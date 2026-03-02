@@ -1,20 +1,36 @@
 import React from 'react';
-import { Users } from 'lucide-react';
-import { CardHeader, V12Table, Row, Cell, Loz, F } from './KAResponseShared';
+import { Users, Loader2 } from 'lucide-react';
+import { CardHeader, V12Table, Row, Cell, Loz } from './KAResponseShared';
+import { useTeamWorkload } from './useKAData';
+
+function getCapacityStatus(active: number, blocked: number): string {
+  if (blocked > 3) return 'BLOCKED';
+  if (active > 15) return 'AT CAPACITY';
+  return 'AVAILABLE';
+}
 
 export function TeamWorkloadResponse() {
+  const { data, loading } = useTeamWorkload();
+
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Loader2 size={20} className="animate-spin" color="#7C3AED" /></div>;
+  if (!data.length) return <div style={{ padding: 24, color: '#64748B', fontSize: 13, textAlign: 'center' }}>No team workload data available.</div>;
+
   return (
     <div>
-      <CardHeader icon={Users} iconColor="#7C3AED" title="Team Workload" subtitle="5 team members" />
+      <CardHeader icon={Users} iconColor="#7C3AED" title="Team Workload" subtitle={`${data.length} team members`} />
       <V12Table
-        headers={['MEMBER', 'ROLE', 'ACTIVE', 'BLOCKED', 'CLOSED', 'STATUS']}
-        widths={['130px', '90px', '70px', '70px', '70px', '100px']}
+        headers={['MEMBER', 'ACTIVE', 'BLOCKED', 'CLOSED (2W)', 'STATUS']}
+        widths={['auto', '70px', '70px', '90px', '110px']}
       >
-        <Row><Cell bold>Wahid Nasri</Cell><Cell>Mobile FE</Cell><Cell mono>20</Cell><Cell mono>0</Cell><Cell mono>4</Cell><Cell><Loz status="AT CAPACITY" /></Cell></Row>
-        <Row><Cell bold>Nada Alfassam</Cell><Cell>QA</Cell><Cell mono>15</Cell><Cell mono>7</Cell><Cell mono>1</Cell><Cell><Loz status="BLOCKED" /></Cell></Row>
-        <Row><Cell bold>Raza Bangi</Cell><Cell>Backend</Cell><Cell mono>8</Cell><Cell mono>0</Cell><Cell mono>3</Cell><Cell><Loz status="AVAILABLE" /></Cell></Row>
-        <Row><Cell bold>Yousif Al-Harbi</Cell><Cell>Backend</Cell><Cell mono>8</Cell><Cell mono>0</Cell><Cell mono>2</Cell><Cell><Loz status="AT CAPACITY" /></Cell></Row>
-        <Row><Cell bold>Sara Ahmad</Cell><Cell>BA</Cell><Cell mono>4</Cell><Cell mono>0</Cell><Cell mono>2</Cell><Cell><Loz status="AVAILABLE" /></Cell></Row>
+        {data.map(m => (
+          <Row key={m.name}>
+            <Cell bold>{m.name}</Cell>
+            <Cell mono>{m.active}</Cell>
+            <Cell mono>{m.blocked}</Cell>
+            <Cell mono>{m.closedRecent}</Cell>
+            <Cell><Loz status={getCapacityStatus(m.active, m.blocked)} /></Cell>
+          </Row>
+        ))}
       </V12Table>
     </div>
   );

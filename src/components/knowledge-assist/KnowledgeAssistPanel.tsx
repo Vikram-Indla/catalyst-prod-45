@@ -7,6 +7,7 @@ import {
   CalendarDays,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useLandingStats } from './responses/useKAData';
 import { KAItemDetailPanel } from './KAItemDetailPanel';
 
 // Hardcoded response components
@@ -106,6 +107,7 @@ const F = {
 
 export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { user } = useAuth();
+  const { stats: landingStats } = useLandingStats();
 
   const [view, setView] = useState<ViewState>('land');
   const [input, setInput] = useState('');
@@ -365,10 +367,10 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginTop: 20 }}>
-                <StatTile value="+8 New" label="stories this week" color="#1D4ED8" onClick={() => handleSend('New stories created this sprint')} />
-                <StatTile value="3 Blocked" label="this week" color="#DC2626" onClick={() => handleSend('Items blocked this week')} />
-                <StatTile value="5 Re-opened" label="this week" color="#D97706" onClick={() => handleSend('Re-opened items this week')} />
-                <StatTile value="12 Closed" label="this week" color="#16A34A" onClick={() => handleSend('Items closed this week')} />
+                <StatTile value={`${landingStats.newStories} New`} label="stories recently" color="#1D4ED8" onClick={() => handleSend('New stories created this sprint')} />
+                <StatTile value={`${landingStats.blocked} Blocked`} label="currently" color="#DC2626" onClick={() => handleSend('Items blocked this week')} />
+                <StatTile value={`${landingStats.reopened} Re-opened`} label="currently" color="#D97706" onClick={() => handleSend('Re-opened items this week')} />
+                <StatTile value={`${landingStats.closed} Closed`} label="last 2 weeks" color="#16A34A" onClick={() => handleSend('Items closed this week')} />
               </div>
 
               <div style={{ marginTop: 28 }}>

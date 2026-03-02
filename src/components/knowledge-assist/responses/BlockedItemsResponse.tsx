@@ -1,23 +1,34 @@
 import React from 'react';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, Loader2 } from 'lucide-react';
 import { CardHeader, V12Table, Row, KeyCell, Cell, ScopeBar, ExtendLink } from './KAResponseShared';
+import { useBlockedItems, formatTimeAgo } from './useKAData';
 
 export function BlockedItemsResponse({ onItemClick }: { onItemClick?: (key: string) => void }) {
+  const { data, total, loading } = useBlockedItems();
+
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Loader2 size={20} className="animate-spin" color="#DC2626" /></div>;
+  if (!data.length) return <div style={{ padding: 24, color: '#64748B', fontSize: 13, textAlign: 'center' }}>No blocked items found.</div>;
+
   return (
     <div>
-      <CardHeader icon={ShieldAlert} iconColor="#DC2626" title="Blocked Items" titleColor="#DC2626" subtitle="10 total" />
+      <CardHeader icon={ShieldAlert} iconColor="#DC2626" title="Blocked Items" titleColor="#DC2626" subtitle={`${total} total`} />
       <V12Table
-        headers={['KEY', 'TITLE', 'REASON', 'ASSIGNEE', 'PROJECT', 'BLOCKED SINCE']}
-        widths={['90px', 'auto', '160px', '110px', '90px', '90px']}
+        headers={['KEY', 'TITLE', 'ASSIGNEE', 'PROJECT', 'TYPE', 'BLOCKED SINCE']}
+        widths={['90px', 'auto', '120px', '100px', '80px', '90px']}
       >
-        <Row onClick={() => onItemClick?.('SIMP-3172')}><KeyCell value="SIMP-3172" /><Cell>Restricted Chemical Imports Permit</Cell><Cell muted>Accessibility &lt;100</Cell><Cell>Nada Alfassam</Cell><Cell bold>SIMP</Cell><Cell mono muted>2d ago</Cell></Row>
-        <Row onClick={() => onItemClick?.('SIMP-3166')}><KeyCell value="SIMP-3166" /><Cell>Restricted Chemical Imports Permit</Cell><Cell muted>Accessibility &lt;100</Cell><Cell>Nada Alfassam</Cell><Cell bold>SIMP</Cell><Cell mono muted>2d ago</Cell></Row>
-        <Row onClick={() => onItemClick?.('SIMP-3245')}><KeyCell value="SIMP-3245" /><Cell>Landing Page — Program & Incentives</Cell><Cell muted>Card color mismatch with Figma</Cell><Cell>Nada Alfassam</Cell><Cell bold>SIMP</Cell><Cell mono muted>5d ago</Cell></Row>
-        <Row onClick={() => onItemClick?.('SIMP-3133')}><KeyCell value="SIMP-3133" /><Cell>Usage and Disclaimer page</Cell><Cell muted>Accessibility &lt;100</Cell><Cell>Nada Alfassam</Cell><Cell bold>SIMP</Cell><Cell mono muted>3d ago</Cell></Row>
-        <Row onClick={() => onItemClick?.('SIMP-3128')}><KeyCell value="SIMP-3128" /><Cell>Usage and Disclaimer footer</Cell><Cell muted>Accessibility &lt;100</Cell><Cell>Nada Alfassam</Cell><Cell bold>SIMP</Cell><Cell mono muted>3d ago</Cell></Row>
+        {data.map(item => (
+          <Row key={item.issue_key} onClick={() => onItemClick?.(item.issue_key)}>
+            <KeyCell value={item.issue_key} />
+            <Cell>{item.summary}</Cell>
+            <Cell>{item.assignee_display_name || '—'}</Cell>
+            <Cell bold>{item.project_name || item.project_key}</Cell>
+            <Cell muted>{item.issue_type}</Cell>
+            <Cell mono muted>{formatTimeAgo(item.jira_updated_at)}</Cell>
+          </Row>
+        ))}
       </V12Table>
-      <ScopeBar showing={5} total={10} label="Blocked in last 6 weeks" />
-      <ExtendLink main="Load older blocked items" hint="3 items beyond 6 weeks" />
+      <ScopeBar showing={data.length} total={total} label="Currently blocked" />
+      <ExtendLink main="Show all blocked items" hint={`${total} items total`} />
     </div>
   );
 }
