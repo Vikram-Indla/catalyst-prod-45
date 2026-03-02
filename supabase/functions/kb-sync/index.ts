@@ -236,7 +236,7 @@ const TABLE_CONFIGS: TableConfig[] = [
   },
   {
     table: "business_requests",
-    sourceType: "initiative",
+    sourceType: "catalyst",
     urlField: "request_key",
     titleField: "title",
     bodyFields: ["description", "business_justification", "proposed_solution"],
@@ -246,7 +246,7 @@ const TABLE_CONFIGS: TableConfig[] = [
   },
   {
     table: "incidents",
-    sourceType: "incident",
+    sourceType: "catalyst",
     urlField: "incident_key",
     titleField: "title",
     bodyFields: ["description", "resolution_summary", "root_cause"],
@@ -359,18 +359,23 @@ serve(async (req) => {
           const texts = batch.map(c => c.content);
           const embeddings = await batchEmbed(texts);
 
-          for (let j = 0; j < batch.length; j++) {
-            const c = batch[j];
-            const { error: insertErr } = await sb.from("kb_embeddings").insert({
-              content: c.content, content_hash: c.content_hash,
-              source_type: c.source_type, source_url: c.source_url,
-              metadata: c.metadata, embedding: embeddings[j],
-              chunk_type: c.chunk_type, section_title: c.section_title,
-              token_count: c.token_count, tags: c.tags,
-              chunk_index: c.chunk_index, language: c.language,
-            });
-            if (insertErr) errors.push(`${c.source_url}: ${insertErr.message}`);
-            else synced++;
+          // Build batch insert rows
+          const insertRows = batch.map((c, j) => ({
+            content: c.content, content_hash: c.content_hash,
+            source_type: c.source_type, source_url: c.source_url,
+            metadata: c.metadata,
+            embedding: JSON.stringify(embeddings[j]),
+            chunk_type: c.chunk_type, section_title: c.section_title,
+            token_count: c.token_count, tags: c.tags,
+            chunk_index: c.chunk_index, language: c.language,
+          }));
+
+          const { error: insertErr, count } = await sb.from("kb_embeddings").insert(insertRows);
+          if (insertErr) {
+            console.error(`Insert error for ${config.table} batch ${i}:`, insertErr.message);
+            errors.push(`Batch ${i}: ${insertErr.message}`);
+          } else {
+            synced += batch.length;
           }
 
           if (i + BATCH_SIZE < newChunks.length) await new Promise(r => setTimeout(r, 300));
@@ -435,9 +440,10 @@ serve(async (req) => {
           rowsProcessed += stepRows;
           newChunks += stepNewChunks;
 
-          if (payload?.error) {
+          if (payload?.error || (payload?.errors && payload.errors.length > 0)) {
             failedTables += 1;
-            steps[i] = { ...steps[i], status: "failed", durationMs: stepDuration, rowsProcessed: stepRows, newChunks: stepNewChunks, synced: stepSynced, result: payload.error };
+            const errMsg = payload.error || payload.errors?.[0] || 'Unknown error';
+            steps[i] = { ...steps[i], status: "failed", durationMs: stepDuration, rowsProcessed: stepRows, newChunks: stepNewChunks, synced: stepSynced, result: errMsg };
           } else {
             steps[i] = { ...steps[i], status: "done", durationMs: stepDuration, rowsProcessed: stepRows, newChunks: stepNewChunks, synced: stepSynced, result: `${stepSynced} synced` };
           }
