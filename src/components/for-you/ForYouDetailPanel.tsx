@@ -5,7 +5,8 @@
  */
 
 import React, { useState, useEffect, Fragment } from 'react';
-import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft, Paperclip, FileText, Image, Download, File, ListTree, Loader2 } from 'lucide-react';
+import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft, Paperclip, FileText, Image, Download, File, ListTree, Loader2, GitPullRequest } from 'lucide-react';
+import { TransitionsTab } from './TransitionsTab';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
@@ -518,6 +519,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
   const tabs = [
     { id: 'details', label: 'Details', icon: <Layers size={13} /> },
     { id: 'subtasks', label: 'Sub-Tasks', icon: <ListTree size={13} />, count: subTaskCount },
+    { id: 'transitions', label: 'Transitions', icon: <GitPullRequest size={13} /> },
     { id: 'attachments', label: 'Attachments', icon: <Paperclip size={13} />, count: attachments.length },
     { id: 'comments', label: 'Comments', icon: <MessageSquare size={13} />, count: comments.length },
     { id: 'history', label: 'History', icon: <Clock size={13} />, count: changelog.length },
@@ -696,7 +698,10 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
             <SubTasksTabContent parentKey={currentItem.key} onSubTaskClick={handleSubTaskClick} />
           )}
 
-          {/* ═══ ATTACHMENTS TAB ═══ */}
+          {/* ═══ TRANSITIONS TAB ═══ */}
+          {tab === 'transitions' && (
+            <TransitionsTab issueKey={currentItem.key} />
+          )}
           {tab === 'attachments' && (
             <div style={{ padding: '16px 0' }}>
               {attachmentsLoading ? (
