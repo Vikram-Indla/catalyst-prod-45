@@ -11,7 +11,70 @@ interface KBResponseRendererProps {
 
 /* ── helpers ── */
 const ISSUE_HEADERS = ['issues & risks', 'issues', 'risks', 'blockers'];
-const SOURCE_RE = /\[SOURCE-(\d+)\]/g;
+
+const F = {
+  inter: "'Inter', -apple-system, sans-serif",
+  mono: "'JetBrains Mono', monospace",
+};
+
+/* ── V12 Status Lozenge Detection ── */
+const STATUS_PATTERNS: Record<string, { bg: string; color: string }> = {
+  'done': { bg: '#E3FCEF', color: '#006644' },
+  'to do': { bg: '#E3FCEF', color: '#006644' },
+  'todo': { bg: '#E3FCEF', color: '#006644' },
+  'available': { bg: '#E3FCEF', color: '#006644' },
+  'open': { bg: '#E3FCEF', color: '#006644' },
+  'ready': { bg: '#E3FCEF', color: '#006644' },
+  'fixed': { bg: '#E3FCEF', color: '#006644' },
+  'in progress': { bg: '#DEEBFF', color: '#0747A6' },
+  're-open': { bg: '#DEEBFF', color: '#0747A6' },
+  'reopen': { bg: '#DEEBFF', color: '#0747A6' },
+  're-opened': { bg: '#DEEBFF', color: '#0747A6' },
+  'blocked': { bg: '#DEEBFF', color: '#0747A6' },
+  'under review': { bg: '#DEEBFF', color: '#0747A6' },
+  'in review': { bg: '#DEEBFF', color: '#0747A6' },
+  'analysis': { bg: '#DEEBFF', color: '#0747A6' },
+  'deferred': { bg: '#DFE1E6', color: '#253858' },
+  'closed': { bg: '#DFE1E6', color: '#253858' },
+  'resolved': { bg: '#DFE1E6', color: '#253858' },
+  'at capacity': { bg: '#DFE1E6', color: '#253858' },
+  'critical': { bg: '#DFE1E6', color: '#253858' },
+  'high': { bg: '#DFE1E6', color: '#253858' },
+  'medium': { bg: '#DFE1E6', color: '#253858' },
+  'low': { bg: '#DFE1E6', color: '#253858' },
+  'backlog': { bg: '#DFE1E6', color: '#253858' },
+};
+
+function isStatusText(text: string): { bg: string; color: string } | null {
+  const clean = text.replace(/^\*+|\*+$/g, '').trim().toLowerCase();
+  return STATUS_PATTERNS[clean] || null;
+}
+
+/* ── Issue Key Detection (e.g. BAU-5054, SIMP-3245) ── */
+const ISSUE_KEY_RE = /^`?([A-Z]{2,10}-\d{1,6})`?$/;
+
+function isIssueKey(text: string): string | null {
+  const match = text.trim().match(ISSUE_KEY_RE);
+  return match ? match[1] : null;
+}
+
+/* ── Ageing Detection (e.g. 4h, 2d, 15h, <1h) ── */
+const AGE_RE = /^[⏱\s]*<?(\d+\.?\d*)\s*(h|d|m|hr|hrs|day|days)>?$/i;
+
+function isAgeing(text: string): { value: string; color: string } | null {
+  const clean = text.replace(/[⏱\s]/g, '').trim();
+  const match = clean.match(AGE_RE);
+  if (!match) return null;
+  const num = parseFloat(match[1]);
+  const unit = match[2].toLowerCase();
+  let color = '#16A34A'; // green ≤12h
+  if (unit.startsWith('d')) {
+    color = num > 3 ? '#DC2626' : '#D97706';
+  } else if ((unit === 'h' || unit === 'hr' || unit === 'hrs') && num > 12) {
+    color = '#D97706';
+  }
+  return { value: clean, color };
+}
 
 function isHeader(line: string) {
   return /^\*\*[A-Za-z &/]+\*\*$/.test(line.trim());
@@ -37,7 +100,7 @@ function renderInline(text: string): React.ReactNode[] {
     if (match[1]) {
       parts.push(
         <code key={key++} style={{
-          fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+          fontFamily: F.mono,
           color: '#2563EB', background: '#EFF6FF', border: '1px solid #DBEAFE',
           borderRadius: 4, padding: '1px 6px', fontSize: 12, fontWeight: 600,
         }}>{match[1]}</code>
@@ -60,6 +123,52 @@ function renderInline(text: string): React.ReactNode[] {
   return parts;
 }
 
+/* ── Smart Cell Renderer: detects status, keys, ageing ── */
+function renderSmartCell(cellText: string, colIndex: number): React.ReactNode {
+  const trimmed = cellText.trim();
+
+  // Check for issue key
+  const key = isIssueKey(trimmed);
+  if (key) {
+    return (
+      <span style={{
+        fontSize: 12, fontWeight: 500, color: '#2563EB', fontFamily: F.mono,
+        cursor: 'pointer', whiteSpace: 'nowrap',
+      }}>{key}</span>
+    );
+  }
+
+  // Check for status lozenge
+  const status = isStatusText(trimmed);
+  if (status) {
+    const label = trimmed.replace(/^\*+|\*+$/g, '').trim();
+    return (
+      <span style={{
+        display: 'inline-flex', alignItems: 'center', height: 20,
+        padding: '0 6px', borderRadius: 3,
+        background: status.bg, color: status.color,
+        fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+        letterSpacing: '0.03em', fontFamily: F.inter,
+        lineHeight: '20px', whiteSpace: 'nowrap',
+      }}>{label.toUpperCase()}</span>
+    );
+  }
+
+  // Check for ageing value
+  const age = isAgeing(trimmed);
+  if (age) {
+    return (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: age.color, flexShrink: 0 }} />
+        <span style={{ fontSize: 12, fontFamily: F.mono, color: '#64748B', fontVariantNumeric: 'tabular-nums' }}>{age.value}</span>
+      </span>
+    );
+  }
+
+  // Default: render with inline formatting
+  return <>{renderInline(trimmed)}</>;
+}
+
 export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
   response, language, onFeedback, feedbackGiven,
 }) => {
@@ -68,6 +177,8 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [feedbackState, setFeedbackState] = useState<'none' | 'up' | 'down'>('none');
   const [showThanks, setShowThanks] = useState(false);
+
+  const isLiveData = response.category === 'live_data' || response._meta?.source === 'live_query';
 
   const elements: React.ReactNode[] = [];
   let idx = 0;
@@ -82,7 +193,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
     const trimmed = lines[i].trim();
     if (!trimmed) { i++; continue; }
 
-    // Table block
+    // Table block — enhanced with V12 styling for live data
     if (isTableRow(trimmed)) {
       const tableRows: string[][] = [];
       while (i < lines.length && isTableRow(lines[i].trim())) {
@@ -90,35 +201,91 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
         tableRows.push(cells);
         i++;
       }
-      elements.push(
-        <div key={idx} style={{ overflowX: 'auto', margin: '8px 0' }}>
-          <table style={{
-            width: '100%', borderCollapse: 'collapse', fontSize: 12.5,
-            fontFamily: "'Inter', system-ui, sans-serif",
+
+      if (isLiveData && tableRows.length > 0) {
+        // V12 styled table for live data
+        elements.push(
+          <div key={idx} style={{
+            border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6,
+            overflow: 'hidden', margin: '8px 0',
           }}>
-            <tbody>
-              {tableRows.map((row, ri) => (
-                <tr key={ri} style={{
-                  borderBottom: '1px solid #F4F4F5',
-                  background: ri % 2 === 0 ? '#FAFAFA' : '#FFFFFF',
-                }}>
-                  {row.map((cell, ci) => (
-                    <td key={ci} style={{
-                      padding: '6px 10px', verticalAlign: 'top',
-                      whiteSpace: ci === 0 ? 'nowrap' : 'normal',
-                      color: ci === 0 ? '#2563EB' : '#374151',
-                      fontFamily: ci === 0 ? "'JetBrains Mono', monospace" : 'inherit',
-                      fontWeight: ci === 0 ? 600 : 400,
-                      fontSize: ci === 0 ? 11.5 : 12.5,
-                      lineHeight: 1.6,
-                    }}>{renderInline(cell)}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      );
+            <table style={{
+              width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed',
+            }}>
+              <tbody>
+                {tableRows.map((row, ri) => (
+                  <tr
+                    key={ri}
+                    style={{
+                      height: 36,
+                      borderBottom: ri < tableRows.length - 1 ? '0.75px solid rgba(15,23,42,0.06)' : 'none',
+                      background: ri === 0 ? '#F1F5F9' : 'transparent',
+                      transition: 'background 80ms',
+                    }}
+                    onMouseEnter={ri > 0 ? (e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(15,23,42,0.04)'; } : undefined}
+                    onMouseLeave={ri > 0 ? (e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; } : undefined}
+                  >
+                    {row.map((cell, ci) => {
+                      if (ri === 0) {
+                        return (
+                          <th key={ci} style={{
+                            padding: '10px 12px', fontSize: 11, fontWeight: 650,
+                            textTransform: 'uppercase', letterSpacing: '0.06em',
+                            color: '#64748B', fontFamily: F.inter, textAlign: 'left',
+                            whiteSpace: 'nowrap',
+                            borderBottom: '1.5px solid rgba(15,23,42,0.12)',
+                          }}>{cell}</th>
+                        );
+                      }
+                      return (
+                        <td key={ci} style={{
+                          padding: '8px 12px', fontSize: 13, color: '#0F172A',
+                          fontFamily: F.inter, overflow: 'hidden',
+                          textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          verticalAlign: 'middle',
+                        }}>
+                          {renderSmartCell(cell, ci)}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      } else {
+        // Standard table for non-live data
+        elements.push(
+          <div key={idx} style={{ overflowX: 'auto', margin: '8px 0' }}>
+            <table style={{
+              width: '100%', borderCollapse: 'collapse', fontSize: 12.5,
+              fontFamily: F.inter,
+            }}>
+              <tbody>
+                {tableRows.map((row, ri) => (
+                  <tr key={ri} style={{
+                    borderBottom: '1px solid #F4F4F5',
+                    background: ri % 2 === 0 ? '#FAFAFA' : '#FFFFFF',
+                  }}>
+                    {row.map((cell, ci) => (
+                      <td key={ci} style={{
+                        padding: '6px 10px', verticalAlign: 'top',
+                        whiteSpace: ci === 0 ? 'nowrap' : 'normal',
+                        color: ci === 0 ? '#2563EB' : '#374151',
+                        fontFamily: ci === 0 ? F.mono : 'inherit',
+                        fontWeight: ci === 0 ? 600 : 400,
+                        fontSize: ci === 0 ? 11.5 : 12.5,
+                        lineHeight: 1.6,
+                      }}>{renderInline(cell)}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
       idx++;
       continue;
     }
@@ -188,8 +355,6 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
     low: { color: '#DC2626', label: 'Low confidence — verify with sources' },
     insufficient: { color: '#DC2626', label: 'Insufficient data' },
   }[confidence] || { color: '#71717A', label: '' };
-
-  const isLiveData = response.category === 'live_data' || response._meta?.source === 'live_query';
 
   const handleFeedbackClick = (helpful: boolean) => {
     setFeedbackState(helpful ? 'up' : 'down');
