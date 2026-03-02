@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Clock, ArrowUpRight } from 'lucide-react';
 import type { KBQueryResponse } from '@/services/knowledgeBase';
 
 interface KBResponseRendererProps {
@@ -7,6 +7,7 @@ interface KBResponseRendererProps {
   language: 'en';
   onFeedback?: (helpful: boolean) => void;
   feedbackGiven?: boolean;
+  onExtend?: (query: string) => void;
 }
 
 /* ── helpers ── */
@@ -50,7 +51,6 @@ function isStatusText(text: string): { bg: string; color: string } | null {
   return STATUS_PATTERNS[clean] || null;
 }
 
-/* ── Issue Key Detection (e.g. BAU-5054, SIMP-3245) ── */
 const ISSUE_KEY_RE = /^`?([A-Z]{2,10}-\d{1,6})`?$/;
 
 function isIssueKey(text: string): string | null {
@@ -58,7 +58,6 @@ function isIssueKey(text: string): string | null {
   return match ? match[1] : null;
 }
 
-/* ── Ageing Detection (e.g. 4h, 2d, 15h, <1h) ── */
 const AGE_RE = /^[⏱\s]*<?(\d+\.?\d*)\s*(h|d|m|hr|hrs|day|days)>?$/i;
 
 function isAgeing(text: string): { value: string; color: string } | null {
@@ -67,7 +66,7 @@ function isAgeing(text: string): { value: string; color: string } | null {
   if (!match) return null;
   const num = parseFloat(match[1]);
   const unit = match[2].toLowerCase();
-  let color = '#16A34A'; // green ≤12h
+  let color = '#16A34A';
   if (unit.startsWith('d')) {
     color = num > 3 ? '#DC2626' : '#D97706';
   } else if ((unit === 'h' || unit === 'hr' || unit === 'hrs') && num > 12) {
@@ -108,12 +107,8 @@ function renderInline(text: string): React.ReactNode[] {
     } else if (match[2]) {
       parts.push(<strong key={key++} style={{ color: '#1D4ED8', fontWeight: 700, fontFamily: 'system-ui' }}>{match[2]}</strong>);
     } else if (match[3]) {
-      parts.push(
-        <sup key={key++} style={{
-          fontSize: 10, color: '#2563EB', fontWeight: 700, cursor: 'pointer',
-          verticalAlign: 'super',
-        }} title={`Source ${match[3]}`}>[{match[3]}]</sup>
-      );
+      // Hide inline source citations
+      // parts.push(<sup>...</sup>);
     }
     lastIndex = match.index + match[0].length;
   }
@@ -123,11 +118,9 @@ function renderInline(text: string): React.ReactNode[] {
   return parts;
 }
 
-/* ── Smart Cell Renderer: detects status, keys, ageing ── */
 function renderSmartCell(cellText: string, colIndex: number): React.ReactNode {
   const trimmed = cellText.trim();
 
-  // Check for issue key
   const key = isIssueKey(trimmed);
   if (key) {
     return (
@@ -138,7 +131,6 @@ function renderSmartCell(cellText: string, colIndex: number): React.ReactNode {
     );
   }
 
-  // Check for status lozenge
   const status = isStatusText(trimmed);
   if (status) {
     const label = trimmed.replace(/^\*+|\*+$/g, '').trim();
@@ -154,7 +146,6 @@ function renderSmartCell(cellText: string, colIndex: number): React.ReactNode {
     );
   }
 
-  // Check for ageing value
   const age = isAgeing(trimmed);
   if (age) {
     return (
@@ -165,16 +156,73 @@ function renderSmartCell(cellText: string, colIndex: number): React.ReactNode {
     );
   }
 
-  // Default: render with inline formatting
   return <>{renderInline(trimmed)}</>;
 }
 
+/* ── Scope Bar Component ── */
+function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendHint, onExtend }: {
+  totalShown: number;
+  totalAvailable: number;
+  scopeLabel: string;
+  extendLabel?: string;
+  extendHint?: string;
+  onExtend?: () => void;
+}) {
+  return (
+    <div style={{
+      padding: '12px 20px', background: '#F8FAFC',
+      borderTop: '0.75px solid rgba(15,23,42,0.06)',
+      display: 'flex', flexDirection: 'column', gap: 8,
+    }}>
+      {/* Scope label */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748B' }}>
+        <Clock size={14} strokeWidth={2} color="#64748B" />
+        <span>Showing {totalShown} of {totalAvailable} · {scopeLabel}</span>
+      </div>
+
+      {/* Extend action */}
+      {extendLabel && onExtend && (
+        <button
+          onClick={onExtend}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '10px 14px', background: '#FFFFFF',
+            border: '1.5px solid rgba(15,23,42,0.08)', borderRadius: 8,
+            cursor: 'pointer', transition: 'all 150ms',
+            width: '100%', textAlign: 'left',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.borderColor = '#2563EB';
+            e.currentTarget.style.background = '#EFF6FF';
+            e.currentTarget.style.boxShadow = '0 1px 4px rgba(37,99,235,0.08)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.borderColor = 'rgba(15,23,42,0.08)';
+            e.currentTarget.style.background = '#FFFFFF';
+            e.currentTarget.style.boxShadow = 'none';
+          }}
+        >
+          <div style={{
+            width: 32, height: 32, minWidth: 32, background: '#EFF6FF',
+            borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <ArrowUpRight size={16} strokeWidth={2} color="#2563EB" />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: '#1D4ED8' }}>{extendLabel}</span>
+            {extendHint && <span style={{ fontSize: 11, color: '#64748B' }}>{extendHint}</span>}
+          </div>
+        </button>
+      )}
+    </div>
+  );
+}
+
 export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
-  response, language, onFeedback, feedbackGiven,
+  response, language, onFeedback, feedbackGiven, onExtend,
 }) => {
   const dir = 'ltr';
   const lines = (response.answer || '').split('\n');
-  const _sourcesAvailable = response.references && response.references.length > 0; // kept for internal use
   const [feedbackState, setFeedbackState] = useState<'none' | 'up' | 'down'>('none');
   const [showThanks, setShowThanks] = useState(false);
 
@@ -183,17 +231,15 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
   const elements: React.ReactNode[] = [];
   let idx = 0;
   let lastHeaderDanger = false;
+  let tableRowCount = 0;
 
-  // Detect table rows (pipe-delimited)
   const isTableRow = (l: string) => l.trim().startsWith('|') && l.trim().endsWith('|');
 
-  // Group consecutive table rows
   let i = 0;
   while (i < lines.length) {
     const trimmed = lines[i].trim();
     if (!trimmed) { i++; continue; }
 
-    // Table block — enhanced with V12 styling for live data
     if (isTableRow(trimmed)) {
       const tableRows: string[][] = [];
       while (i < lines.length && isTableRow(lines[i].trim())) {
@@ -201,17 +247,15 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
         tableRows.push(cells);
         i++;
       }
+      tableRowCount += tableRows.length;
 
       if (isLiveData && tableRows.length > 0) {
-        // V12 styled table for live data
         elements.push(
           <div key={idx} style={{
             border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6,
             overflow: 'hidden', margin: '8px 0',
           }}>
-            <table style={{
-              width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed',
-            }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
               <tbody>
                 {tableRows.map((row, ri) => (
                   <tr
@@ -255,13 +299,9 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
           </div>
         );
       } else {
-        // Standard table for non-live data
         elements.push(
           <div key={idx} style={{ overflowX: 'auto', margin: '8px 0' }}>
-            <table style={{
-              width: '100%', borderCollapse: 'collapse', fontSize: 12.5,
-              fontFamily: F.inter,
-            }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5, fontFamily: F.inter }}>
               <tbody>
                 {tableRows.map((row, ri) => (
                   <tr key={ri} style={{
@@ -307,10 +347,8 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
       i++; idx++; continue;
     }
 
-    // Horizontal rule
     if (trimmed === '---') { i++; continue; }
 
-    // Subheading (#### TITLE)
     if (trimmed.startsWith('####')) {
       const label = trimmed.replace(/^#{1,4}\s*/, '').trim();
       elements.push(
@@ -356,12 +394,21 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
     insufficient: { color: '#DC2626', label: 'Insufficient data' },
   }[confidence] || { color: '#71717A', label: '' };
 
+  // Parse "Showing X of Y" from the response text for scope bar
+  const showingMatch = (response.answer || '').match(/Showing\s+(\d+)\s+of\s+(\d+)/i);
+  const totalShown = showingMatch ? parseInt(showingMatch[1]) : tableRowCount;
+  const totalAvailable = showingMatch ? parseInt(showingMatch[2]) : tableRowCount;
+  const scopeLabel = isLiveData ? 'Active in last 6 weeks' : 'From indexed sources';
+
   const handleFeedbackClick = (helpful: boolean) => {
     setFeedbackState(helpful ? 'up' : 'down');
     setShowThanks(true);
     onFeedback?.(helpful);
     setTimeout(() => setShowThanks(false), 2000);
   };
+
+  // Build extend query
+  const extendQuery = response.title ? `Show all ${response.title} beyond 6 weeks` : undefined;
 
   return (
     <div dir={dir}>
@@ -372,31 +419,39 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
         </h3>
       )}
 
-      {/* Category badge */}
-      {response.category && (
-        <span style={{
-          display: 'inline-block', fontSize: 10, fontWeight: 600, textTransform: 'uppercase',
-          letterSpacing: '0.5px', color: '#2563EB', background: '#EFF6FF', border: '1px solid #DBEAFE',
-          borderRadius: 4, padding: '2px 8px', marginBottom: 10,
-        }}>{response.category}</span>
-      )}
-
       {/* Body */}
       <div>{elements}</div>
 
-      {/* Confidence indicator */}
-      {confConfig.label && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 14 }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: confConfig.color }} />
-          <span style={{ fontSize: 11, fontWeight: 500, color: confConfig.color }}>{confConfig.label}</span>
-        </div>
+      {/* Scope Bar — between table and footer */}
+      {tableRowCount > 0 && (
+        <ScopeBar
+          totalShown={totalShown}
+          totalAvailable={totalAvailable}
+          scopeLabel={scopeLabel}
+          extendLabel={totalAvailable > totalShown ? `Load older items (${totalAvailable - totalShown} items beyond 6 weeks)` : undefined}
+          extendHint={totalAvailable > totalShown ? 'Last activity 2–5 months ago' : undefined}
+          onExtend={extendQuery && onExtend ? () => onExtend(extendQuery) : undefined}
+        />
       )}
 
-      {/* Sources kept in background — not shown to users */}
+      {/* Footer: confidence + date */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {confConfig.label && (
+            <>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: confConfig.color }} />
+              <span style={{ fontSize: 11, fontWeight: 500, color: confConfig.color }}>{confConfig.label}</span>
+            </>
+          )}
+        </div>
+        <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: F.inter }}>
+          {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+        </span>
+      </div>
 
       {/* Feedback */}
       {!feedbackGiven && feedbackState === 'none' && onFeedback && (
-        <div style={{ display: 'flex', gap: 4, marginTop: 10 }}>
+        <div style={{ display: 'flex', gap: 4, marginTop: 8 }}>
           <button
             onClick={() => handleFeedbackClick(true)}
             style={{
@@ -431,7 +486,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
         </div>
       )}
 
-      {/* Meta (hover-visible via parent CSS) */}
+      {/* Meta (hover-visible) */}
       <div className="kb-response-meta" style={{
         marginTop: 8, fontSize: 10, color: '#D4D4D8', opacity: 0, transition: 'opacity 200ms',
       }}>
