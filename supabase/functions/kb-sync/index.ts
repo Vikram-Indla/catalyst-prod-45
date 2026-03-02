@@ -322,21 +322,13 @@ serve(async (req) => {
         allChunks.push(...c);
       }
 
-      const hashes = allChunks.map(c => c.content_hash);
-      // Query existing hashes in batches of 500 to avoid URL length limits
-      const existingHashes = new Set<string>();
-      for (let h = 0; h < hashes.length; h += 500) {
-        const batch = hashes.slice(h, h + 500);
-        const { data: existing } = await sb
-          .from("kb_embeddings")
-          .select("content_hash")
-          .in("content_hash", batch);
-        for (const e of existing || []) existingHashes.add(e.content_hash);
+      const uniqueChunksByHash = new Map<string, Chunk>();
+      for (const chunk of allChunks) {
+        if (!uniqueChunksByHash.has(chunk.content_hash)) uniqueChunksByHash.set(chunk.content_hash, chunk);
       }
+      const uniqueChunks = Array.from(uniqueChunksByHash.values());
 
-      const newChunks = allChunks.filter(c => !existingHashes.has(c.content_hash));
-
-      if (newChunks.length === 0) {
+      if (uniqueChunks.length === 0) {
         return {
           table: config.table, rows_processed: rows.length,
           total_chunks: allChunks.length, new_chunks: 0, synced: 0,
@@ -347,38 +339,60 @@ serve(async (req) => {
       let synced = 0;
       const errors: string[] = [];
 
-      for (let i = 0; i < newChunks.length; i += BATCH_SIZE) {
+      for (let i = 0; i < uniqueChunks.length; i += BATCH_SIZE) {
         // Timeout guard: stop embedding if we're running out of time
         if (Date.now() - tableStart > timeoutMs) {
-          errors.push(`Timeout after ${synced} chunks — remaining ${newChunks.length - i} skipped`);
+          errors.push(`Timeout after ${synced} chunks — remaining ${uniqueChunks.length - i} skipped`);
           break;
         }
 
-        const batch = newChunks.slice(i, i + BATCH_SIZE);
+        const batch = uniqueChunks.slice(i, i + BATCH_SIZE);
+        const batchHashes = batch.map(c => c.content_hash);
+
         try {
-          const texts = batch.map(c => c.content);
+          const { data: existingInBatch } = await sb
+            .from("kb_embeddings")
+            .select("content_hash")
+            .in("content_hash", batchHashes);
+
+          const existingSet = new Set((existingInBatch || []).map((r: any) => r.content_hash));
+          const toInsert = batch.filter(c => !existingSet.has(c.content_hash));
+
+          if (toInsert.length === 0) {
+            if (i + BATCH_SIZE < uniqueChunks.length) await new Promise(r => setTimeout(r, 150));
+            continue;
+          }
+
+          const texts = toInsert.map(c => c.content);
           const embeddings = await batchEmbed(texts);
 
-          // Build batch insert rows
-          const insertRows = batch.map((c, j) => ({
-            content: c.content, content_hash: c.content_hash,
-            source_type: c.source_type, source_url: c.source_url,
+          const insertRows = toInsert.map((c, j) => ({
+            content: c.content,
+            content_hash: c.content_hash,
+            source_type: c.source_type,
+            source_url: c.source_url,
             metadata: c.metadata,
             embedding: JSON.stringify(embeddings[j]),
-            chunk_type: c.chunk_type, section_title: c.section_title,
-            token_count: c.token_count, tags: c.tags,
-            chunk_index: c.chunk_index, language: c.language,
+            chunk_type: c.chunk_type,
+            section_title: c.section_title,
+            token_count: c.token_count,
+            tags: c.tags,
+            chunk_index: c.chunk_index,
+            language: c.language,
           }));
 
-          const { error: insertErr, count } = await sb.from("kb_embeddings").insert(insertRows);
+          const { error: insertErr } = await sb
+            .from("kb_embeddings")
+            .upsert(insertRows, { onConflict: "content_hash", ignoreDuplicates: true });
+
           if (insertErr) {
             console.error(`Insert error for ${config.table} batch ${i}:`, insertErr.message);
             errors.push(`Batch ${i}: ${insertErr.message}`);
           } else {
-            synced += batch.length;
+            synced += toInsert.length;
           }
 
-          if (i + BATCH_SIZE < newChunks.length) await new Promise(r => setTimeout(r, 300));
+          if (i + BATCH_SIZE < uniqueChunks.length) await new Promise(r => setTimeout(r, 300));
         } catch (batchErr: any) {
           errors.push(`Batch ${i}-${i + BATCH_SIZE}: ${batchErr.message}`);
         }
@@ -389,9 +403,12 @@ serve(async (req) => {
         .eq("source_type", config.sourceType);
 
       return {
-        table: config.table, rows_processed: rows.length,
-        total_chunks: allChunks.length, new_chunks: newChunks.length,
-        synced, errors: errors.length > 0 ? errors.slice(0, 10) : undefined,
+        table: config.table,
+        rows_processed: rows.length,
+        total_chunks: allChunks.length,
+        new_chunks: synced,
+        synced,
+        errors: errors.length > 0 ? errors.slice(0, 10) : undefined,
       };
     }
 
