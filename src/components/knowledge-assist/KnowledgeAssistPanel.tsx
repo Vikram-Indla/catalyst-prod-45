@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
-  X, Plus, Mic, Send, RefreshCw,
-  ClipboardList, AlertTriangle, Clock, User, Users,
-  RotateCcw, FileSearch, CalendarDays, TrendingUp, ArrowRightLeft,
+  X, Mic, Send, RefreshCw, Clock, ArrowUpRight,
+  FilePlus, Layers, Bug, AlertOctagon, ShieldAlert, RotateCcw,
+  CheckCircle, ClipboardCheck, TrendingUp, Rocket,
+  FolderOpen, BarChart3, Activity, AlertTriangle, Users, ArrowRightLeft,
 } from 'lucide-react';
-import { HubIcon } from '@/components/caty-ai/constants';
 import { useKBQuery } from '@/hooks/useKnowledgeBase';
 import { useAuth } from '@/hooks/useAuth';
 import { KBResponseRenderer } from '@/components/kb/KBResponseRenderer';
@@ -18,7 +18,6 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content?: string;
   response?: KBQueryResponse;
-  
   logId?: string;
   feedbackGiven?: boolean;
 }
@@ -43,22 +42,32 @@ interface Preset {
   hint: string;
 }
 
-const WORK_POOL: Preset[] = [
-  { icon: ClipboardList, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: "What are Vikram's open items?", hint: 'Active items across projects' },
-  { icon: AlertTriangle, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'What items are blocked?', hint: 'Blocked work items' },
-  { icon: RotateCcw, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'Show re-opened items this week', hint: 'Recently re-opened items' },
-  { icon: FileSearch, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'What did I report this sprint?', hint: 'Items you reported' },
-  { icon: Clock, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'Show deferred items', hint: 'Items pushed to next sprint' },
-  { icon: CalendarDays, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'What changed since yesterday?', hint: 'Recent updates across projects' },
+/* ═══ WHAT'S NEW pool ═══ */
+const WHATS_NEW_POOL: Preset[] = [
+  { icon: FilePlus, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'New stories created this sprint', hint: 'Recently added stories across projects' },
+  { icon: Layers, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'New epics this month', hint: 'Epics created in the last 6 weeks' },
+  { icon: Bug, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'New defects logged this week', hint: 'Defects reported recently' },
+  { icon: AlertOctagon, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'Production incidents this week', hint: 'Recent production incidents' },
+  { icon: ShieldAlert, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'Items blocked this week', hint: 'Newly blocked work items' },
+  { icon: RotateCcw, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'Re-opened items this week', hint: 'Items that bounced back' },
 ];
 
-const TEAM_POOL: Preset[] = [
-  { icon: User, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'What is Wahid working on?', hint: 'View active work items' },
-  { icon: User, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'What is Nada working on?', hint: 'View active work items' },
-  { icon: User, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'What is Raza working on?', hint: 'View active work items' },
-  { icon: User, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'What is Yousif working on?', hint: 'View active work items' },
-  { icon: Users, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'Team capacity & workload', hint: 'Resource balancing overview' },
-  { icon: ArrowRightLeft, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'Who has bandwidth this week?', hint: 'Available team members' },
+/* ═══ WHAT'S CLOSING pool ═══ */
+const WHATS_CLOSING_POOL: Preset[] = [
+  { icon: CheckCircle, iconBg: '#D1FAE5', iconColor: '#065F46', main: 'Items closed this week', hint: 'Items moved to Done recently' },
+  { icon: ClipboardCheck, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'Items ready for QA', hint: 'Items awaiting validation' },
+  { icon: TrendingUp, iconBg: '#D1FAE5', iconColor: '#065F46', main: 'Sprint velocity this week', hint: 'Story points delivered' },
+  { icon: Rocket, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'Deployments this week', hint: 'Recent releases to production' },
+];
+
+/* ═══ PROJECT SPOTLIGHT pool ═══ */
+const SPOTLIGHT_POOL: Preset[] = [
+  { icon: FolderOpen, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'Most active project this week', hint: 'Highest activity project' },
+  { icon: BarChart3, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'Senaei BAU sprint status', hint: 'Current sprint breakdown' },
+  { icon: Activity, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'SIMP project health', hint: 'Project health overview' },
+  { icon: AlertTriangle, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'Cross-project blockers', hint: 'Blocked items across projects' },
+  { icon: Users, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'Team workload distribution', hint: 'Team capacity overview' },
+  { icon: ArrowRightLeft, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'Handoff queue this week', hint: 'Items pending review or handoff' },
 ];
 
 function shuffle<T>(arr: T[]): T[] {
@@ -70,6 +79,12 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+const F = {
+  inter: "'Inter', -apple-system, sans-serif",
+  sora: "'Sora', sans-serif",
+  mono: "'JetBrains Mono', monospace",
+};
+
 /* ══════════════════════════════════════════════════════════════════ */
 
 export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -80,8 +95,9 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isListening, setIsListening] = useState(false);
-  const [workPresets, setWorkPresets] = useState<Preset[]>([]);
-  const [teamPresets, setTeamPresets] = useState<Preset[]>([]);
+  const [whatsNewPresets, setWhatsNewPresets] = useState<Preset[]>([]);
+  const [whatsClosingPresets, setWhatsClosingPresets] = useState<Preset[]>([]);
+  const [spotlightPresets, setSpotlightPresets] = useState<Preset[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const pendingRef = useRef(false);
@@ -91,11 +107,11 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
   const name = firstName(fullName);
 
   const rotatePresets = useCallback(() => {
-    setWorkPresets(shuffle(WORK_POOL).slice(0, 3));
-    setTeamPresets(shuffle(TEAM_POOL).slice(0, 2));
+    setWhatsNewPresets(shuffle(WHATS_NEW_POOL).slice(0, 3));
+    setWhatsClosingPresets(shuffle(WHATS_CLOSING_POOL).slice(0, 2));
+    setSpotlightPresets(shuffle(SPOTLIGHT_POOL).slice(0, 2));
   }, []);
 
-  // Reset panel state every time it opens
   useEffect(() => {
     if (isOpen) {
       setView('land');
@@ -107,7 +123,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     }
   }, [isOpen]);
 
-  // Handle response
   useEffect(() => {
     if (response && pendingRef.current) {
       pendingRef.current = false;
@@ -119,12 +134,11 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isLoading]);
 
-  // Auto-grow textarea
   const handleTextareaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
     const el = e.target;
     el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 96) + 'px'; // max ~4 lines
+    el.style.height = Math.min(el.scrollHeight, 96) + 'px';
   }, []);
 
   const handleSend = useCallback(async (text?: string) => {
@@ -133,7 +147,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     setInput('');
     if (textareaRef.current) { textareaRef.current.style.height = 'auto'; }
     if (view === 'land') setView('chat');
-
 
     setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'user', content: q }]);
     pendingRef.current = true;
@@ -206,16 +219,47 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           <Icon size={20} strokeWidth={2} color={p.iconColor} aria-hidden="true" />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif", display: 'block' }}>
+          <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: F.inter, display: 'block' }}>
             {p.main}
           </span>
-          <span style={{ fontSize: 11, fontWeight: 400, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
+          <span style={{ fontSize: 11, fontWeight: 400, color: '#64748B', fontFamily: F.inter }}>
             {p.hint}
           </span>
         </div>
       </button>
     );
   };
+
+  /* ── Section label ── */
+  const SectionLabel = ({ children }: { children: string }) => (
+    <span style={{
+      fontSize: 11, fontWeight: 700, color: '#475569',
+      textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: F.inter,
+    }}>{children}</span>
+  );
+
+  /* ── Stat Tile (delta format) ── */
+  const StatTile = ({ value, label, color, onClick }: { value: string; label: string; color: string; onClick?: () => void }) => (
+    <button
+      onClick={onClick}
+      style={{
+        border: '1.5px solid rgba(15,23,42,0.08)', borderRadius: 8,
+        padding: '14px 16px', textAlign: 'left', background: '#FFFFFF',
+        cursor: onClick ? 'pointer' : 'default',
+        transition: 'all 150ms',
+      }}
+      onMouseEnter={onClick ? e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.16)'; e.currentTarget.style.transform = 'translateY(-1px)'; } : undefined}
+      onMouseLeave={onClick ? e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.08)'; e.currentTarget.style.transform = 'translateY(0)'; } : undefined}
+    >
+      <div style={{
+        fontFamily: F.mono, fontSize: 22, fontWeight: 600,
+        fontVariantNumeric: 'tabular-nums', lineHeight: 1.2, color,
+      }}>{value}</div>
+      <div style={{ fontSize: 11, fontWeight: 500, color: '#475569', marginTop: 2, fontFamily: F.inter }}>
+        {label}
+      </div>
+    </button>
+  );
 
   return (
     <>
@@ -247,54 +291,47 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           zIndex: 50, display: 'flex', flexDirection: 'column',
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 300ms cubic-bezier(0,0,0.2,1)',
-          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+          fontFamily: F.inter,
         }}
       >
-        {/* ── Header — CATY-style ── */}
+        {/* ── Header — simplified ── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '14px 20px', borderBottom: '1px solid rgba(15,23,42,0.12)',
           flexShrink: 0,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {/* Blue logo container */}
-            <div style={{
-              width: 40, height: 40, borderRadius: 10, background: '#2563EB',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {/* Blue dot with pulse */}
+            <div style={{ position: 'relative', width: 8, height: 8 }}>
+              <span style={{
+                position: 'absolute', inset: 0, borderRadius: '50%', background: '#2563EB',
+              }} />
+              <span style={{
+                position: 'absolute', inset: -3, borderRadius: '50%', border: '1.5px solid #2563EB',
+                animation: 'ka-ring-pulse 2s ease-out infinite', opacity: 0.5,
+              }} />
+            </div>
+            <span style={{
+              fontSize: 15, fontWeight: 700, color: '#0F172A',
+              letterSpacing: '-0.01em', fontFamily: F.sora,
             }}>
-              <div style={{ width: 24, height: 24 }}>
-                <HubIcon />
-              </div>
-            </div>
-            <div>
-              <div style={{
-                fontSize: 15, fontWeight: 700, color: '#0F172A',
-                letterSpacing: '-0.01em', fontFamily: "'Sora', sans-serif", lineHeight: 1.2,
-              }}>
-                Knowledge Assist<sup style={{ fontSize: 8, verticalAlign: 'super', marginLeft: 2 }}>™</sup>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
-                <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
-                  Intelligent Work Assistant
-                </span>
-              </div>
-            </div>
+              Knowledge Assist
+            </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <button onClick={handleNewChat} title="New chat" aria-label="New chat" className="ka-icon-btn"
-              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid rgba(15,23,42,0.10)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
+            <button onClick={handleNewChat} title="Re-roll presets" aria-label="Refresh" className="ka-icon-btn"
+              style={{ width: 32, height: 32, borderRadius: 8, border: '1.5px solid rgba(15,23,42,0.08)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
             >
-              <RefreshCw size={14} strokeWidth={2} color="#64748B" aria-hidden="true" />
+              <RefreshCw size={16} strokeWidth={2} color="#64748B" aria-hidden="true" />
             </button>
             <button onClick={onClose} aria-label="Close Knowledge Assist" className="ka-icon-btn"
-              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid rgba(15,23,42,0.10)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
+              style={{ width: 32, height: 32, borderRadius: 8, border: '1.5px solid rgba(15,23,42,0.08)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
             >
-              <X size={14} strokeWidth={2} color="#64748B" aria-hidden="true" />
+              <X size={16} strokeWidth={2} color="#64748B" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -303,11 +340,11 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         <div ref={scrollRef} className="ka-scroll-area" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           {/* ═══ LANDING STATE ═══ */}
           {view === 'land' && (
-            <div style={{ padding: '32px 24px 16px' }}>
-              {/* Greeting */}
+            <div style={{ padding: '28px 24px 16px' }}>
+              {/* 1. Greeting */}
               <h1 style={{
                 fontSize: 24, fontWeight: 700, color: '#0F172A',
-                letterSpacing: '-0.02em', margin: 0, fontFamily: "'Sora', sans-serif",
+                letterSpacing: '-0.02em', margin: 0, fontFamily: F.sora,
               }}>
                 {getGreeting()}, {name}
               </h1>
@@ -315,53 +352,43 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 Your knowledge briefing is ready.
               </p>
 
-              {/* Quick Action Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginTop: 20 }}>
-                {[
-                  { icon: '📋', label: 'My items', color: '#2563EB', query: "What are my open items?" },
-                  { icon: '🚫', label: 'Blocked', color: '#DC2626', query: "What items are blocked?" },
-                  { icon: '🔄', label: 'Re-opened', color: '#D97706', query: "Show re-opened items this week" },
-                ].map((s, i) => (
-                  <button key={i} onClick={() => handleSend(s.query)} style={{
-                    padding: 16, border: '1.5px solid rgba(15,23,42,0.10)', borderRadius: 8, background: '#FFFFFF',
-                    cursor: 'pointer', textAlign: 'center', transition: 'all 150ms',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.20)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.10)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                  >
-                    <div style={{ fontSize: 20, lineHeight: 1 }}>{s.icon}</div>
-                    <div style={{ fontSize: 11, fontWeight: 500, color: s.color, marginTop: 6, fontFamily: "'Inter', sans-serif" }}>{s.label}</div>
-                  </button>
-                ))}
+              {/* 2. This Week Pulse — 4 delta tiles */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginTop: 20 }}>
+                <StatTile value="+8 New" label="stories this week" color="#1D4ED8" onClick={() => handleSend('New stories created this sprint')} />
+                <StatTile value="3 Blocked" label="this week" color="#DC2626" onClick={() => handleSend('Items blocked this week')} />
+                <StatTile value="5 Re-opened" label="this week" color="#D97706" onClick={() => handleSend('Re-opened items this week')} />
+                <StatTile value="12 Closed" label="this week" color="#16A34A" onClick={() => handleSend('Items closed this week')} />
               </div>
 
-              {/* YOUR WORK */}
+              {/* 3. WHAT'S NEW */}
               <div style={{ marginTop: 28 }}>
-                <span style={{
-                  fontSize: 11, fontWeight: 700, color: '#475569',
-                  textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'Inter', sans-serif",
-                }}>YOUR WORK</span>
+                <SectionLabel>WHAT'S NEW</SectionLabel>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
-                  {workPresets.map((p, i) => <PresetCard key={p.main} p={p} />)}
+                  {whatsNewPresets.map(p => <PresetCard key={p.main} p={p} />)}
                 </div>
               </div>
 
-              {/* YOUR TEAM */}
+              {/* 4. WHAT'S CLOSING */}
               <div style={{ marginTop: 24 }}>
-                <span style={{
-                  fontSize: 11, fontWeight: 700, color: '#475569',
-                  textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'Inter', sans-serif",
-                }}>YOUR TEAM</span>
+                <SectionLabel>WHAT'S CLOSING</SectionLabel>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
-                  {teamPresets.map((p, i) => <PresetCard key={p.main} p={p} />)}
+                  {whatsClosingPresets.map(p => <PresetCard key={p.main} p={p} />)}
                 </div>
               </div>
 
-              {/* Source Line — landing only */}
+              {/* 5. PROJECT SPOTLIGHT */}
+              <div style={{ marginTop: 24 }}>
+                <SectionLabel>PROJECT SPOTLIGHT</SectionLabel>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
+                  {spotlightPresets.map(p => <PresetCard key={p.main} p={p} />)}
+                </div>
+              </div>
+
+              {/* 6. Source line */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '16px 0 0' }}>
                 <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#16A34A' }} />
-                <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
-                  Verified against indexed sources · Cited responses
+                <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: F.inter }}>
+                  Live data · Last 2 weeks
                 </span>
               </div>
             </div>
@@ -378,12 +405,11 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                         maxWidth: '85%', padding: '10px 16px',
                         borderRadius: '8px 8px 3px 8px', background: '#2563EB',
                         color: '#FFFFFF', fontSize: 13, fontWeight: 500, lineHeight: 1.5,
-                        fontFamily: "'Inter', sans-serif",
+                        fontFamily: F.inter,
                       }}>{msg.content}</div>
                     </div>
                   );
                 }
-                // Assistant — RAG response
                 return (
                   <div key={msg.id} style={{ marginBottom: 16, animation: 'ka-msg-in 200ms ease' }}>
                     {msg.response ? (
@@ -392,6 +418,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                         language="en"
                         feedbackGiven={msg.feedbackGiven}
                         onFeedback={(helpful) => handleFeedback(msg.id, msg.logId, helpful)}
+                        onExtend={(query) => handleSend(query)}
                       />
                     ) : null}
                   </div>
@@ -411,7 +438,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           )}
         </div>
 
-        {/* ── Input Area — taller, prominent ── */}
+        {/* ── Input Area ── */}
         <div style={{ borderTop: '1px solid rgba(15,23,42,0.12)', padding: '16px 20px', flexShrink: 0, background: '#FFFFFF' }}>
           <div
             style={{
@@ -453,7 +480,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               rows={1}
               style={{
                 flex: 1, border: 'none', outline: 'none', background: 'transparent',
-                fontSize: 14, color: '#0F172A', fontFamily: "'Inter', sans-serif",
+                fontSize: 14, color: '#0F172A', fontFamily: F.inter,
                 resize: 'none', minHeight: 32, lineHeight: 1.5,
                 padding: '4px 0', boxShadow: 'none', appearance: 'none' as any,
                 WebkitAppearance: 'none' as any,
@@ -476,7 +503,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               <Send size={18} strokeWidth={2} color={input.trim() ? '#FFFFFF' : '#94A3B8'} aria-hidden="true" />
             </button>
           </div>
-          {/* NO source line here — only on landing */}
         </div>
 
         {/* Keyframes */}
@@ -485,7 +511,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           @keyframes ka-msg-in { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
           @keyframes ka-dot-bounce { 0%,80%,100% { transform: translateY(0) } 40% { transform: translateY(-6px) } }
           @keyframes ka-ring-pulse {
-            0% { opacity: 1; transform: scale(1); }
+            0% { opacity: 0.5; transform: scale(1); }
             100% { opacity: 0; transform: scale(2.2); }
           }
           .ka-icon-btn:focus-visible {
@@ -496,7 +522,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           .ka-scroll-area::-webkit-scrollbar-track { background: transparent; }
           .ka-scroll-area::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.18); border-radius: 4px; }
           .ka-scroll-area::-webkit-scrollbar-thumb:hover { background: rgba(15,23,42,0.28); }
-          .ka-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0; }
         `}</style>
       </div>
     </>
