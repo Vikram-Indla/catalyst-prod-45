@@ -19,6 +19,7 @@ const cors = {
 const BATCH_SIZE = 20;
 const CHUNK_MAX_TOKENS = 500;
 const CHUNK_OVERLAP_TOKENS = 50;
+const PER_TABLE_TIMEOUT_MS = 40_000; // 40s max per table to avoid edge function timeout
 
 async function updateSyncRun(sb: any, runId: string | undefined, patch: Record<string, any>) {
   if (!runId) return;
@@ -211,7 +212,7 @@ const TABLE_CONFIGS: TableConfig[] = [
     bodyFields: ["description_text"],
     tagFields: ["status", "priority", "issue_type"],
     selectFields: "issue_key, summary, description_text, status, priority, issue_type, assignee_display_name, reporter_display_name, project_name, sprint_name, jira_created_at, jira_updated_at",
-    maxRows: 500,
+    maxRows: 150,
   },
   {
     table: "epics",
@@ -302,13 +303,15 @@ serve(async (req) => {
     }
 
     // ── Inline sync logic (shared by sync_table and sync_all) ──
-    async function syncTableInline(config: TableConfig, sb: any): Promise<any> {
+    async function syncTableInline(config: TableConfig, sb: any, timeoutMs: number = PER_TABLE_TIMEOUT_MS): Promise<any> {
+      const tableStart = Date.now();
+
       const { data: rows, error: fetchErr } = await sb
         .from(config.table)
         .select(config.selectFields)
         .limit(config.maxRows);
 
-      if (fetchErr) throw fetchErr;
+      if (fetchErr) throw new Error(`${config.table}: ${fetchErr.message}`);
       if (!rows || rows.length === 0) {
         return { table: config.table, message: `No rows in ${config.table}`, rows_processed: 0, total_chunks: 0, new_chunks: 0, synced: 0 };
       }
@@ -320,12 +323,17 @@ serve(async (req) => {
       }
 
       const hashes = allChunks.map(c => c.content_hash);
-      const { data: existing } = await sb
-        .from("kb_embeddings")
-        .select("content_hash")
-        .in("content_hash", hashes);
+      // Query existing hashes in batches of 500 to avoid URL length limits
+      const existingHashes = new Set<string>();
+      for (let h = 0; h < hashes.length; h += 500) {
+        const batch = hashes.slice(h, h + 500);
+        const { data: existing } = await sb
+          .from("kb_embeddings")
+          .select("content_hash")
+          .in("content_hash", batch);
+        for (const e of existing || []) existingHashes.add(e.content_hash);
+      }
 
-      const existingHashes = new Set((existing || []).map((e: any) => e.content_hash));
       const newChunks = allChunks.filter(c => !existingHashes.has(c.content_hash));
 
       if (newChunks.length === 0) {
@@ -340,6 +348,12 @@ serve(async (req) => {
       const errors: string[] = [];
 
       for (let i = 0; i < newChunks.length; i += BATCH_SIZE) {
+        // Timeout guard: stop embedding if we're running out of time
+        if (Date.now() - tableStart > timeoutMs) {
+          errors.push(`Timeout after ${synced} chunks — remaining ${newChunks.length - i} skipped`);
+          break;
+        }
+
         const batch = newChunks.slice(i, i + BATCH_SIZE);
         try {
           const texts = batch.map(c => c.content);
