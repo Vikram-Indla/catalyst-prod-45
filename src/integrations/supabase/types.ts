@@ -57901,6 +57901,48 @@ export type Database = {
           },
         ]
       }
+      wiki_article_feedback: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          helpful: boolean
+          id: string
+          page_id: string
+          user_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          helpful: boolean
+          id?: string
+          page_id: string
+          user_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          helpful?: boolean
+          id?: string
+          page_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_article_feedback_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_page_admin_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_article_feedback_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wiki_bookmarks: {
         Row: {
           created_at: string | null
@@ -58209,69 +58251,235 @@ export type Database = {
         }
         Relationships: []
       }
+      wiki_knowledge_requests: {
+        Row: {
+          assigned_to: string | null
+          created_at: string | null
+          description: string | null
+          domain_code: string | null
+          id: string
+          requested_by: string | null
+          resolution_page_id: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string | null
+          description?: string | null
+          domain_code?: string | null
+          id?: string
+          requested_by?: string | null
+          resolution_page_id?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string | null
+          description?: string | null
+          domain_code?: string | null
+          id?: string
+          requested_by?: string | null
+          resolution_page_id?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_knowledge_requests_resolution_page_id_fkey"
+            columns: ["resolution_page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_page_admin_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_knowledge_requests_resolution_page_id_fkey"
+            columns: ["resolution_page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wiki_learning_paths: {
+        Row: {
+          article_count: number | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          sort_order: number | null
+          title: string
+        }
+        Insert: {
+          article_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          sort_order?: number | null
+          title: string
+        }
+        Update: {
+          article_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          sort_order?: number | null
+          title?: string
+        }
+        Relationships: []
+      }
+      wiki_learning_progress: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          id: string
+          page_id: string | null
+          path_id: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          id?: string
+          page_id?: string | null
+          path_id?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          id?: string
+          page_id?: string | null
+          path_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_learning_progress_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_page_admin_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_learning_progress_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_learning_progress_path_id_fkey"
+            columns: ["path_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_learning_paths"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wiki_pages: {
         Row: {
           ai_confidence: number | null
+          author_name: string | null
           category_id: string | null
           created_at: string | null
           created_by: string | null
           domain_code: string
+          format: string | null
+          helpfulness_score: number | null
+          helpfulness_votes: number | null
           id: string
           infobox: Json | null
           last_generated: string | null
           last_jira_sync: string | null
           lead_content: string | null
           lead_content_ar: string | null
+          read_time_minutes: number | null
           slug: string
           source_coverage: number | null
           status: string | null
+          tags: string[] | null
           title: string
           title_ar: string | null
+          tldr: string | null
           updated_at: string | null
           updated_by: string | null
+          verification_status: string | null
+          verified_at: string | null
+          verified_by: string | null
           version: number | null
+          view_count: number | null
         }
         Insert: {
           ai_confidence?: number | null
+          author_name?: string | null
           category_id?: string | null
           created_at?: string | null
           created_by?: string | null
           domain_code: string
+          format?: string | null
+          helpfulness_score?: number | null
+          helpfulness_votes?: number | null
           id?: string
           infobox?: Json | null
           last_generated?: string | null
           last_jira_sync?: string | null
           lead_content?: string | null
           lead_content_ar?: string | null
+          read_time_minutes?: number | null
           slug: string
           source_coverage?: number | null
           status?: string | null
+          tags?: string[] | null
           title: string
           title_ar?: string | null
+          tldr?: string | null
           updated_at?: string | null
           updated_by?: string | null
+          verification_status?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
           version?: number | null
+          view_count?: number | null
         }
         Update: {
           ai_confidence?: number | null
+          author_name?: string | null
           category_id?: string | null
           created_at?: string | null
           created_by?: string | null
           domain_code?: string
+          format?: string | null
+          helpfulness_score?: number | null
+          helpfulness_votes?: number | null
           id?: string
           infobox?: Json | null
           last_generated?: string | null
           last_jira_sync?: string | null
           lead_content?: string | null
           lead_content_ar?: string | null
+          read_time_minutes?: number | null
           slug?: string
           source_coverage?: number | null
           status?: string | null
+          tags?: string[] | null
           title?: string
           title_ar?: string | null
+          tldr?: string | null
           updated_at?: string | null
           updated_by?: string | null
+          verification_status?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
           version?: number | null
+          view_count?: number | null
         }
         Relationships: [
           {
@@ -58279,6 +58487,54 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "wiki_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wiki_quick_refs: {
+        Row: {
+          created_at: string | null
+          domain_code: string | null
+          id: string
+          linked_page_id: string | null
+          sort_order: number | null
+          steps: number | null
+          title: string
+          views: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          domain_code?: string | null
+          id?: string
+          linked_page_id?: string | null
+          sort_order?: number | null
+          steps?: number | null
+          title: string
+          views?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          domain_code?: string | null
+          id?: string
+          linked_page_id?: string | null
+          sort_order?: number | null
+          steps?: number | null
+          title?: string
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_quick_refs_linked_page_id_fkey"
+            columns: ["linked_page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_page_admin_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_quick_refs_linked_page_id_fkey"
+            columns: ["linked_page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_pages"
             referencedColumns: ["id"]
           },
         ]
@@ -58423,6 +58679,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      wiki_subscriptions: {
+        Row: {
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       wiki_sync_runs: {
         Row: {
@@ -66539,6 +66819,23 @@ export type Database = {
       }
       get_user_space_ids: { Args: { _user_id: string }; Returns: string[] }
       get_wiki_diagnostic_summary: { Args: never; Returns: Json }
+      get_wiki_domain_cards: {
+        Args: never
+        Returns: {
+          article_count: number
+          coverage_percent: number
+          description: string
+          document_count: number
+          domain_code: string
+          freshness_percent: number
+          icon: string
+          knowledge_gaps: number
+          last_updated: string
+          name: string
+          view_count: number
+        }[]
+      }
+      get_wiki_home_stats: { Args: never; Returns: Json }
       get_worker_activity: { Args: { p_run_id: string }; Returns: Json }
       get_worker_pools: { Args: { p_project_id: string }; Returns: Json }
       get_worker_status: { Args: { p_run_id: string }; Returns: Json }
@@ -67756,6 +68053,10 @@ export type Database = {
           p_step_order: number
         }
         Returns: Json
+      }
+      update_article_helpfulness: {
+        Args: { p_page_id: string }
+        Returns: undefined
       }
       update_connector: {
         Args: {
