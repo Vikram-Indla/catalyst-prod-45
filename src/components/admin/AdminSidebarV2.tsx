@@ -183,6 +183,9 @@ const adminPockets = [
     label: 'Wiki Admin',
     icon: Settings,
     path: '/admin/wiki',
+    children: [
+      { label: 'Wiki Diagnostic', path: '/admin/wiki-diagnostic' },
+    ],
   },
 ];
 

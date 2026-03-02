@@ -65868,6 +65868,15 @@ export type Database = {
         Returns: Json
       }
       get_cc_team_performance: { Args: { p_project_id: string }; Returns: Json }
+      get_column_check: {
+        Args: never
+        Returns: {
+          col: string
+          data_type: string
+          status: string
+          tbl: string
+        }[]
+      }
       get_command_center_kpis: { Args: { p_project_id: string }; Returns: Json }
       get_command_center_kpis_previous: {
         Args: { p_project_id: string }
@@ -66108,6 +66117,31 @@ export type Database = {
         Args: { p_connector_id: string; p_limit?: number }
         Returns: Json
       }
+      get_kb_chunks_summary: {
+        Args: never
+        Returns: {
+          chunk_count: number
+          chunk_type_val: string
+          source_table: string
+          unique_urls: number
+        }[]
+      }
+      get_kb_sample_keys: {
+        Args: never
+        Returns: {
+          chunks: number
+          preview: string
+          source_key: string
+          source_table: string
+        }[]
+      }
+      get_kb_source_type_check: {
+        Args: never
+        Returns: {
+          allowed_values: string
+          constraint_name: string
+        }[]
+      }
       get_linked_defects_for_step: {
         Args: { p_step_result_id: string }
         Returns: Json
@@ -66313,6 +66347,14 @@ export type Database = {
       get_run_metrics: { Args: { p_run_id: string }; Returns: Json }
       get_run_progress: { Args: { p_run_id: string }; Returns: Json }
       get_run_progress_summary: { Args: { p_run_id: string }; Returns: Json }
+      get_schema_check: {
+        Args: never
+        Returns: {
+          row_count: number
+          status: string
+          table_name: string
+        }[]
+      }
       get_slack_config_safe: {
         Args: never
         Returns: {
@@ -66496,6 +66538,7 @@ export type Database = {
         Returns: Database["public"]["Enums"]["app_role"]
       }
       get_user_space_ids: { Args: { _user_id: string }; Returns: string[] }
+      get_wiki_diagnostic_summary: { Args: never; Returns: Json }
       get_worker_activity: { Args: { p_run_id: string }; Returns: Json }
       get_worker_pools: { Args: { p_project_id: string }; Returns: Json }
       get_worker_status: { Args: { p_run_id: string }; Returns: Json }
