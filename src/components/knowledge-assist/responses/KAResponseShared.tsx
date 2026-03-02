@@ -153,9 +153,11 @@ export function ScopeBar({ showing, total, label }: { showing: number; total: nu
 }
 
 /* ── Extend Link ── */
-export function ExtendLink({ main, hint }: { main: string; hint: string }) {
+export function ExtendLink({ main, hint, onClick, loading }: { main: string; hint: string; onClick?: () => void; loading?: boolean }) {
   return (
     <button
+      onClick={onClick}
+      disabled={loading}
       style={{
         display: 'flex', alignItems: 'center', gap: 8, width: '100%',
         padding: '10px 14px', background: 'transparent',

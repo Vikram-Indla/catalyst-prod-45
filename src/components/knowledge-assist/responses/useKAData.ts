@@ -419,3 +419,40 @@ export function useEarlierClosures() {
 
   return { data, loading, loaded, loadEarlier };
 }
+
+/** Load earlier stories (2-6 weeks ago) */
+export function useEarlierStories() {
+  const [data, setData] = useState<KAIssue[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  const loadEarlier = useCallback(async () => {
+    if (loading || loaded) return;
+    setLoading(true);
+    try {
+      const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+      const sixWeeksAgo = new Date(Date.now() - 42 * 24 * 60 * 60 * 1000).toISOString();
+
+      const { data: items, error } = await supabase
+        .from('ph_issues')
+        .select(FIELDS)
+        .is('jira_removed_at', null)
+        .ilike('issue_type', '%story%')
+        .gte('jira_created_at', sixWeeksAgo)
+        .lt('jira_created_at', twoWeeksAgo)
+        .order('jira_created_at', { ascending: false })
+        .limit(28);
+
+      if (!error && items) {
+        setData(items as KAIssue[]);
+      }
+      setLoaded(true);
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, loaded]);
+
+  return { data, loading, loaded, loadEarlier };
+}
