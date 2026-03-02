@@ -33,12 +33,12 @@ function StatusLozenge({ status }: { status: string }) {
   const s = LOZENGE_MAP[status] ?? { bg: '#DFE1E6', color: '#1E293B' };
   return (
     <span style={{
-      display: 'inline-flex', alignItems: 'center', height: 20,
-      padding: '0 6px', borderRadius: 3,
+      display: 'inline-flex', alignItems: 'center', height: 18,
+      padding: '0 5px', borderRadius: 3,
       background: s.bg, color: s.color,
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+      fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', fontFamily: F.inter,
-      lineHeight: '20px', whiteSpace: 'nowrap',
+      lineHeight: '18px', whiteSpace: 'nowrap',
     }}>{status}</span>
   );
 }
@@ -89,7 +89,7 @@ function KeyLink({ k }: { k: string }) {
 
 /* ── Table header & cell styles (enterprise contrast) ── */
 const TH: React.CSSProperties = {
-  padding: '10px 12px', fontSize: 11, fontWeight: 700,
+  padding: '8px 8px', fontSize: 11, fontWeight: 700,
   textTransform: 'uppercase', letterSpacing: '0.06em',
   color: '#475569', fontFamily: F.inter, textAlign: 'left',
   background: '#F1F5F9', whiteSpace: 'nowrap',
@@ -97,7 +97,7 @@ const TH: React.CSSProperties = {
 };
 
 const TD: React.CSSProperties = {
-  padding: '8px 12px', fontSize: 13, color: '#0F172A',
+  padding: '6px 8px', fontSize: 12, color: '#0F172A',
   fontFamily: F.inter, borderBottom: '0.75px solid rgba(15,23,42,0.06)',
   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
   verticalAlign: 'middle',
@@ -185,27 +185,27 @@ export function WahidResponse() {
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 480 }}>
             <caption className="ka-sr-only">Wahid Nasri's work items</caption>
             <thead>
               <tr>
-                <th style={{ ...TH, width: 100 }}>Key</th>
-                <th style={{ ...TH, width: 50 }}>Type</th>
+                <th style={{ ...TH, width: 80 }}>Key</th>
+                <th style={{ ...TH, width: 36 }}>Type</th>
                 <th style={TH}>Title</th>
-                <th style={{ ...TH, width: 120 }}>Status</th>
-                <th style={{ ...TH, width: 110 }}>Reported By</th>
-                <th style={{ ...TH, width: 70, textAlign: 'right' }}>Ageing</th>
+                <th style={{ ...TH, width: 90 }}>Status</th>
+                <th style={{ ...TH, width: 90 }}>Reported By</th>
+                <th style={{ ...TH, width: 50, textAlign: 'right' }}>Age</th>
               </tr>
             </thead>
             <tbody>
               {WAHID_ROWS.map(r => (
                 <HoverRow key={r.key}>
-                  <td style={{ ...TD, width: 100 }}><KeyLink k={r.key} /></td>
-                  <td style={{ ...TD, width: 50 }}><TypeBadge type={r.type} /></td>
+                  <td style={{ ...TD, width: 80 }}><KeyLink k={r.key} /></td>
+                  <td style={{ ...TD, width: 36 }}><TypeBadge type={r.type} /></td>
                   <td style={TD}>{r.title}</td>
-                  <td style={{ ...TD, width: 120 }}><StatusLozenge status={r.status} /></td>
-                  <td style={{ ...TD, width: 110 }}>{r.reporter}</td>
-                  <td style={{ ...TD, width: 70, textAlign: 'right' }}><Ageing text={r.age} /></td>
+                  <td style={{ ...TD, width: 90 }}><StatusLozenge status={r.status} /></td>
+                  <td style={{ ...TD, width: 90, fontSize: 11 }}>{r.reporter}</td>
+                  <td style={{ ...TD, width: 50, textAlign: 'right' }}><Ageing text={r.age} /></td>
                 </HoverRow>
               ))}
             </tbody>
@@ -235,21 +235,21 @@ export function WahidResponse() {
             <caption className="ka-sr-only">Associated items under same parent</caption>
             <thead>
               <tr>
-                <th style={{ ...TH, width: 100 }}>Key</th>
+                <th style={{ ...TH, width: 80 }}>Key</th>
                 <th style={TH}>Title</th>
-                <th style={{ ...TH, width: 110 }}>Assignee</th>
-                <th style={{ ...TH, width: 120 }}>Status</th>
-                <th style={{ ...TH, width: 70, textAlign: 'right' }}>Ageing</th>
+                <th style={{ ...TH, width: 90 }}>Assignee</th>
+                <th style={{ ...TH, width: 90 }}>Status</th>
+                <th style={{ ...TH, width: 50, textAlign: 'right' }}>Age</th>
               </tr>
             </thead>
             <tbody>
               {WAHID_ASSOCIATED.map(r => (
                 <HoverRow key={r.key}>
-                  <td style={{ ...TD, width: 100 }}><KeyLink k={r.key} /></td>
+                  <td style={{ ...TD, width: 80 }}><KeyLink k={r.key} /></td>
                   <td style={TD}>{r.title}</td>
-                  <td style={{ ...TD, width: 110 }}>{r.assignee}</td>
-                  <td style={{ ...TD, width: 120 }}><StatusLozenge status={r.status} /></td>
-                  <td style={{ ...TD, width: 70, textAlign: 'right' }}><Ageing text={r.age} /></td>
+                  <td style={{ ...TD, width: 90, fontSize: 11 }}>{r.assignee}</td>
+                  <td style={{ ...TD, width: 90 }}><StatusLozenge status={r.status} /></td>
+                  <td style={{ ...TD, width: 50, textAlign: 'right' }}><Ageing text={r.age} /></td>
                 </HoverRow>
               ))}
             </tbody>
@@ -286,29 +286,31 @@ export function BlockedResponse() {
           <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.mono }}>10 total</span>
         </div>
 
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div style={{ overflowX: 'auto' }}>
+         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 440 }}>
           <caption className="ka-sr-only">Blocked work items</caption>
           <thead>
             <tr>
-              <th style={{ ...TH, width: 100 }}>Key</th>
+              <th style={{ ...TH, width: 80 }}>Key</th>
               <th style={TH}>Title</th>
-              <th style={{ ...TH, width: 130 }}>Reason</th>
-              <th style={{ ...TH, width: 110 }}>Assignee</th>
-              <th style={{ ...TH, width: 70, textAlign: 'right' }}>Ageing</th>
+              <th style={{ ...TH, width: 110 }}>Reason</th>
+              <th style={{ ...TH, width: 90 }}>Assignee</th>
+              <th style={{ ...TH, width: 50, textAlign: 'right' }}>Age</th>
             </tr>
           </thead>
           <tbody>
-            {BLOCKED_ROWS.map(r => (
+              {BLOCKED_ROWS.map(r => (
               <HoverRow key={r.key}>
-                <td style={{ ...TD, width: 100 }}><KeyLink k={r.key} /></td>
+                <td style={{ ...TD, width: 80 }}><KeyLink k={r.key} /></td>
                 <td style={TD}>{r.title}</td>
-                <td style={{ ...TD, width: 130, fontSize: 11, color: '#64748B' }}>{r.reason}</td>
-                <td style={{ ...TD, width: 110 }}>{r.assignee}</td>
-                <td style={{ ...TD, width: 70, textAlign: 'right' }}><Ageing text={r.age} /></td>
+                <td style={{ ...TD, width: 110, fontSize: 11, color: '#64748B' }}>{r.reason}</td>
+                <td style={{ ...TD, width: 90, fontSize: 11 }}>{r.assignee}</td>
+                <td style={{ ...TD, width: 50, textAlign: 'right' }}><Ageing text={r.age} /></td>
               </HoverRow>
             ))}
           </tbody>
         </table>
+        </div>
 
         <CardFooter meta="5 of 10 · Ask 'Show all blocked' for full list" confidence="High confidence" />
       </ResponseCard>
@@ -346,27 +348,27 @@ export function VikramResponse() {
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 480 }}>
             <caption className="ka-sr-only">Vikram Indla's open items</caption>
             <thead>
               <tr>
-                <th style={{ ...TH, width: 100 }}>Key</th>
-                <th style={{ ...TH, width: 50 }}>Type</th>
+                <th style={{ ...TH, width: 80 }}>Key</th>
+                <th style={{ ...TH, width: 36 }}>Type</th>
                 <th style={TH}>Title</th>
-                <th style={{ ...TH, width: 120 }}>Status</th>
-                <th style={{ ...TH, width: 100 }}>Project</th>
-                <th style={{ ...TH, width: 70, textAlign: 'right' }}>Ageing</th>
+                <th style={{ ...TH, width: 90 }}>Status</th>
+                <th style={{ ...TH, width: 70 }}>Project</th>
+                <th style={{ ...TH, width: 50, textAlign: 'right' }}>Age</th>
               </tr>
             </thead>
             <tbody>
               {VIKRAM_ROWS.map(r => (
                 <HoverRow key={r.key}>
-                  <td style={{ ...TD, width: 100 }}><KeyLink k={r.key} /></td>
-                  <td style={{ ...TD, width: 50 }}><TypeBadge type={r.type} /></td>
+                  <td style={{ ...TD, width: 80 }}><KeyLink k={r.key} /></td>
+                  <td style={{ ...TD, width: 36 }}><TypeBadge type={r.type} /></td>
                   <td style={TD}>{r.title}</td>
-                  <td style={{ ...TD, width: 120 }}><StatusLozenge status={r.status} /></td>
-                  <td style={{ ...TD, width: 100, fontSize: 12 }}>{r.project}</td>
-                  <td style={{ ...TD, width: 70, textAlign: 'right' }}><Ageing text={r.age} /></td>
+                  <td style={{ ...TD, width: 90 }}><StatusLozenge status={r.status} /></td>
+                  <td style={{ ...TD, width: 70, fontSize: 11 }}>{r.project}</td>
+                  <td style={{ ...TD, width: 50, textAlign: 'right' }}><Ageing text={r.age} /></td>
                 </HoverRow>
               ))}
             </tbody>
@@ -403,25 +405,25 @@ export function SLAResponse() {
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 440 }}>
             <caption className="ka-sr-only">SLA breach predictions</caption>
             <thead>
               <tr>
-                <th style={{ ...TH, width: 100 }}>Key</th>
+                <th style={{ ...TH, width: 80 }}>Key</th>
                 <th style={TH}>Title</th>
-                <th style={{ ...TH, width: 110 }}>Assignee</th>
-                <th style={{ ...TH, width: 70, textAlign: 'right' }}>Ageing</th>
-                <th style={{ ...TH, width: 80 }}>Risk</th>
+                <th style={{ ...TH, width: 90 }}>Assignee</th>
+                <th style={{ ...TH, width: 50, textAlign: 'right' }}>Age</th>
+                <th style={{ ...TH, width: 70 }}>Risk</th>
               </tr>
             </thead>
             <tbody>
               {SLA_ROWS.map(r => (
                 <HoverRow key={r.key}>
-                  <td style={{ ...TD, width: 100 }}><KeyLink k={r.key} /></td>
+                  <td style={{ ...TD, width: 80 }}><KeyLink k={r.key} /></td>
                   <td style={TD}>{r.title}</td>
-                  <td style={{ ...TD, width: 110 }}>{r.assignee}</td>
-                  <td style={{ ...TD, width: 70, textAlign: 'right' }}><Ageing text={r.age} /></td>
-                  <td style={{ ...TD, width: 80 }}><StatusLozenge status={r.risk} /></td>
+                  <td style={{ ...TD, width: 90, fontSize: 11 }}>{r.assignee}</td>
+                  <td style={{ ...TD, width: 50, textAlign: 'right' }}><Ageing text={r.age} /></td>
+                  <td style={{ ...TD, width: 70 }}><StatusLozenge status={r.risk} /></td>
                 </HoverRow>
               ))}
             </tbody>
@@ -460,27 +462,27 @@ export function TeamCapacityResponse() {
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 440 }}>
             <caption className="ka-sr-only">Team capacity and workload</caption>
             <thead>
               <tr>
                 <th style={TH}>Member</th>
-                <th style={{ ...TH, width: 80 }}>Role</th>
-                <th style={{ ...TH, width: 55 }}>Items</th>
-                <th style={{ ...TH, width: 55 }}>Blocked</th>
-                <th style={{ ...TH, width: 70 }}>Capacity</th>
-                <th style={{ ...TH, width: 110 }}>Status</th>
+                <th style={{ ...TH, width: 65 }}>Role</th>
+                <th style={{ ...TH, width: 45 }}>Items</th>
+                <th style={{ ...TH, width: 45 }}>Blkd</th>
+                <th style={{ ...TH, width: 55 }}>Cap</th>
+                <th style={{ ...TH, width: 90 }}>Status</th>
               </tr>
             </thead>
             <tbody>
               {TEAM_ROWS.map(r => (
                 <HoverRow key={r.member}>
-                  <td style={{ ...TD, fontWeight: 500 }}>{r.member}</td>
-                  <td style={{ ...TD, width: 80, fontSize: 12, color: '#64748B' }}>{r.role}</td>
-                  <td style={{ ...TD, width: 55, fontFamily: F.mono, fontSize: 12, fontVariantNumeric: 'tabular-nums' as any }}>{r.active}</td>
-                  <td style={{ ...TD, width: 55, fontFamily: F.mono, fontSize: 12, fontVariantNumeric: 'tabular-nums' as any, color: r.blocked > 0 ? '#DC2626' : '#0F172A' }}>{r.blocked}</td>
-                  <td style={{ ...TD, width: 70, fontFamily: F.mono, fontSize: 12, fontVariantNumeric: 'tabular-nums' as any, color: r.capacity < 80 ? '#16A34A' : '#0F172A' }}>{r.capacity}%</td>
-                  <td style={{ ...TD, width: 110 }}><StatusLozenge status={r.status} /></td>
+                  <td style={{ ...TD, fontWeight: 500, fontSize: 12 }}>{r.member}</td>
+                  <td style={{ ...TD, width: 65, fontSize: 11, color: '#64748B' }}>{r.role}</td>
+                  <td style={{ ...TD, width: 45, fontFamily: F.mono, fontSize: 12, fontVariantNumeric: 'tabular-nums' as any }}>{r.active}</td>
+                  <td style={{ ...TD, width: 45, fontFamily: F.mono, fontSize: 12, fontVariantNumeric: 'tabular-nums' as any, color: r.blocked > 0 ? '#DC2626' : '#0F172A' }}>{r.blocked}</td>
+                  <td style={{ ...TD, width: 55, fontFamily: F.mono, fontSize: 12, fontVariantNumeric: 'tabular-nums' as any, color: r.capacity < 80 ? '#16A34A' : '#0F172A' }}>{r.capacity}%</td>
+                  <td style={{ ...TD, width: 90 }}><StatusLozenge status={r.status} /></td>
                 </HoverRow>
               ))}
             </tbody>
@@ -552,18 +554,18 @@ export function StatusResponse() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th style={{ ...TH, width: 100 }}>Key</th>
+                <th style={{ ...TH, width: 80 }}>Key</th>
                 <th style={TH}>Title</th>
-                <th style={{ ...TH, width: 110 }}>Assignee</th>
-                <th style={{ ...TH, width: 120 }}>Status</th>
+                <th style={{ ...TH, width: 90 }}>Assignee</th>
+                <th style={{ ...TH, width: 90 }}>Status</th>
               </tr>
             </thead>
             <tbody>
               <HoverRow>
-                <td style={{ ...TD, width: 100 }}><KeyLink k="BAU-5070" /></td>
+                <td style={{ ...TD, width: 80 }}><KeyLink k="BAU-5070" /></td>
                 <td style={TD}>Integration UI Enhancements</td>
-                <td style={{ ...TD, width: 110 }}>Wahid Nasri</td>
-                <td style={{ ...TD, width: 120 }}><StatusLozenge status="RE-OPEN" /></td>
+                <td style={{ ...TD, width: 90, fontSize: 11 }}>Wahid Nasri</td>
+                <td style={{ ...TD, width: 90 }}><StatusLozenge status="RE-OPEN" /></td>
               </HoverRow>
             </tbody>
           </table>
