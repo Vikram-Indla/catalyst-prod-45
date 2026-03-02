@@ -111,7 +111,7 @@ function ExecutiveSummaryV5({ data, avatarMap, roleMap }: { data: ExecSummaryV5 
             <div className="di-spot-name">{tc.name}</div>
             <div className="di-spot-role">{tc.role} · {tc.projects.join(', ')}</div>
             <div className="di-spot-stats">
-              {(tc.kpis || []).map((kpi, i) => (
+              {(Array.isArray(tc.kpis) ? tc.kpis : []).map((kpi, i) => (
                 <div key={i} className="di-spot-stat">
                   <div className="di-spot-stat-v">{kpi.value}</div>
                   <div className="di-spot-stat-l">{kpi.label}</div>
@@ -137,7 +137,7 @@ function ExecutiveSummaryV5({ data, avatarMap, roleMap }: { data: ExecSummaryV5 
                 <span className="di-role-count">{rc.resourceCount} resources · {rc.projects.join(', ')}</span>
               </div>
               <div className="di-role-kpis">
-                {(rc.kpis || []).map((kpi, ki) => (
+                {(Array.isArray(rc.kpis) ? rc.kpis : []).map((kpi, ki) => (
                   <div className="di-role-kpi" key={ki}>
                     <span className="di-role-kpi-v">{kpi.value}</span>
                     <span className="di-role-kpi-l">{kpi.label}</span>
@@ -329,7 +329,7 @@ function ProjectCard({ prj }: { prj: ProjectActivity }) {
 
       {/* KPI Strip */}
       <div className="di-prj-kpis">
-        {(prj.kpis || []).map((kpi, k) => (
+        {(Array.isArray(prj.kpis) ? prj.kpis : []).map((kpi, k) => (
           <div className="di-prj-kpi" key={k}>
             <div className={`di-prj-kpi-v ${kpi.variant === 'danger' ? 'kpi-v-danger' : kpi.variant === 'warning' ? 'kpi-v-warning' : kpi.variant === 'success' ? 'kpi-v-success' : ''}`}>
               {kpi.value}
