@@ -6,7 +6,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { UserContext } from './useUserContext';
-import { getTierConfig, isWithinFreshness, sortWithIncidentPriority, findCommonTitlePattern } from '../workItemHierarchy';
+import { getTierConfig, isWithinFreshness, sortByHierarchy, findCommonTitlePattern } from '../workItemHierarchy';
 
 export interface BriefingItem {
   itemKey: string;
@@ -135,7 +135,7 @@ export function useProjectBriefing(userCtx: UserContext | undefined) {
       // ═══ BUILD PROJECT GROUPS ═══
       const projects: ProjectGroup[] = Object.entries(projectMap)
         .map(([projectKey, items]) => {
-          const sorted = sortWithIncidentPriority(items);
+          const sorted = sortByHierarchy(items);
           const individualItems = sorted.filter(i => i.renderMode === 'individual');
           const collapsibleItems = sorted.filter(i => i.renderMode === 'collapsed');
 
