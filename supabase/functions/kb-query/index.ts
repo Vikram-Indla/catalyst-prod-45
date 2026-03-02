@@ -87,6 +87,419 @@ async function tryLiveQuery(sb: any, query: string, lang: string, userName?: str
   const qLower = query.toLowerCase();
   const qNorm = qLower.replace(/business requests?/g, 'initiative').replace(/\brequest(s)?\b/g, 'initiative$1');
 
+  // ══ PRIORITY -2: Knowledge Assist Preset Patterns (fast DB queries) ══
+  // These match the exact preset text from the KA landing page for instant responses
+  const calcAge = (d: string): string => {
+    if (!d) return 'N/A';
+    const hours = Math.floor((Date.now() - new Date(d).getTime()) / 3600000);
+    if (hours < 1) return '<1h';
+    if (hours < 24) return `${hours}h`;
+    const days = Math.floor(hours / 24);
+    return `${days}d`;
+  };
+
+  const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 3600000).toISOString();
+  const sixWeeksAgo = new Date(Date.now() - 42 * 24 * 3600000).toISOString();
+
+  // ── "New stories created this sprint" ──
+  if (/new\s+stories?\s+(created|this\s+sprint|this\s+week|recently)/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, priority, issue_type, project_name, project_key, assignee_display_name, jira_created_at')
+      .eq('issue_type', 'Story')
+      .gte('jira_created_at', twoWeeksAgo)
+      .order('jira_created_at', { ascending: false })
+      .limit(30);
+    if (items && items.length > 0) {
+      const parts: string[] = [];
+      parts.push(`**New Stories This Sprint** — ${items.length} created\n`);
+      parts.push(`| KEY | TYPE | TITLE | PROJECT | CREATED | STATUS |`);
+      for (const i of items) {
+        parts.push(`| \`${i.issue_key}\` | ${i.issue_type} | ${i.summary} | ${i.project_name || i.project_key || 'N/A'} | ${calcAge(i.jira_created_at)} ago | *${i.status}* |`);
+      }
+      parts.push(`\n*Showing ${items.length} of ${items.length} items · Created in last 2 weeks*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.95, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No new stories created in the last 2 weeks.', confidence: 0.85, sources: ['ph_issues'] };
+  }
+
+  // ── "New epics this month" ──
+  if (/new\s+epics?\s+(this\s+month|this\s+sprint|recently|created)/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, priority, project_name, project_key, assignee_display_name, jira_created_at')
+      .eq('issue_type', 'Epic')
+      .gte('jira_created_at', sixWeeksAgo)
+      .order('jira_created_at', { ascending: false })
+      .limit(30);
+    if (items && items.length > 0) {
+      const parts: string[] = [];
+      parts.push(`**New Epics This Month** — ${items.length} created\n`);
+      parts.push(`| KEY | TITLE | PROJECT | ASSIGNEE | CREATED | STATUS |`);
+      for (const i of items) {
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | ${i.project_name || i.project_key || 'N/A'} | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_created_at)} ago | *${i.status}* |`);
+      }
+      parts.push(`\n*Showing ${items.length} items · Created in last 6 weeks*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.95, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No new epics created in the last 6 weeks.', confidence: 0.85, sources: ['ph_issues'] };
+  }
+
+  // ── "New defects logged this week" ──
+  if (/new\s+defects?\s+(logged|this\s+week|recently|created|reported)/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, priority, project_name, project_key, reporter_display_name, jira_created_at')
+      .in('issue_type', ['Bug', 'QA Bug', 'Defect'])
+      .gte('jira_created_at', twoWeeksAgo)
+      .order('jira_created_at', { ascending: false })
+      .limit(30);
+    if (items && items.length > 0) {
+      const parts: string[] = [];
+      parts.push(`**New Defects This Week** — ${items.length} logged\n`);
+      parts.push(`| KEY | TITLE | SEVERITY | PROJECT | REPORTED BY | LOGGED |`);
+      for (const i of items) {
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.priority || 'Normal'}* | ${i.project_name || i.project_key || 'N/A'} | ${i.reporter_display_name || 'Unknown'} | ${calcAge(i.jira_created_at)} ago |`);
+      }
+      parts.push(`\n*Showing ${items.length} items · Logged in last 2 weeks*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.95, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No new defects logged in the last 2 weeks.', confidence: 0.85, sources: ['ph_issues'] };
+  }
+
+  // ── "Items closed this week" ──
+  if (/items?\s+(closed|done|completed|resolved)\s+(this\s+week|recently)/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, issue_type, project_name, project_key, assignee_display_name, jira_updated_at')
+      .in('status', ['Done', 'Closed', 'Resolved'])
+      .gte('jira_updated_at', twoWeeksAgo)
+      .order('jira_updated_at', { ascending: false })
+      .limit(30);
+    if (items && items.length > 0) {
+      const parts: string[] = [];
+      parts.push(`**Closed This Week** — ${items.length} resolved\n`);
+      parts.push(`| KEY | TITLE | TYPE | PROJECT | CLOSED BY | CLOSED |`);
+      for (const i of items) {
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | ${i.issue_type} | ${i.project_name || i.project_key || 'N/A'} | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
+      }
+      parts.push(`\n*Showing ${items.length} items · Closed in last 2 weeks*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.95, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No items closed in the last 2 weeks.', confidence: 0.85, sources: ['ph_issues'] };
+  }
+
+  // ── "Items blocked this week" ──
+  if (/items?\s+blocked\s+(this\s+week|recently)/i.test(qLower) || /blocked\s+items?\s+(this\s+week)/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, priority, project_name, project_key, assignee_display_name, jira_updated_at')
+      .ilike('status', '%blocked%')
+      .gte('jira_updated_at', twoWeeksAgo)
+      .order('jira_updated_at', { ascending: false })
+      .limit(30);
+    if (items && items.length > 0) {
+      const parts: string[] = [];
+      parts.push(`**Blocked This Week** — ${items.length} items\n`);
+      parts.push(`| KEY | TITLE | PRIORITY | PROJECT | ASSIGNEE | SINCE |`);
+      for (const i of items) {
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.priority || 'Normal'}* | ${i.project_name || i.project_key || 'N/A'} | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
+      }
+      parts.push(`\n*Showing ${items.length} items · Blocked in last 2 weeks*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.95, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No blocked items found in the last 2 weeks.', confidence: 0.85, sources: ['ph_issues'] };
+  }
+
+  // ── "Re-opened items this week" ──
+  if (/re.?opened?\s+items?\s+(this\s+week|recently)/i.test(qLower) || /items?\s+re.?opened?\s+(this\s+week)/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, priority, project_name, project_key, assignee_display_name, jira_updated_at')
+      .ilike('status', '%re-open%')
+      .gte('jira_updated_at', twoWeeksAgo)
+      .order('jira_updated_at', { ascending: false })
+      .limit(30);
+    if (items && items.length > 0) {
+      const parts: string[] = [];
+      parts.push(`**Re-opened This Week** — ${items.length} items\n`);
+      parts.push(`| KEY | TITLE | PRIORITY | PROJECT | ASSIGNEE | RE-OPENED |`);
+      for (const i of items) {
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.priority || 'Normal'}* | ${i.project_name || i.project_key || 'N/A'} | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
+      }
+      parts.push(`\n*Showing ${items.length} items · Re-opened in last 2 weeks*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.95, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No re-opened items in the last 2 weeks.', confidence: 0.85, sources: ['ph_issues'] };
+  }
+
+  // ── "Most active project this week" ──
+  if (/most\s+active\s+project/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, project_name, project_key, assignee_display_name, jira_updated_at')
+      .gte('jira_updated_at', twoWeeksAgo)
+      .order('jira_updated_at', { ascending: false })
+      .limit(200);
+    if (items && items.length > 0) {
+      const byProject: Record<string, any[]> = {};
+      for (const i of items) {
+        const p = i.project_name || i.project_key || 'Unknown';
+        if (!byProject[p]) byProject[p] = [];
+        byProject[p].push(i);
+      }
+      const sorted = Object.entries(byProject).sort((a, b) => b[1].length - a[1].length);
+      const [topName, topItems] = sorted[0];
+      const newItems = topItems.filter((i: any) => new Date(i.jira_updated_at) > new Date(Date.now() - 7 * 24 * 3600000));
+      const parts: string[] = [];
+      parts.push(`**Most Active: ${topName}** — ${topItems.length} updates this week\n`);
+      parts.push(`| KEY | TITLE | STATUS | LAST UPDATE | UPDATED BY |`);
+      for (const i of topItems.slice(0, 10)) {
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ${calcAge(i.jira_updated_at)} ago | ${i.assignee_display_name || 'Unassigned'} |`);
+      }
+      if (topItems.length > 10) parts.push(`\n*Showing 10 of ${topItems.length} updates*`);
+      // Other projects summary
+      if (sorted.length > 1) {
+        parts.push('\n**Other Projects:**');
+        for (const [name, pItems] of sorted.slice(1, 5)) {
+          parts.push(`- ${name}: ${pItems.length} updates`);
+        }
+      }
+      parts.push(`\n*Active in last 2 weeks*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.92, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No project activity found in the last 2 weeks.', confidence: 0.85, sources: ['ph_issues'] };
+  }
+
+  // ── "Sprint status" / "sprint velocity" ──
+  if (/sprint\s+(status|velocity|progress|breakdown)/i.test(qLower) || /velocity\s+this\s+week/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, status_category, story_points, project_name, project_key, sprint_name, assignee_display_name, jira_updated_at')
+      .not('sprint_name', 'is', null)
+      .gte('jira_updated_at', twoWeeksAgo)
+      .order('jira_updated_at', { ascending: false })
+      .limit(100);
+    if (items && items.length > 0) {
+      const done = items.filter((i: any) => i.status_category === 'Done');
+      const inProgress = items.filter((i: any) => i.status_category === 'In Progress');
+      const todo = items.filter((i: any) => i.status_category !== 'Done' && i.status_category !== 'In Progress');
+      const velocity = done.reduce((s: number, i: any) => s + (i.story_points || 0), 0);
+      const parts: string[] = [];
+      parts.push(`**Sprint Status** — ${items.length} items in active sprints\n`);
+      parts.push(`| Metric | Value |`);
+      parts.push(`| Total Items | ${items.length} |`);
+      parts.push(`| Done | ${done.length} |`);
+      parts.push(`| In Progress | ${inProgress.length} |`);
+      parts.push(`| To Do | ${todo.length} |`);
+      parts.push(`| Velocity (Points) | ${velocity} |`);
+      parts.push(`\n*Active in last 2 weeks*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.90, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No sprint data found for the last 2 weeks.', confidence: 0.85, sources: ['ph_issues'] };
+  }
+
+  // ── "Items ready for QA" ──
+  if (/items?\s+ready\s+for\s+qa/i.test(qLower) || /ready\s+for\s+qa/i.test(qLower) || /awaiting\s+(?:qa|validation|review)/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, project_name, project_key, assignee_display_name, jira_updated_at')
+      .or('status.ilike.%qa%,status.ilike.%review%,status.ilike.%testing%,status.ilike.%validation%')
+      .neq('status_category', 'Done')
+      .order('jira_updated_at', { ascending: false })
+      .limit(30);
+    if (items && items.length > 0) {
+      const parts: string[] = [];
+      parts.push(`**Ready for QA** — ${items.length} items awaiting validation\n`);
+      parts.push(`| KEY | TITLE | STATUS | PROJECT | ASSIGNEE | UPDATED |`);
+      for (const i of items) {
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ${i.project_name || i.project_key || 'N/A'} | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
+      }
+      parts.push(`\n*Showing ${items.length} items*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.92, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No items currently in QA or review status.', confidence: 0.85, sources: ['ph_issues'] };
+  }
+
+  // ── "Cross-project blockers" ──
+  if (/cross.?project\s+blockers?/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, priority, project_name, project_key, assignee_display_name, jira_updated_at')
+      .ilike('status', '%blocked%')
+      .order('jira_updated_at', { ascending: false })
+      .limit(50);
+    if (items && items.length > 0) {
+      const byProject: Record<string, any[]> = {};
+      for (const i of items) {
+        const p = i.project_name || i.project_key || 'Unknown';
+        if (!byProject[p]) byProject[p] = [];
+        byProject[p].push(i);
+      }
+      const parts: string[] = [];
+      parts.push(`**Cross-Project Blockers** — ${items.length} items across ${Object.keys(byProject).length} projects\n`);
+      for (const [projName, projItems] of Object.entries(byProject)) {
+        parts.push(`\n**📁 ${projName}** — ${projItems.length} blocked`);
+        parts.push(`| KEY | TITLE | PRIORITY | ASSIGNEE | SINCE |`);
+        for (const i of projItems.slice(0, 5)) {
+          parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.priority || 'Normal'}* | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
+        }
+      }
+      parts.push(`\n*Active blockers across all projects*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.92, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No blocked items found across projects.', confidence: 0.85, sources: ['ph_issues'] };
+  }
+
+  // ── "Project health" (e.g., "SIMP project health") ──
+  if (/(\w+)\s+project\s+health/i.test(qLower)) {
+    const projMatch = qLower.match(/(\w+)\s+project\s+health/i);
+    const projKey = projMatch ? projMatch[1].toUpperCase() : '';
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, status_category, priority, project_name, project_key, assignee_display_name, jira_updated_at')
+      .or(`project_key.ilike.%${projKey}%,project_name.ilike.%${projKey}%`)
+      .gte('jira_updated_at', twoWeeksAgo)
+      .order('jira_updated_at', { ascending: false })
+      .limit(100);
+    if (items && items.length > 0) {
+      const blocked = items.filter((i: any) => (i.status || '').toLowerCase().includes('blocked'));
+      const done = items.filter((i: any) => i.status_category === 'Done');
+      const inProg = items.filter((i: any) => i.status_category === 'In Progress');
+      const projName = items[0].project_name || projKey;
+      const parts: string[] = [];
+      parts.push(`**${projName} — Project Health**\n`);
+      parts.push(`| Metric | Value |`);
+      parts.push(`| Active Items | ${items.length} |`);
+      parts.push(`| Blocked | ${blocked.length} |`);
+      parts.push(`| In Progress | ${inProg.length} |`);
+      parts.push(`| Done (2 wks) | ${done.length} |`);
+      if (blocked.length > 0) {
+        parts.push(`\n**Blocked Items:**`);
+        parts.push(`| KEY | TITLE | ASSIGNEE | SINCE |`);
+        for (const i of blocked.slice(0, 5)) {
+          parts.push(`| \`${i.issue_key}\` | ${i.summary} | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
+        }
+      }
+      parts.push(`\n*Data from last 2 weeks*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.92, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: `No recent activity found for project "${projKey}".`, confidence: 0.80, sources: ['ph_issues'] };
+  }
+
+  // ── "Team workload distribution" ──
+  if (/team\s+workload\s+(distribution|overview|capacity)/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('assignee_display_name, status_category')
+      .neq('status_category', 'Done')
+      .not('assignee_display_name', 'is', null)
+      .limit(500);
+    if (items && items.length > 0) {
+      const byPerson: Record<string, number> = {};
+      for (const i of items) { byPerson[i.assignee_display_name] = (byPerson[i.assignee_display_name] || 0) + 1; }
+      const sorted = Object.entries(byPerson).sort((a, b) => b[1] - a[1]);
+      const parts: string[] = [];
+      parts.push(`**Team Workload Distribution** — ${sorted.length} team members\n`);
+      parts.push(`| TEAM MEMBER | OPEN ITEMS | LOAD |`);
+      for (const [name, count] of sorted.slice(0, 15)) {
+        const load = count > 15 ? 'Heavy' : count > 8 ? 'Moderate' : 'Light';
+        parts.push(`| ${name} | ${count} | *${load}* |`);
+      }
+      parts.push(`\n*${items.length} total open items across ${sorted.length} team members*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.92, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No workload data available.', confidence: 0.80, sources: ['ph_issues'] };
+  }
+
+  // ── "Handoff queue this week" ──
+  if (/handoff\s+(queue|pending|items?)/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, project_name, project_key, assignee_display_name, jira_updated_at')
+      .or('status.ilike.%handoff%,status.ilike.%hand off%,status.ilike.%pending review%,status.ilike.%ready for%')
+      .neq('status_category', 'Done')
+      .order('jira_updated_at', { ascending: false })
+      .limit(30);
+    if (items && items.length > 0) {
+      const parts: string[] = [];
+      parts.push(`**Handoff Queue** — ${items.length} items pending\n`);
+      parts.push(`| KEY | TITLE | STATUS | PROJECT | ASSIGNEE | UPDATED |`);
+      for (const i of items) {
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ${i.project_name || i.project_key || 'N/A'} | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
+      }
+      parts.push(`\n*Items awaiting handoff or review*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.88, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No items in the handoff queue.', confidence: 0.80, sources: ['ph_issues'] };
+  }
+
+  // ── "Senaei BAU sprint status" (specific project sprint) ──
+  if (/(?:senaei|bau)\s+sprint\s+status/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, status_category, story_points, sprint_name, assignee_display_name, jira_updated_at')
+      .eq('project_key', 'BAU')
+      .not('sprint_name', 'is', null)
+      .gte('jira_updated_at', twoWeeksAgo)
+      .order('jira_updated_at', { ascending: false })
+      .limit(50);
+    if (items && items.length > 0) {
+      const sprintName = items[0].sprint_name || 'Current Sprint';
+      const done = items.filter((i: any) => i.status_category === 'Done');
+      const inProg = items.filter((i: any) => i.status_category === 'In Progress');
+      const todo = items.filter((i: any) => !['Done', 'In Progress'].includes(i.status_category));
+      const velocity = done.reduce((s: number, i: any) => s + (i.story_points || 0), 0);
+      const pct = items.length > 0 ? Math.round((done.length / items.length) * 100) : 0;
+      const parts: string[] = [];
+      parts.push(`**Senaei BAU — ${sprintName}** — ${pct}% complete\n`);
+      parts.push(`| Metric | Value |`);
+      parts.push(`| Total Items | ${items.length} |`);
+      parts.push(`| Done | ${done.length} |`);
+      parts.push(`| In Progress | ${inProg.length} |`);
+      parts.push(`| To Do | ${todo.length} |`);
+      parts.push(`| Velocity (Points) | ${velocity} |`);
+      parts.push(`\n| KEY | TITLE | STATUS | ASSIGNEE | UPDATED |`);
+      for (const i of items.slice(0, 8)) {
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
+      }
+      if (items.length > 8) parts.push(`\n*Showing 8 of ${items.length} items*`);
+      parts.push(`\n*Active in last 2 weeks*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.92, sources: ['ph_issues'] };
+    }
+    return { found: true, answer: 'No sprint data found for Senaei BAU.', confidence: 0.80, sources: ['ph_issues'] };
+  }
+
+  // ── "Deployments this week" ──
+  if (/deployments?\s+(this\s+week|recently|latest)/i.test(qLower)) {
+    const { data: releases } = await sb.from('releases')
+      .select('name, status, release_date, description, created_at')
+      .gte('created_at', twoWeeksAgo)
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (releases && releases.length > 0) {
+      const parts: string[] = [];
+      parts.push(`**Deployments This Week** — ${releases.length} releases\n`);
+      parts.push(`| RELEASE | STATUS | DATE | DESCRIPTION |`);
+      for (const r of releases) {
+        const date = r.release_date ? new Date(r.release_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : calcAge(r.created_at) + ' ago';
+        parts.push(`| ${r.name} | *${r.status || 'N/A'}* | ${date} | ${(r.description || '').substring(0, 60)} |`);
+      }
+      parts.push(`\n*Releases in last 2 weeks*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.90, sources: ['releases'] };
+    }
+    return { found: true, answer: 'No deployments found in the last 2 weeks.', confidence: 0.80, sources: ['releases'] };
+  }
+
+  // ── "Production incidents this week" (KA preset — faster than existing handler) ──
+  if (/production\s+incidents?\s+this\s+week/i.test(qLower)) {
+    try {
+      const { data: incidents } = await sb.from('incidents')
+        .select('incident_key, title, status, severity, priority, reporter_name, created_at')
+        .is('deleted_at', null)
+        .gte('created_at', twoWeeksAgo)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      if (incidents && incidents.length > 0) {
+        const parts: string[] = [];
+        parts.push(`**Production Incidents This Week** — ${incidents.length} logged\n`);
+        parts.push(`| KEY | TITLE | SEVERITY | STATUS | REPORTED BY | LOGGED |`);
+        for (const i of incidents) {
+          parts.push(`| \`${i.incident_key}\` | ${i.title} | *${i.severity || 'N/A'}* | ${i.status} | ${i.reporter_name || 'Unknown'} | ${calcAge(i.created_at)} ago |`);
+        }
+        parts.push(`\n*Incidents logged in last 2 weeks*`);
+        return { found: true, answer: parts.join('\n'), confidence: 0.95, sources: ['incidents'] };
+      }
+    } catch { /* table might not exist */ }
+    return { found: true, answer: 'No production incidents in the last 2 weeks.', confidence: 0.85, sources: ['incidents'] };
+  }
+
   // ── PRIORITY -1: "My items" / "My open items" / "My work" queries ──
   // Detects self-referencing queries and resolves using the logged-in user's name
   const myItemsPattern = /\b(my|mine)\b.*\b(items?|work|tasks?|tickets?|issues?|assignments?|stories|bugs?|open|pending|active|workload|backlog)\b/i;
