@@ -301,13 +301,8 @@ serve(async (req) => {
         { headers: { ...cors, "Content-Type": "application/json" } });
     }
 
-    if (action === "sync_table") {
-      const config = custom_config || TABLE_CONFIGS.find(c => c.table === table_name);
-      if (!config) {
-        return new Response(JSON.stringify({ error: `No config for table: ${table_name}. Available: ${TABLE_CONFIGS.map(c => c.table).join(", ")}` }),
-          { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
-      }
-
+    // ── Inline sync logic (shared by sync_table and sync_all) ──
+    async function syncTableInline(config: TableConfig, sb: any): Promise<any> {
       const { data: rows, error: fetchErr } = await sb
         .from(config.table)
         .select(config.selectFields)
@@ -315,8 +310,7 @@ serve(async (req) => {
 
       if (fetchErr) throw fetchErr;
       if (!rows || rows.length === 0) {
-        return new Response(JSON.stringify({ message: `No rows in ${config.table}`, synced: 0 }),
-          { headers: { ...cors, "Content-Type": "application/json" } });
+        return { table: config.table, message: `No rows in ${config.table}`, rows_processed: 0, total_chunks: 0, new_chunks: 0, synced: 0 };
       }
 
       const allChunks: Chunk[] = [];
@@ -335,10 +329,11 @@ serve(async (req) => {
       const newChunks = allChunks.filter(c => !existingHashes.has(c.content_hash));
 
       if (newChunks.length === 0) {
-        return new Response(JSON.stringify({
-          message: `All ${allChunks.length} chunks already synced for ${config.table}`,
+        return {
+          table: config.table, rows_processed: rows.length,
           total_chunks: allChunks.length, new_chunks: 0, synced: 0,
-        }), { headers: { ...cors, "Content-Type": "application/json" } });
+          message: `All ${allChunks.length} chunks already synced`,
+        };
       }
 
       let synced = 0;
@@ -353,18 +348,12 @@ serve(async (req) => {
           for (let j = 0; j < batch.length; j++) {
             const c = batch[j];
             const { error: insertErr } = await sb.from("kb_embeddings").insert({
-              content: c.content,
-              content_hash: c.content_hash,
-              source_type: c.source_type,
-              source_url: c.source_url,
-              metadata: c.metadata,
-              embedding: embeddings[j],
-              chunk_type: c.chunk_type,
-              section_title: c.section_title,
-              token_count: c.token_count,
-              tags: c.tags,
-              chunk_index: c.chunk_index,
-              language: c.language,
+              content: c.content, content_hash: c.content_hash,
+              source_type: c.source_type, source_url: c.source_url,
+              metadata: c.metadata, embedding: embeddings[j],
+              chunk_type: c.chunk_type, section_title: c.section_title,
+              token_count: c.token_count, tags: c.tags,
+              chunk_index: c.chunk_index, language: c.language,
             });
             if (insertErr) errors.push(`${c.source_url}: ${insertErr.message}`);
             else synced++;
@@ -380,11 +369,22 @@ serve(async (req) => {
         .update({ last_scraped_at: new Date().toISOString(), pages_indexed: synced })
         .eq("source_type", config.sourceType);
 
-      return new Response(JSON.stringify({
+      return {
         table: config.table, rows_processed: rows.length,
         total_chunks: allChunks.length, new_chunks: newChunks.length,
         synced, errors: errors.length > 0 ? errors.slice(0, 10) : undefined,
-      }), { headers: { ...cors, "Content-Type": "application/json" } });
+      };
+    }
+
+    if (action === "sync_table") {
+      const config = custom_config || TABLE_CONFIGS.find(c => c.table === table_name);
+      if (!config) {
+        return new Response(JSON.stringify({ error: `No config for table: ${table_name}` }),
+          { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
+      }
+      const result = await syncTableInline(config, sb);
+      return new Response(JSON.stringify(result),
+        { headers: { ...cors, "Content-Type": "application/json" } });
     }
 
     if (action === "sync_all") {
@@ -394,22 +394,12 @@ serve(async (req) => {
       let failedTables = 0;
 
       const steps = TABLE_CONFIGS.map((config, idx) => ({
-        name: config.table,
-        status: "pending",
-        result: "—",
-        durationMs: 0,
-        rowsProcessed: 0,
-        newChunks: 0,
-        synced: 0,
-        order: idx + 1,
+        name: config.table, status: "pending", result: "—",
+        durationMs: 0, rowsProcessed: 0, newChunks: 0, synced: 0, order: idx + 1,
       }));
 
       await updateSyncRun(sb, sync_run_id, {
-        status: "running",
-        steps,
-        total_items_processed: 0,
-        new_chunks: 0,
-        error_message: null,
+        status: "running", steps, total_items_processed: 0, new_chunks: 0, error_message: null,
       });
 
       const results: any[] = [];
@@ -418,24 +408,11 @@ serve(async (req) => {
         const config = TABLE_CONFIGS[i];
         const stepStart = Date.now();
 
-        steps[i] = {
-          ...steps[i],
-          status: "active",
-          result: "Syncing…",
-        };
+        steps[i] = { ...steps[i], status: "active", result: "Syncing…" };
         await updateSyncRun(sb, sync_run_id, { steps });
 
         try {
-          const res = await fetch(`${SUPABASE_URL}/functions/v1/kb-sync`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ action: "sync_table", table_name: config.table }),
-          });
-
-          const payload = await res.json();
+          const payload = await syncTableInline(config, sb);
           const stepDuration = Date.now() - stepStart;
           const stepRows = payload?.rows_processed ?? 0;
           const stepNewChunks = payload?.new_chunks ?? 0;
@@ -444,52 +421,21 @@ serve(async (req) => {
           rowsProcessed += stepRows;
           newChunks += stepNewChunks;
 
-          if (!res.ok || payload?.error) {
+          if (payload?.error) {
             failedTables += 1;
-            steps[i] = {
-              ...steps[i],
-              status: "failed",
-              durationMs: stepDuration,
-              rowsProcessed: stepRows,
-              newChunks: stepNewChunks,
-              synced: stepSynced,
-              result: payload?.error || `HTTP ${res.status}`,
-            };
+            steps[i] = { ...steps[i], status: "failed", durationMs: stepDuration, rowsProcessed: stepRows, newChunks: stepNewChunks, synced: stepSynced, result: payload.error };
           } else {
-            steps[i] = {
-              ...steps[i],
-              status: "done",
-              durationMs: stepDuration,
-              rowsProcessed: stepRows,
-              newChunks: stepNewChunks,
-              synced: stepSynced,
-              result: `${stepSynced} synced`,
-            };
+            steps[i] = { ...steps[i], status: "done", durationMs: stepDuration, rowsProcessed: stepRows, newChunks: stepNewChunks, synced: stepSynced, result: `${stepSynced} synced` };
           }
 
-          results.push({ table: config.table, ...payload });
-
-          await updateSyncRun(sb, sync_run_id, {
-            steps,
-            total_items_processed: rowsProcessed,
-            new_chunks: newChunks,
-            error_message: failedTables > 0 ? `${failedTables} table(s) failed` : null,
-          });
+          results.push(payload);
+          await updateSyncRun(sb, sync_run_id, { steps, total_items_processed: rowsProcessed, new_chunks: newChunks, error_message: failedTables > 0 ? `${failedTables} table(s) failed` : null });
         } catch (e: any) {
           failedTables += 1;
           const stepDuration = Date.now() - stepStart;
-          steps[i] = {
-            ...steps[i],
-            status: "failed",
-            durationMs: stepDuration,
-            result: e.message,
-          };
+          steps[i] = { ...steps[i], status: "failed", durationMs: stepDuration, result: e.message };
           results.push({ table: config.table, error: e.message });
-
-          await updateSyncRun(sb, sync_run_id, {
-            steps,
-            error_message: `${failedTables} table(s) failed`,
-          });
+          await updateSyncRun(sb, sync_run_id, { steps, error_message: `${failedTables} table(s) failed` });
         }
       }
 
@@ -497,39 +443,21 @@ serve(async (req) => {
       const finalStatus = failedTables === 0 ? "complete" : (failedTables === TABLE_CONFIGS.length ? "failed" : "partial");
 
       await updateSyncRun(sb, sync_run_id, {
-        status: finalStatus,
-        completed_at: new Date().toISOString(),
-        total_duration_ms: durationMs,
-        total_items_processed: rowsProcessed,
-        new_chunks: newChunks,
-        steps,
+        status: finalStatus, completed_at: new Date().toISOString(),
+        total_duration_ms: durationMs, total_items_processed: rowsProcessed,
+        new_chunks: newChunks, steps,
         error_message: failedTables > 0 ? `${failedTables} table(s) failed` : null,
       });
 
       return new Response(JSON.stringify({
-        results,
-        steps,
-        summary: {
-          total_tables: TABLE_CONFIGS.length,
-          failed_tables: failedTables,
-          rows_processed: rowsProcessed,
-          new_chunks: newChunks,
-          duration_ms: durationMs,
-        },
-      }),
-        { headers: { ...cors, "Content-Type": "application/json" } });
+        results, steps,
+        summary: { total_tables: TABLE_CONFIGS.length, failed_tables: failedTables, rows_processed: rowsProcessed, new_chunks: newChunks, duration_ms: durationMs },
+      }), { headers: { ...cors, "Content-Type": "application/json" } });
     }
 
     if (action === "add_config" && custom_config) {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/kb-sync`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ action: "sync_table", custom_config }),
-      });
-      return new Response(JSON.stringify(await res.json()),
+      const result = await syncTableInline(custom_config, sb);
+      return new Response(JSON.stringify(result),
         { headers: { ...cors, "Content-Type": "application/json" } });
     }
 
