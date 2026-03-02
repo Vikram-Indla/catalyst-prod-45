@@ -8,6 +8,7 @@ interface KBResponseRendererProps {
   onFeedback?: (helpful: boolean) => void;
   feedbackGiven?: boolean;
   onExtend?: (query: string) => void;
+  onItemClick?: (issueKey: string) => void;
 }
 
 /* ── helpers ── */
@@ -219,7 +220,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
 }
 
 export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
-  response, language, onFeedback, feedbackGiven, onExtend,
+  response, language, onFeedback, feedbackGiven, onExtend, onItemClick,
 }) => {
   const dir = 'ltr';
   const lines = (response.answer || '').split('\n');
@@ -257,7 +258,14 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
           }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
               <tbody>
-                {tableRows.map((row, ri) => (
+                {tableRows.map((row, ri) => {
+                  // Detect if this row has an issue key (for clickability)
+                  const rowIssueKey = ri > 0 ? row.reduce<string | null>((found, cell) => {
+                    if (found) return found;
+                    return isIssueKey(cell.trim());
+                  }, null) : null;
+
+                  return (
                   <tr
                     key={ri}
                     style={{
@@ -265,7 +273,9 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
                       borderBottom: ri < tableRows.length - 1 ? '0.75px solid rgba(15,23,42,0.06)' : 'none',
                       background: ri === 0 ? '#F1F5F9' : 'transparent',
                       transition: 'background 80ms',
+                      cursor: rowIssueKey && onItemClick ? 'pointer' : undefined,
                     }}
+                    onClick={rowIssueKey && onItemClick ? () => onItemClick(rowIssueKey) : undefined}
                     onMouseEnter={ri > 0 ? (e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(15,23,42,0.04)'; } : undefined}
                     onMouseLeave={ri > 0 ? (e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; } : undefined}
                   >
@@ -293,7 +303,8 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
                       );
                     })}
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
