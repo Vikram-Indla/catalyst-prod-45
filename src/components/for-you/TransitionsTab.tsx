@@ -283,9 +283,11 @@ function CycleSummary({ steps }: { steps: TransitionStep[] }) {
   const activeMs = progressSteps.reduce((s, t) => s + t.duration, 0);
   const uniquePeople = new Set(steps.map(s => s.actor.name)).size;
 
+  const transitionCount = Math.max(0, steps.length - 1);
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 20 }}>
-      <SummaryCard label="Cycle Time" value={formatDuration(totalMs)} sub={`${steps.length} transitions`} color={T.primary} />
+      <SummaryCard label="Cycle Time" value={formatDuration(totalMs)} sub={`${transitionCount} transition${transitionCount !== 1 ? 's' : ''}`} color={T.primary} />
       <SummaryCard label="Active Time" value={formatDuration(activeMs)} sub={`${progressSteps.length} statuses`} color="#0065FF" />
       <SummaryCard label="Wait Time" value={formatDuration(waitMs)} sub={`${todoSteps.length} statuses`} color="#D97706" />
       <SummaryCard label="People" value={`${uniquePeople}`} sub={`${steps.filter(s => s.isHandoff).length} handoffs`} color="#7C3AED" />
