@@ -1,30 +1,40 @@
 import React from 'react';
-import { User } from 'lucide-react';
-import { CardHeader, V12Table, Row, KeyCell, Cell, Loz, AgeingDot, ScopeBar, ExtendLink, F } from './KAResponseShared';
+import { User, Loader2 } from 'lucide-react';
+import { V12Table, Row, KeyCell, Cell, Loz, AgeingDot, ScopeBar, ExtendLink, F } from './KAResponseShared';
+import { usePersonWork, formatTimeAgo } from './useKAData';
 
-export function PersonWorkResponse({ onItemClick }: { onItemClick?: (key: string) => void }) {
+export function PersonWorkResponse({ onItemClick, namePattern = '' }: { onItemClick?: (key: string) => void; namePattern?: string }) {
+  const { data, total, personName, loading } = usePersonWork(namePattern || 'Wahid');
+
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Loader2 size={20} className="animate-spin" color="#2563EB" /></div>;
+  if (!data.length) return <div style={{ padding: 24, color: '#64748B', fontSize: 13, textAlign: 'center' }}>No active items found for this person.</div>;
+
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <User size={16} strokeWidth={2} color="#2563EB" />
-          <span style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 650, color: '#0F172A' }}>Wahid Nasri</span>
-          <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.inter }}>— Mobile Developer</span>
+          <span style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 650, color: '#0F172A' }}>{personName}</span>
         </div>
-        <span style={{ fontFamily: F.mono, fontSize: 12, color: '#64748B' }}>📁 Delivery · 20 items</span>
+        <span style={{ fontFamily: F.mono, fontSize: 12, color: '#64748B' }}>📁 {total} active items</span>
       </div>
       <V12Table
-        headers={['KEY', 'TYPE', 'TITLE', 'STATUS', 'REPORTED BY', 'AGEING']}
-        widths={['90px', '50px', 'auto', '100px', '110px', '70px']}
+        headers={['KEY', 'TYPE', 'TITLE', 'STATUS', 'PROJECT', 'UPDATED']}
+        widths={['90px', '70px', 'auto', '100px', '100px', '80px']}
       >
-        <Row onClick={() => onItemClick?.('BAU-5054')}><KeyCell value="BAU-5054" /><Cell>FE</Cell><Cell>My Requests missing Search & Filter</Cell><Cell><Loz status="RE-OPEN" /></Cell><Cell>Vikram Indla</Cell><Cell><AgeingDot value="4h" /></Cell></Row>
-        <Row onClick={() => onItemClick?.('BAU-5070')}><KeyCell value="BAU-5070" /><Cell>FE</Cell><Cell>Individual Dashboard Issues</Cell><Cell><Loz status="RE-OPEN" /></Cell><Cell>Vikram Indla</Cell><Cell><AgeingDot value="4h" /></Cell></Row>
-        <Row onClick={() => onItemClick?.('BAU-5073')}><KeyCell value="BAU-5073" /><Cell>FE</Cell><Cell>More Screen Issues</Cell><Cell><Loz status="RE-OPEN" /></Cell><Cell>Vikram Indla</Cell><Cell><AgeingDot value="5h" /></Cell></Row>
-        <Row onClick={() => onItemClick?.('BAU-5074')}><KeyCell value="BAU-5074" /><Cell>FE</Cell><Cell>Notification Screen Issues</Cell><Cell><Loz status="DEFERRED" /></Cell><Cell>Vikram Indla</Cell><Cell><AgeingDot value="15h" /></Cell></Row>
-        <Row onClick={() => onItemClick?.('BAU-5027')}><KeyCell value="BAU-5027" /><Cell>FE</Cell><Cell>Entity Page Issues</Cell><Cell><Loz status="RE-OPEN" /></Cell><Cell>Vikram Indla</Cell><Cell><AgeingDot value="17h" /></Cell></Row>
+        {data.map(item => (
+          <Row key={item.issue_key} onClick={() => onItemClick?.(item.issue_key)}>
+            <KeyCell value={item.issue_key} />
+            <Cell muted>{item.issue_type}</Cell>
+            <Cell>{item.summary}</Cell>
+            <Cell><Loz status={item.status} /></Cell>
+            <Cell bold>{item.project_name || item.project_key}</Cell>
+            <Cell mono muted>{formatTimeAgo(item.jira_updated_at)}</Cell>
+          </Row>
+        ))}
       </V12Table>
-      <ScopeBar showing={5} total={14} label="Active in last 6 weeks" />
-      <ExtendLink main="Load older items" hint="6 items beyond 6 weeks" />
+      <ScopeBar showing={data.length} total={total} label="Active items" />
+      <ExtendLink main="Load older items" hint={`${total} items total`} />
     </div>
   );
 }

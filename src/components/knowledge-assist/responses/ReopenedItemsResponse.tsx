@@ -1,23 +1,34 @@
 import React from 'react';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, Loader2 } from 'lucide-react';
 import { CardHeader, V12Table, Row, KeyCell, Cell, Loz, ScopeBar, ExtendLink } from './KAResponseShared';
+import { useReopenedItems, formatTimeAgo } from './useKAData';
 
 export function ReopenedItemsResponse({ onItemClick }: { onItemClick?: (key: string) => void }) {
+  const { data, total, loading } = useReopenedItems();
+
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Loader2 size={20} className="animate-spin" color="#D97706" /></div>;
+  if (!data.length) return <div style={{ padding: 24, color: '#64748B', fontSize: 13, textAlign: 'center' }}>No re-opened items found.</div>;
+
   return (
     <div>
-      <CardHeader icon={RotateCcw} iconColor="#D97706" title="Re-opened Items" titleColor="#D97706" subtitle="5 bounced back" />
+      <CardHeader icon={RotateCcw} iconColor="#D97706" title="Re-opened Items" titleColor="#D97706" subtitle={`${total} bounced back`} />
       <V12Table
-        headers={['KEY', 'TITLE', 'STATUS', 'ASSIGNEE', 'PROJECT', 'RE-OPENED']}
-        widths={['90px', 'auto', '100px', '110px', '100px', '80px']}
+        headers={['KEY', 'TITLE', 'STATUS', 'ASSIGNEE', 'PROJECT', 'UPDATED']}
+        widths={['90px', 'auto', '100px', '120px', '100px', '80px']}
       >
-        <Row onClick={() => onItemClick?.('BAU-5054')}><KeyCell value="BAU-5054" /><Cell>My Requests missing Search & Filter</Cell><Cell><Loz status="RE-OPEN" /></Cell><Cell>Wahid Nasri</Cell><Cell bold>Senaei BAU</Cell><Cell mono muted>3h ago</Cell></Row>
-        <Row onClick={() => onItemClick?.('BAU-5074')}><KeyCell value="BAU-5074" /><Cell>Notification Screen Issues</Cell><Cell><Loz status="RE-OPEN" /></Cell><Cell>Wahid Nasri</Cell><Cell bold>Senaei BAU</Cell><Cell mono muted>5h ago</Cell></Row>
-        <Row onClick={() => onItemClick?.('BAU-5070')}><KeyCell value="BAU-5070" /><Cell>Individual Dashboard Issues</Cell><Cell><Loz status="RE-OPEN" /></Cell><Cell>Raza Bangi</Cell><Cell bold>Senaei BAU</Cell><Cell mono muted>8h ago</Cell></Row>
-        <Row onClick={() => onItemClick?.('BAU-5073')}><KeyCell value="BAU-5073" /><Cell>More Screen Issues</Cell><Cell><Loz status="RE-OPEN" /></Cell><Cell>Wahid Nasri</Cell><Cell bold>Senaei BAU</Cell><Cell mono muted>12h ago</Cell></Row>
-        <Row onClick={() => onItemClick?.('BAU-5027')}><KeyCell value="BAU-5027" /><Cell>Entity Page Issues</Cell><Cell><Loz status="RE-OPEN" /></Cell><Cell>Wahid Nasri</Cell><Cell bold>Senaei BAU</Cell><Cell mono muted>17h ago</Cell></Row>
+        {data.map(item => (
+          <Row key={item.issue_key} onClick={() => onItemClick?.(item.issue_key)}>
+            <KeyCell value={item.issue_key} />
+            <Cell>{item.summary}</Cell>
+            <Cell><Loz status={item.status} /></Cell>
+            <Cell>{item.assignee_display_name || '—'}</Cell>
+            <Cell bold>{item.project_name || item.project_key}</Cell>
+            <Cell mono muted>{formatTimeAgo(item.jira_updated_at)}</Cell>
+          </Row>
+        ))}
       </V12Table>
-      <ScopeBar showing={5} total={5} label="Re-opened in last 2 weeks" />
-      <ExtendLink main="Load older re-opens" hint="3 items, 2-6 weeks ago" />
+      <ScopeBar showing={data.length} total={total} label="Currently re-opened" />
+      <ExtendLink main="Load older re-opens" hint="items beyond current view" />
     </div>
   );
 }

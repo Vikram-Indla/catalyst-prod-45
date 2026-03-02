@@ -1,74 +1,34 @@
 import React from 'react';
-import { CalendarDays } from 'lucide-react';
-import { CardHeader, V12Table, Row, KeyCell, Cell, Loz, ScopeBar, ExtendLink, F } from './KAResponseShared';
+import { CalendarDays, Loader2 } from 'lucide-react';
+import { CardHeader, V12Table, Row, KeyCell, Cell, Loz, ScopeBar, ExtendLink } from './KAResponseShared';
+import { useChangedYesterday, formatTimeAgo } from './useKAData';
 
 export function ChangedYesterdayResponse({ onItemClick }: { onItemClick?: (key: string) => void }) {
+  const { data, total, loading } = useChangedYesterday();
+
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Loader2 size={20} className="animate-spin" color="#2563EB" /></div>;
+  if (!data.length) return <div style={{ padding: 24, color: '#64748B', fontSize: 13, textAlign: 'center' }}>No changes found in the last 24 hours.</div>;
+
   return (
     <div>
-      <CardHeader icon={CalendarDays} iconColor="#2563EB" title="Changes Since Yesterday" subtitle="14 items updated" />
+      <CardHeader icon={CalendarDays} iconColor="#2563EB" title="Changes Since Yesterday" subtitle={`${total} items updated`} />
       <V12Table
-        headers={['KEY', 'TITLE', 'CHANGE', 'ASSIGNEE', 'PROJECT', 'WHEN']}
-        widths={['100px', 'auto', '180px', '110px', '100px', '70px']}
+        headers={['KEY', 'TITLE', 'STATUS', 'ASSIGNEE', 'PROJECT', 'WHEN']}
+        widths={['100px', 'auto', '120px', '120px', '100px', '80px']}
       >
-        <Row onClick={() => onItemClick?.('BAU-5054')}>
-          <KeyCell value="BAU-5054" />
-          <Cell>My Requests missing Search & Filter</Cell>
-          <Cell><Loz status="RE-OPEN" /> <span style={{ color: '#64748B', margin: '0 4px' }}>→</span> <Loz status="IN PROGRESS" /></Cell>
-          <Cell>Wahid Nasri</Cell>
-          <Cell bold>Senaei BAU</Cell>
-          <Cell mono muted>3h ago</Cell>
-        </Row>
-        <Row onClick={() => onItemClick?.('BAU-5074')}>
-          <KeyCell value="BAU-5074" />
-          <Cell>Notification Screen Issues</Cell>
-          <Cell><Loz status="DEFERRED" /> <span style={{ color: '#64748B', margin: '0 4px' }}>→</span> <Loz status="RE-OPEN" /></Cell>
-          <Cell>Wahid Nasri</Cell>
-          <Cell bold>Senaei BAU</Cell>
-          <Cell mono muted>5h ago</Cell>
-        </Row>
-        <Row onClick={() => onItemClick?.('SIMP-3245')}>
-          <KeyCell value="SIMP-3245" />
-          <Cell>Landing Page — Program & Incentives</Cell>
-          <Cell><span style={{ color: '#94A3B8' }}>Priority: Medium</span> <span style={{ color: '#64748B' }}>→</span> <span style={{ fontWeight: 600, color: '#0F172A' }}>High</span></Cell>
-          <Cell>Nada Alfassam</Cell>
-          <Cell bold>SIMP</Cell>
-          <Cell mono muted>6h ago</Cell>
-        </Row>
-        <Row onClick={() => onItemClick?.('BAU-5070')}>
-          <KeyCell value="BAU-5070" />
-          <Cell>Individual Dashboard Issues</Cell>
-          <Cell><span style={{ color: '#94A3B8' }}>Assignee: —</span> <span style={{ color: '#64748B' }}>→</span> <span style={{ fontWeight: 600, color: '#0F172A' }}>Raza Bangi</span></Cell>
-          <Cell>Raza Bangi</Cell>
-          <Cell bold>Senaei BAU</Cell>
-          <Cell mono muted>8h ago</Cell>
-        </Row>
-        <Row onClick={() => onItemClick?.('MDT-533')}>
-          <KeyCell value="MDT-533" />
-          <Cell>Request Query Optimization</Cell>
-          <Cell><Loz status="IN PROGRESS" /> <span style={{ color: '#64748B', margin: '0 4px' }}>→</span> <Loz status="CODE REVIEW" /></Cell>
-          <Cell>Yousif Al-Harbi</Cell>
-          <Cell bold>MDT</Cell>
-          <Cell mono muted>10h ago</Cell>
-        </Row>
-        <Row onClick={() => onItemClick?.('BAU-5073')}>
-          <KeyCell value="BAU-5073" />
-          <Cell>More Screen Issues</Cell>
-          <Cell><span style={{ fontStyle: 'italic', color: '#64748B', fontSize: 12 }}>Comment: "Figma updated, ready…"</span></Cell>
-          <Cell>Wahid Nasri</Cell>
-          <Cell bold>Senaei BAU</Cell>
-          <Cell mono muted>12h ago</Cell>
-        </Row>
-        <Row onClick={() => onItemClick?.('SIMP-3172')}>
-          <KeyCell value="SIMP-3172" />
-          <Cell>Restricted Chemical Imports Permit</Cell>
-          <Cell><Loz status="BLOCKED" /> <span style={{ color: '#64748B', margin: '0 4px' }}>→</span> <Loz status="IN PROGRESS" /></Cell>
-          <Cell>Nada Alfassam</Cell>
-          <Cell bold>SIMP</Cell>
-          <Cell mono muted>14h ago</Cell>
-        </Row>
+        {data.map(item => (
+          <Row key={item.issue_key} onClick={() => onItemClick?.(item.issue_key)}>
+            <KeyCell value={item.issue_key} />
+            <Cell>{item.summary}</Cell>
+            <Cell><Loz status={item.status} /></Cell>
+            <Cell>{item.assignee_display_name || '—'}</Cell>
+            <Cell bold>{item.project_name || item.project_key}</Cell>
+            <Cell mono muted>{formatTimeAgo(item.jira_updated_at)}</Cell>
+          </Row>
+        ))}
       </V12Table>
-      <ScopeBar showing={7} total={14} label="Since yesterday" />
-      <ExtendLink main="Show full activity log" hint="14 items in last 24 hours" />
+      <ScopeBar showing={data.length} total={total} label="Since yesterday" />
+      <ExtendLink main="Show full activity log" hint={`${total} items in last 24 hours`} />
     </div>
   );
 }
