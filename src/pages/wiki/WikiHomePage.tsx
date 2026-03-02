@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, Upload, Zap, Sparkles, MessageCircle, FileText, FileDown, Video,
@@ -39,7 +39,7 @@ const Skeleton = ({ w, h, style }: { w: string | number; h: number; style?: Reac
 );
 
 /* ── Section Header ── */
-const SectionHeader = ({ icon, iconColor, title, count, rightLabel, rightAction, aiBadge }: {
+const SectionHeader = React.memo(({ icon, iconColor, title, count, rightLabel, rightAction, aiBadge }: {
   icon?: React.ReactNode; iconColor?: string; title: string; count?: number;
   rightLabel?: string; rightAction?: () => void; aiBadge?: boolean;
 }) => (
@@ -62,12 +62,13 @@ const SectionHeader = ({ icon, iconColor, title, count, rightLabel, rightAction,
     )}
     {rightLabel && (
       <span onClick={rightAction} style={{
-        marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: '#2563EB', cursor: 'pointer',
+        marginLeft: 'auto', fontSize: 12, fontWeight: 650, color: '#2563EB', cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 2,
       }}>{rightLabel} <ChevronRight size={12} /></span>
     )}
   </div>
-);
+));
+SectionHeader.displayName = 'SectionHeader';
 
 /* ── Format time ago ── */
 function timeAgo(dateStr: string) {
@@ -84,6 +85,31 @@ function formatK(n: number) {
   if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
   return String(n);
 }
+
+/* ── Section-level skeleton loaders ── */
+const LearningPathsSkeleton = () => (
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+    {Array.from({ length: 3 }).map((_, i) => (
+      <div key={i} style={{ padding: 20, borderRadius: 6, background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)' }}>
+        <Skeleton w={140} h={16} style={{ marginBottom: 12 }} />
+        <Skeleton w="100%" h={4} style={{ marginBottom: 8 }} />
+        <Skeleton w="60%" h={12} />
+      </div>
+    ))}
+  </div>
+);
+
+const RecommendationsSkeleton = () => (
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
+    {Array.from({ length: 3 }).map((_, i) => (
+      <div key={i} style={{ padding: 16, borderRadius: 6, background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderLeft: '3px solid #E2E8F0' }}>
+        <Skeleton w={80} h={12} style={{ marginBottom: 10 }} />
+        <Skeleton w="80%" h={14} style={{ marginBottom: 8 }} />
+        <Skeleton w="60%" h={11} />
+      </div>
+    ))}
+  </div>
+);
 
 /* ═══════════════════════════════════════════════════════════════
    WIKI HOME PAGE
@@ -177,7 +203,7 @@ export default function WikiHomePage() {
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.borderColor = '#2563EB';
-                e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)';
+                e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)';
@@ -277,28 +303,13 @@ export default function WikiHomePage() {
                 <Skeleton w="60%" h={12} />
               </div>
             ))
-          ) : (quickRefs ?? []).map((qr: any) => (
-            <div key={qr.id} style={{
-              minWidth: 220, padding: 16, borderRadius: 6, background: '#FFFFFF',
-              border: '1px solid rgba(15,23,42,0.12)', cursor: 'pointer', scrollSnapAlign: 'start',
-              transition: 'border-color 120ms, box-shadow 120ms',
-            }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = '#2563EB';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.08)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 8 }}>{qr.title}</div>
-              <div style={{ display: 'flex', gap: 12, fontSize: 11 }}>
-                <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#2563EB', fontWeight: 500 }}>{qr.steps} steps</span>
-                <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B', fontWeight: 500 }}>{formatK(qr.views)} views</span>
-              </div>
+          ) : (quickRefs ?? []).length > 0 ? (quickRefs ?? []).map((qr: any) => (
+            <QuickRefCard key={qr.id} qr={qr} />
+          )) : (
+            <div style={{ padding: 32, textAlign: 'center', color: '#64748B', fontSize: 12, width: '100%' }}>
+              No quick reference cards yet — add guides to help users navigate common workflows.
             </div>
-          ))}
+          )}
         </div>
 
         {/* ═══ SECTION 3: BROWSE BY DOMAIN ═══ */}
@@ -311,73 +322,75 @@ export default function WikiHomePage() {
               <div key={i} style={{ padding: 20, borderRadius: 6, background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)' }}>
                 <Skeleton w={160} h={16} style={{ marginBottom: 12 }} />
                 <Skeleton w="100%" h={12} style={{ marginBottom: 8 }} />
-                <Skeleton w="80%" h={12} />
+                <Skeleton w="80%" h={3} style={{ marginBottom: 8 }} />
+                <Skeleton w="60%" h={12} />
               </div>
             ))
-          ) : (domains ?? []).map((d) => {
+          ) : (domains ?? []).length > 0 ? (domains ?? []).map((d) => {
             const Icon = DOMAIN_ICONS[d.domain_code] || Globe;
-            return (
-              <DomainCard key={d.domain_code} d={d} Icon={Icon} navigate={navigate} />
-            );
-          })}
+            return <DomainCard key={d.domain_code} d={d} Icon={Icon} navigate={navigate} />;
+          }) : (
+            <div style={{ padding: 40, textAlign: 'center', color: '#64748B', fontSize: 12, gridColumn: '1 / -1' }}>
+              No domain data available — run a sync to populate domains.
+            </div>
+          )}
         </div>
 
         {/* ═══ SECTION 4: LEARNING PATHS ═══ */}
         <SectionHeader title="Learning Paths" count={paths?.length ?? 0} icon={<GraduationCap size={16} style={{ color: '#2563EB' }} />} />
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12, marginBottom: 40,
-        }}>
-          {pathsLoading ? (
-            Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} style={{ padding: 20, borderRadius: 6, background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)' }}>
-                <Skeleton w={140} h={16} style={{ marginBottom: 12 }} />
-                <Skeleton w="100%" h={4} style={{ marginBottom: 8 }} />
-                <Skeleton w="60%" h={12} />
-              </div>
-            ))
-          ) : (paths ?? []).map((p: any) => {
-            const pct = p.article_count > 0 ? Math.round((p.completedCount / p.article_count) * 100) : 0;
-            const isDone = pct === 100;
-            return (
-              <div key={p.id} style={{
-                padding: 20, borderRadius: 6, background: '#FFFFFF', position: 'relative',
-                border: '1px solid rgba(15,23,42,0.12)', transition: 'border-color 120ms',
-              }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = '#2563EB'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)'}
-              >
-                {/* Completion badge */}
-                <span style={{
-                  position: 'absolute', top: 12, right: 12, fontSize: 10, fontWeight: 650,
-                  padding: '2px 8px', borderRadius: 4,
-                  background: isDone ? '#E3FCEF' : '#DEEBFF',
-                  color: isDone ? '#006644' : '#0747A6',
-                }}>{isDone ? 'Complete' : `${pct}%`}</span>
+        {pathsLoading ? <LearningPathsSkeleton /> : (
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12, marginBottom: 40,
+          }}>
+            {(paths ?? []).length > 0 ? (paths ?? []).map((p: any) => {
+              const pct = p.article_count > 0 ? Math.round((p.completedCount / p.article_count) * 100) : 0;
+              const isDone = pct === 100;
+              return (
+                <div key={p.id} style={{
+                  padding: 20, borderRadius: 6, background: '#FFFFFF', position: 'relative',
+                  border: '1px solid rgba(15,23,42,0.12)', transition: 'border-color 120ms',
+                }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = '#2563EB'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)'}
+                >
+                  {/* Completion badge */}
+                  <span style={{
+                    position: 'absolute', top: 12, right: 12, fontSize: 10, fontWeight: 700,
+                    padding: '2px 8px', borderRadius: 3,
+                    background: isDone ? '#E3FCEF' : '#DEEBFF',
+                    color: isDone ? '#006644' : '#0747A6',
+                    textTransform: 'uppercase',
+                  }}>{isDone ? 'Complete' : `${pct}%`}</span>
 
-                <div style={{
-                  width: 36, height: 36, borderRadius: '50%', background: '#2563EB',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12,
-                }}>
-                  <GraduationCap size={18} style={{ color: '#FFFFFF' }} />
-                </div>
-                <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 650, color: '#0F172A', marginBottom: 4 }}>{p.title}</div>
-                <div style={{ fontSize: 12, color: '#64748B', marginBottom: 12, lineHeight: 1.5 }}>{p.description}</div>
-
-                {/* Progress bar */}
-                <div style={{ height: 4, borderRadius: 2, background: '#E2E8F0', marginBottom: 8 }}>
                   <div style={{
-                    height: '100%', borderRadius: 2, background: '#2563EB',
-                    width: `${pct}%`, transition: 'width 600ms ease',
-                  }} />
+                    width: 36, height: 36, borderRadius: '50%', background: '#2563EB',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12,
+                  }}>
+                    <GraduationCap size={18} style={{ color: '#FFFFFF' }} />
+                  </div>
+                  <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 650, color: '#0F172A', marginBottom: 4 }}>{p.title}</div>
+                  <div style={{ fontSize: 12, color: '#64748B', marginBottom: 12, lineHeight: 1.5 }}>{p.description}</div>
+
+                  {/* Progress bar */}
+                  <div style={{ height: 4, borderRadius: 2, background: '#E2E8F0', marginBottom: 8 }}>
+                    <div style={{
+                      height: '100%', borderRadius: 2, background: '#2563EB',
+                      width: `${pct}%`, transition: 'width 600ms ease',
+                    }} />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
+                    <span style={{ color: '#64748B' }}>{p.completedCount}/{p.article_count} articles</span>
+                    {isDone && <span style={{ color: '#006644', display: 'flex', alignItems: 'center', gap: 3 }}><CheckCircle2 size={11} /> Completed</span>}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
-                  <span style={{ color: '#64748B' }}>{p.completedCount}/{p.article_count} articles</span>
-                  {isDone && <span style={{ color: '#16A34A', display: 'flex', alignItems: 'center', gap: 3 }}><CheckCircle2 size={11} /> Completed</span>}
-                </div>
+              );
+            }) : (
+              <div style={{ padding: 32, textAlign: 'center', color: '#64748B', fontSize: 12, gridColumn: '1 / -1' }}>
+                No learning paths configured yet.
               </div>
-            );
-          })}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* ═══ SECTION 5: RECOMMENDED FOR YOU ═══ */}
         <SectionHeader
@@ -395,17 +408,18 @@ export default function WikiHomePage() {
             <div key={i} style={{
               padding: 16, borderRadius: 6, background: '#FFFFFF',
               border: '1px solid rgba(15,23,42,0.12)', borderLeft: '3px solid #7C3AED',
-              transition: 'border-color 120ms',
+              transition: 'box-shadow 120ms',
             }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = '#7C3AED'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)'}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 2px 8px rgba(124,58,237,0.08)'; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; }}
             >
               <span style={{
-                fontSize: 9, fontWeight: 650, padding: '2px 8px', borderRadius: 9999,
+                fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 9999,
                 background: '#F5F3FF', color: '#7C3AED', display: 'inline-flex',
                 alignItems: 'center', gap: 3, marginBottom: 8,
+                textTransform: 'uppercase',
               }}><Sparkles size={9} /> AI Suggestion</span>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>{r.title}</div>
+              <div style={{ fontSize: 13, fontWeight: 650, color: '#0F172A', marginBottom: 6 }}>{r.title}</div>
               <div style={{ fontSize: 11, color: '#64748B' }}>{r.domain} · {r.readTime} min read · {r.reason}</div>
             </div>
           ))}
@@ -476,7 +490,7 @@ export default function WikiHomePage() {
                 display: 'grid',
                 gridTemplateColumns: '36px 1fr 110px 100px 80px 70px 80px 90px',
                 padding: '0 12px', height: 36, alignItems: 'center',
-                borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+                borderBottom: '0.75px solid rgba(15,23,42,0.12)',
               }}>
                 <span /><Skeleton w="80%" h={12} /><Skeleton w={60} h={12} /><Skeleton w={60} h={12} />
                 <Skeleton w={40} h={12} /><Skeleton w={30} h={12} /><Skeleton w={50} h={12} /><Skeleton w={60} h={12} />
@@ -548,6 +562,7 @@ export default function WikiHomePage() {
       {/* ═══ SECTION 10: CHAT FAB ═══ */}
       <button
         onClick={() => toast.info('AI Assistant coming soon')}
+        aria-label="AI Assistant"
         style={{
           position: 'fixed', bottom: 24, right: 24, width: 52, height: 52, borderRadius: '50%',
           background: '#7C3AED', border: 'none', cursor: 'pointer', zIndex: 50,
@@ -579,30 +594,54 @@ export default function WikiHomePage() {
   );
 }
 
-/* ── Stat Card ── */
-function StatCard({ label, value, valueColor }: { label: string; value: string | number; valueColor?: string }) {
-  return (
-    <div style={{
-      padding: 20, borderRadius: 8, background: '#F8FAFC', textAlign: 'center',
-      border: '1px solid rgba(15,23,42,0.12)', transition: 'all 150ms', cursor: 'default',
+/* ── Stat Card (memoized) ── */
+const StatCard = React.memo(({ label, value, valueColor }: { label: string; value: string | number; valueColor?: string }) => (
+  <div style={{
+    padding: 20, borderRadius: 8, background: '#F8FAFC', textAlign: 'center',
+    border: '1px solid rgba(15,23,42,0.12)', transition: 'all 150ms', cursor: 'default',
+  }}
+    onMouseEnter={e => {
+      e.currentTarget.style.borderColor = '#2563EB';
+      e.currentTarget.style.background = '#EFF6FF';
     }}
-      onMouseEnter={e => {
-        e.currentTarget.style.borderColor = '#2563EB';
-        e.currentTarget.style.background = '#EFF6FF';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)';
-        e.currentTarget.style.background = '#F8FAFC';
-      }}
-    >
-      <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 28, fontWeight: 700, color: valueColor || '#0F172A' }}>{value}</div>
-      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.04em', marginTop: 4 }}>{label}</div>
-    </div>
-  );
-}
+    onMouseLeave={e => {
+      e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)';
+      e.currentTarget.style.background = '#F8FAFC';
+    }}
+  >
+    <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 28, fontWeight: 700, color: valueColor || '#0F172A' }}>{value}</div>
+    <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.04em', marginTop: 4 }}>{label}</div>
+  </div>
+));
+StatCard.displayName = 'StatCard';
 
-/* ── Domain Card ── */
-function DomainCard({ d, Icon, navigate }: { d: any; Icon: React.ComponentType<any>; navigate: any }) {
+/* ── Quick Ref Card (memoized) ── */
+const QuickRefCard = React.memo(({ qr }: { qr: any }) => (
+  <div style={{
+    minWidth: 220, padding: 16, borderRadius: 6, background: '#FFFFFF',
+    border: '1px solid rgba(15,23,42,0.12)', cursor: 'pointer', scrollSnapAlign: 'start',
+    transition: 'border-color 120ms, box-shadow 120ms',
+  }}
+    onMouseEnter={e => {
+      e.currentTarget.style.borderColor = '#2563EB';
+      e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.08)';
+    }}
+    onMouseLeave={e => {
+      e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)';
+      e.currentTarget.style.boxShadow = 'none';
+    }}
+  >
+    <div style={{ fontSize: 13, fontWeight: 650, color: '#0F172A', marginBottom: 8 }}>{qr.title}</div>
+    <div style={{ display: 'flex', gap: 12, fontSize: 11 }}>
+      <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#2563EB', fontWeight: 500 }}>{qr.steps} steps</span>
+      <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B', fontWeight: 500 }}>{formatK(qr.views)} views</span>
+    </div>
+  </div>
+));
+QuickRefCard.displayName = 'QuickRefCard';
+
+/* ── Domain Card (memoized) ── */
+const DomainCard = React.memo(({ d, Icon, navigate }: { d: any; Icon: React.ComponentType<any>; navigate: any }) => {
   const [hovered, setHovered] = useState(false);
   const freshnessColor = d.freshness_percent >= 90 ? '#006644' : d.freshness_percent >= 75 ? '#0747A6' : '#9A5402';
   const freshnessBg = d.freshness_percent >= 90 ? '#E3FCEF' : d.freshness_percent >= 75 ? '#DEEBFF' : '#FEF3C7';
@@ -653,7 +692,7 @@ function DomainCard({ d, Icon, navigate }: { d: any; Icon: React.ComponentType<a
 
         {/* Coverage bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-          <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B' }}>Coverage</span>
+          <span style={{ fontSize: 10, fontWeight: 650, color: '#64748B' }}>Coverage</span>
           <div style={{ flex: 1, height: 3, borderRadius: 2, background: '#E2E8F0' }}>
             <div style={{
               height: '100%', borderRadius: 2, background: '#2563EB',
@@ -671,7 +710,7 @@ function DomainCard({ d, Icon, navigate }: { d: any; Icon: React.ComponentType<a
           <span>{d.document_count} docs</span>
           <span>{formatK(d.view_count)} views</span>
           {d.knowledge_gaps > 0 && (
-            <span style={{ color: '#D97706', display: 'flex', alignItems: 'center', gap: 2 }}>
+            <span style={{ color: '#9A5402', display: 'flex', alignItems: 'center', gap: 2 }}>
               <HelpCircle size={10} /> {d.knowledge_gaps} gaps
             </span>
           )}
@@ -680,21 +719,22 @@ function DomainCard({ d, Icon, navigate }: { d: any; Icon: React.ComponentType<a
         {/* Footer */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{
-            fontSize: 10, fontWeight: 650, padding: '2px 6px', borderRadius: 3,
-            background: freshnessBg, color: freshnessColor,
+            fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
+            background: freshnessBg, color: freshnessColor, textTransform: 'uppercase',
           }}>{d.freshness_percent}% fresh</span>
           <span style={{
-            fontSize: 11, fontWeight: 600, color: '#2563EB', display: 'flex', alignItems: 'center', gap: 3,
+            fontSize: 11, fontWeight: 650, color: '#2563EB', display: 'flex', alignItems: 'center', gap: 3,
             opacity: hovered ? 1 : 0, transition: 'opacity 200ms',
           }}>Explore <ArrowRight size={12} /></span>
         </div>
       </div>
     </div>
   );
-}
+});
+DomainCard.displayName = 'DomainCard';
 
-/* ── Article Row ── */
-function ArticleRow({ a, navigate }: { a: any; navigate: any }) {
+/* ── Article Row (memoized) ── */
+const ArticleRow = React.memo(({ a, navigate }: { a: any; navigate: any }) => {
   const formatIcon = a.format === 'pdf'
     ? <FileDown size={14} style={{ color: '#DC2626' }} />
     : a.format === 'video'
@@ -709,7 +749,7 @@ function ArticleRow({ a, navigate }: { a: any; navigate: any }) {
     : { bg: '#DFE1E6', color: '#44546F', label: 'Unverified', icon: null };
 
   const conf = Math.round((a.ai_confidence ?? 0) * 100);
-  const confColor = conf >= 90 ? '#16A34A' : conf >= 70 ? '#2563EB' : '#D97706';
+  const confColor = conf >= 90 ? '#006644' : conf >= 70 ? '#0747A6' : '#9A5402';
 
   const helpful = a.helpfulness_score ?? 0;
 
@@ -730,10 +770,10 @@ function ArticleRow({ a, navigate }: { a: any; navigate: any }) {
         display: 'grid',
         gridTemplateColumns: '36px 1fr 110px 100px 80px 70px 80px 90px',
         padding: '0 12px', minHeight: 36, alignItems: 'center', cursor: 'pointer',
-        borderBottom: '0.75px solid rgba(15,23,42,0.06)', fontSize: 12,
+        borderBottom: '0.75px solid rgba(15,23,42,0.12)', fontSize: 12,
         transition: 'background 80ms',
       }}
-      onMouseEnter={e => e.currentTarget.style.background = 'rgba(15,23,42,0.02)'}
+      onMouseEnter={e => e.currentTarget.style.background = 'rgba(15,23,42,0.04)'}
       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
     >
       {/* Bookmark */}
@@ -747,24 +787,25 @@ function ArticleRow({ a, navigate }: { a: any; navigate: any }) {
         <div style={{ minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{
-              fontWeight: 600, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis',
+              fontWeight: 650, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
             }}>{a.title}</span>
             {a.tldr && (
               <span title={a.tldr} style={{
-                fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 3,
+                fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
                 background: '#F5F3FF', color: '#7C3AED', cursor: 'help', flexShrink: 0,
               }}>TL;DR</span>
             )}
             <span style={{
-              fontSize: 9, fontWeight: 600, padding: '1px 5px', borderRadius: 3,
+              fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 3,
               background: '#F1F5F9', color: '#64748B', flexShrink: 0,
             }}>{a.domain_code}</span>
             {a.read_time_minutes && (
-              <span style={{ fontSize: 10, color: '#94A3B8', flexShrink: 0 }}>{a.read_time_minutes}m</span>
+              <span style={{ fontSize: 10, color: '#64748B', flexShrink: 0 }}>{a.read_time_minutes}m</span>
             )}
             <span style={{
-              fontSize: 9, color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: 2, flexShrink: 0,
+              fontSize: 9, color: '#64748B', display: 'inline-flex', alignItems: 'center', gap: 2, flexShrink: 0,
+              fontFamily: 'JetBrains Mono, monospace',
             }}><GitBranch size={9} /> v{a.version ?? 1}</span>
           </div>
           {tags.length > 0 && (
@@ -822,7 +863,8 @@ function ArticleRow({ a, navigate }: { a: any; navigate: any }) {
       }}>{st.label}</span>
     </div>
   );
-}
+});
+ArticleRow.displayName = 'ArticleRow';
 
 /* ── Static recommendations (TODO: Wire to AI recommendation engine) ── */
 const RECOMMENDATIONS = [

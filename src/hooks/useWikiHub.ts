@@ -30,7 +30,7 @@ export function useWikiHomeStats() {
 export function useWikiDomainCards() {
   return useQuery({
     queryKey: ['wiki-domain-cards'],
-    staleTime: 120_000,
+    staleTime: 300_000,
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_wiki_domain_cards');
       if (error) throw error;

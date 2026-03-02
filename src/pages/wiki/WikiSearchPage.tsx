@@ -91,7 +91,7 @@ export default function WikiSearchPage() {
   const aiAnswer = aiResults?.answer;
   const aiSources = aiResults?.sources ?? [];
 
-  const confColor = (c: number) => c >= 90 ? '#006644' : c >= 70 ? '#2563EB' : '#D97706';
+  const confColor = (c: number) => c >= 90 ? '#006644' : c >= 70 ? '#0747A6' : '#9A5402';
   const confBg = (c: number) => c >= 90 ? '#E3FCEF' : c >= 70 ? '#DEEBFF' : '#FEF3C7';
 
   return (
