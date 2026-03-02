@@ -391,6 +391,8 @@ import EnterpriseComingSoon from "./pages/enterprise/ComingSoon";
 import SkillsInventory from "./pages/SkillsInventory";
 import StarredPage from "./pages/StarredPage";
 
+// WorkHub lazy imports
+const WorkHubAllWork = lazy(() => import("./pages/workhub/AllWork"));
 
 import BusinessRequests from "./pages/enterprise/BusinessRequests";
 import MiningComingSoon from "./pages/enterprise/MiningComingSoon";
@@ -830,9 +832,10 @@ const App = () => (
               <Route path="/projects/:projectKey/summary" element={<Navigate to={`/projects`} replace />} />
 
               {/* ═══════════════════════════════════════════════════════════════ */}
+              {/* WorkHub All Work — new route */}
+              <Route path="/workhub/all-work" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubAllWork /></Suspense>} />
               {/* LEGACY /projecthub — redirect to /project-hub ════════════ */}
               <Route path="/workhub" element={<Navigate to="/project-hub" replace />} />
-              <Route path="/workhub/*" element={<Navigate to="/project-hub" replace />} />
               <Route path="/projecthub" element={<Navigate to="/project-hub" replace />} />
               <Route path="/projecthub/resource360" element={<Navigate to="/project-hub/resource-360/009" replace />} />
               <Route path="/projecthub/resource360/:id" element={<Resource360Redirect />} />
