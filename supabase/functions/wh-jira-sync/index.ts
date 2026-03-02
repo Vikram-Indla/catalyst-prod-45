@@ -146,7 +146,7 @@ serve(async (req) => {
       let projectIssueCount = 0
 
       do {
-        const reqBody: Record<string, any> = { jql, fields, maxResults }
+        const reqBody: Record<string, any> = { jql, fields, maxResults, expand: ['changelog'] }
         if (nextPageToken) reqBody.nextPageToken = nextPageToken
 
         const res = await fetch(searchUrl, { method: 'POST', headers: postHeaders, body: JSON.stringify(reqBody) })
@@ -288,6 +288,74 @@ serve(async (req) => {
           .upsert(chunk, { onConflict: 'issue_key,jira_attachment_id' })
       }
       console.log(`[sync] Upserted ${attachmentRows.length} attachments`)
+    }
+
+    // 7c. Extract and upsert changelog entries → jira_sync_changelog
+    const changelogRows: any[] = []
+    for (const issue of allIssues) {
+      const histories = issue.changelog?.histories || []
+      for (const history of histories) {
+        for (const item of (history.items || [])) {
+          changelogRows.push({
+            issue_key: issue.key,
+            jira_history_id: history.id,
+            author_display_name: history.author?.displayName || null,
+            author_account_id: history.author?.accountId || null,
+            author_avatar_url: history.author?.avatarUrls?.['24x24'] || history.author?.avatarUrls?.['48x48'] || null,
+            field_name: item.field || null,
+            field_type: item.fieldtype || null,
+            from_value: item.from || null,
+            to_value: item.to || null,
+            from_string: item.fromString || null,
+            to_string: item.toString || null,
+            jira_created_at: history.created,
+          })
+        }
+      }
+    }
+    if (changelogRows.length > 0) {
+      // Delete existing changelogs for synced issues then insert fresh
+      const syncedKeys = [...new Set(changelogRows.map(r => r.issue_key))]
+      for (let i = 0; i < syncedKeys.length; i += 500) {
+        const batch = syncedKeys.slice(i, i + 500)
+        await supabase.from('jira_sync_changelog').delete().in('issue_key', batch)
+      }
+      for (let i = 0; i < changelogRows.length; i += 500) {
+        const chunk = changelogRows.slice(i, i + 500)
+        await supabase.from('jira_sync_changelog').insert(chunk)
+      }
+      console.log(`[sync] Upserted ${changelogRows.length} changelog entries`)
+    }
+
+    // 7d. Extract and upsert comments → jira_sync_comments
+    const commentRows: any[] = []
+    for (const issue of allIssues) {
+      const rawComments = issue.fields.comment?.comments || []
+      for (const c of rawComments) {
+        commentRows.push({
+          issue_key: issue.key,
+          jira_comment_id: c.id,
+          author_display_name: c.author?.displayName || null,
+          author_account_id: c.author?.accountId || null,
+          author_avatar_url: c.author?.avatarUrls?.['24x24'] || c.author?.avatarUrls?.['48x48'] || null,
+          body: c.body ? adfToPlainText(c.body) : '',
+          jira_created_at: c.created,
+          jira_updated_at: c.updated,
+        })
+      }
+    }
+    if (commentRows.length > 0) {
+      // Delete existing comments for synced issues then insert fresh
+      const syncedKeys = [...new Set(commentRows.map(r => r.issue_key))]
+      for (let i = 0; i < syncedKeys.length; i += 500) {
+        const batch = syncedKeys.slice(i, i + 500)
+        await supabase.from('jira_sync_comments').delete().in('issue_key', batch)
+      }
+      for (let i = 0; i < commentRows.length; i += 500) {
+        const chunk = commentRows.slice(i, i + 500)
+        await supabase.from('jira_sync_comments').insert(chunk)
+      }
+      console.log(`[sync] Upserted ${commentRows.length} comments`)
     }
 
     // 8. HARD DELETE — Remove issues not in the fetched set for synced projects
