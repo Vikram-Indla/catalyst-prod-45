@@ -53,10 +53,10 @@ const WORK_POOL: Preset[] = [
 ];
 
 const TEAM_POOL: Preset[] = [
-  { icon: User, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'What is Wahid working on?', hint: 'Mobile Developer' },
-  { icon: User, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'What is Nada working on?', hint: 'QA Engineer' },
-  { icon: User, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'What is Raza working on?', hint: 'Backend Developer' },
-  { icon: User, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'What is Yousif working on?', hint: 'Backend Developer' },
+  { icon: User, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'What is Wahid working on?', hint: 'View active work items' },
+  { icon: User, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'What is Nada working on?', hint: 'View active work items' },
+  { icon: User, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'What is Raza working on?', hint: 'View active work items' },
+  { icon: User, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'What is Yousif working on?', hint: 'View active work items' },
   { icon: Users, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'Team capacity & workload', hint: 'Resource balancing overview' },
   { icon: ArrowRightLeft, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'Who has bandwidth this week?', hint: 'Available team members' },
 ];
