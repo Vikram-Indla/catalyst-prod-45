@@ -13,6 +13,7 @@ import { AllWorkBulkBar } from '@/components/workhub/allwork/AllWorkBulkBar';
 import { AllWorkCreateModal } from '@/components/workhub/allwork/modals/AllWorkCreateModal';
 import { AllWorkEmptyState } from '@/components/workhub/allwork/AllWorkEmptyState';
 import { Skeleton } from '@/components/ui/skeleton';
+import { normalizeWorkItem } from '@/types/allwork.types';
 
 type ViewMode = 'grid' | 'split';
 type TabKey = 'all-work' | 'board' | 'timeline' | 'calendar' | 'backlog' | 'reports';
@@ -43,7 +44,7 @@ export default function AllWork() {
     pagination,
     { field: sortField, dir: sortDir },
   );
-  const items = data?.items ?? [];
+  const items = useMemo(() => (data?.items ?? []).map(normalizeWorkItem), [data?.items]);
   const totalCount = data?.totalCount ?? 0;
   const totalPages = data?.totalPages ?? 0;
 
