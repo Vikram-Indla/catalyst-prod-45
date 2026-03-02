@@ -63,7 +63,9 @@ export default function ProjectDashboardPage() {
   const { setSelectedReleaseIds } = useDashboardStore();
   useEffect(() => {
     if (releases?.length && selectedReleaseIds.length === 0) {
-      setSelectedReleaseIds(releases.map((r: any) => r.id));
+      // Default to last 2 releases only
+      const last2 = releases.slice(-2).map((r: any) => r.id);
+      setSelectedReleaseIds(last2);
     }
   }, [releases]);
 
