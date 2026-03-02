@@ -1,10 +1,9 @@
 /**
- * WorkHub "All Work" — Stage C Complete UI
- * Grid view + Split view with full interactions
+ * WorkHub "All Work" — Stage D: Fully wired to Supabase
+ * ZERO hardcoded data. All reads/writes via workhubService → wh_ tables (with ph_issues fallback).
  */
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useWorkItems, useIssueTypes, useIssueStatuses } from '@/hooks/workhub/useWorkItems';
-import type { WorkItemFilterConfig, PaginationConfig, JiraIssue } from '@/hooks/workhub/useWorkItems';
+import { useAllWorkItems } from '@/hooks/workhub/useAllWork';
 import { AllWorkHeader } from '@/components/workhub/allwork/AllWorkHeader';
 import { AllWorkToolbar } from '@/components/workhub/allwork/AllWorkToolbar';
 import { AllWorkTable } from '@/components/workhub/allwork/AllWorkTable';
@@ -20,18 +19,30 @@ type TabKey = 'all-work' | 'board' | 'timeline' | 'calendar' | 'backlog' | 'repo
 
 const DEFAULT_PAGE_SIZE = 25;
 
+interface Filters {
+  types?: string[];
+  statuses?: string[];
+  priorities?: string[];
+  search?: string;
+}
+
 export default function AllWork() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [activeTab, setActiveTab] = useState<TabKey>('all-work');
-  const [filters, setFilters] = useState<Partial<WorkItemFilterConfig>>({});
-  const [pagination, setPagination] = useState<PaginationConfig>({ page: 0, pageSize: DEFAULT_PAGE_SIZE });
+  const [filters, setFilters] = useState<Filters>({});
+  const [pagination, setPagination] = useState({ page: 0, pageSize: DEFAULT_PAGE_SIZE });
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedItemKey, setSelectedItemKey] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [sortField, setSortField] = useState<string>('jira_updated_at');
+  const [sortField, setSortField] = useState<string>('updated_at');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
-  const { data, isLoading, error, refetch, isFetching } = useWorkItems(filters, pagination);
+  const { data, isLoading, error, refetch, isFetching } = useAllWorkItems(
+    undefined, // projectId
+    filters,
+    pagination,
+    { field: sortField, dir: sortDir },
+  );
   const items = data?.items ?? [];
   const totalCount = data?.totalCount ?? 0;
   const totalPages = data?.totalPages ?? 0;
@@ -54,14 +65,14 @@ export default function AllWork() {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  const handleFilterChange = useCallback((newFilters: Partial<WorkItemFilterConfig>) => {
+  const handleFilterChange = useCallback((newFilters: Filters) => {
     setFilters(newFilters);
     setPagination(prev => ({ ...prev, page: 0 }));
     setSelectedIds(new Set());
   }, []);
 
   const handleSearch = useCallback((q: string) => {
-    setFilters(prev => ({ ...prev, search_query: q || undefined }));
+    setFilters(prev => ({ ...prev, search: q || undefined }));
     setPagination(prev => ({ ...prev, page: 0 }));
   }, []);
 
@@ -81,7 +92,7 @@ export default function AllWork() {
 
   const handleSelectAll = useCallback(() => {
     if (selectAllState === 'all') setSelectedIds(new Set());
-    else setSelectedIds(new Set(items.map(i => i.issue_key)));
+    else setSelectedIds(new Set(items.map((i: any) => i.item_key || i.issue_key)));
   }, [items, selectAllState]);
 
   const goToPage = useCallback((page: number) => {
@@ -94,26 +105,23 @@ export default function AllWork() {
     setSelectedIds(new Set());
   }, []);
 
-  const selectedItem = useMemo(() => 
-    selectedItemKey ? items.find(i => i.issue_key === selectedItemKey) ?? null : null
-  , [items, selectedItemKey]);
-
   const uniqueAssignees = useMemo(() => {
     const names = new Set<string>();
-    items.forEach(i => { if (i.assignee_display_name) names.add(i.assignee_display_name); });
+    items.forEach((i: any) => {
+      const name = i.assignee_name || i.assignee_display_name;
+      if (name) names.add(name);
+    });
     return Array.from(names).slice(0, 5);
   }, [items]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden" style={{ fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
-      {/* Page header */}
       <AllWorkHeader
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onCreateClick={() => setShowCreateModal(true)}
       />
 
-      {/* Toolbar */}
       <AllWorkToolbar
         filters={filters}
         onFilterChange={handleFilterChange}
@@ -125,7 +133,6 @@ export default function AllWork() {
         uniqueAssignees={uniqueAssignees}
       />
 
-      {/* Main content */}
       <div className="flex-1 min-h-0 px-8 pb-4">
         {isLoading ? (
           <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'rgba(11,18,14,0.14)' }}>
@@ -136,7 +143,7 @@ export default function AllWork() {
               <div key={i} className="flex items-center gap-4 px-4" style={{ height: 40, borderBottom: '0.56px solid rgba(11,18,14,0.08)' }}>
                 <Skeleton className="h-4 w-4 rounded" />
                 <Skeleton className="h-3.5 w-20 rounded" />
-                <Skeleton className="h-3.5 rounded flex-1" style={{ width: `${45 + Math.random() * 35}%` }} />
+                <Skeleton className="h-3.5 rounded flex-1" />
                 <Skeleton className="h-5 w-16 rounded" />
                 <Skeleton className="h-5 w-14 rounded" />
                 <Skeleton className="h-4 w-4 rounded-full" />
@@ -146,8 +153,8 @@ export default function AllWork() {
         ) : error ? (
           <AllWorkEmptyState type="error" message={(error as Error).message} onRetry={() => refetch()} />
         ) : items.length === 0 ? (
-          filters.search_query ? (
-            <AllWorkEmptyState type="no-results" query={filters.search_query} onClear={() => handleFilterChange({})} />
+          filters.search ? (
+            <AllWorkEmptyState type="no-results" query={filters.search} onClear={() => handleFilterChange({})} />
           ) : (
             <AllWorkEmptyState type="no-items" onAction={() => setShowCreateModal(true)} />
           )
@@ -175,7 +182,6 @@ export default function AllWork() {
         )}
       </div>
 
-      {/* Pagination */}
       {totalCount > 0 && !isLoading && (
         <AllWorkPagination
           currentPage={pagination.page}
@@ -187,7 +193,6 @@ export default function AllWork() {
         />
       )}
 
-      {/* Bulk actions bar */}
       {selectedIds.size > 0 && (
         <AllWorkBulkBar
           selectedIds={Array.from(selectedIds)}
@@ -198,7 +203,6 @@ export default function AllWork() {
         />
       )}
 
-      {/* Create modal */}
       {showCreateModal && (
         <AllWorkCreateModal
           onClose={() => setShowCreateModal(false)}
