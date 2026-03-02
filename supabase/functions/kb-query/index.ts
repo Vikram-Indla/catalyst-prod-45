@@ -188,8 +188,9 @@ async function tryLiveQuery(sb: any, query: string, lang: string, userName?: str
   // ── "Items blocked this week" ──
   if (/items?\s+blocked\s+(this\s+week|recently)/i.test(qLower) || /blocked\s+items?\s+(this\s+week)/i.test(qLower)) {
     const { data: items } = await sb.from('ph_issues')
-      .select('issue_key, summary, status, priority, project_name, project_key, assignee_display_name, jira_updated_at')
+      .select('issue_key, summary, status, priority, project_name, project_key, assignee_display_name, jira_updated_at, status_category')
       .ilike('status', '%blocked%')
+      .neq('status_category', 'Done')
       .gte('jira_updated_at', twoWeeksAgo)
       .order('jira_updated_at', { ascending: false })
       .limit(30);
@@ -315,8 +316,9 @@ async function tryLiveQuery(sb: any, query: string, lang: string, userName?: str
   // ── "Cross-project blockers" ──
   if (/cross.?project\s+blockers?/i.test(qLower)) {
     const { data: items } = await sb.from('ph_issues')
-      .select('issue_key, summary, status, priority, project_name, project_key, assignee_display_name, jira_updated_at')
+      .select('issue_key, summary, status, priority, project_name, project_key, assignee_display_name, jira_updated_at, status_category')
       .ilike('status', '%blocked%')
+      .neq('status_category', 'Done')
       .order('jira_updated_at', { ascending: false })
       .limit(50);
     if (items && items.length > 0) {
