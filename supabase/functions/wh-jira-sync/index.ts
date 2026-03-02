@@ -86,6 +86,7 @@ serve(async (req) => {
 
     // 4. Build per-project JQL queries and fetch issues
     let allIssues: any[] = []
+    let hadSearchErrors = false
     const maxResults = 100
     const fields = ['summary','status','assignee','reporter','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016','description','comment','attachment']
     const searchUrl = `${base}/rest/api/3/search/jql`
@@ -141,30 +142,36 @@ serve(async (req) => {
       const jql = `${jqlParts.join(' AND ')} ORDER BY updated DESC`
       console.log(`[sync] Project ${projectKey}: JQL = ${jql}`)
 
-      // Paginate with cursor-based pagination
+      // Paginate with cursor token (supported by /search/jql)
       let nextPageToken: string | undefined = undefined
       let projectIssueCount = 0
 
       do {
-        const reqBody: Record<string, any> = { jql, fields, maxResults, expand: ['changelog'] }
+        const reqBody: Record<string, any> = { jql, fields, maxResults, expand: 'changelog' }
         if (nextPageToken) reqBody.nextPageToken = nextPageToken
 
         const res = await fetch(searchUrl, { method: 'POST', headers: postHeaders, body: JSON.stringify(reqBody) })
 
         if (!res.ok) {
           const errText = await res.text().catch(() => '')
+          hadSearchErrors = true
           console.error(`[search] ${projectKey} Error ${res.status}: ${errText.slice(0, 300)}`)
           break
         }
 
         const data = await res.json()
-        const issues = data.issues || []
+        const issues = Array.isArray(data.issues) ? data.issues : []
         allIssues = allIssues.concat(issues)
         projectIssueCount += issues.length
         nextPageToken = data.nextPageToken || undefined
       } while (nextPageToken && projectIssueCount < 5000)
 
       console.log(`[sync] Project ${projectKey}: fetched ${projectIssueCount} issues`)
+    }
+
+    // Fail fast if search failed and returned no issues at all (protect existing data)
+    if (hadSearchErrors && allIssues.length === 0) {
+      throw new Error('Jira search failed: invalid search payload or permissions. No issues were synced.')
     }
 
     // 5. Map Jira status to Catalyst category
@@ -362,7 +369,7 @@ serve(async (req) => {
     const fetchedKeys = new Set(rows.map(r => r.issue_key))
     let pruned = 0
 
-    if (syncType === 'full' && projectsToSync.length > 0) {
+    if (syncType === 'full' && projectsToSync.length > 0 && !hadSearchErrors) {
       for (const projectKey of projectsToSync) {
         const { data: existingIssues } = await supabase
           .from('ph_issues')
@@ -473,6 +480,9 @@ serve(async (req) => {
       .eq('is_mapped', false)
     if (unmapped && unmapped.length > 0) {
       warnings.push(`${unmapped.length} unmapped Jira users`)
+    }
+    if (hadSearchErrors) {
+      warnings.push('Search errors occurred; prune step was skipped to protect existing data')
     }
     if (pruned > 0) {
       warnings.push(`${pruned} issues pruned (no longer match sync criteria)`)
