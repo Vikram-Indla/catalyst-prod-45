@@ -8,6 +8,7 @@ import {
 import { useKBQuery } from '@/hooks/useKnowledgeBase';
 import { useAuth } from '@/hooks/useAuth';
 import { KBResponseRenderer } from '@/components/kb/KBResponseRenderer';
+import { KAItemDetailPanel } from './KAItemDetailPanel';
 
 import type { KBQueryResponse } from '@/services/knowledgeBase';
 import type { LucideIcon } from 'lucide-react';
@@ -98,6 +99,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
   const [whatsNewPresets, setWhatsNewPresets] = useState<Preset[]>([]);
   const [whatsClosingPresets, setWhatsClosingPresets] = useState<Preset[]>([]);
   const [spotlightPresets, setSpotlightPresets] = useState<Preset[]>([]);
+  const [selectedItemKey, setSelectedItemKey] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const pendingRef = useRef(false);
@@ -117,6 +119,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
       setView('land');
       setInput('');
       setMessages([]);
+      setSelectedItemKey(null);
       reset();
       pendingRef.current = false;
       rotatePresets();
@@ -419,6 +422,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                         feedbackGiven={msg.feedbackGiven}
                         onFeedback={(helpful) => handleFeedback(msg.id, msg.logId, helpful)}
                         onExtend={(query) => handleSend(query)}
+                        onItemClick={(key) => setSelectedItemKey(key)}
                       />
                     ) : null}
                   </div>
@@ -504,6 +508,14 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
             </button>
           </div>
         </div>
+
+        {/* Item Detail Panel overlay */}
+        {selectedItemKey && (
+          <KAItemDetailPanel
+            issueKey={selectedItemKey}
+            onClose={() => setSelectedItemKey(null)}
+          />
+        )}
 
         {/* Keyframes */}
         <style>{`
