@@ -2,14 +2,9 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { X, Mic, Send, RefreshCw, Loader2 } from 'lucide-react';
 import { KAItemDetailPanel } from './KAItemDetailPanel';
 import { useUserContext } from '../home/hooks/useUserContext';
-import { useAttentionItems } from '../home/hooks/useAttentionItems';
-import { useWeekSummary } from '../home/hooks/useWeekSummary';
-import { BriefingGreeting } from '../home/BriefingGreeting';
-import { AttentionSection } from '../home/AttentionSection';
-import { WeekSummarySection } from '../home/WeekSummary';
-import { QuickActions } from '../home/QuickActions';
+import { ProjectBriefingView } from '../home/ProjectBriefingView';
 import { QueryResultRenderer } from '../home/QueryResultRenderers';
-import { processPersonalizedQuery, getPresetsForRole, type QueryResult } from '../home/PersonalizedQueryProcessor';
+import { processPersonalizedQuery, type QueryResult } from '../home/PersonalizedQueryProcessor';
 
 type ViewState = 'land' | 'chat';
 
@@ -20,8 +15,6 @@ const F = {
 
 export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { data: userCtx, isLoading: userLoading, refetch: refetchUser } = useUserContext();
-  const { data: attentionItems, refetch: refetchAttention } = useAttentionItems(userCtx);
-  const { data: weekSummary, refetch: refetchWeek } = useWeekSummary(userCtx);
 
   const [view, setView] = useState<ViewState>('land');
   const [input, setInput] = useState('');
@@ -32,8 +25,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
-
-  const presets = userCtx ? getPresetsForRole(userCtx.role) : [];
 
   useEffect(() => {
     if (isOpen) {
@@ -51,11 +42,9 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
 
   const handleRefresh = useCallback(() => {
     refetchUser();
-    refetchAttention();
-    refetchWeek();
     setView('land');
     setChatMessages([]);
-  }, [refetchUser, refetchAttention, refetchWeek]);
+  }, [refetchUser]);
 
   const handleSend = useCallback(async (text?: string) => {
     const q = (text || input).trim();
@@ -119,6 +108,11 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     r.start();
   }, [isListening]);
 
+  // Effective role for header display
+  const effectiveRole = userCtx
+    ? (userCtx.role === 'admin' || userCtx.role === 'authenticated' ? 'Team Member' : userCtx.role)
+    : '';
+
   return (
     <>
       {isOpen && (
@@ -163,7 +157,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 <span style={{ fontSize: 14, color: '#5E6270' }}>←</span>
               </button>
             )}
-            {/* CATY AI icon — blue circle with node pattern */}
+            {/* CATY AI icon */}
             <div style={{
               width: 40, height: 40, borderRadius: 12, background: '#2563EB',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
@@ -185,8 +179,8 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 Knowledge Assist
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#8B8FA3', fontFamily: F.inter }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#52C41A', flexShrink: 0 }} />
-                {userCtx ? `${userCtx.role} · Live` : 'Connecting...'}
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#2563EB', flexShrink: 0, animation: 'ka-pulse 2s infinite' }} />
+                {userCtx ? `${effectiveRole} · Live` : 'Connecting...'}
               </span>
             </div>
           </div>
@@ -217,28 +211,12 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
             </div>
           )}
 
-          {/* ═══ BRIEFING VIEW ═══ */}
+          {/* ═══ BRIEFING VIEW (NEW: hierarchy-driven, project-grouped) ═══ */}
           {!userLoading && view === 'land' && userCtx && (
-            <div style={{ padding: '24px 24px 16px' }}>
-              <BriefingGreeting userCtx={userCtx} />
-
-              {attentionItems && attentionItems.length > 0 && (
-                <AttentionSection items={attentionItems} onItemClick={handleItemClick} />
-              )}
-
-              {weekSummary && (
-                <WeekSummarySection summary={weekSummary} onItemClick={handleItemClick} />
-              )}
-
-              <QuickActions presets={presets} onSelect={q => handleSend(q)} />
-
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '12px 0 0' }}>
-                <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#52C41A' }} />
-                <span style={{ fontSize: 11, color: '#8B8FA3', fontFamily: F.inter }}>
-                  Live data · Auto-refreshes every 60s
-                </span>
-              </div>
-            </div>
+            <ProjectBriefingView
+              onItemClick={handleItemClick}
+              onPresetClick={q => handleSend(q)}
+            />
           )}
 
           {/* ═══ CHAT VIEW ═══ */}
@@ -353,9 +331,9 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         <style>{`
           @keyframes ka-overlay-in { from { opacity: 0 } to { opacity: 1 } }
           @keyframes ka-msg-in { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
-          @keyframes ka-ring-pulse {
-            0% { opacity: 0.5; transform: scale(1); }
-            100% { opacity: 0; transform: scale(2.2); }
+          @keyframes ka-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
           }
           @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
           .ka-icon-btn:focus-visible { outline: 2px solid #4C6EF5; outline-offset: 2px; }
