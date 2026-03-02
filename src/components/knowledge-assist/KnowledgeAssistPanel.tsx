@@ -1,29 +1,50 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   X, Mic, Send, RefreshCw, Clock, ArrowUpRight,
   FilePlus, Layers, Bug, AlertOctagon, ShieldAlert, RotateCcw,
-  CheckCircle, ClipboardCheck, TrendingUp, Rocket,
+  CheckCircle, ClipboardCheck, Rocket,
   FolderOpen, BarChart3, Activity, AlertTriangle, Users, ArrowRightLeft,
+  CalendarDays,
 } from 'lucide-react';
-import { useKBQuery } from '@/hooks/useKnowledgeBase';
 import { useAuth } from '@/hooks/useAuth';
-import { KBResponseRenderer } from '@/components/kb/KBResponseRenderer';
 import { KAItemDetailPanel } from './KAItemDetailPanel';
 
-import type { KBQueryResponse } from '@/services/knowledgeBase';
+// Hardcoded response components
+import { ChangedYesterdayResponse } from './responses/ChangedYesterdayResponse';
+import { NewStoriesResponse } from './responses/NewStoriesResponse';
+import { NewDefectsResponse } from './responses/NewDefectsResponse';
+import { BlockedItemsResponse } from './responses/BlockedItemsResponse';
+import { ClosedThisWeekResponse } from './responses/ClosedThisWeekResponse';
+import { ReopenedItemsResponse } from './responses/ReopenedItemsResponse';
+import { MostActiveProjectResponse } from './responses/MostActiveProjectResponse';
+import { TeamWorkloadResponse } from './responses/TeamWorkloadResponse';
+import { PersonWorkResponse } from './responses/PersonWorkResponse';
+
 import type { LucideIcon } from 'lucide-react';
 
 /* ── Types ── */
-interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content?: string;
-  response?: KBQueryResponse;
-  logId?: string;
-  feedbackGiven?: boolean;
-}
-
 type ViewState = 'land' | 'chat';
+
+/* ── Preset → Response mapping ── */
+const PRESET_RESPONSE_MAP: Record<string, string> = {
+  'New stories created this sprint': 'new-stories',
+  'New epics this month': 'new-stories',
+  'New defects logged this week': 'new-defects',
+  'Production incidents this week': 'new-defects',
+  'Items blocked this week': 'blocked-items',
+  'Re-opened items this week': 'reopened-items',
+  'Items closed this week': 'closed-this-week',
+  'Items ready for QA': 'closed-this-week',
+  'Deployments this week': 'closed-this-week',
+  'Most active project this week': 'most-active-project',
+  'Senaei BAU sprint status': 'most-active-project',
+  'SIMP project health': 'most-active-project',
+  'Cross-project blockers': 'blocked-items',
+  'Team workload distribution': 'team-workload',
+  'Team capacity & workload': 'team-workload',
+  'Handoff queue this week': 'closed-this-week',
+  'What changed since yesterday?': 'changed-yesterday',
+};
 
 /* ── Helpers ── */
 function getGreeting(): string {
@@ -43,27 +64,23 @@ interface Preset {
   hint: string;
 }
 
-/* ═══ WHAT'S NEW pool ═══ */
 const WHATS_NEW_POOL: Preset[] = [
+  { icon: CalendarDays, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'What changed since yesterday?', hint: 'Status transitions across all projects' },
   { icon: FilePlus, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'New stories created this sprint', hint: 'Recently added stories across projects' },
   { icon: Layers, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'New epics this month', hint: 'Epics created in the last 6 weeks' },
   { icon: Bug, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'New defects logged this week', hint: 'Defects reported recently' },
-  { icon: AlertOctagon, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'Production incidents this week', hint: 'Recent production incidents' },
   { icon: ShieldAlert, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'Items blocked this week', hint: 'Newly blocked work items' },
   { icon: RotateCcw, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'Re-opened items this week', hint: 'Items that bounced back' },
 ];
 
-/* ═══ WHAT'S CLOSING pool ═══ */
 const WHATS_CLOSING_POOL: Preset[] = [
   { icon: CheckCircle, iconBg: '#D1FAE5', iconColor: '#065F46', main: 'Items closed this week', hint: 'Items moved to Done recently' },
   { icon: ClipboardCheck, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'Items ready for QA', hint: 'Items awaiting validation' },
   { icon: Rocket, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'Deployments this week', hint: 'Items moved to production' },
 ];
 
-/* ═══ PROJECT SPOTLIGHT pool ═══ */
 const SPOTLIGHT_POOL: Preset[] = [
   { icon: FolderOpen, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'Most active project this week', hint: 'Highest activity project' },
-  { icon: BarChart3, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'Senaei BAU sprint status', hint: 'Current sprint breakdown' },
   { icon: Activity, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'SIMP project health', hint: 'Project health overview' },
   { icon: AlertTriangle, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'Cross-project blockers', hint: 'Blocked items across projects' },
   { icon: Users, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'Team workload distribution', hint: 'Team capacity overview' },
@@ -89,11 +106,11 @@ const F = {
 
 export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { user } = useAuth();
-  const { response, isLoading, error, askQuestion, sendFeedback, reset } = useKBQuery();
 
   const [view, setView] = useState<ViewState>('land');
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [userQuery, setUserQuery] = useState('');
+  const [activeResponseId, setActiveResponseId] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [whatsNewPresets, setWhatsNewPresets] = useState<Preset[]>([]);
   const [whatsClosingPresets, setWhatsClosingPresets] = useState<Preset[]>([]);
@@ -101,7 +118,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
   const [selectedItemKey, setSelectedItemKey] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const pendingRef = useRef(false);
   const recognitionRef = useRef<any>(null);
 
   const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Vikram';
@@ -117,24 +133,16 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     if (isOpen) {
       setView('land');
       setInput('');
-      setMessages([]);
+      setUserQuery('');
+      setActiveResponseId(null);
       setSelectedItemKey(null);
-      reset();
-      pendingRef.current = false;
       rotatePresets();
     }
   }, [isOpen]);
 
   useEffect(() => {
-    if (response && pendingRef.current) {
-      pendingRef.current = false;
-      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', response }]);
-    }
-  }, [response]);
-
-  useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages, isLoading]);
+  }, [activeResponseId]);
 
   const handleTextareaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
@@ -143,30 +151,26 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     el.style.height = Math.min(el.scrollHeight, 96) + 'px';
   }, []);
 
-  const handleSend = useCallback(async (text?: string) => {
+  const handleSend = useCallback((text?: string) => {
     const q = (text || input).trim();
-    if (!q || isLoading) return;
+    if (!q) return;
     setInput('');
     if (textareaRef.current) { textareaRef.current.style.height = 'auto'; }
-    if (view === 'land') setView('chat');
+    setView('chat');
+    setUserQuery(q);
 
-    setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'user', content: q }]);
-    pendingRef.current = true;
-    await askQuestion({ query: q, language: 'en', input_method: 'keyboard', user_name: fullName });
-  }, [input, isLoading, view, fullName, askQuestion]);
+    // Find matching response
+    const responseId = PRESET_RESPONSE_MAP[q] || findBestMatch(q);
+    setActiveResponseId(responseId);
+  }, [input]);
 
   const handleNewChat = useCallback(() => {
     setView('land');
-    setMessages([]);
+    setUserQuery('');
+    setActiveResponseId(null);
     setInput('');
-    reset();
     rotatePresets();
-  }, [reset, rotatePresets]);
-
-  const handleFeedback = useCallback((msgId: string, logId: string | undefined, helpful: boolean) => {
-    if (logId) sendFeedback(logId, helpful);
-    setMessages(prev => prev.map(m => m.id === msgId ? { ...m, feedbackGiven: true } : m));
-  }, [sendFeedback]);
+  }, [rotatePresets]);
 
   // Voice
   const toggleListening = useCallback(() => {
@@ -186,6 +190,23 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     };
     r.start();
   }, [isListening]);
+
+  /* ── Render the active response component ── */
+  const renderResponse = () => {
+    const onItemClick = (key: string) => setSelectedItemKey(key);
+    switch (activeResponseId) {
+      case 'changed-yesterday': return <ChangedYesterdayResponse onItemClick={onItemClick} />;
+      case 'new-stories': return <NewStoriesResponse onItemClick={onItemClick} />;
+      case 'new-defects': return <NewDefectsResponse onItemClick={onItemClick} />;
+      case 'blocked-items': return <BlockedItemsResponse onItemClick={onItemClick} />;
+      case 'closed-this-week': return <ClosedThisWeekResponse onItemClick={onItemClick} />;
+      case 'reopened-items': return <ReopenedItemsResponse onItemClick={onItemClick} />;
+      case 'most-active-project': return <MostActiveProjectResponse onItemClick={onItemClick} />;
+      case 'team-workload': return <TeamWorkloadResponse />;
+      case 'person-work': return <PersonWorkResponse onItemClick={onItemClick} />;
+      default: return <ChangedYesterdayResponse onItemClick={onItemClick} />;
+    }
+  };
 
   /* ── Preset card renderer ── */
   const PresetCard = ({ p }: { p: Preset }) => {
@@ -232,7 +253,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     );
   };
 
-  /* ── Section label ── */
   const SectionLabel = ({ children }: { children: string }) => (
     <span style={{
       fontSize: 11, fontWeight: 700, color: '#475569',
@@ -240,7 +260,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     }}>{children}</span>
   );
 
-  /* ── Stat Tile (delta format) ── */
   const StatTile = ({ value, label, color, onClick }: { value: string; label: string; color: string; onClick?: () => void }) => (
     <button
       onClick={onClick}
@@ -265,7 +284,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
 
   return (
     <>
-      {/* Overlay */}
       {isOpen && (
         <div
           onClick={onClose}
@@ -278,7 +296,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         />
       )}
 
-      {/* Panel — 50vw */}
       <div
         className="knowledge-assist-panel"
         data-v={view}
@@ -296,32 +313,26 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           fontFamily: F.inter,
         }}
       >
-        {/* ── Header — simplified ── */}
+        {/* Header */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '14px 20px', borderBottom: '1px solid rgba(15,23,42,0.12)',
           flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* Blue dot with pulse */}
             <div style={{ position: 'relative', width: 8, height: 8 }}>
-              <span style={{
-                position: 'absolute', inset: 0, borderRadius: '50%', background: '#2563EB',
-              }} />
+              <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#2563EB' }} />
               <span style={{
                 position: 'absolute', inset: -3, borderRadius: '50%', border: '1.5px solid #2563EB',
                 animation: 'ka-ring-pulse 2s ease-out infinite', opacity: 0.5,
               }} />
             </div>
-            <span style={{
-              fontSize: 15, fontWeight: 700, color: '#0F172A',
-              letterSpacing: '-0.01em', fontFamily: F.sora,
-            }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.01em', fontFamily: F.sora }}>
               Knowledge Assist
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <button onClick={handleNewChat} title="Re-roll presets" aria-label="Refresh" className="ka-icon-btn"
+            <button onClick={handleNewChat} title="New chat" aria-label="Refresh" className="ka-icon-btn"
               style={{ width: 32, height: 32, borderRadius: 8, border: '1.5px solid rgba(15,23,42,0.08)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
@@ -338,12 +349,11 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           </div>
         </div>
 
-        {/* ── Scrollable body ── */}
+        {/* Scrollable body */}
         <div ref={scrollRef} className="ka-scroll-area" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           {/* ═══ LANDING STATE ═══ */}
           {view === 'land' && (
             <div style={{ padding: '28px 24px 16px' }}>
-              {/* 1. Greeting */}
               <h1 style={{
                 fontSize: 24, fontWeight: 700, color: '#0F172A',
                 letterSpacing: '-0.02em', margin: 0, fontFamily: F.sora,
@@ -354,7 +364,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 Your knowledge briefing is ready.
               </p>
 
-              {/* 2. This Week Pulse — 4 delta tiles */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginTop: 20 }}>
                 <StatTile value="+8 New" label="stories this week" color="#1D4ED8" onClick={() => handleSend('New stories created this sprint')} />
                 <StatTile value="3 Blocked" label="this week" color="#DC2626" onClick={() => handleSend('Items blocked this week')} />
@@ -362,7 +371,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 <StatTile value="12 Closed" label="this week" color="#16A34A" onClick={() => handleSend('Items closed this week')} />
               </div>
 
-              {/* 3. WHAT'S NEW */}
               <div style={{ marginTop: 28 }}>
                 <SectionLabel>WHAT'S NEW</SectionLabel>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
@@ -370,7 +378,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 </div>
               </div>
 
-              {/* 4. WHAT'S CLOSING */}
               <div style={{ marginTop: 24 }}>
                 <SectionLabel>WHAT'S CLOSING</SectionLabel>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
@@ -378,7 +385,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 </div>
               </div>
 
-              {/* 5. PROJECT SPOTLIGHT */}
               <div style={{ marginTop: 24 }}>
                 <SectionLabel>PROJECT SPOTLIGHT</SectionLabel>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
@@ -386,7 +392,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 </div>
               </div>
 
-              {/* 6. Source line */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '16px 0 0' }}>
                 <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#16A34A' }} />
                 <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: F.inter }}>
@@ -396,52 +401,32 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
             </div>
           )}
 
-          {/* ═══ CHAT STATE ═══ */}
+          {/* ═══ CHAT STATE — Hardcoded responses ═══ */}
           {view === 'chat' && (
             <div style={{ padding: '16px 24px', flex: 1 }}>
-              {messages.map(msg => {
-                if (msg.role === 'user') {
-                  return (
-                    <div key={msg.id} style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8, animation: 'ka-msg-in 200ms ease' }}>
-                      <div style={{
-                        maxWidth: '85%', padding: '10px 16px',
-                        borderRadius: '8px 8px 3px 8px', background: '#2563EB',
-                        color: '#FFFFFF', fontSize: 13, fontWeight: 500, lineHeight: 1.5,
-                        fontFamily: F.inter,
-                      }}>{msg.content}</div>
-                    </div>
-                  );
-                }
-                return (
-                  <div key={msg.id} style={{ marginBottom: 16, animation: 'ka-msg-in 200ms ease' }}>
-                    {msg.response ? (
-                      <KBResponseRenderer
-                        response={msg.response}
-                        language="en"
-                        feedbackGiven={msg.feedbackGiven}
-                        onFeedback={(helpful) => handleFeedback(msg.id, msg.logId, helpful)}
-                        onExtend={(query) => handleSend(query)}
-                        onItemClick={(key) => setSelectedItemKey(key)}
-                      />
-                    ) : null}
-                  </div>
-                );
-              })}
-              {isLoading && (
-                <div style={{ display: 'flex', gap: 5, padding: '12px 0' }}>
-                  {[0, 1, 2].map(i => (
-                    <span key={i} style={{
-                      width: 6, height: 6, borderRadius: '50%', background: '#2563EB',
-                      animation: 'ka-dot-bounce 1.2s infinite', animationDelay: `${i * 150}ms`,
-                    }} />
-                  ))}
+              {/* User message bubble */}
+              {userQuery && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16, animation: 'ka-msg-in 200ms ease' }}>
+                  <div style={{
+                    maxWidth: '85%', padding: '10px 16px',
+                    borderRadius: '8px 8px 3px 8px', background: '#2563EB',
+                    color: '#FFFFFF', fontSize: 13, fontWeight: 500, lineHeight: 1.5,
+                    fontFamily: F.inter,
+                  }}>{userQuery}</div>
+                </div>
+              )}
+
+              {/* Hardcoded response */}
+              {activeResponseId && (
+                <div style={{ animation: 'ka-msg-in 200ms ease' }}>
+                  {renderResponse()}
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* ── Input Area ── */}
+        {/* Input Area */}
         <div style={{ borderTop: '1px solid rgba(15,23,42,0.12)', padding: '16px 20px', flexShrink: 0, background: '#FFFFFF' }}>
           <div
             style={{
@@ -491,7 +476,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
             />
             <button
               onClick={() => handleSend()}
-              disabled={!input.trim() || isLoading}
+              disabled={!input.trim()}
               aria-label="Send message"
               className="ka-icon-btn"
               style={{
@@ -537,6 +522,25 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
       </div>
     </>
   );
+}
+
+/* ── Fuzzy matcher for free-text queries ── */
+function findBestMatch(query: string): string {
+  const q = query.toLowerCase();
+  if (/changed|yesterday|recent\s+changes|what.s\s+new/i.test(q)) return 'changed-yesterday';
+  if (/new\s+stor|created.*sprint|created.*week/i.test(q)) return 'new-stories';
+  if (/defect|bug|logged/i.test(q)) return 'new-defects';
+  if (/block/i.test(q)) return 'blocked-items';
+  if (/close|done|complet|resolv/i.test(q)) return 'closed-this-week';
+  if (/re.?open/i.test(q)) return 'reopened-items';
+  if (/active\s+project|most\s+active/i.test(q)) return 'most-active-project';
+  if (/team|workload|capacity/i.test(q)) return 'team-workload';
+  if (/wahid|nada|raza|yousif|sara|imran|vikram|working\s+on|assigned/i.test(q)) return 'person-work';
+  if (/epic/i.test(q)) return 'new-stories';
+  if (/deploy|production/i.test(q)) return 'closed-this-week';
+  if (/qa|review|handoff/i.test(q)) return 'closed-this-week';
+  if (/health|simp|senaei|mdt/i.test(q)) return 'most-active-project';
+  return 'changed-yesterday';
 }
 
 export default KnowledgeAssistPanel;
