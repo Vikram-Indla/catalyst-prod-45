@@ -179,8 +179,8 @@ const TABLE_CONFIGS: TableConfig[] = [
     urlField: "case_key",
     titleField: "title",
     bodyFields: ["description", "preconditions", "expected_result"],
-    tagFields: ["status", "module"],
-    selectFields: "id, case_key, title, description, preconditions, expected_result, status, module, created_at",
+    tagFields: ["status"],
+    selectFields: "id, case_key, title, description, preconditions, expected_result, status, created_at",
     maxRows: 500,
   },
   {
@@ -189,8 +189,8 @@ const TABLE_CONFIGS: TableConfig[] = [
     urlField: "id",
     titleField: "name",
     bodyFields: ["description"],
-    tagFields: ["status"],
-    selectFields: "id, name, description, status, created_at",
+    tagFields: [],
+    selectFields: "id, name, description, is_active, created_at",
     maxRows: 100,
   },
   {
