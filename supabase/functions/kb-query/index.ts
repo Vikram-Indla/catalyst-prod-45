@@ -154,9 +154,9 @@ async function tryLiveQuery(sb: any, query: string, lang: string, userName?: str
     if (items && items.length > 0) {
       const parts: string[] = [];
       parts.push(`**New Defects This Week** — ${items.length} logged\n`);
-      parts.push(`| KEY | TITLE | SEVERITY | PROJECT | REPORTED BY | LOGGED |`);
+      parts.push(`| KEY | TITLE | SEVERITY | STATUS | PROJECT | REPORTED BY | LOGGED |`);
       for (const i of items) {
-        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.priority || 'Normal'}* | ${i.project_name || i.project_key || 'N/A'} | ${i.reporter_display_name || 'Unknown'} | ${calcAge(i.jira_created_at)} ago |`);
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.priority || 'Normal'}* | *${i.status}* | ${i.project_name || i.project_key || 'N/A'} | ${i.reporter_display_name || 'Unknown'} | ${calcAge(i.jira_created_at)} ago |`);
       }
       parts.push(`\n*Showing ${items.length} items · Logged in last 2 weeks*`);
       return { found: true, answer: parts.join('\n'), confidence: 0.95, sources: ['ph_issues'] };
@@ -197,9 +197,9 @@ async function tryLiveQuery(sb: any, query: string, lang: string, userName?: str
     if (items && items.length > 0) {
       const parts: string[] = [];
       parts.push(`**Blocked This Week** — ${items.length} items\n`);
-      parts.push(`| KEY | TITLE | PRIORITY | PROJECT | ASSIGNEE | SINCE |`);
+      parts.push(`| KEY | TITLE | STATUS | PRIORITY | PROJECT | ASSIGNEE | SINCE |`);
       for (const i of items) {
-        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.priority || 'Normal'}* | ${i.project_name || i.project_key || 'N/A'} | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | *${i.priority || 'Normal'}* | ${i.project_name || i.project_key || 'N/A'} | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
       }
       parts.push(`\n*Showing ${items.length} items · Blocked in last 2 weeks*`);
       return { found: true, answer: parts.join('\n'), confidence: 0.95, sources: ['ph_issues'] };
@@ -218,9 +218,9 @@ async function tryLiveQuery(sb: any, query: string, lang: string, userName?: str
     if (items && items.length > 0) {
       const parts: string[] = [];
       parts.push(`**Re-opened This Week** — ${items.length} items\n`);
-      parts.push(`| KEY | TITLE | PRIORITY | PROJECT | ASSIGNEE | RE-OPENED |`);
+      parts.push(`| KEY | TITLE | STATUS | PRIORITY | PROJECT | ASSIGNEE | RE-OPENED |`);
       for (const i of items) {
-        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.priority || 'Normal'}* | ${i.project_name || i.project_key || 'N/A'} | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | *${i.priority || 'Normal'}* | ${i.project_name || i.project_key || 'N/A'} | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
       }
       parts.push(`\n*Showing ${items.length} items · Re-opened in last 2 weeks*`);
       return { found: true, answer: parts.join('\n'), confidence: 0.95, sources: ['ph_issues'] };

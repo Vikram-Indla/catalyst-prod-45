@@ -135,19 +135,34 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
   const [changelog, setChangelog] = useState<ChangelogEntry[]>([]);
 
   useEffect(() => {
-    async function fetch() {
+    async function fetchItem() {
       setLoading(true);
+      setItem(null);
       try {
-        const { data } = await (supabase as any)
+        const { data, error } = await (supabase as any)
           .from('ph_issues')
           .select('issue_key, summary, status, priority, issue_type, project_key, project_name, assignee_display_name, reporter_display_name, description, jira_created_at, jira_updated_at, labels, fix_versions, components, sprint_name, story_points, parent_key, parent_summary')
           .eq('issue_key', issueKey)
           .maybeSingle();
-        if (data) setItem(data);
+        if (error) {
+          console.error('KA detail fetch error:', error);
+        }
+        if (data) {
+          setItem(data);
+        } else {
+          // Fallback: try ilike match in case of whitespace issues
+          const { data: fallback } = await (supabase as any)
+            .from('ph_issues')
+            .select('issue_key, summary, status, priority, issue_type, project_key, project_name, assignee_display_name, reporter_display_name, description, jira_created_at, jira_updated_at, labels, fix_versions, components, sprint_name, story_points, parent_key, parent_summary')
+            .ilike('issue_key', issueKey.trim())
+            .maybeSingle();
+          if (fallback) setItem(fallback);
+          else console.warn('KA detail: item not found for key:', JSON.stringify(issueKey));
+        }
       } catch (e) { console.error('KA detail fetch error:', e); }
       finally { setLoading(false); }
     }
-    fetch();
+    fetchItem();
   }, [issueKey]);
 
   // Fetch changelog
