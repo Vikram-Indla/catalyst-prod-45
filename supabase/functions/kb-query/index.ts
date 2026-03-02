@@ -83,9 +83,101 @@ interface LiveResult {
   sources: string[];
 }
 
-async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveResult> {
+async function tryLiveQuery(sb: any, query: string, lang: string, userName?: string): Promise<LiveResult> {
   const qLower = query.toLowerCase();
   const qNorm = qLower.replace(/business requests?/g, 'initiative').replace(/\brequest(s)?\b/g, 'initiative$1');
+
+  // ── PRIORITY -1: "My items" / "My open items" / "My work" queries ──
+  // Detects self-referencing queries and resolves using the logged-in user's name
+  const myItemsPattern = /\b(my|mine)\b.*\b(items?|work|tasks?|tickets?|issues?|assignments?|stories|bugs?|open|pending|active|workload|backlog)\b/i;
+  const myItemsPattern2 = /\b(items?|work|tasks?|tickets?|issues?|stories|bugs?)\b.*\b(assigned to me|i have|i own|i'm working)\b/i;
+  const isMyItemsQuery = myItemsPattern.test(qLower) || myItemsPattern2.test(qLower);
+
+  if (isMyItemsQuery && userName) {
+    // Extract first name for matching
+    const userFirstName = userName.split(' ')[0];
+    const showAllIntent = /(?:show\s+all|full\s+list|all\s+items|every\s+item|complete\s+list|all\s+of)/i.test(qLower);
+    const fetchLimit = showAllIntent ? 100 : 20;
+    const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 3600000).toISOString();
+
+    // Search by full name first, then first name
+    const { data: issues } = await sb
+      .from('ph_issues')
+      .select('issue_key, summary, status, priority, issue_type, jira_updated_at, project_name, project_key, assignee_display_name, reporter_display_name')
+      .or(`assignee_display_name.ilike.%${userFirstName}%,reporter_display_name.ilike.%${userFirstName}%`)
+      .gte('jira_updated_at', twoWeeksAgo)
+      .order('jira_updated_at', { ascending: false })
+      .limit(fetchLimit);
+
+    if (issues && issues.length > 0) {
+      const isAssigned = (i: any) => (i.assignee_display_name || '').toLowerCase().includes(userFirstName.toLowerCase());
+      const isReported = (i: any) => (i.reporter_display_name || '').toLowerCase().includes(userFirstName.toLowerCase());
+      const active = issues.filter((i: any) => !['Done', 'Closed', 'Resolved'].includes(i.status));
+      const completed = issues.filter((i: any) => ['Done', 'Closed', 'Resolved'].includes(i.status));
+
+      const calcAge = (d: string): string => {
+        if (!d) return 'N/A';
+        const hours = Math.floor((Date.now() - new Date(d).getTime()) / 3600000);
+        if (hours < 1) return '<1h';
+        if (hours < 24) return `${hours}h`;
+        return `${Math.floor(hours / 24)}d`;
+      };
+
+      const parts: string[] = [];
+      parts.push(`**${userName}** — Your Work Items\n`);
+      parts.push(`Assigned: **${issues.filter(isAssigned).length}** · Reported: **${issues.filter(isReported).length}** · Active: **${active.length}** · Completed: **${completed.length}**`);
+
+      // Group by project
+      if (active.length > 0) {
+        const byProject: Record<string, any[]> = {};
+        for (const i of active) {
+          const proj = i.project_name || i.project_key || 'Unknown Project';
+          if (!byProject[proj]) byProject[proj] = [];
+          byProject[proj].push(i);
+        }
+
+        parts.push('\n---\n#### ACTIVE ITEMS');
+        const activeLimit = showAllIntent ? active.length : 5;
+        let shown = 0;
+        for (const [projName, projItems] of Object.entries(byProject)) {
+          parts.push(`\n**📁 ${projName}**`);
+          for (const i of projItems) {
+            if (shown >= activeLimit) break;
+            const age = calcAge(i.jira_updated_at);
+            const relation: string[] = [];
+            if (isAssigned(i)) relation.push('Assigned');
+            if (isReported(i)) relation.push('Reported');
+            parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ${i.priority || '-'} | ${relation.join('/')} | ⏱ ${age} |`);
+            shown++;
+          }
+          if (shown >= activeLimit) break;
+        }
+
+        if (!showAllIntent && active.length > 5) {
+          parts.push(`\n*Showing 5 of ${active.length} active items. Ask "Show all my items" for the full list.*`);
+        }
+      }
+
+      if (completed.length > 0) {
+        parts.push('\n---\n#### RECENTLY COMPLETED');
+        for (const i of completed.slice(0, 3)) {
+          parts.push(`| \`${i.issue_key}\` | ${i.summary} | ✅ ${i.status} | 📁 ${i.project_name || i.project_key || 'N/A'} |`);
+        }
+        if (completed.length > 3) parts.push(`\n*${completed.length - 3} more completed items.*`);
+      }
+
+      parts.push(`\n*Last 2 weeks · ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`);
+
+      return { found: true, answer: parts.join('\n'), confidence: 0.92, sources: ['ph_issues'] };
+    } else {
+      return {
+        found: true,
+        answer: `No assigned or reported items found for **${userName}** in the last 2 weeks.`,
+        confidence: 0.85,
+        sources: ['ph_issues'],
+      };
+    }
+  }
 
   // ── PRIORITY 0: Initiative date/detail queries ──
   // Detects: "dates of know your journey initiative", "know your journey timeline", etc.
@@ -380,7 +472,7 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
             const relation: string[] = [];
             if (isAssignedToPerson(i)) relation.push('Assigned');
             if (isReportedByPerson(i)) relation.push('Reported');
-            parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ${relation.join('/')} | ⏱ ${sitting} |`);
+            parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ${relation.join('/')} | 📁 ${i.project_name || i.project_key || 'N/A'} | ⏱ ${sitting} |`);
           }
 
           if (!showAllIntent && totalActive > 5) {
@@ -957,7 +1049,7 @@ serve(async (req) => {
     }
 
     // S1.5: Live data detection (people, tickets, status queries)
-    const live = await tryLiveQuery(sb, query, language);
+    const live = await tryLiveQuery(sb, query, language, user_name);
     if (live.found) {
       const ms = Math.round(performance.now() - t0);
       const resp = {
