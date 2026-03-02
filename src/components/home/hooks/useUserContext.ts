@@ -1,6 +1,6 @@
 /**
- * useUserContext — Fetches the current user's identity, role, projects, and team.
- * Adapts to ph_issues schema: assignee_display_name (text), not UUID.
+ * useUserContext — Fetches the current user's identity, BUSINESS role, projects, and team.
+ * NEVER shows "admin" or "authenticated" as the display role.
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +16,38 @@ export interface UserContext {
   teamMemberNames: string[];
 }
 
+/** Resolve business role — NEVER return 'admin' or 'authenticated' */
+async function fetchBusinessRole(userId: string, profileRole: string | null): Promise<string> {
+  // If profile has a real business role, use it
+  if (profileRole && profileRole !== 'admin' && profileRole !== 'authenticated' && profileRole !== 'user') {
+    return profileRole;
+  }
+
+  // Check user_roles table
+  const { data: userRole } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (userRole?.role && String(userRole.role) !== 'admin' && String(userRole.role) !== 'authenticated' && String(userRole.role) !== 'user') {
+    // Convert enum values to display labels
+    const roleLabels: Record<string, string> = {
+      program_manager: 'Program Manager',
+      delivery_manager: 'Delivery Manager',
+      team_lead: 'Team Lead',
+      product_owner: 'Product Owner',
+      developer: 'Developer',
+      qa_lead: 'QA Lead',
+      director: 'Director',
+      moderator: 'Team Lead',
+    };
+    return roleLabels[userRole.role] || userRole.role;
+  }
+
+  return 'Team Member';
+}
+
 export function useUserContext() {
   return useQuery({
     queryKey: ['user-context-personalized'],
@@ -23,7 +55,7 @@ export function useUserContext() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Get profile with role
+      // Get profile
       const { data: profile } = await supabase
         .from('profiles')
         .select('id, full_name, role, department_id, avatar_url')
@@ -32,7 +64,10 @@ export function useUserContext() {
 
       const displayName = profile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
 
-      // Derive project membership from involvement in ph_issues (by display name)
+      // Resolve business role
+      const role = await fetchBusinessRole(user.id, profile?.role || null);
+
+      // Derive project membership from ph_issues activity (last 14 days for sorting)
       const { data: projectData } = await supabase
         .from('ph_issues')
         .select('project_key, project_name')
@@ -55,7 +90,7 @@ export function useUserContext() {
           .select('project_key, project_name')
           .is('jira_removed_at', null)
           .limit(1000);
-        
+
         (allProjects || []).forEach(row => {
           if (row.project_key && row.project_name) {
             projectMap[row.project_key] = row.project_name;
@@ -64,7 +99,25 @@ export function useUserContext() {
         projectKeys = Object.keys(projectMap);
       }
 
-      // Get team members (same projects)
+      // Sort projects by recent activity (top 4 first, then rest)
+      // We'll use the count of items updated in last 14 days per project
+      const fourteenDaysAgo = new Date(Date.now() - 14 * 86400000).toISOString();
+      const { data: activityData } = await supabase
+        .from('ph_issues')
+        .select('project_key')
+        .in('project_key', projectKeys)
+        .is('jira_removed_at', null)
+        .gte('jira_updated_at', fourteenDaysAgo)
+        .limit(500);
+
+      const activityCount: Record<string, number> = {};
+      (activityData || []).forEach(row => {
+        activityCount[row.project_key] = (activityCount[row.project_key] || 0) + 1;
+      });
+
+      projectKeys.sort((a, b) => (activityCount[b] || 0) - (activityCount[a] || 0));
+
+      // Get team members
       let teamMemberNames: string[] = [];
       if (projectKeys.length > 0) {
         const { data: teamData } = await supabase
@@ -82,7 +135,7 @@ export function useUserContext() {
       return {
         userId: user.id,
         displayName,
-        role: profile?.role || 'Team Member',
+        role,
         department: '',
         avatar: (displayName || 'U')[0].toUpperCase(),
         projectKeys,
