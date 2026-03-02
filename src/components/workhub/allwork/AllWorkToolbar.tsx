@@ -1,16 +1,16 @@
 /**
- * AllWorkToolbar — Filters, search, avatar stack, view toggle
+ * AllWorkToolbar — Filters, search, avatar stack, view toggle (V12 compliant)
  */
 import { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, Check, X, LayoutGrid, Columns2, Loader2 } from 'lucide-react';
 import { useIssueTypes, useIssueStatuses } from '@/hooks/workhub/useWorkItems';
-import type { WorkItemFilterConfig } from '@/hooks/workhub/useWorkItems';
+import type { AllWorkFilters } from '@/pages/workhub/AllWork';
 
 type ViewMode = 'grid' | 'split';
 
 interface Props {
-  filters: Partial<WorkItemFilterConfig>;
-  onFilterChange: (f: Partial<WorkItemFilterConfig>) => void;
+  filters: AllWorkFilters;
+  onFilterChange: (f: AllWorkFilters) => void;
   onSearch: (q: string) => void;
   viewMode: ViewMode;
   onViewModeChange: (v: ViewMode) => void;
@@ -19,38 +19,43 @@ interface Props {
   uniqueAssignees: string[];
 }
 
-function FilterDropdown({ label, options, selected, onToggle }: {
+function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
   label: string;
   options: string[];
   selected: string[];
   onToggle: (v: string) => void;
+  isLoading?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    if (open) document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    if (!open) return;
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    const escHandler = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    document.addEventListener('keydown', escHandler);
+    return () => { document.removeEventListener('mousedown', handler); document.removeEventListener('keydown', escHandler); };
   }, [open]);
 
   return (
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 px-3 h-8 text-[13px] rounded-md border transition-colors hover:bg-[#f8f8f8]"
+        className="inline-flex items-center gap-1.5 px-3 h-8 text-[13px] rounded border transition-colors duration-[80ms] hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
         style={{
-          borderColor: selected.length > 0 ? '#1868db' : '#DFE1E6',
-          color: selected.length > 0 ? '#1868db' : '#44546f',
-          backgroundColor: selected.length > 0 ? '#e9f2fe' : '#fff',
+          borderColor: selected.length > 0 ? '#2563EB' : 'rgba(15,23,42,0.12)',
+          color: selected.length > 0 ? '#2563EB' : '#44546f',
+          backgroundColor: selected.length > 0 ? 'rgba(37,99,235,0.08)' : '#fff',
           fontWeight: selected.length > 0 ? 500 : 400,
+          fontFamily: 'Inter, sans-serif',
         }}
+        aria-haspopup="listbox"
+        aria-expanded={open}
       >
         {label}
         {selected.length > 0 && (
-          <span className="text-[11px] font-semibold px-1 rounded" style={{ backgroundColor: '#1868db', color: '#fff' }}>
+          <span className="text-[11px] font-semibold px-1.5 rounded" style={{ backgroundColor: '#2563EB', color: '#fff' }}>
             {selected.length}
           </span>
         )}
@@ -59,30 +64,39 @@ function FilterDropdown({ label, options, selected, onToggle }: {
 
       {open && (
         <div
-          className="absolute top-full left-0 mt-1 w-56 rounded-lg border bg-white shadow-lg z-50 py-1 max-h-64 overflow-y-auto"
-          style={{ borderColor: '#DFE1E6' }}
+          className="absolute top-full left-0 mt-1 w-56 rounded-lg border bg-white shadow-lg z-50 py-1 max-h-64 overflow-y-auto animate-scale-in"
+          style={{ borderColor: 'rgba(15,23,42,0.12)' }}
+          role="listbox"
         >
-          {options.map(opt => (
-            <button
-              key={opt}
-              onClick={() => onToggle(opt)}
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] hover:bg-[#f8f8f8] text-left"
-              style={{ color: '#1A1D23' }}
-            >
-              <span
-                className="w-4 h-4 rounded border flex items-center justify-center shrink-0"
-                style={{
-                  borderColor: selected.includes(opt) ? '#1868db' : '#DFE1E6',
-                  backgroundColor: selected.includes(opt) ? '#1868db' : '#fff',
-                }}
+          {isLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="w-4 h-4 animate-spin" style={{ color: '#71717A' }} />
+              <span className="ml-2 text-[12px]" style={{ color: '#71717A' }}>Loading...</span>
+            </div>
+          ) : options.length === 0 ? (
+            <div className="px-3 py-4 text-center text-[12px]" style={{ color: '#71717A' }}>No options</div>
+          ) : (
+            options.map(opt => (
+              <button
+                key={opt}
+                onClick={() => onToggle(opt)}
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] hover:bg-[rgba(15,23,42,0.04)] text-left transition-colors duration-[80ms]"
+                style={{ color: '#0F172A', fontFamily: 'Inter, sans-serif' }}
+                role="option"
+                aria-selected={selected.includes(opt)}
               >
-                {selected.includes(opt) && <Check className="w-3 h-3 text-white" />}
-              </span>
-              {opt}
-            </button>
-          ))}
-          {options.length === 0 && (
-            <div className="px-3 py-4 text-center text-[12px]" style={{ color: '#8c8f96' }}>No options</div>
+                <span
+                  className="w-4 h-4 rounded border flex items-center justify-center shrink-0"
+                  style={{
+                    borderColor: selected.includes(opt) ? '#2563EB' : 'rgba(15,23,42,0.12)',
+                    backgroundColor: selected.includes(opt) ? '#2563EB' : '#fff',
+                  }}
+                >
+                  {selected.includes(opt) && <Check className="w-3 h-3 text-white" />}
+                </span>
+                {opt}
+              </button>
+            ))
           )}
         </div>
       )}
@@ -90,17 +104,19 @@ function FilterDropdown({ label, options, selected, onToggle }: {
   );
 }
 
+const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1'];
+
 export function AllWorkToolbar({
   filters, onFilterChange, onSearch, viewMode, onViewModeChange,
   totalCount, isFetching, uniqueAssignees,
 }: Props) {
-  const [searchValue, setSearchValue] = useState(filters.search_query ?? '');
-  const { data: issueTypes } = useIssueTypes();
-  const { data: statuses } = useIssueStatuses();
+  const [searchValue, setSearchValue] = useState(filters.search ?? '');
+  const { data: issueTypes, isLoading: typesLoading } = useIssueTypes();
+  const { data: statuses, isLoading: statusesLoading } = useIssueStatuses();
 
   const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
 
-  const toggleFilter = (key: keyof WorkItemFilterConfig, value: string) => {
+  const toggleFilter = (key: 'types' | 'statuses' | 'priorities', value: string) => {
     const current = (filters[key] as string[] | undefined) ?? [];
     const next = current.includes(value)
       ? current.filter(v => v !== value)
@@ -110,23 +126,21 @@ export function AllWorkToolbar({
 
   const hasFilters = !!(filters.types?.length || filters.statuses?.length || filters.priorities?.length);
 
-  // Avatar colors
-  const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1'];
-
   return (
-    <div className="px-8 py-3 flex items-center gap-3 flex-wrap" style={{ borderBottom: '1px solid #E2E8F0' }}>
-      {/* Filter buttons */}
+    <div className="px-8 py-3 flex items-center gap-3 flex-wrap" style={{ borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
       <FilterDropdown
         label="Type"
         options={issueTypes ?? []}
         selected={filters.types ?? []}
         onToggle={(v) => toggleFilter('types', v)}
+        isLoading={typesLoading}
       />
       <FilterDropdown
         label="Status"
         options={statuses ?? []}
         selected={filters.statuses ?? []}
         onToggle={(v) => toggleFilter('statuses', v)}
+        isLoading={statusesLoading}
       />
       <FilterDropdown
         label="Priority"
@@ -138,8 +152,9 @@ export function AllWorkToolbar({
       {hasFilters && (
         <button
           onClick={() => onFilterChange({})}
-          className="inline-flex items-center gap-1 px-2 h-8 text-[12px] rounded-md hover:bg-[#fef2f2] transition-colors"
+          className="inline-flex items-center gap-1 px-2 h-8 text-[12px] rounded hover:bg-[rgba(220,38,38,0.06)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
           style={{ color: '#dc2626' }}
+          aria-label="Clear all filters"
         >
           <X className="w-3.5 h-3.5" />
           Clear
@@ -148,86 +163,82 @@ export function AllWorkToolbar({
 
       {/* Search */}
       <div
-        className="flex items-center gap-2 h-8 px-2.5 rounded-md border bg-white"
-        style={{ minWidth: 140, borderColor: '#DFE1E6' }}
+        className="flex items-center gap-2 h-8 px-2.5 rounded border bg-white focus-within:border-[#2563EB] transition-colors duration-[80ms]"
+        style={{ minWidth: 140, borderColor: 'rgba(15,23,42,0.12)' }}
       >
-        <Search className="w-3.5 h-3.5 shrink-0" style={{ color: '#8c8f96' }} />
+        <Search className="w-3.5 h-3.5 shrink-0" style={{ color: '#71717A' }} />
         <input
           id="aw-search-input"
           type="text"
           value={searchValue}
           onChange={(e) => { setSearchValue(e.target.value); onSearch(e.target.value); }}
           placeholder="Search"
-          className="text-[13px] border-none outline-none bg-transparent w-full"
-          style={{ color: '#1A1D23', appearance: 'none' }}
+          className="text-[13px] border-none outline-none shadow-none bg-transparent w-full"
+          style={{ color: '#0F172A', fontFamily: 'Inter, sans-serif' }}
+          aria-label="Search work items"
         />
       </div>
 
       {/* Avatar stack */}
-      <div className="flex items-center ml-1" style={{ marginRight: -4 }}>
-        {uniqueAssignees.slice(0, 5).map((name, i) => (
-          <div
-            key={name}
-            className="flex items-center justify-center rounded-full text-[10px] font-bold text-white"
-            style={{
-              width: 28, height: 28,
-              backgroundColor: AVATAR_COLORS[i % AVATAR_COLORS.length],
-              border: '2px solid #fff',
-              marginLeft: i === 0 ? 0 : -4,
-              zIndex: 5 - i,
-            }}
-            title={name}
-          >
-            {name.charAt(0).toUpperCase()}
-          </div>
-        ))}
-      </div>
+      {uniqueAssignees.length > 0 && (
+        <div className="flex items-center ml-1" style={{ marginRight: -4 }} aria-label="Team members">
+          {uniqueAssignees.slice(0, 5).map((name, i) => (
+            <div
+              key={name}
+              className="flex items-center justify-center rounded-full text-[10px] font-bold text-white"
+              style={{
+                width: 28, height: 28,
+                backgroundColor: AVATAR_COLORS[i % AVATAR_COLORS.length],
+                border: '2px solid #fff',
+                marginLeft: i === 0 ? 0 : -4,
+                zIndex: 5 - i,
+              }}
+              title={name}
+              aria-label={name}
+            >
+              {name.charAt(0).toUpperCase()}
+            </div>
+          ))}
+        </div>
+      )}
 
-      {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Fetching indicator */}
       {isFetching && (
-        <span className="inline-flex items-center gap-1 text-[11px]" style={{ color: '#8c8f96' }}>
+        <span className="inline-flex items-center gap-1 text-[11px]" style={{ color: '#71717A' }} aria-label="Loading">
           <Loader2 className="w-3 h-3 animate-spin" />
         </span>
       )}
 
-      {/* Count */}
-      <span className="text-[12px]" style={{ color: '#6b6e76' }}>{totalCount.toLocaleString()} items</span>
+      <span className="text-[12px]" style={{ color: '#6b6e76', fontFamily: "'JetBrains Mono', monospace" }}>
+        {totalCount.toLocaleString()} items
+      </span>
 
       {/* View toggle */}
-      <div
-        className="inline-flex rounded-md border overflow-hidden"
-        style={{ borderColor: '#DFE1E6' }}
-      >
-        <button
-          onClick={() => onViewModeChange('grid')}
-          className="flex items-center gap-1.5 px-3 h-8 text-[12px] transition-colors"
-          style={{
-            backgroundColor: viewMode === 'grid' ? '#e9f2fe' : '#fff',
-            color: viewMode === 'grid' ? '#1868db' : '#6b6e76',
-            fontWeight: viewMode === 'grid' ? 500 : 400,
-            boxShadow: viewMode === 'grid' ? 'inset 0 1px 2px rgba(0,0,0,0.06)' : 'none',
-          }}
-        >
-          <LayoutGrid className="w-3.5 h-3.5" />
-          Grid
-        </button>
-        <button
-          onClick={() => onViewModeChange('split')}
-          className="flex items-center gap-1.5 px-3 h-8 text-[12px] transition-colors"
-          style={{
-            backgroundColor: viewMode === 'split' ? '#e9f2fe' : '#fff',
-            color: viewMode === 'split' ? '#1868db' : '#6b6e76',
-            fontWeight: viewMode === 'split' ? 500 : 400,
-            borderLeft: '1px solid #DFE1E6',
-            boxShadow: viewMode === 'split' ? 'inset 0 1px 2px rgba(0,0,0,0.06)' : 'none',
-          }}
-        >
-          <Columns2 className="w-3.5 h-3.5" />
-          Split
-        </button>
+      <div className="inline-flex rounded border overflow-hidden" style={{ borderColor: 'rgba(15,23,42,0.12)' }} role="radiogroup" aria-label="View mode">
+        {([
+          { key: 'grid' as const, icon: LayoutGrid, label: 'Grid' },
+          { key: 'split' as const, icon: Columns2, label: 'Split' },
+        ]).map(({ key, icon: Icon, label }) => (
+          <button
+            key={key}
+            onClick={() => onViewModeChange(key)}
+            className="flex items-center gap-1.5 px-3 h-8 text-[12px] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+            style={{
+              backgroundColor: viewMode === key ? 'rgba(37,99,235,0.08)' : '#fff',
+              color: viewMode === key ? '#2563EB' : '#6b6e76',
+              fontWeight: viewMode === key ? 500 : 400,
+              borderLeft: key === 'split' ? '1px solid rgba(15,23,42,0.12)' : 'none',
+              boxShadow: viewMode === key ? 'inset 0 1px 2px rgba(0,0,0,0.06)' : 'none',
+              fontFamily: 'Inter, sans-serif',
+            }}
+            role="radio"
+            aria-checked={viewMode === key}
+          >
+            <Icon className="w-3.5 h-3.5" />
+            {label}
+          </button>
+        ))}
       </div>
     </div>
   );

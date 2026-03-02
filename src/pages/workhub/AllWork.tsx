@@ -1,8 +1,8 @@
 /**
- * WorkHub "All Work" — Stage D: Fully wired to Supabase
- * ZERO hardcoded data. All reads/writes via workhubService → wh_ tables (with ph_issues fallback).
+ * WorkHub "All Work" — Stage E: QA & Polish (GOD-TIER)
+ * Full Supabase wiring, design-system compliant, all edge cases handled.
  */
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, memo } from 'react';
 import { useAllWorkItems } from '@/hooks/workhub/useAllWork';
 import { AllWorkHeader } from '@/components/workhub/allwork/AllWorkHeader';
 import { AllWorkToolbar } from '@/components/workhub/allwork/AllWorkToolbar';
@@ -20,7 +20,7 @@ type TabKey = 'all-work' | 'board' | 'timeline' | 'calendar' | 'backlog' | 'repo
 
 const DEFAULT_PAGE_SIZE = 25;
 
-interface Filters {
+export interface AllWorkFilters {
   types?: string[];
   statuses?: string[];
   priorities?: string[];
@@ -30,7 +30,7 @@ interface Filters {
 export default function AllWork() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [activeTab, setActiveTab] = useState<TabKey>('all-work');
-  const [filters, setFilters] = useState<Filters>({});
+  const [filters, setFilters] = useState<AllWorkFilters>({});
   const [pagination, setPagination] = useState({ page: 0, pageSize: DEFAULT_PAGE_SIZE });
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedItemKey, setSelectedItemKey] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export default function AllWork() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
   const { data, isLoading, error, refetch, isFetching } = useAllWorkItems(
-    undefined, // projectId
+    undefined,
     filters,
     pagination,
     { field: sortField, dir: sortDir },
@@ -52,10 +52,10 @@ export default function AllWork() {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
-        const el = document.getElementById('aw-search-input');
-        if (el && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        const active = document.activeElement;
+        if (active?.tagName !== 'INPUT' && active?.tagName !== 'TEXTAREA') {
           e.preventDefault();
-          el.focus();
+          document.getElementById('aw-search-input')?.focus();
         }
       }
       if (e.key === 'Escape') {
@@ -66,7 +66,7 @@ export default function AllWork() {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  const handleFilterChange = useCallback((newFilters: Filters) => {
+  const handleFilterChange = useCallback((newFilters: AllWorkFilters) => {
     setFilters(newFilters);
     setPagination(prev => ({ ...prev, page: 0 }));
     setSelectedIds(new Set());
@@ -89,11 +89,11 @@ export default function AllWork() {
     if (selectedIds.size === 0) return 'none';
     if (selectedIds.size === items.length) return 'all';
     return 'some';
-  }, [items, selectedIds]);
+  }, [items.length, selectedIds.size]);
 
   const handleSelectAll = useCallback(() => {
     if (selectAllState === 'all') setSelectedIds(new Set());
-    else setSelectedIds(new Set(items.map((i: any) => i.item_key || i.issue_key)));
+    else setSelectedIds(new Set(items.map(i => i.issue_key)));
   }, [items, selectAllState]);
 
   const goToPage = useCallback((page: number) => {
@@ -108,12 +108,11 @@ export default function AllWork() {
 
   const uniqueAssignees = useMemo(() => {
     const names = new Set<string>();
-    items.forEach((i: any) => {
-      const name = i.assignee_name || i.assignee_display_name;
-      if (name) names.add(name);
-    });
+    items.forEach(i => { if (i.assignee_display_name) names.add(i.assignee_display_name); });
     return Array.from(names).slice(0, 5);
   }, [items]);
+
+  const hasActiveFilters = !!(filters.types?.length || filters.statuses?.length || filters.priorities?.length);
 
   return (
     <div className="flex flex-col h-full overflow-hidden" style={{ fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
@@ -136,26 +135,14 @@ export default function AllWork() {
 
       <div className="flex-1 min-h-0 px-8 pb-4">
         {isLoading ? (
-          <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'rgba(11,18,14,0.14)' }}>
-            <div className="flex items-center gap-4 px-4" style={{ height: 40, backgroundColor: '#f8fafc', borderBottom: '0.56px solid rgba(11,18,14,0.14)' }}>
-              {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-3 rounded" style={{ width: `${40 + i * 12}px` }} />)}
-            </div>
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-4 px-4" style={{ height: 40, borderBottom: '0.56px solid rgba(11,18,14,0.08)' }}>
-                <Skeleton className="h-4 w-4 rounded" />
-                <Skeleton className="h-3.5 w-20 rounded" />
-                <Skeleton className="h-3.5 rounded flex-1" />
-                <Skeleton className="h-5 w-16 rounded" />
-                <Skeleton className="h-5 w-14 rounded" />
-                <Skeleton className="h-4 w-4 rounded-full" />
-              </div>
-            ))}
-          </div>
+          <TableSkeleton />
         ) : error ? (
           <AllWorkEmptyState type="error" message={(error as Error).message} onRetry={() => refetch()} />
         ) : items.length === 0 ? (
           filters.search ? (
             <AllWorkEmptyState type="no-results" query={filters.search} onClear={() => handleFilterChange({})} />
+          ) : hasActiveFilters ? (
+            <AllWorkEmptyState type="no-filters" onClear={() => handleFilterChange({})} />
           ) : (
             <AllWorkEmptyState type="no-items" onAction={() => setShowCreateModal(true)} />
           )
@@ -213,3 +200,36 @@ export default function AllWork() {
     </div>
   );
 }
+
+/** 12-row skeleton matching 44px row height */
+const TableSkeleton = memo(function TableSkeleton() {
+  return (
+    <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'rgba(15,23,42,0.12)' }}>
+      <div
+        className="flex items-center gap-4 px-4"
+        style={{ height: 44, backgroundColor: '#f8fafc', borderBottom: '1px solid rgba(15,23,42,0.08)' }}
+      >
+        {Array.from({ length: 8 }).map((_, i) => (
+          <Skeleton key={i} className="h-3 rounded" style={{ width: `${40 + i * 14}px` }} />
+        ))}
+      </div>
+      {Array.from({ length: 12 }).map((_, i) => (
+        <div
+          key={i}
+          className="flex items-center gap-4 px-4"
+          style={{ height: 44, borderBottom: '1px solid rgba(15,23,42,0.06)' }}
+        >
+          <Skeleton className="h-4 w-4 rounded" />
+          <Skeleton className="h-3.5 w-20 rounded" />
+          <Skeleton className="h-3.5 rounded flex-1" />
+          <Skeleton className="h-5 w-16 rounded-sm" />
+          <Skeleton className="h-3.5 w-20 rounded" />
+          <Skeleton className="h-5 w-14 rounded-sm" />
+          <Skeleton className="h-3 w-10 rounded" />
+          <Skeleton className="h-3 w-16 rounded" />
+          <Skeleton className="h-5 w-5 rounded-full" />
+        </div>
+      ))}
+    </div>
+  );
+});

@@ -1,7 +1,8 @@
 /**
- * AllWorkPagination — Showing X-Y of Z + pages + per page
+ * AllWorkPagination — Showing X-Y of Z + pages + per page (no native select)
  */
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, ChevronDown, Check } from 'lucide-react';
 
 interface Props {
   currentPage: number;
@@ -17,15 +18,24 @@ const PAGE_SIZES = [25, 50, 100];
 export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSize, onPageChange, onPageSizeChange }: Props) {
   const start = currentPage * pageSize + 1;
   const end = Math.min((currentPage + 1) * pageSize, totalCount);
+  const [sizeOpen, setSizeOpen] = useState(false);
+  const sizeRef = useRef<HTMLDivElement>(null);
 
-  // Page numbers to show
+  useEffect(() => {
+    if (!sizeOpen) return;
+    const handler = (e: MouseEvent) => { if (sizeRef.current && !sizeRef.current.contains(e.target as Node)) setSizeOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [sizeOpen]);
+
+  // Page numbers
   const pages: number[] = [];
   const maxVisible = 7;
   if (totalPages <= maxVisible) {
     for (let i = 0; i < totalPages; i++) pages.push(i);
   } else if (currentPage < 3) {
     for (let i = 0; i < 5; i++) pages.push(i);
-    pages.push(-1); // ellipsis
+    pages.push(-1);
     pages.push(totalPages - 1);
   } else if (currentPage > totalPages - 4) {
     pages.push(0);
@@ -42,37 +52,40 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
   return (
     <div
       className="flex items-center justify-between px-8 py-2.5"
-      style={{ borderTop: '1px solid #E2E8F0', backgroundColor: '#fff' }}
+      style={{ borderTop: '1px solid rgba(15,23,42,0.08)', backgroundColor: '#fff' }}
     >
       {/* Left: count */}
-      <span className="text-[12px]" style={{ color: '#6b6e76' }}>
-        Showing <b style={{ color: '#1A1D23' }}>{start}–{end}</b> of <b style={{ color: '#1A1D23' }}>{totalCount.toLocaleString()}</b>
+      <span className="text-[12px]" style={{ color: '#6b6e76', fontFamily: 'Inter, sans-serif' }}>
+        Showing <b style={{ color: '#0F172A' }}>{start}–{end}</b> of <b style={{ color: '#0F172A' }}>{totalCount.toLocaleString()}</b>
       </span>
 
       {/* Center: pages */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1" role="navigation" aria-label="Pagination">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 0}
-          className="p-1.5 rounded-md border disabled:opacity-30 hover:bg-[#f8f8f8] transition-colors"
-          style={{ borderColor: '#DFE1E6' }}
+          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          style={{ borderColor: 'rgba(15,23,42,0.12)' }}
+          aria-label="Previous page"
         >
           <ChevronLeft className="w-3.5 h-3.5" style={{ color: '#6b6e76' }} />
         </button>
 
         {pages.map((p, i) => {
           if (p < 0) {
-            return <span key={`e${i}`} className="text-[12px] px-1" style={{ color: '#8c8f96' }}>…</span>;
+            return <span key={`e${i}`} className="text-[12px] px-1" style={{ color: '#71717A' }}>…</span>;
           }
           return (
             <button
               key={p}
               onClick={() => onPageChange(p)}
-              className="w-8 h-8 rounded-md text-[12px] font-medium transition-colors"
+              className="w-8 h-8 rounded text-[12px] font-medium transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB] focus-visible:outline-offset-2"
               style={{
-                backgroundColor: p === currentPage ? '#1868db' : 'transparent',
+                backgroundColor: p === currentPage ? '#2563EB' : 'transparent',
                 color: p === currentPage ? '#fff' : '#6b6e76',
               }}
+              aria-label={`Page ${p + 1}`}
+              aria-current={p === currentPage ? 'page' : undefined}
             >
               {p + 1}
             </button>
@@ -82,26 +95,48 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages - 1}
-          className="p-1.5 rounded-md border disabled:opacity-30 hover:bg-[#f8f8f8] transition-colors"
-          style={{ borderColor: '#DFE1E6' }}
+          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          style={{ borderColor: 'rgba(15,23,42,0.12)' }}
+          aria-label="Next page"
         >
           <ChevronRight className="w-3.5 h-3.5" style={{ color: '#6b6e76' }} />
         </button>
       </div>
 
-      {/* Right: per page */}
-      <div className="flex items-center gap-2">
+      {/* Right: per page (custom dropdown, NO native select) */}
+      <div className="relative flex items-center gap-2" ref={sizeRef}>
         <span className="text-[12px]" style={{ color: '#6b6e76' }}>Per page:</span>
-        <select
-          value={pageSize}
-          onChange={(e) => onPageSizeChange(Number(e.target.value))}
-          className="text-[12px] rounded-md border px-2 py-1 bg-white cursor-pointer"
-          style={{ borderColor: '#DFE1E6', color: '#1A1D23', appearance: 'auto' }}
+        <button
+          onClick={() => setSizeOpen(!sizeOpen)}
+          className="inline-flex items-center gap-1 px-2.5 h-8 text-[12px] rounded border hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          style={{ borderColor: 'rgba(15,23,42,0.12)', color: '#0F172A', fontFamily: "'JetBrains Mono', monospace" }}
+          aria-haspopup="listbox"
+          aria-expanded={sizeOpen}
         >
-          {PAGE_SIZES.map(s => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
+          {pageSize}
+          <ChevronDown className="w-3 h-3" style={{ color: '#6b6e76' }} />
+        </button>
+        {sizeOpen && (
+          <div
+            className="absolute bottom-full right-0 mb-1 w-24 rounded border bg-white shadow-lg z-50 py-1"
+            style={{ borderColor: 'rgba(15,23,42,0.12)' }}
+            role="listbox"
+          >
+            {PAGE_SIZES.map(s => (
+              <button
+                key={s}
+                onClick={() => { onPageSizeChange(s); setSizeOpen(false); }}
+                className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms]"
+                style={{ color: '#0F172A', fontFamily: "'JetBrains Mono', monospace" }}
+                role="option"
+                aria-selected={s === pageSize}
+              >
+                {s}
+                {s === pageSize && <Check className="w-3 h-3" style={{ color: '#2563EB' }} />}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
