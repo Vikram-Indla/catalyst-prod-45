@@ -155,7 +155,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           padding: '14px 20px', borderBottom: '1px solid #ECEEF2',
           flexShrink: 0, background: '#FFFFFF',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {view === 'chat' && (
               <button onClick={() => { setView('land'); setChatMessages([]); }} className="ka-icon-btn"
                 style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #ECEEF2', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -163,24 +163,32 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 <span style={{ fontSize: 14, color: '#5E6270' }}>←</span>
               </button>
             )}
-            <div style={{ position: 'relative', width: 8, height: 8 }}>
-              <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#52C41A' }} />
-              <span style={{
-                position: 'absolute', inset: -3, borderRadius: '50%', border: '1.5px solid #52C41A',
-                animation: 'ka-ring-pulse 2s ease-out infinite', opacity: 0.5,
-              }} />
+            {/* CATY AI icon — blue circle with node pattern */}
+            <div style={{
+              width: 40, height: 40, borderRadius: 12, background: '#2563EB',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}>
+              <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="12" fill="white" />
+                <circle cx="22" cy="22" r="7" fill="white" opacity="0.7" />
+                <circle cx="78" cy="22" r="7" fill="white" opacity="0.7" />
+                <circle cx="22" cy="78" r="7" fill="white" opacity="0.7" />
+                <circle cx="78" cy="78" r="7" fill="white" opacity="0.7" />
+                <line x1="50" y1="50" x2="22" y2="22" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round" />
+                <line x1="50" y1="50" x2="78" y2="22" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round" />
+                <line x1="50" y1="50" x2="22" y2="78" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round" />
+                <line x1="50" y1="50" x2="78" y2="78" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round" />
+              </svg>
             </div>
-            <span style={{ fontSize: 15, fontWeight: 700, color: '#1A1D23', letterSpacing: '-0.01em', fontFamily: F.sora }}>
-              Knowledge Assist
-            </span>
-            {userCtx && (
-              <span style={{
-                fontSize: 11, fontWeight: 500, color: '#8B8FA3', fontFamily: F.inter,
-                padding: '2px 8px', borderRadius: 4, background: '#F7F8FA',
-              }}>
-                {userCtx.role}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <span style={{ fontSize: 15, fontWeight: 700, color: '#1A1D23', letterSpacing: '-0.01em', fontFamily: F.sora }}>
+                Knowledge Assist
               </span>
-            )}
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#8B8FA3', fontFamily: F.inter }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#52C41A', flexShrink: 0 }} />
+                {userCtx ? `${userCtx.role} · Live` : 'Connecting...'}
+              </span>
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <button onClick={handleRefresh} title="Refresh data" aria-label="Refresh" className="ka-icon-btn"
