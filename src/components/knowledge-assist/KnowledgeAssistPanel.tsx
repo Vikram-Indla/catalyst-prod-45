@@ -243,6 +243,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
 
       {/* Panel — 40vw */}
       <div
+        className="knowledge-assist-panel"
         data-v={view}
         role="complementary"
         aria-label="Knowledge Assist"
@@ -450,7 +451,9 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               style={{
                 flex: 1, border: 'none', outline: 'none', background: 'transparent',
                 fontSize: 14, color: '#0F172A', fontFamily: "'Inter', sans-serif",
-                resize: 'none', minHeight: 28, lineHeight: 1.5,
+                resize: 'none', minHeight: 32, lineHeight: 1.5,
+                padding: '4px 0', boxShadow: 'none', appearance: 'none' as any,
+                WebkitAppearance: 'none' as any,
               }}
             />
             <button

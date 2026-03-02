@@ -5358,3 +5358,24 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 1px 3px rgba(0,0,0,0.15);
   cursor: pointer;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   Knowledge Assist — Clean Input Override
+   Single-surface: only the wrapper has border/bg. Textarea is invisible.
+   ════════════════════════════════════════════════════════════════ */
+.knowledge-assist-panel textarea {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  padding: 4px 0 !important;
+}
+.knowledge-assist-panel textarea:focus,
+.knowledge-assist-panel textarea:focus-visible {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
