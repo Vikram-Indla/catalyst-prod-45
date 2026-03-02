@@ -1,12 +1,15 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
-  X, Plus, Sparkles, Mic, Send, ClipboardList, AlertTriangle,
-  Clock, User, Users
+  X, Plus, Mic, Send,
+  ClipboardList, AlertTriangle, Clock, User, Users,
+  RotateCcw, FileSearch, CalendarDays, TrendingUp, ArrowRightLeft,
 } from 'lucide-react';
 import { useKBQuery } from '@/hooks/useKnowledgeBase';
 import { useAuth } from '@/hooks/useAuth';
 import { KBResponseRenderer } from '@/components/kb/KBResponseRenderer';
+import { matchMockResponse } from './KAChatResponses';
 import type { KBQueryResponse } from '@/services/knowledgeBase';
+import type { LucideIcon } from 'lucide-react';
 
 /* ── Types ── */
 interface ChatMessage {
@@ -14,6 +17,7 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content?: string;
   response?: KBQueryResponse;
+  mockNode?: React.ReactNode;
   logId?: string;
   feedbackGiven?: boolean;
 }
@@ -29,32 +33,41 @@ function getGreeting(): string {
 }
 function firstName(name: string) { return name.split(' ')[0] || name; }
 
-/* ── Presets ── */
-const YOUR_WORK = [
-  {
-    icon: ClipboardList, iconBg: 'rgba(37,99,235,0.10)', iconColor: '#2563EB',
-    main: "What are Vikram's open items?", hint: '12 active across 3 projects', ai: false,
-  },
-  {
-    icon: AlertTriangle, iconBg: 'rgba(220,38,38,0.10)', iconColor: '#DC2626',
-    main: 'What items are blocked?', hint: '10 blocked — 7 accessibility', ai: true,
-  },
-  {
-    icon: Clock, iconBg: 'rgba(13,148,136,0.10)', iconColor: '#0F766E',
-    main: 'SLA breach predictions', hint: 'AI analysis of at-risk items', ai: true,
-  },
+/* ── Preset Pool ── */
+interface Preset {
+  icon: LucideIcon;
+  iconBg: string;
+  iconColor: string;
+  main: string;
+  hint: string;
+}
+
+const WORK_POOL: Preset[] = [
+  { icon: ClipboardList, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: "What are Vikram's open items?", hint: '12 active across 3 projects' },
+  { icon: AlertTriangle, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'What items are blocked?', hint: '10 blocked — 7 accessibility' },
+  { icon: RotateCcw, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'Show re-opened items this week', hint: '5 items need attention' },
+  { icon: FileSearch, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'What did I report this sprint?', hint: 'Items reported by Vikram' },
+  { icon: Clock, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'Show deferred items', hint: 'Items pushed to next sprint' },
+  { icon: CalendarDays, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'What changed since yesterday?', hint: 'Recent updates across projects' },
 ];
 
-const YOUR_TEAM = [
-  {
-    icon: User, iconBg: 'rgba(217,119,6,0.10)', iconColor: '#B45309',
-    main: 'What is Wahid working on?', hint: 'Mobile Developer · 100%', ai: false,
-  },
-  {
-    icon: Users, iconBg: 'rgba(124,58,237,0.10)', iconColor: '#7C3AED',
-    main: 'Team capacity & workload', hint: 'Resource balancing analysis', ai: true,
-  },
+const TEAM_POOL: Preset[] = [
+  { icon: User, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'What is Wahid working on?', hint: 'Mobile Developer · 20 items' },
+  { icon: User, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'What is Nada working on?', hint: 'QA · 15 items, 7 blocked' },
+  { icon: User, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'What is Raza working on?', hint: 'Backend · 8 items' },
+  { icon: User, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'What is Yousif working on?', hint: 'Backend · 8 items' },
+  { icon: Users, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'Team capacity & workload', hint: 'Resource balancing overview' },
+  { icon: ArrowRightLeft, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'Who has bandwidth this week?', hint: 'Available team members' },
 ];
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 /* ══════════════════════════════════════════════════════════════════ */
 
@@ -66,14 +79,20 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isListening, setIsListening] = useState(false);
+  const [workPresets, setWorkPresets] = useState<Preset[]>([]);
+  const [teamPresets, setTeamPresets] = useState<Preset[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const pendingRef = useRef(false);
   const recognitionRef = useRef<any>(null);
-  
 
   const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Vikram';
   const name = firstName(fullName);
+
+  const rotatePresets = useCallback(() => {
+    setWorkPresets(shuffle(WORK_POOL).slice(0, 3));
+    setTeamPresets(shuffle(TEAM_POOL).slice(0, 2));
+  }, []);
 
   // Reset panel state every time it opens
   useEffect(() => {
@@ -83,9 +102,9 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
       setMessages([]);
       reset();
       pendingRef.current = false;
+      rotatePresets();
     }
   }, [isOpen]);
-
 
   // Handle response
   useEffect(() => {
@@ -99,14 +118,33 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isLoading]);
 
+  // Auto-grow textarea
+  const handleTextareaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+    const el = e.target;
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 96) + 'px'; // max ~4 lines
+  }, []);
+
   const handleSend = useCallback(async (text?: string) => {
     const q = (text || input).trim();
     if (!q || isLoading) return;
     setInput('');
+    if (textareaRef.current) { textareaRef.current.style.height = 'auto'; }
     if (view === 'land') setView('chat');
-    setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'user', content: q }]);
 
-    // All questions go through the real kb-query RAG pipeline — no mock interception
+    // Check for mock response first
+    const mock = matchMockResponse(q);
+    if (mock) {
+      setMessages(prev => [
+        ...prev,
+        { id: crypto.randomUUID(), role: 'user', content: q },
+        { id: crypto.randomUUID(), role: 'assistant', mockNode: mock },
+      ]);
+      return;
+    }
+
+    setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'user', content: q }]);
     pendingRef.current = true;
     await askQuestion({ query: q, language: 'en', input_method: 'keyboard', user_name: fullName });
   }, [input, isLoading, view, fullName, askQuestion]);
@@ -116,7 +154,8 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     setMessages([]);
     setInput('');
     reset();
-  }, [reset]);
+    rotatePresets();
+  }, [reset, rotatePresets]);
 
   const handleFeedback = useCallback((msgId: string, logId: string | undefined, helpful: boolean) => {
     if (logId) sendFeedback(logId, helpful);
@@ -143,7 +182,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
   }, [isListening]);
 
   /* ── Preset card renderer ── */
-  const PresetCard = ({ p }: { p: typeof YOUR_WORK[0] }) => {
+  const PresetCard = ({ p }: { p: Preset }) => {
     const Icon = p.icon;
     return (
       <button
@@ -151,39 +190,34 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         className="ka-icon-btn"
         style={{
           display: 'flex', alignItems: 'center', gap: 12, width: '100%',
-          padding: '10px 16px', background: 'transparent',
-          border: '0.75px solid rgba(15,23,42,0.12)', borderRadius: 6,
-          cursor: 'pointer', textAlign: 'left', transition: 'background 80ms, border-color 80ms',
+          padding: '14px 16px', background: 'transparent',
+          border: '1.5px solid rgba(15,23,42,0.08)', borderRadius: 10,
+          cursor: 'pointer', textAlign: 'left',
+          transition: 'all 150ms',
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.background = 'rgba(15,23,42,0.04)';
-          e.currentTarget.style.borderColor = 'rgba(15,23,42,0.20)';
+          e.currentTarget.style.background = '#F8FAFC';
+          e.currentTarget.style.borderColor = 'rgba(15,23,42,0.16)';
+          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
+          e.currentTarget.style.transform = 'translateY(-1px)';
         }}
         onMouseLeave={e => {
           e.currentTarget.style.background = 'transparent';
-          e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)';
+          e.currentTarget.style.borderColor = 'rgba(15,23,42,0.08)';
+          e.currentTarget.style.boxShadow = 'none';
+          e.currentTarget.style.transform = 'translateY(0)';
         }}
       >
         <div style={{
-          width: 36, height: 36, borderRadius: 6, background: p.iconBg,
+          width: 40, height: 40, minWidth: 40, borderRadius: 8, background: p.iconBg,
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         }}>
           <Icon size={20} strokeWidth={2} color={p.iconColor} aria-hidden="true" />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
-              {p.main}
-            </span>
-            {p.ai && (
-              <span style={{
-                fontSize: 9, fontWeight: 700, color: '#7C3AED',
-                background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.15)',
-                borderRadius: 9999, padding: '1px 6px', lineHeight: '14px',
-                fontFamily: "'Inter', sans-serif",
-              }}>AI</span>
-            )}
-          </div>
+          <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif", display: 'block' }}>
+            {p.main}
+          </span>
           <span style={{ fontSize: 11, fontWeight: 400, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
             {p.hint}
           </span>
@@ -192,21 +226,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     );
   };
 
-
-  /* ── Source line ── */
-  const SourceLine = () => (
-    <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-      padding: '8px 0',
-    }}>
-      <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#16A34A' }} />
-      <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
-        Verified against indexed sources · Cited responses
-      </span>
-    </div>
-  );
-
-    return (
+  return (
     <>
       {/* Overlay */}
       {isOpen && (
@@ -221,15 +241,16 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         />
       )}
 
-      {/* Panel */}
+      {/* Panel — 40vw */}
       <div
         data-v={view}
         role="complementary"
         aria-label="Knowledge Assist"
         style={{
           position: 'fixed', top: 48, right: 0, bottom: 0,
-          width: 540, background: '#FFFFFF',
-          borderLeft: '0.75px solid rgba(15,23,42,0.12)',
+          width: '40vw', minWidth: 480, maxWidth: 720,
+          background: '#FFFFFF',
+          borderLeft: '1px solid rgba(15,23,42,0.12)',
           boxShadow: '-4px 0 24px rgba(0,0,0,0.06)',
           zIndex: 50, display: 'flex', flexDirection: 'column',
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
@@ -237,19 +258,15 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         }}
       >
-        {/* ── Header 48px ── */}
+        {/* ── Header ── */}
         <div style={{
           height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0 16px', borderBottom: '0.75px solid rgba(15,23,42,0.12)',
+          padding: '0 20px', borderBottom: '1px solid rgba(15,23,42,0.12)',
           flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{
-              position: 'relative', width: 8, height: 8,
-            }}>
-              <span style={{
-                position: 'absolute', inset: 0, borderRadius: '50%', background: '#2563EB',
-              }} />
+            <span style={{ position: 'relative', width: 8, height: 8 }}>
+              <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#2563EB' }} />
               <span style={{
                 position: 'absolute', inset: -3, borderRadius: '50%',
                 border: '1.5px solid rgba(37,99,235,0.4)',
@@ -257,35 +274,20 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               }} />
             </span>
             <span style={{
-              fontSize: 14, fontWeight: 650, color: '#0F172A',
+              fontSize: 15, fontWeight: 700, color: '#0F172A',
               letterSpacing: '-0.02em', fontFamily: "'Sora', sans-serif",
             }}>Knowledge Assist</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <button
-              onClick={handleNewChat}
-              title="New chat"
-              aria-label="New chat"
-              className="ka-icon-btn"
-              style={{
-                width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent',
-                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'background 80ms, color 80ms',
-              }}
+            <button onClick={handleNewChat} title="New chat" aria-label="New chat" className="ka-icon-btn"
+              style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 80ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
               <Plus size={16} strokeWidth={2} color="#64748B" aria-hidden="true" />
             </button>
-            <button
-              onClick={onClose}
-              aria-label="Close Knowledge Assist"
-              className="ka-icon-btn"
-              style={{
-                width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent',
-                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'background 80ms, color 80ms',
-              }}
+            <button onClick={onClose} aria-label="Close Knowledge Assist" className="ka-icon-btn"
+              style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 80ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
@@ -295,53 +297,36 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         </div>
 
         {/* ── Scrollable body ── */}
-        <div
-          ref={scrollRef}
-          className="ka-scroll-area"
-          style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
-        >
+        <div ref={scrollRef} className="ka-scroll-area" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           {/* ═══ LANDING STATE ═══ */}
           {view === 'land' && (
             <div style={{ padding: '32px 24px 16px' }}>
               {/* Greeting */}
               <h1 style={{
                 fontSize: 24, fontWeight: 700, color: '#0F172A',
-                letterSpacing: '-0.02em', margin: 0,
-                fontFamily: "'Sora', sans-serif",
+                letterSpacing: '-0.02em', margin: 0, fontFamily: "'Sora', sans-serif",
               }}>
                 {getGreeting()}, {name}
               </h1>
-              <p style={{
-                fontSize: 13, color: '#64748B', margin: '6px 0 0', fontWeight: 400,
-              }}>
+              <p style={{ fontSize: 13, color: '#64748B', margin: '6px 0 0', fontWeight: 400 }}>
                 Your knowledge briefing is ready.
               </p>
 
-              {/* Stats Grid */}
-              <div style={{
-                display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
-                gap: 10, marginTop: 20,
-              }}>
+              {/* Stats Grid — 3 cards only */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginTop: 20 }}>
                 {[
                   { value: '12', label: 'My items', color: '#2563EB' },
                   { value: '3', label: 'Blocked', color: '#DC2626' },
                   { value: '5', label: 'Re-opened', color: '#D97706' },
-                  { value: '97%', label: 'Capacity', color: '#0F766E' },
                 ].map((s, i) => (
                   <div key={i} style={{
-                    padding: '12px 14px', border: '0.75px solid rgba(15,23,42,0.12)',
-                    borderRadius: 6, background: '#FFFFFF',
+                    padding: 16, border: '1.5px solid rgba(15,23,42,0.10)', borderRadius: 8, background: '#FFFFFF',
                   }}>
                     <div style={{
-                      fontSize: 22, fontWeight: 700, color: s.color,
-                      fontFamily: "'JetBrains Mono', monospace",
-                      fontVariantNumeric: 'tabular-nums',
-                      lineHeight: 1,
+                      fontSize: 22, fontWeight: 600, color: s.color,
+                      fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums', lineHeight: 1,
                     }}>{s.value}</div>
-                    <div style={{
-                      fontSize: 11, fontWeight: 500, color: '#64748B',
-                      marginTop: 4, fontFamily: "'Inter', sans-serif",
-                    }}>{s.label}</div>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: '#64748B', marginTop: 4, fontFamily: "'Inter', sans-serif" }}>{s.label}</div>
                   </div>
                 ))}
               </div>
@@ -349,30 +334,31 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               {/* YOUR WORK */}
               <div style={{ marginTop: 28 }}>
                 <span style={{
-                  fontSize: 11, fontWeight: 650, color: '#94A3B8',
-                  textTransform: 'uppercase', letterSpacing: '0.06em',
-                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 11, fontWeight: 700, color: '#475569',
+                  textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'Inter', sans-serif",
                 }}>YOUR WORK</span>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
-                  {YOUR_WORK.map((p, i) => <PresetCard key={i} p={p} />)}
+                  {workPresets.map((p, i) => <PresetCard key={p.main} p={p} />)}
                 </div>
               </div>
 
               {/* YOUR TEAM */}
               <div style={{ marginTop: 24 }}>
                 <span style={{
-                  fontSize: 11, fontWeight: 650, color: '#94A3B8',
-                  textTransform: 'uppercase', letterSpacing: '0.06em',
-                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 11, fontWeight: 700, color: '#475569',
+                  textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: "'Inter', sans-serif",
                 }}>YOUR TEAM</span>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
-                  {YOUR_TEAM.map((p, i) => <PresetCard key={i} p={p} />)}
+                  {teamPresets.map((p, i) => <PresetCard key={p.main} p={p} />)}
                 </div>
               </div>
 
-              {/* Source Line */}
-              <div style={{ marginTop: 24 }}>
-                <SourceLine />
+              {/* Source Line — landing only */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '16px 0 0' }}>
+                <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#16A34A' }} />
+                <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
+                  Verified against indexed sources · Cited responses
+                </span>
               </div>
             </div>
           )}
@@ -383,10 +369,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               {messages.map(msg => {
                 if (msg.role === 'user') {
                   return (
-                    <div key={msg.id} style={{
-                      display: 'flex', justifyContent: 'flex-end', marginBottom: 8,
-                      animation: 'ka-msg-in 200ms ease',
-                    }}>
+                    <div key={msg.id} style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8, animation: 'ka-msg-in 200ms ease' }}>
                       <div style={{
                         maxWidth: '85%', padding: '10px 16px',
                         borderRadius: '8px 8px 3px 8px', background: '#2563EB',
@@ -396,17 +379,17 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                     </div>
                   );
                 }
-                // Assistant message — real RAG response
+                // Assistant — mock or RAG
                 return (
                   <div key={msg.id} style={{ marginBottom: 16, animation: 'ka-msg-in 200ms ease' }}>
-                    {msg.response && (
+                    {msg.mockNode ? msg.mockNode : msg.response ? (
                       <KBResponseRenderer
                         response={msg.response}
                         language="en"
                         feedbackGiven={msg.feedbackGiven}
                         onFeedback={(helpful) => handleFeedback(msg.id, msg.logId, helpful)}
                       />
-                    )}
+                    ) : null}
                   </div>
                 );
               })}
@@ -424,24 +407,24 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           )}
         </div>
 
-        {/* ── Input Area (sticky bottom) ── */}
-        <div style={{
-          borderTop: '0.75px solid rgba(15,23,42,0.12)',
-          padding: '12px 20px', flexShrink: 0,
-        }}>
+        {/* ── Input Area — taller, prominent ── */}
+        <div style={{ borderTop: '1px solid rgba(15,23,42,0.12)', padding: '16px 20px', flexShrink: 0, background: '#FFFFFF' }}>
           <div
             style={{
-              display: 'flex', alignItems: 'center', height: 36,
-              border: '1px solid rgba(15,23,42,0.14)', borderRadius: 4,
-              overflow: 'hidden', transition: 'all 150ms',
+              display: 'flex', alignItems: 'flex-end', gap: 8,
+              background: '#F8FAFC', border: '1.5px solid rgba(15,23,42,0.14)',
+              borderRadius: 12, padding: '12px 16px', minHeight: 52,
+              transition: 'border-color 200ms, box-shadow 200ms',
             }}
             onFocus={e => {
               e.currentTarget.style.borderColor = '#2563EB';
-              e.currentTarget.style.boxShadow = '0 0 0 2px rgba(37,99,235,0.18)';
+              e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
+              e.currentTarget.style.background = '#FFFFFF';
             }}
             onBlur={e => {
               e.currentTarget.style.borderColor = 'rgba(15,23,42,0.14)';
               e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.background = '#F8FAFC';
             }}
           >
             <button
@@ -449,27 +432,25 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               aria-label={isListening ? 'Stop listening' : 'Voice input'}
               className="ka-icon-btn"
               style={{
-                width: 28, height: 28, margin: '0 4px', borderRadius: 4,
+                width: 36, height: 36, borderRadius: 8, flexShrink: 0,
                 border: 'none', background: isListening ? 'rgba(220,38,38,0.10)' : 'transparent',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'background 80ms, color 80ms',
               }}
-              onMouseEnter={e => { if (!isListening) e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
-              onMouseLeave={e => { if (!isListening) e.currentTarget.style.background = 'transparent'; }}
             >
-              <Mic size={16} strokeWidth={2} color={isListening ? '#DC2626' : '#64748B'} aria-hidden="true" />
+              <Mic size={18} strokeWidth={2} color={isListening ? '#DC2626' : '#64748B'} aria-hidden="true" />
             </button>
-            <input
-              ref={inputRef}
+            <textarea
+              ref={textareaRef}
               value={input}
-              onChange={e => setInput(e.target.value)}
+              onChange={handleTextareaChange}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
               placeholder="Ask anything…"
               aria-label="Ask a question"
+              rows={1}
               style={{
-                flex: 1, height: '100%', border: 'none', outline: 'none',
-                background: 'transparent', fontSize: 13, color: '#0F172A',
-                fontFamily: "'Inter', sans-serif",
+                flex: 1, border: 'none', outline: 'none', background: 'transparent',
+                fontSize: 14, color: '#0F172A', fontFamily: "'Inter', sans-serif",
+                resize: 'none', minHeight: 28, lineHeight: 1.5,
               }}
             />
             <button
@@ -478,18 +459,18 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               aria-label="Send message"
               className="ka-icon-btn"
               style={{
-                width: 28, height: 28, margin: '0 4px', borderRadius: 4,
+                width: 36, height: 36, borderRadius: 8, flexShrink: 0,
                 border: 'none',
-                background: input.trim() ? 'rgba(37,99,235,0.60)' : 'rgba(15,23,42,0.06)',
+                background: input.trim() ? '#2563EB' : 'rgba(15,23,42,0.06)',
                 cursor: input.trim() ? 'pointer' : 'default',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'background 80ms',
               }}
             >
-              <Send size={16} strokeWidth={2} color={input.trim() ? '#FFFFFF' : '#94A3B8'} aria-hidden="true" />
+              <Send size={18} strokeWidth={2} color={input.trim() ? '#FFFFFF' : '#94A3B8'} aria-hidden="true" />
             </button>
           </div>
-          <SourceLine />
+          {/* NO source line here — only on landing */}
         </div>
 
         {/* Keyframes */}
@@ -501,22 +482,14 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(2.2); }
           }
-          @keyframes ka-sparkle {
-            0%,100% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.15) rotate(5deg); }
-            75% { transform: scale(1.1) rotate(-3deg); }
-          }
-          /* Focus-visible for all interactive buttons */
           .ka-icon-btn:focus-visible {
             outline: 2px solid #2563EB;
             outline-offset: 2px;
           }
-          /* Scrollbar */
           .ka-scroll-area::-webkit-scrollbar { width: 4px; }
           .ka-scroll-area::-webkit-scrollbar-track { background: transparent; }
           .ka-scroll-area::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.18); border-radius: 4px; }
           .ka-scroll-area::-webkit-scrollbar-thumb:hover { background: rgba(15,23,42,0.28); }
-          /* sr-only utility */
           .ka-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0; }
         `}</style>
       </div>
