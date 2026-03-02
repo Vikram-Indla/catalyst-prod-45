@@ -514,7 +514,7 @@ export default function IncidentCommandCenter() {
 
             {/* KPI Tiles */}
             <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
-              {data.kpis.map((kpi) => (
+              {(data.kpis || []).map((kpi) => (
                 <KPICard 
                   key={kpi.label} 
                   kpi={kpi} 
@@ -540,7 +540,7 @@ export default function IncidentCommandCenter() {
             {/* Release Impact */}
             <ReleaseImpactSection
               releases={data.releaseImpacts}
-              missingReleaseCount={data.kpis.find(k => k.label === 'Open Incidents')?.value || 0}
+              missingReleaseCount={(data.kpis || []).find(k => k.label === 'Open Incidents')?.value || 0}
               onDrillDown={handleDrillDown}
             />
           </>
