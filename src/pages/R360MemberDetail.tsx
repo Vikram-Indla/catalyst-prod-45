@@ -6,6 +6,7 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useR360Overview, useR360WorkItems, useR360Siblings } from '@/hooks/useR360';
+import { computeCarriedFromLabel } from '@/services/r360Service';
 import { R360_DEPT_COLORS, R360_PROJECT_COLORS } from '@/constants/r360';
 import { initials, slugify, ageBarPercent, ageBarColor, formatRelativeDate, formatDate } from '@/utils/r360Utils';
 import { getJiraIcon } from '@/components/r360/R360JiraIcons';
@@ -128,15 +129,37 @@ export default function R360MemberDetail() {
     [periodType, weekOffset]
   );
 
-  // Filter items by period — only items updated/resolved within the period
+  // Period filtering:
+  // - Current period (offset 0): Show ALL open items + done items resolved in this period
+  // - Past periods: Show items that were assigned before/during that period AND were still open during it,
+  //   plus items completed during that period
   const weekItems = useMemo(() => {
-    return workItems.filter(item => {
-      const effectiveDate = item.status_category === 'done'
-        ? new Date(item.resolved_at || item.updated_at)
-        : new Date(item.updated_at);
-      return effectiveDate >= period.start && effectiveDate <= period.end;
+    const isCurrentPeriod = weekOffset === 0;
+    const items = workItems.filter(item => {
+      if (isCurrentPeriod) {
+        // Current period: all open items always visible + done items resolved in this period
+        if (item.status_category !== 'done') return true;
+        const resolvedDate = new Date(item.resolved_at || item.updated_at);
+        return resolvedDate >= period.start && resolvedDate <= period.end;
+      } else {
+        // Past period: show items that were assigned on or before period end
+        const assignedDate = new Date(item.assigned_at);
+        if (assignedDate > period.end) return false;
+        // For done items, only show if resolved during or after this period
+        if (item.status_category === 'done') {
+          const resolvedDate = new Date(item.resolved_at || item.updated_at);
+          return resolvedDate >= period.start;
+        }
+        // Open items: show if assigned before period end (they were on the plate)
+        return true;
+      }
     });
-  }, [workItems, period.start, period.end]);
+    // Compute carry-over labels
+    return items.map(item => ({
+      ...item,
+      carried_from_label: computeCarriedFromLabel(item.assigned_at, period.start),
+    }));
+  }, [workItems, period.start, period.end, weekOffset]);
 
   // All-time open items (for persistent banner KPIs)
   const allOpenItems = useMemo(() => workItems.filter(i => i.status_category !== 'done'), [workItems]);
@@ -541,7 +564,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
             background:'#F8FAFC', padding:'2px 8px', borderRadius:'10px',
             border:'1px solid #E2E8F0',
             whiteSpace:'nowrap', fontVariantNumeric:'tabular-nums',
-          }}>{`${l.age}d ago`}</div>
+          }}>{`${l.age}d`}</div>
       ))}
 
       {/* CENTER AVATAR */}
@@ -594,11 +617,16 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
             <div style={{ display:'flex', alignItems:'center', gap:'5px', marginBottom:'5px' }}>
               <span style={{ fontSize:'11px', fontWeight:600, color:'#2563EB', fontFamily:"'JetBrains Mono',monospace" }}>{item.item_key}</span>
               <span style={{ fontSize:'10px', fontWeight:700, padding:'2px 6px', borderRadius:'3px', color:'#FFF', background: PC_MAP[item.project_key] || '#64748B' }}>{item.project_key}</span>
-              <span style={{ marginLeft:'auto', fontSize:'11px', fontWeight:600, color: ageColor(item.age_days), fontVariantNumeric:'tabular-nums' }}>{item.age_days}d</span>
+              <span style={{ marginLeft:'auto', fontSize:'11px', fontWeight:600, color: ageColor(item.age_days), fontVariantNumeric:'tabular-nums' }} title="Days since assigned to this person">{item.age_days}d</span>
             </div>
             <div style={{ fontSize:'12.5px', fontWeight:500, color:'#020617', lineHeight:'1.35', marginBottom:'5px', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' } as React.CSSProperties}>{item.title}</div>
-            <div style={{ display:'flex', alignItems:'center', gap:'6px' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:'6px', flexWrap:'wrap' }}>
               <RingPill status={item.status_label || ''} />
+              {item.carried_from_label && (
+                <span style={{ fontSize:'9.5px', fontWeight:600, padding:'2px 7px', borderRadius:'3px', background:'#FEF3C7', color:'#92400E', border:'1px solid #FDE68A', whiteSpace:'nowrap' }} title="Carried over from an earlier period">
+                  {item.carried_from_label}
+                </span>
+              )}
               {isContributor && (
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize:'10px', fontWeight:500, color:'#64748B' }}>→ <MiniAvatar name={item.assignee_name} size={16} /> {item.assignee_name}</span>
               )}
