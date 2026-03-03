@@ -42,19 +42,59 @@ serve(async (req) => {
   )
 
   try {
-    // ── Security: validate shared secret ──
+    // Debug: log all incoming headers to diagnose Jira webhook format
+    const allHeaders: Record<string, string> = {}
+    req.headers.forEach((v, k) => { allHeaders[k] = k.toLowerCase().includes('secret') || k.toLowerCase().includes('auth') ? '***' : v })
+    console.log('[jira-webhook] Incoming headers:', JSON.stringify(allHeaders))
+    // ── Security: validate webhook secret ──
+    // Jira can send the secret either as:
+    //   1. Custom header X-Jira-Webhook-Secret (manual setup)
+    //   2. HMAC signature via X-Hub-Signature (Jira native webhook secret)
     const webhookSecret = Deno.env.get('JIRA_WEBHOOK_SECRET')
+    const bodyBytes = await req.arrayBuffer()
+    const bodyText = new TextDecoder().decode(bodyBytes)
+
     if (webhookSecret) {
-      const incomingSecret = req.headers.get('x-jira-webhook-secret') || ''
-      if (incomingSecret !== webhookSecret) {
-        console.error('[jira-webhook] Invalid webhook secret')
+      const customHeader = req.headers.get('x-jira-webhook-secret') || ''
+      const hubSignature = req.headers.get('x-hub-signature') || ''
+
+      let valid = false
+
+      // Method 1: Direct header match
+      if (customHeader && customHeader === webhookSecret) {
+        valid = true
+      }
+
+      // Method 2: Jira HMAC-SHA256 signature validation
+      if (!valid && hubSignature) {
+        try {
+          const key = await crypto.subtle.importKey(
+            'raw',
+            new TextEncoder().encode(webhookSecret),
+            { name: 'HMAC', hash: 'SHA-256' },
+            false,
+            ['sign']
+          )
+          const sig = await crypto.subtle.sign('HMAC', key, new Uint8Array(bodyBytes))
+          const computed = 'sha256=' + Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
+          valid = computed === hubSignature
+        } catch (e) {
+          console.error('[jira-webhook] HMAC validation error:', e)
+        }
+      }
+
+      if (!valid) {
+        console.error('[jira-webhook] Invalid webhook secret. Headers:', JSON.stringify({
+          'x-jira-webhook-secret': customHeader || '(none)',
+          'x-hub-signature': hubSignature || '(none)',
+        }))
         return new Response(JSON.stringify({ error: 'Unauthorized' }), {
           status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
       }
     }
 
-    const payload = await req.json()
+    const payload = JSON.parse(bodyText)
     const webhookEvent = payload.webhookEvent || ''
     const issue = payload.issue
     const changelog = payload.changelog // Present on issue_updated
