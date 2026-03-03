@@ -4,10 +4,12 @@ import { useWikiPage, useLogWikiRead } from '@/hooks/useWikiData';
 import { useWikiRelatedArticles, useSubmitArticleFeedback } from '@/hooks/useWikiHub';
 import {
   Star, ThumbsUp, ThumbsDown, ChevronRight, Clock, GitBranch, Sparkles,
-  FileText, FileDown, Video, ShieldCheck, BookOpen, ArrowRight,
+  FileText, FileDown, Video, ShieldCheck, BookOpen, ArrowRight, History,
+  Printer, Download, Link2, RotateCcw,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 /* ── Time helpers ── */
 function timeAgo(d: string) {
@@ -53,12 +55,58 @@ const Sk = ({ w, h, style }: { w: string | number; h: number; style?: React.CSSP
 export default function WikiArticlePage() {
   const { pageSlug } = useParams<{ pageSlug: string }>();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { data: page, isLoading, error } = useWikiPage(pageSlug);
   const logRead = useLogWikiRead();
   const submitFeedback = useSubmitArticleFeedback();
   const [scrollPct, setScrollPct] = useState(0);
   const [bookmarked, setBookmarked] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showExport, setShowExport] = useState(false);
 
+  // Version history
+  const { data: versions } = useQuery({
+    queryKey: ['wiki-page-versions', page?.id],
+    enabled: !!page?.id && showHistory,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('wiki_page_versions')
+        .select('*')
+        .eq('page_id', page!.id)
+        .order('version_number', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  // Cross-module links
+  const { data: crossLinks } = useQuery({
+    queryKey: ['wiki-cross-links', page?.id],
+    enabled: !!page?.id,
+    staleTime: 120_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('wiki_cross_links')
+        .select('*')
+        .eq('page_id', page!.id);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const handleRestore = async (version: any) => {
+    if (!page?.id) return;
+    const { error } = await supabase.from('wiki_pages').update({
+      title: version.title,
+      lead_content: version.lead_content,
+      version: (page.version ?? 1) + 1,
+    } as any).eq('id', page.id);
+    if (error) { toast.error('Restore failed'); return; }
+    toast.success(`Restored to v${version.version_number}`);
+    qc.invalidateQueries({ queryKey: ['wiki-page'] });
+    setShowHistory(false);
+  };
   // Related articles
   const { data: related } = useWikiRelatedArticles(page?.domain_code, page?.id, 3);
 

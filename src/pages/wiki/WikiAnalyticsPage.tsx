@@ -3,7 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useWikiHomeStats } from '@/hooks/useWikiHub';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronRight, BarChart3 } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+
+const DOMAIN_COLORS: Record<string, string> = {
+  D1: '#2563EB', D2: '#0D9488', D3: '#D97706', D4: '#16A34A',
+  D5: '#DC2626', D6: '#0891B2', D7: '#64748B', D8: '#4F46E5', D9: '#CA8A04',
+};
 
 export default function WikiAnalyticsPage() {
   const navigate = useNavigate();
@@ -24,16 +30,70 @@ export default function WikiAnalyticsPage() {
     },
   });
 
+  const { data: leastHelpful } = useQuery({
+    queryKey: ['wiki-least-helpful'],
+    staleTime: 120_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('wiki_pages')
+        .select('id, slug, title, domain_code, helpfulness_score, helpfulness_votes')
+        .is('deleted_at', null)
+        .gt('helpfulness_votes', 0)
+        .order('helpfulness_score', { ascending: true })
+        .limit(5);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  // Articles per domain for bar chart
+  const { data: domainDistribution } = useQuery({
+    queryKey: ['wiki-domain-distribution'],
+    staleTime: 120_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('wiki_pages')
+        .select('domain_code')
+        .is('deleted_at', null);
+      if (error) throw error;
+      const counts: Record<string, number> = {};
+      (data ?? []).forEach((a: any) => { counts[a.domain_code] = (counts[a.domain_code] || 0) + 1; });
+      return Object.entries(counts).map(([code, count]) => ({ domain: code, count }));
+    },
+  });
+
+  // Verification status for pie
+  const { data: verificationPie } = useQuery({
+    queryKey: ['wiki-verification-pie'],
+    staleTime: 120_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('wiki_pages')
+        .select('verification_status')
+        .is('deleted_at', null);
+      if (error) throw error;
+      const counts: Record<string, number> = { verified: 0, needs_review: 0, unverified: 0 };
+      (data ?? []).forEach((a: any) => { counts[a.verification_status || 'unverified']++; });
+      return [
+        { name: 'Verified', value: counts.verified, fill: '#16A34A' },
+        { name: 'Needs Review', value: counts.needs_review, fill: '#D97706' },
+        { name: 'Unverified', value: counts.unverified, fill: '#94A3B8' },
+      ];
+    },
+  });
+
   const statCards = stats ? [
     { label: 'Total Articles', value: stats.totalArticles },
-    { label: 'Documents', value: stats.totalDocuments },
+    { label: 'Total Views', value: (topArticles ?? []).reduce((s: number, a: any) => s + (a.view_count ?? 0), 0) },
+    { label: 'Avg Helpfulness', value: `${stats.avgHelpfulness}%` },
+    { label: 'Avg Confidence', value: `${stats.avgConfidence}%` },
     { label: 'Verified %', value: `${stats.verifiedPercent}%` },
     { label: 'Needs Review', value: stats.needsReview },
     { label: 'Stale Articles', value: stats.staleArticles },
-    { label: 'Open Requests', value: stats.openRequests },
-    { label: 'Avg Helpfulness', value: `${stats.avgHelpfulness}%` },
-    { label: 'Avg Confidence', value: `${stats.avgConfidence}%` },
+    { label: 'Documents', value: stats.totalDocuments },
   ] : [];
+
+  const F = { sora: "'Sora', sans-serif", mono: "'JetBrains Mono', monospace" };
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif', color: '#0F172A', background: '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
@@ -43,45 +103,119 @@ export default function WikiAnalyticsPage() {
         <span style={{ fontSize: 13, color: '#64748B', fontWeight: 600 }}>Analytics</span>
       </nav>
 
-      <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 24 }}>WikiHub Analytics</h1>
+      <h1 style={{ fontFamily: F.sora, fontSize: 18, fontWeight: 700, marginBottom: 24 }}>WikiHub Analytics</h1>
 
+      {/* Stats Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 32 }}>
         {isLoading ? Array.from({ length: 8 }).map((_, i) => (
           <div key={i} style={{ padding: 20, borderRadius: 8, background: '#FFFFFF', border: '0.75px solid rgba(0,0,0,0.06)', height: 80 }} />
         )) : statCards.map(s => (
           <div key={s.label} style={{ padding: 20, borderRadius: 8, background: '#FFFFFF', border: '0.75px solid rgba(0,0,0,0.06)', textAlign: 'center' }}>
-            <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700, color: '#0F172A' }}>{s.value}</div>
+            <div style={{ fontFamily: F.sora, fontSize: 24, fontWeight: 700, color: '#0F172A' }}>{s.value}</div>
             <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: '#94A3B8', marginTop: 4, letterSpacing: '0.05em' }}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, marginBottom: 16 }}>Most Viewed Articles</h2>
-      <div style={{ borderRadius: 8, border: '0.75px solid rgba(0,0,0,0.06)', background: '#FFFFFF', overflow: 'hidden' }}>
-        <div style={{
-          display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 80px',
-          background: '#F1F5F9', padding: '0 16px', height: 36, alignItems: 'center',
-          fontFamily: 'Sora, sans-serif', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const, color: '#64748B', letterSpacing: '0.05em',
-          borderBottom: '0.75px solid rgba(0,0,0,0.06)',
-        }}>
-          <span>Article</span><span>Domain</span><span>Views</span><span>Helpful</span><span>Confidence</span>
+      {/* Charts Row */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
+        {/* Articles per Domain */}
+        <div style={{ padding: 20, borderRadius: 8, background: '#FFFFFF', border: '0.75px solid rgba(0,0,0,0.06)' }}>
+          <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 16, margin: '0 0 16px' }}>Articles per Domain</h2>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={domainDistribution ?? []}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+              <XAxis dataKey="domain" tick={{ fontSize: 10, fill: '#64748B' }} />
+              <YAxis tick={{ fontSize: 10, fill: '#64748B' }} />
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, border: '1px solid #E2E8F0' }} />
+              <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                {(domainDistribution ?? []).map((d: any) => (
+                  <Cell key={d.domain} fill={DOMAIN_COLORS[d.domain] || '#64748B'} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-        {(topArticles ?? []).map((a: any) => {
-          const conf = Math.round((a.ai_confidence ?? 0) * 100);
-          const confColor = conf >= 90 ? '#16A34A' : conf >= 70 ? '#2563EB' : '#D97706';
-          return (
-            <div key={a.id} onClick={() => navigate(`/wiki/${a.slug}`)} style={{
-              display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 80px',
-              padding: '0 16px', height: 36, alignItems: 'center', borderBottom: '0.75px solid rgba(0,0,0,0.06)', fontSize: 12, cursor: 'pointer',
-            }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-              <span style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
-              <span style={{ fontSize: 10, color: '#64748B' }}>{a.domain_code}</span>
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{a.view_count}</span>
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#64748B' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: confColor }}>{conf}%</span>
+
+        {/* Verification Status Pie */}
+        <div style={{ padding: 20, borderRadius: 8, background: '#FFFFFF', border: '0.75px solid rgba(0,0,0,0.06)' }}>
+          <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 16, margin: '0 0 16px' }}>Verification Status</h2>
+          <ResponsiveContainer width="100%" height={220}>
+            <PieChart>
+              <Pie data={verificationPie ?? []} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" label={({ name, value }) => `${name}: ${value}`} labelLine={false}>
+                {(verificationPie ?? []).map((entry: any, i: number) => (
+                  <Cell key={i} fill={entry.fill} />
+                ))}
+              </Pie>
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Most Viewed + Least Helpful */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        {/* Most Viewed */}
+        <div>
+          <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Most Viewed Articles</h2>
+          <div style={{ borderRadius: 8, border: '0.75px solid rgba(0,0,0,0.06)', background: '#FFFFFF', overflow: 'hidden' }}>
+            <div style={{
+              display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',
+              background: '#F1F5F9', padding: '0 14px', height: 32, alignItems: 'center',
+              fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
+              color: '#64748B', letterSpacing: '0.05em', borderBottom: '0.75px solid rgba(0,0,0,0.06)',
+            }}>
+              <span>Article</span><span>Views</span><span>Help.</span><span>Conf.</span>
             </div>
-          );
-        })}
+            {(topArticles ?? []).map((a: any) => {
+              const conf = Math.round((a.ai_confidence ?? 0) * 100);
+              const confColor = conf >= 90 ? '#16A34A' : conf >= 70 ? '#2563EB' : '#D97706';
+              return (
+                <div key={a.id} onClick={() => navigate(`/wiki/${a.slug}`)} style={{
+                  display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',
+                  padding: '0 14px', height: 36, alignItems: 'center', borderBottom: '0.75px solid rgba(0,0,0,0.06)',
+                  fontSize: 12, cursor: 'pointer', transition: 'background 80ms',
+                }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}
+                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                  <span style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
+                  <span style={{ fontFamily: F.mono, fontSize: 11 }}>{a.view_count ?? 0}</span>
+                  <span style={{ fontFamily: F.mono, fontSize: 11, color: '#64748B' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
+                  <span style={{ fontFamily: F.mono, fontSize: 11, color: confColor }}>{conf}%</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Least Helpful */}
+        <div>
+          <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Least Helpful Articles</h2>
+          <div style={{ borderRadius: 8, border: '0.75px solid rgba(0,0,0,0.06)', background: '#FFFFFF', overflow: 'hidden' }}>
+            <div style={{
+              display: 'grid', gridTemplateColumns: '1fr 60px 60px',
+              background: '#F1F5F9', padding: '0 14px', height: 32, alignItems: 'center',
+              fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
+              color: '#64748B', letterSpacing: '0.05em', borderBottom: '0.75px solid rgba(0,0,0,0.06)',
+            }}>
+              <span>Article</span><span>Help.</span><span>Votes</span>
+            </div>
+            {(leastHelpful ?? []).length === 0 ? (
+              <div style={{ padding: 24, textAlign: 'center', color: '#94A3B8', fontSize: 12 }}>No feedback data yet</div>
+            ) : (leastHelpful ?? []).map((a: any) => (
+              <div key={a.id} onClick={() => navigate(`/wiki/${a.slug}`)} style={{
+                display: 'grid', gridTemplateColumns: '1fr 60px 60px',
+                padding: '0 14px', height: 36, alignItems: 'center', borderBottom: '0.75px solid rgba(0,0,0,0.06)',
+                fontSize: 12, cursor: 'pointer', transition: 'background 80ms',
+              }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}
+                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                <span style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
+                <span style={{ fontFamily: F.mono, fontSize: 11, color: '#DC2626' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
+                <span style={{ fontFamily: F.mono, fontSize: 11, color: '#64748B' }}>{a.helpfulness_votes}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

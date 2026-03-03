@@ -62,6 +62,11 @@ const WikiWhatsNewPage = lazy(() => import("./pages/wiki/WikiWhatsNewPage"));
 const WikiLearningPathsPage = lazy(() => import("./pages/wiki/WikiLearningPathsPage"));
 const WikiLearningPathDetailPage = lazy(() => import("./pages/wiki/WikiLearningPathDetailPage"));
 const WikiSubscriptionsPage = lazy(() => import("./pages/wiki/WikiSubscriptionsPage"));
+const WikiAllArticlesPage = lazy(() => import("./pages/wiki/WikiAllArticlesPage"));
+const WikiVerificationPage = lazy(() => import("./pages/wiki/WikiVerificationPage"));
+const WikiAnalyticsPage = lazy(() => import("./pages/wiki/WikiAnalyticsPage"));
+const WikiTemplatesPage = lazy(() => import("./pages/wiki/WikiTemplatesPage"));
+const WikiKnowledgeGraphPage = lazy(() => import("./pages/wiki/WikiKnowledgeGraphPage"));
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { Toaster as HotToaster } from 'react-hot-toast';
@@ -714,6 +719,11 @@ const App = () => (
               <Route path="/wiki/learning-paths" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiLearningPathsPage /></Suspense>} />
               <Route path="/wiki/learning-paths/:pathId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiLearningPathDetailPage /></Suspense>} />
               <Route path="/wiki/subscriptions" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiSubscriptionsPage /></Suspense>} />
+              <Route path="/wiki/all-articles" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiAllArticlesPage /></Suspense>} />
+              <Route path="/wiki/verification" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiVerificationPage /></Suspense>} />
+              <Route path="/wiki/analytics" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiAnalyticsPage /></Suspense>} />
+              <Route path="/wiki/templates" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiTemplatesPage /></Suspense>} />
+              <Route path="/wiki/knowledge-graph" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiKnowledgeGraphPage /></Suspense>} />
               <Route path="/wiki/category/:slug" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiCategoryPage /></Suspense>} />
               <Route path="/wiki/:pageSlug" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiArticlePage /></Suspense>} />
 
