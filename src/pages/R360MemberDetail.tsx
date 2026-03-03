@@ -110,16 +110,15 @@ export default function R360MemberDetail() {
 
   const week = useMemo(() => getWeekRange(weekOffset), [weekOffset]);
 
-  // Filter items by week for ring/board (chronology shows all with date grouping)
+  // Filter items by week for all views
   const weekItems = useMemo(() => {
-    if (view === 'chronology') return workItems;
     return workItems.filter(item => {
       const effectiveDate = item.status_category === 'done'
         ? new Date(item.resolved_at || item.updated_at)
         : new Date(item.updated_at);
       return effectiveDate >= week.start && effectiveDate <= week.end;
     });
-  }, [workItems, week.start, week.end, view]);
+  }, [workItems, week.start, week.end]);
 
   // Auto-skip empty weeks: find nearest week with data in the navigation direction
   const skipDirection = useRef<-1 | 1 | 0>(0);
@@ -127,7 +126,7 @@ export default function R360MemberDetail() {
   const MAX_SKIP = 12;
 
   useEffect(() => {
-    if (itemsLoading || !workItems.length || view === 'chronology') return;
+    if (itemsLoading || !workItems.length) return;
     if (skipDirection.current === 0) return; // no skip if user hasn't navigated
 
     if (weekItems.length === 0 && skipAttempts.current < MAX_SKIP) {
@@ -138,7 +137,7 @@ export default function R360MemberDetail() {
       skipDirection.current = 0;
       skipAttempts.current = 0;
     }
-  }, [weekItems.length, itemsLoading, workItems.length, view, weekOffset]);
+  }, [weekItems.length, itemsLoading, workItems.length, weekOffset]);
 
   const navigateWeek = useCallback((dir: -1 | 1) => {
     skipDirection.current = dir;
