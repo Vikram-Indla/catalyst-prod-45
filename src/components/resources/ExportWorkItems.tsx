@@ -199,7 +199,10 @@ async function generateExcel(selectedMonths: { label: string; start: Date; end: 
     const startISO = m.start.toISOString();
     const endISO = m.end.toISOString();
 
-    const { data: items } = await supabase
+    // Build the list of resource names for department filtering
+    const resourceNames = resources.map((r: any) => r.name).filter(Boolean);
+
+    let issueQuery = supabase
       .from('ph_issues')
       .select('issue_key, project_key, project_name, issue_type, summary, status, assignee_display_name, priority, jira_created_at, jira_updated_at, parent_key, parent_summary')
       .gte('jira_updated_at', startISO)
@@ -207,6 +210,13 @@ async function generateExcel(selectedMonths: { label: string; start: Date; end: 
       .order('assignee_display_name', { ascending: true })
       .order('issue_key', { ascending: true })
       .limit(5000);
+
+    // Filter by department resources if a department filter is active
+    if (deptFilter && deptFilter !== 'All' && resourceNames.length > 0) {
+      issueQuery = issueQuery.in('assignee_display_name', resourceNames);
+    }
+
+    const { data: items } = await issueQuery;
 
     const allItems = (items || []) as any[];
 
