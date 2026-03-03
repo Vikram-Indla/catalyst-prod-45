@@ -14,7 +14,9 @@ import type { R360WorkItem, R360ViewType, R360Filters } from '@/types/r360';
 import '@/styles/r360.css';
 import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 
-// ── Week helpers ──
+// ── Period helpers ──
+type PeriodType = 'weekly' | 'monthly';
+
 function getWeekRange(offset: number) {
   const now = new Date();
   const day = now.getDay();
@@ -28,6 +30,18 @@ function getWeekRange(offset: number) {
   const label = offset === 0 ? 'This Week' : offset === -1 ? 'Last Week' : offset === 1 ? 'Next Week' : `Week ${offset > 0 ? '+' : ''}${offset}`;
   const range = `${M[sun.getMonth()]} ${sun.getDate()} – ${M[sat.getMonth()]} ${sat.getDate()}, ${sat.getFullYear()}`;
   return { start: sun, end: sat, label, range };
+}
+
+function getMonthRange(offset: number) {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(now.getFullYear(), now.getMonth() + offset + 1, 0);
+  end.setHours(23, 59, 59, 999);
+  const M = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const label = offset === 0 ? 'This Month' : `${M[start.getMonth()]} ${start.getFullYear()}`;
+  const range = `${M[start.getMonth()]} 1 – ${start.getDate() === 1 ? end.getDate() : end.getDate()}, ${end.getFullYear()}`;
+  return { start, end, label, range };
 }
 
 // ── Status pill component ──
@@ -91,6 +105,7 @@ export default function R360MemberDetail() {
   const [searchParams] = useSearchParams();
   const initialView = (searchParams.get('view') as R360ViewType) || 'ring';
   const [view, setView] = useState<R360ViewType>(initialView);
+  const [periodType, setPeriodType] = useState<PeriodType>('weekly');
   const [weekOffset, setWeekOffset] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -108,41 +123,50 @@ export default function R360MemberDetail() {
 
   const { data: workItems = [], isLoading: itemsLoading } = useR360WorkItems(resourceId || '', filters);
 
-  const week = useMemo(() => getWeekRange(weekOffset), [weekOffset]);
+  const period = useMemo(() => 
+    periodType === 'weekly' ? getWeekRange(weekOffset) : getMonthRange(weekOffset),
+    [periodType, weekOffset]
+  );
 
-  // Filter items by week for all views
+  // Filter items by period for all views
   const weekItems = useMemo(() => {
     return workItems.filter(item => {
       const effectiveDate = item.status_category === 'done'
         ? new Date(item.resolved_at || item.updated_at)
         : new Date(item.updated_at);
-      return effectiveDate >= week.start && effectiveDate <= week.end;
+      return effectiveDate >= period.start && effectiveDate <= period.end;
     });
-  }, [workItems, week.start, week.end]);
+  }, [workItems, period.start, period.end]);
 
-  // Auto-skip empty weeks: find nearest week with data in the navigation direction
+  // Auto-skip empty periods
   const skipDirection = useRef<-1 | 1 | 0>(0);
   const skipAttempts = useRef(0);
-  const MAX_SKIP = 12;
+  const MAX_SKIP = periodType === 'weekly' ? 12 : 6;
 
   useEffect(() => {
     if (itemsLoading || !workItems.length) return;
-    if (skipDirection.current === 0) return; // no skip if user hasn't navigated
+    if (skipDirection.current === 0) return;
 
     if (weekItems.length === 0 && skipAttempts.current < MAX_SKIP) {
       skipAttempts.current += 1;
       setWeekOffset(prev => prev + skipDirection.current);
     } else {
-      // Found data or exhausted attempts — reset
       skipDirection.current = 0;
       skipAttempts.current = 0;
     }
   }, [weekItems.length, itemsLoading, workItems.length, weekOffset]);
 
-  const navigateWeek = useCallback((dir: -1 | 1) => {
+  const navigatePeriod = useCallback((dir: -1 | 1) => {
     skipDirection.current = dir;
     skipAttempts.current = 0;
     setWeekOffset(prev => prev + dir);
+  }, []);
+
+  const handlePeriodTypeChange = useCallback((type: PeriodType) => {
+    setPeriodType(type);
+    setWeekOffset(0);
+    skipDirection.current = 0;
+    skipAttempts.current = 0;
   }, []);
 
   // Status counts — week-scoped
@@ -241,12 +265,43 @@ export default function R360MemberDetail() {
           </div>
         </div>
 
-        {/* ── Week Navigation ── */}
+        {/* ── Period Navigation ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 0', borderBottom: '1px solid #F1F5F9', flexWrap: 'wrap' as const }}>
-          <span style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>📅 {week.label}</span>
-          <span style={{ fontSize: '13px', fontWeight: 500, color: '#334155' }}>{week.range}</span>
-          <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigateWeek(-1)}>‹</button>
-          <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigateWeek(1)}>›</button>
+          {/* Period Type Toggle */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', background: '#F8FAFC', borderRadius: '8px', padding: '2px', border: '1px solid #E2E8F0' }}>
+            <button
+              onClick={() => handlePeriodTypeChange('weekly')}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 0.15s ease',
+                background: periodType === 'weekly' ? '#FFFFFF' : 'transparent',
+                color: periodType === 'weekly' ? '#0F172A' : '#64748B',
+                boxShadow: periodType === 'weekly' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+              }}
+            >
+              <Calendar size={13} />
+              Weekly
+            </button>
+            <button
+              onClick={() => handlePeriodTypeChange('monthly')}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 0.15s ease',
+                background: periodType === 'monthly' ? '#FFFFFF' : 'transparent',
+                color: periodType === 'monthly' ? '#0F172A' : '#64748B',
+                boxShadow: periodType === 'monthly' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+              }}
+            >
+              <Calendar size={13} />
+              Monthly
+            </button>
+          </div>
+
+          <div style={{ width: '1px', height: '20px', background: '#E2E8F0' }} />
+
+          {/* Period Label + Nav Arrows */}
+          <span style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>📅 {period.label}</span>
+          <span style={{ fontSize: '13px', fontWeight: 500, color: '#334155' }}>{period.range}</span>
+          <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigatePeriod(-1)}>‹</button>
+          <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigatePeriod(1)}>›</button>
           <div style={{ width: '1px', height: '20px', background: '#E2E8F0', margin: '0 4px' }} />
           {([
             { key: null, label: `All (${counts.all})` },
@@ -269,7 +324,7 @@ export default function R360MemberDetail() {
         ) : (
           <>
             {view === 'ring' && <RingView items={weekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} />}
-            {view === 'chronology' && <ChronologyView items={weekItems} onSelect={setSelectedItem} weekStart={week.start} weekEnd={week.end} />}
+            {view === 'chronology' && <ChronologyView items={weekItems} onSelect={setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
             {view === 'board' && <BoardView items={weekItems} onSelect={setSelectedItem} />}
           </>
         )}
