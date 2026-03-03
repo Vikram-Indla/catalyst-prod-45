@@ -532,57 +532,6 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
               );
             })}
 
-            {/* Divider */}
-            <div style={{ height: 1, background: '#e5e7eb', margin: '10px 0' }} />
-
-            {/* Custom date range */}
-            <button
-              onClick={() => setShowCustom(s => !s)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-                padding: '8px 10px', background: 'transparent', border: 'none',
-                cursor: 'pointer', fontSize: 13, fontWeight: 500, color: '#475569',
-                borderRadius: 8,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#f8f9fa'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-            >
-              <Calendar size={14} color="#6B6B6B" />
-              Custom Date Range
-              <ChevronDown size={12} style={{
-                marginLeft: 'auto', transition: 'transform 150ms',
-                transform: showCustom ? 'rotate(180deg)' : 'rotate(0deg)',
-              }} />
-            </button>
-
-            {showCustom && (
-              <div style={{ display: 'flex', gap: 8, padding: '8px 10px 4px' }}>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: 10, fontWeight: 600, color: '#6B6B6B', display: 'block', marginBottom: 4 }}>From</label>
-                  <input
-                    type="month"
-                    value={customFrom}
-                    onChange={e => { setCustomFrom(e.target.value); setGenState('idle'); }}
-                    style={{
-                      width: '100%', padding: '6px 8px', fontSize: 12,
-                      border: '1.5px solid #d1d5db', borderRadius: 6, outline: 'none',
-                    }}
-                  />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: 10, fontWeight: 600, color: '#6B6B6B', display: 'block', marginBottom: 4 }}>To</label>
-                  <input
-                    type="month"
-                    value={customTo}
-                    onChange={e => { setCustomTo(e.target.value); setGenState('idle'); }}
-                    style={{
-                      width: '100%', padding: '6px 8px', fontSize: 12,
-                      border: '1.5px solid #d1d5db', borderRadius: 6, outline: 'none',
-                    }}
-                  />
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Generate button */}
