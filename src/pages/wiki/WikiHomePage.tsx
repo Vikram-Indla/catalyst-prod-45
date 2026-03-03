@@ -4,7 +4,7 @@ import {
   Search, Upload, Zap, FileText, FileDown,
   ShieldCheck, ThumbsUp, HelpCircle, Plus, ArrowRight,
   BookOpen, ChevronRight, CheckCircle2, Star, GraduationCap,
-  Factory, Ship, FlaskConical, Leaf, Landmark, Bot, HardHat, Globe, Pickaxe,
+  Factory, Ship, FlaskConical, Leaf, Flag, Cpu, Users, Globe, Mountain,
   MessageCircle,
 } from 'lucide-react';
 import {
@@ -21,8 +21,8 @@ import { toast } from 'sonner';
 
 /* ── Constants ── */
 const DOMAIN_ICONS: Record<string, React.ComponentType<any>> = {
-  D1: Factory, D2: Ship, D3: FlaskConical, D4: Leaf, D5: Landmark,
-  D6: Bot, D7: HardHat, D8: Globe, D9: Pickaxe,
+  D1: Factory, D2: Ship, D3: FlaskConical, D4: Leaf, D5: Flag,
+  D6: Cpu, D7: Users, D8: Globe, D9: Mountain,
 };
 
 const TAG_STYLES: Record<string, { bg: string; color: string }> = {
@@ -293,11 +293,15 @@ StatCard.displayName = 'StatCard';
 
 /* ── Domain color map for quick ref icons ── */
 const DOMAIN_COLORS: Record<string, { bg: string; fg: string }> = {
-  D1: { bg: '#DBEAFE', fg: '#1E40AF' }, D2: { bg: '#FEF3C7', fg: '#92400E' },
-  D3: { bg: '#E0E7FF', fg: '#3730A3' }, D4: { bg: '#DCFCE7', fg: '#166534' },
-  D5: { bg: '#FEF9C3', fg: '#854D0E' }, D6: { bg: '#EDE9FE', fg: '#5B21B6' },
-  D7: { bg: '#FFE4E6', fg: '#9F1239' }, D8: { bg: '#F0F9FF', fg: '#0C4A6E' },
-  D9: { bg: '#FEF2F2', fg: '#991B1B' },
+  D1: { bg: '#DBEAFE', fg: '#1E40AF' },   // blue
+  D2: { bg: '#CFFAFE', fg: '#0E7490' },   // cyan
+  D3: { bg: '#FEF3C7', fg: '#92400E' },   // amber
+  D4: { bg: '#DCFCE7', fg: '#166534' },   // green
+  D5: { bg: '#EDE9FE', fg: '#5B21B6' },   // purple
+  D6: { bg: '#DBEAFE', fg: '#1E40AF' },   // blue
+  D7: { bg: '#CCFBF1', fg: '#0F766E' },   // teal
+  D8: { bg: '#DBEAFE', fg: '#1E40AF' },   // blue
+  D9: { bg: '#FEF3C7', fg: '#92400E' },   // amber
 };
 
 /* ── Quick Ref Card ── */
@@ -329,17 +333,18 @@ QuickRefCard.displayName = 'QuickRefCard';
 const DomainCard = React.memo(({ d, Icon, navigate }: { d: any; Icon: React.ComponentType<any>; navigate: any }) => {
   const [hovered, setHovered] = useState(false);
   const tagStyle = TAG_STYLES[d.tag] || TAG_STYLES.SUPPORT;
+  const dc = DOMAIN_COLORS[d.domain_code] || { bg: '#F1F5F9', fg: '#64748B' };
   const coverageColor = d.coverage_percent >= 80 ? '#16A34A' : d.coverage_percent >= 60 ? '#2563EB' : '#D97706';
 
   return (
     <div onClick={() => navigate(`/wiki/domains/${d.domain_code}`)} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ display: 'flex', borderRadius: 8, background: '#FFFFFF', cursor: 'pointer', border: '0.75px solid rgba(0,0,0,0.06)', overflow: 'hidden', transition: 'border-color 120ms', borderColor: hovered ? '#2563EB' : 'rgba(0,0,0,0.06)' }}
+      style={{ display: 'flex', borderRadius: 8, background: '#FFFFFF', cursor: 'pointer', border: '0.75px solid rgba(0,0,0,0.06)', overflow: 'hidden', transition: 'border-color 120ms, box-shadow 120ms', borderColor: hovered ? '#2563EB' : 'rgba(0,0,0,0.06)', boxShadow: hovered ? '0 2px 8px rgba(37,99,235,0.08)' : 'none' }}
     >
-      <div style={{ width: 3, background: hovered ? '#2563EB' : 'transparent', transition: 'background 200ms' }} />
+      <div style={{ width: 3, background: hovered ? dc.fg : 'transparent', transition: 'background 200ms' }} />
       <div style={{ flex: 1, padding: '16px 16px 14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, background: hovered ? '#EFF6FF' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 150ms' }}>
-            <Icon size={16} style={{ color: hovered ? '#2563EB' : '#64748B' }} />
+          <div style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, background: dc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 150ms' }}>
+            <Icon size={16} style={{ color: dc.fg }} />
           </div>
           <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700, color: '#64748B', background: '#F1F5F9', padding: '1px 5px', borderRadius: 3 }}>{d.domain_code}</span>
           <div style={{ flex: 1, minWidth: 0 }}>
