@@ -1,8 +1,10 @@
 /**
  * WikiSidebar — /wiki sidebar with 4 grouped sections per V12 spec
  * Groups: KNOWLEDGE | DISCOVERY | PERSONAL | GOVERNANCE
+ * Dynamic badges from Supabase via TanStack Query
  */
 
+import { useMemo } from 'react';
 import {
   Home,
   Layers,
@@ -16,16 +18,9 @@ import {
   ShieldCheck,
   BarChart3,
   FileCode,
-  Factory,
-  Ship,
-  FlaskConical,
-  Leaf,
-  Landmark,
-  Bot,
-  HardHat,
-  Globe,
-  Pickaxe,
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
 interface WikiSidebarProps {
@@ -34,63 +29,90 @@ interface WikiSidebarProps {
   className?: string;
 }
 
-const WIKI_SIDEBAR_CONFIG: SidebarConfig = {
-  badge: 'WK',
-  label: 'Wiki',
-  sections: [
-    {
-      title: 'Knowledge',
-      items: [
-        { id: 'dashboard', title: 'Dashboard', path: '/wiki', icon: Home, exact: true },
-        { id: 'domains', title: 'Domains', path: '/wiki/domains', icon: Layers, exact: true },
-        { id: 'all-articles', title: 'All Articles', path: '/wiki/articles', icon: FileText, exact: true },
-      ],
-    },
-    {
-      title: 'Discovery',
-      items: [
-        { id: 'search', title: 'Search', path: '/wiki/search', icon: Search, exact: true },
-        { id: 'knowledge-graph', title: 'Knowledge Graph', path: '/wiki/knowledge-graph', icon: Share2, exact: true },
-        { id: 'learning-paths', title: 'Learning Paths', path: '/wiki/learning-paths', icon: GraduationCap, exact: true },
-      ],
-    },
-    {
-      title: 'Personal',
-      items: [
-        { id: 'reading-list', title: 'My Reading List', path: '/wiki/reading-list', icon: BookOpen, exact: true },
-        { id: 'subscriptions', title: 'Subscriptions', path: '/wiki/subscriptions', icon: Bell, exact: true },
-        { id: 'knowledge-requests', title: 'Knowledge Requests', path: '/wiki/knowledge-requests', icon: HelpCircle, exact: true },
-      ],
-    },
-    {
-      title: 'Governance',
-      items: [
-        { id: 'verification-queue', title: 'Verification Queue', path: '/wiki/verification', icon: ShieldCheck, exact: true },
-        { id: 'analytics', title: 'Analytics', path: '/wiki/analytics', icon: BarChart3, exact: true },
-        { id: 'templates', title: 'Templates', path: '/wiki/templates', icon: FileCode, exact: true },
-      ],
-    },
-    {
-      title: 'Domains',
-      items: [
-        { id: 'd1', title: 'Industrial Licensing', path: '/wiki/domains/D1', icon: Factory, exact: false },
-        { id: 'd2', title: 'Customs & Trade', path: '/wiki/domains/D2', icon: Ship, exact: false },
-        { id: 'd3', title: 'Chemical Permits', path: '/wiki/domains/D3', icon: FlaskConical, exact: false },
-        { id: 'd4', title: 'Environmental Compliance', path: '/wiki/domains/D4', icon: Leaf, exact: false },
-        { id: 'd5', title: 'Industrial Incentives', path: '/wiki/domains/D5', icon: Landmark, exact: false },
-        { id: 'd6', title: 'Fourth Industrial Revolution', path: '/wiki/domains/D6', icon: Bot, exact: false },
-        { id: 'd7', title: 'Workforce & Industrial Support', path: '/wiki/domains/D7', icon: HardHat, exact: false },
-        { id: 'd8', title: 'Senaei Platform', path: '/wiki/domains/D8', icon: Globe, exact: false },
-        { id: 'd9', title: 'Mining & Mineral Resources', path: '/wiki/domains/D9', icon: Pickaxe, exact: false },
-      ],
-    },
-  ],
-};
-
 export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps) {
+  // Dynamic badge counts from Supabase
+  const { data: articleCount } = useQuery({
+    queryKey: ['wiki-sidebar-article-count'],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('wiki_pages')
+        .select('*', { count: 'exact', head: true })
+        .is('deleted_at', null);
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  const { data: openRequestCount } = useQuery({
+    queryKey: ['wiki-sidebar-open-requests'],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('wiki_knowledge_requests')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'open');
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  const { data: reviewCount } = useQuery({
+    queryKey: ['wiki-sidebar-review-count'],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('wiki_pages')
+        .select('*', { count: 'exact', head: true })
+        .eq('verification_status', 'needs_review')
+        .is('deleted_at', null);
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  const config: SidebarConfig = useMemo(() => ({
+    badge: 'WK',
+    label: 'WikiHub',
+    sections: [
+      {
+        title: 'Knowledge',
+        items: [
+          { id: 'dashboard', title: 'Dashboard', path: '/wiki', icon: Home, exact: true },
+          { id: 'domains', title: 'Domains', path: '/wiki/domains', icon: Layers, exact: true, badge: 9 },
+          { id: 'all-articles', title: 'All Articles', path: '/wiki/articles', icon: FileText, exact: true, badge: articleCount ?? undefined },
+        ],
+      },
+      {
+        title: 'Discovery',
+        items: [
+          { id: 'search', title: 'Search', path: '/wiki/search', icon: Search, exact: true },
+          { id: 'knowledge-graph', title: 'Knowledge Graph', path: '/wiki/knowledge-graph', icon: Share2, exact: true },
+          { id: 'learning-paths', title: 'Learning Paths', path: '/wiki/learning-paths', icon: GraduationCap, exact: true, badge: 3 },
+        ],
+      },
+      {
+        title: 'Personal',
+        items: [
+          { id: 'reading-list', title: 'My Reading List', path: '/wiki/reading-list', icon: BookOpen, exact: true },
+          { id: 'subscriptions', title: 'Subscriptions', path: '/wiki/subscriptions', icon: Bell, exact: true },
+          { id: 'knowledge-requests', title: 'Knowledge Requests', path: '/wiki/knowledge-requests', icon: HelpCircle, exact: true, badge: openRequestCount ?? undefined, badgeVariant: (openRequestCount && openRequestCount > 0) ? 'danger' : undefined },
+        ],
+      },
+      {
+        title: 'Governance',
+        items: [
+          { id: 'verification-queue', title: 'Verification Queue', path: '/wiki/verification', icon: ShieldCheck, exact: true, badge: reviewCount ?? undefined, badgeVariant: (reviewCount && reviewCount > 0) ? 'danger' : undefined },
+          { id: 'analytics', title: 'Analytics', path: '/wiki/analytics', icon: BarChart3, exact: true },
+          { id: 'templates', title: 'Templates', path: '/wiki/templates', icon: FileCode, exact: true, badge: 5 },
+        ],
+      },
+    ],
+  }), [articleCount, openRequestCount, reviewCount]);
+
   return (
     <SidebarBase
-      config={WIKI_SIDEBAR_CONFIG}
+      config={config}
       expanded={expanded}
       onToggle={onToggle}
       className={className}
