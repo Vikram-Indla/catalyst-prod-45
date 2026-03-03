@@ -61,10 +61,15 @@ export const r360Service = {
       avatar_url = profile?.avatar_url ?? null;
     }
 
-    // Count assigned work items
-    const { data: assignedItems } = await (supabase as any).from('ph_issues')
-      .select('status, jira_created_at')
-      .eq('assignee_display_name', resource.name);
+    // Count assigned work items — prefer jira_account_id for accurate matching
+    let overviewAssigneeQuery = (supabase as any).from('ph_issues')
+      .select('status, jira_created_at');
+    if (resource.jira_account_id) {
+      overviewAssigneeQuery = overviewAssigneeQuery.eq('assignee_account_id', resource.jira_account_id);
+    } else {
+      overviewAssigneeQuery = overviewAssigneeQuery.eq('assignee_display_name', resource.name);
+    }
+    const { data: assignedItems } = await overviewAssigneeQuery;
 
     // Count contributed items for non-developer roles
     let contributedItems: any[] = [];
@@ -119,10 +124,14 @@ export const r360Service = {
 
     const ISSUE_FIELDS = 'issue_key, project_key, project_name, summary, issue_type, status, priority, assignee_display_name, reporter_display_name, parent_key, parent_summary, sprint_name, story_points, fix_versions, due_date, jira_created_at, jira_updated_at, resolution, labels, assignee_account_id, reporter_account_id';
 
-    // Fetch assigned items
+    // Fetch assigned items — prefer jira_account_id for accurate matching
     let assigneeQuery = (supabase as any).from('ph_issues')
-      .select(ISSUE_FIELDS)
-      .eq('assignee_display_name', resource.name);
+      .select(ISSUE_FIELDS);
+    if (resource.jira_account_id) {
+      assigneeQuery = assigneeQuery.eq('assignee_account_id', resource.jira_account_id);
+    } else {
+      assigneeQuery = assigneeQuery.eq('assignee_display_name', resource.name);
+    }
     if (filters?.search) assigneeQuery = assigneeQuery.ilike('summary', `%${filters.search}%`);
     if (filters?.project_keys?.length) assigneeQuery = assigneeQuery.in('project_key', filters.project_keys);
     if (filters?.item_types?.length) assigneeQuery = assigneeQuery.in('issue_type', filters.item_types);
