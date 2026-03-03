@@ -240,6 +240,13 @@ export default function R360MemberDetail() {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
+  // Stale alert: compute oldest age (must be before early returns)
+  const oldestAge = useMemo(() => {
+    if (!allStaleItems.length) return 0;
+    return Math.max(...allStaleItems.map(i => i.age_days || 0));
+  }, [allStaleItems]);
+  const allStale = allOpenItems.length > 0 && allStaleItems.length === allOpenItems.length;
+
   if (overviewLoading) {
     return (
       <div id="r360-root">
@@ -263,7 +270,7 @@ export default function R360MemberDetail() {
 
   return (
     <div id="r360-root">
-      <div className="r3-page">
+      <div className="r3-page" style={{ background: '#FFFFFF' }}>
         {/* ── Sticky Header: Profile + Week Nav ── */}
         <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#FFFFFF' }}>
         {/* ── Profile Header ── */}
@@ -279,19 +286,27 @@ export default function R360MemberDetail() {
               <div className="r3-profile-name">{overview.name}</div>
               <div className="r3-profile-role">{overview.role_name} · {overview.department}</div>
             </div>
+            {/* §9 — OPEN (blue) + STALE (danger red) */}
             <div style={{ display: 'flex', gap: '10px' }}>
-              <div style={{ padding: '8px 22px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, border: '1px solid #FDE68A', background: '#FFFBEB' }}>
-                <div style={{ fontSize: '22px', fontWeight: 700, color: '#78350F' }}>{bannerOpenCount}</div>
-                <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#78350F', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
+              <div style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '#EFF6FF' }}>
+                <div style={{ fontSize: '20px', fontWeight: 700, color: '#2563EB' }}>{bannerOpenCount}</div>
+                <div style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
               </div>
-              <div style={{ padding: '8px 22px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, border: '1px solid #E2E8F0', background: '#FFFFFF' }}>
-                <div style={{ fontSize: '22px', fontWeight: 700, color: '#0F172A' }}>{bannerStaleCount}</div>
-                <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#334155', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
+              <div style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '#FEF2F2' }}>
+                <div style={{ fontSize: '20px', fontWeight: 700, color: '#DC2626' }}>{bannerStaleCount}</div>
+                <div style={{ fontSize: '11px', fontWeight: 600, color: '#DC2626', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
               </div>
             </div>
           </div>
 
-          {/* ── Tabs + Actions ── */}
+          {/* §3 — Stale warning banner */}
+          {allStale && allOpenItems.length > 0 && (
+            <div style={{ margin: '8px 0 0', padding: '8px 12px', background: '#FFFBEB', borderLeft: '3px solid #D97706', borderRadius: '0 4px 4px 0', fontSize: '13px', color: '#92400E' }}>
+              ⚠️ All assigned items are stale. Oldest: {oldestAge} days.
+            </div>
+          )}
+
+          {/* ── Tabs + Actions — §10 toolbar buttons ── */}
           <div className="r3-tabs">
             {(['ring', 'chronology', 'board'] as R360ViewType[]).map(v => (
               <button key={v} className={`r3-tab ${view === v ? 'r3-tab--active' : ''}`} onClick={() => setView(v)}>
@@ -299,64 +314,84 @@ export default function R360MemberDetail() {
               </button>
             ))}
             <div className="r3-tab-spacer" />
-            <button className="r3-btn" onClick={() => navigate('/project-hub/resources')}>
+            {/* Back — text button */}
+            <button
+              onClick={() => navigate('/project-hub/resources')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: '#64748B', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
+              onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
+              onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
+            >
               <ChevronLeft size={14} /> Back
             </button>
-            <button className="r3-btn">
-              <Calendar size={14} /> Q1-2026
+            {/* Q1-2026 — neutral chip */}
+            <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(15,23,42,0.05)', border: 'none', borderRadius: '6px', color: '#0F172A', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
+              <Calendar size={13} /> Q1-2026
             </button>
-            <button className="r3-btn r3-btn--primary" onClick={() => setAiOpen(true)}>
-              <Sparkles size={14} /> Intelligence
+            {/* Intelligence — purple */}
+            <button
+              onClick={() => setAiOpen(true)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#7C3AED', border: 'none', borderRadius: '6px', color: '#FFFFFF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', padding: '5px 14px' }}
+            >
+              <Sparkles size={13} /> Intelligence
             </button>
           </div>
         </div>
 
-        {/* ── Period Navigation ── */}
+        {/* ── Period Navigation — §8 filter tabs ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 0', borderBottom: '1px solid #F1F5F9', flexWrap: 'wrap' as const }}>
           {/* Period Type Toggle */}
           <div style={{ display: 'inline-flex', alignItems: 'center', background: '#F8FAFC', borderRadius: '8px', padding: '2px', border: '1px solid #E2E8F0' }}>
             <button
               onClick={() => handlePeriodTypeChange('weekly')}
               style={{
-                display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 0.15s ease',
+                display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 80ms ease',
                 background: periodType === 'weekly' ? '#FFFFFF' : 'transparent',
                 color: periodType === 'weekly' ? '#0F172A' : '#64748B',
                 boxShadow: periodType === 'weekly' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
               }}
             >
-              <Calendar size={13} />
-              Weekly
+              <Calendar size={13} /> Weekly
             </button>
             <button
               onClick={() => handlePeriodTypeChange('monthly')}
               style={{
-                display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 0.15s ease',
+                display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 80ms ease',
                 background: periodType === 'monthly' ? '#FFFFFF' : 'transparent',
                 color: periodType === 'monthly' ? '#0F172A' : '#64748B',
                 boxShadow: periodType === 'monthly' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
               }}
             >
-              <Calendar size={13} />
-              Monthly
+              <Calendar size={13} /> Monthly
             </button>
           </div>
 
           <div style={{ width: '1px', height: '20px', background: '#E2E8F0' }} />
-
-          {/* Period Label + Nav Arrows */}
           <span style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>📅 {period.label}</span>
           <span style={{ fontSize: '13px', fontWeight: 500, color: '#334155' }}>{period.range}</span>
           <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigatePeriod(-1)}>‹</button>
           <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigatePeriod(1)}>›</button>
           <div style={{ width: '1px', height: '20px', background: '#E2E8F0', margin: '0 4px' }} />
+          {/* §8 — V12 filter tabs */}
           {([
             { key: null, label: `All (${counts.all})` },
             { key: 'to_do', label: `To Do (${counts.to_do})` },
             { key: 'in_progress', label: `In Prog (${counts.in_progress})` },
-          ] as const).map(f => (
-            <span key={f.key ?? 'all'} onClick={() => setStatusFilter(statusFilter === f.key ? null : f.key)} style={{ padding: '5px 14px', fontSize: '12.5px', fontWeight: (statusFilter === f.key || (f.key === null && !statusFilter)) ? 600 : 500, border: (statusFilter === f.key || (f.key === null && !statusFilter)) ? '1px solid #2563EB' : '1px solid #E2E8F0', borderRadius: '20px', background: (statusFilter === f.key || (f.key === null && !statusFilter)) ? '#EFF6FF' : '#FFF', color: (statusFilter === f.key || (f.key === null && !statusFilter)) ? '#2563EB' : '#334155', cursor: 'pointer' }}>{f.label}</span>
-          ))}
-          <span style={{ marginLeft: 'auto', fontSize: '12.5px', color: '#64748B' }}>{weekItems.length} items</span>
+          ] as const).map(f => {
+            const isActive = statusFilter === f.key || (f.key === null && !statusFilter);
+            return (
+              <span key={f.key ?? 'all'} onClick={() => setStatusFilter(statusFilter === f.key ? null : f.key)} style={{
+                padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
+                borderRadius: '6px', cursor: 'pointer', transition: 'all 80ms ease',
+                background: isActive ? 'rgba(37,99,235,0.10)' : 'transparent',
+                color: isActive ? '#2563EB' : '#64748B',
+                border: 'none',
+              }}
+              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
+              onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
+              >{f.label}</span>
+            );
+          })}
+          <span style={{ marginLeft: 'auto', fontSize: '12.5px', color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>{weekItems.length} items</span>
         </div>
         </div>{/* end sticky wrapper */}
 
@@ -367,9 +402,9 @@ export default function R360MemberDetail() {
           </div>
         ) : weekItems.length === 0 ? (
           <div>
-            <div className="r3-empty">No work items updated in this period.</div>
+            <div className="r3-empty">No work items assigned in this period.</div>
             {workItems.length > 0 && lastActivityDate && (
-              <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: '1px solid #E2E8F0', background: '#F8FAFC', textAlign: 'center' }}>
+              <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', textAlign: 'center' }}>
                 <div style={{ fontSize: '13px', color: '#334155', marginBottom: '10px' }}>
                   <strong style={{ color: '#0F172A' }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
                   {allStaleItems.length > 0 && <span> · {allStaleItems.length} stale</span>}
@@ -382,11 +417,11 @@ export default function R360MemberDetail() {
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '6px',
                     padding: '7px 18px', borderRadius: '6px', fontSize: '12.5px', fontWeight: 600,
-                    border: '1px solid #2563EB', background: '#EFF6FF', color: '#2563EB',
-                    cursor: 'pointer', transition: 'all 0.15s ease',
+                    border: 'none', background: 'rgba(37,99,235,0.10)', color: '#2563EB',
+                    cursor: 'pointer', transition: 'all 80ms ease',
                   }}
-                  onMouseOver={e => { (e.target as HTMLButtonElement).style.background = '#DBEAFE'; }}
-                  onMouseOut={e => { (e.target as HTMLButtonElement).style.background = '#EFF6FF'; }}
+                  onMouseOver={e => { (e.target as HTMLButtonElement).style.background = 'rgba(37,99,235,0.16)'; }}
+                  onMouseOut={e => { (e.target as HTMLButtonElement).style.background = 'rgba(37,99,235,0.10)'; }}
                 >
                   <Calendar size={13} />
                   Jump to last activity
@@ -420,74 +455,67 @@ export default function R360MemberDetail() {
 }
 
 // ═══════════════════════════════════════════
-// RING VIEW
+// RING VIEW — V12 PRECISION
 // ═══════════════════════════════════════════
-// ═══ PIXEL-BASED RING VIEW ═══
-// All coordinates in pixels. Cards, spokes, labels — same coordinate space.
-const CANVAS_H = 720;
 const CARD_W = 230;
-const CARD_H = 155;
+const CARD_H = 150;
 
-// ═══ TIGHT ORBIT SLOTS ═══
-function computeSlots(W: number) {
-  const H = CANVAS_H;
-  const badge = 72;
-  const rEdge = W - badge - CARD_W - 8;
-  return [
-    { left: W * 0.02,              top: H * 0.015 },
-    { left: W * 0.50 - CARD_W / 2, top: 0          },
-    { left: rEdge,                  top: H * 0.015 },
-    { left: W * 0.01,              top: H * 0.35  },
-    { left: rEdge,                  top: H * 0.33  },
-    { left: W * 0.02,              top: H * 0.61  },
-    { left: W * 0.50 - CARD_W / 2, top: H * 0.65  },
-    { left: rEdge,                  top: H * 0.59  },
-  ];
+// V12 StatusLozenge — exactly 3 states
+function StatusLozenge({ status }: { status: string }) {
+  const s = (status || '').toLowerCase();
+  let bg = '#DFE1E6', color = '#253858', label = 'TO DO'; // Grey default
+  if (['in progress','in review','active','analysis','in development','under implementation','implementation review','code review','ready for qa','in uat','technical validation','in qa'].includes(s)) {
+    bg = '#DEEBFF'; color = '#0747A6'; label = s === 'in review' || s === 'code review' || s === 'implementation review' || s === 'ready for qa' ? 'IN REVIEW' : 'IN PROGRESS';
+  } else if (['done','approved','completed','resolved','closed'].includes(s)) {
+    bg = '#E3FCEF'; color = '#006644'; label = 'DONE';
+  } else {
+    // Grey: To Do, Backlog, On Hold, Waiting, Unknown, any unmapped
+    label = s === 'on hold' || s === 'hold' ? 'ON HOLD' : s === 'backlog' ? 'BACKLOG' : 'TO DO';
+  }
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', height: '20px',
+      padding: '0 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 700,
+      textTransform: 'uppercase' as const, letterSpacing: '0.03em', lineHeight: 1,
+      background: bg, color,
+    }}>{label}</span>
+  );
 }
 
-function computeGeometry(W: number, count: number, ages: number[]) {
+// Dynamic ring geometry
+function computeRingGeometry(W: number, count: number, ages: number[]) {
+  const H_CANVAS = Math.max(500, Math.min(720, 500 + count * 20));
   const CX = W / 2;
-  const CY = CANVAS_H * 0.42;
-  const slots = computeSlots(W);
+  const CY = H_CANVAS * 0.44;
+  // Scale radius based on count
+  const baseR = count <= 3 ? 160 : count <= 5 ? 200 : count <= 6 ? 230 : 260;
+  const slots: { left: number; top: number }[] = [];
   const spokes: { x1: number; y1: number; x2: number; y2: number }[] = [];
-  const labels: { x: number; y: number; age: number }[] = [];
-  for (let i = 0; i < Math.min(count, 8); i++) {
+  const labelData: { x: number; y: number; age: number }[] = [];
+  const n = Math.min(count, 8);
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+    const cx = CX + baseR * Math.cos(angle);
+    const cy = CY + baseR * Math.sin(angle);
+    slots.push({ left: Math.max(4, Math.min(cx - CARD_W / 2, W - CARD_W - 4)), top: Math.max(4, cy - CARD_H / 2) });
     const ccx = slots[i].left + CARD_W / 2;
     const ccy = slots[i].top + CARD_H / 2;
     spokes.push({ x1: CX, y1: CY, x2: ccx, y2: ccy });
-    labels.push({ x: (CX + ccx) / 2, y: (CY + ccy) / 2, age: ages[i] || 0 });
+    labelData.push({ x: (CX + ccx) / 2, y: (CY + ccy) / 2, age: ages[i] || 0 });
   }
-  return { slots, spokes, labels, center: { x: CX, y: CY } };
+  return { slots, spokes, labels: labelData, center: { x: CX, y: CY }, canvasH: Math.max(H_CANVAS, n > 0 ? Math.max(...slots.map(s => s.top + CARD_H)) + 24 : H_CANVAS) };
 }
 
-const SC_MAP: Record<string, { dot: string; bg: string; tx: string; label: string; accent: string }> = {
-  'To Do':          { dot:'#D97706', bg:'#FFFBEB', tx:'#78350F', label:'To Do',       accent:'#D97706' },
-  'Open':           { dot:'#D97706', bg:'#FFFBEB', tx:'#78350F', label:'To Do',       accent:'#D97706' },
-  'Backlog':        { dot:'#D97706', bg:'#FFFBEB', tx:'#78350F', label:'Backlog',     accent:'#D97706' },
-  'In Progress':    { dot:'#2563EB', bg:'#EFF6FF', tx:'#1E3A5F', label:'In Progress', accent:'#2563EB' },
-  'In Development': { dot:'#2563EB', bg:'#EFF6FF', tx:'#1E3A5F', label:'In Progress', accent:'#2563EB' },
-  'In Review':      { dot:'#0D9488', bg:'#F0FDFA', tx:'#134E4A', label:'In Review',   accent:'#0D9488' },
-  'Code Review':    { dot:'#0D9488', bg:'#F0FDFA', tx:'#134E4A', label:'In Review',   accent:'#0D9488' },
-  'Ready for QA':   { dot:'#0D9488', bg:'#F0FDFA', tx:'#134E4A', label:'In QA',       accent:'#0D9488' },
-  'In UAT':         { dot:'#0D9488', bg:'#F0FDFA', tx:'#134E4A', label:'In UAT',      accent:'#0D9488' },
-  'Done':           { dot:'#16A34A', bg:'#F0FDF4', tx:'#14532D', label:'Done',        accent:'#16A34A' },
-  'Closed':         { dot:'#16A34A', bg:'#F0FDF4', tx:'#14532D', label:'Done',        accent:'#16A34A' },
-  'Resolved':       { dot:'#16A34A', bg:'#F0FDF4', tx:'#14532D', label:'Done',        accent:'#16A34A' },
-  'Blocked':        { dot:'#EF4444', bg:'#FEF2F2', tx:'#7F1D1D', label:'Blocked',     accent:'#EF4444' },
-};
-const SC_DEFAULT = { dot:'#64748B', bg:'#F1F5F9', tx:'#334155', label:'Unknown', accent:'#64748B' };
-const scLookup = (s: string) => SC_MAP[s] || SC_DEFAULT;
-const PC_MAP: Record<string, string> = { BAU:'#2563EB', SEN:'#D97706', FAC:'#16A34A', OPS:'#0D9488', SUP:'#64748B', LND:'#7C3AED' };
-const ageColor = (d: number) => d <= 7 ? '#16A34A' : d <= 14 ? '#D97706' : '#EF4444';
-
-function RingPill({ status }: { status: string }) {
-  const s = scLookup(status);
-  return (
-    <span style={{ display:'inline-flex', alignItems:'center', gap:'4px', padding:'3px 10px', borderRadius:'4px', fontSize:'11.5px', fontWeight:600, lineHeight:'1', background:s.bg, color:s.tx }}>
-      <span style={{ width:'6px', height:'6px', borderRadius:'50%', background:s.dot, flexShrink:0 }} />
-      {s.label}
-    </span>
-  );
+// Priority badge helper
+function PriorityBadge({ priority }: { priority: string }) {
+  const p = (priority || '').toLowerCase();
+  if (p === 'highest' || p === 'critical') {
+    return <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: '#FEF2F2', color: '#DC2626' }}>{priority}</span>;
+  }
+  if (p === 'high') {
+    return <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: '#FEF2F2', color: '#DC2626' }}>{priority}</span>;
+  }
+  return <span style={{ fontSize: '10.5px', fontWeight: 500, color: '#64748B' }}>{priority}</span>;
 }
 
 function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
@@ -509,7 +537,6 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
     return () => window.removeEventListener('resize', measure);
   }, [measure]);
 
-  // Close on outside click
   useEffect(() => {
     if (!showDone) return;
     const handler = (e: MouseEvent) => {
@@ -519,7 +546,6 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
     return () => document.removeEventListener('mousedown', handler);
   }, [showDone]);
 
-  // Close on Escape
   useEffect(() => {
     if (!showDone) return;
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowDone(false); };
@@ -528,216 +554,198 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
   }, [showDone]);
 
   const nonDone = items.filter(i => i.status_category !== 'done');
-  // `items` is already week-scoped by the parent filter
   const doneItems = items.filter(i => i.status_category === 'done');
   const doneCount = doneItems.length;
   const visible = nonDone.slice(0, 8);
   const ages = visible.map(i => i.age_days);
-  const { slots, spokes, labels, center } = computeGeometry(W, visible.length, ages);
+  const { slots, spokes, labels, center, canvasH } = computeRingGeometry(W, visible.length, ages);
+
+  const isHighPriority = (p: string) => {
+    const l = (p || '').toLowerCase();
+    return l === 'high' || l === 'highest' || l === 'critical';
+  };
 
   return (
-    <div ref={canvasRef} style={{ position:'relative', width:'100%', height:`${CANVAS_H}px`, overflow:'visible', boxSizing:'border-box' as const, marginTop:'8px' }}>
-      {/* SVG SPOKES — pixel coordinates */}
-      <svg width={W} height={CANVAS_H} style={{ position:'absolute', top:0, left:0, zIndex:1, pointerEvents:'none' }}>
-        {spokes.map((s, i) => {
-          return (
-            <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
-              stroke="#94A3B8" strokeWidth={2} strokeDasharray="8 5" strokeLinecap="round" />
-          );
-        })}
+    <div ref={canvasRef} style={{
+      position: 'relative', width: '100%', height: `${canvasH}px`,
+      overflow: 'visible', boxSizing: 'border-box' as const, marginTop: '8px',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      {/* SVG SPOKES — solid, subtle */}
+      <svg width={W} height={canvasH} style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, pointerEvents: 'none' }}>
+        {spokes.map((s, i) => (
+          <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
+            stroke="rgba(15,23,42,0.08)" strokeWidth={1} />
+        ))}
       </svg>
 
-      {/* SPOKE LABELS — pixel midpoints */}
+      {/* SPOKE LABELS */}
       {labels.map((l, i) => (
-          <div key={`label-${i}`} style={{
-            position:'absolute', left:`${l.x}px`, top:`${l.y}px`,
-            transform:'translate(-50%,-50%)', zIndex:4, pointerEvents:'none',
-            fontSize:'11px', fontWeight:600, color:'#334155',
-            background:'#F8FAFC', padding:'2px 8px', borderRadius:'10px',
-            border:'1px solid #E2E8F0',
-            whiteSpace:'nowrap', fontVariantNumeric:'tabular-nums',
-          }}>{`${l.age}d`}</div>
+        <div key={`label-${i}`} style={{
+          position: 'absolute', left: `${l.x}px`, top: `${l.y}px`,
+          transform: 'translate(-50%,-50%)', zIndex: 4, pointerEvents: 'none',
+          fontSize: '10px', fontWeight: 600, color: '#64748B',
+          background: '#FFFFFF', padding: '2px 8px', borderRadius: '10px',
+          border: '1px solid rgba(15,23,42,0.08)',
+          whiteSpace: 'nowrap', fontFamily: "'JetBrains Mono', monospace",
+          fontVariantNumeric: 'tabular-nums',
+        }}>{`Updated ${l.age}d ago`}</div>
       ))}
 
-      {/* CENTER AVATAR */}
+      {/* CENTER AVATAR — 56px, no dashed ring, no name/role */}
       <div style={{
-        position:'absolute', left:`${center.x}px`, top:`${center.y}px`,
-        transform:'translate(-50%,-50%)', textAlign:'center', zIndex:5,
+        position: 'absolute', left: `${center.x}px`, top: `${center.y}px`,
+        transform: 'translate(-50%,-50%)', zIndex: 5,
       }}>
         <div style={{
-          width:'96px', height:'96px', borderRadius:'50%', border:'3px solid #2563EB',
-          overflow:'hidden', margin:'0 auto 6px',
-          boxShadow:'0 0 0 6px rgba(37,99,235,.12)',
+          width: '56px', height: '56px', borderRadius: '50%',
+          overflow: 'hidden',
           background: avatarUrl ? '#FFFFFF' : 'linear-gradient(135deg,#2563EB,#0D9488)',
-          display:'flex', alignItems:'center', justifyContent:'center',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          border: '2px solid #FFFFFF',
+          outline: '1px solid rgba(15,23,42,0.08)',
         }}>
           {avatarUrl ? (
-            <img src={avatarUrl} alt={name} style={{ width:'100%', height:'100%', objectFit:'cover' }}
+            <img src={avatarUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
           ) : (
-            <span style={{ fontSize:'32px', fontWeight:700, color:'white' }}>{initials(name)}</span>
+            <span style={{ fontSize: '18px', fontWeight: 700, color: 'white' }}>{initials(name)}</span>
           )}
         </div>
-        <div style={{ fontSize:'13px', fontWeight:600, color:'#020617' }}>{name}</div>
-        <div style={{ fontSize:'11px', fontWeight:500, color:'#334155' }}>{role}</div>
       </div>
 
-      {/* ORBITAL CARDS — pixel positions */}
+      {/* ORBITAL CARDS — V12 compliance */}
       {visible.map((item, i) => {
         const pos = slots[i];
         if (!pos) return null;
-        const s = scLookup(item.status_label || '');
         const isSelected = selected?.id === item.id;
         const isContributor = item.role_on_item === 'Contributor';
+        const hasHighPriority = isHighPriority(item.priority);
         return (
           <div key={item.id} onClick={() => onSelect(item)} style={{
-            position:'absolute', left:`${pos.left}px`, top:`${pos.top}px`,
-            width:`${CARD_W}px`, background:'#FFF',
-            border: isSelected ? '1px solid #2563EB' : '1px solid #E2E8F0',
-            borderRadius:'8px', padding:'10px 12px 10px 15px',
-            cursor:'pointer', zIndex:3,
-            boxShadow: isSelected ? '0 0 0 2px rgba(37,99,235,.15)' : '0 1px 3px rgba(15,23,42,.05)',
-          }}>
-            <div style={{ position:'absolute', left:0, top:'8px', bottom:'8px', width:'3px', borderRadius:'0 2px 2px 0', background: s.accent }} />
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'4px' }}>
-              <div style={{ display:'flex', alignItems:'center', gap:'4px' }}>
+            position: 'absolute', left: `${pos.left}px`, top: `${pos.top}px`,
+            width: `${CARD_W}px`, background: '#FFFFFF',
+            border: isSelected ? '1px solid #2563EB' : '1px solid rgba(15,23,42,0.12)',
+            borderLeft: hasHighPriority ? '3px solid #DC2626' : isSelected ? '1px solid #2563EB' : '1px solid rgba(15,23,42,0.12)',
+            borderRadius: '6px', padding: '10px 12px',
+            cursor: 'pointer', zIndex: 3,
+            boxShadow: isSelected ? '0 0 0 2px rgba(37,99,235,.15)' : '0 1px 2px 0 rgba(0,0,0,0.04)',
+            transition: 'background 80ms ease',
+          }}
+          onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+          >
+            {/* Row 1: type + priority */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 {getJiraIcon(item.item_type)}
-                <span style={{ fontSize:'10.5px', fontWeight:700, textTransform:'uppercase', color:'#334155' }}>{item.item_type}</span>
+                <span style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' as const, color: '#334155' }}>{item.item_type}</span>
               </div>
-              <span style={{ fontSize:'10.5px', fontWeight:500, color:'#64748B' }}>{item.priority}</span>
+              <PriorityBadge priority={item.priority} />
             </div>
-            <div style={{ display:'flex', alignItems:'center', gap:'5px', marginBottom:'5px' }}>
-              <span style={{ fontSize:'11px', fontWeight:600, color:'#2563EB', fontFamily:"'JetBrains Mono',monospace" }}>{item.item_key}</span>
-              <span style={{ fontSize:'10px', fontWeight:700, padding:'2px 6px', borderRadius:'3px', color:'#FFF', background: PC_MAP[item.project_key] || '#64748B' }}>{item.project_key}</span>
-              <span style={{ marginLeft:'auto', fontSize:'11px', fontWeight:600, color: ageColor(item.age_days), fontVariantNumeric:'tabular-nums' }} title="Days since assigned to this person">{item.age_days}d</span>
+            {/* Row 2: key + project badge + age */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+              <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: '#F1F5F9', border: '1px solid #D4D4D8', color: '#3F3F46' }}>{item.project_key}</span>
+              <span style={{
+                marginLeft: 'auto', fontSize: '12px', fontWeight: 600,
+                color: item.age_days > 30 ? '#D97706' : '#64748B',
+                fontVariantNumeric: 'tabular-nums', fontFamily: "'JetBrains Mono', monospace",
+              }} title="Days since assigned to this person">{item.age_days}d</span>
             </div>
-            <div style={{ fontSize:'12.5px', fontWeight:500, color:'#020617', lineHeight:'1.35', marginBottom:'5px', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' } as React.CSSProperties}>{item.title}</div>
-            <div style={{ display:'flex', alignItems:'center', gap:'6px', flexWrap:'wrap' }}>
-              <RingPill status={item.status_label || ''} />
+            {/* Row 3: title */}
+            <div style={{ fontSize: '13px', fontWeight: 400, color: '#0F172A', lineHeight: '1.35', marginBottom: '5px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } as React.CSSProperties}>{item.title}</div>
+            {/* Row 4: status lozenge + carry-over */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+              <StatusLozenge status={item.status} />
               {item.carried_from_label && (
-                <span style={{ fontSize:'9.5px', fontWeight:600, padding:'2px 7px', borderRadius:'3px', background:'#FEF3C7', color:'#92400E', border:'1px solid #FDE68A', whiteSpace:'nowrap' }} title="Carried over from an earlier period">
+                <span style={{ fontSize: '9.5px', fontWeight: 600, padding: '2px 7px', borderRadius: '3px', background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A', whiteSpace: 'nowrap' }} title="Carried over from an earlier period">
                   {item.carried_from_label}
                 </span>
               )}
               {isContributor && (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize:'10px', fontWeight:500, color:'#64748B' }}>→ <MiniAvatar name={item.assignee_name} size={16} /> {item.assignee_name}</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 500, color: '#64748B' }}>→ <MiniAvatar name={item.assignee_name} size={16} /> {item.assignee_name}</span>
               )}
             </div>
           </div>
         );
       })}
 
-      {/* COMPLETED BADGE — CLICKABLE WITH DROPDOWN */}
+      {/* COMPLETED BADGE */}
       {doneCount > 0 && (
-        <div ref={doneRef} style={{ position:'absolute', right:'16px', top:`${center.y}px`, transform:'translateY(-50%)', zIndex:10 }}>
-          {/* Badge */}
+        <div ref={doneRef} style={{ position: 'absolute', right: '16px', top: `${center.y}px`, transform: 'translateY(-50%)', zIndex: 10 }}>
           <div
             onClick={() => setShowDone(prev => !prev)}
             title="Click to view completed items"
             style={{
-              display:'flex', flexDirection:'column', alignItems:'center', gap:'6px',
-              cursor:'pointer', transition:'transform .15s',
-              transform: showDone ? 'scale(1.08)' : 'scale(1)',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+              cursor: 'pointer', transition: 'transform 80ms',
+              transform: showDone ? 'scale(1.05)' : 'scale(1)',
             }}
           >
             <div style={{
-              width:'48px', height:'48px', borderRadius:'50%', background:'#16A34A', color:'#FFF',
-              fontSize:'18px', fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center',
+              width: '44px', height: '44px', borderRadius: '50%', background: '#16A34A', color: '#FFF',
+              fontSize: '16px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: showDone
                 ? '0 0 0 3px rgba(22,163,74,.25), 0 2px 8px rgba(22,163,74,.3)'
                 : '0 2px 8px rgba(22,163,74,.3)',
-              transition:'box-shadow .15s', fontVariantNumeric:'tabular-nums',
+              transition: 'box-shadow 80ms', fontVariantNumeric: 'tabular-nums',
             }}>{doneCount}</div>
-            <span style={{ fontSize:'9.5px', fontWeight:700, color:'#14532D', textTransform:'uppercase', letterSpacing:'.06em', writingMode:'vertical-rl' } as React.CSSProperties}>COMPLETED</span>
+            <span style={{ fontSize: '9px', fontWeight: 700, color: '#14532D', textTransform: 'uppercase' as const, letterSpacing: '.06em', writingMode: 'vertical-rl' } as React.CSSProperties}>COMPLETED</span>
           </div>
 
           {/* POPOVER DROPDOWN */}
           {showDone && (
             <div style={{
-              position:'absolute', right:'64px', top:'50%', transform:'translateY(-50%)',
-              width:'360px', maxHeight:'420px', background:'#FFFFFF',
-              border:'1px solid #E2E8F0', borderRadius:'12px',
-              boxShadow:'0 8px 30px rgba(15,23,42,.12), 0 2px 8px rgba(15,23,42,.06)',
-              overflow:'hidden', zIndex:11,
+              position: 'absolute', right: '64px', top: '50%', transform: 'translateY(-50%)',
+              width: '360px', maxHeight: '420px', background: '#FFFFFF',
+              border: '1px solid rgba(15,23,42,0.12)', borderRadius: '8px',
+              boxShadow: '0 8px 30px rgba(15,23,42,.12), 0 2px 8px rgba(15,23,42,.06)',
+              overflow: 'hidden', zIndex: 11,
             }}>
-              {/* Header */}
               <div style={{
-                padding:'14px 16px', borderBottom:'1px solid #F1F5F9',
-                display:'flex', alignItems:'center', justifyContent:'space-between',
+                padding: '14px 16px', borderBottom: '1px solid #F1F5F9',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               }}>
-                <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div style={{
-                    width:'22px', height:'22px', borderRadius:'50%', background:'#16A34A',
-                    color:'#FFF', fontSize:'12px', fontWeight:700,
-                    display:'flex', alignItems:'center', justifyContent:'center',
-                  }}>✓</div>
-                  <span style={{ fontSize:'13.5px', fontWeight:600, color:'#020617' }}>
-                    Completed This Week
-                  </span>
+                    width: '22px', height: '22px', borderRadius: '50%', background: '#E3FCEF',
+                    border: '1.5px solid #16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  }}>
+                    <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </div>
+                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#0F172A' }}>Completed This Week</span>
                 </div>
-                <span style={{
-                  fontSize:'11px', fontWeight:700, color:'#14532D',
-                  background:'#F0FDF4', padding:'2px 10px', borderRadius:'10px',
-                }}>{doneCount}</span>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#006644', background: '#E3FCEF', padding: '2px 10px', borderRadius: '10px' }}>{doneCount}</span>
               </div>
-
-              {/* Scrollable list */}
-              <div style={{ maxHeight:'340px', overflowY:'auto', scrollbarWidth:'thin', padding:'4px 0' }}>
+              <div style={{ maxHeight: '340px', overflowY: 'auto', scrollbarWidth: 'thin', padding: '4px 0' }}>
                 {doneItems.map(item => {
                   const closedDate = item.resolved_at || item.updated_at;
-                  const resolvedLabel = closedDate
-                    ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                    : '';
+                  const resolvedLabel = closedDate ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
                   return (
-                    <div
-                      key={item.id}
-                      onClick={(e) => { e.stopPropagation(); onSelect(item); setShowDone(false); }}
-                      style={{
-                        display:'flex', alignItems:'flex-start', gap:'10px',
-                        padding:'10px 16px', cursor:'pointer',
-                        borderBottom:'1px solid #F8FAFC', transition:'background .1s',
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.background = '#F0FDF4')}
+                    <div key={item.id} onClick={(e) => { e.stopPropagation(); onSelect(item); setShowDone(false); }}
+                      style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 16px', cursor: 'pointer', borderBottom: '1px solid #F8FAFC', transition: 'background 80ms' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
-                      {/* Check circle — outlined */}
-                      <div style={{
-                        width:'22px', height:'22px', borderRadius:'50%',
-                        background:'#F0FDF4', border:'1.5px solid #16A34A',
-                        display:'flex', alignItems:'center', justifyContent:'center',
-                        flexShrink:0, marginTop:'1px',
-                      }}>
-                        <svg width="12" height="12" viewBox="0 0 12 12">
-                          <path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A"
-                            strokeWidth="2" fill="none" strokeLinecap="round"
-                            strokeLinejoin="round" />
-                        </svg>
+                      <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#E3FCEF', border: '1.5px solid #16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
+                        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
                       </div>
-
-                      {/* Content */}
-                      <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'3px' }}>
-                          <span style={{ fontSize:'11.5px', fontWeight:600, color:'#16A34A', fontFamily:"'JetBrains Mono','Fira Code',monospace" }}>{item.item_key}</span>
-                          <span style={{ fontSize:'9.5px', fontWeight:700, padding:'1px 6px', borderRadius:'3px', color:'#FFF', background:'#16A34A', textTransform:'uppercase' as const, letterSpacing:'.02em' }}>DONE</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
+                          <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+                          <StatusLozenge status="Done" />
                         </div>
-                        <div style={{ fontSize:'12.5px', fontWeight:500, color:'#020617', lineHeight:'1.35', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{item.title}</div>
-                        <div style={{ fontSize:'11px', color:'#64748B', marginTop:'2px' }}>
-                          Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}
-                        </div>
+                        <div style={{ fontSize: '12.5px', fontWeight: 400, color: '#0F172A', lineHeight: '1.35', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
+                        <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
                       </div>
-
-                      {/* Age */}
-                      <span style={{ fontSize:'11px', fontWeight:600, color:'#16A34A', flexShrink:0 }}>{item.age_days}d</span>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: '#006644', flexShrink: 0, fontFamily: "'JetBrains Mono', monospace" }}>{item.age_days}d</span>
                     </div>
                   );
                 })}
               </div>
-
-              {/* Footer */}
-              <div style={{
-                padding:'10px 16px', borderTop:'1px solid #F1F5F9',
-                fontSize:'11px', color:'#64748B', textAlign:'center',
-              }}>
+              <div style={{ padding: '10px 16px', borderTop: '1px solid #F1F5F9', fontSize: '11px', color: '#64748B', textAlign: 'center' }}>
                 Click any item to view details
               </div>
             </div>
@@ -747,7 +755,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
 
       {/* EMPTY STATE */}
       {items.length === 0 && (
-        <div style={{ position:'absolute', left:'50%', top:'50%', transform:'translate(-50%,-50%)', textAlign:'center', color:'#64748B', fontSize:'14px' }}>
+        <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center', color: '#64748B', fontSize: '14px' }}>
           No work items found for this week
         </div>
       )}
