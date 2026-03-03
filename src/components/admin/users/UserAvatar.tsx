@@ -1,22 +1,24 @@
 /**
- * UserAvatar — Avatar component with hash-based colors and country flag overlay
- * Per LOVABLE-USERS-MODULE-REDESIGN.md spec
+ * UserAvatar — Avatar component with photo support, hash-based fallback colors, and country flag overlay
+ * Priority: Real photo > Initials fallback
+ * Color constraint: No purple, magenta, or pink (reserved for AI features)
  */
 
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
-// Avatar colors (hash-based selection)
+// Avatar colors — neutral blue-gray palette + approved Catalyst hues (no purple/pink/magenta)
 const AVATAR_COLORS = [
-  '#8b5cf6', // Purple
-  '#ec4899', // Pink
-  '#f97316', // Orange
-  '#eab308', // Yellow
-  '#22c55e', // Green
-  '#06b6d4', // Cyan
+  '#475569', // Slate
+  '#334155', // Slate dark
   '#3b82f6', // Blue
-  '#6366f1', // Indigo
-  '#14b8a6', // Teal
-  '#ef4444', // Red
+  '#0d9488', // Teal
+  '#d97706', // Amber
+  '#2563eb', // Blue 600
+  '#0f766e', // Teal dark
+  '#1e40af', // Blue 800
+  '#065f46', // Emerald dark
+  '#0369a1', // Sky 700
 ];
 
 // Country flags mapping
@@ -39,7 +41,11 @@ const COUNTRY_FLAGS: Record<string, string> = {
 // Select color based on name hash
 const getAvatarColor = (name: string | null | undefined): string => {
   if (!name) return AVATAR_COLORS[0];
-  return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 };
 
 // Get initials from name
@@ -54,6 +60,7 @@ const getInitials = (name: string | null | undefined): string => {
 
 interface UserAvatarProps {
   name: string | null | undefined;
+  avatarUrl?: string | null;
   country?: string | null;
   flagUrl?: string | null;
   onClick?: () => void;
@@ -63,12 +70,14 @@ interface UserAvatarProps {
 
 export function UserAvatar({ 
   name, 
+  avatarUrl,
   country, 
   flagUrl,
   onClick, 
   size = 'md',
   className 
 }: UserAvatarProps) {
+  const [imgError, setImgError] = useState(false);
   const initials = getInitials(name);
   const bgColor = getAvatarColor(name);
   const flag = country ? COUNTRY_FLAGS[country] : null;
@@ -85,6 +94,8 @@ export function UserAvatar({
     lg: 'w-5 h-5 text-base',
   };
 
+  const showPhoto = avatarUrl && !imgError;
+
   return (
     <div 
       className={cn(
@@ -95,16 +106,29 @@ export function UserAvatar({
       )}
       onClick={onClick}
     >
-      <div 
-        className={cn(
-          "rounded-full flex items-center justify-center font-semibold text-white transition-transform",
-          sizeClasses[size],
-          onClick && "hover:scale-105"
-        )}
-        style={{ backgroundColor: bgColor }}
-      >
-        {initials}
-      </div>
+      {showPhoto ? (
+        <img
+          src={avatarUrl}
+          alt={name || 'User'}
+          onError={() => setImgError(true)}
+          className={cn(
+            "rounded-full object-cover transition-transform",
+            sizeClasses[size],
+            onClick && "hover:scale-105"
+          )}
+        />
+      ) : (
+        <div 
+          className={cn(
+            "rounded-full flex items-center justify-center font-semibold text-white transition-transform",
+            sizeClasses[size],
+            onClick && "hover:scale-105"
+          )}
+          style={{ backgroundColor: bgColor }}
+        >
+          {initials}
+        </div>
+      )}
       {(flagUrl || flag) && (
         <div 
           className={cn(

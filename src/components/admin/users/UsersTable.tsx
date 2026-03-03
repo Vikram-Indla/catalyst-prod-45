@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { UserAvatar } from './UserAvatar';
 import { Card, CardHeader, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -624,13 +625,14 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
             <div key={user.id} className="border rounded-lg p-4 bg-card hover:bg-muted/20 transition-colors">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <button
+                  <UserAvatar
+                    name={user.full_name}
+                    avatarUrl={user.avatar_url}
+                    country={user.country}
+                    flagUrl={user.country_flag_svg_url || undefined}
                     onClick={() => setEditUser(user)}
-                    className="h-10 w-10 rounded-full bg-brand-primary/20 flex items-center justify-center text-sm font-medium text-brand-primary hover:bg-brand-primary/30 transition-colors cursor-pointer flex-shrink-0"
-                    title="Edit user"
-                  >
-                    {getInitials(user.full_name)}
-                  </button>
+                    size="md"
+                  />
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium truncate">{user.full_name || 'Unknown'}</div>
                     <div className="text-xs text-muted-foreground truncate">{user.email}</div>
@@ -909,25 +911,14 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-3">
-                        <div className="relative flex-shrink-0">
-                          <button
-                            onClick={() => setEditUser(user)}
-                            className="h-8 w-8 rounded-full bg-brand-primary/20 flex items-center justify-center text-xs font-medium text-brand-primary hover:bg-brand-primary/30 transition-colors cursor-pointer"
-                            title="Edit user"
-                          >
-                            {getInitials(user.full_name)}
-                          </button>
-                          {(() => {
-                            const flagUrl = user.country_flag_svg_url || getCountryInfo(user.country)?.svg;
-                            return flagUrl ? (
-                              <img 
-                                src={flagUrl} 
-                                alt={user.country || ''} 
-                                className="absolute -bottom-0.5 -right-0.5 h-3.5 w-5 object-cover rounded-sm border border-background shadow-sm"
-                              />
-                            ) : null;
-                          })()}
-                        </div>
+                        <UserAvatar
+                          name={user.full_name}
+                          avatarUrl={user.avatar_url}
+                          country={user.country}
+                          flagUrl={user.country_flag_svg_url || getCountryInfo(user.country)?.svg}
+                          onClick={() => setEditUser(user)}
+                          size="sm"
+                        />
                         <div className="min-w-0">
                           <div className="text-sm font-medium truncate">{user.full_name || 'Unknown'}</div>
                           <div className="text-xs text-muted-foreground truncate">{user.email}</div>
