@@ -29,6 +29,9 @@ export const R360_STATUS_MAP: Record<string, StatusDisplay> = {
   'Closed':         { category:'done',        label:'Done',        color:'#14532D', bg:'#F0FDF4', dot:'#16A34A' },
   'Resolved':       { category:'done',        label:'Done',        color:'#14532D', bg:'#F0FDF4', dot:'#16A34A' },
   'Blocked':        { category:'blocked',     label:'Blocked',     color:'#7F1D1D', bg:'#FEF2F2', dot:'#EF4444' },
+  'hold':           { category:'blocked',     label:'On Hold',     color:'#7F1D1D', bg:'#FEF2F2', dot:'#EF4444' },
+  'Hold':           { category:'blocked',     label:'On Hold',     color:'#7F1D1D', bg:'#FEF2F2', dot:'#EF4444' },
+  'On Hold':        { category:'blocked',     label:'On Hold',     color:'#7F1D1D', bg:'#FEF2F2', dot:'#EF4444' },
 };
 export const R360_STATUS_DEFAULT: StatusDisplay = { category:'to_do', label:'Unknown', color:'#334155', bg:'#F1F5F9', dot:'#64748B' };
 
