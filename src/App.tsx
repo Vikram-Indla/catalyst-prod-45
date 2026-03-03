@@ -59,6 +59,9 @@ const WikiSearchPage = lazy(() => import("./pages/wiki/WikiSearchPage"));
 const WikiCategoryPage = lazy(() => import("./pages/wiki/WikiCategoryPage"));
 const WikiArticlePage = lazy(() => import("./pages/wiki/WikiArticlePage"));
 const WikiWhatsNewPage = lazy(() => import("./pages/wiki/WikiWhatsNewPage"));
+const WikiLearningPathsPage = lazy(() => import("./pages/wiki/WikiLearningPathsPage"));
+const WikiLearningPathDetailPage = lazy(() => import("./pages/wiki/WikiLearningPathDetailPage"));
+const WikiSubscriptionsPage = lazy(() => import("./pages/wiki/WikiSubscriptionsPage"));
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { Toaster as HotToaster } from 'react-hot-toast';
@@ -708,6 +711,9 @@ const App = () => (
               <Route path="/wiki" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiHomePage /></Suspense>} />
               <Route path="/wiki/search" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiSearchPage /></Suspense>} />
               <Route path="/wiki/whats-new" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiWhatsNewPage /></Suspense>} />
+              <Route path="/wiki/learning-paths" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiLearningPathsPage /></Suspense>} />
+              <Route path="/wiki/learning-paths/:pathId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiLearningPathDetailPage /></Suspense>} />
+              <Route path="/wiki/subscriptions" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiSubscriptionsPage /></Suspense>} />
               <Route path="/wiki/category/:slug" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiCategoryPage /></Suspense>} />
               <Route path="/wiki/:pageSlug" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiArticlePage /></Suspense>} />
 
