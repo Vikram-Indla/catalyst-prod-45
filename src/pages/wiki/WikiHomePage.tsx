@@ -14,6 +14,7 @@ import {
 } from '@/hooks/useWikiHub';
 import { WikiCommandPalette } from '@/components/wiki/WikiCommandPalette';
 import { WikiUploadWizard } from '@/components/wiki/WikiUploadWizard';
+import { WikiChatPanel } from '@/components/wiki/WikiChatPanel';
 import { toast } from 'sonner';
 
 /* ── Constants ── */
@@ -258,6 +259,7 @@ export default function WikiHomePage() {
 
       <WikiCommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
       <WikiUploadWizard open={uploadOpen} onClose={() => setUploadOpen(false)} />
+      <WikiChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
 
       <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
     </div>
