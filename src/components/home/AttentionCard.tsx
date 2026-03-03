@@ -39,9 +39,11 @@ export function AttentionCard({ item, onClick }: { item: AttentionItem; onClick:
         borderLeft: `3px solid ${urgStyle.dot}`,
         cursor: 'pointer', textAlign: 'left',
         transition: 'all 120ms',
+        position: 'relative',
+        zIndex: 0,
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = '#FAFBFC'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(0)'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = '#FAFBFC'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.zIndex = '10'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.zIndex = '0'; e.currentTarget.style.boxShadow = ''; }}
     >
       {/* Top row: key + type + days */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

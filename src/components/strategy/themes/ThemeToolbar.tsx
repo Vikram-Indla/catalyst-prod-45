@@ -166,9 +166,7 @@ export function ThemeToolbar(props: Props) {
         <button
           onClick={props.onToggleIntelligence}
           style={{
-            background: props.isIntelligenceOpen
-              ? '#2563EB'
-              : 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
+            background: '#2563EB',
             color: '#FFFFFF', border: 'none',
             borderRadius: 20, padding: '0 16px', height: 32,
             fontSize: 12, fontWeight: 600, letterSpacing: '0.3px',
