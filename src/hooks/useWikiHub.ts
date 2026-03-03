@@ -325,3 +325,59 @@ export function useLogWikiRead() {
     },
   });
 }
+
+/* ── User Prefs (Onboarding) ── */
+export function useWikiUserPrefs() {
+  return useQuery({
+    queryKey: ['wiki-user-prefs'],
+    staleTime: 300_000,
+    queryFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      const userId = session?.session?.user?.id;
+      if (!userId) return null;
+      const { data, error } = await supabase
+        .from('wiki_user_prefs')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+/* ── Read Acknowledgments ── */
+export function useWikiPendingAcknowledgments() {
+  return useQuery({
+    queryKey: ['wiki-pending-acknowledgments'],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      const userId = session?.session?.user?.id;
+      if (!userId) return [];
+      const { data, error } = await supabase
+        .from('wiki_read_acknowledgments')
+        .select('id, page_id, acknowledged_at')
+        .eq('user_id', userId)
+        .is('acknowledged_at', null);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
+/* ── Acknowledge Read ── */
+export function useAcknowledgeRead() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (ackId: string) => {
+      await supabase
+        .from('wiki_read_acknowledgments')
+        .update({ acknowledged_at: new Date().toISOString() })
+        .eq('id', ackId);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['wiki-pending-acknowledgments'] });
+    },
+  });
+}

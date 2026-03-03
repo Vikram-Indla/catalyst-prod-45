@@ -10,13 +10,15 @@ import {
 import {
   useWikiHomeStats, useWikiDomainCards, useWikiRecentArticles,
   useWikiQuickRefs, useWikiLearningPaths, useWikiKnowledgeRequests,
-  useToggleBookmark, useWikiUserBookmarks,
+  useToggleBookmark, useWikiUserBookmarks, useWikiUserPrefs,
+  useWikiPendingAcknowledgments,
 } from '@/hooks/useWikiHub';
 import { WikiCommandPalette } from '@/components/wiki/WikiCommandPalette';
 import { WikiUploadWizard } from '@/components/wiki/WikiUploadWizard';
 import { WikiChatPanel } from '@/components/wiki/WikiChatPanel';
 import { WikiQuickRefDrawer } from '@/components/wiki/WikiQuickRefDrawer';
 import { WikiKnowledgeRequestForm } from '@/components/wiki/WikiKnowledgeRequestForm';
+import { WikiOnboardingWizard } from '@/components/wiki/WikiOnboardingWizard';
 import { toast } from 'sonner';
 
 /* ── Constants ── */
@@ -80,11 +82,15 @@ export default function WikiHomePage() {
   const { data: requests } = useWikiKnowledgeRequests();
   const { data: bookmarkedIds } = useWikiUserBookmarks();
   const toggleBookmark = useToggleBookmark();
+  const { data: userPrefs } = useWikiUserPrefs();
+  const { data: pendingAcks = [] } = useWikiPendingAcknowledgments();
   const [cmdOpen, setCmdOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [selectedQR, setSelectedQR] = useState<any>(null);
   const [krFormOpen, setKrFormOpen] = useState(false);
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+  const showOnboarding = userPrefs !== undefined && userPrefs !== null ? !userPrefs.onboarding_completed && !onboardingDismissed : false;
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -106,6 +112,16 @@ export default function WikiHomePage() {
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif', color: '#0F172A', background: '#F8FAFC', minHeight: '100%' }}>
+      {/* Onboarding Wizard */}
+      {showOnboarding && <WikiOnboardingWizard onComplete={() => setOnboardingDismissed(true)} />}
+
+      {/* Pending Acknowledgments Banner */}
+      {pendingAcks.length > 0 && (
+        <div style={{ margin: '0 28px', padding: '10px 16px', background: '#FEF3C7', border: '0.75px solid #FDE68A', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: '#92400E', fontWeight: 500 }}>
+          <ShieldCheck size={14} />
+          <span>{pendingAcks.length} article{pendingAcks.length !== 1 ? 's' : ''} require your acknowledgment</span>
+        </div>
+      )}
       {/* ═══ HERO ═══ */}
       <div style={{ background: '#FFFFFF', position: 'relative', overflow: 'hidden', borderBottom: '0.75px solid rgba(15,23,42,0.08)' }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #2563EB, #7C3AED, #2563EB)' }} />
@@ -226,7 +242,7 @@ export default function WikiHomePage() {
             <div key={i} style={{ padding: 20, borderRadius: 8, background: '#FFFFFF', border: '0.75px solid rgba(0,0,0,0.06)' }}>
               <Skeleton w={140} h={16} style={{ marginBottom: 12 }} /><Skeleton w="100%" h={4} style={{ marginBottom: 8 }} /><Skeleton w="60%" h={12} />
             </div>
-          )) : (paths ?? []).length > 0 ? (paths ?? []).map((p: any) => <LearningPathCard key={p.id} p={p} />) : (
+          )) : (paths ?? []).length > 0 ? (paths ?? []).map((p: any) => <LearningPathCard key={p.id} p={p} navigate={navigate} />) : (
             <div style={{ padding: 32, textAlign: 'center', color: '#64748B', fontSize: 12, gridColumn: '1 / -1' }}>No learning paths configured yet.</div>
           )}
         </div>
@@ -378,12 +394,13 @@ const DomainCard = React.memo(({ d, Icon, navigate }: { d: any; Icon: React.Comp
 DomainCard.displayName = 'DomainCard';
 
 /* ── Learning Path Card ── */
-const LearningPathCard = React.memo(({ p }: { p: any }) => {
+const LearningPathCard = React.memo(({ p, navigate }: { p: any; navigate: any }) => {
   const pct = p.article_count > 0 ? Math.round((p.completedCount / p.article_count) * 100) : 0;
   const diffColor = p.difficulty === 'beginner' ? '#16A34A' : p.difficulty === 'intermediate' ? '#2563EB' : '#D97706';
   return (
-    <div style={{ padding: 20, borderRadius: 8, background: '#FFFFFF', border: '0.75px solid rgba(0,0,0,0.06)', transition: 'border-color 120ms' }}
-      onMouseEnter={e => e.currentTarget.style.borderColor = '#2563EB'} onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)'}
+    <div onClick={() => navigate(`/wiki/learning-paths/${p.id}`)} style={{ padding: 20, borderRadius: 8, background: '#FFFFFF', border: '0.75px solid rgba(0,0,0,0.06)', transition: 'border-color 120ms, box-shadow 120ms', cursor: 'pointer' }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.08)'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
         <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
