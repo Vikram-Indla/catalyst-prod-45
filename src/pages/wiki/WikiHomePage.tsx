@@ -20,7 +20,7 @@ import { WikiQuickRefDrawer } from '@/components/wiki/WikiQuickRefDrawer';
 import { WikiKnowledgeRequestForm } from '@/components/wiki/WikiKnowledgeRequestForm';
 import { WikiOnboardingWizard } from '@/components/wiki/WikiOnboardingWizard';
 import { toast } from 'sonner';
-import wikiHubIcon from '@/assets/wiki-hub-icon.png';
+import wikiHubIcon from '@/assets/catalyst-logo-white.svg';
 
 /* ── Constants ── */
 const DOMAIN_ICONS: Record<string, React.ComponentType<any>> = {
