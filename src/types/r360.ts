@@ -36,8 +36,13 @@ export interface R360WorkItem {
   updated_at: string;
   resolved_at: string | null;
   labels: string[];
+  /** Days since assigned to this resource (not ticket creation) */
   age_days: number;
   age_class: 'green' | 'amber' | 'red';
+  /** Date when this item was assigned to the current resource */
+  assigned_at: string;
+  /** Human-readable carry-over label e.g. "From W48" or "From Jan" */
+  carried_from_label: string | null;
   group_date: string;
   date_label: string;
   /** 'Assignee' for directly assigned items, 'Contributor' for reported-by items */

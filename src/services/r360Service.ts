@@ -7,8 +7,8 @@ function mapStatus(jiraStatus: string) {
   return R360_STATUS_MAP[jiraStatus] || R360_STATUS_DEFAULT;
 }
 
-function computeAge(createdAt: string) {
-  const days = Math.max(0, Math.floor((Date.now() - new Date(createdAt).getTime()) / 86400000));
+function computeAge(fromDate: string) {
+  const days = Math.max(0, Math.floor((Date.now() - new Date(fromDate).getTime()) / 86400000));
   return { age_days: days, age_class: (days <= 7 ? 'green' : days <= 14 ? 'amber' : 'red') as R360WorkItem['age_class'] };
 }
 
@@ -23,6 +23,59 @@ function groupDate(dateStr: string) {
   const D = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   let label = gd===tStr ? `Today, ${M[d.getMonth()]} ${d.getDate()}` : gd===yStr ? `Yesterday, ${M[d.getMonth()]} ${d.getDate()}` : `${D[d.getDay()]}, ${M[d.getMonth()]} ${d.getDate()}`;
   return { group_date: gd, date_label: label };
+}
+
+/** Compute carry-over label from assignment date relative to a period */
+function computeCarriedFromLabel(assignedAt: string, periodStart: Date): string | null {
+  const ad = new Date(assignedAt);
+  if (ad >= periodStart) return null; // assigned in current period — no carry-over
+  const M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // Get ISO week number
+  const d = new Date(ad);
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
+  const week1 = new Date(d.getFullYear(), 0, 4);
+  const weekNum = 1 + Math.round(((d.getTime() - week1.getTime()) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7);
+  return `From W${weekNum}, ${M[ad.getMonth()]}`;
+}
+
+/**
+ * Fetch the most recent assignment date for each issue_key assigned to a specific person.
+ * Uses jira_sync_changelog where field_name = 'assignee' and to_string matches the resource name (case-insensitive).
+ * Falls back to jira_created_at if no changelog entry exists.
+ */
+async function fetchAssignmentDates(issueKeys: string[], resourceName: string, jiraAccountId?: string): Promise<Record<string, string>> {
+  if (!issueKeys.length) return {};
+  
+  // Fetch assignee changelog entries for these issues
+  const { data, error } = await (supabase as any).from('jira_sync_changelog')
+    .select('issue_key, to_string, to_value, jira_created_at')
+    .in('issue_key', issueKeys)
+    .eq('field_name', 'assignee')
+    .order('jira_created_at', { ascending: false });
+  
+  if (error) {
+    console.error('[R360] Failed to fetch assignment dates:', error.message);
+    return {};
+  }
+
+  const result: Record<string, string> = {};
+  const nameLower = resourceName.toLowerCase();
+  
+  for (const entry of (data || [])) {
+    const key = entry.issue_key;
+    if (result[key]) continue; // already found the most recent assignment
+    
+    // Match by account_id first, then by name
+    const matchesAccount = jiraAccountId && entry.to_value === jiraAccountId;
+    const matchesName = entry.to_string && entry.to_string.toLowerCase() === nameLower;
+    
+    if (matchesAccount || matchesName) {
+      result[key] = entry.jira_created_at;
+    }
+  }
+  
+  return result;
 }
 
 export const r360Service = {
@@ -63,7 +116,7 @@ export const r360Service = {
 
     // Count assigned work items — prefer jira_account_id for accurate matching
     let overviewAssigneeQuery = (supabase as any).from('ph_issues')
-      .select('status, jira_created_at');
+      .select('issue_key, status, jira_created_at');
     if (resource.jira_account_id) {
       overviewAssigneeQuery = overviewAssigneeQuery.eq('assignee_account_id', resource.jira_account_id);
     } else {
@@ -71,18 +124,21 @@ export const r360Service = {
     }
     const { data: assignedItems } = await overviewAssigneeQuery;
 
+    // Fetch assignment dates for age calculation
+    const issueKeys = (assignedItems || []).map((i: any) => i.issue_key);
+    const assignmentDates = await fetchAssignmentDates(issueKeys, resource.name, resource.jira_account_id);
+
     // Count contributed items for non-developer roles
     let contributedItems: any[] = [];
     if (isContributorRole(resource.role_name || '')) {
       let contribQuery = (supabase as any).from('ph_issues')
-        .select('status, jira_created_at, assignee_account_id, reporter_account_id');
+        .select('issue_key, status, jira_created_at, assignee_account_id, reporter_account_id');
       if (resource.jira_account_id) {
         contribQuery = contribQuery.eq('reporter_account_id', resource.jira_account_id);
       } else {
         contribQuery = contribQuery.ilike('reporter_display_name', `%${resource.name}%`);
       }
       const { data: cItems } = await contribQuery;
-      // Exclude items where they are also the assignee
       contributedItems = (cItems || []).filter((i: any) =>
         resource.jira_account_id
           ? i.assignee_account_id !== resource.jira_account_id
@@ -98,7 +154,9 @@ export const r360Service = {
     const stale = all.filter((i: any) => {
       const st = mapStatus(i.status);
       if (st.category === 'done') return false;
-      const age = computeAge(i.jira_created_at);
+      // Use assignment date for stale calculation
+      const ageFrom = assignmentDates[i.issue_key] || i.jira_created_at;
+      const age = computeAge(ageFrom);
       return age.age_days > 14;
     }).length;
 
@@ -140,6 +198,10 @@ export const r360Service = {
     const { data: assignedData, error: assignedError } = await assigneeQuery;
     if (assignedError) throw assignedError;
 
+    // Fetch assignment dates from changelog
+    const assignedKeys = (assignedData || []).map((i: any) => i.issue_key);
+    const assignmentDates = await fetchAssignmentDates(assignedKeys, resource.name, resource.jira_account_id);
+
     // Fetch contributor items (reported-by) for non-developer roles
     let contributedData: any[] = [];
     if (isContributorRole(resource.role_name || '')) {
@@ -157,7 +219,6 @@ export const r360Service = {
 
       const { data: cData, error: cError } = await contribQuery;
       if (cError) throw cError;
-      // Exclude items where they are also the assignee
       contributedData = (cData || []).filter((i: any) =>
         resource.jira_account_id
           ? i.assignee_account_id !== resource.jira_account_id
@@ -167,7 +228,9 @@ export const r360Service = {
 
     const mapItem = (item: any, roleOnItem: 'Assignee' | 'Contributor'): R360WorkItem => {
       const st = mapStatus(item.status);
-      const age = computeAge(item.jira_created_at);
+      // Use assignment date for age, fall back to jira_created_at
+      const assignedAt = assignmentDates[item.issue_key] || item.jira_created_at;
+      const age = computeAge(assignedAt);
       const gd = groupDate(item.jira_updated_at || item.jira_created_at);
       let fv: string | null = null;
       if (item.fix_versions) {
@@ -202,6 +265,8 @@ export const r360Service = {
         updated_at: item.jira_updated_at || item.jira_created_at,
         resolved_at: item.resolution ? item.jira_updated_at : null,
         labels: item.labels || [],
+        assigned_at: assignedAt,
+        carried_from_label: null, // computed at the view layer based on period context
         role_on_item: roleOnItem,
         ...age,
         ...gd,
@@ -257,3 +322,5 @@ export const r360Service = {
     });
   },
 };
+
+export { computeCarriedFromLabel };
