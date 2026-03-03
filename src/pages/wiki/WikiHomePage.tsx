@@ -20,6 +20,7 @@ import { WikiQuickRefDrawer } from '@/components/wiki/WikiQuickRefDrawer';
 import { WikiKnowledgeRequestForm } from '@/components/wiki/WikiKnowledgeRequestForm';
 import { WikiOnboardingWizard } from '@/components/wiki/WikiOnboardingWizard';
 import { toast } from 'sonner';
+import wikiHubIcon from '@/assets/wiki-hub-icon.png';
 
 /* ── Constants ── */
 const DOMAIN_ICONS: Record<string, React.ComponentType<any>> = {
@@ -269,16 +270,17 @@ export default function WikiHomePage() {
         </div>
       </div>
 
-      {/* ═══ AI CHATBOT FAB ═══ */}
+      {/* ═══ AI CHATBOT FAB — Wiki Convergence Hub Icon ═══ */}
       <div onClick={() => setChatOpen(!chatOpen)} style={{
         position: 'fixed', bottom: 24, right: 24, width: 48, height: 48, borderRadius: 14,
-        background: '#7C3AED', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        cursor: 'pointer', boxShadow: '0 4px 12px rgba(124,58,237,0.3)', transition: 'transform 150ms, box-shadow 150ms', zIndex: 50,
+        background: '#2563EB', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer', boxShadow: '0 4px 12px rgba(37,99,235,0.3)', transition: 'transform 150ms, box-shadow 150ms', zIndex: 50,
+        overflow: 'hidden',
       }}
-        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(124,58,237,0.4)'; }}
-        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,58,237,0.3)'; }}
+        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(37,99,235,0.4)'; }}
+        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.3)'; }}
       >
-        <MessageCircle size={22} />
+        <img src={wikiHubIcon} alt="Ask Catalyst" style={{ width: 32, height: 32, borderRadius: 8 }} />
       </div>
 
       <WikiCommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
