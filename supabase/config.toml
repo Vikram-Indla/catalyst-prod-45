@@ -158,3 +158,6 @@ verify_jwt = false
 
 [functions.kb-ingest]
 verify_jwt = false
+
+[functions.jira-webhook]
+verify_jwt = false
