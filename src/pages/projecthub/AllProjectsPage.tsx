@@ -24,7 +24,7 @@ import { toast } from 'sonner';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 
 export default function AllProjectsPage() {
-  const [view, setView] = useState<ViewMode>('cards');
+  const [view, setView] = useState<ViewMode>('list');
   const [filters, setFilters] = useState<ProjectFilters>(DEFAULT_FILTERS);
   const [sortCol, setSortCol] = useState<SortColumn>('total_tasks');
   const [sortDir, setSortDir] = useState<SortDirection>('desc');
