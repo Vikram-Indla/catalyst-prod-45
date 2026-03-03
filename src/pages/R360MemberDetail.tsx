@@ -128,16 +128,19 @@ export default function R360MemberDetail() {
     [periodType, weekOffset]
   );
 
-  // Filter items by period — open items always show, done items scoped to period
+  // Filter items by period — only items updated/resolved within the period
   const weekItems = useMemo(() => {
     return workItems.filter(item => {
-      // Open items always visible regardless of period
-      if (item.status_category !== 'done') return true;
-      // Done items only show if resolved/updated within the selected period
-      const effectiveDate = new Date(item.resolved_at || item.updated_at);
+      const effectiveDate = item.status_category === 'done'
+        ? new Date(item.resolved_at || item.updated_at)
+        : new Date(item.updated_at);
       return effectiveDate >= period.start && effectiveDate <= period.end;
     });
   }, [workItems, period.start, period.end]);
+
+  // All-time open items (for persistent banner KPIs)
+  const allOpenItems = useMemo(() => workItems.filter(i => i.status_category !== 'done'), [workItems]);
+  const allStaleItems = useMemo(() => allOpenItems.filter(i => (i.age_days || 0) > 14), [allOpenItems]);
 
   // Auto-skip empty periods
   const skipDirection = useRef<-1 | 1 | 0>(0);
@@ -177,9 +180,9 @@ export default function R360MemberDetail() {
     return c;
   }, [weekItems]);
 
-  // Week-scoped KPIs for banner (must match pill counts)
-  const weekOpenItems = useMemo(() => weekItems.filter(i => i.status_category !== 'done').length, [weekItems]);
-  const weekStaleItems = useMemo(() => weekItems.filter(i => i.status_category !== 'done' && (i.age_days || 0) > 14).length, [weekItems]);
+  // All-time KPIs for banner — always reflect total workload health
+  const bannerOpenCount = allOpenItems.length;
+  const bannerStaleCount = allStaleItems.length;
 
   // Avg age of open items
   const avgAge = useMemo(() => {
@@ -236,11 +239,11 @@ export default function R360MemberDetail() {
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
               <div style={{ padding: '8px 22px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, border: '1px solid #FDE68A', background: '#FFFBEB' }}>
-                <div style={{ fontSize: '22px', fontWeight: 700, color: '#78350F' }}>{weekOpenItems}</div>
+                <div style={{ fontSize: '22px', fontWeight: 700, color: '#78350F' }}>{bannerOpenCount}</div>
                 <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#78350F', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
               </div>
               <div style={{ padding: '8px 22px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, border: '1px solid #E2E8F0', background: '#FFFFFF' }}>
-                <div style={{ fontSize: '22px', fontWeight: 700, color: '#0F172A' }}>{weekStaleItems}</div>
+                <div style={{ fontSize: '22px', fontWeight: 700, color: '#0F172A' }}>{bannerStaleCount}</div>
                 <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#334155', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
               </div>
             </div>
@@ -321,7 +324,18 @@ export default function R360MemberDetail() {
             {Array.from({ length: 5 }).map((_, i) => <div key={i} className="r3-skeleton" style={{ height: 60 }} />)}
           </div>
         ) : weekItems.length === 0 ? (
-          <div className="r3-empty">No work items found for this period.</div>
+          <div>
+            <div className="r3-empty">No work items updated in this period.</div>
+            {allOpenItems.length > 0 && (
+              <div style={{ margin: '16px auto', maxWidth: 520, padding: '14px 20px', borderRadius: '8px', border: '1px solid #E2E8F0', background: '#F8FAFC', textAlign: 'center' }}>
+                <span style={{ fontSize: '13px', color: '#334155' }}>
+                  This person has <strong style={{ color: '#0F172A' }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
+                  {allStaleItems.length > 0 && <> ({allStaleItems.length} stale)</>}.
+                  Navigate to an earlier period to see activity.
+                </span>
+              </div>
+            )}
+          </div>
         ) : (
           <>
             {view === 'ring' && <RingView items={weekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} />}
