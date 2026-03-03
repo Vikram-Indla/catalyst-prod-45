@@ -79,18 +79,26 @@ function getMonthOptions() {
 }
 
 /* ── Excel generation ── */
-async function generateExcel(selectedMonths: { label: string; start: Date; end: Date }[]) {
+async function generateExcel(selectedMonths: { label: string; start: Date; end: Date }[], deptFilter: string) {
   const wb = new ExcelJS.Workbook();
   wb.creator = 'Catalyst Platform';
   wb.created = new Date();
 
   // ── SHEET 1: Resources ──
-  const { data: resData } = await supabase
+  let query = supabase
     .from('resource_inventory')
-    .select('rid, name, role_name, department_name, assignments, location_id, vendor_name, resource_type')
+    .select('rid, name, role_name, department_name, department_id, assignments, location_id, vendor_name, resource_type')
     .eq('is_active', true)
     .order('name', { ascending: true })
     .limit(5000);
+
+  // Filter by department if not "All"
+  if (deptFilter && deptFilter !== 'All') {
+    // department_name matches the filter
+    query = query.eq('department_name', deptFilter);
+  }
+
+  const { data: resData } = await query;
 
   const { data: locs } = await supabase.from('resource_locations').select('id, name');
   const locMap = new Map((locs || []).map((l: any) => [l.id, l.name]));
@@ -105,7 +113,7 @@ async function generateExcel(selectedMonths: { label: string; start: Date; end: 
   // Title row
   ws1.mergeCells('A1:H1');
   const titleCell = ws1.getCell('A1');
-  titleCell.value = 'Delivery — Resource Directory';
+  titleCell.value = `${deptFilter && deptFilter !== 'All' ? deptFilter : 'All Departments'} — Resource Directory`;
   titleCell.font = arialFont(16, { bold: true, color: { argb: argb(C.WHITE) } });
   titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(C.NAVY) } };
   titleCell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
@@ -227,7 +235,7 @@ async function generateExcel(selectedMonths: { label: string; start: Date; end: 
     // Title
     ws.mergeCells('A1:J1');
     const t = ws.getCell('A1');
-    t.value = `Delivery — ${m.label}`;
+    t.value = `${deptFilter && deptFilter !== 'All' ? deptFilter : 'All Departments'} — ${m.label}`;
     t.font = arialFont(16, { bold: true, color: { argb: argb(C.WHITE) } });
     t.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(C.NAVY) } };
     t.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
@@ -357,7 +365,7 @@ async function generateExcel(selectedMonths: { label: string; start: Date; end: 
 /* ── UI Component ── */
 type GenState = 'idle' | 'generating' | 'done';
 
-export default function ExportWorkItems() {
+export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [showCustom, setShowCustom] = useState(false);
@@ -419,7 +427,7 @@ export default function ExportWorkItems() {
       // Sort most recent first
       months.sort((a, b) => b.start.getTime() - a.start.getTime());
 
-      await generateExcel(months);
+      await generateExcel(months, deptFilter);
       setGenState('done');
       toast.success('Excel exported successfully', { id: 'export-xl' });
 
@@ -428,7 +436,7 @@ export default function ExportWorkItems() {
       setGenState('idle');
       toast.error(err.message || 'Export failed', { id: 'export-xl' });
     }
-  }, [canGenerate, selected, customFrom, customTo, monthOptions]);
+  }, [canGenerate, selected, customFrom, customTo, monthOptions, deptFilter]);
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
