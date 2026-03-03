@@ -128,12 +128,13 @@ export default function R360MemberDetail() {
     [periodType, weekOffset]
   );
 
-  // Filter items by period for all views
+  // Filter items by period — open items always show, done items scoped to period
   const weekItems = useMemo(() => {
     return workItems.filter(item => {
-      const effectiveDate = item.status_category === 'done'
-        ? new Date(item.resolved_at || item.updated_at)
-        : new Date(item.updated_at);
+      // Open items always visible regardless of period
+      if (item.status_category !== 'done') return true;
+      // Done items only show if resolved/updated within the selected period
+      const effectiveDate = new Date(item.resolved_at || item.updated_at);
       return effectiveDate >= period.start && effectiveDate <= period.end;
     });
   }, [workItems, period.start, period.end]);
