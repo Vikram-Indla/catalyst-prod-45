@@ -162,16 +162,23 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               width: 40, height: 40, borderRadius: 12, background: '#2563EB',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>
-              <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
-                <circle cx="50" cy="50" r="12" fill="white" />
-                <circle cx="22" cy="22" r="7" fill="white" opacity="0.7" />
-                <circle cx="78" cy="22" r="7" fill="white" opacity="0.7" />
-                <circle cx="22" cy="78" r="7" fill="white" opacity="0.7" />
-                <circle cx="78" cy="78" r="7" fill="white" opacity="0.7" />
-                <line x1="50" y1="50" x2="22" y2="22" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round" />
-                <line x1="50" y1="50" x2="78" y2="22" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round" />
-                <line x1="50" y1="50" x2="22" y2="78" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round" />
-                <line x1="50" y1="50" x2="78" y2="78" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round" />
+              <svg width="22" height="22" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="kaLogoBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style={{stopColor:'#3b82f6'}}/>
+                    <stop offset="100%" style={{stopColor:'#1d4ed8'}}/>
+                  </linearGradient>
+                </defs>
+                <line x1="50" y1="50" x2="22" y2="22" stroke="#93c5fd" strokeWidth="4" strokeLinecap="round"/>
+                <line x1="50" y1="50" x2="78" y2="22" stroke="#93c5fd" strokeWidth="4" strokeLinecap="round"/>
+                <line x1="50" y1="50" x2="22" y2="78" stroke="#93c5fd" strokeWidth="4" strokeLinecap="round"/>
+                <line x1="50" y1="50" x2="78" y2="78" stroke="#93c5fd" strokeWidth="4" strokeLinecap="round"/>
+                <circle cx="22" cy="22" r="12" fill="url(#kaLogoBlue)"/>
+                <circle cx="78" cy="22" r="12" fill="url(#kaLogoBlue)"/>
+                <circle cx="22" cy="78" r="12" fill="url(#kaLogoBlue)"/>
+                <circle cx="78" cy="78" r="12" fill="url(#kaLogoBlue)"/>
+                <circle cx="50" cy="50" r="18" fill="url(#kaLogoBlue)"/>
+                <circle cx="50" cy="50" r="9" fill="white"/>
               </svg>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
