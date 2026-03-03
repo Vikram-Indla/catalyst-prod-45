@@ -142,6 +142,33 @@ export default function R360MemberDetail() {
   const allOpenItems = useMemo(() => workItems.filter(i => i.status_category !== 'done'), [workItems]);
   const allStaleItems = useMemo(() => allOpenItems.filter(i => (i.age_days || 0) > 14), [allOpenItems]);
 
+  // Most recent activity date across all items
+  const lastActivityDate = useMemo(() => {
+    if (!workItems.length) return null;
+    let latest = new Date(0);
+    workItems.forEach(item => {
+      const d = new Date(item.updated_at);
+      if (d > latest) latest = d;
+    });
+    return latest;
+  }, [workItems]);
+
+  // Jump to the period containing the most recent activity
+  const jumpToLastActivity = useCallback(() => {
+    if (!lastActivityDate) return;
+    const now = new Date();
+    if (periodType === 'weekly') {
+      const diffMs = lastActivityDate.getTime() - now.getTime();
+      const diffWeeks = Math.floor(diffMs / (7 * 86400000));
+      setWeekOffset(diffWeeks);
+    } else {
+      const diffMonths = (lastActivityDate.getFullYear() - now.getFullYear()) * 12 + (lastActivityDate.getMonth() - now.getMonth());
+      setWeekOffset(diffMonths);
+    }
+    skipDirection.current = 0;
+    skipAttempts.current = 0;
+  }, [lastActivityDate, periodType]);
+
   // Auto-skip empty periods
   const skipDirection = useRef<-1 | 1 | 0>(0);
   const skipAttempts = useRef(0);
@@ -326,13 +353,29 @@ export default function R360MemberDetail() {
         ) : weekItems.length === 0 ? (
           <div>
             <div className="r3-empty">No work items updated in this period.</div>
-            {allOpenItems.length > 0 && (
-              <div style={{ margin: '16px auto', maxWidth: 520, padding: '14px 20px', borderRadius: '8px', border: '1px solid #E2E8F0', background: '#F8FAFC', textAlign: 'center' }}>
-                <span style={{ fontSize: '13px', color: '#334155' }}>
-                  This person has <strong style={{ color: '#0F172A' }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
-                  {allStaleItems.length > 0 && <> ({allStaleItems.length} stale)</>}.
-                  Navigate to an earlier period to see activity.
-                </span>
+            {workItems.length > 0 && lastActivityDate && (
+              <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: '1px solid #E2E8F0', background: '#F8FAFC', textAlign: 'center' }}>
+                <div style={{ fontSize: '13px', color: '#334155', marginBottom: '10px' }}>
+                  <strong style={{ color: '#0F172A' }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
+                  {allStaleItems.length > 0 && <span> · {allStaleItems.length} stale</span>}
+                </div>
+                <div style={{ fontSize: '12.5px', color: '#64748B', marginBottom: '12px' }}>
+                  Last activity: <strong style={{ color: '#334155' }}>{lastActivityDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong>
+                </div>
+                <button
+                  onClick={jumpToLastActivity}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '6px',
+                    padding: '7px 18px', borderRadius: '6px', fontSize: '12.5px', fontWeight: 600,
+                    border: '1px solid #2563EB', background: '#EFF6FF', color: '#2563EB',
+                    cursor: 'pointer', transition: 'all 0.15s ease',
+                  }}
+                  onMouseOver={e => { (e.target as HTMLButtonElement).style.background = '#DBEAFE'; }}
+                  onMouseOut={e => { (e.target as HTMLButtonElement).style.background = '#EFF6FF'; }}
+                >
+                  <Calendar size={13} />
+                  Jump to last activity
+                </button>
               </div>
             )}
           </div>
