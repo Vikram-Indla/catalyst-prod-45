@@ -470,7 +470,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
         }}>
           {/* Header */}
           <div style={{
-            background: 'linear-gradient(135deg, #1B2A4A, #2C3E6B)', padding: '14px 16px',
+            background: 'linear-gradient(135deg, #1d4ed8, #2563EB)', padding: '14px 16px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#D6E4F0" strokeWidth="2" /><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" fill="#D6E4F0" /></svg>
@@ -519,7 +519,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                   {opt.isCurrent && (
                     <span style={{
                       fontSize: 10, fontWeight: 700, color: '#fff',
-                      background: '#3A5BA0', borderRadius: 4, padding: '2px 7px',
+                      background: '#2563EB', borderRadius: 4, padding: '2px 7px',
                     }}>CURRENT</span>
                   )}
                   {opt.isFuture && (
@@ -599,7 +599,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                 background: genState === 'done'
                   ? 'linear-gradient(135deg, #15803D, #16A34A)'
                   : totalSelected > 0
-                    ? 'linear-gradient(135deg, #1B2A4A, #3A5BA0)'
+                    ? 'linear-gradient(135deg, #1d4ed8, #2563EB)'
                     : '#E2E8F0',
                 ...(totalSelected === 0 ? { color: '#94A3B8' } : {}),
               }}
