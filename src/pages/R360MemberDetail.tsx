@@ -130,34 +130,26 @@ export default function R360MemberDetail() {
   );
 
   // Period filtering:
-  // - Current period (offset 0): Show ALL open items + done items resolved in this period
-  // - Past periods: Show items that were assigned before/during that period AND were still open during it,
-  //   plus items completed during that period
+  // - Current period (offset 0): Show ALL open items (including carry-overs as source of truth) + done items resolved in this period
+  // - Past/future periods: Show ONLY tickets assigned during that specific period (assigned_at within range)
   const weekItems = useMemo(() => {
     const isCurrentPeriod = weekOffset === 0;
     const items = workItems.filter(item => {
+      const assignedDate = new Date(item.assigned_at);
       if (isCurrentPeriod) {
-        // Current period: all open items always visible + done items resolved in this period
+        // Current period: all open items always visible (carry-overs included) + done items resolved in this period
         if (item.status_category !== 'done') return true;
         const resolvedDate = new Date(item.resolved_at || item.updated_at);
         return resolvedDate >= period.start && resolvedDate <= period.end;
       } else {
-        // Past period: show items that were assigned on or before period end
-        const assignedDate = new Date(item.assigned_at);
-        if (assignedDate > period.end) return false;
-        // For done items, only show if resolved during or after this period
-        if (item.status_category === 'done') {
-          const resolvedDate = new Date(item.resolved_at || item.updated_at);
-          return resolvedDate >= period.start;
-        }
-        // Open items: show if assigned before period end (they were on the plate)
-        return true;
+        // Past/future period: ONLY show tickets whose assigned_at falls within this specific period
+        return assignedDate >= period.start && assignedDate <= period.end;
       }
     });
-    // Compute carry-over labels
+    // Compute carry-over labels — only meaningful for current period
     return items.map(item => ({
       ...item,
-      carried_from_label: computeCarriedFromLabel(item.assigned_at, period.start),
+      carried_from_label: isCurrentPeriod ? computeCarriedFromLabel(item.assigned_at, period.start) : null,
     }));
   }, [workItems, period.start, period.end, weekOffset]);
 
