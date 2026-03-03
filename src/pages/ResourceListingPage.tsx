@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
+import { exportResourceWorkItems } from '@/lib/exportResourceWorkItems';
 
 /* ── Types ── */
 interface Resource {
@@ -304,6 +305,26 @@ export default function ResourceListingPage() {
                 boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: '180px',
                 zIndex: 20, overflow: 'hidden',
               }}>
+                <ExportMenuItem
+                  label="Export Work Items (Excel)"
+                  onClick={async () => {
+                    setExportOpen(false);
+                    try {
+                      toast.loading('Generating Excel…', { id: 'work-export' });
+                      const mapped = resources.map(r => ({
+                        rid: r.rid,
+                        jira_account_id: null as string | null,
+                        full_name: r.full_name,
+                        dept_name: r.dept_name,
+                      }));
+                      await exportResourceWorkItems(deptFilter, mapped);
+                      toast.success('Excel exported successfully', { id: 'work-export' });
+                    } catch (err: any) {
+                      toast.error(err.message || 'Export failed', { id: 'work-export' });
+                    }
+                  }}
+                />
+                <div style={{ height: 1, background: '#f0f0f0' }} />
                 <ExportMenuItem
                   label="Export as CSV"
                   onClick={() => { exportCSV(filtered); setExportOpen(false); toast.success('CSV exported'); }}
