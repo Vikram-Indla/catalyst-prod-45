@@ -126,9 +126,11 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
         borderBottom: '1px solid #F4F5F7', border: 'none',
         cursor: 'pointer', textAlign: 'left',
         transition: 'background 80ms',
+        position: 'relative',
+        zIndex: 0,
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = '#F7F8FA'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = '#F7F8FA'; e.currentTarget.style.zIndex = '10'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.zIndex = '0'; }}
     >
       {/* Type label + key + day counter */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

@@ -26,7 +26,7 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
           letterSpacing: '0.02em',
           border: 'none',
           cursor: 'pointer',
-          background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
+          background: '#2563EB',
           color: '#FFFFFF',
           fontFamily: "'Inter', system-ui, sans-serif",
           overflow: 'hidden',

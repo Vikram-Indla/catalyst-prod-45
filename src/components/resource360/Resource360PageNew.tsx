@@ -106,7 +106,7 @@ export default function Resource360PageNew() {
         <button
           onClick={() => setAIOpen(true)}
           style={{
-            background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
+            background: '#2563EB',
             color: '#FFFFFF', border: 'none', borderRadius: 20,
             padding: '0 16px', height: 32, fontSize: 12, fontWeight: 600,
             letterSpacing: '0.3px', cursor: 'pointer',

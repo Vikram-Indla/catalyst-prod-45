@@ -28,9 +28,7 @@ export function AIIntelligenceButton({
       style={{
         background: disabled
           ? '#94A3B8'
-          : isActive
-            ? '#2563EB'
-            : 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
+          : '#2563EB',
         color: '#FFFFFF',
         border: 'none',
         borderRadius: 20,
