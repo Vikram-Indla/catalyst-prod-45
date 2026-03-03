@@ -10,10 +10,11 @@ import { computeCarriedFromLabel } from '@/services/r360Service';
 import { R360_DEPT_COLORS, R360_PROJECT_COLORS } from '@/constants/r360';
 import { initials, slugify, ageBarPercent, ageBarColor, formatRelativeDate, formatDate } from '@/utils/r360Utils';
 import { getJiraIcon } from '@/components/r360/R360JiraIcons';
-import { ChevronLeft, ChevronRight, Calendar, Sparkles, X, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, X, ChevronDown } from 'lucide-react';
 import type { R360WorkItem, R360ViewType, R360Filters } from '@/types/r360';
 import '@/styles/r360.css';
 import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
+import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 
 // ── Period helpers ──
 type PeriodType = 'weekly' | 'monthly';
@@ -327,13 +328,11 @@ export default function R360MemberDetail() {
             <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(15,23,42,0.05)', border: 'none', borderRadius: '6px', color: '#0F172A', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
               <Calendar size={13} /> Q1-2026
             </button>
-            {/* Intelligence — purple */}
-            <button
+            {/* Intelligence — brand blue standard */}
+            <AIIntelligenceButton
+              label="Intelligence"
               onClick={() => setAiOpen(true)}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#7C3AED', border: 'none', borderRadius: '6px', color: '#FFFFFF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', padding: '5px 14px' }}
-            >
-              <Sparkles size={13} /> Intelligence
-            </button>
+            />
           </div>
         </div>
 
