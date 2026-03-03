@@ -3,17 +3,16 @@
  * Route: /project-hub/resources
  * Executive Elevation: avatar pipeline, dynamic dept pills, filled action buttons, export dropdown
  */
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Search, RotateCw, Clock, LayoutGrid,
-  Download, ChevronDown, FileDown, ChevronUp,
+  ChevronDown, ChevronUp,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { toast } from 'sonner';
-import { exportResourceWorkItems } from '@/lib/exportResourceWorkItems';
+import ExportWorkItems from '@/components/resources/ExportWorkItems';
 
 /* ── Types ── */
 interface Resource {
@@ -67,45 +66,6 @@ const hashColor = (name: string) => {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 };
 
-/* ── Export helpers ── */
-function downloadBlob(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function exportCSV(data: Resource[]) {
-  const headers = ['Resource ID', 'Name', 'Department', 'Job Role', 'Assignment', 'Location', 'Vendor'];
-  const rows = data.map(r => [
-    r.rid,
-    `"${(r.full_name || '').replace(/"/g, '""')}"`,
-    `"${(r.dept_name || '').replace(/"/g, '""')}"`,
-    `"${(r.job_role || '').replace(/"/g, '""')}"`,
-    `"${(r.assignment_name || '').replace(/"/g, '""')}"`,
-    r.location_type || '',
-    `"${(r.vendor_name || '').replace(/"/g, '""')}"`,
-  ]);
-  const csv = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  downloadBlob(blob, `resources_${new Date().toISOString().split('T')[0]}.csv`);
-}
-
-function exportJSON(data: Resource[]) {
-  const json = JSON.stringify(data.map(r => ({
-    resource_id: r.rid,
-    name: r.full_name,
-    department: r.dept_name,
-    job_role: r.job_role,
-    assignment: r.assignment_name,
-    location: r.location_type,
-    vendor: r.vendor_name,
-  })), null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  downloadBlob(blob, `resources_${new Date().toISOString().split('T')[0]}.json`);
-}
 
 /* ── Component ── */
 export default function ResourceListingPage() {
@@ -115,17 +75,8 @@ export default function ResourceListingPage() {
   const [sortKey, setSortKey] = useState<SortKey>('full_name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   
-  const [exportOpen, setExportOpen] = useState(false);
-  const exportRef = useRef<HTMLDivElement>(null);
 
-  // Close export dropdown on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (exportRef.current && !exportRef.current.contains(e.target as Node)) setExportOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+
 
   const { data: resources = [], isLoading } = useQuery({
     queryKey: ['resources-listing'],
@@ -277,66 +228,8 @@ export default function ResourceListingPage() {
 
           <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
 
-          {/* Export dropdown */}
-          <div ref={exportRef} style={{ position: 'relative' }}>
-            <button
-              onClick={() => setExportOpen(o => !o)}
-              style={{
-                background: '#FFFFFF', color: '#334155',
-                border: '1.5px solid #E2E8F0', borderRadius: '8px',
-                padding: '8px 14px', fontSize: '13px', fontWeight: 600,
-                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
-                transition: 'border-color 150ms',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#94A3B8'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; }}
-            >
-              <Download size={14} strokeWidth={2} />
-              Export
-              <ChevronDown size={13} style={{
-                transition: 'transform 150ms',
-                transform: exportOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-              }} />
-            </button>
-            {exportOpen && (
-              <div style={{
-                position: 'absolute', top: '100%', right: 0, marginTop: '4px',
-                background: '#fff', borderRadius: '8px', border: '1px solid #e5e7eb',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: '180px',
-                zIndex: 20, overflow: 'hidden',
-              }}>
-                <ExportMenuItem
-                  label="Export Work Items (Excel)"
-                  onClick={async () => {
-                    setExportOpen(false);
-                    try {
-                      toast.loading('Generating Excel…', { id: 'work-export' });
-                      const mapped = resources.map(r => ({
-                        rid: r.rid,
-                        jira_account_id: null as string | null,
-                        full_name: r.full_name,
-                        dept_name: r.dept_name,
-                      }));
-                      await exportResourceWorkItems(deptFilter, mapped);
-                      toast.success('Excel exported successfully', { id: 'work-export' });
-                    } catch (err: any) {
-                      toast.error(err.message || 'Export failed', { id: 'work-export' });
-                    }
-                  }}
-                />
-                <div style={{ height: 1, background: '#f0f0f0' }} />
-                <ExportMenuItem
-                  label="Export as CSV"
-                  onClick={() => { exportCSV(filtered); setExportOpen(false); toast.success('CSV exported'); }}
-                />
-                <div style={{ height: 1, background: '#f0f0f0' }} />
-                <ExportMenuItem
-                  label="Export as JSON"
-                  onClick={() => { exportJSON(filtered); setExportOpen(false); toast.success('JSON exported'); }}
-                />
-              </div>
-            )}
-          </div>
+           {/* Export dropdown */}
+          <ExportWorkItems />
         </div>
       </div>
 
@@ -616,21 +509,3 @@ function ActionBtn({
   );
 }
 
-function ExportMenuItem({ label, onClick }: { label: string; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: 'flex', alignItems: 'center', gap: '8px', width: '100%',
-        padding: '10px 14px', fontSize: '13px', fontWeight: 500, color: '#1a1d21',
-        background: 'transparent', border: 'none', cursor: 'pointer',
-        textAlign: 'left', transition: 'background 100ms',
-      }}
-      onMouseEnter={e => { e.currentTarget.style.background = '#f5f5f5'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-    >
-      <FileDown size={14} strokeWidth={2} color="#6b7280" />
-      {label}
-    </button>
-  );
-}
