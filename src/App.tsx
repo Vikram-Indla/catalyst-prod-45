@@ -70,7 +70,7 @@ import { NavigationProvider } from "./contexts/NavigationContext";
 import { ProcessStepsProvider } from "./contexts/ProcessStepsContext";
 import { CatalystToastProvider } from "./contexts/CatalystToastContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { CatalystShell } from "./components/layout/CatalystShell";
+const CatalystShell = lazy(() => import("./components/layout/CatalystShell").then(m => ({ default: m.CatalystShell })));
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CatalystLoginPage } from "./components/auth/login";
 // Caty AI chatbot - FAB icon only, functionality unhooked
@@ -400,7 +400,7 @@ import IndustryPage from "./pages/enterprise/DemandIntakeCatalyst";
 import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
 import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import ProductRoomPage from "./pages/ProductRoomPage";
-import CapacityPlanningPage from "./pages/CapacityPlanningPage";
+const CapacityPlanningPage = lazy(() => import("./pages/CapacityPlanningPage"));
 // ExecutiveRoadmapPage removed
 import CatalystDemandKanban from "./modules/kanban/pages/CatalystDemandKanban";
 import CatalystDemandList from "./modules/product-backlog/pages/CatalystDemandList";
@@ -509,7 +509,6 @@ const App = () => (
               <BrowserRouter>
               <Routes>
  <Route path="/" element={<Navigate to="/for-you" replace />} />
-<Route path="/" element={<Navigate to="/for-you" replace />} />
               <Route path="/auth" element={<CatalystLoginPage />} />
               <Route path="/auth/slack/callback" element={<SlackOAuthCallback />} />
               {/* Jira test routes removed */}
@@ -532,14 +531,14 @@ const App = () => (
               
               
               {/* Deep-link resolver for work items */}
-              <Route path="/browse/:key" element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
+              <Route path="/browse/:key" element={<ProtectedRoute><Suspense fallback={<div className="p-8">Loading...</div>}><CatalystShell /></Suspense></ProtectedRoute>}>
                 <Route index element={<BrowsePage />} />
               </Route>
               
               {/* ProdHub backlog route moved inside CatalystShell below */}
 
               {/* All Routes - Catalyst Style */}
-              <Route element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
+              <Route element={<ProtectedRoute><Suspense fallback={<div className="p-8">Loading...</div>}><CatalystShell /></Suspense></ProtectedRoute>}>
               <Route path="/for-you" element={<ForYouPage />} />
               <Route path="/home" element={<Navigate to="/for-you" replace />} />
               
