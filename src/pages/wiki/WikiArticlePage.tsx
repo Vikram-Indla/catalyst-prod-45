@@ -5,7 +5,7 @@ import { useWikiRelatedArticles, useSubmitArticleFeedback } from '@/hooks/useWik
 import {
   Star, ThumbsUp, ThumbsDown, ChevronRight, Clock, GitBranch, Sparkles,
   FileText, FileDown, Video, ShieldCheck, BookOpen, ArrowRight, History,
-  Printer, Download, Link2, RotateCcw,
+  Printer, Download, Link2, RotateCcw, ExternalLink, ChevronDown, X,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -19,6 +19,10 @@ function timeAgo(d: string) {
   const h = Math.floor(m / 60);
   if (h < 24) return `${h}h ago`;
   return `${Math.floor(h / 24)}d ago`;
+}
+
+function formatDate(d: string) {
+  return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 /* ── StatusLozenge (V12 3-color guardrail) ── */
@@ -50,6 +54,186 @@ const Sk = ({ w, h, style }: { w: string | number; h: number; style?: React.CSSP
     animation: 'pulse 1.5s ease-in-out infinite', ...style,
   }} />
 );
+
+/* ── Module icon map for cross-links ── */
+const MODULE_COLORS: Record<string, { bg: string; color: string; label: string }> = {
+  task: { bg: '#EFF6FF', color: '#2563EB', label: 'TaskHub' },
+  product: { bg: '#F5F3FF', color: '#7C3AED', label: 'ProductHub' },
+  incident: { bg: '#FEF2F2', color: '#DC2626', label: 'IncidentHub' },
+  release: { bg: '#ECFDF5', color: '#059669', label: 'ReleaseHub' },
+  requirement: { bg: '#FFFBEB', color: '#D97706', label: 'Requirements' },
+  wiki: { bg: '#F0F9FF', color: '#0284C7', label: 'WikiHub' },
+};
+
+/* ═══ VERSION HISTORY PANEL ═══ */
+function VersionHistoryPanel({ versions, onRestore, onClose }: {
+  versions: any[];
+  onRestore: (v: any) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div style={{
+      position: 'fixed', top: 0, right: 0, bottom: 0, width: 400, zIndex: 200,
+      background: '#FFFFFF', borderLeft: '1px solid rgba(15,23,42,0.12)',
+      boxShadow: '-8px 0 24px rgba(15,23,42,0.08)',
+      display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif',
+    }}>
+      {/* Header */}
+      <div style={{
+        padding: '16px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.08)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <History size={16} style={{ color: '#2563EB' }} />
+          <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, color: '#0F172A' }}>Version History</span>
+          <span style={{
+            fontSize: 10, fontWeight: 650, padding: '2px 6px', borderRadius: 9999,
+            background: '#EFF6FF', color: '#2563EB',
+          }}>{versions.length}</span>
+        </div>
+        <button onClick={onClose} style={{
+          width: 28, height: 28, borderRadius: 4, border: 'none', background: 'transparent',
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#64748B',
+        }}><X size={16} /></button>
+      </div>
+
+      {/* Version list */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 0' }}>
+        {versions.length === 0 ? (
+          <div style={{ padding: '48px 20px', textAlign: 'center' }}>
+            <History size={32} style={{ color: '#E2E8F0', marginBottom: 12 }} />
+            <div style={{ fontSize: 13, color: '#94A3B8' }}>No version history yet</div>
+          </div>
+        ) : versions.map((v: any, i: number) => (
+          <div key={v.id || i} style={{
+            padding: '12px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.04)',
+            transition: 'background 120ms',
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{
+                  fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 700,
+                  color: i === 0 ? '#2563EB' : '#64748B',
+                  padding: '2px 6px', borderRadius: 3,
+                  background: i === 0 ? '#EFF6FF' : '#F1F5F9',
+                }}>v{v.version_number}</span>
+                {i === 0 && (
+                  <span style={{ fontSize: 9, fontWeight: 700, color: '#059669', textTransform: 'uppercase' as const }}>CURRENT</span>
+                )}
+              </div>
+              {i > 0 && (
+                <button onClick={() => onRestore(v)} style={{
+                  fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
+                  border: '1px solid rgba(37,99,235,0.3)', background: '#EFF6FF', color: '#2563EB',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                }}>
+                  <RotateCcw size={10} /> Restore
+                </button>
+              )}
+            </div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>{v.title || 'Untitled'}</div>
+            {v.change_summary && (
+              <div style={{ fontSize: 11, color: '#64748B', marginBottom: 4, lineHeight: 1.5 }}>{v.change_summary}</div>
+            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, color: '#94A3B8' }}>
+              {v.changed_by_name && <span>{v.changed_by_name}</span>}
+              {v.changed_at && <span>· {formatDate(v.changed_at)}</span>}
+              {!v.changed_at && v.created_at && <span>· {formatDate(v.created_at)}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══ EXPORT DROPDOWN ═══ */
+function ExportDropdown({ onClose }: { onClose: () => void }) {
+  const handlePrint = () => {
+    window.print();
+    onClose();
+  };
+  const handlePdf = () => {
+    window.print(); // CSS @media print acts as PDF via browser
+    onClose();
+    toast.info('Use "Save as PDF" in the print dialog');
+  };
+  return (
+    <div style={{
+      position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 50,
+      background: '#FFFFFF', borderRadius: 6, border: '1px solid rgba(15,23,42,0.12)',
+      boxShadow: '0 4px 12px rgba(15,23,42,0.08)', minWidth: 160, overflow: 'hidden',
+    }}>
+      <button onClick={handlePdf} style={{
+        width: '100%', padding: '8px 14px', fontSize: 12, fontWeight: 500,
+        color: '#0F172A', background: 'transparent', border: 'none', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', gap: 8, textAlign: 'left',
+      }}
+        onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'}
+        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+      >
+        <Download size={13} style={{ color: '#DC2626' }} /> Export as PDF
+      </button>
+      <button onClick={handlePrint} style={{
+        width: '100%', padding: '8px 14px', fontSize: 12, fontWeight: 500,
+        color: '#0F172A', background: 'transparent', border: 'none', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', gap: 8, textAlign: 'left',
+      }}
+        onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'}
+        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+      >
+        <Printer size={13} style={{ color: '#64748B' }} /> Print
+      </button>
+    </div>
+  );
+}
+
+/* ═══ CROSS-MODULE LINKS ═══ */
+function CrossModuleLinks({ links }: { links: any[] }) {
+  if (!links || links.length === 0) return null;
+  return (
+    <div style={{
+      marginTop: 32, padding: 16, borderRadius: 6,
+      border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF',
+    }}>
+      <div style={{
+        fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
+        color: '#64748B', marginBottom: 10, letterSpacing: '0.04em',
+        display: 'flex', alignItems: 'center', gap: 6,
+      }}>
+        <Link2 size={12} /> Related Items
+      </div>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        {links.map((link: any) => {
+          const mod = MODULE_COLORS[link.target_module] || { bg: '#F1F5F9', color: '#64748B', label: link.target_module };
+          return (
+            <span key={link.id} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px',
+              borderRadius: 4, background: mod.bg, fontSize: 11, fontWeight: 600,
+              color: mod.color, cursor: 'default',
+            }}>
+              <span style={{
+                fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 2,
+                background: `${mod.color}15`, color: mod.color,
+              }}>{mod.label}</span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700 }}>
+                {link.target_id}
+              </span>
+              {link.target_title && (
+                <span style={{ fontWeight: 500, fontSize: 11 }}>{link.target_title}</span>
+              )}
+              <ExternalLink size={9} style={{ opacity: 0.6 }} />
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 /* ═══ ARTICLE PAGE ═══ */
 export default function WikiArticlePage() {
@@ -107,6 +291,7 @@ export default function WikiArticlePage() {
     qc.invalidateQueries({ queryKey: ['wiki-page'] });
     setShowHistory(false);
   };
+
   // Related articles
   const { data: related } = useWikiRelatedArticles(page?.domain_code, page?.id, 3);
 
@@ -125,6 +310,14 @@ export default function WikiArticlePage() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Close export dropdown on outside click
+  useEffect(() => {
+    if (!showExport) return;
+    const handler = () => setShowExport(false);
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [showExport]);
 
   const handleFeedback = useCallback((helpful: boolean) => {
     if (!page?.id) return;
@@ -242,7 +435,7 @@ export default function WikiArticlePage() {
         {/* ── 2-column ── */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 32, alignItems: 'start' }}>
           {/* Main content */}
-          <article style={{ minWidth: 0 }}>
+          <article>
             {/* Title */}
             <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 28, fontWeight: 700, color: '#0F172A', margin: '0 0 12px' }}>{title}</h1>
 
@@ -271,6 +464,27 @@ export default function WikiArticlePage() {
               }}>
                 <Star size={12} fill={bookmarked ? 'currentColor' : 'none'} /> {bookmarked ? 'Saved' : 'Save'}
               </button>
+
+              {/* ── History button ── */}
+              <button onClick={() => setShowHistory(prev => !prev)} style={{
+                fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
+                border: '1px solid rgba(15,23,42,0.12)', background: showHistory ? '#EFF6FF' : 'transparent',
+                color: showHistory ? '#2563EB' : '#64748B', display: 'flex', alignItems: 'center', gap: 4,
+              }}>
+                <History size={12} /> History
+              </button>
+
+              {/* ── Export dropdown ── */}
+              <div style={{ position: 'relative' }}>
+                <button onClick={(e) => { e.stopPropagation(); setShowExport(prev => !prev); }} style={{
+                  fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
+                  border: '1px solid rgba(15,23,42,0.12)', background: showExport ? '#EFF6FF' : 'transparent',
+                  color: showExport ? '#2563EB' : '#64748B', display: 'flex', alignItems: 'center', gap: 4,
+                }}>
+                  <Download size={12} /> Export <ChevronDown size={10} />
+                </button>
+                {showExport && <ExportDropdown onClose={() => setShowExport(false)} />}
+              </div>
             </div>
 
             {/* Author + verification */}
@@ -391,6 +605,9 @@ export default function WikiArticlePage() {
               </div>
             )}
 
+            {/* ── Cross-Module Links ── */}
+            <CrossModuleLinks links={crossLinks ?? []} />
+
             {/* ── Feedback footer ── */}
             <div style={{
               marginTop: 32, padding: 20, borderRadius: 6,
@@ -480,8 +697,25 @@ export default function WikiArticlePage() {
         </div>
       </div>
 
+      {/* ── Version History slide-over panel ── */}
+      {showHistory && (
+        <VersionHistoryPanel
+          versions={versions ?? []}
+          onRestore={handleRestore}
+          onClose={() => setShowHistory(false)}
+        />
+      )}
+
+      {/* ── Print styles ── */}
       <style>{`
         @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.5 } }
+        @media print {
+          nav, button, aside, [data-no-print] { display: none !important; }
+          div[style*="position: fixed"] { display: none !important; }
+          article { max-width: 100% !important; }
+          body { background: white !important; }
+          * { box-shadow: none !important; }
+        }
       `}</style>
     </div>
   );
