@@ -229,7 +229,7 @@ export default function ResourceListingPage() {
           <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
 
            {/* Export dropdown */}
-          <ExportWorkItems />
+          <ExportWorkItems deptFilter={deptFilter} />
         </div>
       </div>
 
