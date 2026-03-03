@@ -111,6 +111,12 @@ function ProjectCard({ project, onItemClick }: { project: ProjectGroup; onItemCl
 function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isFirst: boolean; onClick: (key: string) => void }) {
   const dayColor = item.daysSinceUpdate <= 1 ? '#52C41A' : item.daysSinceUpdate <= 3 ? '#5E6270' : item.daysSinceUpdate <= 7 ? '#FA8C16' : '#CF1322';
 
+  // Items in backlog/to-do that surfaced in the current week = "moved to current week"
+  const statusLower = (item.status || '').toLowerCase();
+  const isBacklogItem = statusLower === 'to do' || statusLower === 'backlog' || statusLower === 'open' || statusLower === 'ready';
+  const isCurrentWeek = item.daysSinceUpdate <= 7;
+  const showMovedTag = isBacklogItem && isCurrentWeek;
+
   return (
     <button
       onClick={() => onClick(item.itemKey)}
@@ -135,6 +141,16 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
         <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 650, color: '#4C6EF5' }}>
           {item.itemKey}
         </span>
+        {showMovedTag && (
+          <span style={{
+            fontSize: 9, fontWeight: 700, color: '#0747A6',
+            background: '#DEEBFF', padding: '1px 6px', borderRadius: 3,
+            textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: F.inter,
+            whiteSpace: 'nowrap',
+          }}>
+            Moved to current week
+          </span>
+        )}
         <span style={{ flex: 1 }} />
         <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 600, color: dayColor }}>
           {item.daysSinceUpdate <= 0 ? 'today' : item.daysSinceUpdate === 1 ? '1d' : `${item.daysSinceUpdate}d`}
