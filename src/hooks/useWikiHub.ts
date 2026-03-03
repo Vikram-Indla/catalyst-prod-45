@@ -19,7 +19,7 @@ export function useWikiHomeStats() {
         openRequests: d.open_requests ?? 0,
         avgConfidence: d.avg_confidence ?? 0,
         avgHelpfulness: d.avg_helpfulness ?? 0,
-        totalDomains: d.total_domains ?? 0,
+        unverified: d.unverified ?? 0,
         verifiedPercent: d.verified_percent ?? 0,
       };
     },
@@ -30,37 +30,39 @@ export function useWikiHomeStats() {
 export function useWikiDomainCards() {
   return useQuery({
     queryKey: ['wiki-domain-cards'],
-    staleTime: 300_000,
+    staleTime: 120_000,
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_wiki_domain_cards');
       if (error) throw error;
-      return (data ?? []) as Array<{
-        domain_code: string;
-        name: string;
-        description: string;
-        icon: string;
-        article_count: number;
-        document_count: number;
-        view_count: number;
-        knowledge_gaps: number;
-        freshness_percent: number;
-        coverage_percent: number;
-        last_updated: string | null;
-      }>;
+      // RPC returns `code` from wiki_domains — normalize to domain_code for UI
+      return ((data ?? []) as any[]).map((d: any) => ({
+        domain_code: d.code ?? d.domain_code,
+        name: d.name,
+        name_ar: d.name_ar,
+        description: d.description,
+        icon: d.icon,
+        tag: d.tag,
+        article_count: d.article_count ?? 0,
+        document_count: d.document_count ?? 0,
+        view_count: d.view_count ?? 0,
+        knowledge_gaps: d.knowledge_gaps ?? 0,
+        freshness_percent: d.freshness_percent ?? 100,
+        coverage_percent: d.coverage_percent ?? 0,
+      }));
     },
   });
 }
 
 /* ── Recent Articles ── */
-export function useWikiRecentArticles(limit = 5) {
+export function useWikiRecentArticles(limit = 8) {
   return useQuery({
     queryKey: ['wiki-recent-articles', limit],
     staleTime: 30_000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('wiki_pages')
-        .select('*')
-        .eq('status', 'published')
+        .select('id, slug, title, lead_content, domain_code, status, verification_status, format, ai_confidence, helpfulness_score, helpfulness_votes, tags, version, read_time_minutes, author_name, tldr, view_count, updated_at')
+        .is('deleted_at', null)
         .order('updated_at', { ascending: false })
         .limit(limit);
       if (error) throw error;
@@ -78,6 +80,7 @@ export function useWikiQuickRefs() {
       const { data, error } = await supabase
         .from('wiki_quick_refs')
         .select('*')
+        .is('deleted_at', null)
         .order('sort_order');
       if (error) throw error;
       return data ?? [];
@@ -89,35 +92,18 @@ export function useWikiQuickRefs() {
 export function useWikiLearningPaths() {
   return useQuery({
     queryKey: ['wiki-learning-paths'],
-    staleTime: 60_000,
+    staleTime: 120_000,
     queryFn: async () => {
       const { data: paths, error } = await supabase
         .from('wiki_learning_paths')
         .select('*')
+        .is('deleted_at', null)
         .order('sort_order');
       if (error) throw error;
-
-      const { data: session } = await supabase.auth.getSession();
-      const userId = session?.session?.user?.id;
-
-      if (!userId || !paths?.length) {
-        return (paths ?? []).map((p: any) => ({ ...p, completedCount: 0 }));
-      }
-
-      const { data: progress } = await supabase
-        .from('wiki_learning_progress')
-        .select('path_id')
-        .eq('user_id', userId)
-        .eq('completed', true);
-
-      const countByPath: Record<string, number> = {};
-      (progress ?? []).forEach((r: any) => {
-        countByPath[r.path_id] = (countByPath[r.path_id] || 0) + 1;
-      });
-
       return (paths ?? []).map((p: any) => ({
         ...p,
-        completedCount: countByPath[p.id] || 0,
+        article_count: (p.article_ids ?? []).length,
+        completedCount: 0,
       }));
     },
   });
@@ -132,6 +118,7 @@ export function useWikiKnowledgeRequests(status: 'open' | 'all' = 'open') {
       let q = supabase
         .from('wiki_knowledge_requests')
         .select('*')
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
       if (status === 'open') {
@@ -152,10 +139,11 @@ export function useSubmitArticleFeedback() {
     mutationFn: async ({ pageId, helpful, comment }: { pageId: string; helpful: boolean; comment?: string }) => {
       const { data: session } = await supabase.auth.getSession();
       const userId = session?.session?.user?.id;
+      if (!userId) throw new Error('Not authenticated');
 
       const { error: insertErr } = await supabase
         .from('wiki_article_feedback')
-        .insert({ page_id: pageId, user_id: userId ?? null, helpful, comment: comment ?? null });
+        .upsert({ page_id: pageId, user_id: userId, helpful, comment: comment ?? null }, { onConflict: 'page_id,user_id' });
       if (insertErr) throw insertErr;
 
       const { error: rpcErr } = await supabase.rpc('update_article_helpfulness', { p_page_id: pageId });
@@ -163,6 +151,56 @@ export function useSubmitArticleFeedback() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['wiki-recent-articles'] });
+    },
+  });
+}
+
+/* ── Toggle Bookmark ── */
+export function useToggleBookmark() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ pageId }: { pageId: string }) => {
+      const { data: session } = await supabase.auth.getSession();
+      const userId = session?.session?.user?.id;
+      if (!userId) throw new Error('Not authenticated');
+
+      const { data: existing } = await supabase
+        .from('wiki_bookmarks')
+        .select('id')
+        .eq('page_id', pageId)
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (existing) {
+        await supabase.from('wiki_bookmarks').delete().eq('id', existing.id);
+        return { bookmarked: false };
+      } else {
+        await supabase.from('wiki_bookmarks').insert({ page_id: pageId, user_id: userId });
+        return { bookmarked: true };
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['wiki-bookmarks'] });
+      qc.invalidateQueries({ queryKey: ['wiki-recent-articles'] });
+    },
+  });
+}
+
+/* ── User Bookmarks ── */
+export function useWikiUserBookmarks() {
+  return useQuery({
+    queryKey: ['wiki-bookmarks'],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      const userId = session?.session?.user?.id;
+      if (!userId) return [];
+      const { data, error } = await supabase
+        .from('wiki_bookmarks')
+        .select('page_id')
+        .eq('user_id', userId);
+      if (error) throw error;
+      return (data ?? []).map((b: any) => b.page_id as string);
     },
   });
 }
@@ -183,29 +221,7 @@ export function useWikiAISearch(query: string) {
   });
 }
 
-/* ── Related Articles ── */
-export function useWikiRelatedArticles(domainCode?: string, excludeId?: string, limit = 3) {
-  return useQuery({
-    queryKey: ['wiki-related-articles', domainCode, excludeId, limit],
-    enabled: !!domainCode,
-    staleTime: 60_000,
-    queryFn: async () => {
-      let q = supabase
-        .from('wiki_pages')
-        .select('id, slug, title, domain_code, ai_confidence, read_time_minutes, updated_at')
-        .eq('status', 'published')
-        .eq('domain_code', domainCode!)
-        .order('updated_at', { ascending: false })
-        .limit(limit + 1);
-
-      const { data, error } = await q;
-      if (error) throw error;
-      return (data ?? []).filter((a: any) => a.id !== excludeId).slice(0, limit);
-    },
-  });
-}
-
-/* ── Keyword Search (full-text on wiki_pages) ── */
+/* ── Keyword Search ── */
 export function useWikiKeywordSearch(query: string, filters?: { format?: string; verifiedOnly?: boolean }) {
   return useQuery({
     queryKey: ['wiki-keyword-search', query, filters],
@@ -215,7 +231,7 @@ export function useWikiKeywordSearch(query: string, filters?: { format?: string;
       let q = supabase
         .from('wiki_pages')
         .select('id, slug, title, lead_content, domain_code, ai_confidence, read_time_minutes, verification_status, format, status, updated_at, tags, view_count')
-        .eq('status', 'published')
+        .is('deleted_at', null)
         .or(`title.ilike.%${query}%,lead_content.ilike.%${query}%`)
         .order('updated_at', { ascending: false })
         .limit(50);
@@ -230,6 +246,82 @@ export function useWikiKeywordSearch(query: string, filters?: { format?: string;
       const { data, error } = await q;
       if (error) throw error;
       return data ?? [];
+    },
+  });
+}
+
+/* ── Related Articles ── */
+export function useWikiRelatedArticles(domainCode?: string, excludeId?: string, limit = 3) {
+  return useQuery({
+    queryKey: ['wiki-related-articles', domainCode, excludeId, limit],
+    enabled: !!domainCode,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('wiki_pages')
+        .select('id, slug, title, domain_code, ai_confidence, read_time_minutes, updated_at')
+        .is('deleted_at', null)
+        .eq('domain_code', domainCode!)
+        .order('updated_at', { ascending: false })
+        .limit(limit + 1);
+      if (error) throw error;
+      return (data ?? []).filter((a: any) => a.id !== excludeId).slice(0, limit);
+    },
+  });
+}
+
+/* ── Verification Queue ── */
+export function useWikiVerificationQueue() {
+  return useQuery({
+    queryKey: ['wiki-verification-queue'],
+    staleTime: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('wiki_pages')
+        .select('id, slug, title, domain_code, author_name, freshness_score, updated_at, verification_status')
+        .is('deleted_at', null)
+        .eq('verification_status', 'needs_review')
+        .order('updated_at', { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
+/* ── Article Templates ── */
+export function useWikiArticleTemplates() {
+  return useQuery({
+    queryKey: ['wiki-article-templates'],
+    staleTime: 300_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('wiki_article_templates')
+        .select('*')
+        .order('sort_order');
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
+/* ── Increment View Count ── */
+export function useIncrementViewCount() {
+  return useMutation({
+    mutationFn: async (pageId: string) => {
+      await supabase.rpc('increment_view_count', { p_page_id: pageId });
+    },
+  });
+}
+
+/* ── Log Read ── */
+export function useLogWikiRead() {
+  return useMutation({
+    mutationFn: async ({ pageId }: { pageId: string }) => {
+      const { data: session } = await supabase.auth.getSession();
+      const userId = session?.session?.user?.id;
+      if (!userId) return;
+      await supabase.from('wiki_read_log').insert({ page_id: pageId, user_id: userId });
+      await supabase.rpc('increment_view_count', { p_page_id: pageId });
     },
   });
 }
