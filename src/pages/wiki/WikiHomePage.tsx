@@ -15,6 +15,8 @@ import {
 import { WikiCommandPalette } from '@/components/wiki/WikiCommandPalette';
 import { WikiUploadWizard } from '@/components/wiki/WikiUploadWizard';
 import { WikiChatPanel } from '@/components/wiki/WikiChatPanel';
+import { WikiQuickRefDrawer } from '@/components/wiki/WikiQuickRefDrawer';
+import { WikiKnowledgeRequestForm } from '@/components/wiki/WikiKnowledgeRequestForm';
 import { toast } from 'sonner';
 
 /* ── Constants ── */
@@ -81,6 +83,8 @@ export default function WikiHomePage() {
   const [cmdOpen, setCmdOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [selectedQR, setSelectedQR] = useState<any>(null);
+  const [krFormOpen, setKrFormOpen] = useState(false);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -176,21 +180,25 @@ export default function WikiHomePage() {
               <Skeleton w="80%" h={14} style={{ marginBottom: 12 }} /><Skeleton w="60%" h={12} />
             </div>
           )) : (quickRefs ?? []).length > 0 ? (quickRefs ?? []).map((qr: any) => (
-            <QuickRefCard key={qr.id} qr={qr} />
+            <QuickRefCard key={qr.id} qr={qr} onClick={() => setSelectedQR(qr)} />
           )) : (
             <div style={{ padding: 32, textAlign: 'center', color: '#64748B', fontSize: 12, width: '100%' }}>No quick reference cards yet.</div>
           )}
         </div>
 
         {/* ═══ KNOWLEDGE REQUEST BANNER ═══ */}
-        <div style={{
+        <div onClick={() => setKrFormOpen(true)} style={{
           display: 'flex', alignItems: 'center', gap: 16, padding: '16px 20px', borderRadius: 8,
           background: '#FFFFFF', border: '0.75px solid rgba(37,99,235,0.2)', marginBottom: 40, flexWrap: 'wrap',
-        }}>
+          cursor: 'pointer', transition: 'border-color 150ms, background 150ms',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.background = '#F0F5FF'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(37,99,235,0.2)'; e.currentTarget.style.background = '#FFFFFF'; }}
+        >
           <HelpCircle size={16} style={{ color: '#2563EB' }} />
           <div style={{ flex: 1, minWidth: 200 }}>
             <span style={{ fontSize: 12, color: '#334155' }}>Can't find what you need? </span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#2563EB', cursor: 'pointer' }} onClick={() => navigate('/wiki/knowledge-requests')}>Submit a Knowledge Request</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#2563EB', cursor: 'pointer' }} onClick={() => setKrFormOpen(true)}>Submit a Knowledge Request</span>
             <span style={{ fontSize: 12, color: '#334155' }}> — route to domain experts</span>
           </div>
           <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: '#EFF6FF', color: '#2563EB' }}>
@@ -260,6 +268,8 @@ export default function WikiHomePage() {
       <WikiCommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
       <WikiUploadWizard open={uploadOpen} onClose={() => setUploadOpen(false)} />
       <WikiChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
+      <WikiQuickRefDrawer open={!!selectedQR} onClose={() => setSelectedQR(null)} qr={selectedQR} />
+      <WikiKnowledgeRequestForm open={krFormOpen} onClose={() => setKrFormOpen(false)} />
 
       <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
     </div>
@@ -281,22 +291,38 @@ const StatCard = React.memo(({ label, value, valueColor }: { label: string; valu
 ));
 StatCard.displayName = 'StatCard';
 
+/* ── Domain color map for quick ref icons ── */
+const DOMAIN_COLORS: Record<string, { bg: string; fg: string }> = {
+  D1: { bg: '#DBEAFE', fg: '#1E40AF' }, D2: { bg: '#FEF3C7', fg: '#92400E' },
+  D3: { bg: '#E0E7FF', fg: '#3730A3' }, D4: { bg: '#DCFCE7', fg: '#166534' },
+  D5: { bg: '#FEF9C3', fg: '#854D0E' }, D6: { bg: '#EDE9FE', fg: '#5B21B6' },
+  D7: { bg: '#FFE4E6', fg: '#9F1239' }, D8: { bg: '#F0F9FF', fg: '#0C4A6E' },
+  D9: { bg: '#FEF2F2', fg: '#991B1B' },
+};
+
 /* ── Quick Ref Card ── */
-const QuickRefCard = React.memo(({ qr }: { qr: any }) => (
-  <div style={{
-    minWidth: 190, maxWidth: 190, padding: 16, borderRadius: 8, background: '#FFFFFF',
-    border: '0.75px solid rgba(0,0,0,0.06)', cursor: 'pointer', scrollSnapAlign: 'start', transition: 'border-color 120ms, box-shadow 120ms, transform 120ms',
-  }}
-    onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.08)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}
-  >
-    <div style={{ fontSize: 12, fontWeight: 600, color: '#0F172A', marginBottom: 8, lineHeight: 1.3 }}>{qr.title}</div>
-    <div style={{ display: 'flex', gap: 12, fontSize: 10 }}>
-      <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#2563EB', fontWeight: 500 }}>{qr.steps} steps</span>
-      <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B', fontWeight: 500 }}>{formatK(qr.view_count ?? 0)} views</span>
+const QuickRefCard = React.memo(({ qr, onClick }: { qr: any; onClick: () => void }) => {
+  const dc = DOMAIN_COLORS[qr.domain_code] || { bg: '#F1F5F9', fg: '#64748B' };
+  const Icon = DOMAIN_ICONS[qr.domain_code] || FileText;
+  return (
+    <div onClick={onClick} style={{
+      minWidth: 190, maxWidth: 190, padding: 16, borderRadius: 8, background: '#FFFFFF',
+      border: '0.75px solid rgba(0,0,0,0.06)', cursor: 'pointer', scrollSnapAlign: 'start', transition: 'border-color 120ms, box-shadow 120ms, transform 120ms',
+    }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.08)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}
+    >
+      <div style={{ width: 30, height: 30, borderRadius: 6, background: dc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
+        <Icon size={15} style={{ color: dc.fg }} />
+      </div>
+      <div style={{ fontSize: 12, fontWeight: 600, color: '#0F172A', marginBottom: 8, lineHeight: 1.3 }}>{qr.title}</div>
+      <div style={{ display: 'flex', gap: 12, fontSize: 10 }}>
+        <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#2563EB', fontWeight: 500 }}>{qr.steps} steps</span>
+        <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B', fontWeight: 500 }}>{formatK(qr.view_count ?? qr.views ?? 0)} views</span>
+      </div>
     </div>
-  </div>
-));
+  );
+});
 QuickRefCard.displayName = 'QuickRefCard';
 
 /* ── Domain Card ── */
