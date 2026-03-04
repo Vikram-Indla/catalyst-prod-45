@@ -531,11 +531,12 @@
 /* ─── RING VIEW ─── */
 #r360-root .r3-ring-canvas {
   position: relative !important;
-  min-height: 640px !important;
-  background: radial-gradient(circle at 50% 50%, #FFFFFF, #F1F5F9) !important;
+  height: 620px !important;
+  min-width: 1100px !important;
+  background: radial-gradient(circle at 50% 44%, #FFFFFF, #F8FAFC) !important;
   border-radius: 12px !important;
   border: 1px solid #E2E8F0 !important;
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
 #r360-root .r3-ring-center {
@@ -573,20 +574,45 @@
 
 #r360-root .r3-ring-card {
   position: absolute !important;
-  width: 195px !important;
+  width: 228px !important;
+  height: 145px !important;
   background: #FFFFFF !important;
-  border: 1px solid #E2E8F0 !important;
-  border-radius: 8px !important;
-  padding: 10px 12px !important;
+  border: 1px solid rgba(15,23,42,0.08) !important;
+  border-radius: 6px !important;
+  padding: 10px !important;
   cursor: pointer !important;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
   overflow: hidden !important;
-  transition: box-shadow 0.15s, border-color 0.15s !important;
-  z-index: 5 !important;
+  transition: all var(--cp-duration-fast) ease !important;
+  z-index: 1 !important;
+  will-change: transform !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 #r360-root .r3-ring-card:hover {
-  box-shadow: 0 6px 24px rgba(0,0,0,0.12) !important;
-  border-color: #94A3B8 !important;
+  box-shadow: var(--cp-shadow-xs) !important;
+  transform: translateY(-1px) !important;
+}
+#r360-root .r3-ring-card:focus-visible {
+  outline: var(--cp-focus-ring) !important;
+  outline-offset: var(--cp-focus-offset) !important;
+}
+#r360-root .r3-ring-card.carryover {
+  opacity: 0.88 !important;
+}
+#r360-root .r3-ring-card.selected {
+  border-color: #2563EB !important;
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.15) !important;
+}
+/* Priority left border */
+#r360-root .r3-ring-card.priority-high {
+  border-inline-start: 3px solid #DC2626 !important;
+}
+#r360-root .r3-ring-card.priority-medium {
+  border-inline-start: 3px solid #D97706 !important;
+}
+#r360-root .r3-ring-card.priority-low {
+  border-inline-start: 3px solid #94A3B8 !important;
 }
 
 #r360-root .r3-spoke-label {
@@ -807,7 +833,7 @@
 
 #r360-root .r3-completed-badge {
   position: absolute !important;
-  right: 24px !important;
+  right: 0 !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
   display: flex !important;
@@ -815,27 +841,90 @@
   align-items: center !important;
   gap: 6px !important;
   z-index: 8 !important;
+  cursor: pointer !important;
+  transition: transform var(--cp-duration-fast) ease !important;
+}
+#r360-root .r3-completed-badge:hover {
+  transform: translateY(-50%) scale(1.05) !important;
 }
 #r360-root .r3-completed-circle {
-  width: 48px !important;
-  height: 48px !important;
+  width: 32px !important;
+  height: 32px !important;
   border-radius: 50% !important;
-  background: #16A34A !important;
-  color: #FFFFFF !important;
+  background: #E3FCEF !important;
+  color: #006644 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 16px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
+  font-family: 'Sora', sans-serif !important;
+}
+#r360-root .r3-completed-circle.empty {
+  background: transparent !important;
+  border: 2px dashed #D4D4D8 !important;
+  color: #94A3B8 !important;
 }
 #r360-root .r3-completed-text {
   writing-mode: vertical-rl !important;
   text-orientation: mixed !important;
-  font-size: 10px !important;
+  font-size: 11px !important;
   font-weight: 700 !important;
-  letter-spacing: 0.1em !important;
+  letter-spacing: 0.05em !important;
   text-transform: uppercase !important;
-  color: #16A34A !important;
+  color: #006644 !important;
+}
+#r360-root .r3-completed-text.empty {
+  color: #94A3B8 !important;
+}
+/* Completed panel popover */
+#r360-root .r3-completed-panel {
+  position: absolute !important;
+  right: 48px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 340px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #D4D4D8 !important;
+  border-radius: 8px !important;
+  box-shadow: var(--cp-shadow-overlay) !important;
+  z-index: 10 !important;
+  overflow: hidden !important;
+}
+/* Updated Xd ago label */
+#r360-root .r3-card-age-label {
+  position: absolute !important;
+  left: 50% !important;
+  bottom: -18px !important;
+  transform: translateX(-50%) !important;
+  font-size: 11px !important;
+  color: #94A3B8 !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+/* From tag age escalation */
+#r360-root .r3-from-tag {
+  font-size: 9.5px !important;
+  font-weight: 600 !important;
+  padding: 2px 7px !important;
+  border-radius: 3px !important;
+  white-space: nowrap !important;
+}
+#r360-root .r3-from-tag.neutral {
+  background: #F1F5F9 !important;
+  color: #64748B !important;
+  border: 1px solid #E2E8F0 !important;
+}
+#r360-root .r3-from-tag.amber {
+  background: #FFFBEB !important;
+  color: #92400E !important;
+  border: 1px solid #FDE68A !important;
+}
+#r360-root .r3-from-tag.red {
+  background: #FEF2F2 !important;
+  color: #991B1B !important;
+  border: 1px solid #FECACA !important;
 }
 
 /* ─── MINI STATUS BAR ─── */
