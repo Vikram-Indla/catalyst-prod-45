@@ -621,14 +621,14 @@ function StatusLozenge({ status }: { status: string }) {
 const RING_CANVAS_H = 620;
 // Slot positions as percentages/px for absolute placement (228×145 cards)
 const SLOT_POSITIONS: { left: string; top: string }[] = [
-  { left: '4%',  top: '8%' },       // Slot 1: top-left
+  { left: '4%',  top: '5%' },       // Slot 1: top-left
   { left: '36%', top: '2%' },       // Slot 2: top-center
-  { left: '64%', top: '8%' },       // Slot 3: top-right
-  { left: '70%', top: '35%' },      // Slot 4: right
-  { left: '64%', top: '62%' },      // Slot 5: bottom-right
-  { left: '36%', top: '68%' },      // Slot 6: bottom-center
-  { left: '4%',  top: '62%' },      // Slot 7: bottom-left
-  { left: '4%',  top: '35%' },      // Slot 8: left
+  { left: '62%', top: '5%' },       // Slot 3: top-right
+  { left: '68%', top: '33%' },      // Slot 4: mid-right
+  { left: '62%', top: '61%' },      // Slot 5: bottom-right
+  { left: '36%', top: '65%' },      // Slot 6: bottom-center
+  { left: '4%',  top: '61%' },      // Slot 7: bottom-left
+  { left: '4%',  top: '33%' },      // Slot 8: mid-left
 ];
 
 // Compute connector endpoints dynamically from card positions
@@ -1010,16 +1010,16 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
               onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
             >
-              {/* Row 1: type + priority */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+              {/* Row 1: type + priority — fixed 18px */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px', flexShrink: 0, height: '18px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {getJiraIcon(item.item_type)}
                   <span style={{ fontSize: '11px', fontWeight: 650, textTransform: 'uppercase' as const, color: '#334155' }}>{item.item_type}</span>
                 </div>
                 <span style={{ fontSize: '11px', color: '#64748B' }}>{item.priority}</span>
               </div>
-              {/* Row 2: key + project badge + age */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
+              {/* Row 2: key + project badge + age — fixed 18px */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px', flexShrink: 0, height: '18px' }}>
                 <span style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
                 <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: '#F1F5F9', color: '#64748B' }}>{item.project_key}</span>
                 <span style={{
@@ -1029,10 +1029,10 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
                   fontFamily: "'JetBrains Mono', monospace",
                 }}>{item.age_days}d</span>
               </div>
-              {/* Row 3: title */}
-              <div style={{ fontSize: '12px', fontWeight: 500, color: '#0F172A', lineHeight: '1.35', marginBottom: '5px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', flex: 1 } as React.CSSProperties}>{item.title}</div>
-              {/* Row 4: status lozenge + from tag */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: 'auto' }}>
+              {/* Row 3: title — 11px, 2-line clamp, flex fills remaining space */}
+              <div style={{ fontSize: '11px', fontWeight: 500, color: '#0F172A', lineHeight: '1.3', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', textOverflow: 'ellipsis', flex: '1 1 auto', minHeight: 0 } as React.CSSProperties}>{item.title}</div>
+              {/* Row 4: status lozenge + from tag — fixed 24px, pinned to bottom */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: 'auto', flexShrink: 0, height: '24px' }}>
                 <StatusLozenge status={item.status} />
                 {item.carried_from_label && (
                   <span className={`r3-from-tag ${fromClass}`} title="Carried over from an earlier period">
