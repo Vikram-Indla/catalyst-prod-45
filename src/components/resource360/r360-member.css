@@ -334,22 +334,24 @@
 #r360-root .r3-tab {
   font-size: 13px !important;
   font-weight: 500 !important;
-  padding: 6px 14px !important;
-  border-radius: 6px !important;
+  padding: 10px 16px !important;
+  border-radius: 0 !important;
   cursor: pointer !important;
   border: none !important;
   background: transparent !important;
   color: #64748B !important;
+  border-bottom: 2px solid transparent !important;
   transition: all 0.15s ease !important;
 }
 #r360-root .r3-tab:hover {
-  background: #F1F5F9 !important;
+  background: transparent !important;
   color: #334155 !important;
 }
 #r360-root .r3-tab.active {
-  background: #EFF6FF !important;
+  background: transparent !important;
   color: #2563EB !important;
   font-weight: 600 !important;
+  border-bottom-color: #2563EB !important;
 }
 
 /* Intelligence button — BLUE, not purple */

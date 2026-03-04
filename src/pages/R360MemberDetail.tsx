@@ -510,7 +510,7 @@ export default function R360MemberDetail() {
           {/* ── Tabs + Actions — §10 toolbar buttons ── */}
           <div className="r3-tabs">
             {(['ring', 'chronology', 'board'] as R360ViewType[]).map(v => (
-              <button key={v} className={`r3-tab ${view === v ? 'r3-tab--active' : ''}`} onClick={() => setView(v)}>
+              <button key={v} className={`r3-tab ${view === v ? 'active' : ''}`} onClick={() => setView(v)}>
                 {v.charAt(0).toUpperCase() + v.slice(1)}
               </button>
             ))}
@@ -684,18 +684,15 @@ function getCardPixelPos(slotIdx: number, containerW: number): { x: number; y: n
   return { x: leftPx + CARD_W / 2, y: topPx + CARD_H / 2 };
 }
 
-// From tag age escalation helper
-function getFromTagClass(label: string | null): string {
-  if (!label) return '';
-  // Extract week number from "From W{N}" pattern
-  const match = label.match(/W(\d+)/);
-  if (!match) return 'neutral';
-  const currentWeek = Math.ceil(((new Date().getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / 86400000 + 1) / 7);
-  const fromWeek = parseInt(match[1], 10);
-  const diff = currentWeek - fromWeek;
-  if (diff >= 5) return 'red';
-  if (diff >= 3) return 'amber';
+// From tag age escalation helper — uses age_days directly
+function getFromTagClass(ageDays: number): string {
+  if (ageDays >= 29) return 'red';
+  if (ageDays >= 15) return 'amber';
   return 'neutral';
+}
+
+function getFromTagPrefix(ageDays: number): string {
+  return ageDays >= 15 ? '⚠ ' : '';
 }
 
 // Priority badge helper
@@ -899,7 +896,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
                 const hasHighP = isHighPriority(item.priority);
                 const hasMedP = isMediumPriority(item.priority);
                 const borderColor = hasHighP ? '#DC2626' : hasMedP ? '#D97706' : '#94A3B8';
-                const fromClass = getFromTagClass(item.carried_from_label);
+                const fromClass = getFromTagClass(item.age_days);
                 return (
                   <div key={item.id} onClick={() => onSelect(item)} style={{
                     width: '100%', padding: '12px 16px', border: '1px solid rgba(15,23,42,0.08)',
@@ -931,7 +928,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
                       <StatusLozenge status={item.status} />
                       {item.carried_from_label && (
                         <span className={`r3-from-tag ${fromClass}`}>
-                          {fromClass === 'red' ? '⚠ ' : ''}{item.carried_from_label}
+                          {getFromTagPrefix(item.age_days)}{item.carried_from_label}
                         </span>
                       )}
                     </div>
@@ -1030,7 +1027,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
         const hasHighPriority = isHighPriority(item.priority);
         const hasMedPriority = isMediumPriority(item.priority);
         const hasCarryover = !!item.carried_from_label;
-        const fromClass = getFromTagClass(item.carried_from_label);
+        const fromClass = getFromTagClass(item.age_days);
         const priorityClass = hasHighPriority ? 'priority-high' : hasMedPriority ? 'priority-medium' : 'priority-low';
         return (
           <div key={item.id} style={{ position: 'absolute', left: slotPos.left, top: slotPos.top }}>
@@ -1068,7 +1065,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
                 <StatusLozenge status={item.status} />
                 {item.carried_from_label && (
                   <span className={`r3-from-tag ${fromClass}`} title="Carried over from an earlier period">
-                    {fromClass === 'red' ? '⚠ ' : ''}{item.carried_from_label}
+                    {getFromTagPrefix(item.age_days)}{item.carried_from_label}
                   </span>
                 )}
                 {isContributor && (
@@ -1206,7 +1203,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
 
   // Render a single chronology card
   const renderChronoCard = (item: R360WorkItem) => {
-    const fromClass = getFromTagClass(item.carried_from_label);
+    const fromClass = getFromTagClass(item.age_days);
     return (
       <div key={item.id} className="r3-chrono-card" onClick={() => onSelect(item)}>
         <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : accentColor(item.status_category) }} />
@@ -1220,7 +1217,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
             )}
             {item.carried_from_label && (
               <span className={`r3-from-tag ${fromClass}`} style={{ fontSize: '10px' }}>
-                {fromClass === 'red' ? '⚠ ' : ''}{item.carried_from_label}
+                {getFromTagPrefix(item.age_days)}{item.carried_from_label}
               </span>
             )}
           </div>
@@ -1395,7 +1392,7 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
             </div>
             <div className="r3-board-cards">
               {col.items.map(item => {
-                const fromClass = getFromTagClass(item.carried_from_label);
+                const fromClass = getFromTagClass(item.age_days);
                 return (
                   <div key={item.id} className="r3-board-card" onClick={() => onSelect(item)}>
                     <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : accentColor(item.status_category) }} />
@@ -1421,7 +1418,7 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
                         <StatusLozenge status={item.status} />
                         {item.carried_from_label && (
                           <span className={`r3-from-tag ${fromClass}`} style={{ fontSize: '10px' }}>
-                            {fromClass === 'red' ? '⚠ ' : ''}{item.carried_from_label}
+                            {getFromTagPrefix(item.age_days)}{item.carried_from_label}
                           </span>
                         )}
                       </div>
