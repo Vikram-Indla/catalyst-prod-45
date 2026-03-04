@@ -27,7 +27,7 @@ serve(async (req) => {
   const syncType: string = body.sync_type || 'full'
   const overrideIssueTypes: string[] | undefined = body.issue_types
   const overrideFixVersions: string[] | undefined = body.fix_versions
-  const overrideProjects: string[] | undefined = body.projects
+  const overrideProjects: string[] | undefined = body.projects || body.projectKeys
   const overrideProjectConfigs: Record<string, ProjectConfig> | undefined = body.project_configs
 
   // Create log entry
