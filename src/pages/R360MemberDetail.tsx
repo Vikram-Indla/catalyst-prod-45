@@ -510,7 +510,7 @@ export default function R360MemberDetail() {
           {/* ── Tabs + Actions — §10 toolbar buttons ── */}
           <div className="r3-tabs">
             {(['ring', 'chronology', 'board'] as R360ViewType[]).map(v => (
-              <button key={v} className={`r3-tab ${view === v ? 'active' : ''}`} onClick={() => setView(v)}>
+              <button key={v} className={`r3-tab ${view === v ? 'active' : ''}`} onClick={() => { setView(v); const root = document.getElementById('r360-root'); if (root) root.scrollTop = 0; const tabs = document.querySelector('#r360-root .r3-tabs'); if (tabs) tabs.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' }); }}>
                 {v.charAt(0).toUpperCase() + v.slice(1)}
               </button>
             ))}
