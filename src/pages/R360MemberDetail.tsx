@@ -1202,19 +1202,22 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
   const accentColor = (cat: string) => cat === 'in_progress' ? '#2563EB' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? '#EF4444' : cat === 'done' ? '#16A34A' : '#D97706';
 
   const getChronologyStatusLozengeColors = (status: string): { background: string; color: string } => {
-    const normalized = (status || '').toUpperCase().trim();
+    const s = (status || '').toUpperCase().trim();
 
-    // BLUE statuses
-    if (normalized === 'IN PROGRESS' || normalized === 'IN REVIEW' || normalized === 'ACTIVE') {
-      return { background: '#DEEBFF', color: '#0747A6' };
-    }
+    // GREEN: work is finished
+    const greenStatuses = ['DONE', 'COMPLETED', 'APPROVED', 'RESOLVED', 'CLOSED', 'RELEASED', 'VERIFIED'];
+    if (greenStatuses.includes(s)) return { background: '#E3FCEF', color: '#006644' };
 
-    // GREEN statuses
-    if (normalized === 'DONE' || normalized === 'COMPLETED' || normalized === 'APPROVED') {
-      return { background: '#E3FCEF', color: '#006644' };
-    }
+    // BLUE: work is actively happening
+    const blueStatuses = [
+      'IN PROGRESS', 'IN REVIEW', 'IN DEVELOPMENT', 'IN TESTING',
+      'UNDER IMPLEMENTATION', 'UNDER REVIEW', 'ACTIVE', 'CODE REVIEW',
+      'QA', 'UAT', 'AWAITING APPROVAL', 'READY FOR QA', 'READY FOR REVIEW',
+      'IMPLEMENTATION',
+    ];
+    if (blueStatuses.includes(s)) return { background: '#DEEBFF', color: '#0747A6' };
 
-    // GREY statuses (default)
+    // GREY (default)
     return { background: '#DFE1E6', color: '#253858' };
   };
 
