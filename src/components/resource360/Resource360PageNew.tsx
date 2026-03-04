@@ -9,6 +9,8 @@ import { Resource360Banner } from './Resource360Banner';
 import RingViewV16 from './RingViewV16';
 import { Resource360Chronology } from './Resource360Chronology';
 import { Resource360Board } from './Resource360Board';
+import { R360ItemDetailDrawer, mapToDrawerItem } from './R360ItemDetailDrawer';
+import type { R360DrawerItem } from './R360ItemDetailDrawer';
 import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 import './r360-tokens.css';
 
@@ -26,6 +28,29 @@ export default function Resource360PageNew() {
   const [aiOpen, setAIOpen] = useState(false);
   const viewTabsRef = useRef<HTMLDivElement>(null);
 
+  // ─── ITEM DETAIL DRAWER STATE ───
+  const [drawerItem, setDrawerItem] = useState<R360DrawerItem | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const handleOpenDrawer = useCallback((item: Resource360Item) => {
+    setDrawerItem(mapToDrawerItem(item));
+    setDrawerOpen(true);
+  }, []);
+
+  const handleCloseDrawer = useCallback(() => {
+    setDrawerOpen(false);
+    setTimeout(() => setDrawerItem(null), 250);
+  }, []);
+
+  // ESC key to close drawer
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && drawerOpen) handleCloseDrawer();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [drawerOpen, handleCloseDrawer]);
+
   useEffect(() => {
     if (viewTabsRef.current) {
       viewTabsRef.current.scrollIntoView({ behavior: 'instant', block: 'nearest' });
@@ -40,7 +65,10 @@ export default function Resource360PageNew() {
   const { data: items = [], isLoading: itemsLoading } = useResource360Items(resourceId);
   const { data: summary, isLoading: summaryLoading } = useResource360Summary(resourceId);
 
-  const handleItemClick = useCallback((item: Resource360Item) => setSelectedItem(item), []);
+  const handleItemClick = useCallback((item: Resource360Item) => {
+    setSelectedItem(item);
+    handleOpenDrawer(item);
+  }, [handleOpenDrawer]);
 
   if (!resourceId) {
     return (
@@ -155,6 +183,13 @@ export default function Resource360PageNew() {
           onClose={() => setAIOpen(false)}
         />
       )}
+
+      {/* Item Detail Drawer */}
+      <R360ItemDetailDrawer
+        item={drawerItem}
+        isOpen={drawerOpen}
+        onClose={handleCloseDrawer}
+      />
     </div>
   );
 }

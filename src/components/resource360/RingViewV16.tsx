@@ -281,7 +281,7 @@ const CARD_POSITIONS = [
   { x: 62, y: 58 },   // slot 7: bottom-right
 ];
 
-const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) => {
+const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, onItemClick }) => {
   const ringCanvasRef = useRef<HTMLDivElement>(null);
   const centerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -424,7 +424,14 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
     return () => window.removeEventListener('keydown', handler);
   }, [selectedId, pageItems]);
 
-  const selectCard = useCallback((key: string) => { setSelectedId(key); setPanelMode('detail'); }, []);
+  const selectCard = useCallback((key: string) => {
+    setSelectedId(key); setPanelMode('detail');
+    // Also notify parent to open the item detail drawer
+    if (onItemClick) {
+      const original = rawItems.find(r => r.item_key === key);
+      if (original) onItemClick(original);
+    }
+  }, [onItemClick, rawItems]);
   const closePanel = useCallback(() => { setSelectedId(null); setPanelMode('hidden'); }, []);
   const toggleCompleted = useCallback(() => {
     if (panelMode === 'completed') { setPanelMode('hidden'); } else { setSelectedId(null); setPanelMode('completed'); }

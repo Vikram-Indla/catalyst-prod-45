@@ -1011,3 +1011,222 @@
     width: 100% !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   R360 ITEM DETAIL DRAWER — Stage C
+   All scoped under #r360-root
+   ═══════════════════════════════════════════════════════════ */
+
+#r360-root .drawer-backdrop {
+  position: fixed !important; inset: 0 !important;
+  background: rgba(15,23,42,0.18) !important;
+  z-index: 200 !important; opacity: 0 !important; pointer-events: none !important;
+  transition: opacity var(--cp-duration-normal, 0.25s) !important;
+}
+#r360-root .drawer-backdrop.open {
+  opacity: 1 !important; pointer-events: auto !important;
+}
+
+#r360-root .item-drawer {
+  position: fixed !important;
+  top: 48px !important; right: 0 !important; bottom: 0 !important; width: 420px !important;
+  background: #FFFFFF !important;
+  border-left: 0.75px solid rgba(15,23,42,0.08) !important;
+  box-shadow: -4px 0 24px rgba(15,23,42,0.10) !important;
+  z-index: 210 !important;
+  display: flex !important; flex-direction: column !important;
+  transform: translateX(100%) !important;
+  transition: transform var(--cp-duration-normal, 0.25s) cubic-bezier(0.4,0,0.2,1) !important;
+  overflow: hidden !important;
+}
+#r360-root .item-drawer.open {
+  transform: translateX(0) !important;
+}
+
+#r360-root .drawer-hd {
+  display: flex !important; align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 20px !important; height: 48px !important;
+  border-bottom: 0.75px solid rgba(15,23,42,0.08) !important;
+  flex-shrink: 0 !important;
+}
+
+#r360-root .drawer-key {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace) !important;
+  font-size: 14px !important; font-weight: 600 !important;
+  color: var(--cp-primary, #2563EB) !important;
+}
+
+#r360-root .drawer-close-btn {
+  width: 28px !important; height: 28px !important; border-radius: 6px !important;
+  border: none !important; background: none !important; cursor: pointer !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  color: var(--cp-ink-muted, #64748B) !important; font-size: 14px !important;
+  transition: background var(--cp-duration-fast, 0.15s) !important;
+}
+#r360-root .drawer-close-btn:hover {
+  background: rgba(15,23,42,0.04) !important;
+}
+
+#r360-root .drawer-pills {
+  display: flex !important; align-items: center !important; gap: 8px !important;
+  padding: 0 20px !important; height: 44px !important;
+  border-bottom: 0.75px solid rgba(15,23,42,0.08) !important;
+  flex-shrink: 0 !important; flex-wrap: wrap !important;
+}
+
+#r360-root .pill-status {
+  display: flex !important; align-items: center !important; gap: 5px !important;
+  font-size: 13px !important; font-weight: 500 !important;
+  color: var(--cp-ink-secondary, #334155) !important;
+}
+
+#r360-root .pill-dot {
+  width: 8px !important; height: 8px !important; border-radius: 50% !important;
+}
+#r360-root .pill-dot.grey  { background: #6B778C !important; }
+#r360-root .pill-dot.blue  { background: #0052CC !important; }
+#r360-root .pill-dot.green { background: #00875A !important; }
+
+#r360-root .pill-sep {
+  width: 1px !important; height: 16px !important;
+  background: var(--cp-border-strong, #D4D4D8) !important;
+}
+
+#r360-root .pill-priority {
+  font-size: 12px !important; font-weight: 500 !important;
+  color: var(--cp-ink-secondary, #334155) !important;
+}
+
+#r360-root .pill-type {
+  display: flex !important; align-items: center !important; gap: 5px !important;
+  font-size: 12px !important; font-weight: 600 !important;
+  color: var(--cp-ink-secondary, #334155) !important;
+}
+
+#r360-root .pill-project {
+  font-size: 11px !important; font-weight: 700 !important; color: #fff !important;
+  background: var(--cp-primary, #2563EB) !important;
+  padding: 2px 8px !important; border-radius: 4px !important;
+  letter-spacing: 0.02em !important;
+}
+
+#r360-root .drawer-title {
+  padding: 16px 20px !important;
+  font-family: var(--font-heading, 'Sora', sans-serif) !important;
+  font-size: 15px !important; font-weight: 700 !important;
+  color: var(--cp-ink, #0F172A) !important; line-height: 1.45 !important;
+  border-bottom: 0.75px solid rgba(15,23,42,0.08) !important;
+  flex-shrink: 0 !important;
+}
+
+#r360-root .drawer-meta {
+  display: grid !important; grid-template-columns: 1fr 1fr !important;
+  border-bottom: 0.75px solid rgba(15,23,42,0.08) !important;
+  flex-shrink: 0 !important;
+}
+
+#r360-root .meta-cell {
+  padding: 12px 20px !important;
+  border-bottom: 0.75px solid rgba(15,23,42,0.08) !important;
+}
+#r360-root .meta-cell:nth-child(odd) {
+  border-right: 0.75px solid rgba(15,23,42,0.08) !important;
+}
+#r360-root .meta-cell:nth-last-child(-n+2) {
+  border-bottom: none !important;
+}
+
+#r360-root .meta-label {
+  font-size: 10px !important; font-weight: 600 !important;
+  text-transform: uppercase !important; letter-spacing: 0.06em !important;
+  color: var(--cp-ink-muted, #64748B) !important; margin-bottom: 5px !important;
+}
+
+#r360-root .meta-value {
+  font-size: 13px !important; font-weight: 500 !important;
+  color: var(--cp-ink, #0F172A) !important;
+}
+#r360-root .meta-value.muted {
+  color: var(--cp-ink-muted, #64748B) !important;
+}
+
+#r360-root .days-wrap {
+  display: flex !important; align-items: center !important; gap: 8px !important;
+}
+#r360-root .days-num {
+  font-size: 13px !important; font-weight: 600 !important;
+  min-width: 16px !important;
+}
+#r360-root .days-track {
+  flex: 1 !important; max-width: 80px !important; height: 4px !important;
+  background: var(--cp-border-strong, #D4D4D8) !important;
+  border-radius: 2px !important; overflow: hidden !important;
+}
+#r360-root .days-fill {
+  height: 100% !important; border-radius: 2px !important;
+  background: var(--cp-primary, #2563EB) !important;
+  transition: width var(--cp-duration-normal, 0.25s) !important;
+}
+#r360-root .days-fill.amber { background: var(--cp-warning, #D97706) !important; }
+#r360-root .days-fill.red   { background: var(--cp-danger, #DC2626) !important; }
+
+#r360-root .drawer-hier {
+  padding: 16px 20px !important; flex: 1 !important; overflow-y: auto !important;
+}
+
+#r360-root .hier-label {
+  font-size: 10px !important; font-weight: 600 !important;
+  text-transform: uppercase !important; letter-spacing: 0.06em !important;
+  color: var(--cp-ink-muted, #64748B) !important; margin-bottom: 12px !important;
+}
+
+#r360-root .hier-row {
+  display: flex !important; align-items: flex-start !important; gap: 8px !important;
+  padding: 8px 12px !important; border-radius: 6px !important;
+  cursor: pointer !important; transition: background var(--cp-duration-fast, 0.15s) !important;
+}
+#r360-root .hier-row:hover {
+  background: rgba(15,23,42,0.04) !important;
+}
+#r360-root .hier-row.hier-self {
+  border: 1.5px solid var(--cp-primary, #2563EB) !important;
+  background: rgba(37,99,235,0.04) !important;
+  margin-top: 2px !important;
+}
+
+#r360-root .hier-indent {
+  margin-left: 20px !important; display: flex !important;
+  gap: 0 !important; align-items: flex-start !important;
+}
+#r360-root .hier-indent-line {
+  width: 14px !important; min-height: 20px !important;
+  border-left: 1.5px solid var(--cp-border-strong, #D4D4D8) !important;
+  margin-left: 10px !important; margin-top: 4px !important; flex-shrink: 0 !important;
+}
+
+#r360-root .hier-icon {
+  width: 18px !important; height: 18px !important; border-radius: 4px !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  font-size: 9px !important; font-weight: 700 !important;
+  flex-shrink: 0 !important; margin-top: 1px !important;
+}
+#r360-root .hier-icon.epic {
+  background: #6554C0 !important; color: #fff !important;
+}
+
+#r360-root .hier-key {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace) !important;
+  font-size: 12px !important; font-weight: 600 !important;
+  color: var(--cp-primary, #2563EB) !important;
+}
+#r360-root .hier-name {
+  font-size: 12px !important;
+  color: var(--cp-ink-secondary, #334155) !important; line-height: 1.4 !important;
+}
+
+@media (max-width: 480px) {
+  #r360-root .item-drawer {
+    width: 100% !important;
+  }
+}
