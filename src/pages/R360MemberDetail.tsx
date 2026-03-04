@@ -590,8 +590,8 @@ export default function R360MemberDetail() {
 // ═══════════════════════════════════════════
 // RING VIEW — V12 PRECISION
 // ═══════════════════════════════════════════
-const CARD_W = 230;
-const CARD_H = 150;
+const CARD_W = 228;
+const CARD_H = 145;
 
 // V12 StatusLozenge — exactly 3 states
 function StatusLozenge({ status }: { status: string }) {
@@ -615,40 +615,53 @@ function StatusLozenge({ status }: { status: string }) {
   );
 }
 
-// Fixed 8-slot ring geometry — absolute positioning
+// Fixed 8-slot ring geometry — elliptical placement around center
 const RING_CANVAS_H = 620;
+// Slot positions as percentages/px for absolute placement (228×145 cards)
 const SLOT_POSITIONS: { left: string; top: string }[] = [
-  { left: '16px', top: '16px' },
-  { left: 'calc(50% - 114px)', top: '2px' },
-  { left: 'calc(100% - 280px)', top: '16px' },
-  { left: '16px', top: '232px' },
-  { left: 'calc(100% - 280px)', top: '232px' },
-  { left: '16px', top: `${RING_CANVAS_H - CARD_H - 20}px` },
-  { left: 'calc(50% - 114px)', top: `${RING_CANVAS_H - CARD_H - 2}px` },
-  { left: 'calc(100% - 280px)', top: `${RING_CANVAS_H - CARD_H - 20}px` },
+  { left: '2%',  top: '8%' },       // Slot 1: top-left
+  { left: '35%', top: '2%' },       // Slot 2: top-center
+  { left: '68%', top: '8%' },       // Slot 3: top-right
+  { left: '76%', top: '35%' },      // Slot 4: right
+  { left: '68%', top: '62%' },      // Slot 5: bottom-right
+  { left: '35%', top: '68%' },      // Slot 6: bottom-center
+  { left: '2%',  top: '62%' },      // Slot 7: bottom-left
+  { left: '2%',  top: '35%' },      // Slot 8: left
 ];
 
-function computeRingGeometry(W: number, count: number, ages: number[]) {
-  const CX = W / 2;
-  const CY = RING_CANVAS_H * 0.44;
-  const n = Math.min(count, 8);
-  const slots: { left: number; top: number }[] = [];
-  const spokes: { x1: number; y1: number; x2: number; y2: number }[] = [];
-  const labelData: { x: number; y: number; age: number }[] = [];
-  // We still compute numeric positions for spokes/labels
-  for (let i = 0; i < n; i++) {
-    // Approximate pixel positions from the CSS for spokes
-    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-    const baseR = n <= 3 ? 160 : n <= 5 ? 200 : n <= 6 ? 230 : 260;
-    const cx = CX + baseR * Math.cos(angle);
-    const cy = CY + baseR * Math.sin(angle);
-    slots.push({ left: Math.max(4, Math.min(cx - CARD_W / 2, W - CARD_W - 4)), top: Math.max(4, cy - CARD_H / 2) });
-    const ccx = slots[i].left + CARD_W / 2;
-    const ccy = slots[i].top + CARD_H / 2;
-    spokes.push({ x1: CX, y1: CY, x2: ccx, y2: ccy });
-    labelData.push({ x: (CX + ccx) / 2, y: (CY + ccy) / 2, age: ages[i] || 0 });
+// Compute connector endpoints dynamically from card positions
+function getCardPixelPos(slotIdx: number, containerW: number): { x: number; y: number } {
+  const slot = SLOT_POSITIONS[slotIdx];
+  if (!slot) return { x: 0, y: 0 };
+  // Parse left
+  let leftPx: number;
+  if (slot.left.endsWith('%')) {
+    leftPx = (parseFloat(slot.left) / 100) * containerW;
+  } else {
+    leftPx = parseFloat(slot.left);
   }
-  return { slots, spokes, labels: labelData, center: { x: CX, y: CY }, canvasH: RING_CANVAS_H };
+  // Parse top
+  let topPx: number;
+  if (slot.top.endsWith('%')) {
+    topPx = (parseFloat(slot.top) / 100) * RING_CANVAS_H;
+  } else {
+    topPx = parseFloat(slot.top);
+  }
+  return { x: leftPx + CARD_W / 2, y: topPx + CARD_H / 2 };
+}
+
+// From tag age escalation helper
+function getFromTagClass(label: string | null): string {
+  if (!label) return '';
+  // Extract week number from "From W{N}" pattern
+  const match = label.match(/W(\d+)/);
+  if (!match) return 'neutral';
+  const currentWeek = Math.ceil(((new Date().getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / 86400000 + 1) / 7);
+  const fromWeek = parseInt(match[1], 10);
+  const diff = currentWeek - fromWeek;
+  if (diff >= 5) return 'red';
+  if (diff >= 3) return 'amber';
+  return 'neutral';
 }
 
 // Priority badge helper
@@ -701,45 +714,40 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
   const nonDone = items.filter(i => i.status_category !== 'done');
   const doneItems = items.filter(i => i.status_category === 'done');
   const doneCount = doneItems.length;
+  const totalItems = items.length;
   const visible = nonDone.slice(0, 8);
-  const ages = visible.map(i => i.age_days);
-  const { slots, spokes, labels, center, canvasH } = computeRingGeometry(W, visible.length, ages);
+
+  const CX = W / 2;
+  const CY = RING_CANVAS_H * 0.44;
 
   const isHighPriority = (p: string) => {
     const l = (p || '').toLowerCase();
     return l === 'high' || l === 'highest' || l === 'critical';
   };
+  const isMediumPriority = (p: string) => (p || '').toLowerCase() === 'medium';
+
+  // Compute connector spokes dynamically
+  const spokes = useMemo(() => {
+    return visible.map((_, i) => {
+      const pos = getCardPixelPos(i, W);
+      return { x1: CX, y1: CY, x2: pos.x, y2: pos.y };
+    });
+  }, [visible.length, W, CX, CY]);
 
   return (
-    <div ref={canvasRef} style={{
-      position: 'relative', width: '100%', minWidth: '1100px', height: `${canvasH}px`,
-      overflow: 'visible', boxSizing: 'border-box' as const, marginTop: '8px',
-    }}>
-      {/* SVG SPOKES — solid, subtle */}
-      <svg width={W} height={canvasH} style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, pointerEvents: 'none' }}>
+    <div ref={canvasRef} className="r3-ring-canvas" style={{ marginTop: '8px' }}>
+      {/* SVG CONNECTORS — dynamic endpoints */}
+      <svg width={W} height={RING_CANVAS_H} style={{ position: 'absolute', top: 0, left: 0, zIndex: 0, pointerEvents: 'none' }}>
         {spokes.map((s, i) => (
           <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
-            stroke="rgba(15,23,42,0.08)" strokeWidth={1} />
+            stroke="rgba(148,163,184,0.4)" strokeWidth={1} />
         ))}
       </svg>
 
-      {/* SPOKE LABELS */}
-      {labels.map((l, i) => (
-        <div key={`label-${i}`} style={{
-          position: 'absolute', left: `${l.x}px`, top: `${l.y}px`,
-          transform: 'translate(-50%,-50%)', zIndex: 4, pointerEvents: 'none',
-          fontSize: '10px', fontWeight: 600, color: '#64748B',
-          background: '#FFFFFF', padding: '2px 8px', borderRadius: '10px',
-          border: '1px solid rgba(15,23,42,0.08)',
-          whiteSpace: 'nowrap', fontFamily: "'JetBrains Mono', monospace",
-          fontVariantNumeric: 'tabular-nums',
-        }}>{`Updated ${l.age}d ago`}</div>
-      ))}
-
-      {/* CENTER AVATAR — 56px, no dashed ring, no name/role */}
+      {/* CENTER AVATAR — 56px, z-index 2 */}
       <div style={{
-        position: 'absolute', left: `${center.x}px`, top: `${center.y}px`,
-        transform: 'translate(-50%,-50%)', zIndex: 5,
+        position: 'absolute', left: `${CX}px`, top: `${CY}px`,
+        transform: 'translate(-50%,-50%)', zIndex: 2,
       }}>
         <div style={{
           width: '56px', height: '56px', borderRadius: '50%',
@@ -759,58 +767,64 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
         </div>
       </div>
 
-      {/* ORBITAL CARDS — V12 fixed 8-slot layout */}
+      {/* ORBITAL CARDS — 8-slot elliptical layout */}
       {visible.map((item, i) => {
         if (i >= SLOT_POSITIONS.length) return null;
         const slotPos = SLOT_POSITIONS[i];
         const isSelected = selected?.id === item.id;
         const isContributor = item.role_on_item === 'Contributor';
         const hasHighPriority = isHighPriority(item.priority);
+        const hasMedPriority = isMediumPriority(item.priority);
+        const hasCarryover = !!item.carried_from_label;
+        const fromClass = getFromTagClass(item.carried_from_label);
+        const priorityClass = hasHighPriority ? 'priority-high' : hasMedPriority ? 'priority-medium' : 'priority-low';
         return (
-          <div key={item.id} onClick={() => onSelect(item)} style={{
-            position: 'absolute', left: slotPos.left, top: slotPos.top,
-            width: `${CARD_W}px`, height: `${CARD_H}px`, background: '#FFFFFF',
-            border: isSelected ? '1px solid #2563EB' : '1px solid rgba(15,23,42,0.12)',
-            borderLeft: hasHighPriority ? '3px solid #DC2626' : isSelected ? '1px solid #2563EB' : '1px solid rgba(15,23,42,0.12)',
-            borderRadius: '6px', padding: '10px 12px',
-            cursor: 'pointer', zIndex: 3,
-            boxShadow: isSelected ? '0 0 0 2px rgba(37,99,235,.15)' : '0 1px 2px 0 rgba(0,0,0,0.04)',
-            transition: 'background 80ms ease',
-          }}
-          onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
-          >
-            {/* Row 1: type + priority */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                {getJiraIcon(item.item_type)}
-                <span style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' as const, color: '#334155' }}>{item.item_type}</span>
+          <div key={item.id} style={{ position: 'absolute', left: slotPos.left, top: slotPos.top }}>
+            <div
+              className={`r3-ring-card ${priorityClass} ${isSelected ? 'selected' : ''} ${hasCarryover ? 'carryover' : ''}`}
+              onClick={() => onSelect(item)}
+              tabIndex={0}
+              data-testid={`r360-ring-card-${item.item_key}`}
+              onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+            >
+              {/* Row 1: type + priority */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  {getJiraIcon(item.item_type)}
+                  <span style={{ fontSize: '11px', fontWeight: 650, textTransform: 'uppercase' as const, color: '#334155' }}>{item.item_type}</span>
+                </div>
+                <span style={{ fontSize: '11px', color: '#64748B' }}>{item.priority}</span>
               </div>
-              <PriorityBadge priority={item.priority} />
+              {/* Row 2: key + project badge + age */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: '#F1F5F9', color: '#64748B' }}>{item.project_key}</span>
+                <span style={{
+                  marginLeft: 'auto', fontSize: '10px', fontWeight: 600,
+                  padding: '1px 6px', borderRadius: '4px', background: '#F8FAFC',
+                  color: item.age_days > 30 ? '#D97706' : '#64748B',
+                  fontFamily: "'JetBrains Mono', monospace",
+                }}>{item.age_days}d</span>
+              </div>
+              {/* Row 3: title */}
+              <div style={{ fontSize: '12px', fontWeight: 500, color: '#0F172A', lineHeight: '1.35', marginBottom: '5px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', flex: 1 } as React.CSSProperties}>{item.title}</div>
+              {/* Row 4: status lozenge + from tag */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: 'auto' }}>
+                <StatusLozenge status={item.status} />
+                {item.carried_from_label && (
+                  <span className={`r3-from-tag ${fromClass}`} title="Carried over from an earlier period">
+                    {fromClass === 'red' ? '⚠ ' : ''}{item.carried_from_label}
+                  </span>
+                )}
+                {isContributor && (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 500, color: '#64748B' }}>→ <MiniAvatar name={item.assignee_name} size={16} /> {item.assignee_name}</span>
+                )}
+              </div>
             </div>
-            {/* Row 2: key + project badge + age */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
-              <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: '#F1F5F9', border: '1px solid #D4D4D8', color: '#3F3F46' }}>{item.project_key}</span>
-              <span style={{
-                marginLeft: 'auto', fontSize: '12px', fontWeight: 600,
-                color: item.age_days > 30 ? '#D97706' : '#64748B',
-                fontVariantNumeric: 'tabular-nums', fontFamily: "'JetBrains Mono', monospace",
-              }} title="Days since assigned to this person">{item.age_days}d</span>
-            </div>
-            {/* Row 3: title */}
-            <div style={{ fontSize: '13px', fontWeight: 400, color: '#0F172A', lineHeight: '1.35', marginBottom: '5px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } as React.CSSProperties}>{item.title}</div>
-            {/* Row 4: status lozenge + carry-over */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-              <StatusLozenge status={item.status} />
-              {item.carried_from_label && (
-                <span style={{ fontSize: '9.5px', fontWeight: 600, padding: '2px 7px', borderRadius: '3px', background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A', whiteSpace: 'nowrap' }} title="Carried over from an earlier period">
-                  {item.carried_from_label}
-                </span>
-              )}
-              {isContributor && (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 500, color: '#64748B' }}>→ <MiniAvatar name={item.assignee_name} size={16} /> {item.assignee_name}</span>
-              )}
+            {/* Updated Xd ago label below card */}
+            <div className="r3-card-age-label" style={{ position: 'relative', textAlign: 'center', marginTop: '4px', fontSize: '11px', color: '#94A3B8' }}>
+              Updated {item.age_days}d ago
             </div>
           </div>
         );
@@ -826,86 +840,76 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
         }}>Showing 8 of {nonDone.length}</div>
       )}
 
-      {/* COMPLETED BADGE */}
-      {doneCount > 0 && (
-        <div ref={doneRef} style={{ position: 'absolute', right: '16px', top: `${center.y}px`, transform: 'translateY(-50%)', zIndex: 10 }}>
-          <div
-            onClick={() => setShowDone(prev => !prev)}
-            title="Click to view completed items"
-            style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
-              cursor: 'pointer', transition: 'transform 80ms',
-              transform: showDone ? 'scale(1.05)' : 'scale(1)',
-            }}
-          >
-            <div style={{
-              width: '44px', height: '44px', borderRadius: '50%', background: '#16A34A', color: '#FFF',
-              fontSize: '16px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: showDone
-                ? '0 0 0 3px rgba(22,163,74,.25), 0 2px 8px rgba(22,163,74,.3)'
-                : '0 2px 8px rgba(22,163,74,.3)',
-              transition: 'box-shadow 80ms', fontVariantNumeric: 'tabular-nums',
-            }}>{doneCount}</div>
-            <span style={{ fontSize: '9px', fontWeight: 700, color: '#14532D', textTransform: 'uppercase' as const, letterSpacing: '.06em', writingMode: 'vertical-rl' } as React.CSSProperties}>COMPLETED</span>
-          </div>
-
-          {/* POPOVER DROPDOWN */}
-          {showDone && (
-            <div style={{
-              position: 'absolute', right: '64px', top: '50%', transform: 'translateY(-50%)',
-              width: '360px', maxHeight: '420px', background: '#FFFFFF',
-              border: '1px solid rgba(15,23,42,0.12)', borderRadius: '8px',
-              boxShadow: '0 8px 30px rgba(15,23,42,.12), 0 2px 8px rgba(15,23,42,.06)',
-              overflow: 'hidden', zIndex: 11,
-            }}>
-              <div style={{
-                padding: '14px 16px', borderBottom: '1px solid #F1F5F9',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{
-                    width: '22px', height: '22px', borderRadius: '50%', background: '#E3FCEF',
-                    border: '1.5px solid #16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                  }}>
-                    <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  </div>
-                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#0F172A' }}>Completed This Week</span>
-                </div>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#006644', background: '#E3FCEF', padding: '2px 10px', borderRadius: '10px' }}>{doneCount}</span>
-              </div>
-              <div style={{ maxHeight: '340px', overflowY: 'auto', scrollbarWidth: 'thin', padding: '4px 0' }}>
-                {doneItems.map(item => {
-                  const closedDate = item.resolved_at || item.updated_at;
-                  const resolvedLabel = closedDate ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-                  return (
-                    <div key={item.id} onClick={(e) => { e.stopPropagation(); onSelect(item); setShowDone(false); }}
-                      style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 16px', cursor: 'pointer', borderBottom: '1px solid #F8FAFC', transition: 'background 80ms' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#E3FCEF', border: '1.5px solid #16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
-                        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
-                          <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
-                          <StatusLozenge status="Done" />
-                        </div>
-                        <div style={{ fontSize: '12.5px', fontWeight: 400, color: '#0F172A', lineHeight: '1.35', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
-                        <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
-                      </div>
-                      <span style={{ fontSize: '11px', fontWeight: 600, color: '#006644', flexShrink: 0, fontFamily: "'JetBrains Mono', monospace" }}>{item.age_days}d</span>
-                    </div>
-                  );
-                })}
-              </div>
-              <div style={{ padding: '10px 16px', borderTop: '1px solid #F1F5F9', fontSize: '11px', color: '#64748B', textAlign: 'center' }}>
-                Click any item to view details
-              </div>
-            </div>
-          )}
+      {/* COMPLETED BADGE — always shown */}
+      <div ref={doneRef} className="r3-completed-badge"
+        tabIndex={0} role="button" aria-label="View completed items"
+        data-testid="r360-completed-badge"
+        onClick={() => setShowDone(prev => !prev)}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowDone(prev => !prev); } }}
+      >
+        <div className={`r3-completed-circle ${doneCount === 0 ? 'empty' : ''}`}>
+          {doneCount > 0 ? doneCount : '—'}
         </div>
-      )}
+        <span className={`r3-completed-text ${doneCount === 0 ? 'empty' : ''}`}>COMPLETED</span>
+
+        {/* COMPLETED PANEL POPOVER */}
+        {showDone && doneCount > 0 && (
+          <div className="r3-completed-panel" role="dialog" aria-label="Completed items this week" aria-modal="true"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{
+                  width: '22px', height: '22px', borderRadius: '50%', background: '#E3FCEF',
+                  border: '1.5px solid #16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                }}>
+                  <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </div>
+                <span style={{ fontSize: '14px', fontWeight: 650, color: '#0F172A' }}>Completed This Week</span>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#006644', background: '#E3FCEF', padding: '2px 8px', borderRadius: '10px' }}>{doneCount}</span>
+              </div>
+              <button onClick={(e) => { e.stopPropagation(); setShowDone(false); }}
+                style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', color: '#64748B', fontSize: '14px' }}
+                aria-label="Close completed panel"
+              >✕</button>
+            </div>
+            {/* Throughput */}
+            <div style={{ padding: '8px 16px', fontSize: '12px', color: '#64748B', borderBottom: '1px solid #F1F5F9' }}>
+              {doneCount} of {totalItems} total resolved ({totalItems > 0 ? Math.round((doneCount / totalItems) * 100) : 0}%)
+            </div>
+            {/* Item list */}
+            <div style={{ maxHeight: '280px', overflowY: 'auto', scrollbarWidth: 'thin' }}>
+              {doneItems.map(item => {
+                const closedDate = item.resolved_at || item.updated_at;
+                const resolvedLabel = closedDate ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+                return (
+                  <div key={item.id} onClick={(e) => { e.stopPropagation(); onSelect(item); setShowDone(false); }}
+                    style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 16px', cursor: 'pointer', borderBottom: '1px solid #F8FAFC', transition: 'background 80ms' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <div style={{ flexShrink: 0, marginTop: '2px' }}>{getJiraIcon(item.item_type)}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+                        <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: '#F1F5F9', color: '#64748B' }}>{item.project_key}</span>
+                        <StatusLozenge status="Done" />
+                      </div>
+                      <div style={{ fontSize: '12px', fontWeight: 400, color: '#0F172A', lineHeight: '1.35', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
+                      <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px', fontStyle: 'italic' }}>Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Footer */}
+            <div style={{ padding: '10px 16px', borderTop: '1px solid #F1F5F9', fontSize: '11px', color: '#94A3B8', textAlign: 'center', fontStyle: 'italic' }}>
+              Click any item to view details
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* EMPTY STATE */}
       {items.length === 0 && (
