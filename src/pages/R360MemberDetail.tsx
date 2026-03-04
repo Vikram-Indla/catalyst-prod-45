@@ -2,6 +2,22 @@
  * R360 Member Detail Page
  * Route: /project-hub/resources/:resourceId
  * Contains: Profile Header, Week Nav, Ring/Chronology/Board views, Detail Panel
+ *
+ * R360 STAGE D WIRING AUDIT — 2026-03-04
+ *
+ * 1. Member Header:     ✅ WIRED — name, role, dept, avatar from useR360Overview; open/stale computed from workItems
+ * 2. Week Strip:         ✅ WIRED — open/stale/done/touched computed from weekItems; day cells from period dates; LIVE/SNAPSHOT from weekOffset
+ * 3. Ring View:          ✅ WIRED — cards mapped from filteredWeekItems; slots assigned dynamically; all fields from item records
+ * 4. Chronology View:    ✅ WIRED — day groups from item.group_date; carryover filtered by updated_at vs week range; Today from new Date()
+ * 5. Board View:         ✅ WIRED — columns from status_category filter on items array; counts computed dynamically
+ * 6. Status Mapping:     ✅ WIRED — StatusLozenge + getChronologyStatusLozengeColors handle all known Jira statuses; grey fallback for unknown
+ * 7. Age Calculations:   ✅ WIRED — age_days from R360WorkItem (computed server-side); from tags via computeCarriedFromLabel; escalation thresholds applied client-side
+ *
+ * Violations found: 1
+ * Violations fixed: 1
+ * Remaining: 0
+ *
+ * Fixed: Quarter label "Q1-2026" was hardcoded → now computed from current date
  */
 import React, { useState, useMemo, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -524,9 +540,9 @@ export default function R360MemberDetail() {
             >
               <ChevronLeft size={14} /> Back
             </button>
-            {/* Q1-2026 — neutral chip */}
+            {/* Quarter label — computed from current date */}
             <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(15,23,42,0.05)', border: 'none', borderRadius: '6px', color: '#0F172A', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
-              <Calendar size={13} /> Q1-2026
+              <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
             </button>
             {/* Intelligence — brand blue standard */}
             <AIIntelligenceButton
