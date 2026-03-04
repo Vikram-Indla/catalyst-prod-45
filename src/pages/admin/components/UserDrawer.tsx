@@ -288,7 +288,8 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
         toast.success('User created successfully');
       }
 
-      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      await queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      await queryClient.invalidateQueries({ queryKey: ['user-inventory', user?.id] });
       onSuccess();
     } catch (error: any) {
       console.error('Save error:', error);
