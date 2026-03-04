@@ -16,6 +16,7 @@ import {
   ScatterChart,
   BarChart3,
   Rocket,
+  FileText,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -54,6 +55,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
         title: 'Intelligence',
         items: [
           { id: 'req-assist', title: 'Req Assist™', path: '/producthub/requirement-assist', icon: Zap, exact: false, textBadge: 'AI', textBadgeVariant: 'info' as const },
+          { id: 'req-assist-pipeline', title: 'Req Assist', path: '/product/req-assist', icon: FileText, exact: false },
         ],
       },
     ],
