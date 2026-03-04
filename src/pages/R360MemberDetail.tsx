@@ -1186,18 +1186,8 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
   const todayGroup = groups.find(([k]) => k === todayStr);
   const otherGroups = groups.filter(([k]) => k !== todayStr);
 
-  // Auto-scroll to the first date group that falls within the selected week
-  useEffect(() => {
-    if (!groups.length) return;
-    const targetGroup = groups.find(([dateKey]) => {
-      const d = new Date(dateKey + 'T00:00:00');
-      return d >= weekStart && d <= weekEnd;
-    });
-    const key = targetGroup?.[0] || groups[0]?.[0];
-    if (key && groupRefs.current[key]) {
-      groupRefs.current[key]!.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [weekStart, weekEnd, groups]);
+  // D-19: No auto-scroll — Chronology renders Today first at the top.
+  // The tab-switch handler already scrolls to top on view change.
 
   const accentColor = (cat: string) => cat === 'in_progress' ? '#2563EB' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? '#EF4444' : cat === 'done' ? '#16A34A' : '#D97706';
 
