@@ -234,9 +234,15 @@ function WeekStripCollapsible({
             const isFuture = cell.date > today;
             const isSelected = selectedDay === i;
             const dateStr = cell.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            // Simple mock: distribute items across days
-            const dayDone = Math.floor(doneCount / 5);
-            const dayTotal = Math.floor(totalCount / 5);
+            // Y = total open items for the member (constant across all days)
+            const openItems = weekItems.filter(it => it.status_category !== 'done');
+            const dayY = openItems.length;
+            // X = items that had activity (updated_at) on this specific day
+            const cellDateStr = cell.date.toISOString().slice(0, 10);
+            const dayX = isFuture ? 0 : weekItems.filter(it => {
+              const updStr = it.updated_at?.slice(0, 10);
+              return updStr === cellDateStr;
+            }).length;
             return (
               <div
                 key={i}
@@ -253,9 +259,9 @@ function WeekStripCollapsible({
                   ) : (
                     <>
                       <div className="r3-day-cell-minibar">
-                        <div className="r3-day-cell-minibar-fill" style={{ width: `${dayTotal > 0 ? (dayDone / dayTotal) * 100 : 0}%` }} />
+                        <div className="r3-day-cell-minibar-fill" style={{ width: `${dayY > 0 ? (dayX / dayY) * 100 : 0}%` }} />
                       </div>
-                      <span className="r3-day-cell-count">{dayDone}/{dayTotal}</span>
+                      <span className="r3-day-cell-count">{dayX}/{dayY}</span>
                     </>
                   )}
                 </div>
