@@ -307,6 +307,33 @@ export default function R360MemberDetail() {
   const [searchParams] = useSearchParams();
   const initialView = (searchParams.get('view') as R360ViewType) || 'ring';
   const [view, setView] = useState<R360ViewType>(initialView);
+
+  // D-19 Nuclear scroll reset on view tab switch
+  useEffect(() => {
+    // Immediate reset
+    window.scrollTo(0, 0);
+    const r360Root = document.getElementById('r360-root');
+    if (r360Root) r360Root.scrollTop = 0;
+    const mainEl = document.querySelector('main');
+    if (mainEl) mainEl.scrollTop = 0;
+
+    // Deferred reset after React render
+    const raf = requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      if (r360Root) r360Root.scrollTop = 0;
+      if (mainEl) mainEl.scrollTop = 0;
+      // Walk all scrollable ancestors
+      let el: HTMLElement | null = r360Root;
+      while (el && el !== document.body) {
+        if (el.scrollTop > 0) el.scrollTop = 0;
+        el = el.parentElement;
+      }
+      // Anchor tabs into view
+      const tabs = document.querySelector('#r360-root .r3-tabs');
+      if (tabs) tabs.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [view]);
   const [periodType, setPeriodType] = useState<PeriodType>('weekly');
   const [weekOffset, setWeekOffset] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
@@ -542,7 +569,7 @@ export default function R360MemberDetail() {
           {/* ── Tabs + Actions — §10 toolbar buttons ── */}
           <div className="r3-tabs">
             {(['ring', 'chronology', 'board'] as R360ViewType[]).map(v => (
-              <button key={v} className={`r3-tab ${view === v ? 'active' : ''}`} onClick={() => { setView(v); const root = document.getElementById('r360-root'); if (root) root.scrollTop = 0; const tabs = document.querySelector('#r360-root .r3-tabs'); if (tabs) tabs.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' }); }}>
+              <button key={v} className={`r3-tab ${view === v ? 'active' : ''}`} onClick={() => setView(v)}>
                 {v.charAt(0).toUpperCase() + v.slice(1)}
               </button>
             ))}
