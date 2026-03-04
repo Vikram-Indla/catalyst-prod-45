@@ -1,33 +1,17 @@
 // src/utils/statusCategory.ts — Normalizes any raw status string → 3-bucket category
-export type StatusCategory = 'todo' | 'progress' | 'done';
+// Now delegates to the shared default mapping for consistency with admin panel.
+import { resolveStatusBucketStatic } from '@/hooks/useStatusMappingLookup';
 
-const STATUS_MAP: Record<string, StatusCategory> = {
-  // Todo
-  'in requirements': 'todo', 'in design': 'todo', 'ready for dev': 'todo',
-  'to do': 'todo', 'todo': 'todo', 'open': 'todo', 'reported': 'todo',
-  'new': 'todo', 'backlog': 'todo', 'ready for test': 'todo',
-  // Progress
-  'in development': 'progress', 'in qa': 'progress', 'in progress': 'progress',
-  'under implementation': 'progress', 'in investigation': 'progress',
-  'in fix': 'progress', 'in execution': 'progress', 'in beta': 'progress',
-  'in review': 'progress', 'in testing': 'progress', 'reopened': 'progress',
-  // Done
-  'done': 'done', 'resolved': 'done', 'closed': 'done',
-  'in production': 'done', 'released': 'done', 'verified': 'done',
-};
+export type StatusCategory = 'todo' | 'progress' | 'done';
 
 /**
  * Maps a raw Jira status_category ("To Do", "In Progress", "Done")
  * or a raw status string to our 3-bucket model.
+ * Uses the same mapping as the admin Status Mapping panel.
  */
 export function getStatusCategory(statusOrCategory: string | null | undefined): StatusCategory {
   if (!statusOrCategory) return 'progress';
-  const key = statusOrCategory.toLowerCase().trim();
-  // Direct match on Jira status_category values
-  if (key === 'to do') return 'todo';
-  if (key === 'in progress') return 'progress';
-  if (key === 'done') return 'done';
-  return STATUS_MAP[key] ?? 'progress';
+  return resolveStatusBucketStatic(statusOrCategory, undefined);
 }
 
 export const SC_COLORS = {

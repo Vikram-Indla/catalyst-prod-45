@@ -1,28 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { useStatusMapping, useUpdateConfig } from '../hooks/useAdminConfig'
 import { CATALYST_CATEGORY_COLORS, type CatalystCategory, type ConfigKey } from '../types/admin-config.types'
+import { FULL_DEFAULT_MAPPING } from '@/hooks/useStatusMappingLookup'
 import toast from 'react-hot-toast'
 
 const CATEGORY_ORDER: CatalystCategory[] = ['To Do', 'In Progress', 'Blocked', 'In Review', 'Done']
 
-const DEFAULT_MAPPING: Record<CatalystCategory, string[]> = {
-  'To Do':       ['Open', 'To Do', 'Backlog', 'New', 'Todo', 'Re-Open', 'Awaiting Info', 'On Hold'],
-  'In Progress': ['In Progress', 'In Development', 'Active', 'Under Implementation', 'In Design',
-                  'In Requirements', 'Ready for Development', 'In Entity Integration', 'In Beta',
-                  'In Production', 'Deferred for Int'],
-  'Blocked':     ['Blocked', 'Impediment', 'Rejected'],
-  'In Review':   ['In Review', 'Code Review', 'In QA', 'Ready for QA', 'Retest', 'In UAT', 'UAT Ready',
-                  'Technical Validation', 'End to End Testing'],
-  'Done':        ['Done', 'Closed', 'Resolved', 'Complete', 'Completed', 'Ready for Production',
-                  'Beta Ready', 'Production Ready', 'Monitor', 'Released', 'Verified', 'Approved'],
-}
-
 export function StatusMapping() {
   const { data: dbMapping, isLoading } = useStatusMapping()
   const updateConfig = useUpdateConfig()
-  const [mapping, setMapping] = useState<Record<string, string[]>>(DEFAULT_MAPPING)
+  const [mapping, setMapping] = useState<Record<string, string[]>>(FULL_DEFAULT_MAPPING)
   const [addingTo, setAddingTo] = useState<string | null>(null)
   const [newStatus, setNewStatus] = useState('')
+  const [dragItem, setDragItem] = useState<{ status: string; fromCategory: string } | null>(null)
 
   useEffect(() => {
     if (dbMapping && Object.keys(dbMapping).length > 0) {
@@ -42,11 +32,20 @@ export function StatusMapping() {
   }
 
   const handleReset = () => {
-    setMapping(DEFAULT_MAPPING)
+    setMapping(FULL_DEFAULT_MAPPING)
+    toast.success('Reset to defaults — click Save to persist')
   }
 
   const handleAddStatus = (category: string) => {
     if (!newStatus.trim()) return
+    // Check for duplicates across all categories
+    const existing = Object.entries(mapping).find(([, statuses]) =>
+      statuses.some(s => s.toLowerCase() === newStatus.trim().toLowerCase())
+    )
+    if (existing) {
+      toast.error(`"${newStatus.trim()}" already exists in ${existing[0]}`)
+      return
+    }
     setMapping(prev => ({
       ...prev,
       [category]: [...(prev[category] || []), newStatus.trim()],
@@ -62,6 +61,15 @@ export function StatusMapping() {
     }))
   }
 
+  const handleMoveStatus = (status: string, fromCategory: string, toCategory: string) => {
+    if (fromCategory === toCategory) return
+    setMapping(prev => ({
+      ...prev,
+      [fromCategory]: (prev[fromCategory] || []).filter(s => s !== status),
+      [toCategory]: [...(prev[toCategory] || []), status],
+    }))
+  }
+
   if (isLoading) {
     return <div style={{ padding: 40, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>Loading...</div>
   }
@@ -73,7 +81,7 @@ export function StatusMapping() {
           Status Mapping
         </h1>
         <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
-          Map each Jira workflow status to a Catalyst category for consistent reporting.
+          Map each Jira workflow status to a Catalyst category. Covers Story, Task, Sub-task, Production Incident, and QA Bug workflows.
         </p>
       </div>
 
@@ -95,7 +103,19 @@ export function StatusMapping() {
           const colors = CATALYST_CATEGORY_COLORS[category]
           const statuses = mapping[category] || []
           return (
-            <div key={category} style={{ marginBottom: 20 }}>
+            <div
+              key={category}
+              style={{ marginBottom: 20 }}
+              onDragOver={e => { e.preventDefault(); e.currentTarget.style.background = 'rgba(37,99,235,0.03)' }}
+              onDragLeave={e => { e.currentTarget.style.background = 'transparent' }}
+              onDrop={e => {
+                e.currentTarget.style.background = 'transparent'
+                if (dragItem) {
+                  handleMoveStatus(dragItem.status, dragItem.fromCategory, category)
+                  setDragItem(null)
+                }
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <span style={{
                   padding: '3px 10px', borderRadius: 4, fontSize: 10, fontWeight: 700,
@@ -107,42 +127,54 @@ export function StatusMapping() {
                 <span style={{ fontSize: 10, color: '#94A3B8' }}>
                   {statuses.length} Jira statuses
                 </span>
+                <button
+                  onClick={() => { setAddingTo(addingTo === category ? null : category); setNewStatus('') }}
+                  style={{
+                    marginLeft: 'auto', fontSize: 11, color: '#2563EB', background: 'none',
+                    border: 'none', cursor: 'pointer', padding: '2px 6px', fontWeight: 500,
+                  }}
+                >
+                  + Add
+                </button>
               </div>
 
-              {statuses.map(status => (
-                <div key={status} style={{
-                  display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0',
-                  borderBottom: '1px solid #F1F5F9',
-                }}>
-                  <span style={{
-                    width: 160, fontFamily: 'JetBrains Mono, monospace', fontSize: 12,
-                    color: '#334155', fontWeight: 500,
-                  }}>
-                    {status}
-                  </span>
-                  <span style={{ fontSize: 14, color: '#94A3B8' }}>→</span>
-                  <span style={{
-                    padding: '3px 10px', borderRadius: 4, fontSize: 10, fontWeight: 700,
-                    textTransform: 'uppercase', letterSpacing: '.3px',
-                    background: colors.bg, color: colors.text,
-                  }}>
-                    {category}
-                  </span>
-                  <button
-                    onClick={() => handleRemoveStatus(category, status)}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {statuses.map(status => (
+                  <div
+                    key={status}
+                    draggable
+                    onDragStart={() => setDragItem({ status, fromCategory: category })}
+                    onDragEnd={() => setDragItem(null)}
                     style={{
-                      marginLeft: 'auto', fontSize: 11, color: '#94A3B8', background: 'none',
-                      border: 'none', cursor: 'pointer', padding: '2px 6px',
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      padding: '4px 10px', borderRadius: 4,
+                      background: '#F8FAFC', border: '1px solid #E2E8F0',
+                      fontSize: 12, fontFamily: 'JetBrains Mono, monospace',
+                      color: '#334155', fontWeight: 500, cursor: 'grab',
                     }}
-                    title="Remove"
                   >
-                    ✕
-                  </button>
-                </div>
-              ))}
+                    <span style={{
+                      width: 6, height: 6, borderRadius: '50%',
+                      background: colors.text, flexShrink: 0,
+                    }} />
+                    {status}
+                    <button
+                      onClick={() => handleRemoveStatus(category, status)}
+                      style={{
+                        fontSize: 10, color: '#94A3B8', background: 'none',
+                        border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1,
+                        marginLeft: 2,
+                      }}
+                      title="Remove"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
 
               {addingTo === category && (
-                <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+                <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
                   <input
                     value={newStatus}
                     onChange={(e) => setNewStatus(e.target.value)}
@@ -151,7 +183,7 @@ export function StatusMapping() {
                     autoFocus
                     style={{
                       padding: '5px 10px', border: '1px solid #E2E8F0', borderRadius: 4,
-                      fontSize: 12, fontFamily: 'JetBrains Mono, monospace', width: 180,
+                      fontSize: 12, fontFamily: 'JetBrains Mono, monospace', width: 200,
                     }}
                   />
                   <button onClick={() => handleAddStatus(category)} style={{
@@ -168,7 +200,7 @@ export function StatusMapping() {
           )
         })}
 
-        <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
+        <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: 16, marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
           <button
             onClick={handleSave}
             disabled={updateConfig.isPending}
@@ -181,15 +213,6 @@ export function StatusMapping() {
             {updateConfig.isPending ? 'Saving...' : 'Save Mapping'}
           </button>
           <button
-            onClick={() => setAddingTo(addingTo ? null : CATEGORY_ORDER[0])}
-            style={{
-              padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: '#F8FAFC', color: '#334155', border: '1px solid #E2E8F0', cursor: 'pointer',
-            }}
-          >
-            Add Custom Status
-          </button>
-          <button
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
@@ -198,6 +221,9 @@ export function StatusMapping() {
           >
             Reset to Default
           </button>
+          <span style={{ marginLeft: 'auto', fontSize: 11, color: '#94A3B8' }}>
+            Drag statuses between categories to reassign
+          </span>
         </div>
       </div>
     </div>
