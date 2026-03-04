@@ -1,0 +1,1 @@
+UPDATE profiles SET department_id = 'ed1dad78-c693-4969-aab3-53e6a112c78f' WHERE id = '92c834be-5caa-43e1-b305-dee370903301';
