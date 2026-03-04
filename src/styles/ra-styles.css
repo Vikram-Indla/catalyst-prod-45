@@ -97,12 +97,12 @@
   background: var(--ra-neutral-20); margin: 0 8px; }
 .ra-spb-s.done:not(:last-child)::after { background: var(--ra-success); }
 .ra-spb-s.run:not(:last-child)::after { background: var(--ra-blue-10); }
-.ra-spb-ic { width: 28px; height: 28px; border-radius: 50%; display: flex;
-  align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
-.ra-spb-s.done .ra-spb-ic { background: var(--ra-success-10); color: var(--ra-success); }
-.ra-spb-s.run .ra-spb-ic { background: var(--ra-blue-10); color: var(--ra-blue);
+.ra-spb-ic { width: 32px; height: 32px; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.ra-spb-s.done .ra-spb-ic { background: #DCFCE7; color: #16A34A; }
+.ra-spb-s.run .ra-spb-ic { background: #DBEAFE; color: #2563EB;
   animation: ra-pulse 1.5s infinite; }
-.ra-spb-s.wait .ra-spb-ic { background: var(--ra-neutral-10); color: var(--ra-text-muted); }
+.ra-spb-s.wait .ra-spb-ic { background: #F5F5F5; color: #94A3B8; }
 .ra-spb-lb { font-size: 12px; font-weight: 600; white-space: nowrap; }
 .ra-spb-s.done .ra-spb-lb { color: var(--ra-success); }
 .ra-spb-s.run .ra-spb-lb { color: var(--ra-blue); }

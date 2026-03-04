@@ -99,11 +99,12 @@ function RaDropdown({ value, options, placeholder, onChange }: {
 
 /* ═══ MAIN DRAWER ═══ */
 export default function ReqAssistIntakeDrawer({ open, onClose, initialTab }: Props) {
-  const [tab, setTab] = useState<IntakeTab>(initialTab || 'upload_pdf');
+  const [tab, setTab] = useState<IntakeTab>('upload_pdf');
 
+  // Reset tab when drawer opens or initialTab changes
   useEffect(() => {
-    if (initialTab) setTab(initialTab);
-  }, [initialTab]);
+    if (open) setTab(initialTab || 'upload_pdf');
+  }, [open, initialTab]);
 
   useEffect(() => {
     if (!open) return;

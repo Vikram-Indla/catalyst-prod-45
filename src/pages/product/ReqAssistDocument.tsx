@@ -198,12 +198,11 @@ export default function ReqAssistDocument() {
       <div className="ra-spb" style={{ marginTop: 20 }}>
         {STAGES.map((stage, i) => {
           const state = stageState(currentIdx, i);
-          // Find queue item timing for this stage
           const qi = queueItems.find((q: BrdQueueItem) => q.status?.toLowerCase().includes(stage));
           const timing = qi ? durationMs(qi.started_at, qi.completed_at) : null;
           return (
             <div key={stage} className={`ra-spb-s ${state}`}>
-              <div className="ra-spb-ic">
+              <div className="ra-spb-ic" style={{ width: 32, height: 32 }}>
                 {state === 'done' ? <Check size={14} /> : (i + 1)}
               </div>
               <div>
