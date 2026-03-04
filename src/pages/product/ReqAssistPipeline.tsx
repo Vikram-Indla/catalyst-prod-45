@@ -79,7 +79,7 @@ export default function ReqAssistPipeline() {
   }, [stats, totalCount]);
 
   return (
-    <div className="ra-root" style={{ padding: '24px 32px' }}>
+    <div className="ra-root" style={{ padding: '24px 32px', minHeight: '100%' }}>
 
       {/* ── HEADER ROW ───────────────────────────────────────────── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
@@ -95,7 +95,7 @@ export default function ReqAssistPipeline() {
           <button className="ra-btn-ghost" onClick={() => { setDrawerTab('upload_pdf'); setDrawerOpen(true); }}>
             <Upload size={14} /> Upload PDF
           </button>
-          <button className="ra-btn-teal" onClick={() => { setDrawerTab('generate_text'); setDrawerOpen(true); }}>
+          <button className="ra-btn-blue" onClick={() => { setDrawerTab('generate_text'); setDrawerOpen(true); }}>
             <Sparkles size={14} /> Generate BRD
           </button>
         </div>
