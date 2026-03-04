@@ -217,8 +217,8 @@ export default function ReqAssistPipeline() {
           return (
             <div key={s.stage} style={{
               flex: 1, minWidth: 140, padding: 16,
-              background: '#FFFFFF', border: '1px solid var(--cp-border-default)',
-              borderRadius: 6,
+              background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)',
+              borderRadius: 6, boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
             }}>
               <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', color: 'var(--cp-text-tertiary)', marginBottom: 8, letterSpacing: '0.04em' }}>
                 {s.label}
