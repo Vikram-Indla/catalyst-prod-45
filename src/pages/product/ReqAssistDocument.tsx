@@ -136,7 +136,7 @@ const ARTIFACT_ICONS: Record<string, React.ReactNode> = {
 function StageLozenge({ stage }: { stage: PipelineStage }) {
   let bg: string, text: string;
   if (stage === 'complete' || stage === 'distribute') { bg = '#E3FCEF'; text = '#006644'; }
-  else if (stage === 'intake' || stage === 'failed') { bg = '#F1F5F9'; text = '#64748B'; }
+  else if (stage === 'intake' || stage === 'extract' || stage === 'process' || stage === 'validate' || stage === 'failed') { bg = '#DFE1E6'; text = '#253858'; }
   else { bg = '#DBEAFE'; text = '#2563EB'; }
   return (
     <span style={{
