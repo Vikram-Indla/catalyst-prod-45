@@ -2,49 +2,34 @@ import React, { useState, useMemo } from 'react';
 import { initials as getInitials, groupByDate } from './r360-helpers';
 
 // ═══════════════════════════════════════════════════
-// STATUS COLORS — 100% inline, no CSS classes
+// STATUS LOZENGE — 3-colour guardrail (immutable spec)
 // ═══════════════════════════════════════════════════
-const SC: Record<string, { dot: string; bg: string; tx: string; label: string }> = {
-  'To Do':                { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Open':                 { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Backlog':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog' },
-  'Re-Open':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
-  'In Requirements':      { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
-  'Awaiting Info':        { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
-  'In Progress':          { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
-  'In Development':       { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
-  'Under Implementation': { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
-  'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
-  'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
-  'Ready for QA':         { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA' },
-  'Retest':               { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Retest' },
-  'Code Review':          { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
-  'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
-  'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
-  'Done':                 { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Closed':               { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Resolved':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Ready for Production': { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Beta Ready':           { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Blocked':              { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Blocked' },
-  'Rejected':             { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Rejected' },
-};
-const SCD = { dot: '#64748B', bg: '#F1F5F9', tx: '#334155', label: 'Unknown' };
-
-function resolveStatus(item: any) {
-  if (item.status_name && SC[item.status_name]) return SC[item.status_name];
-  if (item.status_dot_color && item.status_bg_color && item.status_color) {
-    return { dot: item.status_dot_color, bg: item.status_bg_color, tx: item.status_color, label: item.status_name || 'Unknown' };
-  }
-  const cat = (item.status_category || '').toLowerCase();
-  if (cat === 'completed' || cat === 'done') return SC['Done'];
-  if (cat === 'started' || cat === 'in progress' || cat === 'indeterminate') return SC['In Progress'];
-  return SCD;
+function getLozengeStyle(status: string): { bg: string; color: string; label: string } {
+  const s = (status || '').toLowerCase();
+  // Green
+  if (['done', 'closed', 'resolved', 'ready for production', 'beta ready', 'completed'].some(k => s.includes(k)))
+    return { bg: '#E3FCEF', color: '#006644', label: status.toUpperCase() };
+  // Blue
+  if (['in progress', 'in development', 'under implementation', 'in review', 'in qa', 'ready for qa', 'retest', 'code review', 'in uat', 'uat ready', 're-open'].some(k => s.includes(k)))
+    return { bg: '#DEEBFF', color: '#0747A6', label: status.toUpperCase() };
+  // Grey (default)
+  return { bg: '#DFE1E6', color: '#253858', label: status.toUpperCase() };
 }
 
-// ═══════════════════════════════════════════════════
-// ICONS
-// ═══════════════════════════════════════════════════
+function StatusLozenge({ status }: { status: string }) {
+  const s = getLozengeStyle(status);
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
+      borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+      letterSpacing: '0.03em', whiteSpace: 'nowrap', background: s.bg, color: s.color,
+    }}>
+      {s.label}
+    </span>
+  );
+}
+
+// Icons
 const BugIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#E5493A"/><circle cx="8" cy="8" r="3" fill="white"/></svg>;
 const TaskIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#4BADE8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 const StoryIcon = () => <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#63BA3C"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>;
@@ -61,20 +46,14 @@ const PC: Record<string, string> = { BAU: '#2563EB', SEN: '#D97706', FAC: '#16A3
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || '#64748B';
 const ageCol = (d: number) => d <= 7 ? '#16A34A' : d <= 14 ? '#D97706' : '#EF4444';
 
-function StatusPill({ item, small }: { item: any; small?: boolean }) {
-  const s = resolveStatus(item);
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', gap: small ? '3px' : '4px',
-      padding: small ? '2px 6px' : '3px 10px', borderRadius: small ? '3px' : '4px',
-      fontSize: small ? '10.5px' : '11.5px', fontWeight: 600, lineHeight: '1',
-      background: s.bg, color: s.tx,
-    }}>
-      <span style={{ width: small ? '5px' : '6px', height: small ? '5px' : '6px', borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
-      {s.label}
-    </span>
-  );
+function getCatFromStatus(status: string): 'done' | 'progress' | 'blocked' | 'todo' {
+  const s = (status || '').toLowerCase();
+  if (['done', 'closed', 'resolved', 'ready for production', 'completed'].some(k => s.includes(k))) return 'done';
+  if (['in progress', 'in development', 'in review', 'in qa', 'in uat', 'retest', 'code review', 'uat ready', 'ready for qa'].some(k => s.includes(k))) return 'progress';
+  if (['blocked', 'rejected'].some(k => s.includes(k))) return 'blocked';
+  return 'todo';
 }
+
 
 interface Props {
   items: any[];
@@ -117,10 +96,10 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
         };
 
         // Mini progress bar
-        const doneC = groupItems.filter((i: any) => resolveStatus(i).label === 'Done').length;
-        const ipC = groupItems.filter((i: any) => ['In Progress', 'In Review', 'In QA', 'Ready QA', 'Retest', 'In UAT', 'UAT Ready'].includes(resolveStatus(i).label)).length;
-        const todoC = groupItems.filter((i: any) => ['To Do', 'Backlog', 'Re-Open', 'Requirements', 'Awaiting', 'Unknown'].includes(resolveStatus(i).label)).length;
-        const blockC = groupItems.filter((i: any) => ['Blocked', 'Rejected'].includes(resolveStatus(i).label)).length;
+        const doneC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '') === 'done').length;
+        const ipC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '') === 'progress').length;
+        const todoC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '') === 'todo').length;
+        const blockC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '') === 'blocked').length;
 
         return (
           <div key={dateLabel} style={{ marginBottom: 20, position: 'relative' }}>
@@ -152,7 +131,8 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
             {!isCollapsed && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {groupItems.map((item: any) => {
-                  const s = resolveStatus(item);
+                  const cat = getCatFromStatus(item.status_name || item.status || '');
+                  const accentDot = cat === 'done' ? '#16A34A' : cat === 'progress' ? '#2563EB' : cat === 'blocked' ? '#EF4444' : '#D97706';
                   const projColor = pColor(item.project_key, item.project_color);
                   return (
                     <div key={item.id} onClick={() => onItemClick(item)} style={{
@@ -165,7 +145,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                       onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
                     >
                       {/* 3px ACCENT BAR */}
-                      <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: s.dot }} />
+                      <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: accentDot }} />
 
                       {/* Jira Icon */}
                       <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
@@ -207,7 +187,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                         <span style={{ fontSize: '12.5px', fontWeight: 500, color: '#334155', whiteSpace: 'nowrap', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {item.assigner_name ? item.assigner_name.split(' ')[0] : 'Unassigned'}
                         </span>
-                        <StatusPill item={item} />
+                        <StatusLozenge status={item.status_name || item.status || ''} />
                         <span style={{ fontSize: '12px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                           {item.age_days ?? 0}d
                         </span>
