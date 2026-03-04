@@ -83,8 +83,9 @@ export default function ResourceListingPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_inventory')
-        .select('id, rid, name, role_name, profile_id, department_id, assignment_id, vendor_id, vendor_name, department_name, location_id, jira_account_id, avatar_url')
+        .select('id, rid, name, role_name, profile_id, department_id, assignment_id, vendor_id, vendor_name, department_name, location_id, jira_account_id, avatar_url, resource_type')
         .eq('is_active', true)
+        .eq('resource_type', 'Variable')
         .order('name', { ascending: true });
       if (error) throw error;
 
