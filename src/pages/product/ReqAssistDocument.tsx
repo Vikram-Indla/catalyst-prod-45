@@ -90,14 +90,15 @@ export default function ReqAssistDocument() {
   const currentIdx = doc ? stageIdx(doc.pipeline_stage) : 0;
   const qualityScore = doc?.quality_score ?? null;
 
-  // Derive quality axes from score
+  // Derive quality axes from score (4 axes, each 0-25 scale)
   const axes = useMemo(() => {
     if (qualityScore === null) return null;
+    const base = qualityScore / 4;
     return [
-      { label: 'Typography', score: Math.min(100, qualityScore + 2) },
-      { label: 'Data Density', score: Math.min(100, qualityScore - 3) },
-      { label: 'Completeness', score: Math.min(100, qualityScore + 1) },
-      { label: 'Traceability', score: Math.min(100, qualityScore - 1) },
+      { label: 'Typography', score: Math.min(25, Math.round(base + 0.5)) },
+      { label: 'Data Density', score: Math.min(25, Math.round(base * 0.68)) },
+      { label: 'Completeness', score: Math.min(25, Math.round(base + 0.25)) },
+      { label: 'Traceability', score: Math.min(25, Math.round(base - 0.25)) },
     ];
   }, [qualityScore]);
 
@@ -298,15 +299,20 @@ export default function ReqAssistDocument() {
                 </div>
               </div>
 
-              {/* Epic children */}
+              {/* Epic children — show first 3 + "+N more" */}
               {item.name.startsWith('Epics') && epics.length > 0 && (
                 <div className="ra-ci-kids">
-                  {epics.map((epic: BrdEpic) => (
+                  {epics.slice(0, 3).map((epic: BrdEpic) => (
                     <div key={epic.id} className="ra-ci-kid">
                       <span className="dot" style={{ background: 'var(--ra-purple)' }} />
                       <span>{epic.epic_key}: {epic.title}</span>
                     </div>
                   ))}
+                  {epics.length > 3 && (
+                    <div className="ra-ci-kid" style={{ color: 'var(--ra-text-muted)', fontStyle: 'italic' }}>
+                      +{epics.length - 3} more
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -329,22 +335,26 @@ export default function ReqAssistDocument() {
               </div>
               <div style={{ textAlign: 'center', marginBottom: 12 }}>
                 {qualityScore >= 80 ? (
-                  <span className="ra-lz ra-lz-green">PASS</span>
+                  <span className="ra-lz ra-lz-green">PASS — AUTO-DISTRIBUTED</span>
                 ) : (
-                  <span className="ra-lz ra-lz-grey">FAIL</span>
+                  <span className="ra-lz ra-lz-grey">REVIEW REQUIRED</span>
                 )}
               </div>
-              {axes.map(axis => (
-                <div key={axis.label} className="ra-qb-row">
-                  <span className="ra-qb-lbl">{axis.label}</span>
-                  <div className="ra-qb-bar">
-                    <div className="ra-qb-fill" style={{ width: `${axis.score}%`, background: qualityColor(axis.score) }} />
+              {axes.map(axis => {
+                const pct = Math.round((axis.score / 25) * 100);
+                const color = pct >= 80 ? 'var(--ra-success)' : pct >= 60 ? 'var(--ra-warn)' : 'var(--ra-danger)';
+                return (
+                  <div key={axis.label} className="ra-qb-row">
+                    <span className="ra-qb-lbl">{axis.label}</span>
+                    <div className="ra-qb-bar">
+                      <div className="ra-qb-fill" style={{ width: `${pct}%`, background: color }} />
+                    </div>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color, minWidth: 24, textAlign: 'right' }}>
+                      {axis.score}
+                    </span>
                   </div>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: qualityColor(axis.score), minWidth: 24, textAlign: 'right' }}>
-                    {axis.score}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, fontSize: 12, color: 'var(--ra-success)' }}>
                 <Check size={12} /> Zero ungrounded claims
               </div>

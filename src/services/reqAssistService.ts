@@ -99,6 +99,37 @@ export async function fetchAvgQuality(): Promise<number | null> {
   return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
 }
 
+// ─── FETCH AVG PROCESSING TIME (seconds) ─────────────────────────
+export async function fetchAvgProcessingTime(): Promise<number | null> {
+  const { data, error } = await supabase
+    .from('brd_processing_queue')
+    .select('started_at, completed_at')
+    .not('started_at', 'is', null)
+    .not('completed_at', 'is', null);
+  if (error) throw error;
+  const rows = data as unknown as { started_at: string; completed_at: string }[];
+  if (rows.length === 0) return null;
+  const totalSec = rows.reduce((sum, r) => {
+    return sum + (new Date(r.completed_at).getTime() - new Date(r.started_at).getTime()) / 1000;
+  }, 0);
+  return totalSec / rows.length;
+}
+
+// ─── FETCH EPIC COUNTS PER DOCUMENT ──────────────────────────────
+export async function fetchEpicCountsByDoc(docIds: string[]): Promise<Record<string, number>> {
+  if (docIds.length === 0) return {};
+  const { data, error } = await supabase
+    .from('brd_epics')
+    .select('brd_id')
+    .in('brd_id', docIds);
+  if (error) throw error;
+  const counts: Record<string, number> = {};
+  (data as unknown as { brd_id: string }[]).forEach(r => {
+    counts[r.brd_id] = (counts[r.brd_id] || 0) + 1;
+  });
+  return counts;
+}
+
 // ─── GET STAGE STATS (for stat cards) ────────────────────────────
 export async function fetchStageStats(): Promise<StageStats[]> {
   const { data, error } = await supabase

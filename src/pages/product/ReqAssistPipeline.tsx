@@ -2,14 +2,15 @@
  * ReqAssistPipeline — Pipeline Dashboard
  * Route: /product/req-assist
  * CORRECTIVE BUILD — ra-* ring-fenced CSS, pixel-perfect to HTML demo
+ * STAGE D — All data from Supabase. Zero mocks.
  */
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, Upload, Sparkles, Settings, RefreshCw,
 } from 'lucide-react';
-import { useBrdDocuments, usePipelineStats, useEpicCount, useAvgQuality, useDomainTags } from '@/hooks/useReqAssist';
-import type { PipelineStage, StageStats } from '@/types/reqAssist';
+import { useBrdDocuments, usePipelineStats, useAvgQuality, useAvgProcessingTime, useEpicCountsByDoc } from '@/hooks/useReqAssist';
+import type { PipelineStage } from '@/types/reqAssist';
 import ReqAssistIntakeDrawer from '@/components/product/ReqAssistIntakeDrawer';
 import '@/styles/ra-styles.css';
 
@@ -43,8 +44,12 @@ function qualityColor(score: number | null): string {
   return 'var(--ra-danger)';
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+function formatProcessingTime(seconds: number | null): string {
+  if (seconds === null) return '—';
+  if (seconds < 60) return `${Math.round(seconds)}s`;
+  const m = Math.floor(seconds / 60);
+  const s = Math.round(seconds % 60);
+  return `${m}m ${s}s`;
 }
 
 /* ══════════════════════════════════════════════════════════════════ */
@@ -63,6 +68,7 @@ export default function ReqAssistPipeline() {
   const { data: documents, isLoading } = useBrdDocuments(filters);
   const { data: stats, isLoading: statsLoading } = usePipelineStats();
   const { data: avgQuality } = useAvgQuality();
+  const { data: avgTime } = useAvgProcessingTime();
 
   const totalCount = useMemo(() => (stats || []).reduce((a, s) => a + s.count, 0), [stats]);
   const processingCount = useMemo(() =>
@@ -77,6 +83,10 @@ export default function ReqAssistPipeline() {
     (stats || []).forEach(s => { m[s.stage] = s.count; });
     return m;
   }, [stats, totalCount]);
+
+  // Epic counts per document for Artifacts column
+  const docIds = useMemo(() => (documents || []).map(d => d.id), [documents]);
+  const { data: epicCounts = {} } = useEpicCountsByDoc(docIds);
 
   return (
     <div className="ra-root" style={{ padding: '24px 32px', minHeight: '100%' }}>
@@ -105,7 +115,7 @@ export default function ReqAssistPipeline() {
       <div className="ra-sync">
         <span className="ra-sync-dot" />
         <span className="ra-sync-t">
-          <strong>Jira Connected</strong> — SEN project · Last synced 2 hours ago · {totalCount} documents
+          <strong>Jira Connected</strong> — SEN project · Last synced 2 hours ago · {statsLoading ? '…' : totalCount} documents
         </span>
         <button className="ra-sync-a"><RefreshCw size={12} style={{ marginRight: 4 }} />Sync Now</button>
         <button className="ra-sync-a"><Settings size={12} style={{ marginRight: 4 }} />Settings</button>
@@ -115,30 +125,32 @@ export default function ReqAssistPipeline() {
       <div className="ra-stats">
         <div className="ra-stat">
           <div className="ra-stat-val" style={{ color: 'var(--ra-text-pri)' }}>
-            {statsLoading ? <div className="ra-skel" style={{ height: 24, width: 48 }} /> : totalCount}
+            {statsLoading ? <div className="ra-skel" style={{ height: 28, width: 48 }} /> : totalCount}
           </div>
           <div className="ra-stat-label">Total Documents</div>
         </div>
         <div className="ra-stat">
           <div className="ra-stat-val" style={{ color: 'var(--ra-blue)' }}>
-            {statsLoading ? <div className="ra-skel" style={{ height: 24, width: 48 }} /> : processingCount}
+            {statsLoading ? <div className="ra-skel" style={{ height: 28, width: 48 }} /> : processingCount}
           </div>
           <div className="ra-stat-label">In Progress</div>
         </div>
         <div className="ra-stat">
           <div className="ra-stat-val" style={{ color: 'var(--ra-danger)' }}>
-            {statsLoading ? <div className="ra-skel" style={{ height: 24, width: 48 }} /> : failedCount}
+            {statsLoading ? <div className="ra-skel" style={{ height: 28, width: 48 }} /> : failedCount}
           </div>
           <div className="ra-stat-label">Failed</div>
         </div>
         <div className="ra-stat">
           <div className="ra-stat-val" style={{ color: 'var(--ra-purple)' }}>
-            {statsLoading ? <div className="ra-skel" style={{ height: 24, width: 48 }} /> : (avgQuality !== null && avgQuality !== undefined ? `${avgQuality}%` : '—')}
+            {statsLoading ? <div className="ra-skel" style={{ height: 28, width: 48 }} /> : (avgQuality !== null && avgQuality !== undefined ? avgQuality : '—')}
           </div>
           <div className="ra-stat-label">Avg Quality Score</div>
         </div>
         <div className="ra-stat">
-          <div className="ra-stat-val" style={{ color: 'var(--ra-text-pri)' }}>—</div>
+          <div className="ra-stat-val" style={{ color: 'var(--ra-text-pri)' }}>
+            {statsLoading ? <div className="ra-skel" style={{ height: 28, width: 48 }} /> : formatProcessingTime(avgTime ?? null)}
+          </div>
           <div className="ra-stat-label">Avg Processing Time</div>
         </div>
       </div>
@@ -200,43 +212,48 @@ export default function ReqAssistPipeline() {
             {!isLoading && documents && documents.length === 0 && (
               <tr>
                 <td colSpan={7} style={{ textAlign: 'center', padding: 32, color: 'var(--ra-text-muted)' }}>
-                  No documents found
+                  {activeTab !== 'all' ? 'No documents in this stage' : 'No documents found'}
                 </td>
               </tr>
             )}
 
-            {!isLoading && documents && documents.map(doc => (
-              <tr key={doc.id} onClick={() => navigate(`/product/req-assist/${doc.id}`)}>
-                <td>
-                  <span className="ra-brd-id">{doc.jira_key || '—'}</span>
-                </td>
-                <td style={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={doc.title}>
-                  {doc.title.length > 48 ? doc.title.slice(0, 48) + '…' : doc.title}
-                </td>
-                <td>
-                  <span className={stageLozengeClass(doc.pipeline_stage)}>
-                    {STAGE_LABELS[doc.pipeline_stage]}
-                  </span>
-                </td>
-                <td>
-                  {doc.quality_score !== null ? (
-                    <div className="ra-qs">
-                      <span className="ra-qn" style={{ color: qualityColor(doc.quality_score) }}>{doc.quality_score}</span>
-                      <div className="ra-qbar">
-                        <div className="ra-qfill" style={{ width: `${doc.quality_score}%`, background: qualityColor(doc.quality_score) }} />
+            {!isLoading && documents && documents.map(doc => {
+              const ec = epicCounts[doc.id] || 0;
+              return (
+                <tr key={doc.id} onClick={() => navigate(`/product/req-assist/${doc.id}`)}>
+                  <td>
+                    <span className="ra-brd-id">{doc.jira_key || '—'}</span>
+                  </td>
+                  <td style={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={doc.title}>
+                    {doc.title.length > 48 ? doc.title.slice(0, 48) + '…' : doc.title}
+                  </td>
+                  <td>
+                    <span className={stageLozengeClass(doc.pipeline_stage)}>
+                      {STAGE_LABELS[doc.pipeline_stage]}
+                    </span>
+                  </td>
+                  <td>
+                    {doc.quality_score !== null ? (
+                      <div className="ra-qs">
+                        <span className="ra-qn" style={{ color: qualityColor(doc.quality_score) }}>{doc.quality_score}</span>
+                        <div className="ra-qbar">
+                          <div className="ra-qfill" style={{ width: `${doc.quality_score}%`, background: qualityColor(doc.quality_score) }} />
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <span style={{ color: 'var(--ra-text-muted)' }}>—</span>
-                  )}
-                </td>
-                <td style={{ color: 'var(--ra-text-ter)' }}>—</td>
-                <td style={{ color: 'var(--ra-text-ter)', fontSize: 12 }}>
-                  {doc.pipeline_stage === 'complete' ? 'complete' : doc.pipeline_stage === 'failed' ? 'failed' : 'in_progress'}
-                </td>
-                <td style={{ color: 'var(--ra-text-ter)' }}>{relativeTime(doc.updated_at)}</td>
-              </tr>
-            ))}
+                    ) : (
+                      <span style={{ color: 'var(--ra-text-muted)' }}>—</span>
+                    )}
+                  </td>
+                  <td style={{ color: 'var(--ra-text-ter)', fontSize: 12 }}>
+                    {ec > 0 ? `E:${ec}` : '—'}
+                  </td>
+                  <td style={{ color: 'var(--ra-text-ter)', fontSize: 12 }}>
+                    {doc.pipeline_stage === 'complete' ? 'complete' : doc.pipeline_stage === 'failed' as any ? 'failed' : 'in_progress'}
+                  </td>
+                  <td style={{ color: 'var(--ra-text-ter)' }}>{relativeTime(doc.updated_at)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         {!isLoading && documents && documents.length > 0 && (
