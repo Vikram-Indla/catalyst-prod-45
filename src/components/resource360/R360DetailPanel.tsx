@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { getJiraIcon } from '../r360/R360JiraIcons';
 import { initials } from './r360-helpers';
+import { resolveStatusCategoryStatic } from '@/hooks/useStatusMappingLookup';
 
 // ═══════════════════════════════════════════════════
 // STATUS COLORS — 100% INLINE. No CSS classes for colors.
@@ -12,10 +13,14 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Open':                 { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
   'Backlog':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog' },
   'Re-Open':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
+  'Reopened':             { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
   'In Requirements':      { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
   'Awaiting Info':        { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
   'On Hold':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'On Hold' },
   'Todo':                 { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
+  'Reported':             { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Reported' },
+  'Ready for Dev':        { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Dev' },
+  'Ready for Test':       { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Test' },
   // ── Blue: In Progress ──
   'In Progress':          { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
   'In Development':       { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
@@ -26,6 +31,10 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Deferred for Int':     { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Deferred' },
   'In Beta':              { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Beta' },
   'In Production':        { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Prod' },
+  'In Investigation':     { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Investigating' },
+  'In Fix':               { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Fix' },
+  'In Execution':         { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Execution' },
+  'Fix in Progress':      { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Fixing' },
   // ── Teal: Review / QA ──
   'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
@@ -34,6 +43,9 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Code Review':          { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'Technical Validation': { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Validation' },
   'End to End Testing':   { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'E2E Testing' },
+  'In Testing':           { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Testing' },
+  'QA Pass':              { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'QA Pass' },
+  'QA Fail':              { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'QA Fail' },
   // ── Purple: UAT ──
   'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
   'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
@@ -45,9 +57,15 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Beta Ready':           { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Beta Ready' },
   'Production Ready':     { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Prod Ready' },
   'Monitor':              { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Monitor' },
+  'Released':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Released' },
+  'Verified':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Verified' },
+  'Approved':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Approved' },
+  'Complete':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
+  'Completed':            { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
   // ── Red: Blocked / Rejected ──
   'Blocked':              { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Blocked' },
   'Rejected':             { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Rejected' },
+  'Impediment':           { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Impediment' },
 };
 
 // Category-level fallbacks (Jira always provides these)
@@ -65,13 +83,13 @@ function resolveStatus(item: any) {
     return { dot: item.status_dot_color, bg: item.status_bg_color, tx: item.status_color, label: name || 'To Do' };
   }
 
-  // 3. PRIORITISE status_category — Jira ALWAYS provides this, eliminates "Unknown"
-  const cat = (item.status_category || '').toLowerCase().replace(/[_ ]/g, '');
-  if (cat === 'done' || cat === 'completed') return CAT_DONE;
-  if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started') return CAT_INPROGRESS;
-  if (cat === 'new' || cat === 'todo') return CAT_TODO;
+  // 3. Use shared admin mapping → resolves to 5-category, then map to visual
+  const cat5 = resolveStatusCategoryStatic(name, item.status_category);
+  if (cat5 === 'Done') return CAT_DONE;
+  if (cat5 === 'In Progress' || cat5 === 'In Review') return CAT_INPROGRESS;
+  if (cat5 === 'Blocked') return { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: name || 'Blocked' };
 
-  // 4. Final fallback: grey To Do (never "Unknown")
+  // 4. Final fallback: To Do (never "Unknown")
   return CAT_TODO;
 }
 

@@ -521,27 +521,30 @@ export interface RingPeriod {
 
 /**
  * Status-to-category mapping helper.
- * Prefers the Jira status_category field when available,
- * falls back to string matching on the raw status.
+ * Delegates to the shared admin-managed status mapping for consistency.
  */
 export function getStatusCategory(status: string, statusCategory?: string): StatusCategory {
-  // Use Jira status_category directly if provided
+  // Inline logic matching the shared mapping to avoid circular imports
+  // Uses Jira status_category first, then string matching
   if (statusCategory) {
     const cat = statusCategory.toLowerCase().trim();
-    if (cat === 'to do' || cat === 'new') return 'todo';
-    if (cat === 'in progress' || cat === 'in review') return 'progress';
     if (cat === 'done' || cat === 'complete') return 'done';
+    if (cat === 'in progress' || cat === 'indeterminate' || cat === 'in review') return 'progress';
+    if (cat === 'new' || cat === 'to do') return 'todo';
   }
-
-  // Fallback: match on raw status string
   const s = status.toLowerCase().trim();
-  const todoStatuses = ['to do', 'open', 'backlog', 'in requirements', 'ready for dev', 'new'];
+  const todoStatuses = ['to do', 'open', 'backlog', 'new', 'todo', 're-open', 'reopened',
+    'awaiting info', 'on hold', 'reported', 'in requirements', 'ready for dev', 'ready for test'];
   const progressStatuses = [
-    'in progress', 'in development', 'in design', 'in qa',
-    'in review', 'investigation', 'fix in progress',
+    'in progress', 'in development', 'in design', 'in qa', 'in review',
+    'in investigation', 'fix in progress', 'in fix', 'in execution',
+    'active', 'under implementation', 'in entity integration', 'in beta',
+    'in production', 'deferred for int', 'ready for development',
+    'code review', 'ready for qa', 'retest', 'technical validation',
+    'end to end testing', 'in testing', 'in uat', 'uat ready', 'qa pass', 'qa fail',
   ];
-  const doneStatuses = ['done', 'resolved', 'closed', 'in beta', 'in production', 'released'];
-
+  const doneStatuses = ['done', 'resolved', 'closed', 'complete', 'completed',
+    'ready for production', 'beta ready', 'production ready', 'monitor', 'released', 'verified', 'approved'];
   if (todoStatuses.includes(s)) return 'todo';
   if (progressStatuses.includes(s)) return 'progress';
   if (doneStatuses.includes(s)) return 'done';
