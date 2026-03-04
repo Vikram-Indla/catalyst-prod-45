@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Zap } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import type { Resource360Item, StatusCategory, ViewMode } from '@/types/resource360';
@@ -24,6 +24,18 @@ export default function Resource360PageNew() {
   const [activeView, setActiveView] = useState<ViewMode>('ring');
   const [selectedItem, setSelectedItem] = useState<Resource360Item | null>(null);
   const [aiOpen, setAIOpen] = useState(false);
+  const viewTabsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (viewTabsRef.current) {
+      viewTabsRef.current.scrollIntoView({ behavior: 'instant', block: 'nearest' });
+      return;
+    }
+    const anchor = document.getElementById('r360-view-tabs');
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: 'instant', block: 'nearest' });
+    }
+  }, [activeView]);
 
   const { data: items = [], isLoading: itemsLoading } = useResource360Items(resourceId);
   const { data: summary, isLoading: summaryLoading } = useResource360Summary(resourceId);
@@ -66,7 +78,7 @@ export default function Resource360PageNew() {
       <Resource360Banner summary={summary ?? null} isLoading={summaryLoading} items={items} />
 
       {/* §4 Tab Bar — 40px */}
-      <div style={{
+      <div ref={viewTabsRef} id="r360-view-tabs" style={{
         display: 'flex', alignItems: 'center', gap: 0,
         padding: '0 20px', height: 40, flexShrink: 0,
         background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
