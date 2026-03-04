@@ -149,6 +149,7 @@ function getWeekCells(periodStart: Date): { label: string; weekNum: number; date
 function WeekStripCollapsible({
   periodType, onPeriodTypeChange, weekOffset, onNavigatePeriod, period,
   weekItems, allOpenItems, allStaleItems, counts, statusFilter, setStatusFilter,
+  selectedDay, onDaySelect,
 }: {
   periodType: PeriodType;
   onPeriodTypeChange: (t: PeriodType) => void;
@@ -161,9 +162,11 @@ function WeekStripCollapsible({
   counts: { all: number; to_do: number; in_progress: number; in_qa: number; done: number; blocked: number };
   statusFilter: string | null;
   setStatusFilter: (s: string | null) => void;
+  selectedDay: string | null;
+  onDaySelect: (day: string | null) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  // selectedDay is lifted from parent — not local
 
   // Week-scoped stats: recalculate from weekItems for the SELECTED period
   const weekOpenItems = weekItems.filter(i => i.status_category !== 'done');
@@ -252,7 +255,8 @@ function WeekStripCollapsible({
           {dayCells.map((cell, i) => {
             const isToday = periodType === 'weekly' && cell.date.toDateString() === today.toDateString();
             const isFuture = cell.date > today;
-            const isSelected = selectedDay === i;
+            const cellDateStr2 = cell.date.toISOString().slice(0, 10);
+            const isSelected = selectedDay === cellDateStr2;
             const dateStr = cell.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             // Y = total open items for the member (constant across all days)
             const openItems = weekItems.filter(it => it.status_category !== 'done');
@@ -267,7 +271,7 @@ function WeekStripCollapsible({
               <div
                 key={i}
                 className={`r3-day-cell ${isToday ? 'today' : ''} ${isFuture ? 'future' : ''} ${isSelected ? 'selected' : ''}`}
-                onClick={(e) => { e.stopPropagation(); setSelectedDay(isSelected ? null : i); }}
+                onClick={(e) => { e.stopPropagation(); if (!isFuture) onDaySelect(isSelected ? null : cellDateStr2); }}
               >
                 <div>
                   <div className="r3-day-cell-name">{periodType === 'weekly' ? cell.name : (cell as any).label}</div>
@@ -307,6 +311,7 @@ export default function R360MemberDetail() {
   const [weekOffset, setWeekOffset] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<R360WorkItem | null>(null);
   const [aiOpen, setAiOpen] = useState(false);
   const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
@@ -403,6 +408,7 @@ export default function R360MemberDetail() {
   const navigatePeriod = useCallback((dir: -1 | 1) => {
     skipDirection.current = dir;
     skipAttempts.current = 0;
+    setSelectedDay(null);
     setWeekOffset(prev => prev + dir);
   }, []);
 
@@ -410,6 +416,7 @@ export default function R360MemberDetail() {
     const scrollY = window.scrollY;
     setPeriodType(type);
     setWeekOffset(0);
+    setSelectedDay(null);
     skipDirection.current = 0;
     skipAttempts.current = 0;
     // Restore scroll position after React re-render to prevent visual jump
@@ -424,10 +431,19 @@ export default function R360MemberDetail() {
   }, [weekItems]);
 
   // Client-side status filtering — counts stay stable
-  const filteredWeekItems = useMemo(() => {
+  const statusFilteredItems = useMemo(() => {
     if (!statusFilter) return weekItems;
     return weekItems.filter(i => i.status_category === statusFilter);
   }, [weekItems, statusFilter]);
+
+  // Day-level filtering: when a day cell is selected, show only items with activity on that day
+  const filteredWeekItems = useMemo(() => {
+    if (!selectedDay) return statusFilteredItems;
+    return statusFilteredItems.filter(item => {
+      const updStr = item.updated_at?.slice(0, 10);
+      return updStr === selectedDay;
+    });
+  }, [statusFilteredItems, selectedDay]);
 
   // All-time KPIs for banner — always reflect total workload health
   const bannerOpenCount = allOpenItems.length;
@@ -565,6 +581,8 @@ export default function R360MemberDetail() {
           counts={counts}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
+          selectedDay={selectedDay}
+          onDaySelect={setSelectedDay}
         />
         </div>{/* end sticky wrapper */}
 
