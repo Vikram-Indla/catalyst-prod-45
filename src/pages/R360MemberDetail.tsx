@@ -192,7 +192,7 @@ function WeekStripCollapsible({
         {([
           { key: null, label: `All (${counts.all})` },
           { key: 'to_do', label: `To Do (${counts.to_do})` },
-          { key: 'in_progress', label: `In Prog (${counts.in_progress})` },
+          { key: 'in_progress', label: `In Progress (${counts.in_progress})` },
         ] as const).map(f => {
           const isActive = statusFilter === f.key || (f.key === null && !statusFilter);
           return (
