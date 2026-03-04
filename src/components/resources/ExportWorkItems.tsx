@@ -199,8 +199,10 @@ async function generateExcel(selectedMonths: { label: string; start: Date; end: 
     const startISO = m.start.toISOString();
     const endISO = m.end.toISOString();
 
-    // Build the list of resource names for department filtering
-    const resourceNames = resources.map((r: any) => r.name).filter(Boolean);
+    // Build the list of resource names (lowercased) for department filtering
+    const resourceNamesLower = new Set(
+      resources.map((r: any) => (r.name || '').toLowerCase()).filter(Boolean)
+    );
 
     let issueQuery = supabase
       .from('ph_issues')
@@ -211,14 +213,15 @@ async function generateExcel(selectedMonths: { label: string; start: Date; end: 
       .order('issue_key', { ascending: true })
       .limit(5000);
 
-    // Filter by department resources if a department filter is active
-    if (deptFilter && deptFilter !== 'All' && resourceNames.length > 0) {
-      issueQuery = issueQuery.in('assignee_display_name', resourceNames);
-    }
-
     const { data: items } = await issueQuery;
 
-    const allItems = (items || []) as any[];
+    // Case-insensitive department filtering on the client side
+    let allItems = (items || []) as any[];
+    if (deptFilter && deptFilter !== 'All' && resourceNamesLower.size > 0) {
+      allItems = allItems.filter((item: any) =>
+        resourceNamesLower.has((item.assignee_display_name || '').toLowerCase())
+      );
+    }
 
     // Group by assignee
     const grouped = new Map<string, any[]>();
