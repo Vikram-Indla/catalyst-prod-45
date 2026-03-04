@@ -96,6 +96,14 @@ function priorityDotColor(p: string) {
   return '#94A3B8';
 }
 
+// ── Priority border color for board/ring cards (D-R7) ──
+function priorityBorderColor(p: string): string {
+  const l = (p || '').toLowerCase();
+  if (l === 'highest' || l === 'critical' || l === 'high') return '#DC2626';
+  if (l === 'medium') return '#D97706';
+  return '#94A3B8';
+}
+
 // ── Mini Avatar for assignee on contributed items ──
 const AVATAR_COLORS = ['#2563EB', '#0D9488', '#D97706'];
 function hashColor(name: string) {
@@ -328,9 +336,9 @@ export default function R360MemberDetail() {
         if (el.scrollTop > 0) el.scrollTop = 0;
         el = el.parentElement;
       }
-      // Anchor tabs into view
-      const tabs = document.querySelector('#r360-root .r3-tabs');
-      if (tabs) tabs.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' });
+      // Anchor member header into view — guarantees completed bar + content visible
+      const memberHeader = document.querySelector('#r360-root .r3-profile');
+      if (memberHeader) memberHeader.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' });
     });
     return () => cancelAnimationFrame(raf);
   }, [view]);
@@ -1486,7 +1494,7 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
                 const fromClass = getFromTagClass(item.age_days);
                 return (
                   <div key={item.id} className="r3-board-card" onClick={() => onSelect(item)}>
-                    <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : accentColor(item.status_category) }} />
+                    <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : priorityBorderColor(item.priority) }} />
                     {/* Row 1: Type icon + key + project badge + age */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                       {getJiraIcon(item.item_type)}
