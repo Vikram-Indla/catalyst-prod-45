@@ -621,14 +621,14 @@ function StatusLozenge({ status }: { status: string }) {
 const RING_CANVAS_H = 620;
 // Slot positions as percentages/px for absolute placement (228×145 cards)
 const SLOT_POSITIONS: { left: string; top: string }[] = [
-  { left: '2%',  top: '8%' },       // Slot 1: top-left
-  { left: '35%', top: '2%' },       // Slot 2: top-center
-  { left: '68%', top: '8%' },       // Slot 3: top-right
-  { left: '76%', top: '35%' },      // Slot 4: right
-  { left: '68%', top: '62%' },      // Slot 5: bottom-right
-  { left: '35%', top: '68%' },      // Slot 6: bottom-center
-  { left: '2%',  top: '62%' },      // Slot 7: bottom-left
-  { left: '2%',  top: '35%' },      // Slot 8: left
+  { left: '4%',  top: '8%' },       // Slot 1: top-left
+  { left: '36%', top: '2%' },       // Slot 2: top-center
+  { left: '64%', top: '8%' },       // Slot 3: top-right
+  { left: '70%', top: '35%' },      // Slot 4: right
+  { left: '64%', top: '62%' },      // Slot 5: bottom-right
+  { left: '36%', top: '68%' },      // Slot 6: bottom-center
+  { left: '4%',  top: '62%' },      // Slot 7: bottom-left
+  { left: '4%',  top: '35%' },      // Slot 8: left
 ];
 
 // Compute connector endpoints dynamically from card positions
@@ -948,8 +948,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
           )}
         </div>
 
-        {/* Completed badge still visible in summary mode */}
-        {completedBadge}
+        {/* Completed badge hidden in summary mode — items shown inline */}
       </div>
     );
   }
