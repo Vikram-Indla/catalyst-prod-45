@@ -9,8 +9,7 @@ import { Resource360Banner } from './Resource360Banner';
 import RingViewV16 from './RingViewV16';
 import { Resource360Chronology } from './Resource360Chronology';
 import { Resource360Board } from './Resource360Board';
-import { R360ItemDetailDrawer, mapToDrawerItem } from './R360ItemDetailDrawer';
-import type { R360DrawerItem } from './R360ItemDetailDrawer';
+import { R360ItemDetailDrawer } from './R360ItemDetailDrawer';
 import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 import './r360-tokens.css';
 
@@ -28,18 +27,18 @@ export default function Resource360PageNew() {
   const [aiOpen, setAIOpen] = useState(false);
   const viewTabsRef = useRef<HTMLDivElement>(null);
 
-  // ─── ITEM DETAIL DRAWER STATE ───
-  const [drawerItem, setDrawerItem] = useState<R360DrawerItem | null>(null);
+  // ─── ITEM DETAIL DRAWER STATE (Stage D — ID-based) ───
+  const [activeItemId, setActiveItemId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const handleOpenDrawer = useCallback((item: Resource360Item) => {
-    setDrawerItem(mapToDrawerItem(item));
+  const handleOpenItemDrawer = useCallback((itemKey: string) => {
+    setActiveItemId(itemKey);
     setDrawerOpen(true);
   }, []);
 
   const handleCloseDrawer = useCallback(() => {
     setDrawerOpen(false);
-    setTimeout(() => setDrawerItem(null), 250);
+    setTimeout(() => setActiveItemId(null), 250);
   }, []);
 
   // ESC key to close drawer
@@ -67,8 +66,9 @@ export default function Resource360PageNew() {
 
   const handleItemClick = useCallback((item: Resource360Item) => {
     setSelectedItem(item);
-    handleOpenDrawer(item);
-  }, [handleOpenDrawer]);
+    // Stage D: pass item_key (= issue_key in ph_issues) to drawer
+    handleOpenItemDrawer(item.item_key);
+  }, [handleOpenItemDrawer]);
 
   if (!resourceId) {
     return (
@@ -184,9 +184,9 @@ export default function Resource360PageNew() {
         />
       )}
 
-      {/* Item Detail Drawer */}
+      {/* Item Detail Drawer — Stage D: ID-based, fetches from Supabase */}
       <R360ItemDetailDrawer
-        item={drawerItem}
+        itemId={activeItemId}
         isOpen={drawerOpen}
         onClose={handleCloseDrawer}
       />
