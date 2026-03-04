@@ -696,18 +696,46 @@ export default function R360MemberDetail() {
 const CARD_W = 228;
 const CARD_H = 145;
 
-// V12 StatusLozenge — exactly 3 states
-function StatusLozenge({ status }: { status: string }) {
-  const s = (status || '').toLowerCase();
-  let bg = '#DFE1E6', color = '#253858', label = 'TO DO'; // Grey default
-  if (['in progress','in review','active','analysis','in development','under implementation','implementation review','code review','ready for qa','in uat','technical validation','in qa'].includes(s)) {
-    bg = '#DEEBFF'; color = '#0747A6'; label = s === 'in review' || s === 'code review' || s === 'implementation review' || s === 'ready for qa' ? 'IN REVIEW' : 'IN PROGRESS';
-  } else if (['done','approved','completed','resolved','closed'].includes(s)) {
-    bg = '#E3FCEF'; color = '#006644'; label = 'DONE';
-  } else {
-    // Grey: To Do, Backlog, On Hold, Waiting, Unknown, any unmapped
-    label = s === 'on hold' || s === 'hold' ? 'ON HOLD' : s === 'backlog' ? 'BACKLOG' : 'TO DO';
+// V12 StatusLozenge — exactly 3 states, prioritises status_category
+function StatusLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
+  // 1. Prioritise Jira's native status_category (always present)
+  const cat = (statusCategory || '').toLowerCase().replace(/[_ ]/g, '');
+  if (cat === 'done' || cat === 'completed') {
+    return <LozengeSpan bg="#E3FCEF" color="#006644" label="DONE" />;
   }
+  if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started') {
+    return <LozengeSpan bg="#DEEBFF" color="#0747A6" label="IN PROGRESS" />;
+  }
+  // cat === 'new' | 'todo' | '' → fall through to string matching for refined label
+
+  // 2. Fallback: string-match raw status name for label refinement
+  const s = (status || '').toLowerCase();
+  // Green — done
+  if (['done','approved','completed','resolved','closed','released','verified','ready for production','beta ready','production ready','monitor'].some(k => s === k)) {
+    return <LozengeSpan bg="#E3FCEF" color="#006644" label="DONE" />;
+  }
+  // Blue — in progress
+  if (['in progress','in review','active','analysis','in development','under implementation','implementation review',
+       'code review','ready for qa','in uat','uat ready','technical validation','in qa','in beta','in production',
+       'in entity integration','in design','in requirements','ready for development','in testing','end to end testing',
+       'retest','re-open','under review','awaiting approval','ready for review','implementation','deferred for int',
+       'awaiting info','ready for production'].some(k => s === k)) {
+    // Refine label for review-type statuses
+    if (['in review','code review','implementation review','ready for qa','in qa','retest','technical validation','end to end testing'].includes(s)) {
+      return <LozengeSpan bg="#DEEBFF" color="#0747A6" label="IN REVIEW" />;
+    }
+    return <LozengeSpan bg="#DEEBFF" color="#0747A6" label="IN PROGRESS" />;
+  }
+  // Grey — to do / waiting (default)
+  let label = 'TO DO';
+  if (s === 'on hold' || s === 'hold') label = 'ON HOLD';
+  else if (s === 'backlog') label = 'BACKLOG';
+  else if (s === 'blocked') label = 'BLOCKED';
+  else if (s === 'rejected') label = 'REJECTED';
+  return <LozengeSpan bg="#DFE1E6" color="#253858" label={label} />;
+}
+
+function LozengeSpan({ bg, color, label }: { bg: string; color: string; label: string }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: '20px',
@@ -1000,7 +1028,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
                     <div style={{ fontSize: '12px', fontWeight: 500, color: '#0F172A', lineHeight: '1.35', marginBottom: '5px' }}>{item.title}</div>
                     {/* Row 4 */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                      <StatusLozenge status={item.status} />
+                      <StatusLozenge status={item.status} statusCategory={item.status_category} />
                       {item.carried_from_label && (
                         <span className={`r3-from-tag ${fromClass}`}>
                           {getFromTagPrefix(item.age_days)}{item.carried_from_label}
@@ -1137,7 +1165,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
               <div style={{ fontSize: '11px', fontWeight: 500, color: '#0F172A', lineHeight: '1.3', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', textOverflow: 'ellipsis', flex: '1 1 auto', minHeight: 0 } as React.CSSProperties}>{item.title}</div>
               {/* Row 4: status lozenge + from tag — fixed 24px, pinned to bottom */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: 'auto', flexShrink: 0, height: '24px' }}>
-                <StatusLozenge status={item.status} />
+                <StatusLozenge status={item.status} statusCategory={item.status_category} />
                 {item.carried_from_label && (
                   <span className={`r3-from-tag ${fromClass}`} title="Carried over from an earlier period">
                     {getFromTagPrefix(item.age_days)}{item.carried_from_label}
@@ -1291,11 +1319,19 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
 
   const accentColor = (cat: string) => cat === 'in_progress' ? '#2563EB' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? '#EF4444' : cat === 'done' ? '#16A34A' : '#D97706';
 
-  const getChronologyStatusLozengeColors = (status: string): { background: string; color: string } => {
+  const getChronologyStatusLozengeColors = (status: string, statusCategory?: string): { background: string; color: string } => {
+    // 1. Prioritise status_category
+    const cat = (statusCategory || '').toLowerCase().replace(/[_ ]/g, '');
+    if (cat === 'done' || cat === 'completed') return { background: '#E3FCEF', color: '#006644' };
+    if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started') return { background: '#DEEBFF', color: '#0747A6' };
+    if (cat === 'new' || cat === 'todo') return { background: '#DFE1E6', color: '#253858' };
+
+    // 2. Fallback: string match
     const s = (status || '').toUpperCase().trim();
 
     // GREEN: work is finished
-    const greenStatuses = ['DONE', 'COMPLETED', 'APPROVED', 'RESOLVED', 'CLOSED', 'RELEASED', 'VERIFIED'];
+    const greenStatuses = ['DONE', 'COMPLETED', 'APPROVED', 'RESOLVED', 'CLOSED', 'RELEASED', 'VERIFIED',
+      'READY FOR PRODUCTION', 'BETA READY', 'PRODUCTION READY', 'MONITOR'];
     if (greenStatuses.includes(s)) return { background: '#E3FCEF', color: '#006644' };
 
     // BLUE: work is actively happening
@@ -1303,11 +1339,14 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
       'IN PROGRESS', 'IN REVIEW', 'IN DEVELOPMENT', 'IN TESTING',
       'UNDER IMPLEMENTATION', 'UNDER REVIEW', 'ACTIVE', 'CODE REVIEW',
       'QA', 'UAT', 'AWAITING APPROVAL', 'READY FOR QA', 'READY FOR REVIEW',
-      'IMPLEMENTATION',
+      'IMPLEMENTATION', 'IN QA', 'IN UAT', 'UAT READY', 'RETEST', 'RE-OPEN',
+      'IN BETA', 'IN PRODUCTION', 'IN DESIGN', 'IN REQUIREMENTS',
+      'READY FOR DEVELOPMENT', 'IN ENTITY INTEGRATION', 'TECHNICAL VALIDATION',
+      'END TO END TESTING', 'DEFERRED FOR INT', 'AWAITING INFO',
     ];
     if (blueStatuses.includes(s)) return { background: '#DEEBFF', color: '#0747A6' };
 
-    // GREY (default)
+    // GREY (default — never "Unknown")
     return { background: '#DFE1E6', color: '#253858' };
   };
 
@@ -1315,7 +1354,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
   const renderChronoCard = (item: R360WorkItem) => {
     const fromClass = getFromTagClass(item.age_days);
     const statusText = (item.status || '').toUpperCase().trim();
-    const { background, color } = getChronologyStatusLozengeColors(item.status || '');
+    const { background, color } = getChronologyStatusLozengeColors(item.status || '', item.status_category);
 
     return (
       <div key={item.id} className="r3-chrono-card" onClick={() => onSelect(item)}>
@@ -1545,7 +1584,7 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
                         <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{item.priority}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <StatusLozenge status={item.status} />
+                        <StatusLozenge status={item.status} statusCategory={item.status_category} />
                         {item.carried_from_label && (
                           <span className={`r3-from-tag ${fromClass}`} style={{ fontSize: '10px' }}>
                             {getFromTagPrefix(item.age_days)}{item.carried_from_label}

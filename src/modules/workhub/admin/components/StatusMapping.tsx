@@ -6,11 +6,15 @@ import toast from 'react-hot-toast'
 const CATEGORY_ORDER: CatalystCategory[] = ['To Do', 'In Progress', 'Blocked', 'In Review', 'Done']
 
 const DEFAULT_MAPPING: Record<CatalystCategory, string[]> = {
-  'To Do':       ['Open', 'To Do', 'Backlog', 'New'],
-  'In Progress': ['In Progress', 'In Development', 'Active'],
-  'Blocked':     ['Blocked', 'Impediment'],
-  'In Review':   ['In Review', 'Code Review', 'QA'],
-  'Done':        ['Done', 'Closed', 'Resolved', 'Complete'],
+  'To Do':       ['Open', 'To Do', 'Backlog', 'New', 'Todo', 'Re-Open', 'Awaiting Info', 'On Hold'],
+  'In Progress': ['In Progress', 'In Development', 'Active', 'Under Implementation', 'In Design',
+                  'In Requirements', 'Ready for Development', 'In Entity Integration', 'In Beta',
+                  'In Production', 'Deferred for Int'],
+  'Blocked':     ['Blocked', 'Impediment', 'Rejected'],
+  'In Review':   ['In Review', 'Code Review', 'In QA', 'Ready for QA', 'Retest', 'In UAT', 'UAT Ready',
+                  'Technical Validation', 'End to End Testing'],
+  'Done':        ['Done', 'Closed', 'Resolved', 'Complete', 'Completed', 'Ready for Production',
+                  'Beta Ready', 'Production Ready', 'Monitor', 'Released', 'Verified', 'Approved'],
 }
 
 export function StatusMapping() {
