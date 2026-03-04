@@ -389,10 +389,13 @@ export default function R360MemberDetail() {
   }, []);
 
   const handlePeriodTypeChange = useCallback((type: PeriodType) => {
+    const scrollY = window.scrollY;
     setPeriodType(type);
     setWeekOffset(0);
     skipDirection.current = 0;
     skipAttempts.current = 0;
+    // Restore scroll position after React re-render to prevent visual jump
+    requestAnimationFrame(() => { window.scrollTo(0, scrollY); });
   }, []);
 
   // Status counts — week-scoped
