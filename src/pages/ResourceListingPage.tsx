@@ -79,7 +79,7 @@ export default function ResourceListingPage() {
 
 
   const { data: resources = [], isLoading } = useQuery({
-    queryKey: ['resources-listing'],
+    queryKey: ['resources-listing', 'variable-only-v2'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_inventory')
@@ -110,6 +110,7 @@ export default function ResourceListingPage() {
       const avatarMap = new Map((profiles || []).map((p: any) => [p.id, p.avatar_url]));
 
       return ((data || []) as any[])
+        .filter((r: any) => (r.resource_type || '').trim().toLowerCase() === 'variable')
         .map((r: any): Resource => ({
           id: r.id,
           rid: r.rid,
