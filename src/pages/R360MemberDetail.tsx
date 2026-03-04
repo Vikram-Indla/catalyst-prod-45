@@ -333,7 +333,7 @@ export default function R360MemberDetail() {
       ...item,
       carried_from_label: isCurrentPeriod ? computeCarriedFromLabel(item.assigned_at, period.start) : null,
     }));
-  }, [workItems, period.start, period.end, weekOffset]);
+  }, [workItems, period.start, period.end, weekOffset]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // All-time open items (for persistent banner KPIs)
   const allOpenItems = useMemo(() => workItems.filter(i => i.status_category !== 'done'), [workItems]);

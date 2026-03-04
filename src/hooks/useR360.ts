@@ -9,7 +9,7 @@ export const useR360Overview = (id: string) =>
   useQuery({ queryKey: ['r360','overview',id], queryFn: () => r360Service.getMemberOverview(id), enabled: !!id });
 
 export const useR360WorkItems = (id: string, filters?: R360Filters) =>
-  useQuery({ queryKey: ['r360','items',id,filters], queryFn: () => r360Service.getMemberWorkItems(id, filters), enabled: !!id });
+  useQuery({ queryKey: ['r360','items',id,filters], queryFn: () => r360Service.getMemberWorkItems(id, filters), enabled: !!id, placeholderData: (prev: any) => prev });
 
 export const useR360Siblings = (key: string | null) =>
   useQuery({ queryKey: ['r360','siblings',key], queryFn: () => r360Service.getSiblings(key!), enabled: !!key });
