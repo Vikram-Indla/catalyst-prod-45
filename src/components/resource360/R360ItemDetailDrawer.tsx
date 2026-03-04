@@ -1,13 +1,13 @@
 /**
- * R360 Item Detail Drawer — Stage C
- * Side-sliding drawer showing full item metadata.
- * Uses in-memory data already loaded in ring/board/chrono views.
+ * R360 Item Detail Drawer — Stage D (DB-wired)
+ * Fetches full item detail from ph_issues via useItemDetail hook.
  * All CSS scoped under #r360-root .item-drawer
  */
 import React, { useEffect, useRef } from 'react';
-import type { Resource360Item } from '@/types/resource360';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { initials } from './r360-helpers';
+import { useItemDetail } from '@/hooks/useItemDetail';
+import { calcDaysSitting } from '@/lib/r360/fetchItemDetail';
 
 // ─── HELPERS ───
 
@@ -31,61 +31,17 @@ const formatDate = (dateStr: string | null | undefined): string => {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
-// ─── TYPES ───
-
-export interface R360DrawerItem {
-  id: string;
-  itemKey: string;
-  title: string;
-  status: string;
-  statusCategory: string;
-  priority: string;
-  itemType: string;
-  projectName: string | null;
-  projectKey: string | null;
-  assignerName: string | null;
-  assignedAt: string;
-  ageDays: number;
-  releaseName: string | null;
-  dueDate: string | null;
-  parentKey: string | null;
-  parentTitle: string | null;
-  parentType: string | null;
-}
-
-/** Map a Resource360Item to the drawer's expected shape */
-export function mapToDrawerItem(item: Resource360Item): R360DrawerItem {
-  return {
-    id: item.work_item_id,
-    itemKey: item.item_key,
-    title: item.title,
-    status: item.status,
-    statusCategory: item.status_category,
-    priority: item.priority,
-    itemType: item.item_type,
-    projectName: item.project_name,
-    projectKey: item.project_key,
-    assignerName: item.assigner_name,
-    assignedAt: item.assigned_at,
-    ageDays: item.age_days,
-    releaseName: item.release_name,
-    dueDate: item.release_end_date,
-    parentKey: item.parent_key,
-    parentTitle: item.parent_title,
-    parentType: item.parent_type,
-  };
-}
-
 // ─── COMPONENT ───
 
 interface R360ItemDetailDrawerProps {
-  item: R360DrawerItem | null;
+  itemId: string | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function R360ItemDetailDrawer({ item, isOpen, onClose }: R360ItemDetailDrawerProps) {
+export function R360ItemDetailDrawer({ itemId, isOpen, onClose }: R360ItemDetailDrawerProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const { data: item, isLoading, isError, refetch } = useItemDetail(itemId);
 
   // Focus close button on open
   useEffect(() => {
@@ -94,11 +50,45 @@ export function R360ItemDetailDrawer({ item, isOpen, onClose }: R360ItemDetailDr
     }
   }, [isOpen]);
 
-  if (!item && !isOpen) return null;
+  if (!itemId && !isOpen) return null;
 
+  const ageDays = item ? calcDaysSitting(item.assignedAt, item.resolution) : 0;
   const statusDotClass = item ? getStatusColor(item.status) : 'grey';
-  const daysFill = item ? getDaysFillClass(item.ageDays) : '';
-  const daysPct = item ? Math.min((item.ageDays / 42) * 100, 100) : 0;
+  const daysFill = getDaysFillClass(ageDays);
+  const daysPct = Math.min((ageDays / 42) * 100, 100);
+
+  // Loading skeleton for drawer body
+  const renderSkeleton = () => (
+    <div style={{ padding: '20px' }}>
+      <div style={{ marginBottom: 16 }}>
+        <div className="animate-pulse" style={{ height: 16, width: '60%', background: '#E2E8F0', borderRadius: 4, marginBottom: 10 }} />
+        <div className="animate-pulse" style={{ height: 12, width: '80%', background: '#F1F5F9', borderRadius: 4, marginBottom: 8 }} />
+        <div className="animate-pulse" style={{ height: 12, width: '45%', background: '#F1F5F9', borderRadius: 4 }} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        {[1,2,3,4,5,6].map(i => (
+          <div key={i}>
+            <div className="animate-pulse" style={{ height: 8, width: '40%', background: '#E2E8F0', borderRadius: 3, marginBottom: 6 }} />
+            <div className="animate-pulse" style={{ height: 14, width: '70%', background: '#F1F5F9', borderRadius: 4 }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Error state
+  const renderError = () => (
+    <div style={{ padding: '24px 20px', fontSize: 13, color: 'var(--cp-danger, #DC2626)' }}>
+      <p style={{ marginBottom: 8 }}>Could not load item detail.</p>
+      <button
+        onClick={() => refetch()}
+        style={{
+          fontSize: 12, fontWeight: 600, color: 'var(--cp-primary, #2563EB)',
+          background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline',
+        }}
+      >Retry</button>
+    </div>
+  );
 
   return (
     <>
@@ -110,16 +100,19 @@ export function R360ItemDetailDrawer({ item, isOpen, onClose }: R360ItemDetailDr
 
       {/* Drawer */}
       <div className={`item-drawer ${isOpen ? 'open' : ''}`}>
-        {item && (
-          <>
-            {/* Header */}
-            <div className="drawer-hd">
-              <span className="drawer-key">{item.itemKey}</span>
-              <button ref={closeRef} className="drawer-close-btn" onClick={onClose} aria-label="Close drawer">
-                ✕
-              </button>
-            </div>
+        {/* Header — always visible */}
+        <div className="drawer-hd">
+          <span className="drawer-key">{item?.key ?? '…'}</span>
+          <button ref={closeRef} className="drawer-close-btn" onClick={onClose} aria-label="Close drawer">
+            ✕
+          </button>
+        </div>
 
+        {isLoading && renderSkeleton()}
+        {isError && renderError()}
+
+        {item && !isLoading && !isError && (
+          <>
             {/* Pill Row */}
             <div className="drawer-pills">
               <span className="pill-status">
@@ -127,11 +120,11 @@ export function R360ItemDetailDrawer({ item, isOpen, onClose }: R360ItemDetailDr
                 {item.status}
               </span>
               <span className="pill-sep" />
-              <span className="pill-priority">{item.priority || '—'}</span>
+              <span className="pill-priority">{item.priority}</span>
               <span className="pill-sep" />
               <span className="pill-type">
-                <JiraIssueTypeIcon type={item.itemType} />
-                {item.itemType}
+                <JiraIssueTypeIcon type={item.type} />
+                {item.type}
               </span>
               {item.projectKey && (
                 <>
@@ -148,20 +141,20 @@ export function R360ItemDetailDrawer({ item, isOpen, onClose }: R360ItemDetailDr
             <div className="drawer-meta">
               <div className="meta-cell">
                 <div className="meta-label">Project</div>
-                <div className="meta-value">{item.projectName || '—'}</div>
+                <div className="meta-value">{item.projectName}</div>
               </div>
               <div className="meta-cell">
-                <div className="meta-label">Assigner</div>
+                <div className="meta-label">Assignee</div>
                 <div className="meta-value" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {item.assignerName ? (
+                  {item.assigneeName !== '—' ? (
                     <>
                       <div style={{
                         width: 18, height: 18, borderRadius: '50%',
                         background: 'linear-gradient(135deg, #2563EB, #0D9488)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: 7, fontWeight: 700, color: '#fff', flexShrink: 0,
-                      }}>{initials(item.assignerName)}</div>
-                      {item.assignerName}
+                      }}>{initials(item.assigneeName)}</div>
+                      {item.assigneeName}
                     </>
                   ) : '—'}
                 </div>
@@ -174,10 +167,10 @@ export function R360ItemDetailDrawer({ item, isOpen, onClose }: R360ItemDetailDr
                 <div className="meta-label">Days Sitting</div>
                 <div className="days-wrap">
                   <span className="days-num" style={{
-                    color: item.ageDays >= 29 ? 'var(--cp-danger, #DC2626)' :
-                           item.ageDays >= 15 ? 'var(--cp-warning, #D97706)' :
+                    color: ageDays >= 29 ? 'var(--cp-danger, #DC2626)' :
+                           ageDays >= 15 ? 'var(--cp-warning, #D97706)' :
                            'var(--cp-ink, #0F172A)'
-                  }}>{item.ageDays}</span>
+                  }}>{ageDays}</span>
                   <div className="days-track">
                     <div className={`days-fill ${daysFill}`} style={{ width: `${daysPct}%` }} />
                   </div>
@@ -202,21 +195,19 @@ export function R360ItemDetailDrawer({ item, isOpen, onClose }: R360ItemDetailDr
               <div className="hier-label">Hierarchy</div>
               {item.parentKey ? (
                 <>
-                  {/* Parent epic row */}
                   <div className="hier-row">
                     <div className="hier-icon epic">E</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                       <span className="hier-key">{item.parentKey}</span>
-                      <span className="hier-name">{item.parentTitle || '—'}</span>
+                      <span className="hier-name">{item.parentName || '—'}</span>
                     </div>
                   </div>
-                  {/* Indent + self */}
                   <div className="hier-indent">
                     <div className="hier-indent-line" />
                     <div className="hier-row hier-self" style={{ flex: 1 }}>
-                      <JiraIssueTypeIcon type={item.itemType} />
+                      <JiraIssueTypeIcon type={item.type} />
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        <span className="hier-key">{item.itemKey}</span>
+                        <span className="hier-key">{item.key}</span>
                         <span className="hier-name">{item.title}</span>
                       </div>
                     </div>
