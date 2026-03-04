@@ -21,58 +21,80 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        // Handle session errors - clear stale sessions
-        if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
-          setSession(null);
-          setUser(null);
-        } else {
-          setSession(session);
-          setUser(session?.user ?? null);
-        }
-        setLoading(false);
-      }
-    );
+    let isMounted = true;
+    let hasInitialized = false;
 
-    // THEN check for existing session - verify it's valid
+    const safeFinalize = (nextSession: Session | null, nextUser: User | null) => {
+      if (!isMounted) return;
+      setSession(nextSession);
+      setUser(nextUser);
+      setLoading(false);
+      hasInitialized = true;
+    };
+
+    const initTimeout = window.setTimeout(() => {
+      if (hasInitialized || !isMounted) return;
+      console.warn('[auth] Initialization timeout, falling back to signed-out state');
+      safeFinalize(null, null);
+    }, 8000);
+
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !nextSession)) {
+        safeFinalize(null, null);
+      } else {
+        safeFinalize(nextSession, nextSession?.user ?? null);
+      }
+    });
+
+    // THEN check for existing session, but never block the UI indefinitely
     const checkSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
+        const sessionResult = await Promise.race([
+          supabase.auth.getSession(),
+          new Promise<never>((_, reject) =>
+            window.setTimeout(() => reject(new Error('getSession timeout')), 6000)
+          ),
+        ]);
+
+        const { data: { session }, error } = sessionResult;
+
         if (error || !session) {
-          setSession(null);
-          setUser(null);
-          setLoading(false);
+          safeFinalize(null, null);
           return;
         }
 
-        // Verify session is still valid by checking with the server
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
+        const userResult = await Promise.race([
+          supabase.auth.getUser(),
+          new Promise<never>((_, reject) =>
+            window.setTimeout(() => reject(new Error('getUser timeout')), 6000)
+          ),
+        ]);
+
+        const { data: { user }, error: userError } = userResult;
         if (userError || !user) {
-          // Session is stale - clear it
-          console.warn('Stale session detected, clearing...');
+          console.warn('[auth] Stale or unreachable session, clearing...');
           await supabase.auth.signOut();
-          setSession(null);
-          setUser(null);
-        } else {
-          setSession(session);
-          setUser(user);
+          safeFinalize(null, null);
+          return;
         }
+
+        safeFinalize(session, user);
       } catch (err) {
         console.error('Session check error:', err);
-        setSession(null);
-        setUser(null);
+        safeFinalize(null, null);
       } finally {
-        setLoading(false);
+        window.clearTimeout(initTimeout);
       }
     };
 
     checkSession();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      window.clearTimeout(initTimeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
