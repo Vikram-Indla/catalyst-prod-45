@@ -4,20 +4,33 @@ import { initials as getInitials, groupByDate } from './r360-helpers';
 // ═══════════════════════════════════════════════════
 // STATUS LOZENGE — 3-colour guardrail (immutable spec)
 // ═══════════════════════════════════════════════════
-function getLozengeStyle(status: string): { bg: string; color: string; label: string } {
+function getLozengeStyle(status: string, statusCategory?: string): { bg: string; color: string; label: string } {
+  // 1. Prioritise status_category from Jira (eliminates Unknown)
+  const cat = (statusCategory || '').toLowerCase().replace(/[_ ]/g, '');
+  if (cat === 'done' || cat === 'completed')
+    return { bg: '#E3FCEF', color: '#006644', label: (status || 'DONE').toUpperCase() };
+  if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started')
+    return { bg: '#DEEBFF', color: '#0747A6', label: (status || 'IN PROGRESS').toUpperCase() };
+  if (cat === 'new' || cat === 'todo')
+    return { bg: '#DFE1E6', color: '#253858', label: (status || 'TO DO').toUpperCase() };
+
+  // 2. Fallback: string-match raw status name
   const s = (status || '').toLowerCase();
   // Green
-  if (['done', 'closed', 'resolved', 'ready for production', 'beta ready', 'completed'].some(k => s.includes(k)))
+  if (['done', 'closed', 'resolved', 'ready for production', 'beta ready', 'completed', 'production ready', 'monitor', 'released', 'verified'].some(k => s === k))
     return { bg: '#E3FCEF', color: '#006644', label: status.toUpperCase() };
   // Blue
-  if (['in progress', 'in development', 'under implementation', 'in review', 'in qa', 'ready for qa', 'retest', 'code review', 'in uat', 'uat ready', 're-open'].some(k => s.includes(k)))
+  if (['in progress', 'in development', 'under implementation', 'in review', 'in qa', 'ready for qa', 'retest',
+       'code review', 'in uat', 'uat ready', 're-open', 'in beta', 'in production', 'in design', 'in requirements',
+       'ready for development', 'in entity integration', 'technical validation', 'end to end testing',
+       'deferred for int', 'awaiting info', 'on hold', 'active'].some(k => s === k))
     return { bg: '#DEEBFF', color: '#0747A6', label: status.toUpperCase() };
-  // Grey (default)
-  return { bg: '#DFE1E6', color: '#253858', label: status.toUpperCase() };
+  // Grey (default — never "Unknown")
+  return { bg: '#DFE1E6', color: '#253858', label: (status || 'TO DO').toUpperCase() };
 }
 
-function StatusLozenge({ status }: { status: string }) {
-  const s = getLozengeStyle(status);
+function StatusLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
+  const s = getLozengeStyle(status, statusCategory);
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
@@ -46,11 +59,18 @@ const PC: Record<string, string> = { BAU: '#2563EB', SEN: '#D97706', FAC: '#16A3
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || '#64748B';
 const ageCol = (d: number) => d <= 7 ? '#16A34A' : d <= 14 ? '#D97706' : '#EF4444';
 
-function getCatFromStatus(status: string): 'done' | 'progress' | 'blocked' | 'todo' {
+function getCatFromStatus(status: string, statusCategory?: string): 'done' | 'progress' | 'blocked' | 'todo' {
+  // Prioritise status_category
+  const cat = (statusCategory || '').toLowerCase().replace(/[_ ]/g, '');
+  if (cat === 'done' || cat === 'completed') return 'done';
+  if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started') return 'progress';
+  // Fallback to string matching
   const s = (status || '').toLowerCase();
-  if (['done', 'closed', 'resolved', 'ready for production', 'completed'].some(k => s.includes(k))) return 'done';
-  if (['in progress', 'in development', 'in review', 'in qa', 'in uat', 'retest', 'code review', 'uat ready', 'ready for qa'].some(k => s.includes(k))) return 'progress';
-  if (['blocked', 'rejected'].some(k => s.includes(k))) return 'blocked';
+  if (['done', 'closed', 'resolved', 'ready for production', 'completed', 'beta ready', 'production ready', 'monitor'].some(k => s === k)) return 'done';
+  if (['in progress', 'in development', 'in review', 'in qa', 'in uat', 'retest', 'code review', 'uat ready', 'ready for qa',
+       'under implementation', 'in beta', 'in production', 'in design', 'in requirements', 'ready for development',
+       'in entity integration', 'technical validation', 'end to end testing'].some(k => s === k)) return 'progress';
+  if (['blocked', 'rejected'].some(k => s === k)) return 'blocked';
   return 'todo';
 }
 
@@ -96,10 +116,10 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
         };
 
         // Mini progress bar
-        const doneC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '') === 'done').length;
-        const ipC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '') === 'progress').length;
-        const todoC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '') === 'todo').length;
-        const blockC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '') === 'blocked').length;
+        const doneC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '', i.status_category) === 'done').length;
+        const ipC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '', i.status_category) === 'progress').length;
+        const todoC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '', i.status_category) === 'todo').length;
+        const blockC = groupItems.filter((i: any) => getCatFromStatus(i.status_name || i.status || '', i.status_category) === 'blocked').length;
 
         return (
           <div key={dateLabel} style={{ marginBottom: 20, position: 'relative' }}>
@@ -131,7 +151,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
             {!isCollapsed && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {groupItems.map((item: any) => {
-                  const cat = getCatFromStatus(item.status_name || item.status || '');
+                  const cat = getCatFromStatus(item.status_name || item.status || '', item.status_category);
                   const accentDot = cat === 'done' ? '#16A34A' : cat === 'progress' ? '#2563EB' : cat === 'blocked' ? '#EF4444' : '#D97706';
                   const projColor = pColor(item.project_key, item.project_color);
                   return (
@@ -187,7 +207,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                         <span style={{ fontSize: '12.5px', fontWeight: 500, color: '#334155', whiteSpace: 'nowrap', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {item.assigner_name ? item.assigner_name.split(' ')[0] : 'Unassigned'}
                         </span>
-                        <StatusLozenge status={item.status_name || item.status || ''} />
+                        <StatusLozenge status={item.status_name || item.status || ''} statusCategory={item.status_category} />
                         <span style={{ fontSize: '12px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                           {item.age_days ?? 0}d
                         </span>

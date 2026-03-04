@@ -7,42 +7,72 @@ import { initials } from './r360-helpers';
 // GREEN = Done ONLY. AMBER = To Do. BLUE = In Progress.
 // ═══════════════════════════════════════════════════
 const SC: Record<string, { dot: string; bg: string; tx: string; label: string }> = {
+  // ── Grey: To Do / Waiting ──
   'To Do':                { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
   'Open':                 { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
   'Backlog':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog' },
   'Re-Open':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
   'In Requirements':      { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
   'Awaiting Info':        { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
+  'On Hold':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'On Hold' },
+  'Todo':                 { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
+  // ── Blue: In Progress ──
   'In Progress':          { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
   'In Development':       { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
   'Under Implementation': { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
+  'In Design':            { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Design' },
+  'Ready for Development':{ dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Ready Dev' },
+  'In Entity Integration':{ dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Integration' },
+  'Deferred for Int':     { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'Deferred' },
+  'In Beta':              { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Beta' },
+  'In Production':        { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Prod' },
+  // ── Teal: Review / QA ──
   'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
   'Ready for QA':         { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA' },
   'Retest':               { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Retest' },
   'Code Review':          { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
+  'Technical Validation': { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Validation' },
+  'End to End Testing':   { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'E2E Testing' },
+  // ── Purple: UAT ──
   'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
   'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
+  // ── Green: Done ──
   'Done':                 { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
   'Closed':               { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
   'Resolved':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Ready for Production': { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Beta Ready':           { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Ready for Production': { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Ready Prod' },
+  'Beta Ready':           { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Beta Ready' },
+  'Production Ready':     { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Prod Ready' },
+  'Monitor':              { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Monitor' },
+  // ── Red: Blocked / Rejected ──
   'Blocked':              { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Blocked' },
   'Rejected':             { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Rejected' },
 };
-const SCD = { dot: '#64748B', bg: '#F1F5F9', tx: '#334155', label: 'Unknown' };
+
+// Category-level fallbacks (Jira always provides these)
+const CAT_DONE       = { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' };
+const CAT_INPROGRESS = { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' };
+const CAT_TODO       = { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' };
 
 function resolveStatus(item: any) {
+  // 1. Try exact status_name match first (most descriptive label)
   const name = item.status_name || item.status || '';
   if (SC[name]) return SC[name];
+
+  // 2. Custom server-side colors if provided
   if (item.status_dot_color && item.status_bg_color && item.status_color) {
-    return { dot: item.status_dot_color, bg: item.status_bg_color, tx: item.status_color, label: name || 'Unknown' };
+    return { dot: item.status_dot_color, bg: item.status_bg_color, tx: item.status_color, label: name || 'To Do' };
   }
-  const cat = (item.status_category || '').toLowerCase();
-  if (cat === 'completed' || cat === 'done') return SC['Done'];
-  if (cat === 'started' || cat === 'in progress' || cat === 'indeterminate') return SC['In Progress'];
-  return SCD;
+
+  // 3. PRIORITISE status_category — Jira ALWAYS provides this, eliminates "Unknown"
+  const cat = (item.status_category || '').toLowerCase().replace(/[_ ]/g, '');
+  if (cat === 'done' || cat === 'completed') return CAT_DONE;
+  if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started') return CAT_INPROGRESS;
+  if (cat === 'new' || cat === 'todo') return CAT_TODO;
+
+  // 4. Final fallback: grey To Do (never "Unknown")
+  return CAT_TODO;
 }
 
 const PC: Record<string, string> = { BAU: '#2563EB', SEN: '#D97706', FAC: '#16A34A', OPS: '#0D9488', SUP: '#64748B', LND: '#7C3AED' };
@@ -74,7 +104,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
 
   const s = resolveStatus(item);
   const ageDays = item.age_days ?? 0;
-  const statusLabel = item.status_name || item.status || 'Unknown';
+  const statusLabel = item.status_name || item.status || 'To Do';
   const projColor = pColor(item.project_key, item.project_color);
 
   const doneSiblings = siblings.filter(sib => {
@@ -221,7 +251,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
               <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#CBD5E1 transparent', maxHeight: '320px' }}>
                 {siblings.map(sib => {
                   const sibS = resolveStatus(sib);
-                  const sibLabel = sib.status_name || sib.status || 'Unknown';
+                  const sibLabel = sib.status_name || sib.status || 'To Do';
                   const isCurrent = sib.item_key === item.item_key;
                   return (
                     <div key={sib.id || sib.item_key} onClick={() => !isCurrent && onSiblingClick(sib)} style={{
