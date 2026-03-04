@@ -297,12 +297,12 @@ export default function R360MemberDetail() {
 
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
 
+  // Status filter is applied CLIENT-SIDE to avoid changing counts when a filter is active
   const filters: R360Filters = useMemo(() => {
     const f: R360Filters = {};
-    if (statusFilter) f.status_categories = [statusFilter];
     if (searchTerm.trim()) f.search = searchTerm;
     return f;
-  }, [statusFilter, searchTerm]);
+  }, [searchTerm]);
 
   const { data: workItems = [], isLoading: itemsLoading } = useR360WorkItems(resourceId || '', filters);
 
@@ -400,12 +400,18 @@ export default function R360MemberDetail() {
     requestAnimationFrame(() => { window.scrollTo(0, scrollY); });
   }, []);
 
-  // Status counts — week-scoped
+  // Status counts — week-scoped (always from UNFILTERED weekItems)
   const counts = useMemo(() => {
     const c = { all: weekItems.length, to_do: 0, in_progress: 0, in_qa: 0, done: 0, blocked: 0 };
     weekItems.forEach(i => { (c as any)[i.status_category] = ((c as any)[i.status_category] || 0) + 1; });
     return c;
   }, [weekItems]);
+
+  // Client-side status filtering — counts stay stable
+  const filteredWeekItems = useMemo(() => {
+    if (!statusFilter) return weekItems;
+    return weekItems.filter(i => i.status_category === statusFilter);
+  }, [weekItems, statusFilter]);
 
   // All-time KPIs for banner — always reflect total workload health
   const bannerOpenCount = allOpenItems.length;
@@ -551,7 +557,7 @@ export default function R360MemberDetail() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {Array.from({ length: 5 }).map((_, i) => <div key={i} className="r3-skeleton" style={{ height: 60 }} />)}
           </div>
-        ) : weekItems.length === 0 ? (
+        ) : filteredWeekItems.length === 0 ? (
           <div>
             <div className="r3-empty">No work items assigned in this period.</div>
             {workItems.length > 0 && lastActivityDate && (
@@ -582,9 +588,9 @@ export default function R360MemberDetail() {
           </div>
         ) : (
           <>
-            {view === 'ring' && <RingView items={weekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} />}
-            {view === 'chronology' && <ChronologyView items={weekItems} onSelect={setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
-            {view === 'board' && <BoardView items={weekItems} onSelect={setSelectedItem} />}
+            {view === 'ring' && <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} />}
+            {view === 'chronology' && <ChronologyView items={filteredWeekItems} onSelect={setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
+            {view === 'board' && <BoardView items={filteredWeekItems} onSelect={setSelectedItem} />}
           </>
         )}
 
