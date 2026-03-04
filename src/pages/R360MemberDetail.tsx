@@ -13,6 +13,7 @@ import { getJiraIcon } from '@/components/r360/R360JiraIcons';
 import { ChevronLeft, ChevronRight, Calendar, X, ChevronDown, ChevronUp } from 'lucide-react';
 import type { R360WorkItem, R360ViewType, R360Filters } from '@/types/r360';
 import '@/styles/r360.css';
+import '@/components/resource360/r360-member.css';
 import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 
@@ -25,13 +26,14 @@ function getWeekRange(offset: number) {
   const sun = new Date(now);
   sun.setDate(now.getDate() - day + offset * 7);
   sun.setHours(0, 0, 0, 0);
-  const sat = new Date(sun);
-  sat.setDate(sun.getDate() + 6);
-  sat.setHours(23, 59, 59, 999);
+  // Saudi work week: Sunday–Thursday (5 days)
+  const thu = new Date(sun);
+  thu.setDate(sun.getDate() + 4);
+  thu.setHours(23, 59, 59, 999);
   const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const label = offset === 0 ? 'This Week' : offset === -1 ? 'Last Week' : offset === 1 ? 'Next Week' : `Week ${offset > 0 ? '+' : ''}${offset}`;
-  const range = `${M[sun.getMonth()]} ${sun.getDate()} – ${M[sat.getMonth()]} ${sat.getDate()}, ${sat.getFullYear()}`;
-  return { start: sun, end: sat, label, range };
+  const range = `${M[sun.getMonth()]} ${sun.getDate()} – ${M[thu.getMonth()]} ${thu.getDate()}, ${thu.getFullYear()}`;
+  return { start: sun, end: thu, label, range };
 }
 
 function getMonthRange(offset: number) {
@@ -607,19 +609,31 @@ function StatusLozenge({ status }: { status: string }) {
   );
 }
 
-// Dynamic ring geometry
+// Fixed 8-slot ring geometry — absolute positioning
+const RING_CANVAS_H = 620;
+const SLOT_POSITIONS: { left: string; top: string }[] = [
+  { left: '16px', top: '16px' },
+  { left: 'calc(50% - 114px)', top: '2px' },
+  { left: 'calc(100% - 280px)', top: '16px' },
+  { left: '16px', top: '232px' },
+  { left: 'calc(100% - 280px)', top: '232px' },
+  { left: '16px', top: `${RING_CANVAS_H - CARD_H - 20}px` },
+  { left: 'calc(50% - 114px)', top: `${RING_CANVAS_H - CARD_H - 2}px` },
+  { left: 'calc(100% - 280px)', top: `${RING_CANVAS_H - CARD_H - 20}px` },
+];
+
 function computeRingGeometry(W: number, count: number, ages: number[]) {
-  const H_CANVAS = Math.max(500, Math.min(720, 500 + count * 20));
   const CX = W / 2;
-  const CY = H_CANVAS * 0.44;
-  // Scale radius based on count
-  const baseR = count <= 3 ? 160 : count <= 5 ? 200 : count <= 6 ? 230 : 260;
+  const CY = RING_CANVAS_H * 0.44;
+  const n = Math.min(count, 8);
   const slots: { left: number; top: number }[] = [];
   const spokes: { x1: number; y1: number; x2: number; y2: number }[] = [];
   const labelData: { x: number; y: number; age: number }[] = [];
-  const n = Math.min(count, 8);
+  // We still compute numeric positions for spokes/labels
   for (let i = 0; i < n; i++) {
+    // Approximate pixel positions from the CSS for spokes
     const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+    const baseR = n <= 3 ? 160 : n <= 5 ? 200 : n <= 6 ? 230 : 260;
     const cx = CX + baseR * Math.cos(angle);
     const cy = CY + baseR * Math.sin(angle);
     slots.push({ left: Math.max(4, Math.min(cx - CARD_W / 2, W - CARD_W - 4)), top: Math.max(4, cy - CARD_H / 2) });
@@ -628,7 +642,7 @@ function computeRingGeometry(W: number, count: number, ages: number[]) {
     spokes.push({ x1: CX, y1: CY, x2: ccx, y2: ccy });
     labelData.push({ x: (CX + ccx) / 2, y: (CY + ccy) / 2, age: ages[i] || 0 });
   }
-  return { slots, spokes, labels: labelData, center: { x: CX, y: CY }, canvasH: Math.max(H_CANVAS, n > 0 ? Math.max(...slots.map(s => s.top + CARD_H)) + 24 : H_CANVAS) };
+  return { slots, spokes, labels: labelData, center: { x: CX, y: CY }, canvasH: RING_CANVAS_H };
 }
 
 // Priority badge helper
@@ -692,9 +706,8 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
 
   return (
     <div ref={canvasRef} style={{
-      position: 'relative', width: '100%', height: `${canvasH}px`,
+      position: 'relative', width: '100%', minWidth: '1100px', height: `${canvasH}px`,
       overflow: 'visible', boxSizing: 'border-box' as const, marginTop: '8px',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       {/* SVG SPOKES — solid, subtle */}
       <svg width={W} height={canvasH} style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, pointerEvents: 'none' }}>
@@ -740,17 +753,17 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
         </div>
       </div>
 
-      {/* ORBITAL CARDS — V12 compliance */}
+      {/* ORBITAL CARDS — V12 fixed 8-slot layout */}
       {visible.map((item, i) => {
-        const pos = slots[i];
-        if (!pos) return null;
+        if (i >= SLOT_POSITIONS.length) return null;
+        const slotPos = SLOT_POSITIONS[i];
         const isSelected = selected?.id === item.id;
         const isContributor = item.role_on_item === 'Contributor';
         const hasHighPriority = isHighPriority(item.priority);
         return (
           <div key={item.id} onClick={() => onSelect(item)} style={{
-            position: 'absolute', left: `${pos.left}px`, top: `${pos.top}px`,
-            width: `${CARD_W}px`, background: '#FFFFFF',
+            position: 'absolute', left: slotPos.left, top: slotPos.top,
+            width: `${CARD_W}px`, height: `${CARD_H}px`, background: '#FFFFFF',
             border: isSelected ? '1px solid #2563EB' : '1px solid rgba(15,23,42,0.12)',
             borderLeft: hasHighPriority ? '3px solid #DC2626' : isSelected ? '1px solid #2563EB' : '1px solid rgba(15,23,42,0.12)',
             borderRadius: '6px', padding: '10px 12px',
@@ -796,6 +809,16 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
           </div>
         );
       })}
+
+      {/* SHOWING X OF N INDICATOR */}
+      {nonDone.length > 8 && (
+        <div style={{
+          position: 'absolute', bottom: '8px', left: '50%', transform: 'translateX(-50%)',
+          fontSize: '11px', fontWeight: 600, color: '#64748B', background: '#F8FAFC',
+          border: '1px solid #E2E8F0', borderRadius: '10px', padding: '3px 12px',
+          fontFamily: "'JetBrains Mono', monospace", zIndex: 8,
+        }}>Showing 8 of {nonDone.length}</div>
+      )}
 
       {/* COMPLETED BADGE */}
       {doneCount > 0 && (
