@@ -4,7 +4,10 @@ import {
   fetchBrdDocument,
   fetchEpicsForDocument,
   fetchQueueStatus,
+  fetchQueueItems,
   fetchStageStats,
+  fetchEpicCount,
+  fetchAvgQuality,
   createBrdDocument,
   updateDocumentStage,
   enqueueDocument,
@@ -20,7 +23,10 @@ export const reqAssistKeys = {
   document: (id: string) => [...reqAssistKeys.all, 'document', id] as const,
   epics: (brdId: string) => [...reqAssistKeys.all, 'epics', brdId] as const,
   queue: (brdId: string) => [...reqAssistKeys.all, 'queue', brdId] as const,
+  queueItems: (brdId: string) => [...reqAssistKeys.all, 'queue-items', brdId] as const,
   stats: () => [...reqAssistKeys.all, 'stats'] as const,
+  epicCount: () => [...reqAssistKeys.all, 'epic-count'] as const,
+  avgQuality: () => [...reqAssistKeys.all, 'avg-quality'] as const,
   domainTags: () => [...reqAssistKeys.all, 'domain-tags'] as const,
 };
 
@@ -62,6 +68,23 @@ export function usePipelineStats() {
   return useQuery({
     queryKey: reqAssistKeys.stats(),
     queryFn: fetchStageStats,
+    staleTime: 30_000,
+  });
+}
+
+export function useEpicCount() {
+  return useQuery({
+    queryKey: reqAssistKeys.epicCount(),
+    queryFn: fetchEpicCount,
+    staleTime: 30_000,
+  });
+}
+
+export function useAvgQuality() {
+  return useQuery({
+    queryKey: reqAssistKeys.avgQuality(),
+    queryFn: fetchAvgQuality,
+    staleTime: 30_000,
   });
 }
 
@@ -69,6 +92,14 @@ export function useDomainTags() {
   return useQuery({
     queryKey: reqAssistKeys.domainTags(),
     queryFn: fetchDomainTags,
+  });
+}
+
+export function useBrdQueueItems(brdId: string) {
+  return useQuery({
+    queryKey: reqAssistKeys.queueItems(brdId),
+    queryFn: () => fetchQueueItems(brdId),
+    enabled: !!brdId,
   });
 }
 

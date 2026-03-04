@@ -67,6 +67,38 @@ export async function fetchQueueStatus(brdId: string): Promise<BrdQueueItem | nu
   return data as unknown as BrdQueueItem | null;
 }
 
+// ─── FETCH ALL QUEUE ITEMS FOR A DOCUMENT (history) ──────────────
+export async function fetchQueueItems(brdId: string): Promise<BrdQueueItem[]> {
+  const { data, error } = await supabase
+    .from('brd_processing_queue')
+    .select('*')
+    .eq('brd_id', brdId)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return data as unknown as BrdQueueItem[];
+}
+
+// ─── FETCH EPIC COUNT FOR STATS ──────────────────────────────────
+export async function fetchEpicCount(): Promise<number> {
+  const { count, error } = await supabase
+    .from('brd_epics')
+    .select('*', { count: 'exact', head: true });
+  if (error) throw error;
+  return count || 0;
+}
+
+// ─── FETCH AVG QUALITY SCORE ─────────────────────────────────────
+export async function fetchAvgQuality(): Promise<number | null> {
+  const { data, error } = await supabase
+    .from('brd_documents')
+    .select('quality_score')
+    .not('quality_score', 'is', null);
+  if (error) throw error;
+  const scores = (data as unknown as { quality_score: number }[]).map(d => d.quality_score);
+  if (scores.length === 0) return null;
+  return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+}
+
 // ─── GET STAGE STATS (for stat cards) ────────────────────────────
 export async function fetchStageStats(): Promise<StageStats[]> {
   const { data, error } = await supabase
