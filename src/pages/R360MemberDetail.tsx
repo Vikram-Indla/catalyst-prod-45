@@ -50,10 +50,12 @@ function getMonthRange(offset: number) {
 
 // ── Status pill component ──
 function StatusPill({ label, color, bg, dot }: { label: string; color: string; bg: string; dot: string }) {
+  // Normalize "Unknown" status to "To Do" per platform guardrail
+  const displayLabel = label.toLowerCase() === 'unknown' ? 'To Do' : label;
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 10px', borderRadius: '4px', fontSize: '11.5px', fontWeight: 600, background: bg, color }}>
       <span style={{ width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0, background: dot }} />
-      {label}
+      {displayLabel}
     </span>
   );
 }
@@ -1187,7 +1189,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontSize: 12.5, color: '#334155', display: 'inline-flex', alignItems: 'center', gap: 4 }}>{item.role_on_item === 'Contributor' ? <><span style={{ color: '#64748B' }}>→</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}</> : item.assignee_name}</span>
+                        <span style={{ fontSize: 12.5, color: '#334155', display: 'inline-flex', alignItems: 'center', gap: 4 }}>{item.role_on_item === 'Contributor' ? <><span style={{ color: '#64748B' }}>→</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}</> : (item.reporter_name || '—')}</span>
                         <StatusPill label={item.status_label} color={item.status_color} bg={item.status_bg} dot={item.status_dot} />
                       </div>
                       <AgeBadge days={item.age_days} ageClass={item.age_class} />
