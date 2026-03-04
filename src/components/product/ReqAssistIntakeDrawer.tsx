@@ -1,9 +1,11 @@
 /**
- * ReqAssistIntakeDrawer — Intake Drawer (Stage C)
+ * ReqAssistIntakeDrawer — Intake Drawer (GOD-TIER rebuild)
  * Right-side overlay, 480px, 3 tabs
+ * All white background, custom dropdowns, enterprise labels
  */
-import React, { useState, useEffect, useCallback } from 'react';
-import { X, Upload, FileText, Link, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Upload, FileText, Link, Sparkles, ChevronDown } from 'lucide-react';
+import { useDomainTags } from '@/hooks/useReqAssist';
 import type { IntakeTab } from '@/types/reqAssist';
 
 interface Props {
@@ -17,6 +19,107 @@ const TABS: { key: IntakeTab; label: string; icon: React.ReactNode }[] = [
   { key: 'import_jira', label: 'Import from Jira', icon: <Link size={14} /> },
 ];
 
+const LANGUAGES = ['English', 'Arabic'];
+
+/* ═══════════════════════════════════════════════════════════════════
+   CUSTOM DROPDOWN (replaces banned native <select>)
+   ═══════════════════════════════════════════════════════════════════ */
+function CustomDropdown({
+  value,
+  options,
+  placeholder,
+  onChange,
+}: {
+  value: string;
+  options: string[];
+  placeholder: string;
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        style={{
+          width: '100%', height: 36, borderRadius: 4,
+          border: '1px solid rgba(15,23,42,0.14)',
+          background: '#FFFFFF', padding: '0 12px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          fontFamily: "'Inter', sans-serif", fontSize: 13,
+          color: value ? '#0F172A' : '#94A3B8',
+          cursor: 'pointer', transition: 'border-color 80ms',
+          outline: 'none',
+        }}
+        onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
+        onBlur={e => { if (!open) e.currentTarget.style.borderColor = 'rgba(15,23,42,0.14)'; }}
+      >
+        <span>{value || placeholder}</span>
+        <ChevronDown size={16} style={{ color: '#94A3B8', flexShrink: 0 }} />
+      </button>
+
+      {open && (
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, right: 0,
+          marginTop: 4, zIndex: 50,
+          background: '#FFFFFF',
+          border: '1px solid rgba(15,23,42,0.12)',
+          borderRadius: 6,
+          boxShadow: '0 4px 6px rgba(0,0,0,0.07)',
+          maxHeight: 200, overflowY: 'auto',
+          padding: '4px 0',
+        }}>
+          {options.map(opt => (
+            <div
+              key={opt}
+              onClick={() => { onChange(opt); setOpen(false); }}
+              style={{
+                height: 32, padding: '0 12px',
+                display: 'flex', alignItems: 'center',
+                fontFamily: "'Inter', sans-serif", fontSize: 13,
+                color: opt === value ? '#2563EB' : '#0F172A',
+                background: opt === value ? 'rgba(37,99,235,0.06)' : 'transparent',
+                cursor: 'pointer', transition: 'background 80ms',
+              }}
+              onMouseEnter={e => {
+                if (opt !== value) e.currentTarget.style.background = 'rgba(15,23,42,0.04)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = opt === value ? 'rgba(37,99,235,0.06)' : 'transparent';
+              }}
+            >
+              {opt}
+            </div>
+          ))}
+          {options.length === 0 && (
+            <div style={{
+              height: 32, padding: '0 12px',
+              display: 'flex', alignItems: 'center',
+              fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#94A3B8',
+            }}>
+              No options available
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MAIN DRAWER
+   ═══════════════════════════════════════════════════════════════════ */
 export default function ReqAssistIntakeDrawer({ open, onClose }: Props) {
   const [tab, setTab] = useState<IntakeTab>('upload_pdf');
   const [dragOver, setDragOver] = useState(false);
@@ -37,7 +140,8 @@ export default function ReqAssistIntakeDrawer({ open, onClose }: Props) {
       <div
         onClick={onClose}
         style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 399,
+          position: 'fixed', inset: 0,
+          background: 'rgba(0,0,0,0.25)', zIndex: 399,
         }}
       />
 
@@ -46,20 +150,24 @@ export default function ReqAssistIntakeDrawer({ open, onClose }: Props) {
         role="dialog"
         aria-label="New Document"
         style={{
-          position: 'fixed', top: 'var(--cp-layout-topnav)', right: 0, bottom: 0,
-          width: 480, background: 'var(--cp-bg-elevated)',
-          borderLeft: '1px solid var(--cp-border-default)',
-          boxShadow: 'var(--cp-shadow-overlay)', zIndex: 400,
+          position: 'fixed', top: 48, right: 0, bottom: 0,
+          width: 480, background: '#FFFFFF',
+          borderLeft: '1px solid rgba(15,23,42,0.12)',
+          boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
+          zIndex: 400,
           display: 'flex', flexDirection: 'column',
         }}
       >
         {/* Header */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          height: 52, padding: '0 20px', borderBottom: '1px solid var(--cp-border-default)',
+          height: 52, padding: '0 20px',
+          borderBottom: '1px solid rgba(15,23,42,0.08)',
           flexShrink: 0,
         }}>
-          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary)' }}>
+          <span style={{
+            fontFamily: "'Sora', sans-serif", fontSize: 16, fontWeight: 600, color: '#0F172A',
+          }}>
             New Document
           </span>
           <button
@@ -69,13 +177,19 @@ export default function ReqAssistIntakeDrawer({ open, onClose }: Props) {
               width: 32, height: 32, border: 'none', background: 'transparent',
               cursor: 'pointer', borderRadius: 4,
             }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
-            <X size={18} style={{ color: 'var(--cp-text-tertiary)' }} />
+            <X size={18} style={{ color: '#64748B' }} />
           </button>
         </div>
 
         {/* Tab bar */}
-        <div style={{ display: 'flex', borderBottom: '1px solid var(--cp-border-default)', flexShrink: 0 }}>
+        <div style={{
+          display: 'flex',
+          borderBottom: '1px solid rgba(15,23,42,0.08)',
+          flexShrink: 0,
+        }}>
           {TABS.map(t => {
             const isActive = tab === t.key;
             return (
@@ -85,11 +199,12 @@ export default function ReqAssistIntakeDrawer({ open, onClose }: Props) {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 6,
                   height: 40, padding: '0 14px', border: 'none', background: 'transparent',
-                  cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 13,
+                  cursor: 'pointer',
+                  fontFamily: "'Inter', sans-serif", fontSize: 13,
                   fontWeight: isActive ? 650 : 500,
-                  color: isActive ? 'var(--cp-primary-60)' : 'var(--cp-text-secondary)',
-                  borderBottom: isActive ? '2px solid var(--cp-primary-60)' : '2px solid transparent',
-                  marginBottom: -1, transition: 'background 80ms',
+                  color: isActive ? '#2563EB' : '#64748B',
+                  borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
+                  marginBottom: -1, transition: 'all 80ms',
                 }}
               >
                 {t.icon}{t.label}
@@ -98,8 +213,8 @@ export default function ReqAssistIntakeDrawer({ open, onClose }: Props) {
           })}
         </div>
 
-        {/* Content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
+        {/* Content — all white */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: 20, background: '#FFFFFF' }}>
           {tab === 'upload_pdf' && <UploadPdfTab dragOver={dragOver} setDragOver={setDragOver} />}
           {tab === 'generate_text' && <GenerateTextTab />}
           {tab === 'import_jira' && <ImportJiraTab />}
@@ -109,39 +224,91 @@ export default function ReqAssistIntakeDrawer({ open, onClose }: Props) {
   );
 }
 
-/* ── Tab 1: Upload PDF ─────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════
+   Tab 1: Upload PDF
+   ═══════════════════════════════════════════════════════════════════ */
 function UploadPdfTab({ dragOver, setDragOver }: { dragOver: boolean; setDragOver: (v: boolean) => void }) {
+  const [domainTag, setDomainTag] = useState('');
+  const [language, setLanguage] = useState('English');
+  const { data: domainTags = [] } = useDomainTags();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Convert domain tags to string array
+  const domainOptions = Array.isArray(domainTags)
+    ? domainTags.map((t: any) => typeof t === 'string' ? t : t.domain_tag || t.name || String(t))
+    : [];
+
   return (
     <div>
+      {/* Upload zone */}
       <div
         onDragOver={e => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={e => { e.preventDefault(); setDragOver(false); }}
+        onClick={() => fileInputRef.current?.click()}
         style={{
-          border: dragOver ? '2px dashed var(--cp-primary-60)' : '2px dashed var(--cp-border-default)',
-          borderRadius: 6, padding: 40, textAlign: 'center',
-          background: dragOver ? 'rgba(37,99,235,0.04)' : 'transparent',
-          transition: 'all 150ms',
+          border: dragOver ? '2px dashed #2563EB' : '2px dashed rgba(15,23,42,0.15)',
+          borderRadius: 8, padding: 36, textAlign: 'center',
+          background: dragOver ? 'rgba(37,99,235,0.02)' : 'transparent',
+          transition: 'all 150ms', cursor: 'pointer',
+        }}
+        onMouseEnter={e => {
+          if (!dragOver) {
+            e.currentTarget.style.borderColor = '#2563EB';
+            e.currentTarget.style.background = 'rgba(37,99,235,0.02)';
+          }
+        }}
+        onMouseLeave={e => {
+          if (!dragOver) {
+            e.currentTarget.style.borderColor = 'rgba(15,23,42,0.15)';
+            e.currentTarget.style.background = 'transparent';
+          }
         }}
       >
-        <Upload size={32} style={{ color: 'var(--cp-text-muted)', marginBottom: 12 }} />
-        <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary)' }}>
+        <Upload size={32} style={{ color: '#94A3B8', marginBottom: 12 }} />
+        <div style={{
+          fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 500, color: '#0F172A',
+        }}>
           Drop a PDF here or browse
         </div>
-        <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary)', marginTop: 4 }}>
+        <div style={{
+          fontFamily: "'Inter', sans-serif", fontSize: 12, color: '#94A3B8', marginTop: 4,
+        }}>
           Supports BRD documents up to 50MB
         </div>
+        <div
+          onClick={e => { e.stopPropagation(); fileInputRef.current?.click(); }}
+          style={{
+            fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#2563EB',
+            cursor: 'pointer', marginTop: 8, fontWeight: 500,
+          }}
+        >
+          Browse files
+        </div>
+        <input ref={fileInputRef} type="file" accept=".pdf" style={{ display: 'none' }} />
       </div>
 
       <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
         <FieldLabel label="Domain Tag">
-          <StubDropdown placeholder="Select domain..." />
+          <CustomDropdown
+            value={domainTag}
+            options={domainOptions}
+            placeholder="Select domain..."
+            onChange={setDomainTag}
+          />
         </FieldLabel>
         <FieldLabel label="Language">
-          <StubDropdown placeholder="English" />
+          <CustomDropdown
+            value={language}
+            options={LANGUAGES}
+            placeholder="Select language..."
+            onChange={setLanguage}
+          />
         </FieldLabel>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-secondary)' }}>
+          <span style={{
+            fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#334155',
+          }}>
             Process on upload
           </span>
           <ToggleSwitch />
@@ -153,8 +320,16 @@ function UploadPdfTab({ dragOver, setDragOver }: { dragOver: boolean; setDragOve
   );
 }
 
-/* ── Tab 2: Generate from Text ─────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════
+   Tab 2: Generate from Text
+   ═══════════════════════════════════════════════════════════════════ */
 function GenerateTextTab() {
+  const [domain, setDomain] = useState('');
+  const { data: domainTags = [] } = useDomainTags();
+  const domainOptions = Array.isArray(domainTags)
+    ? domainTags.map((t: any) => typeof t === 'string' ? t : t.domain_tag || t.name || String(t))
+    : [];
+
   return (
     <div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -162,37 +337,49 @@ function GenerateTextTab() {
           <input
             placeholder="Enter document title..."
             style={{
-              width: '100%', height: 36, borderRadius: 4, padding: '0 10px',
-              border: '1px solid var(--cp-border-default)', background: 'transparent',
-              fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-primary)',
+              width: '100%', height: 36, borderRadius: 4, padding: '0 12px',
+              border: '1px solid rgba(15,23,42,0.14)', background: '#FFFFFF',
+              fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#0F172A',
               outline: 'none',
             }}
+            onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
+            onBlur={e => (e.currentTarget.style.borderColor = 'rgba(15,23,42,0.14)')}
           />
         </FieldLabel>
         <FieldLabel label="BRD Content">
           <textarea
             placeholder="Paste or type your BRD requirements here..."
             style={{
-              width: '100%', height: 200, borderRadius: 4, padding: 10,
-              border: '1px solid var(--cp-border-default)', background: 'transparent',
-              fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-primary)',
+              width: '100%', height: 200, borderRadius: 4, padding: 12,
+              border: '1px solid rgba(15,23,42,0.14)', background: '#FFFFFF',
+              fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#0F172A',
               outline: 'none', resize: 'vertical',
             }}
+            onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
+            onBlur={e => (e.currentTarget.style.borderColor = 'rgba(15,23,42,0.14)')}
           />
         </FieldLabel>
         <FieldLabel label="Domain">
-          <StubDropdown placeholder="Select domain..." />
+          <CustomDropdown
+            value={domain}
+            options={domainOptions}
+            placeholder="Select domain..."
+            onChange={setDomain}
+          />
         </FieldLabel>
       </div>
 
       {/* AI badge */}
       <div style={{
         marginTop: 16, padding: 12, borderRadius: 6,
-        background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.15)',
+        background: 'rgba(124,58,237,0.08)',
+        border: '1px solid rgba(124,58,237,0.15)',
         display: 'flex', alignItems: 'center', gap: 8,
       }}>
-        <Sparkles size={14} style={{ color: 'var(--cp-purple-60)', flexShrink: 0 }} />
-        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-secondary)' }}>
+        <Sparkles size={14} style={{ color: '#7C3AED', flexShrink: 0 }} />
+        <span style={{
+          fontFamily: "'Inter', sans-serif", fontSize: 12, color: '#334155',
+        }}>
           AI will structure and score this document automatically
         </span>
       </div>
@@ -202,7 +389,9 @@ function GenerateTextTab() {
   );
 }
 
-/* ── Tab 3: Import from Jira ───────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════
+   Tab 3: Import from Jira
+   ═══════════════════════════════════════════════════════════════════ */
 function ImportJiraTab() {
   const [projectKey, setProjectKey] = useState('');
   const [mode, setMode] = useState<'all' | 'selected'>('all');
@@ -215,11 +404,13 @@ function ImportJiraTab() {
             onChange={e => setProjectKey(e.target.value)}
             placeholder="e.g. SEN or project = SEN AND issuetype = BRD"
             style={{
-              width: '100%', height: 36, borderRadius: 4, padding: '0 10px',
-              border: '1px solid var(--cp-border-default)', background: 'transparent',
-              fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-primary)',
+              width: '100%', height: 36, borderRadius: 4, padding: '0 12px',
+              border: '1px solid rgba(15,23,42,0.14)', background: '#FFFFFF',
+              fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#0F172A',
               outline: 'none',
             }}
+            onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
+            onBlur={e => (e.currentTarget.style.borderColor = 'rgba(15,23,42,0.14)')}
           />
         </FieldLabel>
         <FieldLabel label="Import Mode">
@@ -230,10 +421,10 @@ function ImportJiraTab() {
                 onClick={() => setMode(o.key as 'all' | 'selected')}
                 style={{
                   flex: 1, height: 36, borderRadius: 6,
-                  border: mode === o.key ? '1px solid var(--cp-primary-60)' : '1px solid var(--cp-border-default)',
-                  background: mode === o.key ? 'var(--cp-interact-selected)' : 'transparent',
-                  fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-                  color: mode === o.key ? 'var(--cp-primary-60)' : 'var(--cp-text-secondary)',
+                  border: mode === o.key ? '1px solid #2563EB' : '1px solid rgba(15,23,42,0.14)',
+                  background: mode === o.key ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
+                  fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 500,
+                  color: mode === o.key ? '#2563EB' : '#64748B',
                   cursor: 'pointer', transition: 'all 80ms',
                 }}
               >
@@ -247,9 +438,12 @@ function ImportJiraTab() {
       {projectKey.length > 2 && (
         <div style={{
           marginTop: 16, padding: 12, borderRadius: 6,
-          background: 'var(--cp-bg-surface)', border: '1px solid var(--cp-border-default)',
+          background: '#F8FAFC',
+          border: '1px solid rgba(15,23,42,0.08)',
         }}>
-          <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-primary)' }}>
+          <span style={{
+            fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#0F172A',
+          }}>
             12 BRD documents found
           </span>
         </div>
@@ -260,33 +454,21 @@ function ImportJiraTab() {
   );
 }
 
-/* ── Shared sub-components ─────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════
+   SHARED SUB-COMPONENTS
+   ═══════════════════════════════════════════════════════════════════ */
 function FieldLabel({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
       <label style={{
-        display: 'block', fontFamily: 'var(--cp-font-body)', fontSize: 11,
-        fontWeight: 500, textTransform: 'uppercase', color: 'var(--cp-text-tertiary)',
-        marginBottom: 6, letterSpacing: '0.04em',
+        display: 'block',
+        fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 500,
+        textTransform: 'uppercase' as const, letterSpacing: '0.04em',
+        color: '#64748B', marginBottom: 6,
       }}>
         {label}
       </label>
       {children}
-    </div>
-  );
-}
-
-function StubDropdown({ placeholder }: { placeholder: string }) {
-  return (
-    <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      height: 36, padding: '0 10px', borderRadius: 6,
-      border: '1px solid var(--cp-border-default)', background: 'transparent',
-      fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-tertiary)',
-      cursor: 'pointer',
-    }}>
-      {placeholder}
-      <span style={{ fontSize: 10, color: 'var(--cp-text-muted)' }}>▾</span>
     </div>
   );
 }
@@ -298,7 +480,7 @@ function ToggleSwitch() {
       onClick={() => setOn(!on)}
       style={{
         width: 36, height: 20, borderRadius: 10, border: 'none',
-        background: on ? 'var(--cp-primary-60)' : 'var(--cp-bg-sunken)',
+        background: on ? '#2563EB' : '#CBD5E1',
         cursor: 'pointer', position: 'relative', transition: 'background 150ms',
       }}
     >
@@ -317,12 +499,12 @@ function PrimaryButton({ label, style }: { label: string; style?: React.CSSPrope
     <button
       style={{
         width: '100%', height: 36, borderRadius: 6, border: 'none',
-        background: 'var(--cp-primary-60)', color: '#FFFFFF',
-        fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
+        background: '#2563EB', color: '#FFFFFF',
+        fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 500,
         cursor: 'pointer', transition: 'background 80ms', ...style,
       }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-primary-70)')}
-      onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-primary-60)')}
+      onMouseEnter={e => (e.currentTarget.style.background = '#1D4ED8')}
+      onMouseLeave={e => (e.currentTarget.style.background = '#2563EB')}
     >
       {label}
     </button>
