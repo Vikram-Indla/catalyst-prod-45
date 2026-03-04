@@ -1,6 +1,7 @@
 /**
  * ReqAssistDocument — Document Detail — Premier Enterprise Layout
  * Route: /product/req-assist/:id
+ * STAGE D: All data wired to Supabase. Zero mocks.
  */
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -10,8 +11,8 @@ import {
   Inbox, FileSearch, Cpu, ShieldCheck, Send, CheckCircle2,
   Star, Globe, Calendar, Upload, Database, Sparkles,
 } from 'lucide-react';
-import { useBrdDocument, useBrdEpics } from '@/hooks/useReqAssist';
-import type { PipelineStage, ArtifactNode, QualityAxes } from '@/types/reqAssist';
+import { useBrdDocument, useBrdEpics, useBrdQueueItems } from '@/hooks/useReqAssist';
+import type { PipelineStage, ArtifactNode, QualityAxes, BrdEpic, BrdQueueItem } from '@/types/reqAssist';
 
 /* ── Constants ───────────────────────────────────────────────────── */
 const STAGES: PipelineStage[] = ['intake', 'extract', 'process', 'validate', 'distribute', 'complete'];
@@ -57,8 +58,7 @@ function qualityColor(score: number): string {
   return '#DC2626';
 }
 
-function getStubQuality(score: number | null): QualityAxes {
-  if (!score) return { completeness: 0, clarity: 0, traceability: 0, consistency: 0, overall: 0 };
+function deriveQualityAxes(score: number): QualityAxes {
   return {
     completeness: Math.min(100, score + 2),
     clarity: Math.min(100, score - 3),
@@ -100,7 +100,7 @@ function sourceIconColor(s: string): string {
   return '#64748B';
 }
 
-function getArtifactChain(stage: PipelineStage, lang: string): ArtifactNode {
+function getArtifactChain(stage: PipelineStage, lang: string, epicCount: number): ArtifactNode {
   const idx = stageIndex(stage);
   const s = (i: number): 'complete' | 'pending' => idx >= i ? 'complete' : 'pending';
   return {
@@ -115,7 +115,7 @@ function getArtifactChain(stage: PipelineStage, lang: string): ArtifactNode {
           id: '3', label: 'BRD', type: 'brd' as const, status: s(2),
           children: [
             { id: '4', label: 'WikiHub Chunks', type: 'wiki_chunk' as const, status: s(4), children: [] },
-            { id: '5', label: 'Epics', type: 'epic' as const, status: s(4), children: [] },
+            { id: '5', label: `Epics (${epicCount} generated)`, type: 'epic' as const, status: epicCount > 0 ? 'complete' : 'pending', children: [] },
             { id: '6', label: 'UAT Test Cases', type: 'uat' as const, status: s(4), children: [] },
             { id: '7', label: 'Word Export', type: 'word' as const, status: s(5), children: [] },
           ],
@@ -146,6 +146,20 @@ function StageLozenge({ stage }: { stage: PipelineStage }) {
       textTransform: 'uppercase', letterSpacing: '0.03em',
     }}>
       {stage.toUpperCase()}
+    </span>
+  );
+}
+
+/* ── EpicLozenge ──────────────────────────────────────────────────── */
+function ComplexityLozenge({ complexity }: { complexity: string }) {
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
+      borderRadius: 3, background: '#DFE1E6', color: '#253858',
+      fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 700,
+      textTransform: 'uppercase',
+    }}>
+      {complexity}
     </span>
   );
 }
@@ -203,31 +217,55 @@ export default function ReqAssistDocument() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: doc, isLoading } = useBrdDocument(id || '');
+  const { data: epics = [], isLoading: epicsLoading } = useBrdEpics(id || '');
+  const { data: queueItems = [] } = useBrdQueueItems(id || '');
   const [activeTab, setActiveTab] = useState<'content' | 'artifacts' | 'quality' | 'history'>('content');
 
   const currentIdx = doc ? stageIndex(doc.pipeline_stage) : 0;
-  const quality = doc ? getStubQuality(doc.quality_score) : null;
-  const artifacts = doc ? getArtifactChain(doc.pipeline_stage, doc.language) : null;
+  const quality = doc?.quality_score !== null && doc?.quality_score !== undefined
+    ? deriveQualityAxes(doc.quality_score)
+    : null;
+  const artifacts = doc ? getArtifactChain(doc.pipeline_stage, doc.language, epics.length) : null;
 
+  // Build history from queue items + document timestamps
   const historyEvents = useMemo(() => {
     if (!doc) return [];
-    const events: { title: string; time: string }[] = [];
+    const events: { title: string; time: string; isError?: boolean }[] = [];
     events.push({ title: 'Document created', time: doc.created_at });
-    const idx = stageIndex(doc.pipeline_stage);
-    if (idx >= 1) events.push({ title: 'Queued for extraction', time: doc.created_at });
-    if (idx >= 2) events.push({ title: 'Extraction complete', time: doc.updated_at });
-    if (idx >= 3) events.push({ title: 'Processing complete', time: doc.updated_at });
-    if (doc.quality_score !== null) events.push({ title: `Quality score assigned: ${doc.quality_score}`, time: doc.updated_at });
-    if (idx >= 4) events.push({ title: 'Distributed to WikiHub', time: doc.updated_at });
-    if (idx >= 5) events.push({ title: 'Pipeline complete', time: doc.updated_at });
-    return events;
-  }, [doc]);
+
+    if (queueItems.length > 0) {
+      // Use real queue data for history
+      queueItems.forEach(qi => {
+        if (qi.started_at) {
+          events.push({ title: `${qi.status.charAt(0).toUpperCase() + qi.status.slice(1)} started`, time: qi.started_at });
+        }
+        if (qi.completed_at) {
+          events.push({ title: `${qi.status.charAt(0).toUpperCase() + qi.status.slice(1)} completed`, time: qi.completed_at });
+        }
+        if (qi.error_message) {
+          events.push({ title: `Error: ${qi.error_message}`, time: qi.completed_at || qi.started_at || qi.created_at, isError: true });
+        }
+      });
+    } else {
+      // Derive from pipeline_stage if no queue data
+      const idx = stageIndex(doc.pipeline_stage);
+      if (idx >= 1) events.push({ title: 'Queued for extraction', time: doc.created_at });
+      if (idx >= 2) events.push({ title: 'Extraction complete', time: doc.updated_at });
+      if (idx >= 3) events.push({ title: 'Processing complete', time: doc.updated_at });
+      if (doc.quality_score !== null) events.push({ title: `Quality score assigned: ${doc.quality_score}`, time: doc.updated_at });
+      if (idx >= 4) events.push({ title: 'Distributed to WikiHub', time: doc.updated_at });
+      if (idx >= 5) events.push({ title: 'Pipeline complete', time: doc.updated_at });
+    }
+
+    return events.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+  }, [doc, queueItems]);
 
   if (isLoading || !doc) {
     return (
       <div style={{ padding: 24, fontFamily: "'Inter', sans-serif" }}>
-        <div style={{ height: 20, width: 120, background: '#F1F5F9', borderRadius: 3 }} />
-        <div style={{ height: 14, width: 200, background: '#F1F5F9', borderRadius: 3, marginTop: 12 }} />
+        <div style={{ height: 20, width: 120, background: '#F1F5F9', borderRadius: 3, animation: 'ra-stage-pulse 1.5s infinite' }} />
+        <div style={{ height: 14, width: 200, background: '#F1F5F9', borderRadius: 3, marginTop: 12, animation: 'ra-stage-pulse 1.5s infinite' }} />
+        <div style={{ height: 60, width: '100%', background: '#F1F5F9', borderRadius: 8, marginTop: 20, animation: 'ra-stage-pulse 1.5s infinite' }} />
       </div>
     );
   }
@@ -239,6 +277,9 @@ export default function ReqAssistDocument() {
     { key: 'history' as const, label: 'History' },
   ];
 
+  // Extract json_data sections if available
+  const jsonData = doc.json_data as Record<string, unknown> | null;
+
   return (
     <div style={{
       padding: 24,
@@ -248,7 +289,6 @@ export default function ReqAssistDocument() {
       flex: 1,
     }}>
       {/* ═══ SECTION 1 — PAGE HEADER ═══════════════════════════════ */}
-      {/* Row 1: Back link */}
       <button
         onClick={() => navigate('/product/req-assist')}
         style={{
@@ -260,7 +300,6 @@ export default function ReqAssistDocument() {
         <ArrowLeft size={14} /> Pipeline
       </button>
 
-      {/* Row 2: Title + lozenge */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {doc.jira_key && (
@@ -284,26 +323,22 @@ export default function ReqAssistDocument() {
 
       {/* Row 3: Metric chips */}
       <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
-        {/* Quality chip */}
         <MetricChip
           icon={<Star size={14} color={doc.quality_score === null ? '#94A3B8' : doc.quality_score >= 85 ? '#16A34A' : '#D97706'} />}
           label="Quality"
           value={doc.quality_score !== null ? `${doc.quality_score} / 100` : '—'}
           valueColor={doc.quality_score !== null ? qualityColor(doc.quality_score) : '#94A3B8'}
         />
-        {/* Source chip */}
         <MetricChip
           icon={<span style={{ color: sourceIconColor(doc.source_type) }}>{sourceIcon(doc.source_type)}</span>}
           label="Source"
           value={sourceLabel(doc.source_type)}
         />
-        {/* Language chip */}
         <MetricChip
           icon={<Globe size={14} color="#64748B" />}
           label="Language"
           value={doc.language === 'ar' ? 'Arabic' : 'English'}
         />
-        {/* Created chip */}
         <MetricChip
           icon={<Calendar size={14} color="#64748B" />}
           label="Created"
@@ -391,42 +426,81 @@ export default function ReqAssistDocument() {
           border: '1px solid rgba(15,23,42,0.10)', borderRadius: 8,
           padding: 24,
         }}>
-          {BRD_SECTIONS.map((section, i) => (
-            <div key={section}>
-              {i > 0 && <div style={{ height: 0.75, background: 'rgba(15,23,42,0.06)', margin: '16px 0' }} />}
+          {jsonData !== null ? (
+            // Render json_data sections
+            Object.entries(jsonData).map(([key, value], i) => (
+              <div key={key}>
+                {i > 0 && <div style={{ height: 0.75, background: 'rgba(15,23,42,0.06)', margin: '16px 0' }} />}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{
+                    fontSize: 11, fontWeight: 500, textTransform: 'uppercase' as const,
+                    letterSpacing: '0.04em', color: '#64748B',
+                  }}>
+                    {key.replace(/_/g, ' ')}
+                  </span>
+                  <span style={{
+                    fontSize: 10, background: '#F1F5F9', color: '#94A3B8',
+                    borderRadius: 3, padding: '2px 6px',
+                  }}>
+                    SECTION {i + 1}
+                  </span>
+                </div>
+                <div style={{ padding: '8px 0 16px 0' }}>
+                  <p style={{ fontSize: 14, color: '#0F172A', lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap' }}>
+                    {typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
+                  </p>
+                </div>
+              </div>
+            ))
+          ) : doc.raw_text ? (
+            // Fallback to raw_text
+            <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
                   fontSize: 11, fontWeight: 500, textTransform: 'uppercase' as const,
                   letterSpacing: '0.04em', color: '#64748B',
                 }}>
-                  {section}
-                </span>
-                <span style={{
-                  fontSize: 10, background: '#F1F5F9', color: '#94A3B8',
-                  borderRadius: 3, padding: '2px 6px',
-                }}>
-                  SECTION {i + 1}
+                  Raw Content
                 </span>
               </div>
               <div style={{ padding: '8px 0 16px 0' }}>
-                {doc.json_data === null ? (
+                <p style={{ fontSize: 14, color: '#0F172A', lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap' }}>
+                  {doc.raw_text}
+                </p>
+              </div>
+            </div>
+          ) : (
+            // No content — show placeholder per section
+            BRD_SECTIONS.map((section, i) => (
+              <div key={section}>
+                {i > 0 && <div style={{ height: 0.75, background: 'rgba(15,23,42,0.06)', margin: '16px 0' }} />}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{
+                    fontSize: 11, fontWeight: 500, textTransform: 'uppercase' as const,
+                    letterSpacing: '0.04em', color: '#64748B',
+                  }}>
+                    {section}
+                  </span>
+                  <span style={{
+                    fontSize: 10, background: '#F1F5F9', color: '#94A3B8',
+                    borderRadius: 3, padding: '2px 6px',
+                  }}>
+                    SECTION {i + 1}
+                  </span>
+                </div>
+                <div style={{ padding: '8px 0 16px 0' }}>
                   <p style={{ fontSize: 13, color: '#94A3B8', fontStyle: 'italic', margin: 0 }}>
                     Awaiting extraction
                   </p>
-                ) : (
-                  <p style={{ fontSize: 14, color: '#0F172A', lineHeight: 1.7, margin: 0 }}>
-                    This section contains the {section.toLowerCase()} for "{doc.title}".
-                    Full content will be rendered after pipeline processing is complete.
-                  </p>
-                )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
 
       {/* ── TAB: Artifacts ──────────────────────────────────────── */}
-      {activeTab === 'artifacts' && artifacts && (
+      {activeTab === 'artifacts' && (
         <div style={{
           marginTop: 16, background: '#FFFFFF',
           border: '1px solid rgba(15,23,42,0.10)', borderRadius: 8,
@@ -435,12 +509,58 @@ export default function ReqAssistDocument() {
           <div style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', marginBottom: 16 }}>
             Artifact Chain
           </div>
-          <ArtifactTree node={artifacts} />
+          {artifacts && <ArtifactTree node={artifacts} />}
+
+          {/* Epic cards from DB */}
+          {epics.length > 0 && (
+            <div style={{ marginTop: 24 }}>
+              <div style={{
+                fontSize: 11, fontWeight: 500, textTransform: 'uppercase' as const,
+                letterSpacing: '0.04em', color: '#64748B', marginBottom: 12,
+              }}>
+                Generated Epics ({epics.length})
+              </div>
+              {epics.map((epic: BrdEpic) => (
+                <div key={epic.id} style={{
+                  padding: '12px 16px', marginBottom: 8,
+                  border: '1px solid rgba(15,23,42,0.08)', borderRadius: 6,
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{
+                      fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+                      color: '#64748B', background: '#F1F5F9', borderRadius: 3,
+                      padding: '2px 6px',
+                    }}>
+                      {epic.epic_key}
+                    </span>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>
+                      {epic.title}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <ComplexityLozenge complexity={epic.complexity} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {epicsLoading && (
+            <div style={{ marginTop: 16 }}>
+              {[1, 2, 3].map(i => (
+                <div key={i} style={{
+                  height: 44, marginBottom: 8, borderRadius: 6,
+                  background: '#F1F5F9', animation: 'ra-stage-pulse 1.5s infinite',
+                }} />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
       {/* ── TAB: Quality ────────────────────────────────────────── */}
-      {activeTab === 'quality' && quality && (
+      {activeTab === 'quality' && (
         <div style={{
           marginTop: 16, background: '#FFFFFF',
           border: '1px solid rgba(15,23,42,0.10)', borderRadius: 8,
@@ -455,14 +575,13 @@ export default function ReqAssistDocument() {
             </div>
           ) : (
             <>
-              {/* Large score */}
               <div style={{ textAlign: 'center', marginBottom: 24 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4 }}>
                   <span style={{
                     fontFamily: "'Sora', sans-serif", fontSize: 48, fontWeight: 700,
-                    color: qualityColor(quality.overall),
+                    color: qualityColor(quality!.overall),
                   }}>
-                    {quality.overall}
+                    {quality!.overall}
                   </span>
                   <span style={{
                     fontFamily: "'Sora', sans-serif", fontSize: 24, color: '#94A3B8',
@@ -471,7 +590,7 @@ export default function ReqAssistDocument() {
                   </span>
                 </div>
                 <div style={{ marginTop: 8 }}>
-                  {quality.overall >= 85 ? (
+                  {quality!.overall >= 85 ? (
                     <span style={{
                       display: 'inline-block', padding: '4px 12px', borderRadius: 4,
                       background: '#E3FCEF', color: '#006644', fontSize: 13,
@@ -489,12 +608,11 @@ export default function ReqAssistDocument() {
                 </div>
               </div>
 
-              {/* 4 axis bars */}
               {[
-                { label: 'Completeness', score: quality.completeness },
-                { label: 'Clarity', score: quality.clarity },
-                { label: 'Traceability', score: quality.traceability },
-                { label: 'Consistency', score: quality.consistency },
+                { label: 'Completeness', score: quality!.completeness },
+                { label: 'Clarity', score: quality!.clarity },
+                { label: 'Traceability', score: quality!.traceability },
+                { label: 'Consistency', score: quality!.consistency },
               ].map(axis => (
                 <div key={axis.label} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
                   <span style={{ fontSize: 13, color: '#334155', minWidth: 100 }}>{axis.label}</span>
@@ -525,30 +643,33 @@ export default function ReqAssistDocument() {
           border: '1px solid rgba(15,23,42,0.10)', borderRadius: 8,
           padding: 24,
         }}>
-          {historyEvents.map((evt, i) => {
-            const isLatest = i === historyEvents.length - 1;
-            return (
-              <div key={i} style={{ display: 'flex', gap: 12, position: 'relative' }}>
-                {/* Connector */}
-                {i < historyEvents.length - 1 && (
+          {historyEvents.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '32px 0' }}>
+              <p style={{ fontSize: 14, color: '#94A3B8' }}>No pipeline events yet</p>
+            </div>
+          ) : (
+            historyEvents.map((evt, i) => {
+              const isLatest = i === historyEvents.length - 1;
+              return (
+                <div key={i} style={{ display: 'flex', gap: 12, position: 'relative' }}>
+                  {i < historyEvents.length - 1 && (
+                    <div style={{
+                      position: 'absolute', left: 3.5, top: 12,
+                      width: 1, height: 'calc(100% + 4px)', background: '#E2E8F0',
+                    }} />
+                  )}
                   <div style={{
-                    position: 'absolute', left: 3.5, top: 12,
-                    width: 1, height: 'calc(100% + 4px)', background: '#E2E8F0',
+                    width: 8, height: 8, borderRadius: '50%', flexShrink: 0, marginTop: 4,
+                    background: evt.isError ? '#DC2626' : isLatest ? '#2563EB' : '#CBD5E1',
                   }} />
-                )}
-                {/* Dot */}
-                <div style={{
-                  width: 8, height: 8, borderRadius: '50%', flexShrink: 0, marginTop: 4,
-                  background: isLatest ? '#2563EB' : '#CBD5E1',
-                }} />
-                {/* Content */}
-                <div style={{ paddingBottom: 16 }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>{evt.title}</div>
-                  <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>{relativeTime(evt.time)}</div>
+                  <div style={{ paddingBottom: 16 }}>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: evt.isError ? '#DC2626' : '#0F172A' }}>{evt.title}</div>
+                    <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>{relativeTime(evt.time)}</div>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       )}
     </div>

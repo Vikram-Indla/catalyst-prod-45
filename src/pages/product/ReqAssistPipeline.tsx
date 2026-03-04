@@ -8,7 +8,7 @@ import {
   Plus, Search, ChevronDown, FileSearch, Zap, Database,
   Upload, Sparkles, ArrowRight,
 } from 'lucide-react';
-import { useBrdDocuments, usePipelineStats, useDomainTags } from '@/hooks/useReqAssist';
+import { useBrdDocuments, usePipelineStats, useDomainTags, useEpicCount, useAvgQuality } from '@/hooks/useReqAssist';
 import type { PipelineStage, BrdDocument, StageStats } from '@/types/reqAssist';
 import ReqAssistIntakeDrawer from '@/components/product/ReqAssistIntakeDrawer';
 
@@ -170,8 +170,10 @@ export default function ReqAssistPipeline() {
   }), [activeTab, search, domainFilter]);
 
   const { data: documents, isLoading } = useBrdDocuments(filters);
-  const { data: stats } = usePipelineStats();
+  const { data: stats, isLoading: statsLoading } = usePipelineStats();
   const { data: domainTags } = useDomainTags();
+  const { data: epicCount } = useEpicCount();
+  const { data: avgQuality } = useAvgQuality();
 
   const totalCount = useMemo(() => (stats || []).reduce((a, s) => a + s.count, 0), [stats]);
 
@@ -224,9 +226,13 @@ export default function ReqAssistPipeline() {
                 {s.label}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 650, color: 'var(--cp-text-primary)', lineHeight: 1 }}>
-                  {s.count}
-                </span>
+                {statsLoading ? (
+                  <div style={{ height: 24, width: 48, borderRadius: 4, background: '#F1F5F9', animation: 'ra-skeleton 1.5s ease-in-out infinite' }} />
+                ) : (
+                  <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 650, color: 'var(--cp-text-primary)', lineHeight: 1 }}>
+                    {s.count}
+                  </span>
+                )}
                 {s.stage === 'process' && (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '1px 5px',
@@ -426,7 +432,7 @@ export default function ReqAssistPipeline() {
             <div><SourceCell type={doc.source_type} /></div>
             {/* Artifacts */}
             <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-tertiary)' }}>
-              {doc.pipeline_stage === 'complete' ? '4 items' : doc.pipeline_stage === 'distribute' ? '3 items' : '—'}
+              —
             </div>
             {/* Created */}
             <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-tertiary)' }}>
