@@ -39,11 +39,18 @@ export function CatalystLoginPage() {
 
   const checkMustChangePassword = useCallback(async (userId: string): Promise<boolean> => {
     try {
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('must_change_password, approval_status')
-        .eq('id', userId)
-        .maybeSingle();
+      const result = await Promise.race([
+        supabase
+          .from('profiles')
+          .select('must_change_password, approval_status')
+          .eq('id', userId)
+          .maybeSingle(),
+        new Promise<never>((_, reject) =>
+          window.setTimeout(() => reject(new Error('profile lookup timeout')), 6000)
+        ),
+      ]);
+
+      const { data: profile, error } = result;
 
       if (error) {
         console.error('Error checking profile:', error);
@@ -79,26 +86,49 @@ export function CatalystLoginPage() {
     const handleAuthRedirect = async () => {
       checkedUserRef.current = user.id;
       setIsTransitioning(true);
-      
-      const needsPasswordChange = await checkMustChangePassword(user.id);
-      
-      if (needsPasswordChange) {
+
+      const transitionGuard = window.setTimeout(async () => {
+        console.warn('[auth] Login transition timeout, resetting session state');
+        checkedUserRef.current = null;
         setIsTransitioning(false);
-        setMustChangePassword(true);
-        setCurrentUserId(user.id);
-      } else {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('approval_status')
-          .eq('id', user.id)
-          .maybeSingle();
-        
+        await supabase.auth.signOut();
+      }, 8000);
+
+      try {
+        const needsPasswordChange = await checkMustChangePassword(user.id);
+
+        if (needsPasswordChange) {
+          setMustChangePassword(true);
+          setCurrentUserId(user.id);
+          return;
+        }
+
+        const profileResult = await Promise.race([
+          supabase
+            .from('profiles')
+            .select('approval_status')
+            .eq('id', user.id)
+            .maybeSingle(),
+          new Promise<never>((_, reject) =>
+            window.setTimeout(() => reject(new Error('approval lookup timeout')), 6000)
+          ),
+        ]);
+
+        const { data: profile } = profileResult;
+
         if (profile?.approval_status === 'APPROVED') {
           const lastRoute = getLastRoute();
           navigate(lastRoute, { replace: true });
         } else {
-          setIsTransitioning(false);
+          checkedUserRef.current = null;
         }
+      } catch (error) {
+        console.error('[auth] Redirect flow failed:', error);
+        checkedUserRef.current = null;
+        await supabase.auth.signOut();
+      } finally {
+        window.clearTimeout(transitionGuard);
+        setIsTransitioning(false);
       }
     };
 
