@@ -291,6 +291,7 @@ export default function R360MemberDetail() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState<R360WorkItem | null>(null);
   const [aiOpen, setAiOpen] = useState(false);
+  const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
 
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
 
@@ -467,11 +468,21 @@ export default function R360MemberDetail() {
             </div>
             {/* §9 — OPEN (blue) + STALE (danger red) */}
             <div style={{ display: 'flex', gap: '10px' }}>
-              <div style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '#EFF6FF' }}>
+              <div
+                onClick={() => setTicketListMode(bannerOpenCount > 0 ? 'open' : null)}
+                style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '#EFF6FF', cursor: bannerOpenCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
+                onMouseEnter={e => { if (bannerOpenCount > 0) (e.currentTarget.style.background = 'rgba(37,99,235,0.12)'); }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; }}
+              >
                 <div style={{ fontSize: '20px', fontWeight: 700, color: '#2563EB' }}>{bannerOpenCount}</div>
                 <div style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
               </div>
-              <div style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '#FEF2F2' }}>
+              <div
+                onClick={() => setTicketListMode(bannerStaleCount > 0 ? 'stale' : null)}
+                style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '#FEF2F2', cursor: bannerStaleCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
+                onMouseEnter={e => { if (bannerStaleCount > 0) (e.currentTarget.style.background = 'rgba(220,38,38,0.12)'); }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#FEF2F2'; }}
+              >
                 <div style={{ fontSize: '20px', fontWeight: 700, color: '#DC2626' }}>{bannerStaleCount}</div>
                 <div style={{ fontSize: '11px', fontWeight: 600, color: '#DC2626', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
               </div>
@@ -575,6 +586,16 @@ export default function R360MemberDetail() {
         {/* ── Detail Panel ── */}
         {selectedItem && (
           <DetailPanel item={selectedItem} onClose={() => setSelectedItem(null)} onSelectItem={setSelectedItem} />
+        )}
+
+        {/* ── Ticket List Drawer (OPEN / STALE) ── */}
+        {ticketListMode && (
+          <TicketListDrawer
+            mode={ticketListMode}
+            items={ticketListMode === 'open' ? allOpenItems : allStaleItems}
+            onClose={() => setTicketListMode(null)}
+            onSelectItem={(item) => { setTicketListMode(null); setSelectedItem(item); }}
+          />
         )}
       </div>
 
@@ -1370,6 +1391,80 @@ function DetailPanel({ item, onClose, onSelectItem }: {
                 </div>
               ))}
             </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════
+// TICKET LIST DRAWER (OPEN / STALE)
+// ═══════════════════════════════════════════
+function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
+  mode: 'open' | 'stale';
+  items: R360WorkItem[];
+  onClose: () => void;
+  onSelectItem: (item: R360WorkItem) => void;
+}) {
+  const isStale = mode === 'stale';
+  const title = isStale ? 'Stale Items' : 'Open Items';
+  const accentColor = isStale ? '#DC2626' : '#2563EB';
+  const accentBg = isStale ? '#FEF2F2' : '#EFF6FF';
+
+  return (
+    <>
+      <div className="r3-overlay" onClick={onClose} />
+      <div className="r3-panel r3-panel--open" style={{ maxWidth: 480 }}>
+        {/* Header */}
+        <div className="r3-panel-header" style={{ borderBottom: '1px solid rgba(15,23,42,0.08)', paddingBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, background: accentBg, color: accentColor, fontSize: 14, fontWeight: 700 }}>
+                {items.length}
+              </span>
+              <span style={{ fontSize: 15, fontWeight: 700, color: '#0F172A' }}>{title}</span>
+            </div>
+            <button className="r3-panel-close" onClick={onClose}><X size={14} /></button>
+          </div>
+          <div style={{ fontSize: 12, color: '#64748B' }}>
+            {isStale ? 'Items with no activity for 14+ days' : 'All currently open items across all periods'}
+          </div>
+        </div>
+
+        {/* List */}
+        <div className="r3-panel-body" style={{ padding: 0 }}>
+          {items.length === 0 ? (
+            <div style={{ padding: 24, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>
+              No {mode} items
+            </div>
+          ) : (
+            items.map(item => (
+              <div
+                key={item.id}
+                onClick={() => onSelectItem(item)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px',
+                  cursor: 'pointer', transition: 'background 80ms ease',
+                  borderBottom: '1px solid rgba(15,23,42,0.05)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                {/* Type icon */}
+                <span style={{ flexShrink: 0, width: 18 }}>{getJiraIcon(item.item_type)}</span>
+                {/* Key */}
+                <span className="r3-card-key r3-card-key--sm" style={{ flexShrink: 0, width: 80 }}>{item.item_key}</span>
+                {/* Title */}
+                <span style={{ fontSize: 12, color: '#0F172A', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {item.title}
+                </span>
+                {/* Status */}
+                <StatusPill label={item.status_label} color={item.status_color} bg={item.status_bg} dot={item.status_dot} />
+                {/* Age */}
+                <AgeBadge days={item.age_days} ageClass={item.age_class} />
+              </div>
+            ))
           )}
         </div>
       </div>
