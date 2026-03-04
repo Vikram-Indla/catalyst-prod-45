@@ -1201,9 +1201,29 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
 
   const accentColor = (cat: string) => cat === 'in_progress' ? '#2563EB' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? '#EF4444' : cat === 'done' ? '#16A34A' : '#D97706';
 
+  const getChronologyStatusLozengeColors = (status: string): { background: string; color: string } => {
+    const normalized = (status || '').toUpperCase().trim();
+
+    // BLUE statuses
+    if (normalized === 'IN PROGRESS' || normalized === 'IN REVIEW' || normalized === 'ACTIVE') {
+      return { background: '#DEEBFF', color: '#0747A6' };
+    }
+
+    // GREEN statuses
+    if (normalized === 'DONE' || normalized === 'COMPLETED' || normalized === 'APPROVED') {
+      return { background: '#E3FCEF', color: '#006644' };
+    }
+
+    // GREY statuses (default)
+    return { background: '#DFE1E6', color: '#253858' };
+  };
+
   // Render a single chronology card
   const renderChronoCard = (item: R360WorkItem) => {
     const fromClass = getFromTagClass(item.age_days);
+    const statusText = (item.status || '').toUpperCase().trim();
+    const { background, color } = getChronologyStatusLozengeColors(item.status || '');
+
     return (
       <div key={item.id} className="r3-chrono-card" onClick={() => onSelect(item)}>
         <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : accentColor(item.status_category) }} />
@@ -1235,7 +1255,24 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
                 <span style={{ color: '#64748B' }}>→</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}
               </span>
             )}
-            <StatusLozenge status={item.status} />
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                height: '20px',
+                padding: '0 8px',
+                borderRadius: '3px',
+                fontSize: '11px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.03em',
+                whiteSpace: 'nowrap',
+                background,
+                color,
+              }}
+            >
+              {statusText || 'TO DO'}
+            </span>
           </div>
           <AgeBadge days={item.age_days} ageClass={item.age_class} />
         </div>
