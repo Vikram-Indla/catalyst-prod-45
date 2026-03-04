@@ -109,11 +109,6 @@ export default function ResourceListingPage() {
       const avatarMap = new Map((profiles || []).map((p: any) => [p.id, p.avatar_url]));
 
       return ((data || []) as any[])
-        .filter((r: any) => {
-          const hasAssigned = ridsWithAssigned.has(r.rid);
-          const hasContributed = r.jira_account_id && jiraIdsWithContrib.has(r.jira_account_id);
-          return hasAssigned || hasContributed;
-        })
         .map((r: any): Resource => ({
           id: r.id,
           rid: r.rid,
