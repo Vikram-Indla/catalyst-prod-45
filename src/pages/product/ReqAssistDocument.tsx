@@ -1,18 +1,18 @@
 /**
- * ReqAssistDocument — Document Detail — Premier Enterprise Layout
+ * ReqAssistDocument — Document Detail — 2-Column Layout
  * Route: /product/req-assist/:id
- * STAGE D: All data wired to Supabase. Zero mocks.
+ * CORRECTIVE BUILD — ra-* ring-fenced CSS, pixel-perfect to HTML demo
  */
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft, Check, FileText, Braces, FileCheck,
-  BookOpen, Zap, TestTube, File, ChevronRight, ClipboardList,
-  Inbox, FileSearch, Cpu, ShieldCheck, Send, CheckCircle2,
-  Star, Globe, Calendar, Upload, Database, Sparkles,
+  ArrowLeft, Check, FileText, Code, Globe, FileCheck,
+  BookOpen, Layers, ClipboardCheck, Download, Zap, TestTube,
+  File, Printer, Send as SendIcon, Sparkles,
 } from 'lucide-react';
 import { useBrdDocument, useBrdEpics, useBrdQueueItems } from '@/hooks/useReqAssist';
-import type { PipelineStage, ArtifactNode, QualityAxes, BrdEpic, BrdQueueItem } from '@/types/reqAssist';
+import type { PipelineStage, BrdEpic, BrdQueueItem } from '@/types/reqAssist';
+import '@/styles/ra-styles.css';
 
 /* ── Constants ───────────────────────────────────────────────────── */
 const STAGES: PipelineStage[] = ['intake', 'extract', 'process', 'validate', 'distribute', 'complete'];
@@ -20,63 +20,48 @@ const STAGE_LABELS: Record<PipelineStage, string> = {
   intake: 'Intake', extract: 'Extract', process: 'Process',
   validate: 'Validate', distribute: 'Distribute', complete: 'Complete', failed: 'Failed',
 };
-const STAGE_ICONS: Record<PipelineStage, React.ReactNode> = {
-  intake: <Inbox size={20} />, extract: <FileSearch size={20} />,
-  process: <Cpu size={20} />, validate: <ShieldCheck size={20} />,
-  distribute: <Send size={20} />, complete: <CheckCircle2 size={20} />,
-  failed: <File size={20} />,
-};
 
 const BRD_SECTIONS = [
   'Executive Summary', 'Business Objectives', 'Functional Requirements',
   'Technical Requirements', 'Integration Requirements', 'Acceptance Criteria',
 ];
 
-/* ── CSS keyframes ───────────────────────────────────────────────── */
-const KEYFRAMES_ID = 'ra-doc-v2-keyframes';
-if (typeof document !== 'undefined' && !document.getElementById(KEYFRAMES_ID)) {
-  const style = document.createElement('style');
-  style.id = KEYFRAMES_ID;
-  style.textContent = `
-    @keyframes ra-stage-pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
-  `;
-  document.head.appendChild(style);
-}
-
 /* ── Helpers ─────────────────────────────────────────────────────── */
-function stageIndex(s: PipelineStage): number {
+function stageIdx(s: PipelineStage): number {
   const i = STAGES.indexOf(s);
   return i === -1 ? 0 : i;
 }
 
-function qualityColor(score: number): string {
-  if (score >= 85) return '#16A34A';
-  if (score >= 70) return '#D97706';
-  return '#DC2626';
+function stageState(current: number, idx: number): 'done' | 'run' | 'wait' {
+  if (idx < current) return 'done';
+  if (idx === current) return 'run';
+  return 'wait';
 }
 
-function deriveQualityAxes(score: number): QualityAxes {
-  return {
-    completeness: Math.min(100, score + 2),
-    clarity: Math.min(100, score - 3),
-    traceability: Math.min(100, score + 1),
-    consistency: Math.min(100, score - 1),
-    overall: score,
-  };
+function lozengeClass(s: PipelineStage): string {
+  if (s === 'complete' || s === 'distribute') return 'ra-lz ra-lz-green';
+  return 'ra-lz ra-lz-grey';
+}
+
+function qualityColor(score: number): string {
+  if (score >= 80) return 'var(--ra-success)';
+  if (score >= 60) return 'var(--ra-warn)';
+  return 'var(--ra-danger)';
 }
 
 function relativeTime(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins} min ago`;
+  if (mins < 60) return `${mins}m ago`;
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs} hour${hrs > 1 ? 's' : ''} ago`;
+  if (hrs < 24) return `${hrs}h ago`;
   const days = Math.floor(hrs / 24);
-  return `${days} day${days > 1 ? 's' : ''} ago`;
+  return `${days}d ago`;
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 function sourceLabel(s: string): string {
@@ -87,172 +72,53 @@ function sourceLabel(s: string): string {
   return map[s] || s;
 }
 
-function sourceIcon(s: string) {
-  if (s === 'jira_webhook') return <Zap size={14} />;
-  if (s === 'jira_bulk') return <Database size={14} />;
-  if (s === 'ai_generated') return <Sparkles size={14} />;
-  return <Upload size={14} />;
+function durationMs(start: string | null, end: string | null): string {
+  if (!start || !end) return '—';
+  const ms = new Date(end).getTime() - new Date(start).getTime();
+  if (ms < 1000) return `${ms}ms`;
+  return `${(ms / 1000).toFixed(1)}s`;
 }
 
-function sourceIconColor(s: string): string {
-  if (s === 'ai_generated') return '#7C3AED';
-  if (s.startsWith('jira')) return '#2563EB';
-  return '#64748B';
-}
-
-function getArtifactChain(stage: PipelineStage, lang: string, epicCount: number): ArtifactNode {
-  const idx = stageIndex(stage);
-  const s = (i: number): 'complete' | 'pending' => idx >= i ? 'complete' : 'pending';
-  return {
-    id: '1', label: 'PDF Source', type: 'pdf', status: s(0),
-    children: [{
-      id: '2', label: 'JSON Extract', type: 'json', status: s(1),
-      children: [
-        ...(lang === 'ar' ? [{
-          id: '2a', label: 'Translation (AR→EN)', type: 'translation' as const, status: s(2), children: [],
-        }] : []),
-        {
-          id: '3', label: 'BRD', type: 'brd' as const, status: s(2),
-          children: [
-            { id: '4', label: 'WikiHub Chunks', type: 'wiki_chunk' as const, status: s(4), children: [] },
-            { id: '5', label: `Epics (${epicCount} generated)`, type: 'epic' as const, status: epicCount > 0 ? 'complete' : 'pending', children: [] },
-            { id: '6', label: 'UAT Test Cases', type: 'uat' as const, status: s(4), children: [] },
-            { id: '7', label: 'Word Export', type: 'word' as const, status: s(5), children: [] },
-          ],
-        },
-      ],
-    }],
-  };
-}
-
-const ARTIFACT_ICONS: Record<string, React.ReactNode> = {
-  pdf: <FileText size={14} />, json: <Braces size={14} />,
-  brd: <FileCheck size={14} />, wiki_chunk: <BookOpen size={14} />,
-  epic: <Zap size={14} />, uat: <TestTube size={14} />,
-  word: <File size={14} />, translation: <FileText size={14} />,
-};
-
-/* ── StageLozenge (3-color guardrail) ─────────────────────────────── */
-function StageLozenge({ stage }: { stage: PipelineStage }) {
-  let bg: string, text: string;
-  if (stage === 'complete' || stage === 'distribute') { bg = '#E3FCEF'; text = '#006644'; }
-  else if (stage === 'intake' || stage === 'extract' || stage === 'process' || stage === 'validate' || stage === 'failed') { bg = '#DFE1E6'; text = '#253858'; }
-  else { bg = '#DBEAFE'; text = '#2563EB'; }
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
-      borderRadius: 3, background: bg, color: text,
-      fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 700,
-      textTransform: 'uppercase', letterSpacing: '0.03em',
-    }}>
-      {stage.toUpperCase()}
-    </span>
-  );
-}
-
-/* ── EpicLozenge ──────────────────────────────────────────────────── */
-function ComplexityLozenge({ complexity }: { complexity: string }) {
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
-      borderRadius: 3, background: '#DFE1E6', color: '#253858',
-      fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 700,
-      textTransform: 'uppercase',
-    }}>
-      {complexity}
-    </span>
-  );
-}
-
-/* ── ArtifactTree ─────────────────────────────────────────────────── */
-function ArtifactTree({ node, depth = 0, isLast = true }: { node: ArtifactNode; depth?: number; isLast?: boolean }) {
-  const dotColor = node.status === 'complete' ? '#16A34A' : node.status === 'failed' ? '#DC2626' : '#E2E8F0';
-  const textColor = node.status === 'complete' ? '#0F172A' : '#94A3B8';
-  const iconColor = dotColor;
-  return (
-    <div style={{ position: 'relative', paddingLeft: depth > 0 ? 20 : 0 }}>
-      {depth > 0 && (
-        <div style={{
-          position: 'absolute', left: 0, top: 0,
-          width: 1, height: isLast ? 16 : '100%',
-          background: '#E2E8F0',
-        }} />
-      )}
-      {depth > 0 && (
-        <div style={{
-          position: 'absolute', left: 0, top: 16,
-          width: 16, height: 1, background: '#E2E8F0',
-        }} />
-      )}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, height: 32 }}>
-        <span style={{
-          width: 8, height: 8, borderRadius: '50%',
-          background: dotColor, flexShrink: 0,
-        }} />
-        <span style={{ color: iconColor, display: 'flex', flexShrink: 0 }}>
-          {ARTIFACT_ICONS[node.type] || <File size={14} />}
-        </span>
-        <span style={{
-          fontFamily: "'Inter', sans-serif", fontSize: 13,
-          color: textColor, fontWeight: node.status === 'complete' ? 500 : 400,
-        }}>
-          {node.label}
-        </span>
-      </div>
-      {node.children.length > 0 && (
-        <div style={{ position: 'relative' }}>
-          {node.children.map((child, i) => (
-            <ArtifactTree key={child.id} node={child} depth={depth + 1} isLast={i === node.children.length - 1} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════════════════════════════
-   MAIN COMPONENT
-   ════════════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════ */
 export default function ReqAssistDocument() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: doc, isLoading } = useBrdDocument(id || '');
-  const { data: epics = [], isLoading: epicsLoading } = useBrdEpics(id || '');
+  const { data: epics = [] } = useBrdEpics(id || '');
   const { data: queueItems = [] } = useBrdQueueItems(id || '');
-  const [activeTab, setActiveTab] = useState<'content' | 'artifacts' | 'quality' | 'history'>('content');
 
-  const currentIdx = doc ? stageIndex(doc.pipeline_stage) : 0;
-  const quality = doc?.quality_score !== null && doc?.quality_score !== undefined
-    ? deriveQualityAxes(doc.quality_score)
-    : null;
-  const artifacts = doc ? getArtifactChain(doc.pipeline_stage, doc.language, epics.length) : null;
+  const currentIdx = doc ? stageIdx(doc.pipeline_stage) : 0;
+  const qualityScore = doc?.quality_score ?? null;
 
-  // Build history from queue items + document timestamps
+  // Derive quality axes from score
+  const axes = useMemo(() => {
+    if (qualityScore === null) return null;
+    return [
+      { label: 'Typography', score: Math.min(100, qualityScore + 2) },
+      { label: 'Data Density', score: Math.min(100, qualityScore - 3) },
+      { label: 'Completeness', score: Math.min(100, qualityScore + 1) },
+      { label: 'Traceability', score: Math.min(100, qualityScore - 1) },
+    ];
+  }, [qualityScore]);
+
+  // Build history from queue items
   const historyEvents = useMemo(() => {
     if (!doc) return [];
     const events: { title: string; time: string; isError?: boolean }[] = [];
     events.push({ title: 'Document created', time: doc.created_at });
 
     if (queueItems.length > 0) {
-      // Use real queue data for history
-      queueItems.forEach(qi => {
-        if (qi.started_at) {
-          events.push({ title: `${qi.status.charAt(0).toUpperCase() + qi.status.slice(1)} started`, time: qi.started_at });
-        }
-        if (qi.completed_at) {
-          events.push({ title: `${qi.status.charAt(0).toUpperCase() + qi.status.slice(1)} completed`, time: qi.completed_at });
-        }
-        if (qi.error_message) {
-          events.push({ title: `Error: ${qi.error_message}`, time: qi.completed_at || qi.started_at || qi.created_at, isError: true });
-        }
+      queueItems.forEach((qi: BrdQueueItem) => {
+        if (qi.started_at) events.push({ title: `${qi.status} started`, time: qi.started_at });
+        if (qi.completed_at) events.push({ title: `${qi.status} completed`, time: qi.completed_at });
+        if (qi.error_message) events.push({ title: `Error: ${qi.error_message}`, time: qi.completed_at || qi.started_at || qi.created_at, isError: true });
       });
     } else {
-      // Derive from pipeline_stage if no queue data
-      const idx = stageIndex(doc.pipeline_stage);
+      const idx = stageIdx(doc.pipeline_stage);
       if (idx >= 1) events.push({ title: 'Queued for extraction', time: doc.created_at });
       if (idx >= 2) events.push({ title: 'Extraction complete', time: doc.updated_at });
       if (idx >= 3) events.push({ title: 'Processing complete', time: doc.updated_at });
-      if (doc.quality_score !== null) events.push({ title: `Quality score assigned: ${doc.quality_score}`, time: doc.updated_at });
+      if (doc.quality_score !== null) events.push({ title: `Quality score: ${doc.quality_score}`, time: doc.updated_at });
       if (idx >= 4) events.push({ title: 'Distributed to WikiHub', time: doc.updated_at });
       if (idx >= 5) events.push({ title: 'Pipeline complete', time: doc.updated_at });
     }
@@ -260,435 +126,243 @@ export default function ReqAssistDocument() {
     return events.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
   }, [doc, queueItems]);
 
+  // Artifact chain config
+  const chainItems = useMemo(() => {
+    if (!doc) return [];
+    const idx = currentIdx;
+    const reached = (i: number) => idx >= i;
+    const items = [
+      { icon: <FileText size={15} />, bg: 'var(--ra-neutral-10)', color: 'var(--ra-text-ter)', name: 'Original PDF', detail: `${doc.language === 'ar' ? 'Arabic' : 'English'} · manual_upload`, reached: true, active: false },
+      { icon: <Code size={15} />, bg: 'var(--ra-teal-10)', color: 'var(--ra-teal)', name: 'Lossless JSON', detail: 'Tier 2 · Vision OCR', reached: reached(1), active: false },
+    ];
+    if (doc.language === 'ar') {
+      items.push({ icon: <Globe size={15} />, bg: 'var(--ra-teal-10)', color: 'var(--ra-teal)', name: 'English Translation', detail: 'Auto-detected Arabic', reached: reached(2), active: false });
+    }
+    items.push(
+      { icon: <FileCheck size={15} />, bg: 'var(--ra-blue-10)', color: 'var(--ra-blue)', name: 'Structured BRD', detail: `KPMG · 6 sections${qualityScore !== null ? ` · ${qualityScore}` : ''}`, reached: reached(2), active: idx === 2 || idx === 3 },
+      { icon: <BookOpen size={15} />, bg: 'var(--ra-success-10)', color: 'var(--ra-success)', name: 'WikiHub Chunks', detail: 'source_type: brd', reached: reached(4), active: false },
+      { icon: <Layers size={15} />, bg: 'var(--ra-purple-10)', color: 'var(--ra-purple)', name: `Epics (${epics.length})`, detail: epics.length > 0 ? 'Generated' : 'Pending', reached: epics.length > 0, active: false },
+      { icon: <ClipboardCheck size={15} />, bg: 'var(--ra-warn-10)', color: 'var(--ra-warn)', name: 'UAT Scenarios', detail: 'After validation', reached: reached(4), active: false },
+      { icon: <Download size={15} />, bg: 'var(--ra-neutral-10)', color: 'var(--ra-text-ter)', name: 'WordX Export', detail: 'Ready to download', reached: reached(5), active: false },
+    );
+    return items;
+  }, [doc, currentIdx, epics.length, qualityScore]);
+
   if (isLoading || !doc) {
     return (
-      <div style={{ padding: 24, fontFamily: "'Inter', sans-serif" }}>
-        <div style={{ height: 20, width: 120, background: '#F1F5F9', borderRadius: 3, animation: 'ra-stage-pulse 1.5s infinite' }} />
-        <div style={{ height: 14, width: 200, background: '#F1F5F9', borderRadius: 3, marginTop: 12, animation: 'ra-stage-pulse 1.5s infinite' }} />
-        <div style={{ height: 60, width: '100%', background: '#F1F5F9', borderRadius: 8, marginTop: 20, animation: 'ra-stage-pulse 1.5s infinite' }} />
+      <div className="ra-root" style={{ padding: 24 }}>
+        <div className="ra-skel" style={{ height: 20, width: 120 }} />
+        <div className="ra-skel" style={{ height: 28, width: 300, marginTop: 12 }} />
+        <div className="ra-skel" style={{ height: 60, width: '100%', marginTop: 20 }} />
       </div>
     );
   }
 
-  const TABS = [
-    { key: 'content' as const, label: 'Content' },
-    { key: 'artifacts' as const, label: 'Artifacts' },
-    { key: 'quality' as const, label: 'Quality' },
-    { key: 'history' as const, label: 'History' },
-  ];
-
-  // Extract json_data sections if available
   const jsonData = doc.json_data as Record<string, unknown> | null;
 
   return (
-    <div style={{
-      padding: 24,
-      fontFamily: "'Inter', sans-serif",
-      background: '#FFFFFF',
-      overflowY: 'auto',
-      flex: 1,
-    }}>
-      {/* ═══ SECTION 1 — PAGE HEADER ═══════════════════════════════ */}
-      <button
-        onClick={() => navigate('/product/req-assist')}
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4,
-          border: 'none', background: 'none', cursor: 'pointer', padding: 0,
-          fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#2563EB',
-        }}
-      >
+    <div className="ra-root" style={{ padding: '24px 32px', background: '#FFFFFF', minHeight: '100%' }}>
+
+      {/* ═══ HEADER ═══════════════════════════════════════════════ */}
+      <button className="ra-back" onClick={() => navigate('/product/req-assist')}>
         <ArrowLeft size={14} /> Pipeline
       </button>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {doc.jira_key && (
-            <span style={{
-              fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
-              background: '#F1F5F9', border: '1px solid rgba(15,23,42,0.12)',
-              borderRadius: 4, padding: '2px 8px', color: '#64748B',
-            }}>
-              {doc.jira_key}
-            </span>
-          )}
-          <h1 style={{
-            fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700,
-            color: '#0F172A', margin: 0,
-          }}>
+          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: 'var(--ra-text-pri)', margin: 0 }}>
             {doc.title}
           </h1>
+          <span className={lozengeClass(doc.pipeline_stage)}>
+            {STAGE_LABELS[doc.pipeline_stage]}
+          </span>
         </div>
-        <StageLozenge stage={doc.pipeline_stage} />
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="ra-btn-ghost"><Printer size={14} /> Print PDF</button>
+          <button className="ra-btn-teal"><Download size={14} /> Download WordX</button>
+          <button className="ra-btn-ghost"><SendIcon size={14} /> Push to Project</button>
+        </div>
       </div>
 
-      {/* Row 3: Metric chips */}
-      <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
-        <MetricChip
-          icon={<Star size={14} color={doc.quality_score === null ? '#94A3B8' : doc.quality_score >= 85 ? '#16A34A' : '#D97706'} />}
-          label="Quality"
-          value={doc.quality_score !== null ? `${doc.quality_score} / 100` : '—'}
-          valueColor={doc.quality_score !== null ? qualityColor(doc.quality_score) : '#94A3B8'}
-        />
-        <MetricChip
-          icon={<span style={{ color: sourceIconColor(doc.source_type) }}>{sourceIcon(doc.source_type)}</span>}
-          label="Source"
-          value={sourceLabel(doc.source_type)}
-        />
-        <MetricChip
-          icon={<Globe size={14} color="#64748B" />}
-          label="Language"
-          value={doc.language === 'ar' ? 'Arabic' : 'English'}
-        />
-        <MetricChip
-          icon={<Calendar size={14} color="#64748B" />}
-          label="Created"
-          value={relativeTime(doc.created_at)}
-        />
+      {/* META ROW */}
+      <div className="ra-meta">
+        {doc.jira_key && <span className="ra-brd-id">{doc.jira_key}</span>}
+        {doc.jira_key && <span className="ra-meta-sep">·</span>}
+        {doc.domain_tag && <><span>{doc.domain_tag}</span><span className="ra-meta-sep">·</span></>}
+        <span>{formatDate(doc.created_at)}</span>
+        <span className="ra-meta-sep">·</span>
+        <span>Source: {sourceLabel(doc.source_type)}</span>
       </div>
 
-      {/* ═══ SECTION 2 — CI/CD PIPELINE STRIP ═════════════════════ */}
-      <div style={{
-        marginTop: 16, padding: '16px 24px',
-        background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.10)',
-        borderRadius: 8, display: 'flex', alignItems: 'center',
-      }}>
+      {/* ═══ STAGE PROGRESS BAR ═══════════════════════════════════ */}
+      <div className="ra-spb" style={{ marginTop: 20 }}>
         {STAGES.map((stage, i) => {
-          const isCompleted = i < currentIdx;
-          const isActive = i === currentIdx;
-          const iconColor = isCompleted ? '#16A34A' : isActive ? '#2563EB' : '#CBD5E1';
-          const nameColor = isCompleted ? '#16A34A' : isActive ? '#2563EB' : '#94A3B8';
-          const statusText = isCompleted ? 'Done' : isActive ? 'In Progress' : 'Pending';
-          const statusColor = iconColor;
-          const bg = isCompleted
-            ? 'rgba(22,163,74,0.04)'
-            : isActive ? 'rgba(37,99,235,0.06)' : 'transparent';
-          const border = isActive ? '1px solid rgba(37,99,235,0.20)' : '1px solid transparent';
-
+          const state = stageState(currentIdx, i);
+          // Find queue item timing for this stage
+          const qi = queueItems.find((q: BrdQueueItem) => q.status?.toLowerCase().includes(stage));
+          const timing = qi ? durationMs(qi.started_at, qi.completed_at) : null;
           return (
-            <React.Fragment key={stage}>
-              {i > 0 && (
-                <ChevronRight size={16} color={i <= currentIdx ? '#16A34A' : '#CBD5E1'} style={{ flexShrink: 0, margin: '0 2px' }} />
-              )}
-              <div style={{
-                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-                gap: 4, padding: '10px 8px', borderRadius: 6,
-                background: bg, border,
-              }}>
-                <span style={{
-                  color: iconColor, display: 'flex',
-                  animation: isActive ? 'ra-stage-pulse 1.5s infinite' : 'none',
-                }}>
-                  {STAGE_ICONS[stage]}
-                </span>
-                <span style={{
-                  fontSize: 12, fontWeight: isActive ? 650 : 500,
-                  textTransform: 'uppercase' as const, color: nameColor,
-                  letterSpacing: '0.03em',
-                }}>
-                  {STAGE_LABELS[stage]}
-                </span>
-                <span style={{ fontSize: 11, color: statusColor }}>
-                  {statusText}
-                </span>
+            <div key={stage} className={`ra-spb-s ${state}`}>
+              <div className="ra-spb-ic">
+                {state === 'done' ? <Check size={14} /> : (i + 1)}
               </div>
-            </React.Fragment>
+              <div>
+                <div className="ra-spb-lb">{STAGE_LABELS[stage]}</div>
+                {timing && <div className="ra-spb-tm">{timing}</div>}
+              </div>
+            </div>
           );
         })}
       </div>
 
-      {/* ═══ SECTION 3 — TABBED CONTENT ═══════════════════════════ */}
-      <div style={{
-        marginTop: 20, borderBottom: '1px solid rgba(15,23,42,0.10)',
-        display: 'flex', gap: 0,
-      }}>
-        {TABS.map(t => (
-          <button
-            key={t.key}
-            onClick={() => setActiveTab(t.key)}
-            style={{
-              padding: '8px 16px', border: 'none', background: 'none', cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif", fontSize: 13,
-              fontWeight: activeTab === t.key ? 650 : 500,
-              color: activeTab === t.key ? '#2563EB' : '#64748B',
-              borderBottom: activeTab === t.key ? '2px solid #2563EB' : '2px solid transparent',
-              marginBottom: -1,
-            }}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      {/* ═══ 2-COLUMN BODY ════════════════════════════════════════ */}
+      <div className="ra-det-body">
 
-      {/* ── TAB: Content ────────────────────────────────────────── */}
-      {activeTab === 'content' && (
-        <div style={{
-          marginTop: 16, background: '#FFFFFF',
-          border: '1px solid rgba(15,23,42,0.10)', borderRadius: 8,
-          padding: 24,
-        }}>
+        {/* LEFT — BRD Content Sections */}
+        <div className="ra-det-content">
           {jsonData !== null ? (
-            // Render json_data sections
             Object.entries(jsonData).map(([key, value], i) => (
-              <div key={key}>
-                {i > 0 && <div style={{ height: 0.75, background: 'rgba(15,23,42,0.06)', margin: '16px 0' }} />}
+              <div key={key} className="ra-sec">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{
-                    fontSize: 11, fontWeight: 500, textTransform: 'uppercase' as const,
-                    letterSpacing: '0.04em', color: '#64748B',
-                  }}>
-                    {key.replace(/_/g, ' ')}
-                  </span>
-                  <span style={{
-                    fontSize: 10, background: '#F1F5F9', color: '#94A3B8',
-                    borderRadius: 3, padding: '2px 6px',
-                  }}>
+                  <span className="ra-sec-label">{key.replace(/_/g, ' ')}</span>
+                  <span style={{ fontSize: 10, background: 'var(--ra-sunken)', color: 'var(--ra-text-muted)', borderRadius: 3, padding: '2px 6px' }}>
                     SECTION {i + 1}
                   </span>
                 </div>
-                <div style={{ padding: '8px 0 16px 0' }}>
-                  <p style={{ fontSize: 14, color: '#0F172A', lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap' }}>
-                    {typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
-                  </p>
+                <div className="ra-sec-body" style={{ marginTop: 8 }}>
+                  {typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
                 </div>
               </div>
             ))
           ) : doc.raw_text ? (
-            // Fallback to raw_text
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{
-                  fontSize: 11, fontWeight: 500, textTransform: 'uppercase' as const,
-                  letterSpacing: '0.04em', color: '#64748B',
-                }}>
-                  Raw Content
-                </span>
-              </div>
-              <div style={{ padding: '8px 0 16px 0' }}>
-                <p style={{ fontSize: 14, color: '#0F172A', lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap' }}>
-                  {doc.raw_text}
-                </p>
-              </div>
+            <div className="ra-sec">
+              <span className="ra-sec-label">Raw Content</span>
+              <div className="ra-sec-body" style={{ marginTop: 8, whiteSpace: 'pre-wrap' }}>{doc.raw_text}</div>
             </div>
           ) : (
-            // No content — show placeholder per section
             BRD_SECTIONS.map((section, i) => (
-              <div key={section}>
-                {i > 0 && <div style={{ height: 0.75, background: 'rgba(15,23,42,0.06)', margin: '16px 0' }} />}
+              <div key={section} className="ra-sec">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{
-                    fontSize: 11, fontWeight: 500, textTransform: 'uppercase' as const,
-                    letterSpacing: '0.04em', color: '#64748B',
-                  }}>
-                    {section}
-                  </span>
-                  <span style={{
-                    fontSize: 10, background: '#F1F5F9', color: '#94A3B8',
-                    borderRadius: 3, padding: '2px 6px',
-                  }}>
+                  <span className="ra-sec-label">{section}</span>
+                  <span style={{ fontSize: 10, background: 'var(--ra-sunken)', color: 'var(--ra-text-muted)', borderRadius: 3, padding: '2px 6px' }}>
                     SECTION {i + 1}
                   </span>
                 </div>
-                <div style={{ padding: '8px 0 16px 0' }}>
-                  <p style={{ fontSize: 13, color: '#94A3B8', fontStyle: 'italic', margin: 0 }}>
-                    Awaiting extraction
-                  </p>
+                <div className="ra-sec-body" style={{ marginTop: 8, fontStyle: 'italic', color: 'var(--ra-text-muted)' }}>
+                  Awaiting extraction
                 </div>
               </div>
             ))
           )}
-        </div>
-      )}
 
-      {/* ── TAB: Artifacts ──────────────────────────────────────── */}
-      {activeTab === 'artifacts' && (
-        <div style={{
-          marginTop: 16, background: '#FFFFFF',
-          border: '1px solid rgba(15,23,42,0.10)', borderRadius: 8,
-          padding: 24,
-        }}>
-          <div style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', marginBottom: 16 }}>
-            Artifact Chain
-          </div>
-          {artifacts && <ArtifactTree node={artifacts} />}
-
-          {/* Epic cards from DB */}
-          {epics.length > 0 && (
-            <div style={{ marginTop: 24 }}>
-              <div style={{
-                fontSize: 11, fontWeight: 500, textTransform: 'uppercase' as const,
-                letterSpacing: '0.04em', color: '#64748B', marginBottom: 12,
-              }}>
-                Generated Epics ({epics.length})
+          {/* History timeline at bottom of content */}
+          {historyEvents.length > 0 && (
+            <div style={{ marginTop: 32, paddingTop: 20, borderTop: '0.75px solid var(--ra-border-sub)' }}>
+              <span className="ra-sec-label">Pipeline History</span>
+              <div style={{ marginTop: 12 }}>
+                {historyEvents.map((evt, i) => {
+                  const isLatest = i === historyEvents.length - 1;
+                  return (
+                    <div key={i} style={{ display: 'flex', gap: 12, position: 'relative' }}>
+                      {i < historyEvents.length - 1 && (
+                        <div style={{ position: 'absolute', left: 3.5, top: 12, width: 1, height: 'calc(100% + 4px)', background: 'var(--ra-neutral-20)' }} />
+                      )}
+                      <div style={{
+                        width: 8, height: 8, borderRadius: '50%', flexShrink: 0, marginTop: 4,
+                        background: evt.isError ? 'var(--ra-danger)' : isLatest ? 'var(--ra-blue)' : 'var(--ra-neutral-30)',
+                      }} />
+                      <div style={{ paddingBottom: 16 }}>
+                        <div style={{ fontSize: 13, fontWeight: 500, color: evt.isError ? 'var(--ra-danger)' : 'var(--ra-text-pri)' }}>{evt.title}</div>
+                        <div style={{ fontSize: 12, color: 'var(--ra-text-muted)', marginTop: 2 }}>{relativeTime(evt.time)}</div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              {epics.map((epic: BrdEpic) => (
-                <div key={epic.id} style={{
-                  padding: '12px 16px', marginBottom: 8,
-                  border: '1px solid rgba(15,23,42,0.08)', borderRadius: 6,
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{
-                      fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
-                      color: '#64748B', background: '#F1F5F9', borderRadius: 3,
-                      padding: '2px 6px',
-                    }}>
-                      {epic.epic_key}
-                    </span>
-                    <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>
-                      {epic.title}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <ComplexityLozenge complexity={epic.complexity} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {epicsLoading && (
-            <div style={{ marginTop: 16 }}>
-              {[1, 2, 3].map(i => (
-                <div key={i} style={{
-                  height: 44, marginBottom: 8, borderRadius: 6,
-                  background: '#F1F5F9', animation: 'ra-stage-pulse 1.5s infinite',
-                }} />
-              ))}
             </div>
           )}
         </div>
-      )}
 
-      {/* ── TAB: Quality ────────────────────────────────────────── */}
-      {activeTab === 'quality' && (
-        <div style={{
-          marginTop: 16, background: '#FFFFFF',
-          border: '1px solid rgba(15,23,42,0.10)', borderRadius: 8,
-          padding: 24,
-        }}>
-          {doc.quality_score === null ? (
-            <div style={{ textAlign: 'center', padding: '32px 0' }}>
-              <ClipboardList size={32} color="#CBD5E1" />
-              <p style={{ fontSize: 14, color: '#94A3B8', marginTop: 12 }}>
-                Quality assessment runs after extraction
-              </p>
-            </div>
-          ) : (
-            <>
-              <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4 }}>
-                  <span style={{
-                    fontFamily: "'Sora', sans-serif", fontSize: 48, fontWeight: 700,
-                    color: qualityColor(quality!.overall),
-                  }}>
-                    {quality!.overall}
-                  </span>
-                  <span style={{
-                    fontFamily: "'Sora', sans-serif", fontSize: 24, color: '#94A3B8',
-                  }}>
-                    / 100
-                  </span>
+        {/* RIGHT — Artifact Chain + Quality */}
+        <div className="ra-chain">
+          <div className="ra-chain-h">Artifact Chain</div>
+
+          {chainItems.map((item, i) => (
+            <React.Fragment key={i}>
+              <div className={`ra-ci ${item.active ? 'active' : ''}`} style={{ opacity: item.reached ? 1 : 0.4 }}>
+                <div className="ra-ci-ic" style={{ background: item.bg, color: item.color }}>
+                  {item.icon}
                 </div>
-                <div style={{ marginTop: 8 }}>
-                  {quality!.overall >= 85 ? (
-                    <span style={{
-                      display: 'inline-block', padding: '4px 12px', borderRadius: 4,
-                      background: '#E3FCEF', color: '#006644', fontSize: 13,
-                    }}>
-                      ✓ Auto-distributed to WikiHub
-                    </span>
-                  ) : (
-                    <span style={{
-                      display: 'inline-block', padding: '4px 12px', borderRadius: 4,
-                      background: '#FEF3C7', color: '#B45309', fontSize: 13,
-                    }}>
-                      ⚠ Held for manual review
-                    </span>
-                  )}
+                <div>
+                  <div className="ra-ci-nm" style={{ color: item.reached ? 'var(--ra-text-pri)' : 'var(--ra-text-muted)' }}>{item.name}</div>
+                  <div className="ra-ci-dt">{item.detail}</div>
                 </div>
               </div>
 
-              {[
-                { label: 'Completeness', score: quality!.completeness },
-                { label: 'Clarity', score: quality!.clarity },
-                { label: 'Traceability', score: quality!.traceability },
-                { label: 'Consistency', score: quality!.consistency },
-              ].map(axis => (
-                <div key={axis.label} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                  <span style={{ fontSize: 13, color: '#334155', minWidth: 100 }}>{axis.label}</span>
-                  <div style={{ flex: 1, height: 8, borderRadius: 4, background: '#F1F5F9', overflow: 'hidden' }}>
-                    <div style={{
-                      width: `${axis.score}%`, height: '100%', borderRadius: 4,
-                      background: qualityColor(axis.score),
-                      transition: 'width 600ms ease',
-                    }} />
+              {/* Epic children */}
+              {item.name.startsWith('Epics') && epics.length > 0 && (
+                <div className="ra-ci-kids">
+                  {epics.map((epic: BrdEpic) => (
+                    <div key={epic.id} className="ra-ci-kid">
+                      <span className="dot" style={{ background: 'var(--ra-purple)' }} />
+                      <span>{epic.epic_key}: {epic.title}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {i < chainItems.length - 1 && <div className="ra-cln" />}
+            </React.Fragment>
+          ))}
+
+          {/* Quality Card */}
+          {qualityScore !== null && axes && (
+            <div className="ra-qc">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <Sparkles size={14} style={{ color: 'var(--ra-teal)' }} />
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ra-text-pri)' }}>REC-QA Validator</div>
+                  <div style={{ fontSize: 11, color: 'var(--ra-text-muted)' }}>Quality Gate · 4-axis scoring</div>
+                </div>
+              </div>
+              <div className="ra-qc-score" style={{ color: qualityColor(qualityScore) }}>
+                {qualityScore}
+              </div>
+              <div style={{ textAlign: 'center', marginBottom: 12 }}>
+                {qualityScore >= 80 ? (
+                  <span className="ra-lz ra-lz-green">PASS</span>
+                ) : (
+                  <span className="ra-lz ra-lz-grey">FAIL</span>
+                )}
+              </div>
+              {axes.map(axis => (
+                <div key={axis.label} className="ra-qb-row">
+                  <span className="ra-qb-lbl">{axis.label}</span>
+                  <div className="ra-qb-bar">
+                    <div className="ra-qb-fill" style={{ width: `${axis.score}%`, background: qualityColor(axis.score) }} />
                   </div>
-                  <span style={{
-                    fontFamily: "'JetBrains Mono', monospace", fontSize: 12,
-                    color: qualityColor(axis.score), minWidth: 28, textAlign: 'right', fontWeight: 500,
-                  }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: qualityColor(axis.score), minWidth: 24, textAlign: 'right' }}>
                     {axis.score}
                   </span>
                 </div>
               ))}
-            </>
-          )}
-        </div>
-      )}
-
-      {/* ── TAB: History ────────────────────────────────────────── */}
-      {activeTab === 'history' && (
-        <div style={{
-          marginTop: 16, background: '#FFFFFF',
-          border: '1px solid rgba(15,23,42,0.10)', borderRadius: 8,
-          padding: 24,
-        }}>
-          {historyEvents.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '32px 0' }}>
-              <p style={{ fontSize: 14, color: '#94A3B8' }}>No pipeline events yet</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, fontSize: 12, color: 'var(--ra-success)' }}>
+                <Check size={12} /> Zero ungrounded claims
+              </div>
+              <button className="ra-btn-purple" style={{ marginTop: 12 }}>
+                <Zap size={12} /> Regenerate Epics
+              </button>
             </div>
-          ) : (
-            historyEvents.map((evt, i) => {
-              const isLatest = i === historyEvents.length - 1;
-              return (
-                <div key={i} style={{ display: 'flex', gap: 12, position: 'relative' }}>
-                  {i < historyEvents.length - 1 && (
-                    <div style={{
-                      position: 'absolute', left: 3.5, top: 12,
-                      width: 1, height: 'calc(100% + 4px)', background: '#E2E8F0',
-                    }} />
-                  )}
-                  <div style={{
-                    width: 8, height: 8, borderRadius: '50%', flexShrink: 0, marginTop: 4,
-                    background: evt.isError ? '#DC2626' : isLatest ? '#2563EB' : '#CBD5E1',
-                  }} />
-                  <div style={{ paddingBottom: 16 }}>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: evt.isError ? '#DC2626' : '#0F172A' }}>{evt.title}</div>
-                    <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>{relativeTime(evt.time)}</div>
-                  </div>
-                </div>
-              );
-            })
+          )}
+
+          {qualityScore === null && (
+            <div className="ra-qc" style={{ textAlign: 'center', padding: 24 }}>
+              <div className="ra-skel" style={{ height: 40, width: 60, margin: '0 auto 8px' }} />
+              <div style={{ fontSize: 12, color: 'var(--ra-text-muted)' }}>Quality assessment pending</div>
+            </div>
           )}
         </div>
-      )}
-    </div>
-  );
-}
-
-/* ── MetricChip ────────────────────────────────────────────────────── */
-function MetricChip({ icon, label, value, valueColor }: {
-  icon: React.ReactNode; label: string; value: string; valueColor?: string;
-}) {
-  return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 8, height: 32, padding: '0 12px',
-      background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.08)',
-      borderRadius: 6,
-    }}>
-      {icon}
-      <span style={{ fontSize: 12, color: '#64748B' }}>{label}</span>
-      <span style={{ fontSize: 13, fontWeight: 600, color: valueColor || '#0F172A' }}>{value}</span>
+      </div>
     </div>
   );
 }

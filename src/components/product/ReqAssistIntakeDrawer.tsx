@@ -1,18 +1,18 @@
 /**
- * ReqAssistIntakeDrawer — Intake Drawer (STAGE D: DB WIRED)
- * Right-side overlay, 480px, 3 tabs
- * All white background, custom dropdowns, enterprise labels
- * Submit actions INSERT into brd_documents + brd_processing_queue
+ * ReqAssistIntakeDrawer — 560px right-slide drawer, 3 tabs
+ * CORRECTIVE BUILD — ra-* ring-fenced CSS
  */
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Upload, FileText, Link, Sparkles, ChevronDown } from 'lucide-react';
-import { useDomainTags, useCreateBrdDocument, useEnqueueDocument } from '@/hooks/useReqAssist';
+import { X, Upload, FileText, Link, Sparkles, Star, ChevronDown } from 'lucide-react';
+import { useCreateBrdDocument, useEnqueueDocument, useBrdDocuments } from '@/hooks/useReqAssist';
 import { toast } from 'sonner';
 import type { IntakeTab, SourceType } from '@/types/reqAssist';
+import '@/styles/ra-styles.css';
 
 interface Props {
   open: boolean;
   onClose: () => void;
+  initialTab?: IntakeTab;
 }
 
 const TABS: { key: IntakeTab; label: string; icon: React.ReactNode }[] = [
@@ -21,32 +21,40 @@ const TABS: { key: IntakeTab; label: string; icon: React.ReactNode }[] = [
   { key: 'import_jira', label: 'Import from Jira', icon: <Link size={14} /> },
 ];
 
-const LANGUAGES = ['English', 'Arabic'];
+const DOMAIN_OPTIONS = [
+  'Auto-detect', 'Industrial Licensing', 'Customs & Trade',
+  'Chemical Permits', 'Environmental Compliance', 'Mining & Mineral Resources',
+];
 
-/* ═══════════════════════════════════════════════════════════════════
-   CUSTOM DROPDOWN (replaces banned native <select>)
-   ═══════════════════════════════════════════════════════════════════ */
-function CustomDropdown({
-  value,
-  options,
-  placeholder,
-  onChange,
-}: {
-  value: string;
-  options: string[];
-  placeholder: string;
-  onChange: (v: string) => void;
+const METHODOLOGIES = [
+  { key: 'kpmg', name: 'KPMG', sub: '16 sections' },
+  { key: 'mckinsey', name: 'McKinsey', sub: '14 sections' },
+  { key: 'deloitte', name: 'Deloitte', sub: '15 sections' },
+];
+
+const JIRA_PROJECTS = [
+  'SEN — Senaei Platform',
+  'MDT — Ministry Digital Transformation',
+  'SIMP — SIMP Project',
+];
+
+const IMPORT_MODES = [
+  { key: 'full', name: 'Full Sync', sub: 'All PDFs' },
+  { key: 'delta', name: 'Delta Only', sub: 'New since last' },
+  { key: 'single', name: 'Single Issue', sub: 'By Jira key' },
+];
+
+/* ═══ Custom Dropdown ═══ */
+function RaDropdown({ value, options, placeholder, onChange }: {
+  value: string; options: string[]; placeholder: string; onChange: (v: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
   }, [open]);
 
   return (
@@ -56,503 +64,313 @@ function CustomDropdown({
         onClick={() => setOpen(!open)}
         style={{
           width: '100%', height: 36, borderRadius: 4,
-          border: '1px solid rgba(15,23,42,0.14)',
-          background: '#FFFFFF', padding: '0 12px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          fontFamily: "'Inter', sans-serif", fontSize: 13,
-          color: value ? '#0F172A' : '#94A3B8',
-          cursor: 'pointer', transition: 'border-color 80ms',
-          outline: 'none',
+          border: '1px solid var(--ra-border-def)', background: '#FFFFFF',
+          padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          fontSize: 13, color: value ? 'var(--ra-text-pri)' : 'var(--ra-text-muted)', cursor: 'pointer',
         }}
-        onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
-        onBlur={e => { if (!open) e.currentTarget.style.borderColor = 'rgba(15,23,42,0.14)'; }}
       >
         <span>{value || placeholder}</span>
-        <ChevronDown size={16} style={{ color: '#94A3B8', flexShrink: 0 }} />
+        <ChevronDown size={14} style={{ color: 'var(--ra-text-muted)' }} />
       </button>
-
       {open && (
         <div style={{
-          position: 'absolute', top: '100%', left: 0, right: 0,
-          marginTop: 4, zIndex: 50,
-          background: '#FFFFFF',
-          border: '1px solid rgba(15,23,42,0.12)',
-          borderRadius: 6,
-          boxShadow: '0 4px 6px rgba(0,0,0,0.07)',
-          maxHeight: 200, overflowY: 'auto',
-          padding: '4px 0',
+          position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, zIndex: 50,
+          background: '#FFFFFF', border: '1px solid var(--ra-border-def)', borderRadius: 6,
+          boxShadow: '0 4px 6px rgba(0,0,0,0.07)', maxHeight: 200, overflowY: 'auto', padding: '4px 0',
         }}>
-          {options.map(opt => (
-            <div
-              key={opt}
-              onClick={() => { onChange(opt); setOpen(false); }}
+          {options.map(o => (
+            <div key={o} onClick={() => { onChange(o); setOpen(false); }}
               style={{
-                height: 32, padding: '0 12px',
-                display: 'flex', alignItems: 'center',
-                fontFamily: "'Inter', sans-serif", fontSize: 13,
-                color: opt === value ? '#2563EB' : '#0F172A',
-                background: opt === value ? 'rgba(37,99,235,0.06)' : 'transparent',
-                cursor: 'pointer', transition: 'background 80ms',
+                height: 32, padding: '0 12px', display: 'flex', alignItems: 'center',
+                fontSize: 13, color: o === value ? 'var(--ra-blue)' : 'var(--ra-text-pri)',
+                background: o === value ? 'var(--ra-selected)' : 'transparent', cursor: 'pointer',
               }}
-              onMouseEnter={e => {
-                if (opt !== value) e.currentTarget.style.background = 'rgba(15,23,42,0.04)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = opt === value ? 'rgba(37,99,235,0.06)' : 'transparent';
-              }}
+              onMouseEnter={e => { if (o !== value) (e.currentTarget.style.background = 'var(--ra-hover)'); }}
+              onMouseLeave={e => { e.currentTarget.style.background = o === value ? 'var(--ra-selected)' : 'transparent'; }}
             >
-              {opt}
+              {o}
             </div>
           ))}
-          {options.length === 0 && (
-            <div style={{
-              height: 32, padding: '0 12px',
-              display: 'flex', alignItems: 'center',
-              fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#94A3B8',
-            }}>
-              No options available
-            </div>
-          )}
         </div>
       )}
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   MAIN DRAWER
-   ═══════════════════════════════════════════════════════════════════ */
-export default function ReqAssistIntakeDrawer({ open, onClose }: Props) {
-  const [tab, setTab] = useState<IntakeTab>('upload_pdf');
-  const [dragOver, setDragOver] = useState(false);
+/* ═══ MAIN DRAWER ═══ */
+export default function ReqAssistIntakeDrawer({ open, onClose, initialTab }: Props) {
+  const [tab, setTab] = useState<IntakeTab>(initialTab || 'upload_pdf');
+
+  useEffect(() => {
+    if (initialTab) setTab(initialTab);
+  }, [initialTab]);
 
   useEffect(() => {
     if (!open) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
+    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', h);
+    return () => document.removeEventListener('keydown', h);
   }, [open, onClose]);
-
-  if (!open) return null;
 
   return (
     <>
-      <div
-        onClick={onClose}
-        style={{
-          position: 'fixed', inset: 0,
-          background: 'rgba(0,0,0,0.25)', zIndex: 399,
-        }}
-      />
-      <div
-        role="dialog"
-        aria-label="New Document"
-        style={{
-          position: 'fixed', top: 48, right: 0, bottom: 0,
-          width: 480, background: '#FFFFFF',
-          borderLeft: '1px solid rgba(15,23,42,0.12)',
-          boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
-          zIndex: 400,
-          display: 'flex', flexDirection: 'column',
-        }}
-      >
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          height: 52, padding: '0 20px',
-          borderBottom: '1px solid rgba(15,23,42,0.08)',
-          flexShrink: 0,
-        }}>
-          <span style={{
-            fontFamily: "'Sora', sans-serif", fontSize: 16, fontWeight: 600, color: '#0F172A',
-          }}>
-            New Document
-          </span>
-          <button
-            onClick={onClose}
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: 32, height: 32, border: 'none', background: 'transparent',
-              cursor: 'pointer', borderRadius: 4,
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            <X size={18} style={{ color: '#64748B' }} />
+      <div className={`ra-dro ${open ? 'show' : ''}`} onClick={onClose} />
+      <div className={`ra-dr ${open ? 'show' : ''}`}>
+        <div className="ra-dr-hd">
+          <h2>New Document</h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+            <X size={18} style={{ color: 'var(--ra-text-ter)' }} />
           </button>
         </div>
-
-        <div style={{
-          display: 'flex',
-          borderBottom: '1px solid rgba(15,23,42,0.08)',
-          flexShrink: 0,
-        }}>
-          {TABS.map(t => {
-            const isActive = tab === t.key;
-            return (
-              <button
-                key={t.key}
-                onClick={() => setTab(t.key)}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  height: 40, padding: '0 14px', border: 'none', background: 'transparent',
-                  cursor: 'pointer',
-                  fontFamily: "'Inter', sans-serif", fontSize: 13,
-                  fontWeight: isActive ? 650 : 500,
-                  color: isActive ? '#2563EB' : '#64748B',
-                  borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
-                  marginBottom: -1, transition: 'all 80ms',
-                }}
-              >
-                {t.icon}{t.label}
-              </button>
-            );
-          })}
+        <div className="ra-dr-tabs">
+          {TABS.map(t => (
+            <button key={t.key} className={`ra-drt ${tab === t.key ? 'active' : ''}`} onClick={() => setTab(t.key)}>
+              {t.icon} {t.label}
+            </button>
+          ))}
         </div>
-
-        <div style={{ flex: 1, overflowY: 'auto', padding: 20, background: '#FFFFFF' }}>
-          {tab === 'upload_pdf' && <UploadPdfTab dragOver={dragOver} setDragOver={setDragOver} onClose={onClose} />}
-          {tab === 'generate_text' && <GenerateTextTab onClose={onClose} />}
-          {tab === 'import_jira' && <ImportJiraTab onClose={onClose} />}
+        <div className="ra-dr-bd">
+          {tab === 'upload_pdf' && <UploadTab onClose={onClose} />}
+          {tab === 'generate_text' && <GenerateTab onClose={onClose} />}
+          {tab === 'import_jira' && <JiraTab onClose={onClose} />}
         </div>
       </div>
     </>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   Tab 1: Upload PDF
-   ═══════════════════════════════════════════════════════════════════ */
-function UploadPdfTab({ dragOver, setDragOver, onClose }: { dragOver: boolean; setDragOver: (v: boolean) => void; onClose: () => void }) {
-  const [domainTag, setDomainTag] = useState('');
-  const [language, setLanguage] = useState('English');
+/* ═══ TAB 1: Upload PDF ═══ */
+function UploadTab({ onClose }: { onClose: () => void }) {
   const [title, setTitle] = useState('');
-  const { data: domainTags = [] } = useDomainTags();
-  const createDoc = useCreateBrdDocument();
-  const enqueue = useEnqueueDocument();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const domainOptions = Array.isArray(domainTags)
-    ? domainTags.map((t: any) => typeof t === 'string' ? t : t.domain_tag || t.name || String(t))
-    : [];
-
-  const handleSubmit = async () => {
-    if (!title.trim()) {
-      toast.error('Please enter a document title');
-      return;
-    }
-    try {
-      const doc = await createDoc.mutateAsync({
-        title: title.trim(),
-        source_type: 'manual_upload' as SourceType,
-        pipeline_stage: 'intake',
-        language: language === 'Arabic' ? 'ar' : 'en',
-        domain_tag: domainTag || null,
-        jira_key: null,
-        original_url: null,
-        content_hash: null,
-        raw_text: null,
-        json_data: null,
-        extraction_tier: null,
-        quality_score: null,
-        methodology: null,
-        processed_at: null,
-      } as any);
-      await enqueue.mutateAsync(doc.id);
-      toast.success('BRD queued for processing');
-      onClose();
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to create document');
-    }
-  };
-
-  return (
-    <div>
-      <div
-        onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={e => { e.preventDefault(); setDragOver(false); }}
-        onClick={() => fileInputRef.current?.click()}
-        style={{
-          border: dragOver ? '2px dashed #2563EB' : '2px dashed rgba(15,23,42,0.15)',
-          borderRadius: 8, padding: 36, textAlign: 'center',
-          background: dragOver ? 'rgba(37,99,235,0.02)' : 'transparent',
-          transition: 'all 150ms', cursor: 'pointer',
-        }}
-        onMouseEnter={e => {
-          if (!dragOver) {
-            e.currentTarget.style.borderColor = '#2563EB';
-            e.currentTarget.style.background = 'rgba(37,99,235,0.02)';
-          }
-        }}
-        onMouseLeave={e => {
-          if (!dragOver) {
-            e.currentTarget.style.borderColor = 'rgba(15,23,42,0.15)';
-            e.currentTarget.style.background = 'transparent';
-          }
-        }}
-      >
-        <Upload size={32} style={{ color: '#94A3B8', marginBottom: 12 }} />
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
-          Drop a PDF here or browse
-        </div>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: '#94A3B8', marginTop: 4 }}>
-          Supports BRD documents up to 50MB
-        </div>
-        <div
-          onClick={e => { e.stopPropagation(); fileInputRef.current?.click(); }}
-          style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#2563EB', cursor: 'pointer', marginTop: 8, fontWeight: 500 }}
-        >
-          Browse files
-        </div>
-        <input ref={fileInputRef} type="file" accept=".pdf" style={{ display: 'none' }} />
-      </div>
-
-      <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <FieldLabel label="Document Title">
-          <input
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            placeholder="Enter document title..."
-            style={{
-              width: '100%', height: 36, borderRadius: 4, padding: '0 12px',
-              border: '1px solid rgba(15,23,42,0.14)', background: '#FFFFFF',
-              fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#0F172A', outline: 'none',
-            }}
-            onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
-            onBlur={e => (e.currentTarget.style.borderColor = 'rgba(15,23,42,0.14)')}
-          />
-        </FieldLabel>
-        <FieldLabel label="Domain Tag">
-          <CustomDropdown value={domainTag} options={domainOptions} placeholder="Select domain..." onChange={setDomainTag} />
-        </FieldLabel>
-        <FieldLabel label="Language">
-          <CustomDropdown value={language} options={LANGUAGES} placeholder="Select language..." onChange={setLanguage} />
-        </FieldLabel>
-      </div>
-
-      <PrimaryButton label={createDoc.isPending ? 'Creating...' : 'Upload & Process'} onClick={handleSubmit} disabled={createDoc.isPending} style={{ marginTop: 20 }} />
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   Tab 2: Generate from Text
-   ═══════════════════════════════════════════════════════════════════ */
-function GenerateTextTab({ onClose }: { onClose: () => void }) {
   const [domain, setDomain] = useState('');
+  const [jiraKey, setJiraKey] = useState('');
+  const [dragOver, setDragOver] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const createDoc = useCreateBrdDocument();
+  const enqueue = useEnqueueDocument();
+
+  const handleSubmit = async () => {
+    if (!title.trim()) { toast.error('Please enter a document title'); return; }
+    try {
+      const doc = await createDoc.mutateAsync({
+        title: title.trim(), source_type: 'manual_upload' as SourceType,
+        pipeline_stage: 'intake', language: 'en',
+        domain_tag: domain === 'Auto-detect' ? null : domain || null,
+        jira_key: jiraKey || null, original_url: null, content_hash: null,
+        raw_text: null, json_data: null, extraction_tier: null,
+        quality_score: null, methodology: null, processed_at: null,
+      } as any);
+      await enqueue.mutateAsync(doc.id);
+      toast.success('BRD queued for processing');
+      onClose();
+    } catch (err: any) { toast.error(err.message || 'Failed to create document'); }
+  };
+
+  return (
+    <div>
+      <FieldLabel label="Document Title" hint="Optional — auto-detected from PDF">
+        <input className="ra-input" value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter document title..." />
+      </FieldLabel>
+
+      <FieldLabel label="Upload Document" style={{ marginTop: 16 }}>
+        <div
+          className="ra-dz"
+          onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={e => { e.preventDefault(); setDragOver(false); }}
+          onClick={() => fileRef.current?.click()}
+          style={dragOver ? { borderColor: 'var(--ra-blue)', background: 'var(--ra-blue-5)' } : {}}
+        >
+          <Upload size={28} style={{ color: 'var(--ra-text-muted)', marginBottom: 8 }} />
+          <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ra-text-pri)' }}>Drop PDF or DOCX here, or click to browse</div>
+          <div style={{ fontSize: 12, color: 'var(--ra-text-muted)', marginTop: 4 }}>Arabic + English · Max 100 pages · Two-tier extraction</div>
+          <input ref={fileRef} type="file" accept=".pdf,.docx" style={{ display: 'none' }} />
+        </div>
+      </FieldLabel>
+
+      <FieldLabel label="Domain Tag" hint="Used for WikiHub categorization and RAG filtering" style={{ marginTop: 16 }}>
+        <RaDropdown value={domain} options={DOMAIN_OPTIONS} placeholder="Select domain..." onChange={setDomain} />
+      </FieldLabel>
+
+      <FieldLabel label="Jira Key (optional)" style={{ marginTop: 16 }}>
+        <input className="ra-input" value={jiraKey} onChange={e => setJiraKey(e.target.value)} placeholder="SEN-BRD009" />
+      </FieldLabel>
+
+      {/* Pipeline Preview */}
+      <div className="ra-pip-preview" style={{ borderColor: 'var(--ra-teal-10)', background: 'var(--ra-teal-5)', marginTop: 16 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: 'var(--ra-teal)', letterSpacing: '0.06em', marginBottom: 6 }}>Pipeline Preview</div>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: 'var(--ra-text-sec)' }}>
+          Upload → Extract → Translate (if Arabic) → Validate → Distribute → Complete
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--ra-text-muted)', marginTop: 4 }}>Estimated: ~2–4 min for large documents · You'll be notified when complete</div>
+      </div>
+
+      <div className="ra-dr-ft" style={{ padding: '16px 0', borderTop: 'none' }}>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ra-text-ter)', cursor: 'pointer' }}>Cancel</button>
+        <button className="ra-btn-start" onClick={handleSubmit} disabled={createDoc.isPending}>
+          <Star size={14} /> {createDoc.isPending ? 'Starting...' : 'Start Pipeline'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ═══ TAB 2: Generate from Text ═══ */
+function GenerateTab({ onClose }: { onClose: () => void }) {
   const [title, setTitle] = useState('');
+  const [methodology, setMethodology] = useState('kpmg');
   const [content, setContent] = useState('');
-  const { data: domainTags = [] } = useDomainTags();
+  const [dragOver, setDragOver] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const createDoc = useCreateBrdDocument();
   const enqueue = useEnqueueDocument();
 
-  const domainOptions = Array.isArray(domainTags)
-    ? domainTags.map((t: any) => typeof t === 'string' ? t : t.domain_tag || t.name || String(t))
-    : [];
-
   const handleSubmit = async () => {
-    if (!title.trim()) {
-      toast.error('Please enter a document title');
-      return;
-    }
+    if (!title.trim()) { toast.error('Please enter a document title'); return; }
     try {
       const doc = await createDoc.mutateAsync({
-        title: title.trim(),
-        source_type: 'ai_generated' as SourceType,
-        pipeline_stage: 'intake',
-        language: 'en',
-        domain_tag: domain || null,
-        jira_key: null,
-        original_url: null,
-        content_hash: null,
-        raw_text: content || null,
-        json_data: null,
-        extraction_tier: null,
-        quality_score: null,
-        methodology: null,
-        processed_at: null,
+        title: title.trim(), source_type: 'ai_generated' as SourceType,
+        pipeline_stage: 'intake', language: 'en',
+        domain_tag: null, jira_key: null, original_url: null, content_hash: null,
+        raw_text: content || null, json_data: null, extraction_tier: null,
+        quality_score: null, methodology, processed_at: null,
       } as any);
       await enqueue.mutateAsync(doc.id);
       toast.success('BRD queued for processing');
       onClose();
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to create document');
-    }
+    } catch (err: any) { toast.error(err.message || 'Failed to create document'); }
   };
 
   return (
     <div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <FieldLabel label="Document Title">
-          <input
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            placeholder="Enter document title..."
-            style={{
-              width: '100%', height: 36, borderRadius: 4, padding: '0 12px',
-              border: '1px solid rgba(15,23,42,0.14)', background: '#FFFFFF',
-              fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#0F172A', outline: 'none',
-            }}
-            onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
-            onBlur={e => (e.currentTarget.style.borderColor = 'rgba(15,23,42,0.14)')}
-          />
-        </FieldLabel>
-        <FieldLabel label="BRD Content">
-          <textarea
-            value={content}
-            onChange={e => setContent(e.target.value)}
-            placeholder="Paste or type your BRD requirements here..."
-            style={{
-              width: '100%', height: 200, borderRadius: 4, padding: 12,
-              border: '1px solid rgba(15,23,42,0.14)', background: '#FFFFFF',
-              fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#0F172A',
-              outline: 'none', resize: 'vertical',
-            }}
-            onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
-            onBlur={e => (e.currentTarget.style.borderColor = 'rgba(15,23,42,0.14)')}
-          />
-        </FieldLabel>
-        <FieldLabel label="Domain">
-          <CustomDropdown value={domain} options={domainOptions} placeholder="Select domain..." onChange={setDomain} />
-        </FieldLabel>
+      <FieldLabel label="Document Title">
+        <input className="ra-input" value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter document title..." />
+      </FieldLabel>
+
+      <FieldLabel label="Methodology Framework" style={{ marginTop: 16 }}>
+        <div className="ra-ro-group">
+          {METHODOLOGIES.map(m => (
+            <div key={m.key} className={`ra-ro ${methodology === m.key ? 'sel' : ''}`} onClick={() => setMethodology(m.key)}>
+              <div className="ra-ro-n">{m.name}</div>
+              <div className="ra-ro-s">{m.sub}</div>
+            </div>
+          ))}
+        </div>
+      </FieldLabel>
+
+      <FieldLabel label="Requirements Input" hint="The AI will structure this into a full BRD with the selected framework" style={{ marginTop: 16 }}>
+        <textarea
+          className="ra-textarea"
+          value={content}
+          onChange={e => setContent(e.target.value)}
+          placeholder="Paste your requirements, brief, or scope document..."
+          style={{ minHeight: 120 }}
+        />
+      </FieldLabel>
+
+      <FieldLabel label="Or Upload Source Document" style={{ marginTop: 16 }}>
+        <div className="ra-dz" onClick={() => fileRef.current?.click()}
+          onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={e => { e.preventDefault(); setDragOver(false); }}
+          style={dragOver ? { borderColor: 'var(--ra-blue)', background: 'var(--ra-blue-5)' } : {}}
+        >
+          <Upload size={24} style={{ color: 'var(--ra-text-muted)', marginBottom: 6 }} />
+          <div style={{ fontSize: 13, color: 'var(--ra-text-sec)' }}>Drop source material here</div>
+          <div style={{ fontSize: 11, color: 'var(--ra-text-muted)', marginTop: 2 }}>PDF, DOCX, or TXT · Max 50 pages</div>
+          <input ref={fileRef} type="file" accept=".pdf,.docx,.txt" style={{ display: 'none' }} />
+        </div>
+      </FieldLabel>
+
+      {/* AI Pipeline Preview */}
+      <div className="ra-pip-preview" style={{ borderColor: 'var(--ra-purple-10)', background: 'var(--ra-purple-5)', marginTop: 16 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: 'var(--ra-purple)', letterSpacing: '0.06em', marginBottom: 6 }}>AI Pipeline</div>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: 'var(--ra-text-sec)' }}>
+          REC-PARSE → REC-CONTEXT → REC-BRD-ARCH → REC-EXTRACT → REC-QA
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--ra-text-muted)', marginTop: 4 }}>Anti-hallucination: 2 retry loops · Estimated: ~35s</div>
       </div>
 
-      <div style={{
-        marginTop: 16, padding: 12, borderRadius: 6,
-        background: 'rgba(124,58,237,0.08)',
-        border: '1px solid rgba(124,58,237,0.15)',
-        display: 'flex', alignItems: 'center', gap: 8,
-      }}>
-        <Sparkles size={14} style={{ color: '#7C3AED', flexShrink: 0 }} />
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: '#334155' }}>
-          AI will structure and score this document automatically
-        </span>
+      <div className="ra-dr-ft" style={{ padding: '16px 0', borderTop: 'none' }}>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ra-text-ter)', cursor: 'pointer' }}>Cancel</button>
+        <button className="ra-btn-start" onClick={handleSubmit} disabled={createDoc.isPending}>
+          <Star size={14} /> {createDoc.isPending ? 'Starting...' : 'Start Pipeline'}
+        </button>
       </div>
-
-      <PrimaryButton label={createDoc.isPending ? 'Creating...' : 'Generate & Process'} onClick={handleSubmit} disabled={createDoc.isPending} style={{ marginTop: 20 }} />
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   Tab 3: Import from Jira
-   ═══════════════════════════════════════════════════════════════════ */
-function ImportJiraTab({ onClose }: { onClose: () => void }) {
-  const [projectKey, setProjectKey] = useState('');
-  const [mode, setMode] = useState<'all' | 'selected'>('all');
+/* ═══ TAB 3: Import from Jira ═══ */
+function JiraTab({ onClose }: { onClose: () => void }) {
+  const [project, setProject] = useState('');
+  const [mode, setMode] = useState('full');
+  const { data: documents } = useBrdDocuments();
   const createDoc = useCreateBrdDocument();
   const enqueue = useEnqueueDocument();
+  const docCount = documents?.length ?? 0;
 
   const handleSubmit = async () => {
-    if (!projectKey.trim()) {
-      toast.error('Please enter a project key or JQL');
-      return;
-    }
+    if (!project) { toast.error('Please select a Jira project'); return; }
     try {
       const doc = await createDoc.mutateAsync({
-        title: `Jira Import: ${projectKey.trim()}`,
+        title: `Jira Import: ${project.split(' — ')[0]}`,
         source_type: 'jira_bulk' as SourceType,
-        pipeline_stage: 'intake',
-        language: 'en',
-        domain_tag: null,
-        jira_key: projectKey.trim(),
-        original_url: null,
-        content_hash: null,
-        raw_text: null,
-        json_data: null,
-        extraction_tier: null,
-        quality_score: null,
-        methodology: null,
-        processed_at: null,
+        pipeline_stage: 'intake', language: 'en',
+        domain_tag: null, jira_key: project.split(' — ')[0],
+        original_url: null, content_hash: null, raw_text: null,
+        json_data: null, extraction_tier: null, quality_score: null,
+        methodology: null, processed_at: null,
       } as any);
       await enqueue.mutateAsync(doc.id);
       toast.success('BRD queued for processing');
       onClose();
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to import');
-    }
+    } catch (err: any) { toast.error(err.message || 'Failed to import'); }
   };
 
   return (
     <div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <FieldLabel label="Project Key or JQL">
-          <input
-            value={projectKey}
-            onChange={e => setProjectKey(e.target.value)}
-            placeholder="e.g. SEN or project = SEN AND issuetype = BRD"
-            style={{
-              width: '100%', height: 36, borderRadius: 4, padding: '0 12px',
-              border: '1px solid rgba(15,23,42,0.14)', background: '#FFFFFF',
-              fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#0F172A', outline: 'none',
-            }}
-            onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
-            onBlur={e => (e.currentTarget.style.borderColor = 'rgba(15,23,42,0.14)')}
-          />
-        </FieldLabel>
-        <FieldLabel label="Import Mode">
-          <div style={{ display: 'flex', gap: 8 }}>
-            {[{ key: 'all', label: 'All BRDs in project' }, { key: 'selected', label: 'Selected issues only' }].map(o => (
-              <button
-                key={o.key}
-                onClick={() => setMode(o.key as 'all' | 'selected')}
-                style={{
-                  flex: 1, height: 36, borderRadius: 6,
-                  border: mode === o.key ? '1px solid #2563EB' : '1px solid rgba(15,23,42,0.14)',
-                  background: mode === o.key ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
-                  fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 500,
-                  color: mode === o.key ? '#2563EB' : '#64748B',
-                  cursor: 'pointer', transition: 'all 80ms',
-                }}
-              >
-                {o.label}
-              </button>
-            ))}
-          </div>
-        </FieldLabel>
+      <FieldLabel label="Jira Project">
+        <RaDropdown value={project} options={JIRA_PROJECTS} placeholder="Select project..." onChange={setProject} />
+      </FieldLabel>
+
+      <FieldLabel label="Import Mode" style={{ marginTop: 16 }}>
+        <div className="ra-ro-group">
+          {IMPORT_MODES.map(m => (
+            <div key={m.key} className={`ra-ro ${mode === m.key ? 'sel' : ''}`} onClick={() => setMode(m.key)}>
+              <div className="ra-ro-n">{m.name}</div>
+              <div className="ra-ro-s">{m.sub}</div>
+            </div>
+          ))}
+        </div>
+      </FieldLabel>
+
+      {/* Jira Connection Preview */}
+      <div className="ra-pip-preview" style={{ borderColor: 'var(--ra-blue-10)', background: 'var(--ra-blue-5)', marginTop: 16 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: 'var(--ra-blue)', letterSpacing: '0.06em', marginBottom: 6 }}>Jira Connection</div>
+        <div style={{ fontSize: 13, color: 'var(--ra-text-sec)' }}>
+          SEN project · {docCount} issues with PDF attachments
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--ra-text-muted)', marginTop: 4 }}>Each PDF enters the pipeline automatically · ~1–4 min per document</div>
       </div>
 
-      <PrimaryButton label={createDoc.isPending ? 'Importing...' : 'Import BRDs'} onClick={handleSubmit} disabled={createDoc.isPending} style={{ marginTop: 20 }} />
+      <div className="ra-dr-ft" style={{ padding: '16px 0', borderTop: 'none' }}>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ra-text-ter)', cursor: 'pointer' }}>Cancel</button>
+        <button className="ra-btn-start" onClick={handleSubmit} disabled={createDoc.isPending}>
+          <Star size={14} /> {createDoc.isPending ? 'Starting...' : 'Start Pipeline'}
+        </button>
+      </div>
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   SHARED SUB-COMPONENTS
-   ═══════════════════════════════════════════════════════════════════ */
-function FieldLabel({ label, children }: { label: string; children: React.ReactNode }) {
+/* ═══ Shared ═══ */
+function FieldLabel({ label, hint, children, style }: { label: string; hint?: string; children: React.ReactNode; style?: React.CSSProperties }) {
   return (
-    <div>
-      <label style={{
-        display: 'block',
-        fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 500,
-        textTransform: 'uppercase' as const, letterSpacing: '0.04em',
-        color: '#64748B', marginBottom: 6,
-      }}>
-        {label}
-      </label>
+    <div style={style}>
+      <label className="ra-field-label">{label}</label>
       {children}
+      {hint && <div className="ra-field-hint">{hint}</div>}
     </div>
-  );
-}
-
-function PrimaryButton({ label, style, onClick, disabled }: { label: string; style?: React.CSSProperties; onClick?: () => void; disabled?: boolean }) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        width: '100%', height: 36, borderRadius: 6, border: 'none',
-        background: disabled ? '#94A3B8' : '#2563EB', color: '#FFFFFF',
-        fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 500,
-        cursor: disabled ? 'not-allowed' : 'pointer', transition: 'background 80ms',
-        opacity: disabled ? 0.7 : 1,
-        ...style,
-      }}
-      onMouseEnter={e => { if (!disabled) e.currentTarget.style.background = '#1D4ED8'; }}
-      onMouseLeave={e => { if (!disabled) e.currentTarget.style.background = '#2563EB'; }}
-    >
-      {label}
-    </button>
   );
 }
