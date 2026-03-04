@@ -23,6 +23,226 @@
   -webkit-font-smoothing: antialiased !important;
   background: #F8FAFC !important;
   min-height: 100vh !important;
+
+  /* ─── V12 INTERACTION TOKENS ─── */
+  --cp-interact-hover: rgba(15,23,42,0.04);
+  --cp-interact-press: rgba(15,23,42,0.08);
+  --cp-interact-selected: rgba(37,99,235,0.08);
+  --cp-duration-fast: 0.15s;
+  --cp-duration-normal: 0.25s;
+  --cp-shadow-xs: 0 1px 3px rgba(0,0,0,0.08);
+  --cp-shadow-overlay: 0 8px 24px rgba(0,0,0,0.12);
+  --cp-focus-ring: 2px solid #2563EB;
+  --cp-focus-offset: 2px;
+}
+
+/* ─── PERIOD TOGGLE — PROMINENT ─── */
+#r360-root .r3-period-toggle {
+  display: inline-flex !important;
+  border: 1px solid #D4D4D8 !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+}
+#r360-root .r3-period-toggle button {
+  height: 32px !important;
+  padding: 0 14px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all var(--cp-duration-fast) ease !important;
+  background: #FFFFFF !important;
+  color: #334155 !important;
+}
+#r360-root .r3-period-toggle button.active {
+  background: #2563EB !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+}
+#r360-root .r3-period-toggle button:hover:not(.active) {
+  background: var(--cp-interact-hover) !important;
+}
+
+/* ─── MODE BADGE ─── */
+#r360-root .r3-mode-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 2px 8px !important;
+  border-radius: 3px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+}
+#r360-root .r3-mode-badge.live {
+  background: #DEEBFF !important;
+  color: #0747A6 !important;
+}
+#r360-root .r3-mode-badge.snapshot {
+  background: #DFE1E6 !important;
+  color: #253858 !important;
+}
+
+/* ─── COLLAPSIBLE WEEK STRIP ─── */
+#r360-root .r3-week-strip {
+  background: #F8FAFC !important;
+  border: 1px solid rgba(15,23,42,0.08) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  transition: box-shadow var(--cp-duration-fast) ease !important;
+}
+#r360-root .r3-week-strip:hover {
+  box-shadow: var(--cp-shadow-xs) !important;
+}
+
+#r360-root .r3-week-strip-summary {
+  display: flex !important;
+  align-items: center !important;
+  height: 44px !important;
+  padding: 0 16px !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: background var(--cp-duration-fast) ease !important;
+}
+#r360-root .r3-week-strip-summary:hover {
+  background: var(--cp-interact-hover) !important;
+}
+
+#r360-root .r3-week-strip-left {
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  color: #0F172A !important;
+  white-space: nowrap !important;
+}
+
+#r360-root .r3-week-strip-center {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 auto !important;
+}
+
+#r360-root .r3-week-strip-bar-track {
+  width: 120px !important;
+  height: 6px !important;
+  background: #E2E8F0 !important;
+  border-radius: 3px !important;
+  overflow: hidden !important;
+}
+#r360-root .r3-week-strip-bar-fill {
+  height: 100% !important;
+  background: #2563EB !important;
+  border-radius: 3px !important;
+  transition: width var(--cp-duration-normal) ease !important;
+}
+
+#r360-root .r3-week-strip-label {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #64748B !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+#r360-root .r3-week-strip-chevron {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  color: #64748B !important;
+  transition: transform var(--cp-duration-normal) ease !important;
+  flex-shrink: 0 !important;
+}
+#r360-root .r3-week-strip-chevron.open {
+  transform: rotate(180deg) !important;
+}
+
+/* Expandable day/week grid */
+#r360-root .r3-week-strip-grid {
+  display: grid !important;
+  gap: 8px !important;
+  padding: 0 16px 12px !important;
+  overflow: hidden !important;
+  max-height: 0 !important;
+  opacity: 0 !important;
+  transition: max-height var(--cp-duration-normal) ease, opacity var(--cp-duration-fast) ease, padding var(--cp-duration-normal) ease !important;
+}
+#r360-root .r3-week-strip-grid.open {
+  max-height: 100px !important;
+  opacity: 1 !important;
+  padding: 8px 16px 12px !important;
+}
+#r360-root .r3-week-strip-grid.weekly {
+  grid-template-columns: repeat(5, 1fr) !important;
+}
+#r360-root .r3-week-strip-grid.monthly {
+  grid-template-columns: repeat(5, 1fr) !important;
+}
+
+#r360-root .r3-day-cell {
+  height: 40px !important;
+  border: 1px solid #D4D4D8 !important;
+  border-radius: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 8px !important;
+  cursor: pointer !important;
+  transition: all var(--cp-duration-fast) ease !important;
+  background: #FFFFFF !important;
+}
+#r360-root .r3-day-cell:hover {
+  background: var(--cp-interact-hover) !important;
+}
+#r360-root .r3-day-cell.today {
+  border: 2px solid #2563EB !important;
+  background: rgba(37,99,235,0.03) !important;
+}
+#r360-root .r3-day-cell.selected {
+  background: var(--cp-interact-selected) !important;
+  border-color: #2563EB !important;
+}
+#r360-root .r3-day-cell.future {
+  opacity: 0.5 !important;
+}
+
+#r360-root .r3-day-cell-name {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  color: #334155 !important;
+  line-height: 1 !important;
+}
+#r360-root .r3-day-cell-date {
+  font-size: 11px !important;
+  color: #64748B !important;
+  line-height: 1 !important;
+}
+
+#r360-root .r3-day-cell-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+#r360-root .r3-day-cell-minibar {
+  width: 40px !important;
+  height: 4px !important;
+  background: #E2E8F0 !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+#r360-root .r3-day-cell-minibar-fill {
+  height: 100% !important;
+  background: #2563EB !important;
+  border-radius: 2px !important;
+}
+#r360-root .r3-day-cell-count {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #334155 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-variant-numeric: tabular-nums !important;
 }
 
 /* Focus ring for keyboard nav */
