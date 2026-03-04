@@ -1113,9 +1113,14 @@ function CompletedSummaryBar({ items, testId, onViewClick }: { items: R360WorkIt
   return (
     <div data-testid={testId} style={{
       width: '100%', background: '#E3FCEF', borderRadius: '6px',
-      padding: '8px 14px', marginBottom: '12px',
+      padding: '8px 14px', margin: '12px 0 8px',
       display: 'flex', alignItems: 'center', gap: '8px',
-    }}>
+      cursor: 'pointer', transition: 'all 0.15s',
+    }}
+    onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)'; }}
+    onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; }}
+    tabIndex={0}
+    role="button">
       <span style={{ fontSize: '14px', color: '#006644', fontWeight: 700 }}>✓</span>
       <span style={{ fontSize: '12px', fontWeight: 650, color: '#006644' }}>{completedItems.length} completed this week</span>
       <span style={{ color: '#047857' }}>·</span>
