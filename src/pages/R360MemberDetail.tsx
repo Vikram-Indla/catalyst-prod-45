@@ -1102,20 +1102,81 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
 }
 
 // ═══════════════════════════════════════════
+// GREEN COMPLETED SUMMARY BAR — shared by Chronology & Board
+// ═══════════════════════════════════════════
+function CompletedSummaryBar({ items, testId, onViewClick }: { items: R360WorkItem[]; testId: string; onViewClick: () => void }) {
+  const completedItems = items.filter(i => i.status_category === 'done');
+  if (completedItems.length === 0) return null;
+  const firstDone = completedItems[0];
+  const resolvedDate = firstDone?.resolved_at || firstDone?.updated_at;
+  const resolvedLabel = resolvedDate ? new Date(resolvedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+  return (
+    <div data-testid={testId} style={{
+      width: '100%', background: '#E3FCEF', borderRadius: '6px',
+      padding: '8px 14px', marginBottom: '12px',
+      display: 'flex', alignItems: 'center', gap: '8px',
+    }}>
+      <span style={{ fontSize: '14px', color: '#006644', fontWeight: 700 }}>✓</span>
+      <span style={{ fontSize: '12px', fontWeight: 650, color: '#006644' }}>{completedItems.length} completed this week</span>
+      <span style={{ color: '#047857' }}>·</span>
+      <span style={{ fontSize: '12px', color: '#047857' }}>{firstDone?.item_key} Done {resolvedLabel}</span>
+      <button
+        onClick={onViewClick}
+        style={{
+          marginLeft: 'auto', fontSize: '11px', fontWeight: 650, color: '#006644',
+          border: '1px solid rgba(0,100,68,0.2)', borderRadius: '4px',
+          padding: '2px 8px', cursor: 'pointer', background: 'transparent',
+          transition: 'background 80ms',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,100,68,0.06)'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+      >View</button>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
 // CHRONOLOGY VIEW
 // ═══════════════════════════════════════════
 function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void; weekStart: Date; weekEnd: Date }) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const carryoverRef = useRef<HTMLDivElement | null>(null);
+
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const y = new Date(today); y.setDate(y.getDate() - 1);
+  const yesterdayStr = `${y.getFullYear()}-${String(y.getMonth() + 1).padStart(2, '0')}-${String(y.getDate()).padStart(2, '0')}`;
+  const todayLabel = `Today, ${today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+
+  // Separate items with activity vs carryover (no activity this week)
+  const weekStartStr = weekStart.toISOString().slice(0, 10);
+  const weekEndStr = weekEnd.toISOString().slice(0, 10);
+  const carryoverItems = useMemo(() => {
+    return items.filter(item => {
+      if (item.status_category === 'done') return false;
+      const updStr = item.updated_at?.slice(0, 10) || '';
+      return updStr < weekStartStr || updStr > weekEndStr;
+    });
+  }, [items, weekStartStr, weekEndStr]);
+
+  const activeItems = useMemo(() => {
+    const carryoverIds = new Set(carryoverItems.map(i => i.id));
+    return items.filter(i => !carryoverIds.has(i.id));
+  }, [items, carryoverItems]);
 
   const groups = useMemo(() => {
     const map = new Map<string, { label: string; items: R360WorkItem[] }>();
-    items.forEach(item => {
+    activeItems.forEach(item => {
       if (!map.has(item.group_date)) map.set(item.group_date, { label: item.date_label, items: [] });
       map.get(item.group_date)!.items.push(item);
     });
     return Array.from(map.entries()).sort(([a], [b]) => b.localeCompare(a));
-  }, [items]);
+  }, [activeItems]);
+
+  // Split out Today's group from the rest
+  const todayGroup = groups.find(([k]) => k === todayStr);
+  const otherGroups = groups.filter(([k]) => k !== todayStr);
 
   // Auto-scroll to the first date group that falls within the selected week
   useEffect(() => {
@@ -1130,77 +1191,162 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
     }
   }, [weekStart, weekEnd, groups]);
 
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  const y = new Date(today); y.setDate(y.getDate() - 1);
-  const yesterdayStr = `${y.getFullYear()}-${String(y.getMonth() + 1).padStart(2, '0')}-${String(y.getDate()).padStart(2, '0')}`;
-
   const accentColor = (cat: string) => cat === 'in_progress' ? '#2563EB' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? '#EF4444' : cat === 'done' ? '#16A34A' : '#D97706';
+
+  // Render a single chronology card
+  const renderChronoCard = (item: R360WorkItem) => {
+    const fromClass = getFromTagClass(item.carried_from_label);
+    return (
+      <div key={item.id} className="r3-chrono-card" onClick={() => onSelect(item)}>
+        <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : accentColor(item.status_category) }} />
+        <div style={{ width: 24, display: 'flex', alignItems: 'center', flexShrink: 0 }}>{getJiraIcon(item.item_type)}</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+            <span className="r3-card-key">{item.item_key}</span>
+            <ProjTag projectKey={item.project_key} />
+            {item.role_on_item === 'Contributor' && (
+              <MiniAvatar name={item.assignee_name} size={18} />
+            )}
+            {item.carried_from_label && (
+              <span className={`r3-from-tag ${fromClass}`} style={{ fontSize: '10px' }}>
+                {fromClass === 'red' ? '⚠ ' : ''}{item.carried_from_label}
+              </span>
+            )}
+          </div>
+          <div className="r3-card-title r3-card-title--lg">{item.title}</div>
+          {item.parent_key && (
+            <div className="r3-parent-ref" style={{ marginTop: 4 }}>
+              ↳ <span className="r3-parent-key">{item.parent_key}</span> {item.parent_title}
+            </div>
+          )}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {item.role_on_item === 'Contributor' && (
+              <span style={{ fontSize: 12.5, color: '#334155', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ color: '#64748B' }}>→</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}
+              </span>
+            )}
+            <StatusLozenge status={item.status} />
+          </div>
+          <AgeBadge days={item.age_days} ageClass={item.age_class} />
+        </div>
+      </div>
+    );
+  };
+
+  // Render a day group header + items
+  const renderDayGroup = (dateKey: string, group: { label: string; items: R360WorkItem[] }) => {
+    const isCollapsed = collapsed.has(dateKey);
+    const dotClass = dateKey === todayStr ? 'r3-date-dot--today' : dateKey === yesterdayStr ? 'r3-date-dot--yesterday' : 'r3-date-dot--other';
+    const statusDist = { done: 0, in_progress: 0, to_do: 0, blocked: 0 };
+    group.items.forEach(i => {
+      if (i.status_category === 'done') statusDist.done++;
+      else if (i.status_category === 'in_progress' || i.status_category === 'in_qa') statusDist.in_progress++;
+      else if (i.status_category === 'blocked') statusDist.blocked++;
+      else statusDist.to_do++;
+    });
+    const total = group.items.length;
+
+    return (
+      <div key={dateKey} ref={el => { groupRefs.current[dateKey] = el; }} className="r3-date-group">
+        <div className="r3-date-header" onClick={() => setCollapsed(prev => { const n = new Set(prev); n.has(dateKey) ? n.delete(dateKey) : n.add(dateKey); return n; })}>
+          <span className={`r3-date-dot ${dotClass}`} />
+          <span className="r3-date-label">{group.label}</span>
+          <span className="r3-date-count">{total} items</span>
+          <div className="r3-minibar">
+            {statusDist.done > 0 && <div style={{ width: `${statusDist.done / total * 100}%`, background: '#16A34A' }} />}
+            {statusDist.in_progress > 0 && <div style={{ width: `${statusDist.in_progress / total * 100}%`, background: '#2563EB' }} />}
+            {statusDist.to_do > 0 && <div style={{ width: `${statusDist.to_do / total * 100}%`, background: '#D97706' }} />}
+            {statusDist.blocked > 0 && <div style={{ width: `${statusDist.blocked / total * 100}%`, background: '#EF4444' }} />}
+          </div>
+          <ChevronDown size={16} className={`r3-date-chevron ${isCollapsed ? 'r3-date-chevron--collapsed' : ''}`} />
+        </div>
+        {!isCollapsed && (
+          <div className="r3-chrono-items">
+            {group.items.map(renderChronoCard)}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="r3-chrono">
-      <div className="r3-chrono-line" />
-      {groups.map(([dateKey, group]) => {
-        const isCollapsed = collapsed.has(dateKey);
-        const dotClass = dateKey === todayStr ? 'r3-date-dot--today' : dateKey === yesterdayStr ? 'r3-date-dot--yesterday' : 'r3-date-dot--other';
-        const statusDist = { done: 0, in_progress: 0, to_do: 0, blocked: 0 };
-        group.items.forEach(i => {
-          if (i.status_category === 'done') statusDist.done++;
-          else if (i.status_category === 'in_progress' || i.status_category === 'in_qa') statusDist.in_progress++;
-          else if (i.status_category === 'blocked') statusDist.blocked++;
-          else statusDist.to_do++;
-        });
-        const total = group.items.length;
+      {/* D-13: Green completed summary bar */}
+      <CompletedSummaryBar
+        items={items}
+        testId="r360-chrono-completed-bar"
+        onViewClick={() => {
+          // Scroll to the day group containing a done item
+          const doneItem = items.find(i => i.status_category === 'done');
+          if (doneItem && groupRefs.current[doneItem.group_date]) {
+            groupRefs.current[doneItem.group_date]!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }}
+      />
 
-        return (
-          <div key={dateKey} ref={el => { groupRefs.current[dateKey] = el; }} className="r3-date-group">
-            <div className="r3-date-header" onClick={() => setCollapsed(prev => { const n = new Set(prev); n.has(dateKey) ? n.delete(dateKey) : n.add(dateKey); return n; })}>
-              <span className={`r3-date-dot ${dotClass}`} />
-              <span className="r3-date-label">{group.label}</span>
-              <span className="r3-date-count">{total} items</span>
+      <div className="r3-chrono-line" />
+
+      {/* D-11: Today Anchor — always first */}
+      <div data-testid="r360-chrono-today" ref={el => { groupRefs.current[todayStr] = el; }} className="r3-date-group">
+        <div className="r3-date-header" onClick={() => setCollapsed(prev => { const n = new Set(prev); n.has('__today__') ? n.delete('__today__') : n.add('__today__'); return n; })}>
+          <span className="r3-date-dot r3-date-dot--today" />
+          <span className="r3-date-label" style={{ fontWeight: 650, fontSize: '13px' }}>{todayLabel}</span>
+          <span className="r3-date-count">{todayGroup ? todayGroup[1].items.length : 0} items</span>
+          {todayGroup && (() => {
+            const total = todayGroup[1].items.length;
+            const sd = { done: 0, in_progress: 0, to_do: 0, blocked: 0 };
+            todayGroup[1].items.forEach(i => {
+              if (i.status_category === 'done') sd.done++;
+              else if (i.status_category === 'in_progress' || i.status_category === 'in_qa') sd.in_progress++;
+              else if (i.status_category === 'blocked') sd.blocked++;
+              else sd.to_do++;
+            });
+            return (
               <div className="r3-minibar">
-                {statusDist.done > 0 && <div style={{ width: `${statusDist.done / total * 100}%`, background: '#16A34A' }} />}
-                {statusDist.in_progress > 0 && <div style={{ width: `${statusDist.in_progress / total * 100}%`, background: '#2563EB' }} />}
-                {statusDist.to_do > 0 && <div style={{ width: `${statusDist.to_do / total * 100}%`, background: '#D97706' }} />}
-                {statusDist.blocked > 0 && <div style={{ width: `${statusDist.blocked / total * 100}%`, background: '#EF4444' }} />}
+                {sd.done > 0 && <div style={{ width: `${sd.done / total * 100}%`, background: '#16A34A' }} />}
+                {sd.in_progress > 0 && <div style={{ width: `${sd.in_progress / total * 100}%`, background: '#2563EB' }} />}
+                {sd.to_do > 0 && <div style={{ width: `${sd.to_do / total * 100}%`, background: '#D97706' }} />}
+                {sd.blocked > 0 && <div style={{ width: `${sd.blocked / total * 100}%`, background: '#EF4444' }} />}
               </div>
-              <ChevronDown size={16} className={`r3-date-chevron ${isCollapsed ? 'r3-date-chevron--collapsed' : ''}`} />
+            );
+          })()}
+          <ChevronDown size={16} className={`r3-date-chevron ${collapsed.has('__today__') ? 'r3-date-chevron--collapsed' : ''}`} />
+        </div>
+        {!collapsed.has('__today__') && (
+          todayGroup ? (
+            <div className="r3-chrono-items">
+              {todayGroup[1].items.map(renderChronoCard)}
             </div>
-            {!isCollapsed && (
-              <div className="r3-chrono-items">
-                {group.items.map(item => (
-                  <div key={item.id} className="r3-chrono-card" onClick={() => onSelect(item)}>
-                    <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : accentColor(item.status_category) }} />
-                    <div style={{ width: 24, display: 'flex', alignItems: 'center', flexShrink: 0 }}>{getJiraIcon(item.item_type)}</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                        <span className="r3-card-key">{item.item_key}</span>
-                        <ProjTag projectKey={item.project_key} />
-                        {item.role_on_item === 'Contributor' && (
-                          <MiniAvatar name={item.assignee_name} size={18} />
-                        )}
-                      </div>
-                      <div className="r3-card-title r3-card-title--lg">{item.title}</div>
-                      {item.parent_key && (
-                        <div className="r3-parent-ref" style={{ marginTop: 4 }}>
-                          ↳ <span className="r3-parent-key">{item.parent_key}</span> {item.parent_title}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontSize: 12.5, color: '#334155', display: 'inline-flex', alignItems: 'center', gap: 4 }}>{item.role_on_item === 'Contributor' ? <><span style={{ color: '#64748B' }}>→</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}</> : (item.reporter_name || '—')}</span>
-                        <StatusPill label={item.status_label} color={item.status_color} bg={item.status_bg} dot={item.status_dot} />
-                      </div>
-                      <AgeBadge days={item.age_days} ageClass={item.age_class} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+          ) : (
+            <div style={{ paddingLeft: '28px', fontSize: '12px', fontStyle: 'italic', color: '#94A3B8', padding: '8px 0 8px 28px' }}>
+              No activity yet today
+            </div>
+          )
+        )}
+      </div>
+
+      {/* Other day groups in reverse chronological order */}
+      {otherGroups.map(([dateKey, group]) => renderDayGroup(dateKey, group))}
+
+      {/* D-12: Carried Over section at the bottom */}
+      {carryoverItems.length > 0 && (
+        <div data-testid="r360-chrono-carryover" ref={carryoverRef} className="r3-date-group">
+          <div className="r3-date-header" onClick={() => setCollapsed(prev => { const n = new Set(prev); n.has('__carryover__') ? n.delete('__carryover__') : n.add('__carryover__'); return n; })}>
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px solid #D97706', background: 'transparent', flexShrink: 0 }} />
+            <span className="r3-date-label" style={{ fontWeight: 650, fontSize: '13px' }}>Carried Over</span>
+            <span className="r3-date-count">{carryoverItems.length} items</span>
+            <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '3px', background: '#F1F5F9', color: '#64748B' }}>No activity this week</span>
+            <ChevronDown size={16} className={`r3-date-chevron ${collapsed.has('__carryover__') ? 'r3-date-chevron--collapsed' : ''}`} />
           </div>
-        );
-      })}
+          {!collapsed.has('__carryover__') && (
+            <div className="r3-chrono-items">
+              {carryoverItems.map(renderChronoCard)}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -1209,6 +1355,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
 // BOARD VIEW
 // ═══════════════════════════════════════════
 function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void }) {
+  const doneColRef = useRef<HTMLDivElement>(null);
   const columns = [
     { key: 'to_do', label: 'TO DO', color: '#D97706', items: items.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked') },
     { key: 'in_progress', label: 'IN PROGRESS', color: '#2563EB', items: items.filter(i => i.status_category === 'in_progress' || i.status_category === 'in_qa') },
@@ -1218,39 +1365,63 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
   const accentColor = (cat: string) => cat === 'in_progress' ? '#2563EB' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? '#EF4444' : cat === 'done' ? '#16A34A' : '#D97706';
 
   return (
-    <div className="r3-board">
-      {columns.map(col => (
-        <div key={col.key}>
-          <div className="r3-board-col-header" style={{ borderBottom: `2px solid ${col.color}` }}>
-            <span className="r3-board-col-dot" style={{ background: col.color }} />
-            <span className="r3-board-col-title">{col.label}</span>
-            <span className="r3-board-col-count" style={{ background: col.color }}>{col.items.length}</span>
-          </div>
-          <div className="r3-board-cards">
-            {col.items.map(item => (
-              <div key={item.id} className="r3-board-card" onClick={() => onSelect(item)}>
-                <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : accentColor(item.status_category) }} />
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                  <span className="r3-card-key">{item.item_key}</span>
-                  <ProjTag projectKey={item.project_key} />
-                  {item.role_on_item === 'Contributor' && (
-                    <MiniAvatar name={item.assignee_name} size={18} />
-                  )}
-                  <span style={{ marginLeft: 'auto' }}><AgeBadge days={item.age_days} ageClass={item.age_class} /></span>
-                </div>
-                <div className="r3-card-title" style={{ fontSize: 13.5, marginBottom: 8 }}>{item.title}</div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <span className="r3-priority-dot" style={{ background: priorityDotColor(item.priority) }} />
-                    <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{item.priority}</span>
+    <div>
+      {/* D-13: Green completed summary bar */}
+      <CompletedSummaryBar
+        items={items}
+        testId="r360-board-completed-bar"
+        onViewClick={() => {
+          doneColRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }}
+      />
+      <div className="r3-board">
+        {columns.map(col => (
+          <div key={col.key} ref={col.key === 'done' ? doneColRef : undefined}>
+            <div className="r3-board-col-header" style={{ borderBottom: `2px solid ${col.color}` }}>
+              <span className="r3-board-col-dot" style={{ background: col.color }} />
+              <span className="r3-board-col-title">{col.label}</span>
+              <span className="r3-board-col-count" style={{ background: col.color }}>{col.items.length}</span>
+            </div>
+            <div className="r3-board-cards">
+              {col.items.map(item => {
+                const fromClass = getFromTagClass(item.carried_from_label);
+                return (
+                  <div key={item.id} className="r3-board-card" onClick={() => onSelect(item)}>
+                    <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : accentColor(item.status_category) }} />
+                    {/* Row 1: Type icon + key + project badge + age */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                      {getJiraIcon(item.item_type)}
+                      <span className="r3-card-key">{item.item_key}</span>
+                      <ProjTag projectKey={item.project_key} />
+                      {item.role_on_item === 'Contributor' && (
+                        <MiniAvatar name={item.assignee_name} size={18} />
+                      )}
+                      <span style={{ marginLeft: 'auto' }}><AgeBadge days={item.age_days} ageClass={item.age_class} /></span>
+                    </div>
+                    {/* Row 2: Title */}
+                    <div className="r3-card-title" style={{ fontSize: 13.5, marginBottom: 8 }}>{item.title}</div>
+                    {/* Row 3: Priority + StatusLozenge + From tag */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span className="r3-priority-dot" style={{ background: priorityDotColor(item.priority) }} />
+                        <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{item.priority}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <StatusLozenge status={item.status} />
+                        {item.carried_from_label && (
+                          <span className={`r3-from-tag ${fromClass}`} style={{ fontSize: '10px' }}>
+                            {fromClass === 'red' ? '⚠ ' : ''}{item.carried_from_label}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <span style={{ fontSize: 12.5, color: '#334155', display: 'inline-flex', alignItems: 'center', gap: 4 }}>{item.role_on_item === 'Contributor' ? <><span style={{ color: '#64748B' }}>→</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}</> : item.assignee_name}</span>
-                </div>
-              </div>
-            ))}
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
