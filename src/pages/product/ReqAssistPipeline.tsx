@@ -1,41 +1,29 @@
 /**
- * ReqAssistPipeline — Pipeline Dashboard (Stage C)
+ * ReqAssistPipeline — Pipeline Dashboard
  * Route: /product/req-assist
+ * CORRECTIVE BUILD — ra-* ring-fenced CSS, pixel-perfect to HTML demo
  */
-import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Plus, Search, ChevronDown, FileSearch, Zap, Database,
-  Upload, Sparkles, ArrowRight,
+  Search, Upload, Sparkles, Settings, RefreshCw,
 } from 'lucide-react';
-import { useBrdDocuments, usePipelineStats, useDomainTags, useEpicCount, useAvgQuality } from '@/hooks/useReqAssist';
-import type { PipelineStage, BrdDocument, StageStats } from '@/types/reqAssist';
+import { useBrdDocuments, usePipelineStats, useEpicCount, useAvgQuality, useDomainTags } from '@/hooks/useReqAssist';
+import type { PipelineStage, StageStats } from '@/types/reqAssist';
 import ReqAssistIntakeDrawer from '@/components/product/ReqAssistIntakeDrawer';
+import '@/styles/ra-styles.css';
 
 /* ── helpers ─────────────────────────────────────────────────────── */
-
 const STAGE_ORDER: PipelineStage[] = ['intake', 'extract', 'process', 'validate', 'distribute', 'complete'];
 const STAGE_LABELS: Record<PipelineStage | 'all', string> = {
   all: 'All', intake: 'Intake', extract: 'Extract', process: 'Process',
   validate: 'Validate', distribute: 'Distribute', complete: 'Complete', failed: 'Failed',
 };
 
-type LozengeColor = 'grey' | 'blue' | 'green';
-function stageToLozenge(s: PipelineStage): LozengeColor {
-  if (s === 'complete' || s === 'distribute') return 'green';
-  if (s === 'intake' || s === 'failed') return 'grey';
-  return 'blue';
-}
-const LOZENGE: Record<LozengeColor, { bg: string; text: string }> = {
-  grey:  { bg: 'var(--cp-lozenge-grey-bg)',  text: 'var(--cp-lozenge-grey-text)' },
-  blue:  { bg: 'var(--cp-lozenge-blue-bg)',  text: 'var(--cp-lozenge-blue-text)' },
-  green: { bg: 'var(--cp-lozenge-green-bg)', text: 'var(--cp-lozenge-green-text)' },
-};
-
-function stagePillStyle(s: PipelineStage) {
-  if (s === 'intake') return { bg: 'var(--cp-bg-sunken)', text: 'var(--cp-text-tertiary)' };
-  if (s === 'distribute' || s === 'complete') return { bg: 'var(--cp-lozenge-green-bg)', text: 'var(--cp-lozenge-green-text)' };
-  return { bg: 'var(--cp-lozenge-blue-bg)', text: 'var(--cp-lozenge-blue-text)' };
+function stageLozengeClass(s: PipelineStage): string {
+  if (s === 'complete' || s === 'distribute') return 'ra-lz ra-lz-green';
+  if (s === 'process' || s === 'validate') return 'ra-lz ra-lz-blue';
+  return 'ra-lz ra-lz-grey';
 }
 
 function relativeTime(iso: string): string {
@@ -49,133 +37,40 @@ function relativeTime(iso: string): string {
 }
 
 function qualityColor(score: number | null): string {
-  if (score === null) return 'var(--cp-text-muted)';
-  if (score >= 85) return 'var(--cp-success-60)';
-  if (score >= 70) return 'var(--cp-warning-60)';
-  return 'var(--cp-text-muted)';
+  if (score === null) return 'var(--ra-text-muted)';
+  if (score >= 80) return 'var(--ra-success)';
+  if (score >= 60) return 'var(--ra-warn)';
+  return 'var(--ra-danger)';
 }
 
-/* ── Lozenge inline component ───────────────────────────────────── */
-function StageLozenge({ stage }: { stage: PipelineStage }) {
-  const c = LOZENGE[stageToLozenge(stage)];
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center',
-      height: 20, padding: '0 6px', borderRadius: 3,
-      background: c.bg, color: c.text,
-      fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 700,
-      textTransform: 'uppercase', letterSpacing: '0.03em', whiteSpace: 'nowrap',
-    }}>
-      {STAGE_LABELS[stage]}
-    </span>
-  );
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-/* ── Source column ──────────────────────────────────────────────── */
-function SourceCell({ type }: { type: string }) {
-  const map: Record<string, { icon: React.ReactNode; label: string }> = {
-    jira_webhook:  { icon: <Zap size={13} style={{ color: 'var(--cp-primary-60)' }} />, label: 'Jira Hook' },
-    jira_bulk:     { icon: <Database size={13} style={{ color: 'var(--cp-text-tertiary)' }} />, label: 'Jira Import' },
-    manual_upload: { icon: <Upload size={13} style={{ color: 'var(--cp-text-tertiary)' }} />, label: 'Manual' },
-    ai_generated:  { icon: <Sparkles size={13} style={{ color: 'var(--cp-purple-60)' }} />, label: 'AI Generated' },
-  };
-  const s = map[type] || { icon: null, label: type };
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-secondary)' }}>
-      {s.icon}{s.label}
-    </span>
-  );
-}
-
-/* ── Custom Dropdown ─────────────────────────────────────────────── */
-function CustomDropdown({ value, options, placeholder, onChange }: {
-  value: string | null; options: string[]; placeholder: string; onChange: (v: string | null) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-  return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button
-        onClick={() => setOpen(!open)}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          height: 32, padding: '0 10px', borderRadius: 6,
-          background: 'var(--cp-bg-surface)', border: '1px solid var(--cp-border-default)',
-          fontFamily: 'var(--cp-font-body)', fontSize: 13, color: value ? 'var(--cp-text-primary)' : 'var(--cp-text-tertiary)',
-          cursor: 'pointer', whiteSpace: 'nowrap',
-        }}
-      >
-        {value || placeholder}
-        <ChevronDown size={14} style={{ color: 'var(--cp-text-muted)' }} />
-      </button>
-      {open && (
-        <div style={{
-          position: 'absolute', top: '100%', right: 0, marginTop: 4,
-          minWidth: 180, background: 'var(--cp-bg-elevated)',
-          border: '1px solid var(--cp-border-default)', borderRadius: 6,
-          boxShadow: 'var(--cp-shadow-overlay)', zIndex: 500,
-          maxHeight: 240, overflowY: 'auto',
-        }}>
-          <div
-            onClick={() => { onChange(null); setOpen(false); }}
-            style={{
-              padding: '8px 12px', cursor: 'pointer', fontSize: 13,
-              fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-tertiary)',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-interact-hover)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            All
-          </div>
-          {options.map(o => (
-            <div
-              key={o}
-              onClick={() => { onChange(o); setOpen(false); }}
-              style={{
-                padding: '8px 12px', cursor: 'pointer', fontSize: 13,
-                fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)',
-                background: o === value ? 'var(--cp-interact-selected)' : 'transparent',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = o === value ? 'var(--cp-interact-selected)' : 'var(--cp-interact-hover)')}
-              onMouseLeave={e => (e.currentTarget.style.background = o === value ? 'var(--cp-interact-selected)' : 'transparent')}
-            >
-              {o}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ══════════════════════════════════════════════════════════════════ */
-/* MAIN COMPONENT                                                    */
 /* ══════════════════════════════════════════════════════════════════ */
 export default function ReqAssistPipeline() {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerTab, setDrawerTab] = useState<'upload_pdf' | 'generate_text' | 'import_jira'>('upload_pdf');
   const [activeTab, setActiveTab] = useState<PipelineStage | 'all'>('all');
   const [search, setSearch] = useState('');
-  const [domainFilter, setDomainFilter] = useState<string | null>(null);
 
   const filters = useMemo(() => ({
     stage: activeTab,
     search: search || undefined,
-    domainTag: domainFilter || undefined,
-  }), [activeTab, search, domainFilter]);
+  }), [activeTab, search]);
 
   const { data: documents, isLoading } = useBrdDocuments(filters);
   const { data: stats, isLoading: statsLoading } = usePipelineStats();
-  const { data: domainTags } = useDomainTags();
-  const { data: epicCount } = useEpicCount();
   const { data: avgQuality } = useAvgQuality();
 
   const totalCount = useMemo(() => (stats || []).reduce((a, s) => a + s.count, 0), [stats]);
+  const processingCount = useMemo(() =>
+    (stats || []).filter(s => ['extract', 'process', 'validate'].includes(s.stage)).reduce((a, s) => a + s.count, 0),
+  [stats]);
+  const failedCount = useMemo(() =>
+    (stats || []).find(s => s.stage === 'failed' as any)?.count || 0,
+  [stats]);
 
   const tabCounts = useMemo(() => {
     const m: Record<string, number> = { all: totalCount };
@@ -184,281 +79,175 @@ export default function ReqAssistPipeline() {
   }, [stats, totalCount]);
 
   return (
-    <div style={{ padding: '24px 32px', fontFamily: 'var(--cp-font-body)' }}>
-      {/* ── Header ──────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+    <div className="ra-root" style={{ padding: '24px 32px' }}>
+
+      {/* ── HEADER ROW ───────────────────────────────────────────── */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>
-          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary)', margin: 0, lineHeight: 1.3 }}>
+          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 24, fontWeight: 700, color: 'var(--ra-text-pri)', margin: 0 }}>
             Req Assist™
           </h1>
-          <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-tertiary)', margin: '4px 0 0' }}>
-            Document Lifecycle Pipeline
+          <p style={{ fontSize: 14, color: 'var(--ra-text-ter)', margin: '4px 0 0' }}>
+            Document lifecycle pipeline — ingest, extract, validate and distribute BRDs
           </p>
         </div>
-        <button
-          onClick={() => setDrawerOpen(true)}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            height: 32, padding: '0 14px', borderRadius: 6, border: 'none',
-            background: 'var(--cp-primary-60)', color: '#FFFFFF',
-            fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-            cursor: 'pointer', transition: 'background 80ms',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-primary-70)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-primary-60)')}
-        >
-          <Plus size={14} />
-          New Document
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="ra-btn-ghost" onClick={() => { setDrawerTab('upload_pdf'); setDrawerOpen(true); }}>
+            <Upload size={14} /> Upload PDF
+          </button>
+          <button className="ra-btn-teal" onClick={() => { setDrawerTab('generate_text'); setDrawerOpen(true); }}>
+            <Sparkles size={14} /> Generate BRD
+          </button>
+        </div>
       </div>
 
-      {/* ── Stat Cards ──────────────────────────────────────────── */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
-        {(stats || STAGE_ORDER.map(s => ({ stage: s, count: 0, label: STAGE_LABELS[s] }))).map(s => {
-          const pill = stagePillStyle(s.stage);
-          return (
-            <div key={s.stage} style={{
-              flex: 1, minWidth: 140, padding: 16,
-              background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)',
-              borderRadius: 6, boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-            }}>
-              <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', color: 'var(--cp-text-tertiary)', marginBottom: 8, letterSpacing: '0.04em' }}>
-                {s.label}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                {statsLoading ? (
-                  <div style={{ height: 24, width: 48, borderRadius: 4, background: '#F1F5F9', animation: 'ra-skeleton 1.5s ease-in-out infinite' }} />
-                ) : (
-                  <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 650, color: 'var(--cp-text-primary)', lineHeight: 1 }}>
-                    {s.count}
-                  </span>
-                )}
-                {s.stage === 'process' && (
-                  <span style={{
-                    display: 'inline-flex', alignItems: 'center', padding: '1px 5px',
-                    borderRadius: 3, background: 'rgba(124,58,237,0.08)', color: 'var(--cp-purple-60)',
-                    fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                  }}>
-                    AI
-                  </span>
-                )}
-              </div>
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', padding: '2px 6px',
-                borderRadius: 3, background: pill.bg, color: pill.text,
-                fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-              }}>
-                {s.label}
-              </span>
-            </div>
-          );
-        })}
+      {/* ── JIRA SYNC BANNER ─────────────────────────────────────── */}
+      <div className="ra-sync">
+        <span className="ra-sync-dot" />
+        <span className="ra-sync-t">
+          <strong>Jira Connected</strong> — SEN project · Last synced 2 hours ago · {totalCount} documents
+        </span>
+        <button className="ra-sync-a"><RefreshCw size={12} style={{ marginRight: 4 }} />Sync Now</button>
+        <button className="ra-sync-a"><Settings size={12} style={{ marginRight: 4 }} />Settings</button>
       </div>
 
-      {/* ── Stage Filter Tabs ───────────────────────────────────── */}
-      <div style={{ display: 'flex', borderBottom: '1px solid var(--cp-border-default)', marginBottom: 0 }}>
-        {(['all', ...STAGE_ORDER] as (PipelineStage | 'all')[]).map(tab => {
-          const isActive = activeTab === tab;
-          return (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                height: 36, padding: '0 14px', border: 'none',
-                background: 'transparent', cursor: 'pointer',
-                fontFamily: 'var(--cp-font-body)', fontSize: 13,
-                fontWeight: isActive ? 650 : 500,
-                color: isActive ? 'var(--cp-primary-60)' : 'var(--cp-text-secondary)',
-                borderBottom: isActive ? '2px solid var(--cp-primary-60)' : '2px solid transparent',
-                transition: 'background 80ms',
-                marginBottom: -1,
-              }}
-              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--cp-interact-hover)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-            >
-              {STAGE_LABELS[tab]}
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                padding: '0 6px', borderRadius: 10, minWidth: 20, height: 18,
-                background: 'var(--cp-bg-sunken)', color: 'var(--cp-text-tertiary)',
-                fontSize: 11, fontWeight: 500,
-              }}>
-                {tabCounts[tab] ?? 0}
-              </span>
-            </button>
-          );
-        })}
+      {/* ── STAT CARDS — 5 cards ─────────────────────────────────── */}
+      <div className="ra-stats">
+        <div className="ra-stat">
+          <div className="ra-stat-val" style={{ color: 'var(--ra-text-pri)' }}>
+            {statsLoading ? <div className="ra-skel" style={{ height: 24, width: 48 }} /> : totalCount}
+          </div>
+          <div className="ra-stat-label">Total Documents</div>
+        </div>
+        <div className="ra-stat">
+          <div className="ra-stat-val" style={{ color: 'var(--ra-blue)' }}>
+            {statsLoading ? <div className="ra-skel" style={{ height: 24, width: 48 }} /> : processingCount}
+          </div>
+          <div className="ra-stat-label">In Progress</div>
+        </div>
+        <div className="ra-stat">
+          <div className="ra-stat-val" style={{ color: 'var(--ra-danger)' }}>
+            {statsLoading ? <div className="ra-skel" style={{ height: 24, width: 48 }} /> : failedCount}
+          </div>
+          <div className="ra-stat-label">Failed</div>
+        </div>
+        <div className="ra-stat">
+          <div className="ra-stat-val" style={{ color: 'var(--ra-purple)' }}>
+            {statsLoading ? <div className="ra-skel" style={{ height: 24, width: 48 }} /> : (avgQuality !== null && avgQuality !== undefined ? `${avgQuality}%` : '—')}
+          </div>
+          <div className="ra-stat-label">Avg Quality Score</div>
+        </div>
+        <div className="ra-stat">
+          <div className="ra-stat-val" style={{ color: 'var(--ra-text-pri)' }}>—</div>
+          <div className="ra-stat-label">Avg Processing Time</div>
+        </div>
       </div>
 
-      {/* ── Toolbar ─────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 40, padding: '4px 0', marginBottom: 0 }}>
+      {/* ── STAGE FILTER TABS ────────────────────────────────────── */}
+      <div className="ra-stabs">
+        {(['all', ...STAGE_ORDER] as (PipelineStage | 'all')[]).map(tab => (
+          <button
+            key={tab}
+            className={`ra-stab ${activeTab === tab ? 'active' : ''}`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {STAGE_LABELS[tab]}
+            <span className="ra-pill">{tabCounts[tab] ?? 0}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* ── TOOLBAR ──────────────────────────────────────────────── */}
+      <div style={{ display: 'flex', alignItems: 'center', padding: '10px 0' }}>
         <div style={{
-          display: 'flex', alignItems: 'center', width: 260, height: 32,
-          border: '1px solid var(--cp-border-default)', borderRadius: 4,
-          padding: '0 8px', gap: 6,
+          display: 'flex', alignItems: 'center', width: 280, height: 32,
+          border: '1px solid var(--ra-border-def)', borderRadius: 4, padding: '0 8px', gap: 6,
         }}>
-          <Search size={14} style={{ color: 'var(--cp-text-muted)', flexShrink: 0 }} />
+          <Search size={14} style={{ color: 'var(--ra-text-muted)', flexShrink: 0 }} />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search documents..."
-            style={{
-              border: 'none', outline: 'none', background: 'transparent', width: '100%',
-              fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-primary)',
-            }}
-          />
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <CustomDropdown
-            value={domainFilter}
-            options={domainTags || []}
-            placeholder="Domain"
-            onChange={setDomainFilter}
+            className="ra-input"
+            style={{ border: 'none', padding: 0, height: 30 }}
           />
         </div>
       </div>
 
-      {/* ── Document Table ──────────────────────────────────────── */}
-      <div style={{
-        border: '1px solid var(--cp-border-default)', borderRadius: 6, overflow: 'hidden',
-      }}>
-        {/* Header */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '2fr 130px 180px 100px 120px 100px 110px 80px',
-          background: 'var(--cp-bg-sunken)', padding: '0 12px',
-          borderBottom: '0.75px solid var(--cp-border-subtle)',
-        }}>
-          {['Document', 'Stage', 'Domain', 'Quality', 'Source', 'Artifacts', 'Created', ''].map(h => (
-            <div key={h} style={{
-              padding: '10px 0', fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 500,
-              textTransform: 'uppercase', color: 'var(--cp-text-tertiary)', letterSpacing: '0.04em',
-            }}>
-              {h}
-            </div>
-          ))}
-        </div>
-
-        {/* Loading skeleton */}
-        {isLoading && Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} style={{
-            display: 'grid',
-            gridTemplateColumns: '2fr 130px 180px 100px 120px 100px 110px 80px',
-            padding: '0 12px', height: 36, maxHeight: 36, alignItems: 'center',
-            borderBottom: '0.75px solid var(--cp-border-subtle)',
-          }}>
-            {Array.from({ length: 8 }).map((_, j) => (
-              <div key={j} style={{
-                height: 14, width: j === 0 ? '70%' : '60%', borderRadius: 3,
-                background: 'var(--cp-bg-sunken)', animation: 'ra-skeleton 1.5s ease-in-out infinite',
-              }} />
+      {/* ── DOCUMENT TABLE ───────────────────────────────────────── */}
+      <div className="ra-tc">
+        <table className="ra-tb">
+          <thead>
+            <tr>
+              <th>Document</th>
+              <th>Title</th>
+              <th>Stage</th>
+              <th>Quality</th>
+              <th>Artifacts</th>
+              <th>Status</th>
+              <th>Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading && Array.from({ length: 5 }).map((_, i) => (
+              <tr key={i}>
+                {Array.from({ length: 7 }).map((_, j) => (
+                  <td key={j}><div className="ra-skel" style={{ height: 14, width: j === 1 ? '80%' : '60%' }} /></td>
+                ))}
+              </tr>
             ))}
-          </div>
-        ))}
 
-        {/* Empty state */}
-        {!isLoading && documents && documents.length === 0 && (
-          <div style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            minHeight: 200, gap: 8,
-          }}>
-            <FileSearch size={32} style={{ color: 'var(--cp-text-muted)' }} />
-            <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 15, color: 'var(--cp-text-secondary)' }}>
-              No documents found
-            </span>
-            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-tertiary)' }}>
-              Try adjusting your filter or add a new document.
-            </span>
-            <button
-              onClick={() => setDrawerOpen(true)}
-              style={{
-                marginTop: 8, height: 32, padding: '0 14px', borderRadius: 6,
-                border: '1px solid var(--cp-border-default)', background: 'var(--cp-bg-surface)',
-                fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-                color: 'var(--cp-text-primary)', cursor: 'pointer',
-              }}
-            >
-              Add Document
-            </button>
+            {!isLoading && documents && documents.length === 0 && (
+              <tr>
+                <td colSpan={7} style={{ textAlign: 'center', padding: 32, color: 'var(--ra-text-muted)' }}>
+                  No documents found
+                </td>
+              </tr>
+            )}
+
+            {!isLoading && documents && documents.map(doc => (
+              <tr key={doc.id} onClick={() => navigate(`/product/req-assist/${doc.id}`)}>
+                <td>
+                  <span className="ra-brd-id">{doc.jira_key || '—'}</span>
+                </td>
+                <td style={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={doc.title}>
+                  {doc.title.length > 48 ? doc.title.slice(0, 48) + '…' : doc.title}
+                </td>
+                <td>
+                  <span className={stageLozengeClass(doc.pipeline_stage)}>
+                    {STAGE_LABELS[doc.pipeline_stage]}
+                  </span>
+                </td>
+                <td>
+                  {doc.quality_score !== null ? (
+                    <div className="ra-qs">
+                      <span className="ra-qn" style={{ color: qualityColor(doc.quality_score) }}>{doc.quality_score}</span>
+                      <div className="ra-qbar">
+                        <div className="ra-qfill" style={{ width: `${doc.quality_score}%`, background: qualityColor(doc.quality_score) }} />
+                      </div>
+                    </div>
+                  ) : (
+                    <span style={{ color: 'var(--ra-text-muted)' }}>—</span>
+                  )}
+                </td>
+                <td style={{ color: 'var(--ra-text-ter)' }}>—</td>
+                <td style={{ color: 'var(--ra-text-ter)', fontSize: 12 }}>
+                  {doc.pipeline_stage === 'complete' ? 'complete' : doc.pipeline_stage === 'failed' ? 'failed' : 'in_progress'}
+                </td>
+                <td style={{ color: 'var(--ra-text-ter)' }}>{relativeTime(doc.updated_at)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {!isLoading && documents && documents.length > 0 && (
+          <div className="ra-pgn">
+            <span>Showing {documents.length} of {totalCount} documents</span>
           </div>
         )}
-
-        {/* Rows */}
-        {!isLoading && documents && documents.map(doc => (
-          <div
-            key={doc.id}
-            onClick={() => navigate(`/product/req-assist/${doc.id}`)}
-            className="ra-table-row"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '2fr 130px 180px 100px 120px 100px 110px 80px',
-              padding: '0 12px', height: 36, maxHeight: 36, alignItems: 'center',
-              borderBottom: '0.75px solid var(--cp-border-subtle)',
-              cursor: 'pointer', transition: 'background 80ms',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-interact-hover)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            {/* Document */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-              {doc.jira_key && (
-                <span style={{
-                  fontFamily: 'var(--cp-font-mono)', fontSize: 11,
-                  background: 'var(--cp-bg-sunken)', borderRadius: 3, padding: '2px 5px',
-                  color: 'var(--cp-text-tertiary)', whiteSpace: 'nowrap', flexShrink: 0,
-                }}>
-                  {doc.jira_key}
-                </span>
-              )}
-              <span style={{
-                fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-                color: 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>
-                {doc.title}
-              </span>
-            </div>
-            {/* Stage */}
-            <div><StageLozenge stage={doc.pipeline_stage} /></div>
-            {/* Domain */}
-            <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {doc.domain_tag || '—'}
-            </div>
-            {/* Quality */}
-            <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: qualityColor(doc.quality_score) }}>
-              {doc.quality_score !== null ? `${doc.quality_score} / 100` : '—'}
-            </div>
-            {/* Source */}
-            <div><SourceCell type={doc.source_type} /></div>
-            {/* Artifacts */}
-            <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-tertiary)' }}>
-              —
-            </div>
-            {/* Created */}
-            <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-tertiary)' }}>
-              {relativeTime(doc.created_at)}
-            </div>
-            {/* Action — hidden at rest */}
-            <div className="ra-row-action" style={{ opacity: 0, transition: 'opacity 80ms' }}>
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: 3,
-                fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 500,
-                color: 'var(--cp-primary-60)', cursor: 'pointer',
-              }}>
-                View <ArrowRight size={12} />
-              </span>
-            </div>
-          </div>
-        ))}
       </div>
 
-      {/* Intake Drawer */}
-      <ReqAssistIntakeDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-
-      {/* Row hover CSS for action visibility */}
-      <style>{`
-        .ra-table-row:hover .ra-row-action { opacity: 1 !important; }
-      `}</style>
+      {/* ── Intake Drawer ────────────────────────────────────────── */}
+      <ReqAssistIntakeDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} initialTab={drawerTab} />
     </div>
   );
 }
