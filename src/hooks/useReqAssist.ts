@@ -8,6 +8,8 @@ import {
   fetchStageStats,
   fetchEpicCount,
   fetchAvgQuality,
+  fetchAvgProcessingTime,
+  fetchEpicCountsByDoc,
   createBrdDocument,
   updateDocumentStage,
   enqueueDocument,
@@ -27,6 +29,8 @@ export const reqAssistKeys = {
   stats: () => [...reqAssistKeys.all, 'stats'] as const,
   epicCount: () => [...reqAssistKeys.all, 'epic-count'] as const,
   avgQuality: () => [...reqAssistKeys.all, 'avg-quality'] as const,
+  avgProcessingTime: () => [...reqAssistKeys.all, 'avg-processing-time'] as const,
+  epicCountsByDoc: (ids: string[]) => [...reqAssistKeys.all, 'epic-counts-by-doc', ids] as const,
   domainTags: () => [...reqAssistKeys.all, 'domain-tags'] as const,
 };
 
@@ -84,6 +88,23 @@ export function useAvgQuality() {
   return useQuery({
     queryKey: reqAssistKeys.avgQuality(),
     queryFn: fetchAvgQuality,
+    staleTime: 30_000,
+  });
+}
+
+export function useAvgProcessingTime() {
+  return useQuery({
+    queryKey: reqAssistKeys.avgProcessingTime(),
+    queryFn: fetchAvgProcessingTime,
+    staleTime: 30_000,
+  });
+}
+
+export function useEpicCountsByDoc(docIds: string[]) {
+  return useQuery({
+    queryKey: reqAssistKeys.epicCountsByDoc(docIds),
+    queryFn: () => fetchEpicCountsByDoc(docIds),
+    enabled: docIds.length > 0,
     staleTime: 30_000,
   });
 }
