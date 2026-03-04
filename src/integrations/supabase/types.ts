@@ -275,6 +275,160 @@ export type Database = {
           },
         ]
       }
+      brd_documents: {
+        Row: {
+          content_hash: string | null
+          created_at: string
+          domain_tag: string | null
+          extraction_tier: number | null
+          id: string
+          jira_key: string | null
+          json_data: Json | null
+          language: string
+          methodology: string | null
+          original_url: string | null
+          pipeline_stage: Database["public"]["Enums"]["pipeline_stage_enum"]
+          processed_at: string | null
+          quality_score: number | null
+          raw_text: string | null
+          source_type: Database["public"]["Enums"]["source_type_enum"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content_hash?: string | null
+          created_at?: string
+          domain_tag?: string | null
+          extraction_tier?: number | null
+          id?: string
+          jira_key?: string | null
+          json_data?: Json | null
+          language?: string
+          methodology?: string | null
+          original_url?: string | null
+          pipeline_stage?: Database["public"]["Enums"]["pipeline_stage_enum"]
+          processed_at?: string | null
+          quality_score?: number | null
+          raw_text?: string | null
+          source_type?: Database["public"]["Enums"]["source_type_enum"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content_hash?: string | null
+          created_at?: string
+          domain_tag?: string | null
+          extraction_tier?: number | null
+          id?: string
+          jira_key?: string | null
+          json_data?: Json | null
+          language?: string
+          methodology?: string | null
+          original_url?: string | null
+          pipeline_stage?: Database["public"]["Enums"]["pipeline_stage_enum"]
+          processed_at?: string | null
+          quality_score?: number | null
+          raw_text?: string | null
+          source_type?: Database["public"]["Enums"]["source_type_enum"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      brd_epics: {
+        Row: {
+          acceptance_criteria: Json | null
+          brd_id: string
+          brd_sections: Json | null
+          complexity: Database["public"]["Enums"]["complexity_enum"]
+          created_at: string
+          description: string | null
+          epic_key: string
+          id: string
+          invest_score: Json | null
+          stories: Json | null
+          title: string
+        }
+        Insert: {
+          acceptance_criteria?: Json | null
+          brd_id: string
+          brd_sections?: Json | null
+          complexity?: Database["public"]["Enums"]["complexity_enum"]
+          created_at?: string
+          description?: string | null
+          epic_key: string
+          id?: string
+          invest_score?: Json | null
+          stories?: Json | null
+          title: string
+        }
+        Update: {
+          acceptance_criteria?: Json | null
+          brd_id?: string
+          brd_sections?: Json | null
+          complexity?: Database["public"]["Enums"]["complexity_enum"]
+          created_at?: string
+          description?: string | null
+          epic_key?: string
+          id?: string
+          invest_score?: Json | null
+          stories?: Json | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brd_epics_brd_id_fkey"
+            columns: ["brd_id"]
+            isOneToOne: false
+            referencedRelation: "brd_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brd_processing_queue: {
+        Row: {
+          attempts: number
+          brd_id: string
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          max_attempts: number
+          started_at: string | null
+          status: Database["public"]["Enums"]["queue_status_enum"]
+        }
+        Insert: {
+          attempts?: number
+          brd_id: string
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          max_attempts?: number
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["queue_status_enum"]
+        }
+        Update: {
+          attempts?: number
+          brd_id?: string
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          max_attempts?: number
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["queue_status_enum"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brd_processing_queue_brd_id_fkey"
+            columns: ["brd_id"]
+            isOneToOne: false
+            referencedRelation: "brd_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       budget_scenarios: {
         Row: {
           avg_extension_months: number | null
@@ -68592,6 +68746,7 @@ export type Database = {
         | "rca"
         | "system"
       committee_status: "pending" | "approved" | "rejected"
+      complexity_enum: "XS" | "S" | "M" | "L" | "XL"
       compliance_state: "compliant" | "exception_recorded"
       confidence_level: "high" | "med" | "low"
       delete_type: "soft" | "permanent"
@@ -68835,6 +68990,14 @@ export type Database = {
         | "configure"
       permission_scope: "global" | "portfolio" | "program" | "team"
       pi_state: "planned" | "active" | "closed"
+      pipeline_stage_enum:
+        | "intake"
+        | "extract"
+        | "process"
+        | "validate"
+        | "distribute"
+        | "complete"
+        | "failed"
       planhub_audit_action:
         | "create"
         | "update"
@@ -68851,6 +69014,15 @@ export type Database = {
       portfolio_status: "active" | "archived"
       priority_level: "P1" | "P2" | "P3" | "P4"
       program_status: "active" | "archived"
+      queue_status_enum:
+        | "pending"
+        | "extracting"
+        | "extracted"
+        | "processing"
+        | "processed"
+        | "distributing"
+        | "complete"
+        | "failed"
       r360_hub:
         | "StrategyHub"
         | "ProductHub"
@@ -68942,6 +69114,11 @@ export type Database = {
         | "intermediate"
         | "advanced"
         | "expert"
+      source_type_enum:
+        | "jira_webhook"
+        | "jira_bulk"
+        | "manual_upload"
+        | "ai_generated"
       space_access: "private" | "team" | "organization"
       space_status: "active" | "archived" | "trashed"
       space_type: "kanban" | "business" | "service"
@@ -69294,6 +69471,7 @@ export const Constants = {
         "system",
       ],
       committee_status: ["pending", "approved", "rejected"],
+      complexity_enum: ["XS", "S", "M", "L", "XL"],
       compliance_state: ["compliant", "exception_recorded"],
       confidence_level: ["high", "med", "low"],
       delete_type: ["soft", "permanent"],
@@ -69561,6 +69739,15 @@ export const Constants = {
       ],
       permission_scope: ["global", "portfolio", "program", "team"],
       pi_state: ["planned", "active", "closed"],
+      pipeline_stage_enum: [
+        "intake",
+        "extract",
+        "process",
+        "validate",
+        "distribute",
+        "complete",
+        "failed",
+      ],
       planhub_audit_action: [
         "create",
         "update",
@@ -69578,6 +69765,16 @@ export const Constants = {
       portfolio_status: ["active", "archived"],
       priority_level: ["P1", "P2", "P3", "P4"],
       program_status: ["active", "archived"],
+      queue_status_enum: [
+        "pending",
+        "extracting",
+        "extracted",
+        "processing",
+        "processed",
+        "distributing",
+        "complete",
+        "failed",
+      ],
       r360_hub: [
         "StrategyHub",
         "ProductHub",
@@ -69677,6 +69874,12 @@ export const Constants = {
         "intermediate",
         "advanced",
         "expert",
+      ],
+      source_type_enum: [
+        "jira_webhook",
+        "jira_bulk",
+        "manual_upload",
+        "ai_generated",
       ],
       space_access: ["private", "team", "organization"],
       space_status: ["active", "archived", "trashed"],
