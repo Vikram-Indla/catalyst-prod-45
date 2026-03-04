@@ -1,6 +1,9 @@
 # Catalyst - Jira Align Portfolio Management
 
+> Operational note: documentation refreshed to trigger a clean deployment workflow.
+
 A comprehensive SAFe (Scaled Agile Framework) portfolio management application built with modern web technologies.
+
 
 ## Project info
 
