@@ -785,6 +785,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
   const doneRef = useRef<HTMLDivElement>(null);
   const [W, setW] = useState(1000);
   const [showDone, setShowDone] = useState(false);
+  const [ringPage, setRingPage] = useState(0);
 
   const measure = useCallback(() => {
     if (canvasRef.current) setW(canvasRef.current.offsetWidth);
@@ -813,10 +814,15 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
   }, [showDone]);
 
   const nonDone = items.filter(i => i.status_category !== 'done');
+  // Reset page when items change
+  useEffect(() => { setRingPage(0); }, [items.length]);
   const doneItems = items.filter(i => i.status_category === 'done');
   const doneCount = doneItems.length;
   const totalItems = items.length;
-  const visible = nonDone.slice(0, 8);
+  const PAGE_SIZE = 8;
+  const totalPages = Math.max(1, Math.ceil(nonDone.length / PAGE_SIZE));
+  const safePage = Math.min(ringPage, totalPages - 1);
+  const visible = nonDone.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
   const showSummaryCard = nonDone.length <= 2;
 
   const CX = W / 2;
@@ -1151,13 +1157,38 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
       })}
 
       {/* SHOWING X OF N INDICATOR */}
-      {nonDone.length > 8 && (
+      {nonDone.length > PAGE_SIZE && (
         <div style={{
           position: 'absolute', bottom: '8px', left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', alignItems: 'center', gap: '8px',
           fontSize: '11px', fontWeight: 600, color: '#64748B', background: '#F8FAFC',
-          border: '1px solid #E2E8F0', borderRadius: '10px', padding: '3px 12px',
+          border: '1px solid #E2E8F0', borderRadius: '10px', padding: '3px 8px',
           fontFamily: "'JetBrains Mono', monospace", zIndex: 8,
-        }}>Showing 8 of {nonDone.length}</div>
+        }}>
+          <button
+            onClick={(e) => { e.stopPropagation(); setRingPage(p => Math.max(0, p - 1)); }}
+            disabled={safePage === 0}
+            style={{
+              background: 'none', border: 'none', cursor: safePage === 0 ? 'default' : 'pointer',
+              color: safePage === 0 ? '#CBD5E1' : '#2563EB', fontSize: '13px', fontWeight: 700,
+              padding: '0 4px', lineHeight: 1,
+            }}
+            aria-label="Previous page"
+          >‹</button>
+          <span>
+            {safePage * PAGE_SIZE + 1}–{Math.min((safePage + 1) * PAGE_SIZE, nonDone.length)} of {nonDone.length}
+          </span>
+          <button
+            onClick={(e) => { e.stopPropagation(); setRingPage(p => Math.min(totalPages - 1, p + 1)); }}
+            disabled={safePage >= totalPages - 1}
+            style={{
+              background: 'none', border: 'none', cursor: safePage >= totalPages - 1 ? 'default' : 'pointer',
+              color: safePage >= totalPages - 1 ? '#CBD5E1' : '#2563EB', fontSize: '13px', fontWeight: 700,
+              padding: '0 4px', lineHeight: 1,
+            }}
+            aria-label="Next page"
+          >›</button>
+        </div>
       )}
 
       {/* COMPLETED BADGE — always shown */}
