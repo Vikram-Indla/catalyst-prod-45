@@ -10,7 +10,7 @@ import { computeCarriedFromLabel } from '@/services/r360Service';
 import { R360_DEPT_COLORS, R360_PROJECT_COLORS } from '@/constants/r360';
 import { initials, slugify, ageBarPercent, ageBarColor, formatRelativeDate, formatDate } from '@/utils/r360Utils';
 import { getJiraIcon } from '@/components/r360/R360JiraIcons';
-import { ChevronLeft, ChevronRight, Calendar, X, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, X, ChevronDown, ChevronUp } from 'lucide-react';
 import type { R360WorkItem, R360ViewType, R360Filters } from '@/types/r360';
 import '@/styles/r360.css';
 import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
@@ -95,6 +95,174 @@ function MiniAvatar({ name, size = 20 }: { name: string; size?: number }) {
       color: '#FFF', fontSize: size * 0.48, fontWeight: 700, flexShrink: 0,
       cursor: 'default', lineHeight: 1,
     }}>{ini}</span>
+  );
+}
+
+// ═══════════════════════════════════════════
+// COLLAPSIBLE WEEK STRIP — V12 Redesign
+// ═══════════════════════════════════════════
+function getSaudiWorkDays(periodStart: Date): { name: string; date: Date }[] {
+  // Saudi work week: Sun–Thu
+  const days: { name: string; date: Date }[] = [];
+  const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU'];
+  const d = new Date(periodStart);
+  // Find Sunday
+  while (d.getDay() !== 0) d.setDate(d.getDate() + 1);
+  for (let i = 0; i < 5; i++) {
+    days.push({ name: dayNames[i], date: new Date(d) });
+    d.setDate(d.getDate() + 1);
+  }
+  return days;
+}
+
+function getWeekCells(periodStart: Date): { label: string; weekNum: number; date: Date }[] {
+  const cells: { label: string; weekNum: number; date: Date }[] = [];
+  const d = new Date(periodStart);
+  for (let i = 0; i < 5; i++) {
+    const weekOfYear = Math.ceil((((d.getTime() - new Date(d.getFullYear(), 0, 1).getTime()) / 86400000) + 1) / 7);
+    cells.push({ label: `W${weekOfYear}`, weekNum: weekOfYear, date: new Date(d) });
+    d.setDate(d.getDate() + 7);
+  }
+  return cells;
+}
+
+function WeekStripCollapsible({
+  periodType, onPeriodTypeChange, weekOffset, onNavigatePeriod, period,
+  weekItems, allOpenItems, allStaleItems, counts, statusFilter, setStatusFilter,
+}: {
+  periodType: PeriodType;
+  onPeriodTypeChange: (t: PeriodType) => void;
+  weekOffset: number;
+  onNavigatePeriod: (dir: -1 | 1) => void;
+  period: { start: Date; end: Date; label: string; range: string };
+  weekItems: R360WorkItem[];
+  allOpenItems: R360WorkItem[];
+  allStaleItems: R360WorkItem[];
+  counts: { all: number; to_do: number; in_progress: number; in_qa: number; done: number; blocked: number };
+  statusFilter: string | null;
+  setStatusFilter: (s: string | null) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+
+  const openCount = allOpenItems.length;
+  const staleCount = allStaleItems.length;
+  const doneCount = counts.done;
+  const touchedCount = weekItems.filter(i => i.status_category !== 'to_do').length;
+  const totalCount = weekItems.length;
+  const isLive = weekOffset === 0;
+  const today = new Date();
+
+  const dayCells = useMemo(() => periodType === 'weekly' ? getSaudiWorkDays(period.start) : getWeekCells(period.start), [periodType, period.start]);
+
+  return (
+    <div style={{ padding: '10px 0', borderBottom: '1px solid #F1F5F9' }}>
+      {/* Top toolbar: Toggle + Date + Mode Badge + Nav arrows */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' as const }}>
+        {/* Prominent Period Toggle */}
+        <div className="r3-period-toggle">
+          <button className={periodType === 'weekly' ? 'active' : ''} onClick={() => onPeriodTypeChange('weekly')}>Weekly</button>
+          <button className={periodType === 'monthly' ? 'active' : ''} onClick={() => onPeriodTypeChange('monthly')}>Monthly</button>
+        </div>
+
+        <div style={{ width: '1px', height: '20px', background: '#E2E8F0' }} />
+        <span style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>📅 {period.label}</span>
+        <span style={{ fontSize: '13px', fontWeight: 500, color: '#334155' }}>{period.range}</span>
+
+        {/* Mode Badge */}
+        <span className={`r3-mode-badge ${isLive ? 'live' : 'snapshot'}`}>
+          {isLive ? 'LIVE' : 'SNAPSHOT'}
+        </span>
+
+        <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(-1)}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#FFF'; }}
+        >‹</button>
+        <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(1)}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#FFF'; }}
+        >›</button>
+
+        <div style={{ width: '1px', height: '20px', background: '#E2E8F0', margin: '0 4px' }} />
+        {/* Status filter tabs */}
+        {([
+          { key: null, label: `All (${counts.all})` },
+          { key: 'to_do', label: `To Do (${counts.to_do})` },
+          { key: 'in_progress', label: `In Prog (${counts.in_progress})` },
+        ] as const).map(f => {
+          const isActive = statusFilter === f.key || (f.key === null && !statusFilter);
+          return (
+            <span key={f.key ?? 'all'} onClick={() => setStatusFilter(statusFilter === f.key ? null : f.key)} style={{
+              padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
+              borderRadius: '6px', cursor: 'pointer', transition: 'all var(--cp-duration-fast, 0.15s) ease',
+              background: isActive ? 'rgba(37,99,235,0.10)' : 'transparent',
+              color: isActive ? '#2563EB' : '#64748B',
+              border: 'none',
+            }}
+            onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
+            onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = isActive ? 'rgba(37,99,235,0.10)' : 'transparent'; }}
+            >{f.label}</span>
+          );
+        })}
+        <span style={{ marginLeft: 'auto', fontSize: '12.5px', color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>{weekItems.length} items</span>
+      </div>
+
+      {/* Collapsible Week Strip */}
+      <div className="r3-week-strip">
+        {/* Summary bar — 44px collapsed */}
+        <div className="r3-week-strip-summary" onClick={() => setExpanded(!expanded)}>
+          <span className="r3-week-strip-left">
+            {openCount} open · {staleCount} stale · {doneCount} done
+          </span>
+          <div className="r3-week-strip-center">
+            <div className="r3-week-strip-bar-track">
+              <div className="r3-week-strip-bar-fill" style={{ width: `${totalCount > 0 ? (touchedCount / totalCount) * 100 : 0}%` }} />
+            </div>
+            <span className="r3-week-strip-label">{touchedCount} of {totalCount} touched</span>
+          </div>
+          <div className={`r3-week-strip-chevron ${expanded ? 'open' : ''}`}>
+            <ChevronDown size={16} />
+          </div>
+        </div>
+
+        {/* Expandable grid */}
+        <div className={`r3-week-strip-grid ${expanded ? 'open' : ''} ${periodType}`}>
+          {dayCells.map((cell, i) => {
+            const isToday = periodType === 'weekly' && cell.date.toDateString() === today.toDateString();
+            const isFuture = cell.date > today;
+            const isSelected = selectedDay === i;
+            const dateStr = cell.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            // Simple mock: distribute items across days
+            const dayDone = Math.floor(doneCount / 5);
+            const dayTotal = Math.floor(totalCount / 5);
+            return (
+              <div
+                key={i}
+                className={`r3-day-cell ${isToday ? 'today' : ''} ${isFuture ? 'future' : ''} ${isSelected ? 'selected' : ''}`}
+                onClick={(e) => { e.stopPropagation(); setSelectedDay(isSelected ? null : i); }}
+              >
+                <div>
+                  <div className="r3-day-cell-name">{periodType === 'weekly' ? cell.name : (cell as any).label}</div>
+                  <div className="r3-day-cell-date">{dateStr}</div>
+                </div>
+                <div className="r3-day-cell-right">
+                  {isFuture ? (
+                    <span className="r3-day-cell-count">—</span>
+                  ) : (
+                    <>
+                      <div className="r3-day-cell-minibar">
+                        <div className="r3-day-cell-minibar-fill" style={{ width: `${dayTotal > 0 ? (dayDone / dayTotal) * 100 : 0}%` }} />
+                      </div>
+                      <span className="r3-day-cell-count">{dayDone}/{dayTotal}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -336,62 +504,20 @@ export default function R360MemberDetail() {
           </div>
         </div>
 
-        {/* ── Period Navigation — §8 filter tabs ── */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 0', borderBottom: '1px solid #F1F5F9', flexWrap: 'wrap' as const }}>
-          {/* Period Type Toggle */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', background: '#F8FAFC', borderRadius: '8px', padding: '2px', border: '1px solid #E2E8F0' }}>
-            <button
-              onClick={() => handlePeriodTypeChange('weekly')}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 80ms ease',
-                background: periodType === 'weekly' ? '#FFFFFF' : 'transparent',
-                color: periodType === 'weekly' ? '#0F172A' : '#64748B',
-                boxShadow: periodType === 'weekly' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-              }}
-            >
-              <Calendar size={13} /> Weekly
-            </button>
-            <button
-              onClick={() => handlePeriodTypeChange('monthly')}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 80ms ease',
-                background: periodType === 'monthly' ? '#FFFFFF' : 'transparent',
-                color: periodType === 'monthly' ? '#0F172A' : '#64748B',
-                boxShadow: periodType === 'monthly' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-              }}
-            >
-              <Calendar size={13} /> Monthly
-            </button>
-          </div>
-
-          <div style={{ width: '1px', height: '20px', background: '#E2E8F0' }} />
-          <span style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>📅 {period.label}</span>
-          <span style={{ fontSize: '13px', fontWeight: 500, color: '#334155' }}>{period.range}</span>
-          <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigatePeriod(-1)}>‹</button>
-          <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigatePeriod(1)}>›</button>
-          <div style={{ width: '1px', height: '20px', background: '#E2E8F0', margin: '0 4px' }} />
-          {/* §8 — V12 filter tabs */}
-          {([
-            { key: null, label: `All (${counts.all})` },
-            { key: 'to_do', label: `To Do (${counts.to_do})` },
-            { key: 'in_progress', label: `In Prog (${counts.in_progress})` },
-          ] as const).map(f => {
-            const isActive = statusFilter === f.key || (f.key === null && !statusFilter);
-            return (
-              <span key={f.key ?? 'all'} onClick={() => setStatusFilter(statusFilter === f.key ? null : f.key)} style={{
-                padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
-                borderRadius: '6px', cursor: 'pointer', transition: 'all 80ms ease',
-                background: isActive ? 'rgba(37,99,235,0.10)' : 'transparent',
-                color: isActive ? '#2563EB' : '#64748B',
-                border: 'none',
-              }}
-              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
-              onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
-              >{f.label}</span>
-            );
-          })}
-          <span style={{ marginLeft: 'auto', fontSize: '12.5px', color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>{weekItems.length} items</span>
-        </div>
+        {/* ── Period Navigation — V12 Redesign ── */}
+        <WeekStripCollapsible
+          periodType={periodType}
+          onPeriodTypeChange={handlePeriodTypeChange}
+          weekOffset={weekOffset}
+          onNavigatePeriod={navigatePeriod}
+          period={period}
+          weekItems={weekItems}
+          allOpenItems={allOpenItems}
+          allStaleItems={allStaleItems}
+          counts={counts}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+        />
         </div>{/* end sticky wrapper */}
 
         {/* ── Views ── */}
