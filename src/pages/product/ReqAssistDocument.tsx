@@ -7,6 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Check, Sparkles, FileText, Braces, FileCheck,
   BookOpen, Zap, TestTube, File, Download, Upload, Search, BarChart3, Shield,
+  Inbox, FileSearch, Cpu, ShieldCheck, Send, CheckCircle2,
 } from 'lucide-react';
 import { useBrdDocument, useBrdEpics } from '@/hooks/useReqAssist';
 import type { PipelineStage, ArtifactNode, QualityAxes } from '@/types/reqAssist';
@@ -18,12 +19,12 @@ const STAGE_LABELS: Record<PipelineStage, string> = {
   validate: 'Validate', distribute: 'Distribute', complete: 'Complete', failed: 'Failed',
 };
 const STAGE_ICONS: Record<PipelineStage, React.ReactNode> = {
-  intake: <Download size={14} />,
-  extract: <Search size={14} />,
-  process: <Sparkles size={14} />,
-  validate: <Shield size={14} />,
-  distribute: <Upload size={14} />,
-  complete: <Check size={14} />,
+  intake: <Inbox size={14} />,
+  extract: <FileSearch size={14} />,
+  process: <Cpu size={14} />,
+  validate: <ShieldCheck size={14} />,
+  distribute: <Send size={14} />,
+  complete: <CheckCircle2 size={14} />,
   failed: <File size={14} />,
 };
 
@@ -105,8 +106,9 @@ if (typeof document !== 'undefined' && !document.getElementById(KEYFRAMES_ID)) {
   style.id = KEYFRAMES_ID;
   style.textContent = `
     @keyframes ra-active-pulse {
-      0%, 100% { box-shadow: 0 0 0 4px rgba(37,99,235,0.2); transform: scale(1); }
-      50% { box-shadow: 0 0 0 6px rgba(37,99,235,0.1); transform: scale(1.08); }
+      0%   { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
+      70%  { box-shadow: 0 0 0 8px rgba(37,99,235,0); }
+      100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
     }
   `;
   document.head.appendChild(style);
@@ -238,7 +240,6 @@ export default function ReqAssistDocument() {
     <div style={{
       padding: '24px 32px',
       fontFamily: "'Inter', sans-serif",
-      height: '100%',
       overflowY: 'auto',
     }}>
       {/* ── Back link ─────────────────────────────────────────── */}
@@ -289,18 +290,18 @@ export default function ReqAssistDocument() {
       <div style={{
         position: 'relative',
         display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-        padding: '20px 0 8px', marginBottom: 24, height: 64,
+        padding: '20px 0 8px', marginBottom: 24, height: 72,
       }}>
         {/* Base connector line */}
         <div style={{
-          position: 'absolute', top: 34, left: 28, right: 28,
+          position: 'absolute', top: 36, left: 32, right: 32,
           height: 2, background: '#E2E8F0', zIndex: 0,
         }} />
         {/* Completed connector overlay */}
         {currentIdx > 0 && (
           <div style={{
-            position: 'absolute', top: 34, left: 28,
-            width: `calc(${((currentIdx) / (STAGES.length - 1)) * 100}% - 56px)`,
+            position: 'absolute', top: 36, left: 32,
+            width: `calc(${((currentIdx) / (STAGES.length - 1)) * 100}% - 64px)`,
             height: 2, background: '#16A34A', zIndex: 1,
           }} />
         )}
@@ -308,7 +309,6 @@ export default function ReqAssistDocument() {
         {STAGES.map((stage, i) => {
           const isCompleted = i < currentIdx;
           const isActive = i === currentIdx;
-          const isPending = i > currentIdx;
 
           return (
             <div key={stage} style={{
@@ -316,23 +316,15 @@ export default function ReqAssistDocument() {
               gap: 6, zIndex: 2, flex: 1,
             }}>
               <div style={{
-                width: 28, height: 28, borderRadius: '50%',
+                width: 32, height: 32, borderRadius: '50%',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: isCompleted ? '#16A34A' : isActive ? '#2563EB' : '#FFFFFF',
-                border: isPending ? '1.5px solid #E2E8F0' : 'none',
-                color: isCompleted || isActive ? '#FFFFFF' : '#94A3B8',
-                animation: isActive ? 'ra-active-pulse 2s infinite' : 'none',
-                boxShadow: isActive ? '0 0 0 4px rgba(37,99,235,0.2)' : 'none',
+                border: (!isCompleted && !isActive) ? '1.5px solid #E2E8F0' : 'none',
+                color: isCompleted || isActive ? '#FFFFFF' : '#CBD5E1',
+                animation: isActive ? 'ra-active-pulse 1.5s infinite' : 'none',
                 transition: 'all 300ms ease',
               }}>
-                {isCompleted ? <Check size={14} /> : isActive ? STAGE_ICONS[stage] : (
-                  <span style={{
-                    fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600,
-                    color: '#94A3B8',
-                  }}>
-                    {i + 1}
-                  </span>
-                )}
+                {isCompleted ? <Check size={14} /> : STAGE_ICONS[stage]}
               </div>
               <span style={{
                 fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500,
