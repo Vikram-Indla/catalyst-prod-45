@@ -49,7 +49,7 @@ export interface ArtifactContribution {
 
 export interface CriticalityResult {
   rawScore: number;
-  percentile: number;             // 0–100
+  percentile: number;             // 0.0–1.0
   label: CriticalityLabel;
   irreplaceabilityRatio: number;
   isSinglePointOfFailure: boolean;
@@ -69,10 +69,11 @@ const SPOF_THRESHOLD = 0.40;
 // ─── Helpers ────────────────────────────────────────────────
 
 export function getCriticalityLabel(percentile: number): CriticalityLabel {
-  if (percentile >= 90) return 'Anchor Resource';
-  if (percentile >= 75) return 'Critical Resource';
-  if (percentile >= 55) return 'Core Contributor';
-  if (percentile >= 35) return 'Active Contributor';
+  // percentile is 0.0–1.0
+  if (percentile >= 0.90) return 'Anchor Resource';
+  if (percentile >= 0.75) return 'Critical Resource';
+  if (percentile >= 0.55) return 'Core Contributor';
+  if (percentile >= 0.35) return 'Active Contributor';
   return 'Developing';
 }
 
@@ -424,12 +425,12 @@ export async function computeCriticalityScore(
     ...peerResults.sort((a, b) => b.totalScore - a.totalScore),
   ];
 
-  // 7. Percentile
+  // 7. Percentile (0.0–1.0)
   const allScores = allRows.map(r => r.totalScore).sort((a, b) => a - b);
   const myRank = allScores.filter(s => s < myScore).length;
   const percentile = allScores.length > 1
-    ? Math.round((myRank / (allScores.length - 1)) * 100)
-    : 50;
+    ? Math.round((myRank / (allScores.length - 1)) * 10000) / 10000
+    : 0.50;
 
   const label = getCriticalityLabel(percentile);
 
