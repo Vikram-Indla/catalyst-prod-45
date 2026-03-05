@@ -177,9 +177,11 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
   const weekNum = getWeekNumber(selectedDate);
   const weekRange = formatWeekRange(selectedDate);
 
-  // Role fitness score from AI patterns (or fallback)
-  const roleFitness = 74; // Will be driven by r360_ai_profiles.role_fitness_score when available
-  const archetype = patternData?.summary || 'Reactive\nSpecialist';
+  // Role fitness and archetype from AI patterns (data-driven)
+  const roleFitness = patternData?.roleFitness ?? 50;
+  const archetypeTitle = patternData?.archetypeTitle || 'Generalist';
+  const archetypeDesc = patternData?.archetypeDesc || '';
+  const archetypeTags = patternData?.archetypeTags || [];
 
   return (
     <div data-module="ai-intelligence">
@@ -359,14 +361,14 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
                   }}>
                     Behavioral Archetype
                   </div>
-                  <div style={{ fontFamily: FONT.heading, fontSize: 18, fontWeight: 700, color: T.tx1, lineHeight: 1.3, marginBottom: 10 }}>
-                    Reactive<br />Specialist
+                  <div style={{ fontFamily: FONT.heading, fontSize: 18, fontWeight: 700, color: T.tx1, lineHeight: 1.3, marginBottom: 10, whiteSpace: 'pre-line' }}>
+                    {archetypeTitle.replace('\\n', '\n')}
                   </div>
                   <div style={{ fontSize: 12, color: T.tx2, lineHeight: 1.6, marginBottom: 12 }}>
-                    Precision output under pressure. Self-activates on incidents and bugs without being asked.
+                    {archetypeDesc}
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                    {['Incident-First', 'QA Affinity', 'Crunch Closer', 'Sequential Focus'].map(tag => (
+                    {archetypeTags.map(tag => (
                       <span key={tag} style={{
                         fontSize: 10, fontWeight: 600, color: T.tx2,
                         background: T.surface, border: `1.5px solid ${T.bdr}`,
