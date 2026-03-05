@@ -7,8 +7,15 @@ const ROLE_MAP: [RegExp, string][] = [
   // R01 — Technical Product Owner
   [/\b(technical\s+)?product\s+owner\b/i, 'R01'],
   [/\btpo\b/i, 'R01'],
+  [/\btechnical\s+po\b/i, 'R01'],
+  // R10 — Engineering Manager / Lead (MUST be before R02 so "React Lead" → R10 not R02)
+  [/\bengineering\s+manager\b/i, 'R10'],
+  [/\bteam\s+lead\b/i, 'R10'],
+  [/\b\w+\s+lead\b/i, 'R10'],
   // R02 — React Developer
+  [/\breact\s+developer\b/i, 'R02'],
   [/\breact\b/i, 'R02'],
+  [/\bfrontend\s+developer\b/i, 'R02'],
   [/\bfrontend\b/i, 'R02'],
   [/\bfront[- ]end\b/i, 'R02'],
   // R03 — Backend Developer
@@ -44,10 +51,7 @@ const ROLE_MAP: [RegExp, string][] = [
   // R09 — Scrum Master
   [/\bscrum\b/i, 'R09'],
   [/\brelease\s+lead\b/i, 'R09'],
-  // R10 — Engineering Manager
-  [/\bengineering\s+manager\b/i, 'R10'],
-  [/\bteam\s+lead\b/i, 'R10'],
-  [/\blead\b/i, 'R10'],
+  // R10 entries moved above R02 to prevent "React Lead" → R02 mismatch
 ];
 
 /**
