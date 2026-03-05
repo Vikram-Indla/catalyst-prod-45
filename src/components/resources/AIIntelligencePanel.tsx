@@ -143,7 +143,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
         </div>
 
         {/* Criticality Badge */}
-        <CriticalityBadge
+      <CriticalityBadge
           criticality={criticality}
           isLoading={criticalityLoading}
           roleName={resource?.role_name?.split(' · ')[0] || 'Team Member'}

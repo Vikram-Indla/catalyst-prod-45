@@ -1,6 +1,6 @@
 /**
  * CriticalityBadge — Displays role-aware criticality scoring
- * Includes: label badge, peer spectrum, SPOF warning, artifact breakdown
+ * Includes: label badge, cohort spectrum, SPOF warning, peer comparison with DYNAMIC columns
  */
 import React from 'react';
 import type { CriticalityResult } from '@/services/r360CriticalityService';
@@ -31,30 +31,21 @@ export const CriticalityBadge: React.FC<Props> = ({ criticality, isLoading, role
   if (!criticality) return null;
 
   const colors = LABEL_COLORS[criticality.label] || LABEL_COLORS['Developing'];
-  const primaryDesc = criticality.primaryArtifacts.join(' + ');
+  const primaryDesc = criticality.primaryMetrics.map(m => m.label).join(' + ');
 
   return (
     <div style={{ borderBottom: '1px solid #E2E8F0' }}>
       {/* Label + Percentile */}
       <div style={{ padding: '14px 20px 8px', display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{
-          display: 'inline-block',
-          padding: '3px 12px',
-          borderRadius: 9999,
-          fontSize: 11,
-          fontWeight: 700,
-          background: colors.bg,
-          color: colors.text,
-          border: `1px solid ${colors.border}`,
-          letterSpacing: '0.02em',
+          display: 'inline-block', padding: '3px 12px', borderRadius: 9999,
+          fontSize: 11, fontWeight: 700,
+          background: colors.bg, color: colors.text,
+          border: `1px solid ${colors.border}`, letterSpacing: '0.02em',
         }}>
           {criticality.label}
         </span>
-        <span style={{
-          fontSize: 11,
-          color: '#64748B',
-          fontFamily: "'JetBrains Mono', monospace",
-        }}>
+        <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>
           P{criticality.percentile}
         </span>
       </div>
@@ -67,25 +58,17 @@ export const CriticalityBadge: React.FC<Props> = ({ criticality, isLoading, role
       {/* Cohort Spectrum */}
       <div style={{ padding: '0 20px 12px' }}>
         <div style={{ position: 'relative', height: 8, background: '#E2E8F0', borderRadius: 4, overflow: 'visible' }}>
-          {/* Gradient fill */}
           <div style={{
             position: 'absolute', left: 0, top: 0, bottom: 0,
-            width: `${criticality.percentile}%`,
-            borderRadius: 4,
+            width: `${criticality.percentile}%`, borderRadius: 4,
             background: 'linear-gradient(90deg, #94A3B8, #2563EB)',
             transition: 'width 600ms ease-out',
           }} />
-          {/* Marker */}
           <div style={{
-            position: 'absolute',
-            left: `${criticality.percentile}%`,
-            top: -3,
-            width: 14, height: 14,
-            borderRadius: '50%',
-            background: '#2563EB',
-            border: '2px solid #FFFFFF',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-            transform: 'translateX(-50%)',
+            position: 'absolute', left: `${criticality.percentile}%`, top: -3,
+            width: 14, height: 14, borderRadius: '50%',
+            background: '#2563EB', border: '2px solid #FFFFFF',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transform: 'translateX(-50%)',
           }} />
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, fontSize: 9, color: '#94A3B8' }}>
@@ -97,20 +80,15 @@ export const CriticalityBadge: React.FC<Props> = ({ criticality, isLoading, role
       {/* SPOF Warning */}
       {criticality.isSinglePointOfFailure && (
         <div style={{
-          margin: '0 20px 12px',
-          padding: '8px 12px',
-          background: '#FEF2F2',
-          border: '1px solid #FECACA',
-          borderRadius: 6,
-          fontSize: 11,
-          color: '#991B1B',
-          lineHeight: 1.5,
+          margin: '0 20px 12px', padding: '8px 12px',
+          background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 6,
+          fontSize: 11, color: '#991B1B', lineHeight: 1.5,
         }}>
           ⚠ Carries {Math.round(criticality.irreplaceabilityRatio * 100)}% of team's {primaryDesc} output. Single point of failure risk.
         </div>
       )}
 
-      {/* Peer Bars (top 5) */}
+      {/* Peer Comparison — Dynamic Columns */}
       {criticality.peerComparison.length > 1 && (
         <div style={{ padding: '0 20px 14px' }}>
           <div style={{
@@ -119,25 +97,68 @@ export const CriticalityBadge: React.FC<Props> = ({ criticality, isLoading, role
           }}>
             Peer Comparison ({roleName})
           </div>
+
+          {/* Column headers */}
+          {criticality.primaryMetrics.length > 0 && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: `1fr ${criticality.primaryMetrics.map(() => '70px').join(' ')} 60px`,
+              gap: 4, marginBottom: 6, fontSize: 9, fontWeight: 600,
+              color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em',
+            }}>
+              <span>Name</span>
+              {criticality.primaryMetrics.map(pm => (
+                <span key={pm.artifactType} style={{ textAlign: 'right' }}>{pm.label}</span>
+              ))}
+              <span style={{ textAlign: 'right' }}>Score</span>
+            </div>
+          )}
+
+          {/* Peer rows */}
           {criticality.peerComparison.slice(0, 6).map((peer) => {
             const maxScore = criticality.peerComparison[0]?.totalScore || 1;
             const pct = Math.round((peer.totalScore / maxScore) * 100);
             return (
-              <div key={peer.peerId} style={{ marginBottom: 5 }}>
+              <div key={peer.peerId} style={{ marginBottom: 6 }}>
+                {/* Data row */}
                 <div style={{
-                  display: 'flex', justifyContent: 'space-between',
-                  fontSize: 10, fontWeight: peer.isCurrentResource ? 700 : 500,
+                  display: 'grid',
+                  gridTemplateColumns: `1fr ${criticality.primaryMetrics.map(() => '70px').join(' ')} 60px`,
+                  gap: 4, fontSize: 10,
+                  fontWeight: peer.isCurrentResource ? 700 : 500,
                   color: peer.isCurrentResource ? '#1E40AF' : '#475569',
                   marginBottom: 2,
                 }}>
-                  <span>{peer.isCurrentResource ? '★ You' : peer.peerName}</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {peer.isCurrentResource ? '★ You' : peer.peerName}
+                  </span>
+                  {criticality.primaryMetrics.map(pm => {
+                    const mv = peer.metrics?.[pm.artifactType];
+                    const val = mv?.value ?? 0;
+                    const display = pm.unit === 'pct' ? `${val}%`
+                      : pm.unit === 'hours' ? `${val}h`
+                      : String(val);
+                    return (
+                      <span key={pm.artifactType} style={{
+                        textAlign: 'right',
+                        fontFamily: "'JetBrains Mono', monospace",
+                        fontSize: 10,
+                      }}>
+                        {display}
+                      </span>
+                    );
+                  })}
+                  <span style={{
+                    textAlign: 'right',
+                    fontFamily: "'JetBrains Mono', monospace",
+                  }}>
                     {peer.totalScore.toFixed(1)}
                   </span>
                 </div>
-                <div style={{ height: 5, borderRadius: 3, background: '#E2E8F0', overflow: 'hidden' }}>
+                {/* Score bar */}
+                <div style={{ height: 4, borderRadius: 2, background: '#E2E8F0', overflow: 'hidden' }}>
                   <div style={{
-                    height: '100%', borderRadius: 3,
+                    height: '100%', borderRadius: 2,
                     width: `${pct}%`,
                     background: peer.isCurrentResource ? '#2563EB' : '#94A3B8',
                     transition: 'width 400ms ease-out',
