@@ -13,6 +13,7 @@ import { DeliveryBacklog } from './ai-intelligence/DeliveryBacklog';
 import { BehavioralPatterns } from './ai-intelligence/BehavioralPatterns';
 import { WeeklyStory } from './ai-intelligence/WeeklyStory';
 import { StoryBeacon } from './ai-intelligence/StoryBeacon';
+import { CriticalityBadge } from './ai-intelligence/CriticalityBadge';
 import {
   useResourceInfo,
   useHubClosures,
@@ -23,6 +24,8 @@ import {
   useAutoGenerateIfMissing,
 } from '@/hooks/useAIIntelligence';
 import { useWeeklyStory } from '@/hooks/useWeeklyStory';
+import { useR360Criticality } from '@/hooks/useR360Criticality';
+import { resolveRoleCode } from '@/constants/r360RoleMapping';
 import { getWeekNumber } from '@/constants/r360WeekConfig';
 import { getAvatarColor } from '@/types/initiative';
 
@@ -42,6 +45,10 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
   const { data: stalenessLabel } = useStalenessLabel(resourceId);
   const { syncData, refreshAI, syncing, generating } = useAIActions(resourceId, resource?.jira_account_id);
   const { storyData, isLoading: storyLoading, selectedDate, onPrevWeek, onNextWeek } = useWeeklyStory(resourceId, resource?.jira_account_id);
+
+  // Criticality engine
+  const roleCode = resolveRoleCode(resource?.role_name);
+  const { data: criticality, isLoading: criticalityLoading } = useR360Criticality(resourceId, roleCode);
 
   // Auto-trigger AI generation if no profile exists
   const { autoGenerating } = useAutoGenerateIfMissing(resourceId, resource?.jira_account_id);
@@ -134,6 +141,13 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
             )}
           </div>
         </div>
+
+        {/* Criticality Badge */}
+        <CriticalityBadge
+          criticality={criticality}
+          isLoading={criticalityLoading}
+          roleName={resource?.role_name?.split(' · ')[0] || 'Team Member'}
+        />
 
         {/* Scrollable body */}
         <div className="rai-body" ref={bodyRef}>
