@@ -342,7 +342,11 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
                     </span>
                   </div>
                   <div style={{ fontSize: 12, color: T.tx2, lineHeight: 1.6 }}>
-                    Strong specialist fit. Feature ownership is the gap. High value in current incident-heavy delivery phase.
+                    {roleFitness >= 80
+                      ? 'Strong alignment with role expectations across primary artifact types.'
+                      : roleFitness >= 60
+                      ? 'Moderate alignment with role expectations. Some artifact areas need growth.'
+                      : 'Early-stage contributor. Building toward role-specific delivery patterns.'}
                   </div>
                 </div>
               </div>
