@@ -49,18 +49,21 @@ export const R360CriticalityBanner: React.FC<R360CriticalityBannerProps> = ({
   const sorted = [...peerComparison].sort((a, b) => b.totalScore - a.totalScore);
   const overallRank = sorted.findIndex(p => p.isCurrentResource) + 1;
 
-  // Build per-metric rank text for top 2 primary metrics
+  // Build per-metric rank text for top 2 primary metrics — skip zeros
   const metricTexts = primaryMetrics.slice(0, 2).map(pm => {
+    const val = currentRow.metrics?.[pm.artifactType]?.value ?? 0;
+    if (val === 0) return null; // do not claim rank on 0 value
     const metricVals = peerComparison
       .map(p => ({ id: p.peerId, isCurrent: p.isCurrentResource, value: p.metrics?.[pm.artifactType]?.value ?? 0 }))
       .sort((a, b) => b.value - a.value);
     const rank = metricVals.findIndex(v => v.isCurrent) + 1;
-    const val = currentRow.metrics?.[pm.artifactType]?.value ?? 0;
     const formatted = formatMetricValue(val, pm.unit);
     return `#${rank} in ${pm.label} (${formatted})`;
-  });
+  }).filter(Boolean);
 
-  const bodyText = `Ranked ${metricTexts.join(' and ')} among ${peerCount} peers in the same role.`;
+  const bodyText = metricTexts.length > 0
+    ? `Ranked ${metricTexts.join(' and ')} among ${peerCount} peers in the same role.`
+    : `Insufficient data to rank. Criticality score will update when work items are assigned and closed.`;
 
   return (
     <div style={{

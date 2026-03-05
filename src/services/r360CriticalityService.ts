@@ -162,14 +162,16 @@ async function collectArtifacts(
   // Epics, Stories, Subtasks, Incidents, Bugs from ph_issues
   const { data: issues } = await (supabase
     .from('ph_issues')
-    .select('issue_type, status_category, reporter_account_id, fix_versions, project_name, jira_created_at, resolved_at')
+    .select('issue_type, status_category, reporter_account_id, fix_versions, project_name, jira_created_at')
     .eq('assignee_account_id', jiraAccountId)
     .gte('jira_created_at', sixMonthsAgo) as any);
+
+  const isDoneCheck = (sc: string) => sc === 'Done' || sc === 'Complete';
 
   if (issues) {
     for (const iss of issues) {
       const type = (iss.issue_type || '').toLowerCase();
-      const isDone = iss.status_category === 'Done' || iss.status_category === 'Complete';
+      const isDone = isDoneCheck(iss.status_category);
       const fv = iss.fix_versions || [];
 
       if (type === 'epic') {
@@ -196,41 +198,25 @@ async function collectArtifacts(
     });
     add('qa_bug_raised', bugsRaised.length);
 
-    // Incident pickup speed (avg hours from created to first assignment)
-    const incidents = issues.filter((i: any) =>
+    // Incident pickup speed — ph_issues has no resolved_at column
+    // Use incident count as proxy for pickup capability
+    const incidentCount = issues.filter((i: any) =>
       (i.issue_type || '').toLowerCase() === 'production incident' &&
-      i.resolved_at && i.jira_created_at
-    );
-    if (incidents.length > 0) {
-      const totalHours = incidents.reduce((sum: number, inc: any) => {
-        const created = new Date(inc.jira_created_at).getTime();
-        const resolved = new Date(inc.resolved_at).getTime();
-        return sum + Math.max(0, (resolved - created) / (1000 * 60 * 60));
-      }, 0);
-      const avgHours = totalHours / incidents.length;
-      // Store as inverse: lower pickup = better score (cap at 72h)
-      const pickupScore = Math.max(0, Math.min(incidents.length, 72 / Math.max(avgHours, 0.1)));
-      add('incident_pickup', Math.round(pickupScore));
+      isDoneCheck(i.status_category)
+    ).length;
+    if (incidentCount > 0) {
+      add('incident_pickup', incidentCount);
     }
   }
 
-  // Planner tasks
+  // Planner tasks — count all tasks assigned (status filtering simplified)
   if (profileId) {
     const { data: tasks } = await supabase
       .from('planner_tasks')
-      .select('id, status_id')
+      .select('id')
       .eq('assignee_id', profileId)
       .gte('created_at', sixMonthsAgo);
-
-    if (tasks) {
-      const { data: doneStatuses } = await (supabase
-        .from('planner_statuses' as any)
-        .select('id')
-        .eq('is_done', true) as any);
-      const doneIds = new Set((doneStatuses || []).map((s: any) => s.id));
-      const doneTasks = tasks.filter(t => doneIds.has(t.status_id));
-      add('task', doneTasks.length);
-    }
+    add('task', tasks?.length || 0);
   }
 
   return counts;
@@ -330,10 +316,10 @@ export async function computeCriticalityScore(
   // 3. Get ranked versions
   const rankedVersions = await getRankedVersions();
 
-  // 4. Get resource info
+  // 4. Get resource info (resource_inventory has no profile_id column)
   const { data: resource } = await (supabase
     .from('resource_inventory' as any)
-    .select('id, jira_account_id, profile_id')
+    .select('id, jira_account_id')
     .eq('id', resourceId)
     .maybeSingle() as any);
 
@@ -346,14 +332,14 @@ export async function computeCriticalityScore(
     };
   }
 
-  // 5. Compute resource score
-  const artifacts = await collectArtifacts(resource.jira_account_id, resource.profile_id, sixMonthsAgo);
+  // 5. Compute resource score (no profile_id — pass null)
+  const artifacts = await collectArtifacts(resource.jira_account_id, null, sixMonthsAgo);
   const { score: myScore, breakdown, metricValues: myMetrics } = computeScore(artifacts, benchmarks, rankedVersions);
 
   // 6. Find peers: same role from resource_inventory
   const { data: allResources } = await (supabase
     .from('resource_inventory' as any)
-    .select('id, name, role_name, jira_account_id, profile_id')
+    .select('id, name, role_name, jira_account_id')
     .not('jira_account_id', 'is', null) as any);
 
   const peers = (allResources || []).filter((r: any) =>
@@ -387,7 +373,7 @@ export async function computeCriticalityScore(
     }
 
     try {
-      const peerArtifacts = await collectArtifacts(peer.jira_account_id, peer.profile_id, sixMonthsAgo);
+      const peerArtifacts = await collectArtifacts(peer.jira_account_id, null, sixMonthsAgo);
       const { score: peerScore, metricValues: peerMetrics } = computeScore(peerArtifacts, benchmarks, rankedVersions);
       teamPrimaryTotal += peerScore;
 

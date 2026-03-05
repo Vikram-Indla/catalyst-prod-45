@@ -43,7 +43,6 @@ export const WeeklyStory: React.FC<Props> = ({ data, selectedDate, onPrevWeek, o
     <div className="rai-section" id="weeklyStory">
       <div className="rai-section-header">
         <span className="rai-section-title">Weekly Story</span>
-        <span className="rai-ai-badge">✦ AI</span>
       </div>
 
       {/* Week selector */}
