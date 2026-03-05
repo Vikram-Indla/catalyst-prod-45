@@ -158,8 +158,8 @@ export function useDeliveryBacklog(resourceId: string | undefined, jiraAccountId
 export function useAIPatterns(resourceId: string | undefined) {
   return useQuery({
     queryKey: ['r360-ai-behavioral-patterns', resourceId],
-    queryFn: async (): Promise<{ summary: string | null; warning: string | null; insights: PatternInsight[]; archetypeTitle: string; archetypeDesc: string; archetypeTags: string[]; roleFitness: number }> => {
-      if (!resourceId) return { summary: null, warning: null, insights: [], archetypeTitle: 'Loading', archetypeDesc: '', archetypeTags: [], roleFitness: 50 };
+    queryFn: async (): Promise<{ summary: string | null; warning: string | null; insights: PatternInsight[] }> => {
+      if (!resourceId) return { summary: null, warning: null, insights: [] };
 
       // Get AI profile for summary
       const { data: profile } = await (supabase
@@ -186,66 +186,10 @@ export function useAIPatterns(resourceId: string | undefined) {
       const roleExp = profile?.role_expectation as any;
       const warning = roleExp?.anomalies?.length > 0 ? roleExp.anomalies[0] : null;
 
-      // Derive archetype from actual_distribution
-      const dist = (roleExp?.actual_distribution || []) as { label: string; pct: number }[];
-      const topActivity = dist.length > 0 ? dist.sort((a: any, b: any) => b.pct - a.pct)[0] : null;
-
-      // Build archetype title from top activity
-      let archetypeTitle = 'Generalist';
-      let archetypeDesc = 'Balanced contributor across multiple areas.';
-      const archetypeTags: string[] = [];
-
-      if (topActivity && topActivity.pct >= 0.5) {
-        const label = topActivity.label.toLowerCase();
-        if (label.includes('bug') || label.includes('qa')) {
-          archetypeTitle = 'QA\nSpecialist';
-          archetypeDesc = `Primarily focused on quality assurance (${Math.round(topActivity.pct * 100)}% of work). Drives defect resolution and compliance.`;
-          archetypeTags.push('Bug-Focused', 'QA Affinity', 'Quality Gate');
-        } else if (label.includes('incident')) {
-          archetypeTitle = 'Reactive\nSpecialist';
-          archetypeDesc = 'Precision output under pressure. Self-activates on incidents and bugs without being asked.';
-          archetypeTags.push('Incident-First', 'Crunch Closer');
-        } else if (label.includes('feature') || label.includes('frontend') || label.includes('backend')) {
-          archetypeTitle = 'Feature\nBuilder';
-          archetypeDesc = `Core feature delivery contributor (${Math.round(topActivity.pct * 100)}% of work). Drives new capability development.`;
-          archetypeTags.push('Feature-First', 'Builder');
-        } else if (label.includes('task') || label.includes('management')) {
-          archetypeTitle = 'Task\nCoordinator';
-          archetypeDesc = 'Orchestrates work items and sub-tasks across the team.';
-          archetypeTags.push('Task-Driven', 'Coordinator');
-        } else {
-          archetypeTitle = 'Domain\nSpecialist';
-          archetypeDesc = `Concentrated effort on ${topActivity.label} (${Math.round(topActivity.pct * 100)}%).`;
-          archetypeTags.push('Focused', 'Specialist');
-        }
-      } else if (dist.length >= 2) {
-        archetypeTitle = 'Balanced\nContributor';
-        archetypeDesc = 'Spread across multiple work streams without a dominant focus area.';
-        archetypeTags.push('Multi-Stream', 'Versatile');
-      }
-
-      // Add secondary tags from distribution
-      for (const d of dist.slice(0, 3)) {
-        const shortLabel = d.label.split('(')[0].trim();
-        if (shortLabel.length < 25 && !archetypeTags.includes(shortLabel)) {
-          archetypeTags.push(shortLabel);
-        }
-      }
-
-      // Calculate role fitness from distribution alignment
-      // Higher fitness = more aligned with expected role activities
-      const roleFitness = topActivity
-        ? Math.min(99, Math.max(20, Math.round(50 + topActivity.pct * 40 + dist.length * 5)))
-        : 50;
-
       return {
         summary: profile?.resource_pattern || null,
         warning,
         insights,
-        archetypeTitle,
-        archetypeDesc,
-        archetypeTags: archetypeTags.slice(0, 4),
-        roleFitness,
       };
     },
     enabled: !!resourceId,

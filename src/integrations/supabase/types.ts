@@ -31230,31 +31230,17 @@ export type Database = {
       }
       r360_ai_profiles: {
         Row: {
-          archetype_description: string | null
-          archetype_tags: string[] | null
-          artifact_breakdown: Json | null
-          behavioral_archetype: string | null
           created_at: string
           created_by: string | null
-          criticality_computed_at: string | null
-          criticality_label: string | null
-          criticality_percentile: number | null
-          criticality_raw_score: number | null
           deleted_at: string | null
           delivery_metrics: Json
           delivery_summary: string | null
-          fitness_score: number | null
           generated_at: string
           generation_version: string
           hub_closure_rates: Json
           hub_distribution: Json
           id: string
-          irreplaceability_ratio: number | null
-          is_single_point_of_failure: boolean | null
           next_refresh_at: string | null
-          peer_comparison: Json | null
-          pickup_latency: Json | null
-          primary_artifact_labels: Json | null
           resource_id: string
           resource_pattern: string
           role_expectation: Json
@@ -31263,31 +31249,17 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
-          archetype_description?: string | null
-          archetype_tags?: string[] | null
-          artifact_breakdown?: Json | null
-          behavioral_archetype?: string | null
           created_at?: string
           created_by?: string | null
-          criticality_computed_at?: string | null
-          criticality_label?: string | null
-          criticality_percentile?: number | null
-          criticality_raw_score?: number | null
           deleted_at?: string | null
           delivery_metrics?: Json
           delivery_summary?: string | null
-          fitness_score?: number | null
           generated_at?: string
           generation_version?: string
           hub_closure_rates?: Json
           hub_distribution?: Json
           id?: string
-          irreplaceability_ratio?: number | null
-          is_single_point_of_failure?: boolean | null
           next_refresh_at?: string | null
-          peer_comparison?: Json | null
-          pickup_latency?: Json | null
-          primary_artifact_labels?: Json | null
           resource_id: string
           resource_pattern: string
           role_expectation?: Json
@@ -31296,31 +31268,17 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
-          archetype_description?: string | null
-          archetype_tags?: string[] | null
-          artifact_breakdown?: Json | null
-          behavioral_archetype?: string | null
           created_at?: string
           created_by?: string | null
-          criticality_computed_at?: string | null
-          criticality_label?: string | null
-          criticality_percentile?: number | null
-          criticality_raw_score?: number | null
           deleted_at?: string | null
           delivery_metrics?: Json
           delivery_summary?: string | null
-          fitness_score?: number | null
           generated_at?: string
           generation_version?: string
           hub_closure_rates?: Json
           hub_distribution?: Json
           id?: string
-          irreplaceability_ratio?: number | null
-          is_single_point_of_failure?: boolean | null
           next_refresh_at?: string | null
-          peer_comparison?: Json | null
-          pickup_latency?: Json | null
-          primary_artifact_labels?: Json | null
           resource_id?: string
           resource_pattern?: string
           role_expectation?: Json
@@ -31764,42 +31722,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      r360_role_benchmarks: {
-        Row: {
-          affinity_weight: number
-          artifact_type: string
-          created_at: string | null
-          display_label: string | null
-          id: string
-          is_primary: boolean | null
-          role_code: string
-          role_name: string
-          unit: string | null
-        }
-        Insert: {
-          affinity_weight: number
-          artifact_type: string
-          created_at?: string | null
-          display_label?: string | null
-          id?: string
-          is_primary?: boolean | null
-          role_code: string
-          role_name: string
-          unit?: string | null
-        }
-        Update: {
-          affinity_weight?: number
-          artifact_type?: string
-          created_at?: string | null
-          display_label?: string | null
-          id?: string
-          is_primary?: boolean | null
-          role_code?: string
-          role_name?: string
-          unit?: string | null
-        }
-        Relationships: []
       }
       r360_status_transitions: {
         Row: {
