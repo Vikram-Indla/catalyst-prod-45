@@ -22,7 +22,8 @@ const ROLE_MAP: [RegExp, string][] = [
   [/\bfrontend\s+developer\b/i, 'R02'],
   [/\bfrontend\b/i, 'R02'],
   [/\bfront[- ]end\b/i, 'R02'],
-  [/^developer$/i, 'R02'],
+  // R12 — Generic Developer (exact match only — must NOT group with React/Frontend)
+  [/^developer$/i, 'R12'],
   // R03 — Backend Developer
   [/\bbackend\b/i, 'R03'],
   [/\b\.net\b/i, 'R03'],
