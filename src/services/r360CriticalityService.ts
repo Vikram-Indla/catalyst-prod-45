@@ -319,7 +319,7 @@ export async function computeCriticalityScore(
   // 4. Get resource info (resource_inventory has no profile_id column)
   const { data: resource } = await (supabase
     .from('resource_inventory' as any)
-    .select('id, jira_account_id')
+    .select('id, name, jira_account_id')
     .eq('id', resourceId)
     .maybeSingle() as any);
 
