@@ -57,6 +57,11 @@ export interface CriticalityResult {
   peerComparison: PeerComparisonRow[];
   artifactBreakdown: ArtifactContribution[];
   computedAt: string;
+  fitnessScore: number;
+  archetype: string;
+  archetypeDescription: string;
+  archetypeTags: string[];
+  pickupLatency: Record<string, { hours?: number | null; days?: number | null }>;
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -271,7 +276,7 @@ export async function computeCriticalityScore(
   // 1. Check cache
   const { data: cached } = await (supabase
     .from('r360_ai_profiles' as any)
-    .select('criticality_raw_score, criticality_percentile, criticality_label, irreplaceability_ratio, is_single_point_of_failure, peer_comparison, artifact_breakdown, primary_artifact_labels, criticality_computed_at')
+    .select('criticality_raw_score, criticality_percentile, criticality_label, irreplaceability_ratio, is_single_point_of_failure, peer_comparison, artifact_breakdown, primary_artifact_labels, criticality_computed_at, fitness_score, behavioral_archetype, archetype_description, archetype_tags, pickup_latency')
     .eq('resource_id', resourceId)
     .maybeSingle() as any);
 
@@ -288,6 +293,11 @@ export async function computeCriticalityScore(
         peerComparison: (cached.peer_comparison as PeerComparisonRow[]) ?? [],
         artifactBreakdown: (cached.artifact_breakdown as ArtifactContribution[]) ?? [],
         computedAt: cached.criticality_computed_at,
+        fitnessScore: cached.fitness_score ?? 50,
+        archetype: cached.behavioral_archetype ?? '',
+        archetypeDescription: cached.archetype_description ?? '',
+        archetypeTags: cached.archetype_tags ?? [],
+        pickupLatency: cached.pickup_latency ?? {},
       };
     }
   }
@@ -329,6 +339,7 @@ export async function computeCriticalityScore(
       irreplaceabilityRatio: 0, isSinglePointOfFailure: false,
       primaryMetrics, peerComparison: [], artifactBreakdown: [],
       computedAt: now.toISOString(),
+      fitnessScore: 50, archetype: '', archetypeDescription: '', archetypeTags: [], pickupLatency: {},
     };
   }
 
@@ -434,6 +445,11 @@ export async function computeCriticalityScore(
     peerComparison: allRows,
     artifactBreakdown: breakdown,
     computedAt: now.toISOString(),
+    fitnessScore: cached?.fitness_score ?? 50,
+    archetype: cached?.behavioral_archetype ?? '',
+    archetypeDescription: cached?.archetype_description ?? '',
+    archetypeTags: cached?.archetype_tags ?? [],
+    pickupLatency: cached?.pickup_latency ?? {},
   };
 
   // 8. Persist to cache
