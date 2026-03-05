@@ -81,7 +81,7 @@ export function useWeeklyStory(resourceId: string | undefined, jiraAccountId: st
       const days: WeekDay[] = R360_WEEK_CONFIG.workDays.map(dayIndex => {
         const items = dayGroups.get(dayIndex) || [];
         const events: WeekDayEvent[] = items.map((item: any) => {
-          const time = new Date(item.jira_updated_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+          const time = new Date(item.jira_updated_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Riyadh' });
           const statusBadge: 'progress' | 'done' | 'review' | undefined =
             item.status_category === 'Done' ? 'done' :
             item.status === 'In Review' || item.status === 'Review' ? 'review' :
