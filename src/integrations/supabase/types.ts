@@ -31230,8 +31230,13 @@ export type Database = {
       }
       r360_ai_profiles: {
         Row: {
+          artifact_breakdown: Json | null
           created_at: string
           created_by: string | null
+          criticality_computed_at: string | null
+          criticality_label: string | null
+          criticality_percentile: number | null
+          criticality_raw_score: number | null
           deleted_at: string | null
           delivery_metrics: Json
           delivery_summary: string | null
@@ -31240,7 +31245,9 @@ export type Database = {
           hub_closure_rates: Json
           hub_distribution: Json
           id: string
+          irreplaceability_ratio: number | null
           next_refresh_at: string | null
+          peer_comparison: Json | null
           resource_id: string
           resource_pattern: string
           role_expectation: Json
@@ -31249,8 +31256,13 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          artifact_breakdown?: Json | null
           created_at?: string
           created_by?: string | null
+          criticality_computed_at?: string | null
+          criticality_label?: string | null
+          criticality_percentile?: number | null
+          criticality_raw_score?: number | null
           deleted_at?: string | null
           delivery_metrics?: Json
           delivery_summary?: string | null
@@ -31259,7 +31271,9 @@ export type Database = {
           hub_closure_rates?: Json
           hub_distribution?: Json
           id?: string
+          irreplaceability_ratio?: number | null
           next_refresh_at?: string | null
+          peer_comparison?: Json | null
           resource_id: string
           resource_pattern: string
           role_expectation?: Json
@@ -31268,8 +31282,13 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          artifact_breakdown?: Json | null
           created_at?: string
           created_by?: string | null
+          criticality_computed_at?: string | null
+          criticality_label?: string | null
+          criticality_percentile?: number | null
+          criticality_raw_score?: number | null
           deleted_at?: string | null
           delivery_metrics?: Json
           delivery_summary?: string | null
@@ -31278,7 +31297,9 @@ export type Database = {
           hub_closure_rates?: Json
           hub_distribution?: Json
           id?: string
+          irreplaceability_ratio?: number | null
           next_refresh_at?: string | null
+          peer_comparison?: Json | null
           resource_id?: string
           resource_pattern?: string
           role_expectation?: Json
@@ -31722,6 +31743,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      r360_role_benchmarks: {
+        Row: {
+          affinity_weight: number
+          artifact_type: string
+          created_at: string | null
+          id: string
+          is_primary: boolean | null
+          role_code: string
+          role_name: string
+        }
+        Insert: {
+          affinity_weight: number
+          artifact_type: string
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          role_code: string
+          role_name: string
+        }
+        Update: {
+          affinity_weight?: number
+          artifact_type?: string
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          role_code?: string
+          role_name?: string
+        }
+        Relationships: []
       }
       r360_status_transitions: {
         Row: {
