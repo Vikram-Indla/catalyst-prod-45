@@ -18,7 +18,7 @@ const LABELS = [
 ];
 
 export const R360CohortSpectrum: React.FC<R360CohortSpectrumProps> = ({ percentile, label }) => {
-  const pct = Math.min(100, Math.max(0, percentile * 100));
+  const pct = Math.min(98, Math.max(2, percentile * 100));
   // Map label to closest match
   const matchLabel = (l: string) => {
     if (label.includes('Anchor')) return l === 'Anchor';
