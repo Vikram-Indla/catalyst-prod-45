@@ -31246,8 +31246,10 @@ export type Database = {
           hub_distribution: Json
           id: string
           irreplaceability_ratio: number | null
+          is_single_point_of_failure: boolean | null
           next_refresh_at: string | null
           peer_comparison: Json | null
+          primary_artifact_labels: Json | null
           resource_id: string
           resource_pattern: string
           role_expectation: Json
@@ -31272,8 +31274,10 @@ export type Database = {
           hub_distribution?: Json
           id?: string
           irreplaceability_ratio?: number | null
+          is_single_point_of_failure?: boolean | null
           next_refresh_at?: string | null
           peer_comparison?: Json | null
+          primary_artifact_labels?: Json | null
           resource_id: string
           resource_pattern: string
           role_expectation?: Json
@@ -31298,8 +31302,10 @@ export type Database = {
           hub_distribution?: Json
           id?: string
           irreplaceability_ratio?: number | null
+          is_single_point_of_failure?: boolean | null
           next_refresh_at?: string | null
           peer_comparison?: Json | null
+          primary_artifact_labels?: Json | null
           resource_id?: string
           resource_pattern?: string
           role_expectation?: Json
@@ -31749,28 +31755,34 @@ export type Database = {
           affinity_weight: number
           artifact_type: string
           created_at: string | null
+          display_label: string | null
           id: string
           is_primary: boolean | null
           role_code: string
           role_name: string
+          unit: string | null
         }
         Insert: {
           affinity_weight: number
           artifact_type: string
           created_at?: string | null
+          display_label?: string | null
           id?: string
           is_primary?: boolean | null
           role_code: string
           role_name: string
+          unit?: string | null
         }
         Update: {
           affinity_weight?: number
           artifact_type?: string
           created_at?: string | null
+          display_label?: string | null
           id?: string
           is_primary?: boolean | null
           role_code?: string
           role_name?: string
+          unit?: string | null
         }
         Relationships: []
       }
