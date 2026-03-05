@@ -31230,7 +31230,10 @@ export type Database = {
       }
       r360_ai_profiles: {
         Row: {
+          archetype_description: string | null
+          archetype_tags: string[] | null
           artifact_breakdown: Json | null
+          behavioral_archetype: string | null
           created_at: string
           created_by: string | null
           criticality_computed_at: string | null
@@ -31240,6 +31243,7 @@ export type Database = {
           deleted_at: string | null
           delivery_metrics: Json
           delivery_summary: string | null
+          fitness_score: number | null
           generated_at: string
           generation_version: string
           hub_closure_rates: Json
@@ -31249,6 +31253,7 @@ export type Database = {
           is_single_point_of_failure: boolean | null
           next_refresh_at: string | null
           peer_comparison: Json | null
+          pickup_latency: Json | null
           primary_artifact_labels: Json | null
           resource_id: string
           resource_pattern: string
@@ -31258,7 +31263,10 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          archetype_description?: string | null
+          archetype_tags?: string[] | null
           artifact_breakdown?: Json | null
+          behavioral_archetype?: string | null
           created_at?: string
           created_by?: string | null
           criticality_computed_at?: string | null
@@ -31268,6 +31276,7 @@ export type Database = {
           deleted_at?: string | null
           delivery_metrics?: Json
           delivery_summary?: string | null
+          fitness_score?: number | null
           generated_at?: string
           generation_version?: string
           hub_closure_rates?: Json
@@ -31277,6 +31286,7 @@ export type Database = {
           is_single_point_of_failure?: boolean | null
           next_refresh_at?: string | null
           peer_comparison?: Json | null
+          pickup_latency?: Json | null
           primary_artifact_labels?: Json | null
           resource_id: string
           resource_pattern: string
@@ -31286,7 +31296,10 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          archetype_description?: string | null
+          archetype_tags?: string[] | null
           artifact_breakdown?: Json | null
+          behavioral_archetype?: string | null
           created_at?: string
           created_by?: string | null
           criticality_computed_at?: string | null
@@ -31296,6 +31309,7 @@ export type Database = {
           deleted_at?: string | null
           delivery_metrics?: Json
           delivery_summary?: string | null
+          fitness_score?: number | null
           generated_at?: string
           generation_version?: string
           hub_closure_rates?: Json
@@ -31305,6 +31319,7 @@ export type Database = {
           is_single_point_of_failure?: boolean | null
           next_refresh_at?: string | null
           peer_comparison?: Json | null
+          pickup_latency?: Json | null
           primary_artifact_labels?: Json | null
           resource_id?: string
           resource_pattern?: string

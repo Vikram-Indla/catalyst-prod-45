@@ -22,6 +22,7 @@ import { useR360Criticality } from '@/hooks/useR360Criticality';
 import { resolveRoleCode } from '@/constants/r360RoleMapping';
 import { getWeekNumber, formatWeekRange, getWeekStart, R360_WEEK_CONFIG } from '@/constants/r360WeekConfig';
 import { getAvatarColor } from '@/types/initiative';
+import { getItemTypeLabel, getItemTypeColor, getReleaseShortName, isUnusualHour } from '@/constants/itemTypes';
 
 interface Props {
   resourceId: string;
@@ -118,18 +119,15 @@ const StatusLoz: React.FC<{ status: string }> = ({ status }) => {
 
 // ─── Item Type Pill ─────────────────────────────────────────
 const TypePill: React.FC<{ type: string; count: number }> = ({ type, count }) => {
-  const t = type.toLowerCase();
-  const bg = t.includes('bug') ? T.bugRed
-    : t.includes('incident') ? T.incRed
-    : t.includes('story') || t.includes('frontend') || t.includes('backend') ? T.storyGrn
-    : T.subGrey;
+  const label = getItemTypeLabel(type);
+  const bg = getItemTypeColor(type);
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20,
       padding: '0 7px', borderRadius: 3, fontSize: 10, fontWeight: 700,
       background: bg, color: '#FFFFFF', letterSpacing: '0.02em',
     }}>
-      {count} {type}
+      {count} {label}
     </span>
   );
 };
@@ -177,11 +175,12 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
   const weekNum = getWeekNumber(selectedDate);
   const weekRange = formatWeekRange(selectedDate);
 
-  // Role fitness and archetype from AI patterns (data-driven)
-  const roleFitness = patternData?.roleFitness ?? 50;
-  const archetypeTitle = patternData?.archetypeTitle || 'Generalist';
-  const archetypeDesc = patternData?.archetypeDesc || '';
-  const archetypeTags = patternData?.archetypeTags || [];
+  // Role fitness and archetype from criticality engine (DB-driven)
+  const roleFitness = criticality?.fitnessScore ?? 50;
+  const archetypeTitle = criticality?.archetype || patternData?.archetypeTitle || 'Loading';
+  const archetypeDesc = criticality?.archetypeDescription || patternData?.archetypeDesc || '';
+  const archetypeTags = (criticality?.archetypeTags?.length ? criticality.archetypeTags : patternData?.archetypeTags) || [];
+  const fitLabel = roleFitness >= 80 ? 'STRONG FIT' : roleFitness >= 60 ? 'MODERATE FIT' : 'DEVELOPING FIT';
 
   return (
     <div data-module="ai-intelligence">
@@ -339,7 +338,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
                       background: T.lozBlue.bg, color: T.lozBlue.text,
                       padding: '3px 10px', borderRadius: 3, letterSpacing: '0.04em',
                     }}>
-                      MODERATE FIT
+                      {fitLabel}
                     </span>
                   </div>
                   <div style={{ fontSize: 12, color: T.tx2, lineHeight: 1.6 }}>
@@ -428,7 +427,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
               Position in Projects
             </div>
 
-            <ProjectCards backlogData={backlogData} />
+            <ProjectCards backlogData={backlogData} jiraAccountId={resource?.jira_account_id || null} />
 
             {criticality?.isSinglePointOfFailure && (
               <R360ExitRisk
@@ -462,7 +461,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
             }}>
               Pickup Latency · Time to First Touch
             </div>
-            <PickupLatency backlogData={backlogData} />
+            <PickupLatency pickupLatency={criticality?.pickupLatency ?? {}} />
           </div>
 
           {/* ═══ SECTION 6: WEEKLY STORY ═══ */}
@@ -555,10 +554,47 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
   );
 };
 
+// ─── Project Card Data Hook ─────────────────────────────────
+function useProjectCardData(jiraAccountId: string | null | undefined) {
+  return useQuery({
+    queryKey: ['r360-project-cards', jiraAccountId],
+    queryFn: async () => {
+      if (!jiraAccountId) return [];
+      const { data: issues } = await (supabase
+        .from('ph_issues')
+        .select('project_name, status_category')
+        .eq('assignee_account_id', jiraAccountId) as any);
+      if (!issues) return [];
+
+      const byProject = new Map<string, { total: number; closed: number; hasOpen: boolean }>();
+      for (const iss of issues) {
+        const pn = iss.project_name || 'Unknown';
+        if (!byProject.has(pn)) byProject.set(pn, { total: 0, closed: 0, hasOpen: false });
+        const entry = byProject.get(pn)!;
+        entry.total++;
+        if (iss.status_category === 'Done') entry.closed++;
+        else entry.hasOpen = true;
+      }
+
+      return [...byProject.entries()]
+        .sort((a, b) => b[1].total - a[1].total)
+        .map(([name, data]) => ({
+          projectName: name,
+          totalCount: data.total,
+          closureRate: data.total > 0 ? Math.round((data.closed / data.total) * 100) : 0,
+          hasOpen: data.hasOpen,
+        }));
+    },
+    enabled: !!jiraAccountId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 // ─── Project Cards Sub-Component ────────────────────────────
-const ProjectCards: React.FC<{ backlogData: any }> = ({ backlogData }) => {
-  const hubs = backlogData?.hubs || [];
-  if (hubs.length === 0) {
+const ProjectCards: React.FC<{ backlogData: any; jiraAccountId: string | null | undefined }> = ({ backlogData, jiraAccountId }) => {
+  const { data: projectData } = useProjectCardData(jiraAccountId);
+  const projects = projectData || [];
+  if (projects.length === 0) {
     return (
       <div style={{ fontSize: 12.5, color: T.tx4, fontStyle: 'italic', padding: '16px 0' }}>
         No project data available.
@@ -568,9 +604,8 @@ const ProjectCards: React.FC<{ backlogData: any }> = ({ backlogData }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
-      {hubs.slice(0, 2).map((hub: any, i: number) => (
+      {projects.slice(0, 3).map((proj: any, i: number) => (
         <div key={i} style={{ border: `1.5px solid ${T.bdr}`, borderRadius: 6, overflow: 'hidden' }}>
-          {/* Header */}
           <div style={{
             background: T.surface, padding: '10px 14px',
             borderBottom: `1.5px solid ${T.bdr}`,
@@ -578,25 +613,24 @@ const ProjectCards: React.FC<{ backlogData: any }> = ({ backlogData }) => {
           }}>
             <span style={{
               fontSize: 10, fontWeight: 700, color: '#FFFFFF',
-              background: T.blue, padding: '2px 8px', borderRadius: 3,
+              background: proj.hasOpen ? T.blue : T.tx2, padding: '2px 8px', borderRadius: 3,
               textTransform: 'uppercase',
             }}>
-              ACTIVE
+              {proj.hasOpen ? 'ACTIVE' : 'CLOSED'}
             </span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: T.tx1 }}>{hub.hub}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: T.tx1 }}>{proj.projectName}</span>
           </div>
-          {/* Body */}
           <div style={{ padding: 16, background: T.page }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 0 }}>
               <div style={{ textAlign: 'center', borderRight: `1px solid ${T.bdr}`, padding: '0 8px' }}>
                 <div style={{ fontFamily: FONT.heading, fontSize: 22, fontWeight: 700, color: T.tx1 }}>
-                  {hub.openCount}
+                  {proj.totalCount}
                 </div>
-                <div style={{ fontSize: 10.5, color: T.tx4, marginTop: 2 }}>Open Items</div>
+                <div style={{ fontSize: 10.5, color: T.tx4, marginTop: 2 }}>Total Items</div>
               </div>
               <div style={{ textAlign: 'center', borderRight: `1px solid ${T.bdr}`, padding: '0 8px' }}>
                 <div style={{ fontFamily: FONT.heading, fontSize: 22, fontWeight: 700, color: T.tx1 }}>
-                  —
+                  {proj.closureRate}%
                 </div>
                 <div style={{ fontSize: 10.5, color: T.tx4, marginTop: 2 }}>Closure rate</div>
               </div>
@@ -655,7 +689,7 @@ const RhythmTable: React.FC<{ resourceId: string; jiraAccountId: string | null |
                 background: row.isActive ? T.blue : row.release === '—' ? T.bdr : T.tx2,
                 ...(row.release === '—' ? { color: T.tx3 } : {}),
               }}>
-                {row.release}
+                {getReleaseShortName(row.release)}
               </span>
             </div>
             {/* Project */}
@@ -748,26 +782,37 @@ function useRhythmData(resourceId: string, jiraAccountId: string | null | undefi
 }
 
 // ─── Pickup Latency Sub-Component ───────────────────────────
-const LATENCY_ROWS = [
-  { label: 'Subtask', color: T.subGrey, pct: 16 },
-  { label: 'Incident', color: T.sGreen, pct: 18 },
-  { label: 'Bug', color: T.blue, pct: 24 },
-  { label: 'Story', color: T.sAmber, pct: 82 },
-  { label: 'Feature', color: T.incRed, pct: 100 },
+const LATENCY_KEYS = [
+  { key: 'subtask',  label: 'Subtask',  color: T.subGrey },
+  { key: 'incident', label: 'Incident', color: T.sGreen },
+  { key: 'bug',      label: 'Bug',      color: T.blue },
+  { key: 'story',    label: 'Story',    color: T.sAmber },
+  { key: 'feature',  label: 'Feature',  color: T.incRed },
 ];
 
-const PickupLatency: React.FC<{ backlogData: any }> = ({ backlogData }) => {
-  const metrics = backlogData?.metrics;
-  // Use backlog data if available, otherwise show defaults
-  const rows = LATENCY_ROWS.map(r => {
-    let value = '—';
-    if (metrics) {
-      if (r.label === 'Subtask' && metrics.avgSubtaskDays != null) value = `${metrics.avgSubtaskDays.toFixed(1)}d`;
-      if (r.label === 'Bug' && metrics.avgBugDays != null) value = `${metrics.avgBugDays.toFixed(1)}d`;
-      if (r.label === 'Story' && metrics.avgStoryDays != null) value = `${metrics.avgStoryDays.toFixed(1)}d`;
-    }
-    return { ...r, value };
-  });
+function formatLatency(entry: { hours?: number | null; days?: number | null } | undefined): string {
+  if (!entry) return '—';
+  if (entry.hours != null) return `${entry.hours}h`;
+  if (entry.days != null) return `${entry.days}d`;
+  return '—';
+}
+
+function toHours(entry: { hours?: number | null; days?: number | null } | undefined): number {
+  if (!entry) return 0;
+  if (entry.hours != null) return entry.hours;
+  if (entry.days != null) return entry.days * 24;
+  return 0;
+}
+
+const PickupLatency: React.FC<{ pickupLatency: Record<string, any> }> = ({ pickupLatency }) => {
+  const latency = pickupLatency || {};
+  const maxHours = Math.max(1, ...LATENCY_KEYS.map(r => toHours(latency[r.key])));
+
+  const rows = LATENCY_KEYS.map(r => ({
+    ...r,
+    value: formatLatency(latency[r.key]),
+    pct: Math.round((toHours(latency[r.key]) / maxHours) * 100),
+  }));
 
   return (
     <>
@@ -793,7 +838,6 @@ const PickupLatency: React.FC<{ backlogData: any }> = ({ backlogData }) => {
         ))}
       </div>
 
-      {/* Note box */}
       <div style={{
         background: T.surface, border: `1.5px solid ${T.bdr}`,
         borderRadius: 4, padding: '12px 14px',
@@ -894,9 +938,8 @@ const WeeklyTimeline: React.FC<{ data: WeeklyStoryData; selectedDate: Date }> = 
             )}
 
             {day.events.map((evt, ei) => {
-              // Detect unusual hours (before 06:00 or after 22:00)
-              const hourNum = parseInt(evt.time.split(':')[0], 10);
-              const isUnusual = hourNum < 6 || hourNum >= 22;
+              // Detect unusual hours (before 06:00 or after 23:30)
+              const isUnusual = isUnusualHour(evt.time);
 
               return (
                 <div key={ei} style={{
