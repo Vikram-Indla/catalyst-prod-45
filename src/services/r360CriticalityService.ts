@@ -406,7 +406,7 @@ export async function computeCriticalityScore(
   }
 
   const allRows: PeerComparisonRow[] = [
-    { peerId: resourceId, peerName: 'You', totalScore: Math.round(myScore * 100) / 100,
+    { peerId: resourceId, peerName: resource.name || 'You', totalScore: Math.round(myScore * 100) / 100,
       isCurrentResource: true, metrics: myMetricValues },
     ...peerResults.sort((a, b) => b.totalScore - a.totalScore),
   ];
