@@ -214,9 +214,6 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
           <button className="rai-topbar-btn" onClick={syncData} disabled={syncing}>
             {syncing ? '⏳ Syncing…' : '🔄 Sync'}
           </button>
-          <button className="rai-topbar-btn rai-primary-btn" onClick={refreshAI} disabled={isGenerating}>
-            {isGenerating ? '⏳ AI…' : '✨ Refresh'}
-          </button>
           <button className="rai-topbar-btn" onClick={onClose} style={{ width: 30, height: 30, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
         </div>
 
