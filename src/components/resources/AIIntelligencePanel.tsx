@@ -13,7 +13,10 @@ import { DeliveryBacklog } from './ai-intelligence/DeliveryBacklog';
 import { BehavioralPatterns } from './ai-intelligence/BehavioralPatterns';
 import { WeeklyStory } from './ai-intelligence/WeeklyStory';
 import { StoryBeacon } from './ai-intelligence/StoryBeacon';
-import { CriticalityBadge } from './ai-intelligence/CriticalityBadge';
+import { R360CriticalityBanner } from '@/components/r360/R360CriticalityBanner';
+import { R360PeerTable } from '@/components/r360/R360PeerTable';
+import { R360CohortSpectrum } from '@/components/r360/R360CohortSpectrum';
+import { R360ExitRisk } from '@/components/r360/R360ExitRisk';
 import {
   useResourceInfo,
   useHubClosures,
@@ -143,11 +146,35 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
         </div>
 
         {/* Criticality Badge */}
-      <CriticalityBadge
-          criticality={criticality}
-          isLoading={criticalityLoading}
-          roleName={resource?.role_name?.split(' · ')[0] || 'Team Member'}
-        />
+        {/* Criticality Section — "Why Critical" */}
+        <div style={{ padding: '0 20px 4px', borderBottom: '1px solid #E2E8F0' }}>
+          <R360CriticalityBanner
+            label={criticality?.label ?? '—'}
+            percentile={criticality?.percentile ?? 0}
+            irreplaceabilityRatio={criticality?.irreplaceabilityRatio ?? 0}
+            isSinglePointOfFailure={criticality?.isSinglePointOfFailure ?? false}
+            primaryMetrics={criticality?.primaryMetrics ?? []}
+            peerComparison={criticality?.peerComparison ?? []}
+            roleName={resource?.role_name?.split(' · ')[0] || 'Team Member'}
+            loading={criticalityLoading}
+          />
+          <R360PeerTable
+            primaryMetrics={criticality?.primaryMetrics ?? []}
+            peerComparison={criticality?.peerComparison ?? []}
+            loading={criticalityLoading}
+          />
+          <R360CohortSpectrum
+            percentile={criticality?.percentile ?? 0}
+            label={criticality?.label ?? 'Developing'}
+          />
+          {criticality?.isSinglePointOfFailure && (
+            <R360ExitRisk
+              resourceName={name || 'Resource'}
+              primaryMetrics={criticality.primaryMetrics}
+              irreplaceabilityRatio={criticality.irreplaceabilityRatio}
+            />
+          )}
+        </div>
 
         {/* Scrollable body */}
         <div className="rai-body" ref={bodyRef}>
