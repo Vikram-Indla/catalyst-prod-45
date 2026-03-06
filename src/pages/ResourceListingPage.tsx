@@ -80,7 +80,7 @@ export default function ResourceListingPage() {
 
 
   const { data: resources = [], isLoading } = useQuery({
-    queryKey: ['resources-listing', 'variable-only-v2'],
+    queryKey: ['resources-listing', 'all-types-v1'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_inventory')
