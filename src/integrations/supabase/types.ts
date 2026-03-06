@@ -32604,48 +32604,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ra_jira_connections: {
-        Row: {
-          api_token_encrypted: string
-          created_at: string | null
-          id: number
-          jira_email: string
-          jira_url: string
-          last_synced_at: string | null
-          pdf_ticket_count: number | null
-          project_key: string
-          project_name: string
-          status: string | null
-          ticket_count: number | null
-        }
-        Insert: {
-          api_token_encrypted: string
-          created_at?: string | null
-          id?: number
-          jira_email: string
-          jira_url: string
-          last_synced_at?: string | null
-          pdf_ticket_count?: number | null
-          project_key: string
-          project_name: string
-          status?: string | null
-          ticket_count?: number | null
-        }
-        Update: {
-          api_token_encrypted?: string
-          created_at?: string | null
-          id?: number
-          jira_email?: string
-          jira_url?: string
-          last_synced_at?: string | null
-          pdf_ticket_count?: number | null
-          project_key?: string
-          project_name?: string
-          status?: string | null
-          ticket_count?: number | null
-        }
-        Relationships: []
-      }
       ra_jira_sync_log: {
         Row: {
           duplicates_skipped: number | null
@@ -32689,8 +32647,10 @@ export type Database = {
           id: number
           page_count: number | null
           pdf_filename: string | null
+          priority: string | null
           project_key: string
           project_name: string
+          status: string | null
           ticket_key: string
           ticket_summary: string
           ticket_type: string | null
@@ -32701,8 +32661,10 @@ export type Database = {
           id?: number
           page_count?: number | null
           pdf_filename?: string | null
+          priority?: string | null
           project_key: string
           project_name: string
+          status?: string | null
           ticket_key: string
           ticket_summary: string
           ticket_type?: string | null
@@ -32713,8 +32675,10 @@ export type Database = {
           id?: number
           page_count?: number | null
           pdf_filename?: string | null
+          priority?: string | null
           project_key?: string
           project_name?: string
+          status?: string | null
           ticket_key?: string
           ticket_summary?: string
           ticket_type?: string | null
