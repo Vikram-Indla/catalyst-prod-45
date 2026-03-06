@@ -213,22 +213,22 @@ export default function ReqAssistLibrary() {
                         )}
                       </td>
                       {/* Title */}
-                      <td style={{ padding: 'var(--ra-cell-pad)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 0 }}>
-                        <span title={doc.title} style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
+                      <td style={{ padding: 'var(--ra-cell-pad)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 0, height: 36, minHeight: 36, maxHeight: 36 }}>
+                        <span title={doc.title} style={{ fontSize: 14, fontWeight: 500, color: '#111827', fontFamily: "'Inter', sans-serif" }}>
                           {doc.title.length > 52 ? doc.title.slice(0, 52) + '…' : doc.title}
                         </span>
                       </td>
                       {/* Domain (EC-003) */}
-                      <td style={{ padding: 'var(--ra-cell-pad)' }}>
+                      <td style={{ padding: 'var(--ra-cell-pad)', height: 36, minHeight: 36, maxHeight: 36 }}>
                         {doc.domain ? (() => {
-                          const lz = domainLozenge(doc.domain);
+                          const lz = domainLozenge();
                           return (
                             <span style={{
                               display: 'inline-flex', alignItems: 'center',
-                              padding: '0 6px', height: 20, borderRadius: 3,
+                              padding: '2px 8px', borderRadius: 3,
                               fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                              letterSpacing: '0.02em', whiteSpace: 'nowrap',
-                              background: lz!.bg, color: lz!.color,
+                              letterSpacing: '0.04em', whiteSpace: 'nowrap',
+                              background: lz.bg, color: lz.color,
                               fontFamily: "'Inter', sans-serif",
                             }}>
                               {doc.domain}
