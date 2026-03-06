@@ -126,25 +126,25 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
         <div className="r3p-sec-title">This Week · W{weekNum} · Mar 1–5, 2026</div>
         <div className="r3p-kpi-grid">
           <div className="r3p-kpi-cell">
-            <div className="r3p-kpi-value" style={{ color: 'var(--r3-danger)' }}>{totalOpen}</div>
+            <div className="r3p-kpi-value" style={{ color: loadColour }}>{totalOpen}</div>
             <div className="r3p-kpi-label">Total Open</div>
-            <div className="r3p-kpi-compare">vs role avg {resource.roleAvgOpenCount}</div>
+            <div className="r3p-kpi-compare">vs role avg {roleAvg}</div>
           </div>
           <div className="r3p-kpi-cell">
-            <div className="r3p-kpi-value" style={{ color: 'var(--r3-success)' }}>
-              {stats?.closedThisWeek ?? 0}
-              <span style={{ fontSize: 11, marginLeft: 3, color: 'var(--r3-success)' }}>↑</span>
+            <div className="r3p-kpi-value" style={{ color: closedColour }}>
+              {closedThisWeek}
+              {closedThisWeek > 0 && <span style={{ fontSize: 11, marginLeft: 3, color: 'var(--r3-success)' }}>↑</span>}
             </div>
             <div className="r3p-kpi-label">Closed This Week</div>
             <div className="r3p-kpi-compare">vs 3 last week</div>
           </div>
           <div className="r3p-kpi-cell">
-            <div className="r3p-kpi-value">{stats?.inReview ?? 0}</div>
+            <div className="r3p-kpi-value" style={{ color: (stats?.inReview ?? 0) > 0 ? 'var(--tx-primary)' : 'var(--tx-muted)' }}>{stats?.inReview ?? 0}</div>
             <div className="r3p-kpi-label">In Review</div>
-            <div className="r3p-kpi-compare" style={{ color: 'var(--r3-warning)' }}>0 items under review</div>
+            <div className="r3p-kpi-compare" style={{ color: (stats?.inReview ?? 0) === 0 ? 'var(--r3-warning)' : 'var(--tx-secondary)' }}>{stats?.inReview ?? 0} items under review</div>
           </div>
           <div className="r3p-kpi-cell">
-            <div className="r3p-kpi-value">
+            <div className="r3p-kpi-value" style={{ color: 'var(--tx-primary)' }}>
               {stats?.pickupSpeedHours ?? 0}
               <span className="r3p-kpi-unit">h</span>
             </div>
