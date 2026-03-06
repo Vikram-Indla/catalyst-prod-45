@@ -697,7 +697,6 @@ export default function R360MemberDetail() {
           onClose={() => setAiOpen(false)}
         />
       )}
-    </div>
 
     {/* ── R360 Profile Drawer — flex split-pane right column ── */}
     {profileDrawerOpen && resourceId && (
@@ -711,7 +710,6 @@ export default function R360MemberDetail() {
     )}
     </div>
   );
-}
 
 // ═══════════════════════════════════════════
 // RING VIEW — V12 PRECISION
