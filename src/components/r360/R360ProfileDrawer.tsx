@@ -738,10 +738,10 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
           />
         )}
         {activeTab === 'behavioural' && (
-          <BehaviouralTab workItems={workItems} />
+          <BehaviouralTab workItems={workItems} showFilteredList={showFilteredList} />
         )}
         {activeTab === 'weekly' && (
-          <WeeklyStoryTab workItems={workItems} openCount={openCount} />
+          <WeeklyStoryTab workItems={workItems} openCount={openCount} showFilteredList={showFilteredList} />
         )}
         {activeTab === 'items' && (
           <WorkItemsTab workItems={workItems} />
