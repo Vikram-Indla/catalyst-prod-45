@@ -690,10 +690,6 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
                   padding: '2px 7px', fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 11, fontWeight: 700, color: BRAND,
                 }}>{resourceRid}</span></>}
-                <span style={{
-                  width: 7, height: 7, borderRadius: '50%',
-                  background: openCount > roleAvg ? WARNING : openCount === 0 ? SUCCESS : INK1,
-                }} />
               </div>
             </div>
           </>
