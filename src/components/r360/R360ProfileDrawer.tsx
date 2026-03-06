@@ -8,6 +8,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { fetchItemDetail, calcDaysSitting } from '@/lib/r360/fetchItemDetail';
+import type { ItemDetailFull } from '@/lib/r360/fetchItemDetail';
 
 // ── Constants ──
 const R360_WEEK = 9;
@@ -19,8 +21,6 @@ const STATUS_MAP: Record<string, { bg: string; color: string; label: string }> =
   DONE:        { bg: '#E3FCEF', color: '#006644', label: 'DONE' },
   BACKLOG:     { bg: '#DFE1E6', color: '#253858', label: 'BACKLOG' },
 };
-
-// Work item icons now use canonical JiraIssueTypeIcon from src/lib/jira-issue-type-icons.tsx
 
 const TYPE_COLORS: Record<string, { color: string; opacity: number }> = {
   Bug:      { color: '#FF5630', opacity: 0.75 },
@@ -50,7 +50,6 @@ function useR360WeeklyStats(resourceId: string) {
   return useQuery({
     queryKey: ['r360-profile-stats', resourceId],
     queryFn: async () => {
-      // Try snapshot first
       const { data: current } = await supabase
         .from('r360_weekly_snapshots')
         .select('*')
@@ -96,14 +95,12 @@ function useR360Resource(resourceId: string) {
   return useQuery({
     queryKey: ['r360-profile-resource', resourceId],
     queryFn: async () => {
-      // Query resource_inventory (same table powering the ring view)
       const { data: resource } = await (supabase as any).from('resource_inventory')
         .select('id, rid, name, role_name, department_name, vendor_name, resource_type, profile_id, jira_account_id')
         .eq('id', resourceId)
         .maybeSingle();
       if (!resource) return null;
 
-      // Fetch real avatar from profiles table
       let avatar_url: string | null = null;
       if (resource.profile_id) {
         const { data: profile } = await supabase.from('profiles')
@@ -131,7 +128,6 @@ function useR360ProfileWorkItems(resourceId: string) {
   return useQuery({
     queryKey: ['r360-profile-work-items', resourceId],
     queryFn: async () => {
-      // Get resource identity for querying ph_issues
       const { data: resource } = await (supabase as any).from('resource_inventory')
         .select('name, jira_account_id')
         .eq('id', resourceId)
@@ -180,7 +176,7 @@ const SLATE = '#64748B';
 
 function computeLoadColour(openCount: number, roleAvg: number): string {
   if (openCount === 0) return SUCCESS;
-  if (openCount <= roleAvg) return SLATE;     // neutral — under avg
+  if (openCount <= roleAvg) return SLATE;
   if (openCount <= roleAvg * 1.5) return WARNING;
   return DANGER;
 }
@@ -231,6 +227,223 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 // ══════════════════════════════════════════
+// PANEL STACK TYPES
+// ══════════════════════════════════════════
+type PanelView =
+  | { type: 'list'; label: string; items: any[] }
+  | { type: 'detail'; itemKey: string };
+
+// ══════════════════════════════════════════
+// FILTERED LIST PANEL
+// ══════════════════════════════════════════
+function FilteredListPanel({
+  label, items, onBack, onItemClick,
+}: {
+  label: string;
+  items: any[];
+  onBack: () => void;
+  onItemClick: (item: any) => void;
+}) {
+  const relTime = (ds: string) => {
+    const d = Math.floor((Date.now() - new Date(ds).getTime()) / 86400000);
+    if (d === 0) return 'Today';
+    if (d === 1) return '1d ago';
+    return `${d}d ago`;
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Header */}
+      <div style={{
+        height: 48, flexShrink: 0, borderBottom: '0.75px solid #E2E8F0',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px',
+      }}>
+        <button onClick={onBack} style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none',
+          border: 'none', cursor: 'pointer', padding: 0,
+        }}>
+          <ChevronLeft size={16} color={INK4} />
+          <span style={{ fontSize: 13, color: INK2 }}>Back</span>
+        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: INK1 }}>{label}</span>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center',
+            backgroundColor: '#DFE1E6', color: '#253858',
+            fontSize: '11px', fontWeight: 700, padding: '0 6px', height: '20px', borderRadius: '3px',
+          }}>{items.length} item{items.length !== 1 ? 's' : ''}</span>
+        </div>
+      </div>
+      {/* Body */}
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {items.length === 0 ? (
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: 8, padding: '48px 16px',
+          }}>
+            <Inbox size={24} color={MUTED} />
+            <span style={{ fontSize: 13, color: INK4 }}>No items found</span>
+          </div>
+        ) : (
+          items.map((item: any, idx: number) => (
+            <div
+              key={item.id || idx}
+              onClick={() => onItemClick(item)}
+              style={{
+                display: 'flex', alignItems: 'center', height: 36, padding: '0 12px', gap: 8,
+                borderBottom: idx < items.length - 1 ? '0.75px solid #E2E8F0' : 'none',
+                background: '#FFFFFF', cursor: 'pointer', transition: 'background 120ms',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+            >
+              <span style={{ width: 20, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+                <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
+              </span>
+              <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK4, flexShrink: 0 }}>{item.item_key}</span>
+              <span style={{
+                flex: 1, fontSize: 13, color: INK2, overflow: 'hidden',
+                textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
+              }}>{item.title}</span>
+              <R360StatusLozenge status={item.status || item.status_category || 'To Do'} />
+              <span style={{ fontSize: 11, color: MUTED, flexShrink: 0 }}>{relTime(item.updated_at)}</span>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════
+// ITEM DETAIL PANEL
+// ══════════════════════════════════════════
+function ItemDetailPanel({
+  itemKey, onBack, backLabel,
+}: {
+  itemKey: string;
+  onBack: () => void;
+  backLabel: string;
+}) {
+  const { data: detail, isLoading } = useQuery({
+    queryKey: ['r360-item-detail', itemKey],
+    queryFn: () => fetchItemDetail(itemKey),
+    enabled: !!itemKey,
+    staleTime: 2 * 60 * 1000,
+  });
+
+  const relTime = (ds: string | null) => {
+    if (!ds) return '—';
+    const d = Math.floor((Date.now() - new Date(ds).getTime()) / 86400000);
+    if (d === 0) return 'Today';
+    if (d === 1) return '1d ago';
+    return `${d}d ago`;
+  };
+
+  const daysSitting = detail ? calcDaysSitting(detail.assignedAt, detail.resolution) : 0;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Header */}
+      <div style={{
+        height: 48, flexShrink: 0, borderBottom: '0.75px solid #E2E8F0',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px',
+      }}>
+        <button onClick={onBack} style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none',
+          border: 'none', cursor: 'pointer', padding: 0,
+        }}>
+          <ChevronLeft size={16} color={INK4} />
+          <span style={{ fontSize: 13, color: INK2 }}>{backLabel}</span>
+        </button>
+        <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK4 }}>{itemKey}</span>
+      </div>
+      {/* Body */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
+        {isLoading ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <Skeleton h={20} w="40%" />
+            <Skeleton h={28} w="80%" />
+            <Skeleton h={16} w="50%" />
+            <Skeleton h={120} />
+          </div>
+        ) : !detail ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '48px 0' }}>
+            <Inbox size={24} color={MUTED} />
+            <span style={{ fontSize: 13, color: INK4 }}>Item not found</span>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {/* Type + Key */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <JiraIssueTypeIcon type={detail.type || 'Task'} size={16} />
+              <span style={{ fontSize: 13, fontFamily: "'JetBrains Mono', monospace", color: INK4 }}>{detail.key}</span>
+            </div>
+
+            {/* Title */}
+            <div style={{ fontSize: 16, fontWeight: 650, color: INK1, lineHeight: 1.4 }}>{detail.title}</div>
+
+            {/* Status + Priority */}
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <R360StatusLozenge status={detail.status} />
+              <span style={{ fontSize: 12, color: INK4 }}>Priority: {detail.priority}</span>
+            </div>
+
+            {/* Metadata grid */}
+            <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+              {[
+                { label: 'Project', value: detail.projectName },
+                { label: 'Assignee', value: detail.assigneeName },
+                { label: 'Assigned', value: relTime(detail.assignedAt) },
+                { label: 'Days Sitting', value: `${daysSitting}d` },
+                ...(detail.releaseName ? [{ label: 'Release', value: detail.releaseName }] : []),
+                ...(detail.dueDate ? [{ label: 'Due Date', value: new Date(detail.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }] : []),
+                ...(detail.sprintName ? [{ label: 'Sprint', value: detail.sprintName }] : []),
+                ...(detail.resolution ? [{ label: 'Resolution', value: detail.resolution }] : []),
+              ].map((row, i, arr) => (
+                <div key={i} style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  height: 36, padding: '0 14px',
+                  borderBottom: i < arr.length - 1 ? '0.75px solid #E2E8F0' : 'none',
+                }}>
+                  <span style={{ fontSize: 12, color: INK4 }}>{row.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: INK1 }}>{row.value}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Parent */}
+            {detail.parentKey && (
+              <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, padding: '10px 14px' }}>
+                <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 6 }}>PARENT</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK4 }}>{detail.parentKey}</span>
+                  <span style={{ fontSize: 13, color: INK2 }}>{detail.parentName || '—'}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Days Sitting Progress */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 6 }}>TIME IN ASSIGNMENT</div>
+              <div style={{ height: 6, borderRadius: 3, background: '#E2E8F0', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%', borderRadius: 3,
+                  width: `${Math.min((daysSitting / 30) * 100, 100)}%`,
+                  background: daysSitting >= 29 ? DANGER : daysSitting >= 15 ? WARNING : SUCCESS,
+                  transition: 'width 300ms',
+                }} />
+              </div>
+              <div style={{ fontSize: 11, color: MUTED, marginTop: 4 }}>{daysSitting}d sitting · {daysSitting >= 29 ? 'Critical' : daysSitting >= 15 ? 'Aging' : 'Healthy'}</div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════
 // MAIN DRAWER
 // ══════════════════════════════════════════
 interface R360ProfileDrawerProps {
@@ -249,6 +462,17 @@ const TABS: { key: TabKey; label: string }[] = [
 
 export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDrawerProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
+  const [panelStack, setPanelStack] = useState<PanelView[]>([]);
+
+  const pushPanel = useCallback((view: PanelView) => {
+    setPanelStack(prev => [...prev, view]);
+  }, []);
+  const popPanel = useCallback(() => {
+    setPanelStack(prev => prev.slice(0, -1));
+  }, []);
+  const clearPanels = useCallback(() => {
+    setPanelStack([]);
+  }, []);
 
   const { data: resource, isLoading: resLoading, isError: resError } = useR360Resource(resourceId);
   const { data: statsData, isLoading: statsLoading } = useR360WeeklyStats(resourceId);
@@ -258,11 +482,8 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
   const stats = statsData?.current;
   const prevWeekClosed = statsData?.prev?.closed_this_week ?? 0;
 
-  // Compute stats from live work items when snapshot is empty
   const liveStats = useMemo(() => {
-    if (stats) return null; // snapshot exists, use it
-
-    // Saudi work week bounds: Sunday–Thursday
+    if (stats) return null;
     const now = new Date();
     const day = now.getDay();
     const daysSinceSunday = day === 0 ? 0 : day;
@@ -303,11 +524,9 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
 
   const effectiveStats = stats || liveStats;
 
-  // Derived
   const openCount = effectiveStats?.total_open ?? 0;
-  const roleAvg = 5; // benchmark
+  const roleAvg = 5;
   const loadColour = computeLoadColour(openCount, roleAvg);
-  console.log('Ring color:', loadColour, '| open:', openCount, '| avg:', roleAvg);
   const resourceName = resource?.full_name || '';
   const resourceRole = resource?.role || '';
   const deptName = resource?.department || '';
@@ -317,19 +536,17 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
   const workMix = useMemo(() => {
     const openItems = workItems.filter((i: any) => i.status_category !== 'done');
     const total = openItems.length || 1;
-    // Normalize issue_type: "Sub-task" → "Subtask", "New Feature" → "Story", etc.
     const normalize = (t: string) => {
       const lower = (t || '').toLowerCase();
       if (lower === 'bug') return 'Bug';
       if (lower === 'story' || lower === 'new feature' || lower === 'improvement') return 'Story';
       if (lower === 'sub-task' || lower === 'subtask') return 'Subtask';
       if (lower === 'incident') return 'Incident';
-      return t; // keep original for "Task", "Epic", etc.
+      return t;
     };
     const counts: Record<string, number> = {};
     openItems.forEach((i: any) => { const n = normalize(i.work_item_type); counts[n] = (counts[n] || 0) + 1; });
     const roleAvgs: Record<string, number> = { Bug: 35, Story: 30, Subtask: 20, Incident: 15 };
-    // Show canonical types + any extra types found in data
     const canonical = ['Bug', 'Story', 'Subtask', 'Incident'];
     const extraTypes = Object.keys(counts).filter(t => !canonical.includes(t) && counts[t] > 0);
     return [...canonical, ...extraTypes].map(t => ({
@@ -362,7 +579,6 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
 
   const totalOpenAcrossHubs = hubBreakdown.reduce((s, h) => s + h.open, 0);
 
-  // Summary KPIs for hub section
   const hubSummary = useMemo(() => {
     let inProgress = 0, toDo = 0, blocked = 0;
     workItems.forEach((i: any) => {
@@ -374,6 +590,22 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
     return { total: totalOpenAcrossHubs, inProgress, toDo, blocked };
   }, [workItems, totalOpenAcrossHubs]);
 
+  // ── Drill-down helpers ──
+  const showFilteredList = useCallback((label: string, filterFn: (i: any) => boolean) => {
+    const items = workItems.filter(filterFn);
+    pushPanel({ type: 'list', label, items });
+  }, [workItems, pushPanel]);
+
+  const showItemDetail = useCallback((itemKey: string) => {
+    pushPanel({ type: 'detail', itemKey });
+  }, [pushPanel]);
+
+  // Tab change clears panels
+  const handleTabChange = useCallback((tab: TabKey) => {
+    clearPanels();
+    setActiveTab(tab);
+  }, [clearPanels]);
+
   if (resError) {
     return (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -384,8 +616,10 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
     );
   }
 
+  const currentPanel = panelStack.length > 0 ? panelStack[panelStack.length - 1] : null;
+
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: "'Inter', system-ui, sans-serif", position: 'relative' }}>
 
       {/* ━━ A. TOPBAR ━━ */}
       <div style={{
@@ -471,7 +705,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
         {TABS.map(t => {
           const isActive = activeTab === t.key;
           return (
-            <button key={t.key} onClick={() => setActiveTab(t.key)} style={{
+            <button key={t.key} onClick={() => handleTabChange(t.key)} style={{
               fontFamily: "'Inter', system-ui, sans-serif", fontSize: 12, fontWeight: isActive ? 600 : 500,
               color: isActive ? BRAND : INK4, padding: '0 14px', height: 38,
               border: 'none', borderBottom: `2px solid ${isActive ? BRAND : 'transparent'}`,
@@ -486,7 +720,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
       </div>
 
       {/* ━━ D. BODY ━━ */}
-      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}>
         {activeTab === 'overview' && (
           <OverviewTab
             stats={effectiveStats}
@@ -501,7 +735,10 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
             hubBreakdown={hubBreakdown}
             hubSummary={hubSummary}
             totalOpenAcrossHubs={totalOpenAcrossHubs}
-            onTabSwitch={setActiveTab}
+            onTabSwitch={handleTabChange}
+            workItems={workItems}
+            showFilteredList={showFilteredList}
+            showItemDetail={showItemDetail}
           />
         )}
         {activeTab === 'behavioural' && (
@@ -513,6 +750,31 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
         {activeTab === 'items' && (
           <WorkItemsTab workItems={workItems} />
         )}
+
+        {/* ━━ STACKED DETAIL PANEL ━━ */}
+        <div style={{
+          position: 'absolute', top: 0, right: 0, width: '100%', height: '100%',
+          background: '#FFFFFF', zIndex: 10,
+          transform: currentPanel ? 'translateX(0%)' : 'translateX(100%)',
+          transition: currentPanel ? 'transform 200ms ease-out' : 'transform 150ms ease-in',
+          pointerEvents: currentPanel ? 'auto' : 'none',
+        }}>
+          {currentPanel?.type === 'list' && (
+            <FilteredListPanel
+              label={currentPanel.label}
+              items={currentPanel.items}
+              onBack={popPanel}
+              onItemClick={(item) => showItemDetail(item.item_key)}
+            />
+          )}
+          {currentPanel?.type === 'detail' && (
+            <ItemDetailPanel
+              itemKey={currentPanel.itemKey}
+              onBack={popPanel}
+              backLabel={panelStack.length > 1 ? 'Back' : `Back to ${resourceName}`}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
@@ -524,7 +786,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
 function OverviewTab({
   stats, statsLoading, prevWeekClosed, openCount, roleAvg, loadColour,
   trend, trendLoading, workMix, hubBreakdown, hubSummary, totalOpenAcrossHubs,
-  onTabSwitch,
+  onTabSwitch, workItems, showFilteredList, showItemDetail,
 }: {
   stats: any; statsLoading: boolean; prevWeekClosed: number;
   openCount: number; roleAvg: number; loadColour: string;
@@ -534,6 +796,9 @@ function OverviewTab({
   hubSummary: { total: number; inProgress: number; toDo: number; blocked: number };
   totalOpenAcrossHubs: number;
   onTabSwitch: (t: TabKey) => void;
+  workItems: any[];
+  showFilteredList: (label: string, filterFn: (i: any) => boolean) => void;
+  showItemDetail: (itemKey: string) => void;
 }) {
   const closedThisWeek = stats?.closed_this_week ?? 0;
   const inReview = stats?.in_review ?? 0;
@@ -553,7 +818,6 @@ function OverviewTab({
   const cycleColour = avgDays > 10 ? DANGER : avgDays > 5 ? WARNING : INK1;
   const oldestColour = oldestAgeDays >= 14 ? DANGER : oldestAgeDays >= 8 ? WARNING : INK1;
 
-  // Sparkline
   const trendMax = Math.max(...trend.map(t => t.closedCount), 1);
   const trendPrev4Avg = trend.length > 4 ? trend.slice(-5, -1).reduce((s: number, t: any) => s + t.closedCount, 0) / 4 : 0;
   const trendCurrent = trend.length > 0 ? trend[trend.length - 1]?.closedCount : 0;
@@ -561,6 +825,40 @@ function OverviewTab({
 
   const bugRow = workMix.find(w => w.type === 'Bug');
   const showBugInsight = bugRow && bugRow.pct > bugRow.roleAvgPct;
+
+  // Compute week bounds for "closed this week" filter
+  const { weekStart, weekEnd } = useMemo(() => {
+    const now = new Date();
+    const day = now.getDay();
+    const daysSinceSunday = day === 0 ? 0 : day;
+    const ws = new Date(now);
+    ws.setDate(now.getDate() - daysSinceSunday);
+    ws.setHours(0, 0, 0, 0);
+    const we = new Date(ws);
+    we.setDate(ws.getDate() + 4);
+    we.setHours(23, 59, 59, 999);
+    return { weekStart: ws, weekEnd: we };
+  }, []);
+
+  // Clickable tile style
+  const clickableTileHover = (e: React.MouseEvent, entering: boolean) => {
+    (e.currentTarget as HTMLElement).style.background = entering ? 'rgba(37,99,235,0.04)' : '#FFFFFF';
+  };
+
+  // Clickable row style
+  const clickableRowHover = (e: React.MouseEvent, entering: boolean) => {
+    (e.currentTarget as HTMLElement).style.background = entering ? 'rgba(0,0,0,0.03)' : 'transparent';
+  };
+
+  // Normalize type for filtering
+  const normalizeType = (t: string) => {
+    const lower = (t || '').toLowerCase();
+    if (lower === 'bug') return 'Bug';
+    if (lower === 'story' || lower === 'new feature' || lower === 'improvement') return 'Story';
+    if (lower === 'sub-task' || lower === 'subtask') return 'Subtask';
+    if (lower === 'incident') return 'Incident';
+    return t;
+  };
 
   return (
     <>
@@ -573,14 +871,28 @@ function OverviewTab({
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden' }}>
-            {/* Total Open */}
-            <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
+            {/* Total Open — CLICKABLE */}
+            <div
+              onClick={() => showFilteredList('Total Open', (i: any) => i.status_category !== 'done')}
+              style={{ background: '#FFFFFF', padding: '12px 14px', cursor: 'pointer', transition: 'background 120ms' }}
+              onMouseEnter={e => clickableTileHover(e, true)}
+              onMouseLeave={e => clickableTileHover(e, false)}
+            >
               <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: loadColour }}>{openCount}</div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>TOTAL OPEN</div>
               <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>vs role avg {roleAvg}</div>
             </div>
-            {/* Closed This Week */}
-            <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
+            {/* Closed This Week — CLICKABLE */}
+            <div
+              onClick={() => showFilteredList('Closed This Week', (i: any) => {
+                if ((i.status_category || '').toLowerCase() !== 'done') return false;
+                const u = new Date(i.updated_at);
+                return u >= weekStart && u <= weekEnd;
+              })}
+              style={{ background: '#FFFFFF', padding: '12px 14px', cursor: 'pointer', transition: 'background 120ms' }}
+              onMouseEnter={e => clickableTileHover(e, true)}
+              onMouseLeave={e => clickableTileHover(e, false)}
+            >
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
                 <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: closedColour }}>{closedThisWeek}</span>
                 {closedTrend && <span style={{ fontSize: 14, fontWeight: 700, color: closedTrendColor }}>{closedTrend}</span>}
@@ -588,13 +900,18 @@ function OverviewTab({
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>CLOSED THIS WEEK</div>
               <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>vs {prevWeekClosed} last week</div>
             </div>
-            {/* In Review */}
-            <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
+            {/* In Review — CLICKABLE */}
+            <div
+              onClick={() => showFilteredList('In Review', (i: any) => (i.status_category || '').toLowerCase() === 'in_review')}
+              style={{ background: '#FFFFFF', padding: '12px 14px', cursor: 'pointer', transition: 'background 120ms' }}
+              onMouseEnter={e => clickableTileHover(e, true)}
+              onMouseLeave={e => clickableTileHover(e, false)}
+            >
               <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{inReview}</div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>IN REVIEW</div>
               <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>{inReview === 0 ? 'None pending' : `${inReview} awaiting`}</div>
             </div>
-            {/* Pickup Speed */}
+            {/* Pickup Speed — not clickable */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
                 {pickupHours > 0 ? (
@@ -619,38 +936,75 @@ function OverviewTab({
         <div style={{ display: 'flex', gap: 16 }}>
           {/* SVG Ring */}
           <svg width={110} height={110} viewBox="0 0 110 110" style={{ flexShrink: 0 }}>
-            {/* Track */}
             <circle cx={55} cy={55} r={44} fill="none" stroke="#E2E8F0" strokeWidth={9} />
-            {/* Ghost arc (role avg) */}
             <circle cx={55} cy={55} r={44} fill="none" stroke="#CBD5E1" strokeWidth={2}
               strokeDasharray="125 151" strokeDashoffset={-69} opacity={0.7} />
-            {/* Main arc */}
             <circle cx={55} cy={55} r={44} fill="none" stroke={loadColour} strokeWidth={9}
               strokeDasharray={`${Math.min((openCount / 11) * 276.5, 276.5)} ${276.5 - Math.min((openCount / 11) * 276.5, 276.5)}`}
               strokeDashoffset={-69} strokeLinecap="round" />
-            {/* Center text */}
             <text x={55} y={52} textAnchor="middle" fontFamily="'Sora', sans-serif" fontSize={22} fontWeight={700} fill={loadColour}>{openCount}</text>
             <text x={55} y={67} textAnchor="middle" fontFamily="'Inter', sans-serif" fontSize={11} fontWeight={700} fill={MUTED}>OPEN</text>
             <text x={55} y={82} textAnchor="middle" fontFamily="'Inter', sans-serif" fontSize={11} fill="#CBD5E1">avg {roleAvg}</text>
           </svg>
 
-          {/* Stat rows */}
+          {/* Stat rows — CLICKABLE */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {[
-              { label: 'In progress right now', value: `${concurrent} concurrent`, color: concurrentColour },
-              { label: 'Closed this week', value: `${closedOfTouched} of ${totalTouched} touched`, color: INK1 },
-              { label: 'Avg cycle time', value: `${avgDays}d per item`, color: cycleColour },
-              { label: 'Oldest open item', value: `${oldestAgeDays}d · ${oldestKey}`, color: oldestColour },
-            ].map((row, i) => (
-              <div key={i} style={{
+            {/* In progress row */}
+            <div
+              onClick={() => showFilteredList('In Progress', (i: any) => (i.status_category || '').toLowerCase() === 'in_progress')}
+              style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '8px 10px', border: `1px solid ${BORDER}`, borderRadius: 4,
+                boxShadow: '0 1px 2px rgba(15,23,42,0.06)', cursor: 'pointer', transition: 'background 120ms',
+              }}
+              onMouseEnter={e => clickableRowHover(e, true)}
+              onMouseLeave={e => clickableRowHover(e, false)}
+            >
+              <span style={{ fontSize: 12, color: INK2 }}>In progress right now</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: concurrentColour, fontFamily: "'JetBrains Mono', monospace" }}>{concurrent} concurrent</span>
+            </div>
+            {/* Closed this week row */}
+            <div
+              onClick={() => showFilteredList('Closed This Week', (i: any) => {
+                if ((i.status_category || '').toLowerCase() !== 'done') return false;
+                const u = new Date(i.updated_at);
+                return u >= weekStart && u <= weekEnd;
+              })}
+              style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '8px 10px', border: `1px solid ${BORDER}`, borderRadius: 4,
+                boxShadow: '0 1px 2px rgba(15,23,42,0.06)', cursor: 'pointer', transition: 'background 120ms',
+              }}
+              onMouseEnter={e => clickableRowHover(e, true)}
+              onMouseLeave={e => clickableRowHover(e, false)}
+            >
+              <span style={{ fontSize: 12, color: INK2 }}>Closed this week</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: INK1, fontFamily: "'JetBrains Mono', monospace" }}>{closedOfTouched} of {totalTouched} touched</span>
+            </div>
+            {/* Avg cycle time row — not clickable */}
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              padding: '8px 10px', border: `1px solid ${BORDER}`, borderRadius: 4,
+              boxShadow: '0 1px 2px rgba(15,23,42,0.06)',
+            }}>
+              <span style={{ fontSize: 12, color: INK2 }}>Avg cycle time</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: cycleColour, fontFamily: "'JetBrains Mono', monospace" }}>{avgDays}d per item</span>
+            </div>
+            {/* Oldest open item — SINGLE ITEM CLICK */}
+            <div
+              onClick={() => { if (oldestKey && oldestKey !== '—') showItemDetail(oldestKey); }}
+              style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 padding: '8px 10px', border: `1px solid ${BORDER}`, borderRadius: 4,
                 boxShadow: '0 1px 2px rgba(15,23,42,0.06)',
-              }}>
-                <span style={{ fontSize: 12, color: INK2 }}>{row.label}</span>
-                <span style={{ fontSize: 12, fontWeight: 600, color: row.color, fontFamily: "'JetBrains Mono', monospace" }}>{row.value}</span>
-              </div>
-            ))}
+                cursor: oldestKey !== '—' ? 'pointer' : 'default', transition: 'background 120ms',
+              }}
+              onMouseEnter={e => { if (oldestKey !== '—') clickableRowHover(e, true); }}
+              onMouseLeave={e => { if (oldestKey !== '—') clickableRowHover(e, false); }}
+            >
+              <span style={{ fontSize: 12, color: INK2 }}>Oldest open item</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: oldestColour, fontFamily: "'JetBrains Mono', monospace" }}>{oldestAgeDays}d · {oldestKey}</span>
+            </div>
           </div>
         </div>
 
@@ -690,16 +1044,13 @@ function OverviewTab({
                   <stop offset="100%" stopColor={SUCCESS} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              {/* Area */}
               <path d={
                 `M${trend.map((t, i) => `${i * 80 + 40},${62 - (t.closedCount / trendMax) * 50}`).join(' L')} L${(trend.length - 1) * 80 + 40},62 L40,62 Z`
               } fill="url(#trendGrad)" />
-              {/* Line */}
               <polyline
                 points={trend.map((t, i) => `${i * 80 + 40},${62 - (t.closedCount / trendMax) * 50}`).join(' ')}
                 fill="none" stroke={SUCCESS} strokeWidth={1.5}
               />
-              {/* Points + labels */}
               {trend.map((t, i) => {
                 const x = i * 80 + 40;
                 const y = 62 - (t.closedCount / trendMax) * 50;
@@ -722,14 +1073,26 @@ function OverviewTab({
         </div>
       </div>
 
-      {/* §4 — Work Mix */}
+      {/* §4 — Work Mix — CLICKABLE ROWS */}
       <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
         <SectionTitle>WORK MIX</SectionTitle>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {workMix.map(row => {
             const tc = TYPE_COLORS[row.type] || { color: '#94A3B8', opacity: 0.6 };
             return (
-              <div key={row.type} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div
+                key={row.type}
+                onClick={() => showFilteredList(row.type, (i: any) => {
+                  const norm = normalizeType(i.work_item_type);
+                  return norm === row.type && i.status_category !== 'done';
+                })}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  cursor: 'pointer', padding: '4px 0', borderRadius: 4, transition: 'background 120ms',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              >
                 <JiraIssueTypeIcon type={row.type} size={16} />
                 <span style={{ fontSize: 12, color: INK2, width: 72, flexShrink: 0 }}>{row.type}</span>
                 <div style={{ flex: 1, height: 18, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
@@ -745,7 +1108,6 @@ function OverviewTab({
             );
           })}
         </div>
-        {/* Bug insight */}
         {showBugInsight && (
           <div style={{
             marginTop: 10, background: '#EFF6FF', border: '1px solid #DBEAFE', borderRadius: 4,
@@ -757,7 +1119,7 @@ function OverviewTab({
         )}
       </div>
 
-      {/* §5 — Weekly Story Card */}
+      {/* §5 — Weekly Story Card — LABEL FIX: use INK4 not BRAND */}
       <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
         <SectionTitle>WEEKLY STORY</SectionTitle>
         <div
@@ -774,20 +1136,20 @@ function OverviewTab({
             width: 32, height: 32, flexShrink: 0, background: '#EFF6FF', border: '1px solid #DBEAFE',
             borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <BookOpen size={16} color={BRAND} />
+            <BookOpen size={16} color={INK4} />
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: BRAND }}>Weekly Story · W{R360_WEEK}</div>
+            <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4 }}>Weekly Story · W{R360_WEEK}</div>
             <div style={{ fontSize: 13, fontWeight: 500, fontStyle: 'italic', color: INK1, marginTop: 2 }}>
               &ldquo;Focus on incident resolution and QA throughput&rdquo;
             </div>
             <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: SUCCESS }} />
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: WARNING }} />
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: BRAND }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: INK4 }} />
             </div>
           </div>
-          <ChevronRight size={14} color={BRAND} />
+          <ChevronRight size={14} color={INK4} />
         </div>
       </div>
 
@@ -798,53 +1160,43 @@ function OverviewTab({
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden', marginBottom: 12 }}>
           {[
             { label: 'Total Backlog', value: hubSummary.total, color: INK1 },
-            { label: 'In Progress', value: hubSummary.inProgress, color: BRAND },
+            { label: 'In Progress', value: hubSummary.inProgress, color: INK1 },
             { label: 'To Do', value: hubSummary.toDo, color: INK1 },
             { label: 'Blocked', value: hubSummary.blocked, color: hubSummary.blocked > 0 ? DANGER : INK1 },
-          ].map((c, i) => (
+          ].map((tile, i) => (
             <div key={i} style={{ background: '#FFFFFF', padding: '10px 12px' }}>
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, color: c.color }}>{c.value}</div>
-              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>{c.label}</div>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: tile.color }}>{tile.value}</div>
+              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>{tile.label}</div>
             </div>
           ))}
         </div>
 
-        {/* Per-hub rows */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {hubBreakdown.map(hub => (
-            <div key={hub.hub} style={{
-              border: `1px solid ${BORDER}`, borderRadius: 6, boxShadow: '0 1px 2px rgba(15,23,42,0.04)',
-              padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
+        {/* Per-hub cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {hubBreakdown.map((hub, i) => (
+            <div key={i} style={{
+              border: `1px solid ${BORDER}`, borderRadius: 6, padding: '10px 14px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             }}>
-              <span style={{
-                width: 22, height: 22, borderRadius: 4, flexShrink: 0,
-                background: hub.isIncident ? DANGER : INK4, color: '#FFFFFF',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 11, fontWeight: 700,
-              }}>{hub.code}</span>
-              <span style={{ flex: 1, fontSize: 12, fontWeight: 600, color: INK1 }}>
-                {hub.hub === 'incident' ? 'IncidentHub' : hub.hub === 'bau' ? 'BAU' : hub.hub}
-              </span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: hub.open > 0 ? WARNING : SUCCESS, fontFamily: "'JetBrains Mono', monospace" }}>{hub.open}</span>
-              <div style={{ width: 60, height: 6, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
-                <div style={{ height: '100%', borderRadius: 3, width: `${hub.closurePct}%`, background: SUCCESS, transition: 'width 300ms' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{
+                  width: 8, height: 8, borderRadius: '50%',
+                  background: hub.isIncident ? DANGER : BRAND,
+                }} />
+                <span style={{ fontSize: 12, fontWeight: 600, color: INK1 }}>
+                  {hub.hub === 'incident' ? 'IncidentHub' : hub.hub === 'bau' || hub.hub === 'BAU' ? 'BAU / ProjectHub' : hub.hub}
+                </span>
               </div>
-              <span style={{ fontSize: 11, fontWeight: 600, color: INK4, fontFamily: "'JetBrains Mono', monospace", width: 36, textAlign: 'right' as const }}>{hub.closurePct}%</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <span style={{ fontSize: 11, color: INK4 }}>{hub.open} open</span>
+                <span style={{ fontSize: 11, color: INK4 }}>{hub.closed} closed</span>
+                <span style={{
+                  fontSize: 11, fontWeight: 650, fontFamily: "'JetBrains Mono', monospace",
+                  color: hub.closurePct >= 50 ? SUCCESS : hub.closurePct > 0 ? WARNING : MUTED,
+                }}>{hub.closurePct}%</span>
+              </div>
             </div>
           ))}
-        </div>
-
-        {/* Total row */}
-        <div style={{
-          marginTop: 8, padding: '8px 12px', borderRadius: 4,
-          background: totalOpenAcrossHubs > roleAvg ? 'rgba(220,38,38,0.06)' : 'rgba(22,163,74,0.06)',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        }}>
-          <span style={{ fontSize: 12, color: INK2 }}>Total open across all hubs</span>
-          <span style={{
-            fontSize: 14, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace",
-            color: totalOpenAcrossHubs > roleAvg ? DANGER : SUCCESS,
-          }}>{totalOpenAcrossHubs}</span>
         </div>
       </div>
     </>
@@ -854,57 +1206,44 @@ function OverviewTab({
 // ══════════════════════════════════════════
 // BEHAVIOURAL PATTERNS TAB
 // ══════════════════════════════════════════
-function BehaviouralTab({ workItems }: { workItems: any[] }) {
-  const DAY_ABBRS = ['Su', 'Mo', 'Tu', 'We', 'Th'];
-  const WORK_DAYS = [0, 1, 2, 3, 4]; // Sun-Thu
+const WORK_DAYS = [0, 1, 2, 3, 4]; // Sun=0..Thu=4
+const DAY_ABBRS = ['Su', 'Mo', 'Tu', 'We', 'Th'];
 
-  // §1 Work Rhythm DNA — group by day_of_week(updated_at) for active items
+function BehaviouralTab({ workItems }: { workItems: any[] }) {
+  // §1 Work Rhythm DNA
   const rhythmData = useMemo(() => {
-    const counts = [0, 0, 0, 0, 0]; // Sun-Thu
+    const counts: Record<number, number> = { 0:0, 1:0, 2:0, 3:0, 4:0 };
     workItems.forEach((i: any) => {
-      if (!i.updated_at) return;
       const sc = (i.status_category || '').toLowerCase();
-      if (sc !== 'in_progress' && sc !== 'done') return;
+      if (!['in_progress', 'done'].includes(sc)) return;
       const d = new Date(i.updated_at).getDay();
       if (d >= 0 && d <= 4) counts[d]++;
     });
-    const max = Math.max(...counts, 1);
+    const max = Math.max(...Object.values(counts), 1);
     return { counts, max };
   }, [workItems]);
 
   // §2 Pickup Intelligence
   const pickupStats = useMemo(() => {
-    let totalPickup = 0, pickupCount = 0, sameDayCount = 0;
-    const teamPickups: number[] = [];
-
+    let totalPickupMs = 0, pickupCount = 0, sameDayCount = 0;
     workItems.forEach((i: any) => {
       if (!i.created_at || !i.updated_at) return;
       const sc = (i.status_category || '').toLowerCase();
-      if (sc === 'in_progress' || sc === 'done' || sc === 'in_review') {
-        // Approximate pickup: difference between created and first activity
-        const created = new Date(i.created_at);
-        const updated = new Date(i.updated_at);
-        // Use created→updated as proxy for pickup if status moved beyond to_do
-        const diffMs = updated.getTime() - created.getTime();
-        if (diffMs > 0) {
-          const hours = diffMs / 3600000;
-          totalPickup += hours;
-          pickupCount++;
-          teamPickups.push(hours);
-          if (created.toDateString() === updated.toDateString()) sameDayCount++;
-        }
-      }
+      if (!['in_progress', 'in_review', 'done'].includes(sc)) return;
+      const created = new Date(i.created_at);
+      const updated = new Date(i.updated_at);
+      const diff = updated.getTime() - created.getTime();
+      if (diff > 0) { totalPickupMs += diff; pickupCount++; }
+      if (created.toDateString() === updated.toDateString()) sameDayCount++;
     });
-
-    const avgPickup = pickupCount > 0 ? totalPickup / pickupCount : null;
-    const teamAvg = 38; // benchmark
+    const avgPickup = pickupCount > 0 ? (totalPickupMs / pickupCount) / 3600000 : null;
+    const teamAvg = 38;
     let vsTeam: { label: string; color: string } = { label: 'On par', color: SLATE };
     if (avgPickup !== null) {
       const diff = avgPickup - teamAvg;
       if (diff > 2) vsTeam = { label: `+${Math.round(diff)}h slower`, color: DANGER };
       else if (diff < -2) vsTeam = { label: `−${Math.round(Math.abs(diff))}h faster`, color: SUCCESS };
     }
-
     return {
       avgPickup,
       avgPickupLabel: avgPickup === null ? '—' : avgPickup < 24 ? `${Math.round(avgPickup)}h` : `${Math.round(avgPickup / 24)}d`,
@@ -919,8 +1258,6 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
     const total = workItems.length;
     const inProg = workItems.filter((i: any) => (i.status_category || '').toLowerCase() === 'in_progress');
     const completionRate = total > 0 ? Math.round((closed.length / total) * 100) : 0;
-
-    // Avg cycle: approximate from created→updated for done items
     let totalCycleDays = 0, cycleCount = 0;
     closed.forEach((i: any) => {
       if (i.created_at && i.updated_at) {
@@ -930,7 +1267,6 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
     });
     const avgCycle = cycleCount > 0 ? totalCycleDays / cycleCount : null;
     const avgCycleLabel = avgCycle === null ? '—' : `${Math.floor(avgCycle)}d ${Math.round((avgCycle % 1) * 24)}h`;
-
     return {
       avgCycleLabel,
       itemsClosed: closed.length,
@@ -956,7 +1292,7 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
     }));
   }, [workItems]);
 
-  const hasActivity = rhythmData.counts.some(c => c > 0);
+  const hasActivity = rhythmData.counts[0] > 0 || rhythmData.counts[1] > 0 || rhythmData.counts[2] > 0 || rhythmData.counts[3] > 0 || rhythmData.counts[4] > 0;
 
   return (
     <>
@@ -1032,13 +1368,11 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
       {/* §4 Hub Breakdown */}
       <div style={{ padding: 16 }}>
         <SectionTitle>HUB BREAKDOWN</SectionTitle>
-        {/* Segmented bar */}
         <div style={{ display: 'flex', height: 10, borderRadius: 4, overflow: 'hidden', background: '#F1F5F9' }}>
           {hubSegments.map((s, i) => (
             <div key={i} style={{ width: `${s.pct}%`, height: '100%', background: s.color, transition: 'width 300ms' }} />
           ))}
         </div>
-        {/* Legend */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 10 }}>
           {hubSegments.map((s, i) => (
             <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -1057,7 +1391,6 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
 // WEEKLY STORY TAB
 // ══════════════════════════════════════════
 function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount: number }) {
-  // Saudi work week bounds
   const { weekStart, weekEnd } = useMemo(() => {
     const now = new Date();
     const day = now.getDay();
@@ -1089,7 +1422,6 @@ function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount:
     }, 0);
   }, [workItems]);
 
-  // §1 Week Headline
   const headline = useMemo(() => {
     if (closedThisWeek === 0 && openCount === 0) return 'Quiet week — no active items.';
     if (closedThisWeek === 0 && openCount > 0) return `Carrying ${openCount} open items into this week, none closed yet.`;
@@ -1097,7 +1429,6 @@ function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount:
     return `Closed ${closedThisWeek} this week, ${openCount} still open. Oldest: ${oldestDays}d.`;
   }, [closedThisWeek, openCount, oldestDays]);
 
-  // §2 Timeline items — updated this week
   const timelineItems = useMemo(() =>
     workItems
       .filter((i: any) => {
@@ -1108,7 +1439,6 @@ function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount:
       .slice(0, 10)
   , [workItems, weekStart, weekEnd]);
 
-  // §3 Summary tiles
   const createdThisWeek = useMemo(() =>
     workItems.filter((i: any) => {
       const c = new Date(i.created_at);
@@ -1117,7 +1447,6 @@ function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount:
   , [workItems, weekStart, weekEnd]);
 
   const updatedOnly = useMemo(() => {
-    // Updated this week but NOT created this week
     return workItems.filter((i: any) => {
       const u = new Date(i.updated_at);
       const c = new Date(i.created_at);
@@ -1134,13 +1463,6 @@ function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount:
     return `${diff}d ago`;
   };
 
-  const statusKey = (cat: string) => {
-    const c = (cat || '').toLowerCase();
-    if (c === 'done') return 'DONE';
-    if (c === 'in_progress' || c === 'in_review') return 'IN_PROGRESS';
-    return 'TO_DO';
-  };
-
   return (
     <>
       {/* §1 Week Headline */}
@@ -1148,7 +1470,7 @@ function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount:
         <div style={{
           border: '1px solid #E2E8F0', borderRadius: 8, padding: 16, background: '#FFFFFF',
         }}>
-          <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.06em', color: INK4, marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 8 }}>
             W{R360_WEEK} · MAR 1–5, 2026
           </div>
           <div style={{ fontSize: 14, color: INK2, lineHeight: 1.5 }}>{headline}</div>
@@ -1181,7 +1503,7 @@ function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount:
                   flex: 1, fontSize: 13, color: INK2, overflow: 'hidden',
                   textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
                 }}>{item.title}</span>
-                <R360StatusLozenge status={item.status || statusKey(item.status_category)} />
+                <R360StatusLozenge status={item.status || item.status_category || 'To Do'} />
                 <span style={{ fontSize: 11, color: MUTED, flexShrink: 0 }}>{relativeTime(item.updated_at)}</span>
               </div>
             ))}
@@ -1236,10 +1558,8 @@ function WorkItemsTab({ workItems }: { workItems: any[] }) {
   const filtered = useMemo(() => {
     return workItems
       .filter((i: any) => {
-        // Week filter
         const u = new Date(i.updated_at);
         if (u < weekStart || u > weekEnd) return false;
-        // Status filter
         if (statusFilter !== 'all') {
           const sc = (i.status_category || '').toLowerCase().replace(/[_\s-]/g, '');
           if (statusFilter === 'todo' && sc !== 'todo' && sc !== 'backlog') return false;
@@ -1247,7 +1567,6 @@ function WorkItemsTab({ workItems }: { workItems: any[] }) {
           if (statusFilter === 'inreview' && sc !== 'inreview') return false;
           if (statusFilter === 'done' && sc !== 'done') return false;
         }
-        // Type filter
         if (typeFilter !== 'all') {
           const t = (i.work_item_type || '').toLowerCase().replace(/[_\s-]/g, '');
           const f = typeFilter.toLowerCase().replace(/[_\s-]/g, '');
@@ -1376,7 +1695,6 @@ function WorkItemsTab({ workItems }: { workItems: any[] }) {
               <span style={{ width: 90, textAlign: 'right' as const, fontSize: 11, color: MUTED }}>{relTime(item.updated_at)}</span>
             </div>
           ))}
-          {/* Count */}
           {totalCount > 50 && (
             <div style={{ padding: '8px 12px', fontSize: 12, color: MUTED, textAlign: 'center' as const }}>
               Showing 50 of {totalCount} items
