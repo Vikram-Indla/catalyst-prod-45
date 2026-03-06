@@ -12,15 +12,11 @@ import RABackgroundModal from '@/components/reqAssist/RABackgroundModal';
 import RAImportDrawer from '@/components/reqAssist/RAImportDrawer';
 import { format } from 'date-fns';
 
-/* ── Domain lozenge mapping (DA-006) ── */
-const BLUE_DOMAINS = ['customs & trade', 'chemical', '4ir', 'environmental'];
-
-function domainLozenge(domain: string | null) {
-  if (!domain) return null;
-  const isBlue = BLUE_DOMAINS.includes(domain.toLowerCase());
+/* ── Domain lozenge mapping (neutral only) ── */
+function domainLozenge() {
   return {
-    bg: isBlue ? '#DEEBFF' : '#DFE1E6',
-    color: isBlue ? '#0747A6' : '#253858',
+    bg: '#F3F4F6',
+    color: '#374151',
   };
 }
 
