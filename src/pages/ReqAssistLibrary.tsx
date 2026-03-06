@@ -297,9 +297,9 @@ export default function ReqAssistLibrary() {
                 /* EC-002: Filtered empty state */
                 <tr>
                   <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
-                    <FileSearch size={24} color="#94A3B8" style={{ margin: '0 auto 8px', display: 'block' }} />
-                    <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
-                      No documents match your search
+                    <FileSearch size={24} color="#9CA3AF" style={{ margin: '0 auto 8px', display: 'block' }} />
+                    <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
+                      No documents match "{search || 'your search term'}"
                     </p>
                     <button onClick={() => { setSearch(''); setTab('all'); }}
                       style={{ fontSize: 12, color: '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
