@@ -575,7 +575,7 @@ function OverviewTab({
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden' }}>
             {/* Total Open */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: loadColour }}>{openCount}</div>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: loadColour }}>{openCount}</div>
               <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>TOTAL OPEN</div>
               <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>vs role avg {roleAvg}</div>
             </div>
