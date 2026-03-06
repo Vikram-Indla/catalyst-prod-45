@@ -507,34 +507,6 @@ export default function R360MemberDetail() {
     return () => window.removeEventListener('keydown', handler);
   }, [aiOpen]);
 
-  // Stale alert: compute oldest age (must be before early returns)
-  const oldestAge = useMemo(() => {
-    if (!allStaleItems.length) return 0;
-    return Math.max(...allStaleItems.map(i => i.age_days || 0));
-  }, [allStaleItems]);
-  const allStale = allOpenItems.length > 0 && allStaleItems.length === allOpenItems.length;
-
-  if (overviewLoading) {
-    return (
-      <div id="r360-root">
-        <div className="r3-page">
-          <div className="r3-skeleton" style={{ height: 120, marginBottom: 20 }} />
-          <div className="r3-skeleton" style={{ height: 400 }} />
-        </div>
-      </div>
-    );
-  }
-
-  if (!overview) {
-    return (
-      <div id="r360-root">
-        <div className="r3-page"><div className="r3-empty">Resource not found.</div></div>
-      </div>
-    );
-  }
-
-  const deptColor = R360_DEPT_COLORS[overview.department] || '#64748B';
-
   // CSS injection to force full-width layout regardless of drawer state
   useEffect(() => {
     const styleId = 'r360-drawer-layout-fix';
@@ -564,6 +536,34 @@ export default function R360MemberDetail() {
       if (el) el.remove();
     };
   }, []);
+
+  // Stale alert: compute oldest age (must be before early returns)
+  const oldestAge = useMemo(() => {
+    if (!allStaleItems.length) return 0;
+    return Math.max(...allStaleItems.map(i => i.age_days || 0));
+  }, [allStaleItems]);
+  const allStale = allOpenItems.length > 0 && allStaleItems.length === allOpenItems.length;
+
+  if (overviewLoading) {
+    return (
+      <div id="r360-root">
+        <div className="r3-page">
+          <div className="r3-skeleton" style={{ height: 120, marginBottom: 20 }} />
+          <div className="r3-skeleton" style={{ height: 400 }} />
+        </div>
+      </div>
+    );
+  }
+
+  if (!overview) {
+    return (
+      <div id="r360-root">
+        <div className="r3-page"><div className="r3-empty">Resource not found.</div></div>
+      </div>
+    );
+  }
+
+  const deptColor = R360_DEPT_COLORS[overview.department] || '#64748B';
 
   return (
     <>
