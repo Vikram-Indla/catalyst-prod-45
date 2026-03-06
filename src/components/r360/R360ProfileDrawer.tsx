@@ -252,27 +252,43 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
   // Compute stats from live work items when snapshot is empty
   const liveStats = useMemo(() => {
     if (stats) return null; // snapshot exists, use it
+
+    // Saudi work week bounds: Sunday–Thursday
+    const now = new Date();
+    const day = now.getDay();
+    const daysSinceSunday = day === 0 ? 0 : day;
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - daysSinceSunday);
+    weekStart.setHours(0, 0, 0, 0);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 4);
+    weekEnd.setHours(23, 59, 59, 999);
+
     const open = workItems.filter((i: any) => i.status_category !== 'done');
     const done = workItems.filter((i: any) => i.status_category === 'done');
+    const closedThisWeek = done.filter((i: any) => {
+      const u = new Date(i.updated_at);
+      return u >= weekStart && u <= weekEnd;
+    }).length;
     const inProg = workItems.filter((i: any) => i.status_category === 'in_progress');
     const inRev = workItems.filter((i: any) => i.status_category === 'in_review');
-    const now = Date.now();
+    const nowMs = Date.now();
     const oldest = open.reduce((max: { age: number; key: string }, i: any) => {
-      const age = Math.floor((now - new Date(i.created_at).getTime()) / 86400000);
+      const age = Math.floor((nowMs - new Date(i.created_at).getTime()) / 86400000);
       return age > max.age ? { age, key: i.item_key ?? '—' } : max;
     }, { age: 0, key: '—' });
     return {
       total_open: open.length,
-      closed_this_week: done.length,
+      closed_this_week: closedThisWeek,
       in_review: inRev.length,
       pickup_speed_hours: 0,
       in_progress_concurrent: inProg.length,
-      closed_of_touched: done.length,
-      total_touched: workItems.length,
+      closed_of_touched: closedThisWeek,
+      total_touched: open.length + closedThisWeek,
       avg_cycle_time_days: 0,
       oldest_item_age_days: oldest.age,
       oldest_item_key: oldest.key,
-      closure_rate_pct: workItems.length > 0 ? Math.round((done.length / workItems.length) * 100) : 0,
+      closure_rate_pct: (open.length + closedThisWeek) > 0 ? Math.round((closedThisWeek / (open.length + closedThisWeek)) * 100) : 0,
     };
   }, [stats, workItems]);
 
