@@ -773,17 +773,16 @@ const SLOT_POSITIONS: { left: string; top: string }[] = [
 ];
 
 // Compute connector endpoints dynamically from card positions
+// Returns card centre in pixel coords
 function getCardPixelPos(slotIdx: number, containerW: number): { x: number; y: number } {
   const slot = SLOT_POSITIONS[slotIdx];
   if (!slot) return { x: 0, y: 0 };
-  // Parse left
   let leftPx: number;
   if (slot.left.endsWith('%')) {
     leftPx = (parseFloat(slot.left) / 100) * containerW;
   } else {
     leftPx = parseFloat(slot.left);
   }
-  // Parse top
   let topPx: number;
   if (slot.top.endsWith('%')) {
     topPx = (parseFloat(slot.top) / 100) * RING_CANVAS_H;
@@ -791,6 +790,53 @@ function getCardPixelPos(slotIdx: number, containerW: number): { x: number; y: n
     topPx = parseFloat(slot.top);
   }
   return { x: leftPx + CARD_W / 2, y: topPx + CARD_H / 2 };
+}
+
+// Compute spoke endpoints offset from avatar edge → card nearest edge
+const AVATAR_R = 28; // half of 56px avatar
+function getSpokeEndpoints(cx: number, cy: number, cardCx: number, cardCy: number) {
+  const dx = cardCx - cx;
+  const dy = cardCy - cy;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist === 0) return { x1: cx, y1: cy, x2: cardCx, y2: cardCy };
+  const ux = dx / dist;
+  const uy = dy / dist;
+  // Start: avatar edge
+  const x1 = cx + ux * AVATAR_R;
+  const y1 = cy + uy * AVATAR_R;
+  // End: nearest card edge (rectangle intersection)
+  const halfW = CARD_W / 2;
+  const halfH = CARD_H / 2;
+  // Ray from card centre back toward avatar
+  const absDx = Math.abs(dx);
+  const absDy = Math.abs(dy);
+  let t: number;
+  if (absDx * halfH > absDy * halfW) {
+    t = halfW / absDx;
+  } else {
+    t = halfH / absDy;
+  }
+  const x2 = cardCx - ux * (t * dist > dist ? dist : t * dist);
+  const y2 = cardCy - uy * (t * dist > dist ? dist : t * dist);
+  // Clamp: card edge
+  const ex = cardCx - ux * Math.min(halfW / Math.max(Math.abs(ux), 0.001), dist);
+  const ey = cardCy - uy * Math.min(halfH / Math.max(Math.abs(uy), 0.001), dist);
+  // Use simpler approach: scale from card centre toward avatar by half-card
+  const scaleX = absDx > 0.001 ? halfW / absDx : Infinity;
+  const scaleY = absDy > 0.001 ? halfH / absDy : Infinity;
+  const scale = Math.min(scaleX, scaleY, 1);
+  const cardEdgeX = cardCx - ux * scale * dist;
+  const cardEdgeY = cardCy - uy * scale * dist;
+  // Final: use the point closest to avatar but still on card boundary
+  const fx = cardCx - ux * Math.min(scaleX, scaleY) * Math.min(dist, Math.sqrt(halfW * halfW + halfH * halfH));
+  const fy = cardCy - uy * Math.min(scaleX, scaleY) * Math.min(dist, Math.sqrt(halfW * halfW + halfH * halfH));
+  // Simplest correct approach:
+  const edgeDist = Math.min(scaleX, scaleY);
+  return {
+    x1, y1,
+    x2: cardCx - ux * edgeDist,
+    y2: cardCy - uy * edgeDist,
+  };
 }
 
 // From tag age escalation helper — uses age_days directly
