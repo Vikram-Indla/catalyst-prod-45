@@ -590,9 +590,9 @@ function OverviewTab({
             </div>
             {/* In Review */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: INK1 }}>{inReview}</div>
-              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>IN REVIEW</div>
-              <div style={{ fontSize: 11, color: inReview === 0 ? WARNING : INK1, marginTop: 2 }}>{inReview === 0 ? 'None pending' : `${inReview} awaiting`}</div>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{inReview}</div>
+              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>IN REVIEW</div>
+              <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>{inReview === 0 ? 'None pending' : `${inReview} awaiting`}</div>
             </div>
             {/* Pickup Speed */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
