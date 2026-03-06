@@ -41,6 +41,22 @@
   --violet-50: #F5F3FF;
   --warning-50: #FFFBEB;
 
+  /* ── REQ ASSIST V2 RING-FENCED TOKENS ── */
+  --ra-row-h: 36px;
+  --ra-cell-pad: 8px 12px;
+  --ra-hd-pad: 10px 12px;
+  --ra-divider: 0.75px solid rgba(15,23,42,0.06);
+  --ra-radius-card: 6px;
+  --ra-radius-input: 4px;
+  --ra-radius-btn: 6px;
+  --ra-radius-lozenge: 3px;
+  --ra-slot-w: 22px;
+  --ra-slot-h: 6px;
+  --ra-slot-done: #0D9488;
+  --ra-slot-processing: #2563EB;
+  --ra-slot-pending: #E5E5E5;
+  --ra-slot-error: #DC2626;
+
   /* ═══ CATALYST V12 HYBRID PRECISION — Wiki Design Tokens ═══ */
   --cp-bg-page: #FFFFFF;
   --cp-bg-surface: #F8FAFC;
