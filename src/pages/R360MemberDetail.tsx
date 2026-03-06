@@ -536,7 +536,7 @@ export default function R360MemberDetail() {
   const deptColor = R360_DEPT_COLORS[overview.department] || '#64748B';
 
   return (
-    <div id="r360-root" style={{ height: '100%', overflow: 'hidden', minHeight: 0 }}>
+    <div id="r360-root" style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden' }}>
       <div className="r3-page" style={{ background: '#FFFFFF', height: '100%', overflow: 'auto' }}>
         {/* ── Sticky Header: Profile + Week Nav ── */}
         <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#FFFFFF' }}>
@@ -688,38 +688,42 @@ export default function R360MemberDetail() {
         )}
       </div>
 
-      {/* R360 Profile Drawer — fixed overlay via portal */}
-      {aiOpen && resourceId && createPortal(
-        <>
-          <div
-            onClick={() => setAiOpen(false)}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              top: 48,
-              backgroundColor: 'rgba(0, 0, 0, 0.15)',
-              zIndex: 49,
-            }}
-          />
-          <div
-            style={{
-              position: 'fixed',
-              top: 48,
-              right: 0,
-              width: 700,
-              height: 'calc(100vh - 48px)',
-              backgroundColor: '#FFFFFF',
-              zIndex: 50,
-              overflowY: 'auto',
-              boxShadow: '-4px 0 24px rgba(0, 0, 0, 0.10)',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <R360ProfileDrawer resourceId={resourceId} onClose={() => setAiOpen(false)} />
-          </div>
-        </>,
-        document.body
+      {/* R360 Profile Drawer — zero-dimension shell + portal to body */}
+      {aiOpen && resourceId && (
+        <div style={{ position: 'fixed', width: 0, height: 0 }}>
+          {createPortal(
+            <>
+              <div
+                onClick={() => setAiOpen(false)}
+                style={{
+                  position: 'fixed',
+                  inset: 0,
+                  top: 48,
+                  backgroundColor: 'rgba(0, 0, 0, 0.15)',
+                  zIndex: 49,
+                }}
+              />
+              <div
+                style={{
+                  position: 'fixed',
+                  top: 48,
+                  right: 0,
+                  width: 700,
+                  height: 'calc(100vh - 48px)',
+                  backgroundColor: '#FFFFFF',
+                  zIndex: 50,
+                  overflowY: 'auto',
+                  boxShadow: '-4px 0 24px rgba(0, 0, 0, 0.10)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <R360ProfileDrawer resourceId={resourceId} onClose={() => setAiOpen(false)} />
+              </div>
+            </>,
+            document.body
+          )}
+        </div>
       )}
 
     </div>
