@@ -235,10 +235,10 @@ export default function ResourceListingPage() {
 
         {/* Department pills (dynamic) */}
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); }}
+          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setResourceTypeFilter('all'); }}
             label={`All`} />
           {deptNames.map(d => (
-            <PillButton key={d} active={deptFilter === d} onClick={() => setDeptFilter(d)}
+            <PillButton key={d} active={deptFilter === d} onClick={() => { setDeptFilter(d); setResourceTypeFilter('all'); }}
               label={`${d} (${deptCounts[d]})`} />
           ))}
 
