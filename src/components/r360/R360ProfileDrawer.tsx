@@ -582,11 +582,11 @@ function OverviewTab({
             {/* Closed This Week */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: closedColour }}>{closedThisWeek}</span>
+                <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: closedColour }}>{closedThisWeek}</span>
                 {closedTrend && <span style={{ fontSize: 14, fontWeight: 700, color: closedTrendColor }}>{closedTrend}</span>}
               </div>
-              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>CLOSED THIS WEEK</div>
-              <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>vs {prevWeekClosed} last week</div>
+              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>CLOSED THIS WEEK</div>
+              <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>vs {prevWeekClosed} last week</div>
             </div>
             {/* In Review */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
