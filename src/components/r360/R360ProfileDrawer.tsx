@@ -224,8 +224,8 @@ function Skeleton({ h = 20, w = '100%', r = 4 }: { h?: number; w?: string | numb
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      fontFamily: "'Inter', system-ui, sans-serif", fontSize: 11, fontWeight: 650,
-      textTransform: 'uppercase', letterSpacing: '0.06em', color: INK4, marginBottom: 12,
+      fontFamily: "'Inter', system-ui, sans-serif", fontSize: 11, fontWeight: 500,
+      textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 12,
     }}>{children}</div>
   );
 }
