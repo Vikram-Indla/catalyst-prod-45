@@ -433,10 +433,6 @@ export default function ResourceListingPage() {
                       </span>
                     ) : <span style={{ fontSize: '13px', color: '#d1d5db' }}>—</span>}
                   </td>
-                  {/* VENDOR */}
-                  <td style={{ padding: '8px 16px', fontSize: '13px', color: '#374151' }}>
-                    {r.vendor_name || <span style={{ color: '#d1d5db' }}>—</span>}
-                  </td>
                   {/* ACTIONS — 4 filled buttons */}
                   <td style={{ padding: '8px 16px', textAlign: 'center' }}>
                     <div style={{ display: 'inline-flex', gap: '8px' }}>
