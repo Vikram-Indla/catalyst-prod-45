@@ -606,7 +606,7 @@ export default function R360MemberDetail() {
             {/* Intelligence — brand blue standard */}
             <AIIntelligenceButton
               label="Intelligence"
-              onClick={openProfileDrawer}
+              onClick={() => setAiOpen(true)}
             />
           </div>
         </div>
