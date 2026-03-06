@@ -759,16 +759,21 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
             workItems={workItems}
             showFilteredList={showFilteredList}
             showItemDetail={showItemDetail}
+            weekLabel={weekLabel}
+            weekStart={weekStart}
+            weekEnd={weekEnd}
+            weekOffset={weekOffset}
+            setWeekOffset={setWeekOffset}
           />
         )}
         {activeTab === 'behavioural' && (
-          <BehaviouralTab workItems={workItems} showFilteredList={showFilteredList} />
+          <BehaviouralTab workItems={workItems} showFilteredList={showFilteredList} weekStart={weekStart} weekEnd={weekEnd} weekLabel={weekLabel} />
         )}
         {activeTab === 'weekly' && (
-          <WeeklyStoryTab workItems={workItems} openCount={openCount} showFilteredList={showFilteredList} />
+          <WeeklyStoryTab workItems={workItems} openCount={openCount} showFilteredList={showFilteredList} weekStart={weekStart} weekEnd={weekEnd} weekLabel={weekLabel} />
         )}
         {activeTab === 'items' && (
-          <WorkItemsTab workItems={workItems} />
+          <WorkItemsTab workItems={workItems} weekStart={weekStart} weekEnd={weekEnd} weekLabel={weekLabel} weekOffset={weekOffset} setWeekOffset={setWeekOffset} />
         )}
 
         {/* ━━ STACKED DETAIL PANEL ━━ */}
