@@ -157,14 +157,14 @@ export default function ReqAssistLibrary() {
                   { label: 'Imported', w: 85 },
                   { label: 'Actions', w: 110 },
                 ].map((col, i) => (
-                  <th key={i} style={{
-                    padding: 'var(--ra-hd-pad)', height: 36,
-                    fontSize: 11, fontWeight: 600, color: '#64748B',
-                    textTransform: 'uppercase', letterSpacing: '0.04em',
-                    textAlign: 'left', width: col.w || undefined,
-                    background: '#FFFFFF',
-                    fontFamily: "'Inter', sans-serif",
-                  }}>
+                    <th key={i} style={{
+                      padding: 'var(--ra-hd-pad)', height: 36,
+                      fontSize: 11, fontWeight: 700, color: '#6B7280',
+                      textTransform: 'uppercase', letterSpacing: '0.06em',
+                      textAlign: 'left', width: col.w || undefined,
+                      background: '#FFFFFF',
+                      fontFamily: "'Inter', sans-serif",
+                    }}>
                     {col.label}
                   </th>
                 ))}
