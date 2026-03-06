@@ -55,6 +55,8 @@ const ProductCardsPage = lazy(() => import("./pages/producthub/CardsPage"));
 const IdeationPage = lazy(() => import("./pages/producthub/IdeationPage"));
 const ReqAssistPipeline = lazy(() => import("./pages/product/ReqAssistPipeline"));
 const ReqAssistDocument = lazy(() => import("./pages/product/ReqAssistDocument"));
+const ReqAssistLibrary = lazy(() => import("./pages/ReqAssistLibrary"));
+const ReqAssistGenerate = lazy(() => import("./pages/ReqAssistGenerate"));
 
 // Wiki Module lazy imports
 const WikiHomePage = lazy(() => import("./pages/wiki/WikiHomePage"));
