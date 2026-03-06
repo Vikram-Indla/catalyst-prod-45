@@ -1344,11 +1344,11 @@ function WorkItemsTab({ workItems }: { workItems: any[] }) {
             display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
             borderBottom: '0.75px solid #E2E8F0', background: '#FFFFFF',
           }}>
-            <span style={{ width: 40, textAlign: 'center' as const, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em' }}>TYPE</span>
-            <span style={{ width: 100, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em', paddingLeft: 8 }}>KEY</span>
-            <span style={{ flex: 1, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em' }}>TITLE</span>
-            <span style={{ width: 120, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em' }}>STATUS</span>
-            <span style={{ width: 90, textAlign: 'right' as const, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em' }}>UPDATED</span>
+            <span style={{ width: 40, textAlign: 'center' as const, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em' }}>TYPE</span>
+            <span style={{ width: 100, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em', paddingLeft: 8 }}>KEY</span>
+            <span style={{ flex: 1, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em' }}>TITLE</span>
+            <span style={{ width: 120, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em' }}>STATUS</span>
+            <span style={{ width: 90, textAlign: 'right' as const, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em' }}>UPDATED</span>
           </div>
           {/* Rows */}
           {display.map((item: any, idx: number) => (
