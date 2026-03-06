@@ -599,15 +599,15 @@ function OverviewTab({
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
                 {pickupHours > 0 ? (
                   <>
-                    <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: INK1 }}>{pickupHours}</span>
+                    <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{pickupHours}</span>
                     <span style={{ fontSize: 14, fontWeight: 500, color: INK4 }}>h</span>
                   </>
                 ) : (
-                  <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: MUTED }}>—</span>
+                  <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: MUTED }}>—</span>
                 )}
               </div>
-              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>PICKUP SPEED</div>
-              <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>team avg 38h</div>
+              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>PICKUP SPEED</div>
+              <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>team avg 38h</div>
             </div>
           </div>
         )}
