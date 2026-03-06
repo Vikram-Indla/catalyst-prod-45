@@ -46,7 +46,7 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
           </div>
         </div>
         {/* Toolbar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 20px', borderBottom: '1px solid rgba(15,23,42,0.06)', flexShrink: 0, background: '#F8FAFC' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 20px', borderBottom: '1px solid rgba(15,23,42,0.06)', flexShrink: 0, background: '#FFFFFF' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} style={{ border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', borderRadius: 4, padding: '4px 6px', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}><ChevronLeft size={14} color={page <= 1 ? '#CBD5E1' : '#334155'} /></button>
             <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>Page {page} of {totalPages}</span>
