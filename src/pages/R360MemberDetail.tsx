@@ -30,7 +30,7 @@ import { ChevronLeft, ChevronRight, Calendar, X, ChevronDown, ChevronUp, Calenda
 import type { R360WorkItem, R360ViewType, R360Filters } from '@/types/r360';
 import '@/styles/r360.css';
 import '@/components/resource360/r360-member.css';
-import AiIntelligencePanelV16 from '@/components/resource360/AiIntelligencePanelV16';
+import R360ProfileDrawer from '@/components/r360/R360ProfileDrawer';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 
 
@@ -687,12 +687,15 @@ export default function R360MemberDetail() {
         )}
       </div>
 
-      {/* AI Intelligence Panel */}
+      {/* R360 Profile Drawer */}
       {aiOpen && resourceId && (
-        <AiIntelligencePanelV16
-          resourceName={overview?.name || 'Resource'}
-          onClose={() => setAiOpen(false)}
-        />
+        <div style={{
+          width: 700, flexShrink: 0, borderLeft: '1px solid rgba(15,23,42,0.12)',
+          background: '#FFFFFF', display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          boxShadow: '-4px 0 20px rgba(15,23,42,0.10)',
+        }}>
+          <R360ProfileDrawer resourceId={resourceId} onClose={() => setAiOpen(false)} />
+        </div>
       )}
 
     </div>
