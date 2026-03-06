@@ -1324,13 +1324,24 @@ function BehaviouralTab({ workItems, showFilteredList }: { workItems: any[]; sho
         <SectionTitle>PICKUP INTELLIGENCE</SectionTitle>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
           {[
-            { label: 'Avg Pickup Time', value: pickupStats.avgPickupLabel, sub: 'time to first touch' },
-            { label: 'Same-Day Pickups', value: String(pickupStats.sameDayCount), sub: 'picked up day of creation' },
-            { label: 'Avg vs Team', value: pickupStats.vsTeam.label, sub: 'vs team benchmark', valueColor: pickupStats.vsTeam.color },
+            { label: 'Avg Pickup Time', value: pickupStats.avgPickupLabel, sub: 'time to first touch',
+              onClick: () => showFilteredList('Pickup Time Detail', (i: any) => ['in_progress','in_review','done'].includes((i.status_category||'').toLowerCase())) },
+            { label: 'Same-Day Pickups', value: String(pickupStats.sameDayCount), sub: 'picked up day of creation',
+              onClick: () => showFilteredList('Same-Day Pickups', (i: any) => {
+                if (!i.created_at || !i.updated_at) return false;
+                return new Date(i.created_at).toDateString() === new Date(i.updated_at).toDateString() && ['in_progress','in_review','done'].includes((i.status_category||'').toLowerCase());
+              }) },
+            { label: 'Avg vs Team', value: pickupStats.vsTeam.label, sub: 'vs team benchmark', valueColor: pickupStats.vsTeam.color, onClick: undefined },
           ].map((tile, i) => (
-            <div key={i} style={{
-              border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
-            }}>
+            <div key={i}
+              onClick={tile.onClick}
+              style={{
+                border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
+                cursor: tile.onClick ? 'pointer' : 'default', transition: 'background 150ms',
+              }}
+              onMouseEnter={e => { if (tile.onClick) e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = '#FFFFFF'; }}
+            >
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
               <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>
               <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 4 }}>{tile.sub}</div>
