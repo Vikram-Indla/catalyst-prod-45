@@ -42,23 +42,43 @@ export default function RAImportDrawer({ onClose }: Props) {
   const queueJob = useQueueJob();
   const qc = useQueryClient();
 
-  // Get tickets for each connection
-  const connectionKeys = useMemo(() => connections.map((c: any) => c.project_key), [connections]);
+  // Fetch all tickets from ra_jira_tickets (PDF-only) for connected projects
+  const connectionKeys = useMemo(() => connections.map((c: any) => c.project_key as string), [connections]);
 
-  // We query tickets for all connected projects
-  const ticketQueries = connectionKeys.map((key: string) => {
-    const { data = [] } = useJiraTickets(key);
-    return { key, tickets: data };
+  const { data: allTickets = [] } = useQuery({
+    queryKey: ['ra', 'jira_tickets_all', connectionKeys],
+    queryFn: async () => {
+      if (connectionKeys.length === 0) return [];
+      const { data, error } = await (supabase as any)
+        .from('ra_jira_tickets')
+        .select('ticket_key, ticket_summary, ticket_type, has_pdf, pdf_filename, page_count, project_key, project_name')
+        .in('project_key', connectionKeys)
+        .eq('has_pdf', true)
+        .order('ticket_key', { ascending: true });
+      if (error) throw error;
+      return (data ?? []).map((t: any) => ({
+        jira_ticket_key: t.ticket_key,
+        title: t.ticket_summary,
+        page_count: t.page_count,
+        has_pdf: t.has_pdf,
+        pdf_filename: t.pdf_filename,
+        jira_project: t.project_key,
+      }));
+    },
+    enabled: connectionKeys.length > 0,
+    staleTime: 30_000,
   });
 
   // PDF-only tickets grouped by project
   const ticketsByProject = useMemo(() => {
     const map: Record<string, any[]> = {};
-    ticketQueries.forEach(({ key, tickets }) => {
-      map[key] = (tickets as any[]).filter((t: any) => t.has_pdf === true);
+    connectionKeys.forEach(k => { map[k] = []; });
+    allTickets.forEach((t: any) => {
+      if (!map[t.jira_project]) map[t.jira_project] = [];
+      map[t.jira_project].push(t);
     });
     return map;
-  }, [ticketQueries]);
+  }, [allTickets, connectionKeys]);
 
   // Existing library keys
   const { data: existingDocs = [] } = useQuery({
