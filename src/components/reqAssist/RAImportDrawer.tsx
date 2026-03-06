@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { X, Check, ChevronRight, ChevronDown, FileText, Eye, EyeOff, Plus, Loader2 } from 'lucide-react';
-import { useJiraTickets, useCreateRADocument, useQueueJob, useJiraConnections, useAddJiraConnection, RA_KEYS } from '@/hooks/useReqAssist';
+import { useCreateRADocument, useQueueJob, useJiraConnections, useAddJiraConnection, RA_KEYS } from '@/hooks/useReqAssist';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
