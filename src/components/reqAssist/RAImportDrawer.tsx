@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { X, Check, ChevronRight, ChevronDown, FileText, AlertCircle } from 'lucide-react';
 import { useJiraTickets, useCreateRADocument, useQueueJob, RA_KEYS } from '@/hooks/useReqAssist';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
