@@ -192,26 +192,26 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
           <div className="r3p-capacity-stats">
             <div className="r3p-stat-row">
               <span className="r3p-stat-label">In progress right now</span>
-              <span className="r3p-stat-value" style={{ color: 'var(--r3-danger)' }}>
-                {stats?.inProgressConcurrent ?? inProgress} concurrent
+              <span className="r3p-stat-value" style={{ color: concurrentColour }}>
+                {inProgress} concurrent
               </span>
             </div>
             <div className="r3p-stat-row">
               <span className="r3p-stat-label">Closed this week</span>
-              <span className="r3p-stat-value">
+              <span className="r3p-stat-value" style={{ color: 'var(--tx-primary)' }}>
                 {stats?.closedOfTouched ?? 0} of {stats?.totalTouched ?? 0} touched
               </span>
             </div>
             <div className="r3p-stat-row">
               <span className="r3p-stat-label">Avg cycle time</span>
-              <span className="r3p-stat-value" style={{ color: 'var(--r3-warning)' }}>
-                {stats?.avgCycleTimeDays ?? 0}d per item
+              <span className="r3p-stat-value" style={{ color: cycleTimeColour }}>
+                {cycleTimeDays}d per item
               </span>
             </div>
             <div className="r3p-stat-row">
               <span className="r3p-stat-label">Oldest open item</span>
-              <span className="r3p-stat-value" style={{ color: 'var(--r3-danger)' }}>
-                {stats?.oldestItemAgeDays ?? 0}d · {stats?.oldestItemKey || '—'}
+              <span className="r3p-stat-value" style={{ color: oldestColour }}>
+                {oldestDays}d · {stats?.oldestItemKey || '—'}
               </span>
             </div>
           </div>
