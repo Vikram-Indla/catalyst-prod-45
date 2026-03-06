@@ -7,6 +7,7 @@ import { ChevronLeft, X, AlertTriangle, Info, BookOpen, ChevronRight, RefreshCw 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 // ── Constants ──
 const R360_WEEK = 9;
@@ -19,12 +20,7 @@ const STATUS_MAP: Record<string, { bg: string; color: string; label: string }> =
   BACKLOG:     { bg: '#DFE1E6', color: '#253858', label: 'BACKLOG' },
 };
 
-const WORK_ITEM_ICONS: Record<string, string> = {
-  Bug: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M3,0L21,0C22.657,0 24,1.343 24,3L24,21C24,22.657 22.657,24 21,24L3,24C1.343,24 0,22.657 0,21L0,3C0,1.343 1.343,0 3,0ZM12,17C14.761,17 17,14.761 17,12C17,9.239 14.761,7 12,7C9.239,7 7,9.239 7,12C7,14.761 9.239,17 12,17Z"/></svg>`,
-  Story: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M3,0L21,0C22.657,0 24,1.343 24,3L24,21C24,22.657 22.657,24 21,24L3,24C1.343,24 0,22.657 0,21L0,3C0,1.343 1.343,0 3,0ZM15.647,19.515L16.937,17.987L12,13.82L7.061,17.987C7.039,18.005 7,17.992 7,18.153L7,6.688C7,6.348 7.412,6 8,6L16,6C16.587,6 17,6.349 17,6.688L17,18.153L16.937,17.987L15.647,19.515C16.885,20.56 19,19.821 19,18.153L19,6.688C19,5.162 17.623,4 16,4L8,4C6.376,4 5,5.161 5,6.688L5,18.153C5,19.821 7.113,20.56 8.351,19.515L12,16.437L15.647,19.515Z"/></svg>`,
-  Subtask: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M3,0L21,0C22.657,0 24,1.343 24,3L24,21C24,22.657 22.657,24 21,24L3,24C1.343,24 0,22.657 0,21L0,3C0,1.343 1.343,0 3,0ZM13,11L13,6C13,5.448 12.552,5 12,5L6,5C5.448,5 5,5.448 5,6L5,12C5,12.552 5.448,13 6,13L11,13L11,18C11,18.552 11.448,19 12,19L18,19C18.552,19 19,18.552 19,18L19,12C19,11.448 18.552,11 18,11L13,11ZM7,7L11,7L11,11L7,11L7,7ZM13,13L17,13L17,17L13,17L13,13Z"/></svg>`,
-  Incident: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M3,0L21,0C22.657,0 24,1.343 24,3L24,21C24,22.657 22.657,24 21,24L3,24C1.343,24 0,22.657 0,21L0,3C0,1.343 1.343,0 3,0ZM8.829,12L7.923,15L16.077,15L15.171,12L8.829,12ZM9.433,10L14.567,10L12.957,4.668C12.86,4.348 12.61,4.097 12.289,4C11.76,3.84 11.202,4.14 11.043,4.668L9.433,10ZM17,17L7,17L6,17C5.448,17 5,17.448 5,18L5,20L19,20L19,18C19,17.448 18.552,17 18,17L17,17Z"/></svg>`,
-};
+// Work item icons now use canonical JiraIssueTypeIcon from src/lib/jira-issue-type-icons.tsx
 
 const TYPE_COLORS: Record<string, { color: string; opacity: number }> = {
   Bug:      { color: '#FF5630', opacity: 0.75 },
@@ -180,10 +176,12 @@ function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
+const SLATE = '#64748B';
+
 function computeLoadColour(openCount: number, roleAvg: number): string {
   if (openCount === 0) return SUCCESS;
-  if (openCount <= roleAvg) return INK1;
-  if (openCount <= roleAvg * 1.4) return WARNING;
+  if (openCount <= roleAvg) return SLATE;     // neutral — under avg
+  if (openCount <= roleAvg * 1.5) return WARNING;
   return DANGER;
 }
 
@@ -298,7 +296,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
   const openCount = effectiveStats?.total_open ?? 0;
   const roleAvg = 5; // benchmark
   const loadColour = computeLoadColour(openCount, roleAvg);
-
+  console.log('Ring color:', loadColour, '| open:', openCount, '| avg:', roleAvg);
   const resourceName = resource?.full_name || '';
   const resourceRole = resource?.role || '';
   const deptName = resource?.department || '';
@@ -588,8 +586,14 @@ function OverviewTab({
             {/* Pickup Speed */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
-                <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: INK1 }}>{pickupHours}</span>
-                <span style={{ fontSize: 14, fontWeight: 500, color: INK4 }}>h</span>
+                {pickupHours > 0 ? (
+                  <>
+                    <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: INK1 }}>{pickupHours}</span>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: INK4 }}>h</span>
+                  </>
+                ) : (
+                  <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: MUTED }}>—</span>
+                )}
               </div>
               <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>PICKUP SPEED</div>
               <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>team avg 38h</div>
@@ -713,10 +717,9 @@ function OverviewTab({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {workMix.map(row => {
             const tc = TYPE_COLORS[row.type] || { color: '#94A3B8', opacity: 0.6 };
-            const icon = WORK_ITEM_ICONS[row.type];
             return (
               <div key={row.type} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                {icon && <span dangerouslySetInnerHTML={{ __html: icon }} style={{ flexShrink: 0, width: 16, height: 16, display: 'flex' }} />}
+                <JiraIssueTypeIcon type={row.type} size={16} />
                 <span style={{ fontSize: 12, color: INK2, width: 72, flexShrink: 0 }}>{row.type}</span>
                 <div style={{ flex: 1, height: 18, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{
