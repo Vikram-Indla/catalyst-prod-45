@@ -1140,9 +1140,9 @@ function OverviewTab({
               &ldquo;Focus on incident resolution and QA throughput&rdquo;
             </div>
             <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: SUCCESS }} />
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: WARNING }} />
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: INK4 }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#64748B' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
             </div>
           </div>
           <ChevronRight size={14} color={INK4} />
