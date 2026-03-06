@@ -277,7 +277,7 @@ export default function ReqAssistLibrary() {
                       </td>
                       {/* Imported */}
                       <td style={{ padding: 'var(--ra-cell-pad)' }}>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#94A3B8' }}>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#6B7280' }}>
                           {doc.pulled_at ? formatImported(doc.pulled_at) : '—'}
                         </span>
                       </td>
