@@ -157,11 +157,21 @@ export async function queueProcessingJob(params: {
 }
 
 export async function fetchJiraProjectTickets(projectKey: string) {
+  // Query the Jira ticket cache table (ra_jira_tickets) for import candidates
   const { data, error } = await (supabase as any)
-    .from('ra_documents')
-    .select('jira_ticket_key, title, page_count, jira_created_at, status')
-    .eq('jira_project', projectKey)
-    .order('jira_created_at', { ascending: false });
+    .from('ra_jira_tickets')
+    .select('ticket_key, ticket_summary, ticket_type, has_pdf, pdf_filename, page_count, project_key, project_name')
+    .eq('project_key', projectKey)
+    .order('ticket_key', { ascending: true });
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []).map((t: any) => ({
+    jira_ticket_key: t.ticket_key,
+    title: t.ticket_summary,
+    page_count: t.page_count,
+    has_pdf: t.has_pdf,
+    pdf_filename: t.pdf_filename,
+    jira_project: t.project_key,
+    // No status field — these are import candidates, not library docs
+    status: null,
+  }));
 }
