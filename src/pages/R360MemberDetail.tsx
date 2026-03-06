@@ -499,10 +499,15 @@ export default function R360MemberDetail() {
 
   // Close panel on ESC
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setSelectedItem(null); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (profileDrawerOpen) closeProfileDrawer();
+        else setSelectedItem(null);
+      }
+    };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [profileDrawerOpen, closeProfileDrawer]);
 
   // Stale alert: compute oldest age (must be before early returns)
   const oldestAge = useMemo(() => {
