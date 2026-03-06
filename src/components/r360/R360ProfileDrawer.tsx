@@ -1305,10 +1305,10 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
               const isPeak = val === rhythmData.max && val > 0;
               return (
                 <div key={d} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? BRAND : INK2 }}>{val}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? '#1D4ED8' : '#374151' }}>{val}</span>
                   <div style={{
                     width: '100%', maxWidth: 40, height: barH, borderRadius: 3,
-                    background: BRAND, opacity: isPeak ? 1 : 0.7,
+                    background: isPeak ? '#1D4ED8' : '#3B82F6',
                     transition: 'height 300ms ease',
                   }} />
                   <span style={{ fontSize: 11, color: INK4, fontWeight: 500 }}>{DAY_ABBRS[idx]}</span>
