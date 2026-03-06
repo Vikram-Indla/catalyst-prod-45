@@ -684,7 +684,7 @@ export default function R360MemberDetail() {
             onSelectItem={(item) => { setTicketListMode(null); setSelectedItem(item); }}
           />
         )}
-      </div>{/* end r3-page inner content div */}
+      </div>{/* end r3-page */}
 
       {/* AI Intelligence Panel */}
       {aiOpen && resourceId && (
@@ -693,8 +693,6 @@ export default function R360MemberDetail() {
           onClose={() => setAiOpen(false)}
         />
       )}
-
-      </div>{/* end r3-page */}
       </div>{/* end flex-left */}
 
       {/* RIGHT: R360 Profile Drawer — flex split-pane */}
