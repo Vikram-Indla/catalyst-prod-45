@@ -498,13 +498,13 @@ export default function R360MemberDetail() {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (profileDrawerOpen) closeProfileDrawer();
+        if (aiOpen) setAiOpen(false);
         else setSelectedItem(null);
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [profileDrawerOpen, closeProfileDrawer]);
+  }, [aiOpen]);
 
   // Stale alert: compute oldest age (must be before early returns)
   const oldestAge = useMemo(() => {
