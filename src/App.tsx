@@ -574,6 +574,7 @@ const App = () => (
               <Route path="/producthub/requirement-assist/:id" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistOutput /></Suspense>} />
               {/* Req Assist Pipeline (Dynamite V2) */}
               <Route path="/product/req-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqAssistPipeline /></Suspense>} />
+              <Route path="/product/req-assist/generate" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqAssistGenerate /></Suspense>} />
               <Route path="/product/req-assist/:id" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqAssistDocument /></Suspense>} />
 
               {/* Legacy industry redirects */}
