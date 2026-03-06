@@ -1480,10 +1480,9 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
         items={items}
         testId="r360-chrono-completed-bar"
         onViewClick={() => {
-          // Scroll to the day group containing a done item
           const doneItem = items.find(i => i.status_category === 'done');
-          if (doneItem && groupRefs.current[doneItem.group_date]) {
-            groupRefs.current[doneItem.group_date]!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (doneItem) {
+            onSelect(doneItem);
           }
         }}
       />
@@ -1573,7 +1572,8 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
         items={items}
         testId="r360-board-completed-bar"
         onViewClick={() => {
-          doneColRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const doneItem = items.find(i => i.status_category === 'done');
+          if (doneItem) onSelect(doneItem);
         }}
       />
       <div className="r3-board">
