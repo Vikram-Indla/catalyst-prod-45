@@ -1355,16 +1355,22 @@ function BehaviouralTab({ workItems, showFilteredList }: { workItems: any[]; sho
         <SectionTitle>EXECUTION STYLE</SectionTitle>
         <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
           {[
-            { label: 'Avg cycle time', value: execStyle.avgCycleLabel },
-            { label: 'Items closed', value: String(execStyle.itemsClosed) },
-            { label: 'Concurrent avg', value: String(execStyle.concurrentAvg) },
-            { label: 'Completion rate', value: execStyle.completionRate },
+            { label: 'Avg cycle time', value: execStyle.avgCycleLabel, onClick: undefined as (() => void) | undefined },
+            { label: 'Items closed', value: String(execStyle.itemsClosed), onClick: () => showFilteredList('All Closed Items', (i: any) => (i.status_category || '').toLowerCase() === 'done') },
+            { label: 'Concurrent avg', value: String(execStyle.concurrentAvg), onClick: undefined as (() => void) | undefined },
+            { label: 'Completion rate', value: execStyle.completionRate, onClick: undefined as (() => void) | undefined },
           ].map((row, i, arr) => (
-            <div key={i} style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              height: 36, padding: '0 14px',
-              borderBottom: i < arr.length - 1 ? '0.75px solid #E2E8F0' : 'none',
-            }}>
+            <div key={i}
+              onClick={row.onClick}
+              style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                height: 36, padding: '0 14px',
+                borderBottom: i < arr.length - 1 ? '0.75px solid #E2E8F0' : 'none',
+                cursor: row.onClick ? 'pointer' : 'default', transition: 'background 150ms',
+              }}
+              onMouseEnter={e => { if (row.onClick) e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseLeave={e => { if (row.onClick) e.currentTarget.style.background = 'transparent'; }}
+            >
               <span style={{ fontSize: 12, color: INK2 }}>{row.label}</span>
               <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: INK1 }}>{row.value}</span>
             </div>
