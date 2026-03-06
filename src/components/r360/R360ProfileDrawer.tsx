@@ -1371,9 +1371,9 @@ function WorkItemsTab({ workItems }: { workItems: any[] }) {
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
               }}>{item.title}</span>
               <span style={{ width: 120 }}>
-                <DrawerLozenge status={item.status || item.status_category || 'To Do'} />
+                <R360StatusLozenge status={item.status || item.status_category || 'To Do'} />
               </span>
-              <span style={{ width: 90, textAlign: 'right' as const, fontSize: 12, color: MUTED }}>{relTime(item.updated_at)}</span>
+              <span style={{ width: 90, textAlign: 'right' as const, fontSize: 11, color: MUTED }}>{relTime(item.updated_at)}</span>
             </div>
           ))}
           {/* Count */}
