@@ -296,7 +296,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
   const openCount = effectiveStats?.total_open ?? 0;
   const roleAvg = 5; // benchmark
   const loadColour = computeLoadColour(openCount, roleAvg);
-
+  console.log('Ring color:', loadColour, '| open:', openCount, '| avg:', roleAvg);
   const resourceName = resource?.full_name || '';
   const resourceRole = resource?.role || '';
   const deptName = resource?.department || '';
