@@ -689,8 +689,8 @@ export default function R360MemberDetail() {
 
       {/* AI Intelligence Panel */}
       {aiOpen && resourceId && (
-        <AIIntelligencePanel
-          resourceId={resourceId}
+        <AiIntelligencePanelV16
+          resourceName={overview?.name || 'Resource'}
           onClose={() => setAiOpen(false)}
         />
       )}
