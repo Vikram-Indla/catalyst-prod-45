@@ -34,7 +34,7 @@ import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { ResourceProfileDrawer } from '@/components/r360/ResourceProfileDrawer';
 import type { R360ActiveTab } from '@/components/r360/ResourceProfileDrawer';
-import { R360DrawerPortal } from '@/components/r360/R360DrawerPortal';
+// R360 drawer uses flex split-pane (no portal, no overlay)
 
 // ── Period helpers ──
 type PeriodType = 'weekly' | 'monthly';
@@ -533,7 +533,8 @@ export default function R360MemberDetail() {
   const deptColor = R360_DEPT_COLORS[overview.department] || '#64748B';
 
   return (
-    <div id="r360-root">
+    <div id="r360-root" style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
+      <div style={{ flex: 1, minWidth: 0, overflow: 'auto', transition: 'flex 200ms ease' }}>
       <div className="r3-page" style={{ background: '#FFFFFF' }}>
         {/* ── Sticky Header: Profile + Week Nav ── */}
         <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#FFFFFF' }}>
@@ -683,7 +684,7 @@ export default function R360MemberDetail() {
             onSelectItem={(item) => { setTicketListMode(null); setSelectedItem(item); }}
           />
         )}
-      </div>
+      </div>{/* end r3-page */}
 
       {/* AI Intelligence Panel */}
       {aiOpen && resourceId && (
@@ -692,18 +693,31 @@ export default function R360MemberDetail() {
           onClose={() => setAiOpen(false)}
         />
       )}
+      </div>{/* end flex-left */}
 
-      {/* R360 Profile Drawer — Portal-based overlay */}
-      <R360DrawerPortal isOpen={r360DrawerOpen && !!resourceId} onClose={() => setR360DrawerOpen(false)}>
-        <ResourceProfileDrawer
-          selectedResourceId={resourceId!}
-          onClose={() => setR360DrawerOpen(false)}
-          activeTab={r360ActiveTab}
-          onTabChange={setR360ActiveTab}
-          weekOffset={r360WeekOffset}
-          onWeekOffsetChange={setR360WeekOffset}
-        />
-      </R360DrawerPortal>
+      {/* RIGHT: R360 Profile Drawer — flex split-pane */}
+      {r360DrawerOpen && resourceId && (
+        <div style={{
+          width: '700px',
+          flexShrink: 0,
+          borderLeft: '1px solid rgba(15,23,42,0.12)',
+          background: '#FFFFFF',
+          display: 'flex',
+          flexDirection: 'column' as const,
+          overflow: 'hidden',
+          boxShadow: '-4px 0 16px rgba(15,23,42,0.08)',
+        }}>
+          <ResourceProfileDrawer
+            selectedResourceId={resourceId}
+            onClose={() => setR360DrawerOpen(false)}
+            activeTab={r360ActiveTab}
+            onTabChange={setR360ActiveTab}
+            weekOffset={r360WeekOffset}
+            onWeekOffsetChange={setR360WeekOffset}
+          />
+        </div>
+      )}
+
     </div>
   );
 }
