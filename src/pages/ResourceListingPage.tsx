@@ -25,6 +25,7 @@ interface Resource {
   assignment_name: string | null;
   vendor_name: string | null;
   avatar_url: string | null;
+  resource_type: string | null;
 }
 
 /* ── Constants ── */
@@ -74,18 +75,17 @@ export default function ResourceListingPage() {
   const [deptFilter, setDeptFilter] = useState<string>('Delivery');
   const [sortKey, setSortKey] = useState<SortKey>('full_name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
-  
+  const [resourceTypeFilter, setResourceTypeFilter] = useState<'all' | 'core' | 'project' | 'temporary'>('all');
 
 
 
   const { data: resources = [], isLoading } = useQuery({
-    queryKey: ['resources-listing', 'variable-only-v2'],
+    queryKey: ['resources-listing', 'all-types-v1'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_inventory')
         .select('id, rid, name, role_name, profile_id, department_id, assignment_id, vendor_id, vendor_name, department_name, location_id, jira_account_id, avatar_url, resource_type')
         .eq('is_active', true)
-        .eq('resource_type', 'Variable')
         .order('name', { ascending: true });
       if (error) throw error;
 
@@ -110,7 +110,6 @@ export default function ResourceListingPage() {
       const avatarMap = new Map((profiles || []).map((p: any) => [p.id, p.avatar_url]));
 
       return ((data || []) as any[])
-        .filter((r: any) => (r.resource_type || '').trim().toLowerCase() === 'variable')
         .map((r: any): Resource => ({
           id: r.id,
           rid: r.rid,
@@ -121,6 +120,7 @@ export default function ResourceListingPage() {
           assignment_name: assignMap.get(r.assignment_id) || null,
           vendor_name: r.vendor_name || null,
           avatar_url: r.avatar_url || (r.profile_id ? (avatarMap.get(r.profile_id) || null) : null),
+          resource_type: (r.resource_type || '').trim().toLowerCase() || null,
         }));
     },
   });
@@ -140,12 +140,31 @@ export default function ResourceListingPage() {
     [deptCounts]
   );
 
+  // Resource type counts (within current dept filter)
+  const deptFiltered = useMemo(() => {
+    if (deptFilter === 'All') return resources;
+    return resources.filter(r => r.dept_name === deptFilter);
+  }, [resources, deptFilter]);
+
+  const resourceTypeCounts = useMemo(() => {
+    const counts = { all: deptFiltered.length, core: 0, project: 0, temporary: 0 };
+    deptFiltered.forEach(r => {
+      const rt = r.resource_type;
+      if (rt === 'variable' || rt === 'permanent') counts.core++;
+      else if (rt === 'fixed') counts.project++;
+      else if (rt === 'freelance') counts.temporary++;
+    });
+    return counts;
+  }, [deptFiltered]);
+
   // Filter
   const filtered = useMemo(() => {
-    let list = resources;
-    if (deptFilter !== 'All') {
-      list = list.filter(r => r.dept_name === deptFilter);
-    }
+    let list = deptFiltered;
+    // Resource type filter
+    if (resourceTypeFilter === 'core') list = list.filter(r => ['variable', 'permanent'].includes(r.resource_type || ''));
+    else if (resourceTypeFilter === 'project') list = list.filter(r => r.resource_type === 'fixed');
+    else if (resourceTypeFilter === 'temporary') list = list.filter(r => r.resource_type === 'freelance');
+    // Search
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(r =>
@@ -157,7 +176,7 @@ export default function ResourceListingPage() {
       );
     }
     return list;
-  }, [resources, deptFilter, search]);
+  }, [deptFiltered, resourceTypeFilter, search]);
 
   // Sort
   const sorted = useMemo(() => {
@@ -216,10 +235,10 @@ export default function ResourceListingPage() {
 
         {/* Department pills (dynamic) */}
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); }}
+          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setResourceTypeFilter('all'); }}
             label={`All`} />
           {deptNames.map(d => (
-            <PillButton key={d} active={deptFilter === d} onClick={() => setDeptFilter(d)}
+            <PillButton key={d} active={deptFilter === d} onClick={() => { setDeptFilter(d); setResourceTypeFilter('all'); }}
               label={`${d} (${deptCounts[d]})`} />
           ))}
 
@@ -228,6 +247,68 @@ export default function ResourceListingPage() {
            {/* Export dropdown */}
           <ExportWorkItems deptFilter={deptFilter} />
         </div>
+      </div>
+
+      {/* Resource Type Filter Pills */}
+      <div style={{ display: 'flex', gap: 8, padding: '12px 0 4px 0', alignItems: 'center' }}>
+        <span style={{
+          fontSize: 11, fontWeight: 600, color: '#64748B',
+          textTransform: 'uppercase', letterSpacing: '0.05em',
+          marginRight: 4, alignSelf: 'center',
+        }}>
+          Resource Type
+        </span>
+        {([
+          { key: 'all' as const, label: 'All', activeStyle: { background: '#1E293B', color: '#FFFFFF', border: '1px solid #1E293B' }, tooltip: 'Show all resource types' },
+          { key: 'core' as const, label: 'Core', activeStyle: { background: '#0D9488', color: '#FFFFFF', border: '1px solid #0D9488' }, tooltip: 'Variable + Permanent (org headcount)' },
+          /* Exception: blue used here for "Project" filter — signals structured project engagement, NOT a +Create CTA */
+          { key: 'project' as const, label: 'Project', activeStyle: { background: '#2563EB', color: '#FFFFFF', border: '1px solid #2563EB' }, tooltip: 'Fixed-term project resources' },
+          { key: 'temporary' as const, label: 'Temporary', activeStyle: { background: '#64748B', color: '#FFFFFF', border: '1px solid #64748B' }, tooltip: 'Freelance / time-bounded engagements' },
+        ] as const).map(pill => {
+          const isActive = resourceTypeFilter === pill.key;
+          const count = resourceTypeCounts[pill.key];
+          const showBadge = pill.key !== 'all' && count > 0;
+          return (
+            <button
+              key={pill.key}
+              title={pill.tooltip}
+              onClick={() => setResourceTypeFilter(pill.key)}
+              style={{
+                height: 28, padding: '0 12px', borderRadius: 14,
+                fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                transition: 'all 150ms ease',
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                border: isActive ? pill.activeStyle.border : '1px solid #E2E8F0',
+                background: isActive ? pill.activeStyle.background : '#F1F5F9',
+                color: isActive ? pill.activeStyle.color : '#475569',
+              }}
+              onMouseEnter={e => {
+                if (!isActive) {
+                  e.currentTarget.style.background = '#E2E8F0';
+                  e.currentTarget.style.color = '#1E293B';
+                }
+              }}
+              onMouseLeave={e => {
+                if (!isActive) {
+                  e.currentTarget.style.background = '#F1F5F9';
+                  e.currentTarget.style.color = '#475569';
+                }
+              }}
+            >
+              {pill.label}
+              {showBadge && (
+                <span style={{
+                  background: isActive ? 'rgba(255,255,255,0.25)' : '#E2E8F0',
+                  color: isActive ? undefined : '#64748B',
+                  borderRadius: 10, padding: '1px 6px',
+                  fontSize: 11, fontWeight: 600, marginLeft: 4,
+                }}>
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* Table */}
