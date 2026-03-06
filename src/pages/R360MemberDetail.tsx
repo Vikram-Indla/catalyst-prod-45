@@ -668,7 +668,7 @@ export default function R360MemberDetail() {
           </div>
         ) : (
           <>
-            {view === 'ring' && <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} />}
+            {view === 'ring' && <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={openProfileDrawer} />}
             {view === 'chronology' && <ChronologyView items={filteredWeekItems} onSelect={setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
             {view === 'board' && <BoardView items={filteredWeekItems} onSelect={setSelectedItem} />}
           </>
