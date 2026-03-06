@@ -719,45 +719,40 @@ export default function R360MemberDetail() {
         )}
       </div>
 
-      {/* R360 Profile Drawer — zero-dimension shell + portal to body */}
-      {aiOpen && resourceId && (
-        <div style={{ position: 'fixed', width: 0, height: 0 }}>
-          {createPortal(
-            <>
-              <div
-                onClick={() => setAiOpen(false)}
-                style={{
-                  position: 'fixed',
-                  inset: 0,
-                  top: 48,
-                  backgroundColor: 'rgba(0, 0, 0, 0.15)',
-                  zIndex: 49,
-                }}
-              />
-              <div
-                style={{
-                  position: 'fixed',
-                  top: 48,
-                  right: 0,
-                  width: 700,
-                  height: 'calc(100vh - 48px)',
-                  backgroundColor: '#FFFFFF',
-                  zIndex: 50,
-                  overflowY: 'auto',
-                  boxShadow: '-4px 0 24px rgba(0, 0, 0, 0.10)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <R360ProfileDrawer resourceId={resourceId} onClose={() => setAiOpen(false)} />
-              </div>
-            </>,
-            document.body
-          )}
-        </div>
+      {/* R360 Profile Drawer — portal to body, OUTSIDE #r360-root */}
+      {aiOpen && resourceId && createPortal(
+        <>
+          <div
+            onClick={() => setAiOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              top: 48,
+              backgroundColor: 'rgba(0, 0, 0, 0.15)',
+              zIndex: 49,
+            }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: 48,
+              right: 0,
+              width: 700,
+              height: 'calc(100vh - 48px)',
+              backgroundColor: '#FFFFFF',
+              zIndex: 50,
+              overflowY: 'auto',
+              boxShadow: '-4px 0 24px rgba(0, 0, 0, 0.10)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <R360ProfileDrawer resourceId={resourceId} onClose={() => setAiOpen(false)} />
+          </div>
+        </>,
+        document.body
       )}
-
-    </div>
+    </>
   );
 }
 
