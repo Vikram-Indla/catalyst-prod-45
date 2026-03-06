@@ -1448,7 +1448,7 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 10 }}>
           {hubSegments.map((s, i) => (
             <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: s.color, display: 'inline-block', flexShrink: 0 }} />
               <span style={{ fontSize: 12, color: INK2 }}>{s.hub === 'incident' ? 'IncidentHub' : s.hub === 'bau' || s.hub === 'BAU' ? 'BAU' : s.hub}</span>
               <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: INK1 }}>{s.count}</span>
             </div>

@@ -357,9 +357,20 @@ export default function ResourceListingPage() {
                   <td style={{ padding: '8px 16px', fontSize: '13px', color: '#374151' }}>
                     {r.vendor_name || <span style={{ color: '#d1d5db' }}>—</span>}
                   </td>
-                  {/* ACTIONS — 3 filled buttons */}
+                  {/* ACTIONS — 4 filled buttons */}
                   <td style={{ padding: '8px 16px', textAlign: 'center' }}>
                     <div style={{ display: 'inline-flex', gap: '8px' }}>
+                      <ActionBtn
+                        tooltip="Open Intelligence"
+                        bg="#7C3AED" bgHover="#6D28D9"
+                        shadowColor="rgba(124,58,237,0.2)"
+                        icon={<Zap size={16} strokeWidth={1.9} />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // TODO: auto-activate intelligence panel on open
+                          navTo(r.id, 'ring');
+                        }}
+                      />
                       <ActionBtn
                         tooltip="Resource 360°"
                         bg="#1e293b" bgHover="#0f172a"
