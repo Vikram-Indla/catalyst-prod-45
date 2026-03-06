@@ -14,7 +14,7 @@ function statusLozenge(status: string) {
   const map: Record<string, { bg: string; color: string }> = {
     ready: { bg: '#E3FCEF', color: '#006644' },
     processing: { bg: '#DEEBFF', color: '#0747A6' },
-    failed: { bg: '#DFE1E6', color: '#253858' },
+    failed: { bg: '#FFEBE6', color: '#BF2600' },
     pending: { bg: '#DFE1E6', color: '#253858' },
   };
   return map[status] ?? map.pending;
