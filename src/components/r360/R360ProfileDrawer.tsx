@@ -452,7 +452,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
         {activeTab === 'overview' && (
           <OverviewTab
-            stats={stats}
+            stats={effectiveStats}
             statsLoading={statsLoading}
             prevWeekClosed={prevWeekClosed}
             openCount={openCount}
