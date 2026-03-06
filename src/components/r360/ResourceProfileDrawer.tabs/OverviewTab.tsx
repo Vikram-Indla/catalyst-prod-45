@@ -185,7 +185,7 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
             </text>
             <text x="55" y="100" textAnchor="middle" fill="#CBD5E1"
               style={{ fontFamily: 'var(--ff-body)', fontSize: 11 }}>
-              avg {resource.roleAvgOpenCount}
+              avg {roleAvg}
             </text>
           </svg>
 
