@@ -45,21 +45,21 @@ function mapStatus(jiraStatus: string) {
   return R360_STATUS_MAP[jiraStatus] || R360_STATUS_DEFAULT;
 }
 
-function useR360WeeklyStats(resourceId: string) {
+function useR360WeeklyStats(resourceId: string, weekNumber: number) {
   return useQuery({
-    queryKey: ['r360-profile-stats', resourceId],
+    queryKey: ['r360-profile-stats', resourceId, weekNumber],
     queryFn: async () => {
       const { data: current } = await supabase
         .from('r360_weekly_snapshots')
         .select('*')
         .eq('resource_id', resourceId)
-        .eq('week_number', R360_WEEK)
+        .eq('week_number', weekNumber)
         .maybeSingle();
       const { data: prev } = await supabase
         .from('r360_weekly_snapshots')
         .select('closed_this_week')
         .eq('resource_id', resourceId)
-        .eq('week_number', R360_WEEK - 1)
+        .eq('week_number', weekNumber - 1)
         .maybeSingle();
       return { current, prev };
     },
@@ -68,9 +68,9 @@ function useR360WeeklyStats(resourceId: string) {
   });
 }
 
-function useR360ClosureTrend(resourceId: string) {
+function useR360ClosureTrend(resourceId: string, weekNumber: number) {
   return useQuery({
-    queryKey: ['r360-profile-trend', resourceId],
+    queryKey: ['r360-profile-trend', resourceId, weekNumber],
     queryFn: async () => {
       const { data } = await supabase
         .from('r360_weekly_snapshots')
@@ -82,7 +82,7 @@ function useR360ClosureTrend(resourceId: string) {
         weekNumber: d.week_number,
         weekLabel: `W${d.week_number}`,
         closedCount: d.closed_this_week,
-        isCurrent: d.week_number === R360_WEEK,
+        isCurrent: d.week_number === weekNumber,
       }));
     },
     enabled: !!resourceId,
