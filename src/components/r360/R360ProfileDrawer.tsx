@@ -1367,8 +1367,8 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
                   <span style={{ fontSize: 11, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? '#1D4ED8' : '#374151' }}>{val}</span>
                   <div style={{
                     width: '100%', maxWidth: 40, height: barH, borderRadius: 3,
-                    background: isPeak ? '#1D4ED8' : '#3B82F6',
-                    transition: 'height 300ms ease',
+                    backgroundColor: isPeak ? '#1D4ED8' : '#3B82F6',
+                    transition: 'height 300ms ease, background-color 0ms',
                   }} />
                   <span style={{ fontSize: 11, color: INK4, fontWeight: 500 }}>{DAY_ABBRS[idx]}</span>
                 </div>
