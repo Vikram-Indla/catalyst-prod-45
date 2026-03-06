@@ -572,10 +572,9 @@ const App = () => (
               <Route path="/producthub/requirement-assist/compose" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistCompose /></Suspense>} />
               <Route path="/producthub/requirement-assist/categories" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistCategories /></Suspense>} />
               <Route path="/producthub/requirement-assist/:id" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistOutput /></Suspense>} />
-              {/* Req Assist Pipeline (Dynamite V2) */}
-              <Route path="/product/req-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqAssistPipeline /></Suspense>} />
+              {/* Req Assist V2 — Document Library */}
+              <Route path="/product/req-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqAssistLibrary /></Suspense>} />
               <Route path="/product/req-assist/generate" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqAssistGenerate /></Suspense>} />
-              <Route path="/product/req-assist/:id" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqAssistDocument /></Suspense>} />
 
               {/* Legacy industry redirects */}
               <Route path="/industry/*" element={<Navigate to="/producthub" replace />} />
