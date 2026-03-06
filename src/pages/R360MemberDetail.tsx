@@ -32,6 +32,8 @@ import '@/styles/r360.css';
 import '@/components/resource360/r360-member.css';
 import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
+import { ResourceProfileDrawer } from '@/components/r360/ResourceProfileDrawer';
+import type { R360ActiveTab } from '@/components/r360/ResourceProfileDrawer';
 
 // ── Period helpers ──
 type PeriodType = 'weekly' | 'monthly';
@@ -349,6 +351,9 @@ export default function R360MemberDetail() {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<R360WorkItem | null>(null);
   const [aiOpen, setAiOpen] = useState(false);
+  const [r360DrawerOpen, setR360DrawerOpen] = useState(false);
+  const [r360ActiveTab, setR360ActiveTab] = useState<R360ActiveTab>('overview');
+  const [r360WeekOffset, setR360WeekOffset] = useState(0);
   const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
 
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
@@ -598,7 +603,7 @@ export default function R360MemberDetail() {
             {/* Intelligence — brand blue standard */}
             <AIIntelligenceButton
               label="Intelligence"
-              onClick={() => setAiOpen(true)}
+              onClick={() => { setR360DrawerOpen(true); setR360ActiveTab('overview'); setR360WeekOffset(0); }}
             />
           </div>
         </div>
@@ -685,6 +690,32 @@ export default function R360MemberDetail() {
           resourceId={resourceId}
           onClose={() => setAiOpen(false)}
         />
+      )}
+
+      {/* R360 Profile Drawer Overlay */}
+      {r360DrawerOpen && resourceId && (
+        <>
+          <div
+            style={{
+              position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.20)',
+              zIndex: 40, cursor: 'pointer',
+            }}
+            onClick={() => setR360DrawerOpen(false)}
+          />
+          <div style={{
+            position: 'fixed', right: 0, top: 0, height: '100vh', width: 700,
+            zIndex: 50, boxShadow: '-4px 0 24px rgba(0,0,0,0.12)',
+          }}>
+            <ResourceProfileDrawer
+              selectedResourceId={resourceId}
+              onClose={() => setR360DrawerOpen(false)}
+              activeTab={r360ActiveTab}
+              onTabChange={setR360ActiveTab}
+              weekOffset={r360WeekOffset}
+              onWeekOffsetChange={setR360WeekOffset}
+            />
+          </div>
+        </>
       )}
     </div>
   );

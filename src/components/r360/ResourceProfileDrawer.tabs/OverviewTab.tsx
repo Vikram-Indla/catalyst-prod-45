@@ -7,7 +7,7 @@ import { useEffect, useRef, useMemo } from 'react';
 import { AlertTriangle, Info, BookOpen, ChevronRight } from 'lucide-react';
 import { useR360WeeklyStats, useR360WorkItems, useR360ClosureTrend, R360_CURRENT_WEEK } from '@/hooks/useR360Profile';
 import type { R360ProfileResource } from '@/types/r360';
-import type { R360ActiveTab } from '@/pages/R360ProfilePage';
+import type { R360ActiveTab } from '../ResourceProfileDrawer';
 import { WorkItemIcon } from '../R360WorkItemIcons';
 
 interface OverviewTabProps {
@@ -59,8 +59,40 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
   }, [workItems]);
 
   const totalOpen = stats?.totalOpen ?? workItems.filter(i => i.status !== 'DONE').length;
-  const inProgress = workItems.filter(i => i.status === 'IN_PROGRESS').length;
+  const roleAvg = resource.roleAvgOpenCount || 5;
+  const inProgress = stats?.inProgressConcurrent ?? workItems.filter(i => i.status === 'IN_PROGRESS').length;
   const toDo = workItems.filter(i => i.status === 'TO_DO').length;
+
+  // Conditional load colour logic
+  const loadColour =
+    totalOpen === 0 ? 'var(--r3-success)'
+    : totalOpen <= roleAvg ? 'var(--tx-primary)'
+    : totalOpen <= roleAvg * 1.4 ? 'var(--r3-warning)'
+    : 'var(--r3-danger)';
+
+  // Concurrent colour
+  const concurrentColour =
+    inProgress === 0 ? 'var(--r3-success)'
+    : inProgress <= 2 ? 'var(--tx-primary)'
+    : 'var(--r3-danger)';
+
+  // Cycle time colour
+  const cycleTimeDays = stats?.avgCycleTimeDays ?? 0;
+  const cycleTimeColour =
+    cycleTimeDays <= 5 ? 'var(--tx-primary)'
+    : cycleTimeDays <= 10 ? 'var(--r3-warning)'
+    : 'var(--r3-danger)';
+
+  // Oldest item colour
+  const oldestDays = stats?.oldestItemAgeDays ?? 0;
+  const oldestColour =
+    oldestDays <= 7 ? 'var(--tx-primary)'
+    : oldestDays <= 13 ? 'var(--r3-warning)'
+    : 'var(--r3-danger)';
+
+  // Closed this week colour
+  const closedThisWeek = stats?.closedThisWeek ?? 0;
+  const closedColour = closedThisWeek > 0 ? 'var(--r3-success)' : 'var(--r3-warning)';
 
   // Bar animation
   const barsRef = useRef<HTMLDivElement>(null);
@@ -94,25 +126,25 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
         <div className="r3p-sec-title">This Week · W{weekNum} · Mar 1–5, 2026</div>
         <div className="r3p-kpi-grid">
           <div className="r3p-kpi-cell">
-            <div className="r3p-kpi-value" style={{ color: 'var(--r3-danger)' }}>{totalOpen}</div>
+            <div className="r3p-kpi-value" style={{ color: loadColour }}>{totalOpen}</div>
             <div className="r3p-kpi-label">Total Open</div>
-            <div className="r3p-kpi-compare">vs role avg {resource.roleAvgOpenCount}</div>
+            <div className="r3p-kpi-compare">vs role avg {roleAvg}</div>
           </div>
           <div className="r3p-kpi-cell">
-            <div className="r3p-kpi-value" style={{ color: 'var(--r3-success)' }}>
-              {stats?.closedThisWeek ?? 0}
-              <span style={{ fontSize: 11, marginLeft: 3, color: 'var(--r3-success)' }}>↑</span>
+            <div className="r3p-kpi-value" style={{ color: closedColour }}>
+              {closedThisWeek}
+              {closedThisWeek > 0 && <span style={{ fontSize: 11, marginLeft: 3, color: 'var(--r3-success)' }}>↑</span>}
             </div>
             <div className="r3p-kpi-label">Closed This Week</div>
             <div className="r3p-kpi-compare">vs 3 last week</div>
           </div>
           <div className="r3p-kpi-cell">
-            <div className="r3p-kpi-value">{stats?.inReview ?? 0}</div>
+            <div className="r3p-kpi-value" style={{ color: (stats?.inReview ?? 0) > 0 ? 'var(--tx-primary)' : 'var(--tx-muted)' }}>{stats?.inReview ?? 0}</div>
             <div className="r3p-kpi-label">In Review</div>
-            <div className="r3p-kpi-compare" style={{ color: 'var(--r3-warning)' }}>0 items under review</div>
+            <div className="r3p-kpi-compare" style={{ color: (stats?.inReview ?? 0) === 0 ? 'var(--r3-warning)' : 'var(--tx-secondary)' }}>{stats?.inReview ?? 0} items under review</div>
           </div>
           <div className="r3p-kpi-cell">
-            <div className="r3p-kpi-value">
+            <div className="r3p-kpi-value" style={{ color: 'var(--tx-primary)' }}>
               {stats?.pickupSpeedHours ?? 0}
               <span className="r3p-kpi-unit">h</span>
             </div>
@@ -138,12 +170,12 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
             />
             <circle
               cx="55" cy="55" r={ringR}
-              fill="none" stroke="var(--r3-warning)" strokeWidth="9"
+              fill="none" stroke={loadColour} strokeWidth="9"
               strokeDasharray={`${dashLen} ${gapLen}`}
               strokeDashoffset={offset}
               strokeLinecap="round"
             />
-            <text x="55" y="52" textAnchor="middle" fill="var(--r3-warning)"
+            <text x="55" y="52" textAnchor="middle" fill={loadColour}
               style={{ fontFamily: 'var(--ff-head)', fontSize: 22, fontWeight: 700 }}>
               {openCount}
             </text>
@@ -153,33 +185,33 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
             </text>
             <text x="55" y="100" textAnchor="middle" fill="#CBD5E1"
               style={{ fontFamily: 'var(--ff-body)', fontSize: 11 }}>
-              avg {resource.roleAvgOpenCount}
+              avg {roleAvg}
             </text>
           </svg>
 
           <div className="r3p-capacity-stats">
             <div className="r3p-stat-row">
               <span className="r3p-stat-label">In progress right now</span>
-              <span className="r3p-stat-value" style={{ color: 'var(--r3-danger)' }}>
-                {stats?.inProgressConcurrent ?? inProgress} concurrent
+              <span className="r3p-stat-value" style={{ color: concurrentColour }}>
+                {inProgress} concurrent
               </span>
             </div>
             <div className="r3p-stat-row">
               <span className="r3p-stat-label">Closed this week</span>
-              <span className="r3p-stat-value">
+              <span className="r3p-stat-value" style={{ color: 'var(--tx-primary)' }}>
                 {stats?.closedOfTouched ?? 0} of {stats?.totalTouched ?? 0} touched
               </span>
             </div>
             <div className="r3p-stat-row">
               <span className="r3p-stat-label">Avg cycle time</span>
-              <span className="r3p-stat-value" style={{ color: 'var(--r3-warning)' }}>
-                {stats?.avgCycleTimeDays ?? 0}d per item
+              <span className="r3p-stat-value" style={{ color: cycleTimeColour }}>
+                {cycleTimeDays}d per item
               </span>
             </div>
             <div className="r3p-stat-row">
               <span className="r3p-stat-label">Oldest open item</span>
-              <span className="r3p-stat-value" style={{ color: 'var(--r3-danger)' }}>
-                {stats?.oldestItemAgeDays ?? 0}d · {stats?.oldestItemKey || '—'}
+              <span className="r3p-stat-value" style={{ color: oldestColour }}>
+                {oldestDays}d · {stats?.oldestItemKey || '—'}
               </span>
             </div>
           </div>
@@ -277,7 +309,7 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
         <div className="r3p-sec-title">Hub Breakdown</div>
         <div className="r3p-hub-summary">
           <div className="r3p-kpi-cell">
-            <div className="r3p-kpi-value" style={{ color: 'var(--r3-danger)' }}>{totalOpen}</div>
+            <div className="r3p-kpi-value" style={{ color: loadColour }}>{totalOpen}</div>
             <div className="r3p-kpi-label">Total Backlog</div>
           </div>
           <div className="r3p-kpi-cell">
@@ -328,7 +360,7 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
 
         <div className="r3p-hub-total">
           <span>Total open across all hubs</span>
-          <span style={{ fontWeight: 700, color: 'var(--r3-danger)' }}>{totalOpen}</span>
+          <span style={{ fontWeight: 700, color: loadColour }}>{totalOpen}</span>
         </div>
       </div>
     </>
