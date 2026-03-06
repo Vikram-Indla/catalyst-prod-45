@@ -32,6 +32,8 @@ import '@/styles/r360.css';
 import '@/components/resource360/r360-member.css';
 import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
+import { ResourceProfileDrawer } from '@/components/r360/ResourceProfileDrawer';
+import type { R360ActiveTab } from '@/components/r360/ResourceProfileDrawer';
 
 // ── Period helpers ──
 type PeriodType = 'weekly' | 'monthly';
