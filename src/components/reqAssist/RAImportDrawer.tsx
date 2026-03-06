@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { X, Check, ChevronRight, ChevronDown, FileText, AlertCircle } from 'lucide-react';
-import { useJiraTickets, useCreateRADocument, useQueueJob, RA_KEYS, useRADocuments } from '@/hooks/useReqAssist';
-import { useQueryClient } from '@tanstack/react-query';
+import { useJiraTickets, useCreateRADocument, useQueueJob, RA_KEYS } from '@/hooks/useReqAssist';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface Props {
