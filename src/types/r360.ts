@@ -60,3 +60,95 @@ export interface R360Filters {
 }
 
 export type R360ViewType = 'ring' | 'chronology' | 'board';
+
+// ═══ R360 Profile Module Types (Stage A) ═══
+
+export type ResourceAvailability = 'available' | 'high-load' | 'overloaded';
+
+export type WorkItemStatus = 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE';
+
+export type WorkItemType = 'Bug' | 'Story' | 'Subtask' | 'Task' | 'Incident' |
+  'Epic' | 'New Feature' | 'Improvement' | 'Changes' | 'Question';
+
+export interface R360ProfileResource {
+  id: string;
+  resourceKey: string;
+  fullName: string;
+  role: string;
+  department: string;
+  skills: string[];
+  availability: ResourceAvailability;
+  avatarInitials: string;
+  avatarGradientStart: string;
+  avatarGradientEnd: string;
+  openItemCount: number;
+  roleAvgOpenCount: number;
+}
+
+export interface R360ProfileWorkItem {
+  id: string;
+  itemKey: string;
+  title: string;
+  status: WorkItemStatus;
+  itemType: WorkItemType;
+  hubSource: string;
+  assigneeId: string;
+  updatedAt: string;
+  createdAt: string;
+  ageDays: number;
+}
+
+export interface R360ActivityEvent {
+  id: string;
+  resourceId: string;
+  workItemId: string;
+  workItemKey: string;
+  workItemTitle: string;
+  workItemStatus: WorkItemStatus;
+  workItemType: WorkItemType;
+  eventTime: string;
+  eventDate: string;
+  dayName: string;
+}
+
+export interface R360WeeklyStats {
+  resourceId: string;
+  weekNumber: number;
+  weekStart: string;
+  weekEnd: string;
+  totalOpen: number;
+  closedThisWeek: number;
+  inReview: number;
+  pickupSpeedHours: number;
+  inProgressConcurrent: number;
+  closedOfTouched: number;
+  totalTouched: number;
+  avgCycleTimeDays: number;
+  oldestItemAgeDays: number;
+  oldestItemKey: string;
+  closureRatePct: number;
+}
+
+export interface R360ClosureTrendPoint {
+  weekNumber: number;
+  weekLabel: string;
+  closedCount: number;
+  isCurrent: boolean;
+}
+
+export interface R360WorkMixRow {
+  itemType: WorkItemType;
+  count: number;
+  percentage: number;
+  roleAvgPct: number;
+}
+
+export interface R360HubBreakdownRow {
+  hubName: string;
+  hubCode: string;
+  isIncident: boolean;
+  openCount: number;
+  closedCount: number;
+  totalCount: number;
+  closurePct: number;
+}

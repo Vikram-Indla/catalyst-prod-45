@@ -10,6 +10,7 @@ const Resource360MemberDetail = lazy(() => import("./pages/Resource360MemberDeta
 const ResourceListingPageLazy = lazy(() => import("./pages/ResourceListingPage"));
 const R360ResourcesListingLazy = lazy(() => import("./pages/R360ResourcesListing"));
 const R360MemberDetailLazy = lazy(() => import("./pages/R360MemberDetail"));
+const R360ProfilePageLazy = lazy(() => import("./pages/R360ProfilePage"));
 
 // ProjectHub V5 lazy imports
 const ProjectHubShellLazy = lazy(() => import("./components/project-hub/ProjectHubShell").then(m => ({ default: m.ProjectHubShell })));
