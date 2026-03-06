@@ -393,39 +393,36 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
           <><Skeleton h={52} w={52} r={26} /><div style={{ flex: 1 }}><Skeleton h={20} w="60%" /><Skeleton h={14} w="80%" /></div></>
         ) : (
           <>
+            {resource?.avatar_url ? (
+              <img
+                src={resource.avatar_url}
+                alt={resourceName}
+                style={{ width: 52, height: 52, borderRadius: '50%', objectFit: 'cover' as const, flexShrink: 0 }}
+                onError={(e) => { (e.currentTarget).style.display = 'none'; const sib = e.currentTarget.nextElementSibling as HTMLElement; if (sib) sib.style.display = 'flex'; }}
+              />
+            ) : null}
             <div style={{
               width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
-              background: 'linear-gradient(135deg, #2563EB, #7C3AED)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'linear-gradient(135deg, #475569, #334155)',
+              display: resource?.avatar_url ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center',
               color: '#FFFFFF', fontFamily: "'Sora', sans-serif", fontSize: 17, fontWeight: 700,
             }}>
-              {getInitials(resourceName)}
+              {getInitials(resourceName || '?')}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, color: INK1 }}>{resourceName}</div>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, color: INK1 }}>{resourceName || '—'}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: INK4, flexWrap: 'wrap', marginTop: 2 }}>
-                <span>{resourceRole}</span>
-                <span>·</span>
-                <span>{deptName}</span>
-                <span>·</span>
-                <span style={{
+                <span>{resourceRole || '—'}</span>
+                {deptName && <><span>·</span><span>{deptName}</span></>}
+                {resourceRid && <><span>·</span><span style={{
                   background: '#EFF6FF', border: '1px solid #DBEAFE', borderRadius: 3,
                   padding: '2px 7px', fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 11, fontWeight: 700, color: BRAND,
-                }}>{resourceRid}</span>
+                }}>{resourceRid}</span></>}
                 <span style={{
                   width: 7, height: 7, borderRadius: '50%',
-                  background: openCount > roleAvg ? WARNING : SUCCESS,
+                  background: openCount > roleAvg ? WARNING : openCount === 0 ? SUCCESS : INK1,
                 }} />
-              </div>
-              {/* Skills placeholder */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
-                {['Jira', 'QA', 'Incident Mgmt'].map(sk => (
-                  <span key={sk} style={{
-                    background: '#F1F5F9', border: `1px solid ${BORDER}`, borderRadius: 3,
-                    padding: '2px 8px', fontSize: 11, fontWeight: 500, color: INK2,
-                  }}>{sk}</span>
-                ))}
               </div>
             </div>
           </>
