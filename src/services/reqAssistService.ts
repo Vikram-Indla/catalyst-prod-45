@@ -1,203 +1,135 @@
 import { supabase } from '@/integrations/supabase/client';
-import type {
-  BrdDocument,
-  BrdEpic,
-  BrdQueueItem,
-  PipelineStage,
-  PipelineFilterState,
-  StageStats,
-} from '@/types/reqAssist';
+import type { RADocumentWithArtifacts, RAProcessingJob } from '@/types/reqAssistV2';
 
-// ─── FETCH ALL DOCUMENTS (with filters) ───────────────────────────
-export async function fetchBrdDocuments(
-  filters: Partial<PipelineFilterState> = {}
-): Promise<BrdDocument[]> {
-  let query = supabase
-    .from('brd_documents')
-    .select('*')
+// ── LIBRARY QUERIES ──
+
+export async function fetchRADocuments(params?: {
+  status?: string;
+  search?: string;
+}): Promise<RADocumentWithArtifacts[]> {
+  let query = (supabase as any)
+    .from('ra_documents')
+    .select(`
+      *,
+      ra_artifacts(id, artifact_type, status),
+      ra_processing_jobs(id, job_type, status, progress_pct, current_step, eta_seconds)
+    `)
     .order('created_at', { ascending: false });
 
-  if (filters.stage && filters.stage !== 'all') {
-    query = query.eq('pipeline_stage', filters.stage);
+  if (params?.status && params.status !== 'all') {
+    query = query.eq('status', params.status);
   }
-  if (filters.search) {
-    query = query.ilike('title', `%${filters.search}%`);
-  }
-  if (filters.domainTag) {
-    query = query.eq('domain_tag', filters.domainTag);
+  if (params?.search) {
+    query = query.or(
+      `title.ilike.%${params.search}%,jira_ticket_key.ilike.%${params.search}%,domain.ilike.%${params.search}%`
+    );
   }
 
   const { data, error } = await query;
   if (error) throw error;
-  return data as unknown as BrdDocument[];
-}
 
-// ─── FETCH SINGLE DOCUMENT ────────────────────────────────────────
-export async function fetchBrdDocument(id: string): Promise<BrdDocument> {
-  const { data, error } = await supabase
-    .from('brd_documents')
-    .select('*')
-    .eq('id', id)
-    .single();
-  if (error) throw error;
-  return data as unknown as BrdDocument;
-}
-
-// ─── FETCH EPICS FOR A DOCUMENT ───────────────────────────────────
-export async function fetchEpicsForDocument(brdId: string): Promise<BrdEpic[]> {
-  const { data, error } = await supabase
-    .from('brd_epics')
-    .select('*')
-    .eq('brd_id', brdId)
-    .order('created_at', { ascending: true });
-  if (error) throw error;
-  return data as unknown as BrdEpic[];
-}
-
-// ─── FETCH QUEUE STATUS FOR A DOCUMENT ───────────────────────────
-export async function fetchQueueStatus(brdId: string): Promise<BrdQueueItem | null> {
-  const { data, error } = await supabase
-    .from('brd_processing_queue')
-    .select('*')
-    .eq('brd_id', brdId)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error) throw error;
-  return data as unknown as BrdQueueItem | null;
-}
-
-// ─── FETCH ALL QUEUE ITEMS FOR A DOCUMENT (history) ──────────────
-export async function fetchQueueItems(brdId: string): Promise<BrdQueueItem[]> {
-  const { data, error } = await supabase
-    .from('brd_processing_queue')
-    .select('*')
-    .eq('brd_id', brdId)
-    .order('created_at', { ascending: true });
-  if (error) throw error;
-  return data as unknown as BrdQueueItem[];
-}
-
-// ─── FETCH EPIC COUNT FOR STATS ──────────────────────────────────
-export async function fetchEpicCount(): Promise<number> {
-  const { count, error } = await supabase
-    .from('brd_epics')
-    .select('*', { count: 'exact', head: true });
-  if (error) throw error;
-  return count || 0;
-}
-
-// ─── FETCH AVG QUALITY SCORE ─────────────────────────────────────
-export async function fetchAvgQuality(): Promise<number | null> {
-  const { data, error } = await supabase
-    .from('brd_documents')
-    .select('quality_score')
-    .not('quality_score', 'is', null);
-  if (error) throw error;
-  const scores = (data as unknown as { quality_score: number }[]).map(d => d.quality_score);
-  if (scores.length === 0) return null;
-  return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-}
-
-// ─── FETCH AVG PROCESSING TIME (seconds) ─────────────────────────
-export async function fetchAvgProcessingTime(): Promise<number | null> {
-  const { data, error } = await supabase
-    .from('brd_processing_queue')
-    .select('started_at, completed_at')
-    .not('started_at', 'is', null)
-    .not('completed_at', 'is', null);
-  if (error) throw error;
-  const rows = data as unknown as { started_at: string; completed_at: string }[];
-  if (rows.length === 0) return null;
-  const totalSec = rows.reduce((sum, r) => {
-    return sum + (new Date(r.completed_at).getTime() - new Date(r.started_at).getTime()) / 1000;
-  }, 0);
-  return totalSec / rows.length;
-}
-
-// ─── FETCH EPIC COUNTS PER DOCUMENT ──────────────────────────────
-export async function fetchEpicCountsByDoc(docIds: string[]): Promise<Record<string, number>> {
-  if (docIds.length === 0) return {};
-  const { data, error } = await supabase
-    .from('brd_epics')
-    .select('brd_id')
-    .in('brd_id', docIds);
-  if (error) throw error;
-  const counts: Record<string, number> = {};
-  (data as unknown as { brd_id: string }[]).forEach(r => {
-    counts[r.brd_id] = (counts[r.brd_id] || 0) + 1;
-  });
-  return counts;
-}
-
-// ─── GET STAGE STATS (for stat cards) ────────────────────────────
-export async function fetchStageStats(): Promise<StageStats[]> {
-  const { data, error } = await supabase
-    .from('brd_documents')
-    .select('pipeline_stage');
-  if (error) throw error;
-
-  const counts: Record<string, number> = {};
-  (data as unknown as { pipeline_stage: PipelineStage }[]).forEach(({ pipeline_stage }) => {
-    counts[pipeline_stage] = (counts[pipeline_stage] || 0) + 1;
-  });
-
-  const stageOrder: PipelineStage[] = [
-    'intake', 'extract', 'process', 'validate', 'distribute', 'complete',
-  ];
-  const labels: Record<PipelineStage, string> = {
-    intake: 'Intake', extract: 'Extract', process: 'Process',
-    validate: 'Validate', distribute: 'Distribute', complete: 'Complete',
-    failed: 'Failed',
-  };
-
-  return stageOrder.map((stage) => ({
-    stage,
-    count: counts[stage] || 0,
-    label: labels[stage],
+  return (data || []).map((doc: any) => ({
+    ...doc,
+    artifact_counts: {
+      brd:        (doc.ra_artifacts || []).filter((a: any) => a.artifact_type === 'brd' && a.status === 'ready').length,
+      epics:      (doc.ra_artifacts || []).filter((a: any) => a.artifact_type === 'epics' && a.status === 'ready').length,
+      uat:        (doc.ra_artifacts || []).filter((a: any) => a.artifact_type === 'uat' && a.status === 'ready').length,
+      initiative: (doc.ra_artifacts || []).filter((a: any) => a.artifact_type === 'initiative' && a.status === 'ready').length,
+    },
+    generation_slots: {
+      brd:   computeSlot(doc, 'brd'),
+      epics: computeSlot(doc, 'epics'),
+      uat:   computeSlot(doc, 'uat'),
+      wiki:  doc.wikihub_synced ? 'done' : doc.status === 'processing' ? 'processing' : 'pending',
+    },
   }));
 }
 
-// ─── CREATE DOCUMENT (manual upload / generate from text) ────────
-export async function createBrdDocument(
-  payload: Omit<BrdDocument, 'id' | 'created_at' | 'updated_at'>
-): Promise<BrdDocument> {
-  const { data, error } = await supabase
-    .from('brd_documents')
-    .insert(payload as any)
+function computeSlot(doc: any, type: string): 'done' | 'processing' | 'pending' | 'error' {
+  const ready = (doc.ra_artifacts || []).some((a: any) => a.artifact_type === type && a.status === 'ready');
+  if (ready) return 'done';
+  const generating = (doc.ra_artifacts || []).some((a: any) => a.artifact_type === type && a.status === 'generating');
+  if (generating) return 'processing';
+  const failed = (doc.ra_artifacts || []).some((a: any) => a.artifact_type === type && a.status === 'failed');
+  if (failed) return 'error';
+  return 'pending';
+}
+
+export async function fetchRADocumentById(id: string) {
+  const { data, error } = await (supabase as any)
+    .from('ra_documents')
+    .select(`*, ra_artifacts(*), ra_processing_jobs(*)`)
+    .eq('id', id)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function fetchRAStats() {
+  const [docs, artifacts, jobs, sync] = await Promise.all([
+    (supabase as any).from('ra_documents').select('id, status, wikihub_synced, wikihub_chunk_count'),
+    (supabase as any).from('ra_artifacts').select('id, artifact_type').eq('status', 'ready'),
+    (supabase as any).from('ra_processing_jobs').select('id').eq('status', 'processing'),
+    (supabase as any).from('ra_jira_sync_log').select('synced_at, project_key').order('synced_at', { ascending: false }).limit(1),
+  ]);
+  const total = docs.data?.length ?? 0;
+  const wikis = docs.data?.filter((d: any) => d.wikihub_synced) ?? [];
+  const chunks = wikis.reduce((s: number, d: any) => s + (d.wikihub_chunk_count ?? 0), 0);
+  return {
+    total_documents: total,
+    wikihub_synced: wikis.length,
+    wikihub_chunks: chunks,
+    artifacts_generated: artifacts.data?.length ?? 0,
+    processing_count: jobs.data?.length ?? 0,
+    last_sync: sync.data?.[0]?.synced_at ?? null,
+  };
+}
+
+// ── MUTATIONS ──
+
+export async function createRADocument(payload: {
+  title: string;
+  source_type: 'jira_pdf' | 'manual_upload' | 'text_generated';
+  language: 'en' | 'ar';
+  domain?: string;
+  jira_ticket_key?: string;
+  jira_project?: string;
+  page_count?: number;
+}) {
+  const { data, error } = await (supabase as any)
+    .from('ra_documents')
+    .insert({
+      ...payload,
+      jira_ticket_key: payload.jira_ticket_key ?? `GEN-${Date.now()}`,
+      jira_project: payload.jira_project ?? 'MANUAL',
+      status: 'pending',
+      wikihub_synced: false,
+    })
     .select()
     .single();
   if (error) throw error;
-  return data as unknown as BrdDocument;
+  return data;
 }
 
-// ─── UPDATE STAGE (manual stage promotion) ───────────────────────
-export async function updateDocumentStage(
-  id: string,
-  stage: PipelineStage
-): Promise<void> {
-  const { error } = await supabase
-    .from('brd_documents')
-    .update({ pipeline_stage: stage } as any)
-    .eq('id', id);
+export async function queueProcessingJob(params: {
+  ra_document_id: string;
+  job_type: RAProcessingJob['job_type'];
+}) {
+  const { data, error } = await (supabase as any)
+    .from('ra_processing_jobs')
+    .insert({ ...params, status: 'queued', progress_pct: 0 })
+    .select()
+    .single();
   if (error) throw error;
+  return data;
 }
 
-// ─── ENQUEUE DOCUMENT FOR PROCESSING ─────────────────────────────
-export async function enqueueDocument(brdId: string): Promise<void> {
-  const { error } = await supabase
-    .from('brd_processing_queue')
-    .insert({ brd_id: brdId, status: 'pending' } as any);
+export async function fetchJiraProjectTickets(projectKey: string) {
+  const { data, error } = await (supabase as any)
+    .from('ra_documents')
+    .select('jira_ticket_key, title, page_count, jira_created_at, status')
+    .eq('jira_project', projectKey)
+    .order('jira_created_at', { ascending: false });
   if (error) throw error;
-}
-
-// ─── FETCH DISTINCT DOMAIN TAGS (for filter dropdown) ────────────
-export async function fetchDomainTags(): Promise<string[]> {
-  const { data, error } = await supabase
-    .from('brd_documents')
-    .select('domain_tag')
-    .not('domain_tag', 'is', null);
-  if (error) throw error;
-  const tags = [...new Set((data as unknown as { domain_tag: string }[]).map((d) => d.domain_tag))];
-  return tags.sort();
+  return data ?? [];
 }
