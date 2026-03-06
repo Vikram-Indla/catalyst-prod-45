@@ -109,6 +109,7 @@ export default function ResourceListingPage() {
       const avatarMap = new Map((profiles || []).map((p: any) => [p.id, p.avatar_url]));
 
       return ((data || []) as any[])
+        .filter((r: any) => (r.role_name || '').trim().toLowerCase() !== 'management')
         .map((r: any): Resource => ({
           id: r.id,
           rid: r.rid,
