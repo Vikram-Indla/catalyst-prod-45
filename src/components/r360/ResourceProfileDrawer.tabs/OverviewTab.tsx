@@ -59,8 +59,40 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
   }, [workItems]);
 
   const totalOpen = stats?.totalOpen ?? workItems.filter(i => i.status !== 'DONE').length;
-  const inProgress = workItems.filter(i => i.status === 'IN_PROGRESS').length;
+  const roleAvg = resource.roleAvgOpenCount || 5;
+  const inProgress = stats?.inProgressConcurrent ?? workItems.filter(i => i.status === 'IN_PROGRESS').length;
   const toDo = workItems.filter(i => i.status === 'TO_DO').length;
+
+  // Conditional load colour logic
+  const loadColour =
+    totalOpen === 0 ? 'var(--r3-success)'
+    : totalOpen <= roleAvg ? 'var(--tx-primary)'
+    : totalOpen <= roleAvg * 1.4 ? 'var(--r3-warning)'
+    : 'var(--r3-danger)';
+
+  // Concurrent colour
+  const concurrentColour =
+    inProgress === 0 ? 'var(--r3-success)'
+    : inProgress <= 2 ? 'var(--tx-primary)'
+    : 'var(--r3-danger)';
+
+  // Cycle time colour
+  const cycleTimeDays = stats?.avgCycleTimeDays ?? 0;
+  const cycleTimeColour =
+    cycleTimeDays <= 5 ? 'var(--tx-primary)'
+    : cycleTimeDays <= 10 ? 'var(--r3-warning)'
+    : 'var(--r3-danger)';
+
+  // Oldest item colour
+  const oldestDays = stats?.oldestItemAgeDays ?? 0;
+  const oldestColour =
+    oldestDays <= 7 ? 'var(--tx-primary)'
+    : oldestDays <= 13 ? 'var(--r3-warning)'
+    : 'var(--r3-danger)';
+
+  // Closed this week colour
+  const closedThisWeek = stats?.closedThisWeek ?? 0;
+  const closedColour = closedThisWeek > 0 ? 'var(--r3-success)' : 'var(--r3-warning)';
 
   // Bar animation
   const barsRef = useRef<HTMLDivElement>(null);
