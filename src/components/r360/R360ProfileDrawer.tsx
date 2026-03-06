@@ -2,7 +2,7 @@
  * R360 Profile Drawer — 700px inline split-pane intelligence view
  * V12 Hybrid Precision · No portal, no fixed, no overlay
  */
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { ChevronLeft, X, AlertTriangle, Info, BookOpen, ChevronRight, ChevronLeft as ChevronLeftIcon, RefreshCw, CalendarX, Inbox } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,9 +10,8 @@ import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { fetchItemDetail, calcDaysSitting } from '@/lib/r360/fetchItemDetail';
 import type { ItemDetailFull } from '@/lib/r360/fetchItemDetail';
-
-// ── Constants ──
-const R360_WEEK = 9;
+import { getWeekNumber } from '@/constants/r360WeekConfig';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const STATUS_MAP: Record<string, { bg: string; color: string; label: string }> = {
   TO_DO:       { bg: '#DFE1E6', color: '#253858', label: 'TO DO' },
