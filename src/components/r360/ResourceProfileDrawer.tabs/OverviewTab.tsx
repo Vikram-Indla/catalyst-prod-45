@@ -170,12 +170,12 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
             />
             <circle
               cx="55" cy="55" r={ringR}
-              fill="none" stroke="var(--r3-warning)" strokeWidth="9"
+              fill="none" stroke={loadColour} strokeWidth="9"
               strokeDasharray={`${dashLen} ${gapLen}`}
               strokeDashoffset={offset}
               strokeLinecap="round"
             />
-            <text x="55" y="52" textAnchor="middle" fill="var(--r3-warning)"
+            <text x="55" y="52" textAnchor="middle" fill={loadColour}
               style={{ fontFamily: 'var(--ff-head)', fontSize: 22, fontWeight: 700 }}>
               {openCount}
             </text>
