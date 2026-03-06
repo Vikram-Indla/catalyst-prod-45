@@ -1364,7 +1364,7 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
               const isPeak = val === rhythmData.max && val > 0;
               return (
                 <div key={d} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? '#1D4ED8' : '#374151' }}>{val}</span>
+                  <span style={{ fontSize: isPeak ? 12 : 12, fontWeight: isPeak ? 600 : 400, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? '#1D4ED8' : '#374151' }}>{val}</span>
                   <div style={{
                     width: '100%', maxWidth: 40, height: barH, borderRadius: 3,
                     backgroundColor: isPeak ? '#1D4ED8' : '#3B82F6',
