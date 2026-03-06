@@ -1206,3 +1206,181 @@ function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount:
     </>
   );
 }
+
+// ══════════════════════════════════════════
+// WORK ITEMS TAB
+// ══════════════════════════════════════════
+function WorkItemsTab({ workItems }: { workItems: any[] }) {
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [weekOffset, setWeekOffset] = useState(0);
+
+  const { weekStart, weekEnd, weekLabel } = useMemo(() => {
+    const now = new Date();
+    const day = now.getDay();
+    const daysSinceSunday = day === 0 ? 0 : day;
+    const ws = new Date(now);
+    ws.setDate(now.getDate() - daysSinceSunday + (weekOffset * 7));
+    ws.setHours(0, 0, 0, 0);
+    const we = new Date(ws);
+    we.setDate(ws.getDate() + 4);
+    we.setHours(23, 59, 59, 999);
+    const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const wn = R360_WEEK + weekOffset;
+    return { weekStart: ws, weekEnd: we, weekLabel: `W${wn} · ${fmt(ws)}–${fmt(we).split(' ')[1]}` };
+  }, [weekOffset]);
+
+  const filtered = useMemo(() => {
+    return workItems
+      .filter((i: any) => {
+        // Week filter
+        const u = new Date(i.updated_at);
+        if (u < weekStart || u > weekEnd) return false;
+        // Status filter
+        if (statusFilter !== 'all') {
+          const sc = (i.status_category || '').toLowerCase().replace(/[_\s-]/g, '');
+          if (statusFilter === 'todo' && sc !== 'todo' && sc !== 'backlog') return false;
+          if (statusFilter === 'inprogress' && sc !== 'inprogress') return false;
+          if (statusFilter === 'inreview' && sc !== 'inreview') return false;
+          if (statusFilter === 'done' && sc !== 'done') return false;
+        }
+        // Type filter
+        if (typeFilter !== 'all') {
+          const t = (i.work_item_type || '').toLowerCase().replace(/[_\s-]/g, '');
+          const f = typeFilter.toLowerCase().replace(/[_\s-]/g, '');
+          if (t !== f) return false;
+        }
+        return true;
+      })
+      .sort((a: any, b: any) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+  }, [workItems, weekStart, weekEnd, statusFilter, typeFilter]);
+
+  const display = filtered.slice(0, 50);
+  const totalCount = filtered.length;
+
+  const relTime = (ds: string) => {
+    const d = Math.floor((Date.now() - new Date(ds).getTime()) / 86400000);
+    if (d === 0) return 'Today';
+    if (d === 1) return '1d ago';
+    return `${d}d ago`;
+  };
+
+  const selectStyle: React.CSSProperties = {
+    height: 36, padding: '0 10px', fontSize: 12, fontWeight: 500,
+    color: INK2, background: '#FFFFFF', border: '1px solid #E2E8F0',
+    borderRadius: 6, cursor: 'pointer', fontFamily: "'Inter', system-ui, sans-serif",
+    appearance: 'none', WebkitAppearance: 'none',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 10px center',
+    paddingRight: 28,
+  };
+
+  return (
+    <>
+      {/* Toolbar */}
+      <div style={{
+        height: 40, flexShrink: 0, borderBottom: '0.75px solid #E2E8F0',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 12px', gap: 8,
+      }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={selectStyle}>
+            <option value="all">All Statuses</option>
+            <option value="todo">To Do</option>
+            <option value="inprogress">In Progress</option>
+            <option value="inreview">In Review</option>
+            <option value="done">Done</option>
+          </select>
+          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={selectStyle}>
+            <option value="all">All Types</option>
+            <option value="Bug">Bug</option>
+            <option value="Story">Story</option>
+            <option value="Subtask">Subtask</option>
+            <option value="Incident">Incident</option>
+            <option value="QA Bug">QA Bug</option>
+            <option value="Frontend">Frontend</option>
+          </select>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button
+            onClick={() => setWeekOffset(o => o - 1)}
+            style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            <ChevronLeft size={16} color={INK4} />
+          </button>
+          <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK2, whiteSpace: 'nowrap' }}>{weekLabel}</span>
+          <button
+            onClick={() => setWeekOffset(o => Math.min(o + 1, 0))}
+            style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset >= 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset >= 0 ? 0.3 : 1 }}
+            disabled={weekOffset >= 0}
+            onMouseEnter={e => { if (weekOffset < 0) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            <ChevronRight size={16} color={INK4} />
+          </button>
+        </div>
+      </div>
+
+      {/* Table */}
+      {display.length === 0 ? (
+        <div style={{
+          flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          gap: 8, padding: '48px 16px',
+        }}>
+          <Inbox size={24} color={MUTED} />
+          <span style={{ fontSize: 13, color: INK4 }}>No work items found</span>
+          <span style={{ fontSize: 12, color: MUTED }}>Try adjusting the filters</span>
+        </div>
+      ) : (
+        <div style={{ overflowX: 'auto' }}>
+          {/* Header */}
+          <div style={{
+            display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
+            borderBottom: '0.75px solid #E2E8F0', background: '#FFFFFF',
+          }}>
+            <span style={{ width: 40, textAlign: 'center' as const, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em' }}>TYPE</span>
+            <span style={{ width: 100, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em', paddingLeft: 8 }}>KEY</span>
+            <span style={{ flex: 1, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em' }}>TITLE</span>
+            <span style={{ width: 120, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em' }}>STATUS</span>
+            <span style={{ width: 90, textAlign: 'right' as const, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em' }}>UPDATED</span>
+          </div>
+          {/* Rows */}
+          {display.map((item: any, idx: number) => (
+            <div
+              key={item.id || idx}
+              style={{
+                display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
+                borderBottom: idx < display.length - 1 ? '0.75px solid #E2E8F0' : 'none',
+                background: '#FFFFFF', transition: 'background 80ms',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+            >
+              <span style={{ width: 40, display: 'flex', justifyContent: 'center' }}>
+                <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
+              </span>
+              <span style={{ width: 100, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK4, paddingLeft: 8 }}>{item.item_key}</span>
+              <span style={{
+                flex: 1, fontSize: 13, color: INK2, overflow: 'hidden',
+                textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
+              }}>{item.title}</span>
+              <span style={{ width: 120 }}>
+                <DrawerLozenge status={item.status || item.status_category || 'To Do'} />
+              </span>
+              <span style={{ width: 90, textAlign: 'right' as const, fontSize: 12, color: MUTED }}>{relTime(item.updated_at)}</span>
+            </div>
+          ))}
+          {/* Count */}
+          {totalCount > 50 && (
+            <div style={{ padding: '8px 12px', fontSize: 12, color: MUTED, textAlign: 'center' as const }}>
+              Showing 50 of {totalCount} items
+            </div>
+          )}
+        </div>
+      )}
+    </>
+  );
+}
