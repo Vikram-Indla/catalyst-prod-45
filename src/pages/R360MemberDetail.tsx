@@ -20,6 +20,7 @@
  * Fixed: Quarter label "Q1-2026" was hardcoded → now computed from current date
  */
 import React, { useState, useMemo, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useR360Overview, useR360WorkItems, useR360Siblings } from '@/hooks/useR360';
 import { computeCarriedFromLabel } from '@/services/r360Service';
