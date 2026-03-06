@@ -1440,9 +1440,9 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
       {/* §4 Hub Breakdown */}
       <div style={{ padding: 16 }}>
         <SectionTitle>HUB BREAKDOWN</SectionTitle>
-        <div style={{ display: 'flex', height: 10, borderRadius: 4, overflow: 'hidden', background: '#F1F5F9' }}>
+        <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', background: '#F1F5F9' }}>
           {hubSegments.map((s, i) => (
-            <div key={i} style={{ width: `${s.pct}%`, height: '100%', background: s.color, transition: 'width 300ms' }} />
+            <div key={i} style={{ width: `${s.pct}%`, height: 8, borderRadius: 4, backgroundColor: s.color, transition: 'width 300ms' }} />
           ))}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 10 }}>
