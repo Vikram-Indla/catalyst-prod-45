@@ -163,5 +163,24 @@ function Lozenge({ bg, color, text }: { bg: string; color: string; text: string 
 }
 
 function ArtifactChip({ label, bg, color }: { label: string; bg: string; color: string }) {
-  return <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', height: 22, borderRadius: 'var(--ra-radius-card)', fontSize: 11, fontWeight: 600, background: bg, color, fontFamily: "'Inter', sans-serif" }}>{label}</span>;
+  return <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', height: 22, borderRadius: 6, fontSize: 11, fontWeight: 600, background: bg, color, fontFamily: "'Inter', sans-serif" }}>{label}</span>;
+}
+
+/* DEF-05: Priority pill — separate from StatusLozenge */
+function PriorityPill({ level }: { level: 'HIGH' | 'MEDIUM' | 'LOW' }) {
+  const map: Record<string, { bg: string; color: string }> = {
+    HIGH:   { bg: '#FFF3CD', color: '#92400E' },
+    MEDIUM: { bg: '#F3F4F6', color: '#374151' },
+    LOW:    { bg: '#F3F4F6', color: '#6B7280' },
+  };
+  const s = map[level] ?? map.MEDIUM;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 3,
+      fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+      background: s.bg, color: s.color, fontFamily: "'Inter', sans-serif",
+    }}>
+      {level}
+    </span>
+  );
 }

@@ -352,30 +352,23 @@ function formatImported(iso: string): string {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  if (status === 'ready') {
-    return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600, color: '#16A34A', fontFamily: "'Inter', sans-serif" }}>
-        <CheckCircle2 size={12} color="#16A34A" /> Ready
-      </span>
-    );
-  }
-  if (status === 'processing') {
-    return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600, color: '#2563EB', fontFamily: "'Inter', sans-serif", animation: 'ra-pulse 1.5s ease-in-out infinite' }}>
-        <Loader2 size={12} color="#2563EB" style={{ animation: 'ra-spin 1s linear infinite' }} /> Processing
-      </span>
-    );
-  }
-  if (status === 'failed') {
-    return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>
-        <AlertCircle size={12} color="#DC2626" /> Failed
-      </span>
-    );
-  }
+  const map: Record<string, { bg: string; color: string; label: string }> = {
+    ready:      { bg: '#E3FCEF', color: '#006644', label: 'READY' },
+    processing: { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
+    pending:    { bg: '#DFE1E6', color: '#253858', label: 'PENDING' },
+    failed:     { bg: '#FFEBE6', color: '#BF2600', label: 'FAILED' },
+  };
+  const s = map[status] ?? map.pending;
   return (
-    <span style={{ fontSize: 12, fontWeight: 500, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
-      Pending
+    <span style={{
+      display: 'inline-flex', alignItems: 'center',
+      padding: '0 6px', height: 20, borderRadius: 3,
+      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+      letterSpacing: '0.03em', whiteSpace: 'nowrap',
+      background: s.bg, color: s.color,
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      {s.label}
     </span>
   );
 }

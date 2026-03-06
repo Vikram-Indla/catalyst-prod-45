@@ -185,7 +185,7 @@ export default function ReqAssistGenerate() {
                 </p>
               </div>
             </div>
-            <div style={{ padding: '12px 16px', background: '#F8FAFC', borderTop: '1px solid rgba(15,23,42,0.06)', display: 'flex', gap: 8 }}>
+            <div style={{ padding: '12px 16px', background: '#FFFFFF', borderTop: '1px solid rgba(15,23,42,0.06)', display: 'flex', gap: 8 }}>
               <button onClick={savedDocId ? handleNavigateBack : handleSaveToLibrary} disabled={saving}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '0 14px', height: 36, fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: '#16A34A', color: '#FFFFFF', cursor: saving ? 'not-allowed' : 'pointer', fontFamily: "'Inter', sans-serif", opacity: saving ? 0.7 : 1 }}>
                 {saving ? <Loader2 size={13} style={{ animation: 'ra-spin 1s linear infinite' }} /> : <BookOpen size={13} />}
