@@ -365,7 +365,7 @@ export default function ResourceListingPage() {
                 ))
               ) : sorted.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '60px 20px' }}>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '60px 20px' }}>
                     <Search size={32} style={{ color: '#D1D5DB', margin: '0 auto 12px' }} />
                     <div style={{ fontSize: '15px', fontWeight: 700, color: '#0F172A', marginBottom: '4px' }}>No resources match your search.</div>
                     <div style={{ fontSize: '12px', color: '#94A3B8' }}>Try adjusting your search or filters</div>
