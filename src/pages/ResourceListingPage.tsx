@@ -259,11 +259,11 @@ export default function ResourceListingPage() {
           Resource Type
         </span>
         {([
-          { key: 'all' as const, label: 'All', activeStyle: { background: '#1E293B', color: '#FFFFFF', border: '1px solid #1E293B' }, tooltip: 'Show all resource types' },
-          { key: 'core' as const, label: 'Core', activeStyle: { background: '#0D9488', color: '#FFFFFF', border: '1px solid #0D9488' }, tooltip: 'Variable + Permanent (org headcount)' },
+          { key: 'all' as const, label: 'All', accentColor: '#1E293B', tooltip: 'Show all resource types' },
+          { key: 'core' as const, label: 'Core', accentColor: '#0D9488', tooltip: 'Variable + Permanent (org headcount)' },
           /* Exception: blue used here for "Project" filter — signals structured project engagement, NOT a +Create CTA */
-          { key: 'project' as const, label: 'Project', activeStyle: { background: '#2563EB', color: '#FFFFFF', border: '1px solid #2563EB' }, tooltip: 'Fixed-term project resources' },
-          { key: 'temporary' as const, label: 'Temporary', activeStyle: { background: '#64748B', color: '#FFFFFF', border: '1px solid #64748B' }, tooltip: 'Freelance / time-bounded engagements' },
+          { key: 'project' as const, label: 'Project', accentColor: '#2563EB', tooltip: 'Fixed-term project resources' },
+          { key: 'temporary' as const, label: 'Temporary', accentColor: '#64748B', tooltip: 'Freelance / time-bounded engagements' },
         ] as const).map(pill => {
           const isActive = resourceTypeFilter === pill.key;
           const count = resourceTypeCounts[pill.key];
@@ -275,12 +275,12 @@ export default function ResourceListingPage() {
               onClick={() => setResourceTypeFilter(pill.key)}
               style={{
                 height: 28, padding: '0 12px', borderRadius: 14,
-                fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                fontSize: 13, fontWeight: isActive ? 600 : 500, cursor: 'pointer',
                 transition: 'all 150ms ease',
                 display: 'inline-flex', alignItems: 'center', gap: 6,
-                border: isActive ? pill.activeStyle.border : '1px solid #E2E8F0',
-                background: isActive ? pill.activeStyle.background : '#F1F5F9',
-                color: isActive ? pill.activeStyle.color : '#475569',
+                border: isActive ? `1.5px solid ${pill.accentColor}` : '1px solid #E2E8F0',
+                background: isActive ? '#FFFFFF' : '#F1F5F9',
+                color: isActive ? pill.accentColor : '#475569',
               }}
               onMouseEnter={e => {
                 if (!isActive) {
@@ -298,8 +298,8 @@ export default function ResourceListingPage() {
               {pill.label}
               {showBadge && (
                 <span style={{
-                  background: isActive ? 'rgba(255,255,255,0.25)' : '#E2E8F0',
-                  color: isActive ? undefined : '#64748B',
+                  background: isActive ? 'rgba(0,0,0,0.06)' : '#E2E8F0',
+                  color: isActive ? 'inherit' : '#64748B',
                   borderRadius: 10, padding: '1px 6px',
                   fontSize: 11, fontWeight: 600, marginLeft: 4,
                 }}>
