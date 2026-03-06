@@ -516,11 +516,24 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
       const age = Math.floor((nowMs - new Date(i.created_at).getTime()) / 86400000);
       return age > max.age ? { age, key: i.item_key ?? '—' } : max;
     }, { age: 0, key: '—' });
+    // Compute pickup speed from items that have moved past To Do/Backlog
+    const pickedUp = workItems.filter((i: any) => {
+      const cat = (i.status_category || '').toLowerCase();
+      return cat !== 'new' && cat !== 'backlog' && i.created_at && i.updated_at;
+    });
+    let pickupSpeedHours = 0;
+    if (pickedUp.length > 0) {
+      const totalH = pickedUp.reduce((sum: number, i: any) => {
+        const h = (new Date(i.updated_at).getTime() - new Date(i.created_at).getTime()) / 3600000;
+        return sum + Math.min(Math.max(h, 0), 240);
+      }, 0);
+      pickupSpeedHours = Math.round(totalH / pickedUp.length);
+    }
     return {
       total_open: open.length,
       closed_this_week: closedThisWeek,
       in_review: inRev.length,
-      pickup_speed_hours: 0,
+      pickup_speed_hours: pickupSpeedHours,
       in_progress_concurrent: inProg.length,
       closed_of_touched: closedThisWeek,
       total_touched: open.length + closedThisWeek,
@@ -952,13 +965,20 @@ function OverviewTab({
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>IN REVIEW</div>
               <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>{inReview === 0 ? 'None pending' : `${inReview} awaiting`}</div>
             </div>
-            {/* Pickup Speed — not clickable */}
+            {/* Pickup Speed — color-coded */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
                 {pickupHours > 0 ? (
                   <>
-                    <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{pickupHours}</span>
-                    <span style={{ fontSize: 14, fontWeight: 500, color: INK4 }}>h</span>
+                    <span style={{
+                      fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650,
+                      color: pickupHours > 38 ? DANGER : SUCCESS,
+                    }}>
+                      {pickupHours < 24 ? pickupHours : Math.round(pickupHours / 24)}
+                    </span>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: INK4 }}>
+                      {pickupHours < 24 ? 'h' : 'd'}
+                    </span>
                   </>
                 ) : (
                   <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: MUTED }}>—</span>
