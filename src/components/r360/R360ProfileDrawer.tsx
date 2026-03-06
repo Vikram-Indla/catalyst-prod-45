@@ -308,10 +308,22 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
   const workMix = useMemo(() => {
     const openItems = workItems.filter((i: any) => i.status_category !== 'done');
     const total = openItems.length || 1;
+    // Normalize issue_type: "Sub-task" → "Subtask", "New Feature" → "Story", etc.
+    const normalize = (t: string) => {
+      const lower = (t || '').toLowerCase();
+      if (lower === 'bug') return 'Bug';
+      if (lower === 'story' || lower === 'new feature' || lower === 'improvement') return 'Story';
+      if (lower === 'sub-task' || lower === 'subtask') return 'Subtask';
+      if (lower === 'incident') return 'Incident';
+      return t; // keep original for "Task", "Epic", etc.
+    };
     const counts: Record<string, number> = {};
-    openItems.forEach((i: any) => { counts[i.work_item_type] = (counts[i.work_item_type] || 0) + 1; });
+    openItems.forEach((i: any) => { const n = normalize(i.work_item_type); counts[n] = (counts[n] || 0) + 1; });
     const roleAvgs: Record<string, number> = { Bug: 35, Story: 30, Subtask: 20, Incident: 15 };
-    return ['Bug', 'Story', 'Subtask', 'Incident'].map(t => ({
+    // Show canonical types + any extra types found in data
+    const canonical = ['Bug', 'Story', 'Subtask', 'Incident'];
+    const extraTypes = Object.keys(counts).filter(t => !canonical.includes(t) && counts[t] > 0);
+    return [...canonical, ...extraTypes].map(t => ({
       type: t,
       count: counts[t] || 0,
       pct: Math.round(((counts[t] || 0) / total) * 100),
