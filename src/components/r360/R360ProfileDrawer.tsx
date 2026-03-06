@@ -1180,7 +1180,7 @@ function OverviewTab({
             <BookOpen size={16} color={INK4} />
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4 }}>Weekly Story · W{R360_WEEK}</div>
+            <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4 }}>Weekly Story · {weekLabel}</div>
             <div style={{ fontSize: 13, fontWeight: 500, fontStyle: 'italic', color: INK1, marginTop: 2 }}>
               &ldquo;Focus on incident resolution and QA throughput&rdquo;
             </div>
