@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Upload, FileText, Link, Sparkles, Star, ChevronDown } from 'lucide-react';
-import { useCreateBrdDocument, useEnqueueDocument, useBrdDocuments } from '@/hooks/useReqAssist';
+import { useCreateBrdDocument, useEnqueueDocument, useBrdDocuments } from '@/hooks/useReqAssistLegacy';
 import { toast } from 'sonner';
 import type { IntakeTab, SourceType } from '@/types/reqAssist';
 import '@/styles/ra-styles.css';

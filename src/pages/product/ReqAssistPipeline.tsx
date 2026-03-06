@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Search, Upload, Sparkles, Settings, RefreshCw,
 } from 'lucide-react';
-import { useBrdDocuments, usePipelineStats, useAvgQuality, useAvgProcessingTime, useEpicCountsByDoc } from '@/hooks/useReqAssist';
+import { useBrdDocuments, usePipelineStats, useAvgQuality, useAvgProcessingTime, useEpicCountsByDoc } from '@/hooks/useReqAssistLegacy';
 import type { PipelineStage } from '@/types/reqAssist';
 import ReqAssistIntakeDrawer from '@/components/product/ReqAssistIntakeDrawer';
 import '@/styles/ra-styles.css';
