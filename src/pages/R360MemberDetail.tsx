@@ -718,6 +718,7 @@ export default function R360MemberDetail() {
           />
         )}
       </div>
+    </div>
 
       {/* R360 Profile Drawer — portal to body, OUTSIDE #r360-root */}
       {aiOpen && resourceId && createPortal(
