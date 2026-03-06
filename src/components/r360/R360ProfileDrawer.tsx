@@ -462,6 +462,26 @@ const TABS: { key: TabKey; label: string }[] = [
 export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDrawerProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [panelStack, setPanelStack] = useState<PanelView[]>([]);
+  const [weekOffset, setWeekOffset] = useState(0);
+
+  // Shared week computation
+  const { weekStart, weekEnd, weekLabel, weekNumber } = useMemo(() => {
+    const now = new Date();
+    const day = now.getDay();
+    const daysSinceSunday = day === 0 ? 0 : day;
+    const ws = new Date(now);
+    ws.setDate(now.getDate() - daysSinceSunday + (weekOffset * 7));
+    ws.setHours(0, 0, 0, 0);
+    const we = new Date(ws);
+    we.setDate(ws.getDate() + 4);
+    we.setHours(23, 59, 59, 999);
+    const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const wn = getWeekNumber(ws);
+    return {
+      weekStart: ws, weekEnd: we, weekNumber: wn,
+      weekLabel: `W${wn} · ${fmt(ws)}–${fmt(we).split(' ')[1]}, ${we.getFullYear()}`,
+    };
+  }, [weekOffset]);
 
   const pushPanel = useCallback((view: PanelView) => {
     setPanelStack(prev => [...prev, view]);
@@ -474,8 +494,8 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
   }, []);
 
   const { data: resource, isLoading: resLoading, isError: resError } = useR360Resource(resourceId);
-  const { data: statsData, isLoading: statsLoading } = useR360WeeklyStats(resourceId);
-  const { data: trend = [], isLoading: trendLoading } = useR360ClosureTrend(resourceId);
+  const { data: statsData, isLoading: statsLoading } = useR360WeeklyStats(resourceId, weekNumber);
+  const { data: trend = [], isLoading: trendLoading } = useR360ClosureTrend(resourceId, weekNumber);
   const { data: workItems = [], isLoading: itemsLoading } = useR360ProfileWorkItems(resourceId);
 
   const stats = statsData?.current;
@@ -483,16 +503,6 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
 
   const liveStats = useMemo(() => {
     if (stats) return null;
-    const now = new Date();
-    const day = now.getDay();
-    const daysSinceSunday = day === 0 ? 0 : day;
-    const weekStart = new Date(now);
-    weekStart.setDate(now.getDate() - daysSinceSunday);
-    weekStart.setHours(0, 0, 0, 0);
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 4);
-    weekEnd.setHours(23, 59, 59, 999);
-
     const open = workItems.filter((i: any) => i.status_category !== 'done');
     const done = workItems.filter((i: any) => i.status_category === 'done');
     const closedThisWeek = done.filter((i: any) => {
@@ -519,7 +529,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
       oldest_item_key: oldest.key,
       closure_rate_pct: (open.length + closedThisWeek) > 0 ? Math.round((closedThisWeek / (open.length + closedThisWeek)) * 100) : 0,
     };
-  }, [stats, workItems]);
+  }, [stats, workItems, weekStart, weekEnd]);
 
   const effectiveStats = stats || liveStats;
 
