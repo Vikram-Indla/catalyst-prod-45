@@ -166,7 +166,7 @@ export default function ReqAssistLibrary() {
                     fontSize: 11, fontWeight: 600, color: '#64748B',
                     textTransform: 'uppercase', letterSpacing: '0.04em',
                     textAlign: 'left', width: col.w || undefined,
-                    background: '#F8FAFC',
+                    background: '#FFFFFF',
                     fontFamily: "'Inter', sans-serif",
                   }}>
                     {col.label}
