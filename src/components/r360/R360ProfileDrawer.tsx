@@ -615,6 +615,21 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
     setActiveTab(tab);
   }, [clearPanels]);
 
+  // Escape key handler (W22+W40)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (panelStack.length > 0) {
+          popPanel();
+        } else {
+          onClose();
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [panelStack, onClose, popPanel]);
+
   if (resError) {
     return (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, fontFamily: "'Inter', system-ui, sans-serif" }}>
