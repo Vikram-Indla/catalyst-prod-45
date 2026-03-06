@@ -32640,6 +32640,45 @@ export type Database = {
         }
         Relationships: []
       }
+      ra_jira_tickets: {
+        Row: {
+          created_at: string | null
+          has_pdf: boolean | null
+          id: number
+          page_count: number | null
+          pdf_filename: string | null
+          project_key: string
+          project_name: string
+          ticket_key: string
+          ticket_summary: string
+          ticket_type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          has_pdf?: boolean | null
+          id?: number
+          page_count?: number | null
+          pdf_filename?: string | null
+          project_key: string
+          project_name: string
+          ticket_key: string
+          ticket_summary: string
+          ticket_type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          has_pdf?: boolean | null
+          id?: number
+          page_count?: number | null
+          pdf_filename?: string | null
+          project_key?: string
+          project_name?: string
+          ticket_key?: string
+          ticket_summary?: string
+          ticket_type?: string | null
+        }
+        Relationships: []
+      }
       ra_processing_jobs: {
         Row: {
           completed_at: string | null
