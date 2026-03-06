@@ -508,7 +508,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
           <WeeklyStoryTab workItems={workItems} openCount={openCount} />
         )}
         {activeTab === 'items' && (
-          <div style={{ padding: 16, fontSize: 13, color: INK4 }}>Work Items — coming in Stage D</div>
+          <WorkItemsTab workItems={workItems} />
         )}
       </div>
     </div>
