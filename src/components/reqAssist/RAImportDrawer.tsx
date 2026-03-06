@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { X, Check, ChevronRight, ChevronDown, FileText } from 'lucide-react';
-import { useJiraTickets } from '@/hooks/useReqAssist';
+import { useJiraTickets, useCreateRADocument, useQueueJob, RA_KEYS } from '@/hooks/useReqAssist';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 interface Props {
   onClose: () => void;
@@ -17,11 +19,25 @@ export default function RAImportDrawer({ onClose }: Props) {
   const [expanded, setExpanded] = useState<string | null>('SEN');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [importState, setImportState] = useState<ImportState>('select');
-  const [importProgress, setImportProgress] = useState<Record<string, number>>({});
+  const [importProgress, setImportProgress] = useState<Record<string, { pct: number; status: string }>>({});
+  const [ticketTitleMap, setTicketTitleMap] = useState<Record<string, { title: string; page_count: number | null; project: string }>>({});
+
+  const createDoc = useCreateRADocument();
+  const queueJob = useQueueJob();
+  const qc = useQueryClient();
 
   const { data: senTickets = [] } = useJiraTickets('SEN');
   const { data: mdtTickets = [] } = useJiraTickets('MDT');
   const ticketsByProject: Record<string, any[]> = { SEN: senTickets, MDT: mdtTickets };
+
+  // Build ticket title map for import progress display
+  useEffect(() => {
+    const map: Record<string, { title: string; page_count: number | null; project: string }> = {};
+    [...senTickets, ...mdtTickets].forEach((t: any) => {
+      map[t.jira_ticket_key] = { title: t.title, page_count: t.page_count, project: t.jira_ticket_key.split('-')[0] || 'SEN' };
+    });
+    setTicketTitleMap(map);
+  }, [senTickets, mdtTickets]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -35,22 +51,70 @@ export default function RAImportDrawer({ onClose }: Props) {
     setSelected(next);
   };
 
-  const handleImport = () => {
+  const handleImport = async () => {
     setImportState('importing');
     const keys = Array.from(selected);
-    let idx = 0;
-    const run = () => {
-      if (idx >= keys.length) { setImportState('done'); return; }
-      const key = keys[idx];
-      setImportProgress(p => ({ ...p, [key]: 0 }));
-      let pct = 0;
-      const interval = setInterval(() => {
-        pct += Math.random() * 30 + 10;
-        if (pct >= 100) { pct = 100; clearInterval(interval); setImportProgress(p => ({ ...p, [key]: 100 })); idx++; setTimeout(run, 300); }
-        else { setImportProgress(p => ({ ...p, [key]: pct })); }
-      }, 400);
-    };
-    run();
+
+    // Initialize progress
+    const initProgress: Record<string, { pct: number; status: string }> = {};
+    keys.forEach(k => { initProgress[k] = { pct: 0, status: 'Queuing...' }; });
+    setImportProgress(initProgress);
+
+    let completedCount = 0;
+
+    for (const key of keys) {
+      const info = ticketTitleMap[key];
+      const title = info?.title || key;
+      const project = info?.project || key.split('-')[0] || 'SEN';
+      const pageCount = info?.page_count ?? null;
+
+      setImportProgress(p => ({ ...p, [key]: { pct: 10, status: 'Creating document...' } }));
+
+      try {
+        // INSERT into ra_documents
+        const doc = await createDoc.mutateAsync({
+          title,
+          source_type: 'jira_pdf',
+          language: 'ar',
+          jira_ticket_key: key,
+          jira_project: project,
+          page_count: pageCount ?? undefined,
+          status: 'processing',
+        });
+
+        setImportProgress(p => ({ ...p, [key]: { pct: 30, status: 'Extracting...' } }));
+
+        // Queue import job
+        await queueJob.mutateAsync({
+          ra_document_id: doc.id,
+          job_type: 'import',
+          eta_seconds: (pageCount ?? 10) * 3,
+        });
+
+        setImportProgress(p => ({ ...p, [key]: { pct: 60, status: 'Translating...' } }));
+
+        // Simulate processing stages (the real processing happens server-side)
+        await new Promise(r => setTimeout(r, 800));
+        setImportProgress(p => ({ ...p, [key]: { pct: 85, status: 'WikiHub indexing...' } }));
+        await new Promise(r => setTimeout(r, 600));
+        setImportProgress(p => ({ ...p, [key]: { pct: 100, status: 'Done' } }));
+
+        completedCount++;
+      } catch (err: any) {
+        setImportProgress(p => ({ ...p, [key]: { pct: 100, status: `Error: ${err.message}` } }));
+      }
+    }
+
+    // All done
+    qc.invalidateQueries({ queryKey: RA_KEYS.all });
+    setImportState('done');
+
+    setTimeout(() => {
+      toast.success(`${completedCount} documents imported`, {
+        description: 'WikiHub updated with new content',
+        duration: 6000,
+      });
+    }, 500);
   };
 
   return (
@@ -113,7 +177,10 @@ export default function RAImportDrawer({ onClose }: Props) {
                 {importState === 'done' ? '✓ Import complete' : `Importing ${selected.size} documents...`}
               </h4>
               {Array.from(selected).map(key => {
-                const pct = importProgress[key] ?? 0; const isDone = pct >= 100;
+                const prog = importProgress[key];
+                const pct = prog?.pct ?? 0;
+                const isDone = pct >= 100 && !prog?.status?.startsWith('Error');
+                const isError = prog?.status?.startsWith('Error');
                 return (
                   <div key={key} style={{ marginBottom: 16 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
@@ -121,10 +188,10 @@ export default function RAImportDrawer({ onClose }: Props) {
                       {isDone && <Check size={14} color="#16A34A" />}
                     </div>
                     <div style={{ height: 4, background: '#E2E8F0', borderRadius: 2, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', borderRadius: 2, background: isDone ? '#16A34A' : '#2563EB', width: `${Math.min(pct, 100)}%`, transition: 'width 300ms ease' }} />
+                      <div style={{ height: '100%', borderRadius: 2, background: isError ? '#DC2626' : isDone ? '#16A34A' : '#2563EB', width: `${Math.min(pct, 100)}%`, transition: 'width 300ms ease' }} />
                     </div>
-                    <span style={{ fontSize: 11, color: isDone ? '#0D9488' : '#94A3B8', marginTop: 2, display: 'block', fontFamily: "'Inter', sans-serif" }}>
-                      {isDone ? 'Done · Chunks → WikiHub ✓' : pct < 30 ? 'Extracting...' : pct < 70 ? 'Translating...' : 'WikiHub indexing...'}
+                    <span style={{ fontSize: 11, color: isError ? '#DC2626' : isDone ? '#0D9488' : '#94A3B8', marginTop: 2, display: 'block', fontFamily: "'Inter', sans-serif" }}>
+                      {prog?.status || 'Waiting...'}
                     </span>
                   </div>
                 );

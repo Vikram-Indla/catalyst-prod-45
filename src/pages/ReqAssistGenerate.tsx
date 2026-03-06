@@ -1,21 +1,105 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Zap, Check, X, BookOpen, Flag, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Zap, Check, X, BookOpen, Flag, RefreshCw, Loader2 } from 'lucide-react';
+import { useCreateRADocument, useQueueJob } from '@/hooks/useReqAssist';
+import { toast } from 'sonner';
 
 export default function ReqAssistGenerate() {
   const navigate = useNavigate();
   const [text, setText] = useState('');
   const [result, setResult] = useState<'none' | 'pass' | 'fail'>('none');
+  const [savedDocId, setSavedDocId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [pushingWiki, setPushingWiki] = useState(false);
+
+  const createDoc = useCreateRADocument();
+  const queueJob = useQueueJob();
 
   const handleQualify = () => {
-    if (text.trim().length < 50) { setResult('fail'); return; }
+    if (text.trim().length < 150) { setResult('fail'); return; }
     setResult('pass');
+  };
+
+  const handleSaveToLibrary = async () => {
+    setSaving(true);
+    try {
+      const title = text.trim().slice(0, 60).replace(/[^\w\s\-.,]/g, '').trim();
+      const doc = await createDoc.mutateAsync({
+        title: title || 'Untitled BRD',
+        source_type: 'text_generated',
+        language: 'en',
+        content_raw: text,
+        jira_ticket_key: `GEN-${Date.now()}`,
+        jira_project: 'MANUAL',
+        status: 'pending',
+      });
+      setSavedDocId(doc.id);
+      toast.success('Saved to Library', { description: `Document "${title}" created successfully`, duration: 4000 });
+    } catch (err: any) {
+      toast.error('Save failed', { description: err.message, duration: 4000 });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePushToWikiHub = async () => {
+    if (!savedDocId) {
+      // Save first, then push
+      setSaving(true);
+      try {
+        const title = text.trim().slice(0, 60).replace(/[^\w\s\-.,]/g, '').trim();
+        const doc = await createDoc.mutateAsync({
+          title: title || 'Untitled BRD',
+          source_type: 'text_generated',
+          language: 'en',
+          content_raw: text,
+          jira_ticket_key: `GEN-${Date.now()}`,
+          jira_project: 'MANUAL',
+          status: 'pending',
+        });
+        setSavedDocId(doc.id);
+        setSaving(false);
+
+        // Now queue wiki sync
+        setPushingWiki(true);
+        await queueJob.mutateAsync({
+          ra_document_id: doc.id,
+          job_type: 'wikihub_sync',
+          eta_seconds: 90,
+        });
+        toast.success('Queued for WikiHub indexing', { description: 'Document will be indexed shortly', duration: 4000 });
+        setPushingWiki(false);
+      } catch (err: any) {
+        toast.error('Failed', { description: err.message, duration: 4000 });
+        setSaving(false);
+        setPushingWiki(false);
+      }
+      return;
+    }
+
+    setPushingWiki(true);
+    try {
+      await queueJob.mutateAsync({
+        ra_document_id: savedDocId,
+        job_type: 'wikihub_sync',
+        eta_seconds: 90,
+      });
+      toast.success('Queued for WikiHub indexing', { description: 'Document will be indexed shortly', duration: 4000 });
+    } catch (err: any) {
+      toast.error('Failed', { description: err.message, duration: 4000 });
+    } finally {
+      setPushingWiki(false);
+    }
+  };
+
+  const handleNavigateBack = () => {
+    navigate('/product/req-assist');
   };
 
   return (
     <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px 28px' }}>
       <div style={{ maxWidth: 860, margin: '0 auto' }}>
-        <button onClick={() => navigate('/product/req-assist')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, color: '#64748B', marginBottom: 16, padding: 0, fontFamily: "'Inter', sans-serif" }}>
+        <button onClick={handleNavigateBack} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, color: '#64748B', marginBottom: 16, padding: 0, fontFamily: "'Inter', sans-serif" }}>
           <ArrowLeft size={14} /> Back to Library
         </button>
 
@@ -30,7 +114,7 @@ export default function ReqAssistGenerate() {
           </div>
           <div style={{ padding: 16 }}>
             <textarea
-              value={text} onChange={e => { setText(e.target.value); setResult('none'); }}
+              value={text} onChange={e => { setText(e.target.value); setResult('none'); setSavedDocId(null); }}
               placeholder="Paste your requirements text here... The system will analyse and qualify the content before generating a structured BRD."
               style={{
                 width: '100%', minHeight: 200, padding: 14, fontSize: 14, lineHeight: 1.65,
@@ -42,7 +126,7 @@ export default function ReqAssistGenerate() {
               onBlur={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)'; e.currentTarget.style.boxShadow = 'none'; }}
             />
             <p style={{ fontSize: 11, color: '#94A3B8', margin: '6px 0 0', fontFamily: "'Inter', sans-serif" }}>
-              Minimum 50 characters recommended for qualification
+              Minimum 150 characters required for qualification
             </p>
 
             {result === 'fail' && (
@@ -51,7 +135,7 @@ export default function ReqAssistGenerate() {
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>Qualification Failed</div>
                   <p style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>
-                    The input text is too short or lacks sufficient requirements detail. Please provide at least 50 characters of requirements content.
+                    Text too short to qualify. Paste at least 150 words of requirements.
                   </p>
                 </div>
               </div>
@@ -73,7 +157,7 @@ export default function ReqAssistGenerate() {
               <button onClick={handleQualify} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
                 <Zap size={13} /> Qualify & Generate
               </button>
-              <button onClick={() => { setText(''); setResult('none'); }} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#334155', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+              <button onClick={() => { setText(''); setResult('none'); setSavedDocId(null); }} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#334155', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
                 Clear
               </button>
             </div>
@@ -104,19 +188,30 @@ export default function ReqAssistGenerate() {
               </div>
             </div>
             <div style={{ padding: '12px 16px', background: '#F8FAFC', borderTop: '1px solid rgba(15,23,42,0.06)', display: 'flex', gap: 8 }}>
-              <button style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '7px 14px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: '#16A34A', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-                <BookOpen size={13} /> Save to Library
+              <button
+                onClick={savedDocId ? handleNavigateBack : handleSaveToLibrary}
+                disabled={saving}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '7px 14px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: savedDocId ? '#0D9488' : '#16A34A', color: '#FFFFFF', cursor: saving ? 'not-allowed' : 'pointer', fontFamily: "'Inter', sans-serif", opacity: saving ? 0.7 : 1 }}
+              >
+                {saving ? <Loader2 size={13} style={{ animation: 'ra-spin 1s linear infinite' }} /> : <BookOpen size={13} />}
+                {savedDocId ? 'View in Library' : 'Save to Library'}
               </button>
               <button style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '7px 14px', fontSize: 12, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#334155', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
                 <Flag size={13} /> Generate Epics
               </button>
-              <button style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '7px 14px', fontSize: 12, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#334155', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-                <RefreshCw size={13} /> Push to WikiHub
+              <button
+                onClick={handlePushToWikiHub}
+                disabled={pushingWiki}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '7px 14px', fontSize: 12, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#334155', cursor: pushingWiki ? 'not-allowed' : 'pointer', fontFamily: "'Inter', sans-serif", opacity: pushingWiki ? 0.7 : 1 }}
+              >
+                {pushingWiki ? <Loader2 size={13} style={{ animation: 'ra-spin 1s linear infinite' }} /> : <RefreshCw size={13} />}
+                Push to WikiHub
               </button>
             </div>
           </div>
         )}
       </div>
+      <style>{`@keyframes ra-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
