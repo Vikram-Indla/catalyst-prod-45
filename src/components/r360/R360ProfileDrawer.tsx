@@ -1616,38 +1616,21 @@ function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekStart, wee
 // ══════════════════════════════════════════
 // WORK ITEMS TAB
 // ══════════════════════════════════════════
-function WorkItemsTab({ workItems }: { workItems: any[] }) {
+function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOffset, setWeekOffset }: {
+  workItems: any[];
+  weekStart: Date; weekEnd: Date; weekLabel: string;
+  weekOffset: number;
+  setWeekOffset: React.Dispatch<React.SetStateAction<number>>;
+}) {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
-  const [weekOffset, setWeekOffset] = useState(0);
-
-  const { weekStart, weekEnd, weekLabel } = useMemo(() => {
-    const now = new Date();
-    const day = now.getDay();
-    const daysSinceSunday = day === 0 ? 0 : day;
-    const ws = new Date(now);
-    ws.setDate(now.getDate() - daysSinceSunday + (weekOffset * 7));
-    ws.setHours(0, 0, 0, 0);
-    const we = new Date(ws);
-    we.setDate(ws.getDate() + 4);
-    we.setHours(23, 59, 59, 999);
-    const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const wn = R360_WEEK + weekOffset;
-    return { weekStart: ws, weekEnd: we, weekLabel: `W${wn} · ${fmt(ws)}–${fmt(we).split(' ')[1]}` };
-  }, [weekOffset]);
 
   const filtered = useMemo(() => {
     return workItems
       .filter((i: any) => {
         const u = new Date(i.updated_at);
         if (u < weekStart || u > weekEnd) return false;
-        if (statusFilter !== 'all') {
-          const sc = (i.status_category || '').toLowerCase().replace(/[_\s-]/g, '');
-          if (statusFilter === 'todo' && sc !== 'todo' && sc !== 'backlog') return false;
-          if (statusFilter === 'inprogress' && sc !== 'inprogress') return false;
-          if (statusFilter === 'inreview' && sc !== 'inreview') return false;
-          if (statusFilter === 'done' && sc !== 'done') return false;
-        }
+        if (statusFilter !== 'all' && i.status_category !== statusFilter) return false;
         if (typeFilter !== 'all') {
           const t = (i.work_item_type || '').toLowerCase().replace(/[_\s-]/g, '');
           const f = typeFilter.toLowerCase().replace(/[_\s-]/g, '');
@@ -1668,17 +1651,6 @@ function WorkItemsTab({ workItems }: { workItems: any[] }) {
     return `${d}d ago`;
   };
 
-  const selectStyle: React.CSSProperties = {
-    height: 36, padding: '0 10px', fontSize: 12, fontWeight: 500,
-    color: INK2, background: '#FFFFFF', border: '1px solid #E2E8F0',
-    borderRadius: 6, cursor: 'pointer', fontFamily: "'Inter', system-ui, sans-serif",
-    appearance: 'none', WebkitAppearance: 'none',
-    backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'right 10px center',
-    paddingRight: 28,
-  };
-
   return (
     <>
       {/* Toolbar */}
@@ -1688,37 +1660,48 @@ function WorkItemsTab({ workItems }: { workItems: any[] }) {
         padding: '0 12px', gap: 8,
       }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={selectStyle}>
-            <option value="all">All Statuses</option>
-            <option value="todo">To Do</option>
-            <option value="inprogress">In Progress</option>
-            <option value="inreview">In Review</option>
-            <option value="done">Done</option>
-          </select>
-          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={selectStyle}>
-            <option value="all">All Types</option>
-            <option value="Bug">Bug</option>
-            <option value="Story">Story</option>
-            <option value="Subtask">Subtask</option>
-            <option value="Incident">Incident</option>
-            <option value="QA Bug">QA Bug</option>
-            <option value="Frontend">Frontend</option>
-          </select>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger style={{ height: 32, fontSize: 13, minWidth: 120 }}>
+              <SelectValue placeholder="All Statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="todo">To Do</SelectItem>
+              <SelectItem value="in_progress">In Progress</SelectItem>
+              <SelectItem value="backlog">Backlog</SelectItem>
+              <SelectItem value="done">Done</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger style={{ height: 32, fontSize: 13, minWidth: 100 }}>
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="Bug">Bug</SelectItem>
+              <SelectItem value="Story">Story</SelectItem>
+              <SelectItem value="Subtask">Subtask</SelectItem>
+              <SelectItem value="Incident">Incident</SelectItem>
+              <SelectItem value="QA Bug">QA Bug</SelectItem>
+              <SelectItem value="Frontend">Frontend</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button
-            onClick={() => setWeekOffset(o => o - 1)}
-            style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+            onClick={() => setWeekOffset(o => Math.max(o - 1, -52))}
+            disabled={weekOffset <= -52}
+            style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset <= -52 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset <= -52 ? 0.3 : 1 }}
+            onMouseEnter={e => { if (weekOffset > -52) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             <ChevronLeft size={16} color={INK4} />
           </button>
-          <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK2, whiteSpace: 'nowrap' }}>{weekLabel}</span>
+          <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK2, whiteSpace: 'nowrap' as const }}>{weekLabel}</span>
           <button
             onClick={() => setWeekOffset(o => Math.min(o + 1, 0))}
-            style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset >= 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset >= 0 ? 0.3 : 1 }}
             disabled={weekOffset >= 0}
+            style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset >= 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset >= 0 ? 0.3 : 1 }}
             onMouseEnter={e => { if (weekOffset < 0) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
