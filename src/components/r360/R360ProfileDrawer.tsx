@@ -690,10 +690,6 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
                   padding: '2px 7px', fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 11, fontWeight: 700, color: BRAND,
                 }}>{resourceRid}</span></>}
-                <span style={{
-                  width: 7, height: 7, borderRadius: '50%',
-                  background: openCount > roleAvg ? WARNING : openCount === 0 ? SUCCESS : INK1,
-                }} />
               </div>
             </div>
           </>
@@ -1095,11 +1091,11 @@ function OverviewTab({
               >
                 <JiraIssueTypeIcon type={row.type} size={16} />
                 <span style={{ fontSize: 12, color: INK2, width: 72, flexShrink: 0 }}>{row.type}</span>
-                <div style={{ flex: 1, height: 18, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ flex: 1, height: 18, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{
                     height: '100%', borderRadius: 3,
                     width: `${row.pct}%`,
-                    background: tc.color, opacity: tc.opacity,
+                    background: row.pct > 0 ? '#0D9488' : 'transparent',
                     transition: 'width 300ms ease',
                   }} />
                 </div>
@@ -1309,10 +1305,10 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
               const isPeak = val === rhythmData.max && val > 0;
               return (
                 <div key={d} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? BRAND : INK2 }}>{val}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? '#1D4ED8' : '#374151' }}>{val}</span>
                   <div style={{
                     width: '100%', maxWidth: 40, height: barH, borderRadius: 3,
-                    background: BRAND, opacity: isPeak ? 1 : 0.7,
+                    background: isPeak ? '#1D4ED8' : '#3B82F6',
                     transition: 'height 300ms ease',
                   }} />
                   <span style={{ fontSize: 11, color: INK4, fontWeight: 500 }}>{DAY_ABBRS[idx]}</span>
