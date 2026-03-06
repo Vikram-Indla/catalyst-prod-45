@@ -21,8 +21,6 @@ export default function RAImportDrawer({ onClose }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [importState, setImportState] = useState<ImportState>('select');
   const [importProgress, setImportProgress] = useState<Record<string, { pct: number; status: string }>>({});
-  const [ticketTitleMap, setTicketTitleMap] = useState<Record<string, { title: string; page_count: number | null; project: string }>>({});
-
   const createDoc = useCreateRADocument();
   const queueJob = useQueueJob();
   const qc = useQueryClient();
@@ -43,14 +41,14 @@ export default function RAImportDrawer({ onClose }: Props) {
     return new Set((existingDocs as any[]).map((d: any) => d.jira_ticket_key));
   }, [existingDocs]);
 
-  const ticketsByProject: Record<string, any[]> = { SEN: senTickets, MDT: mdtTickets };
+  const ticketsByProject: Record<string, any[]> = useMemo(() => ({ SEN: senTickets, MDT: mdtTickets }), [senTickets, mdtTickets]);
 
-  useEffect(() => {
+  const ticketTitleMap = useMemo(() => {
     const map: Record<string, { title: string; page_count: number | null; project: string }> = {};
     [...senTickets, ...mdtTickets].forEach((t: any) => {
       map[t.jira_ticket_key] = { title: t.title, page_count: t.page_count, project: t.jira_project || t.jira_ticket_key.split('-')[0] || 'SEN' };
     });
-    setTicketTitleMap(map);
+    return map;
   }, [senTickets, mdtTickets]);
 
   const selectableCount = useMemo(() => {
