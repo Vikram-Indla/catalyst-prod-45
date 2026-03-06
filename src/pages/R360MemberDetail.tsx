@@ -710,6 +710,7 @@ export default function R360MemberDetail() {
     )}
     </div>
   );
+}
 
 // ═══════════════════════════════════════════
 // RING VIEW — V12 PRECISION
