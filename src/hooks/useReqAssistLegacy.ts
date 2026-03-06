@@ -118,9 +118,9 @@ export function useAvgProcessingTime() {
   });
 }
 
-export function useEpicCountsByDoc() {
+export function useEpicCountsByDoc(_docIds?: any) {
   return useQuery({
-    queryKey: ['epic-counts'],
+    queryKey: ['epic-counts', _docIds],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from('brd_epics')
