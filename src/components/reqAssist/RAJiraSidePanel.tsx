@@ -14,7 +14,7 @@ function statusLozenge(status: string) {
   const map: Record<string, { bg: string; color: string }> = {
     ready: { bg: '#E3FCEF', color: '#006644' },
     processing: { bg: '#DEEBFF', color: '#0747A6' },
-    failed: { bg: '#DFE1E6', color: '#253858' },
+    failed: { bg: '#FFEBE6', color: '#BF2600' },
     pending: { bg: '#DFE1E6', color: '#253858' },
   };
   return map[status] ?? map.pending;
@@ -71,32 +71,11 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate }:
             </div>
           )}
 
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block', marginBottom: 10, fontFamily: "'Inter', sans-serif" }}>Jira Details</span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
-            <FieldRow label="Created in Jira" value={doc.jira_created_at ? format(new Date(doc.jira_created_at), "d MMM yyyy, hh:mm a") : '—'} />
-            <FieldRow label="Reporter" value="—" />
-            <FieldRow label="Priority"><Lozenge bg="#DEEBFF" color="#0747A6" text="HIGH" /></FieldRow>
-            <FieldRow label="Status"><Lozenge bg={slz.bg} color={slz.color} text={doc.status.toUpperCase()} /></FieldRow>
-          </div>
-
-          <div style={{ height: 1, background: 'rgba(15,23,42,0.06)', margin: '16px 0' }} />
-
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block', marginBottom: 8, fontFamily: "'Inter', sans-serif" }}>Description</span>
-          <div style={{ padding: '10px 12px', background: '#F8FAFC', borderRadius: 4, marginBottom: 16 }}>
-            <p style={{ fontSize: 13, color: '#334155', lineHeight: 1.6, margin: 0, fontFamily: "'Inter', sans-serif" }}>
-              {doc.content_processed
-                ? doc.content_processed.slice(0, 300) + (doc.content_processed.length > 300 ? '...' : '')
-                : <em style={{ color: '#94A3B8' }}>Awaiting extraction</em>
-              }
-            </p>
-          </div>
-
-          <div style={{ height: 1, background: 'rgba(15,23,42,0.06)', margin: '16px 0' }} />
-
-          {doc.pdf_url && (
-            <>
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block', marginBottom: 8, fontFamily: "'Inter', sans-serif" }}>Attached PDF</span>
-              <button onClick={onOpenPdf} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', borderRadius: 'var(--ra-radius-card)', border: '1px solid rgba(15,23,42,0.08)', background: '#FFFFFF', cursor: 'pointer', textAlign: 'left' as const, marginBottom: 16 }}
+          {/* DEF-04: PDF ATTACHMENT — between WikiHub banner and Jira Details */}
+          <div style={{ borderTop: '0.75px solid #E5E7EB', paddingTop: 16, marginBottom: 16 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block', marginBottom: 8, fontFamily: "'Inter', sans-serif" }}>PDF Attachment</span>
+            {doc.pdf_url ? (
+              <button onClick={onOpenPdf} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid rgba(15,23,42,0.08)', background: '#FFFFFF', cursor: 'pointer', textAlign: 'left' as const }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(37,99,235,0.03)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}>
                 <div style={{ width: 32, height: 32, borderRadius: 6, background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -110,9 +89,35 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate }:
                 </div>
                 <ExternalLink size={14} color="#2563EB" />
               </button>
-              <div style={{ height: 1, background: 'rgba(15,23,42,0.06)', margin: '16px 0' }} />
-            </>
-          )}
+            ) : (
+              <p style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic', margin: 0, fontFamily: "'Inter', sans-serif" }}>No PDF attached</p>
+            )}
+          </div>
+
+          <div style={{ height: 0.75, background: '#E5E7EB', margin: '0 0 16px' }} />
+
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block', marginBottom: 10, fontFamily: "'Inter', sans-serif" }}>Jira Details</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+            <FieldRow label="Created in Jira" value={doc.jira_created_at ? format(new Date(doc.jira_created_at), "d MMM yyyy, hh:mm a") : '—'} />
+            <FieldRow label="Reporter" value="—" />
+            {/* DEF-05: Priority uses amber/grey, NOT StatusLozenge colors */}
+            <FieldRow label="Priority"><PriorityPill level="HIGH" /></FieldRow>
+            <FieldRow label="Status"><Lozenge bg={slz.bg} color={slz.color} text={doc.status.toUpperCase()} /></FieldRow>
+          </div>
+
+          <div style={{ height: 1, background: 'rgba(15,23,42,0.06)', margin: '16px 0' }} />
+
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block', marginBottom: 8, fontFamily: "'Inter', sans-serif" }}>Description</span>
+          <div style={{ padding: '10px 12px', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.06)', borderRadius: 4, marginBottom: 16 }}>
+            <p style={{ fontSize: 13, color: '#334155', lineHeight: 1.6, margin: 0, fontFamily: "'Inter', sans-serif" }}>
+              {doc.content_processed
+                ? doc.content_processed.slice(0, 300) + (doc.content_processed.length > 300 ? '...' : '')
+                : <em style={{ color: '#94A3B8' }}>Awaiting extraction</em>
+              }
+            </p>
+          </div>
+
+          <div style={{ height: 1, background: 'rgba(15,23,42,0.06)', margin: '16px 0' }} />
 
           <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block', marginBottom: 8, fontFamily: "'Inter', sans-serif" }}>Generated Artifacts</span>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
@@ -158,5 +163,24 @@ function Lozenge({ bg, color, text }: { bg: string; color: string; text: string 
 }
 
 function ArtifactChip({ label, bg, color }: { label: string; bg: string; color: string }) {
-  return <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', height: 22, borderRadius: 'var(--ra-radius-card)', fontSize: 11, fontWeight: 600, background: bg, color, fontFamily: "'Inter', sans-serif" }}>{label}</span>;
+  return <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', height: 22, borderRadius: 6, fontSize: 11, fontWeight: 600, background: bg, color, fontFamily: "'Inter', sans-serif" }}>{label}</span>;
+}
+
+/* DEF-05: Priority pill — separate from StatusLozenge */
+function PriorityPill({ level }: { level: 'HIGH' | 'MEDIUM' | 'LOW' }) {
+  const map: Record<string, { bg: string; color: string }> = {
+    HIGH:   { bg: '#FFF3CD', color: '#92400E' },
+    MEDIUM: { bg: '#F3F4F6', color: '#374151' },
+    LOW:    { bg: '#F3F4F6', color: '#6B7280' },
+  };
+  const s = map[level] ?? map.MEDIUM;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 3,
+      fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+      background: s.bg, color: s.color, fontFamily: "'Inter', sans-serif",
+    }}>
+      {level}
+    </span>
+  );
 }
