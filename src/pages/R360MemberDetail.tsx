@@ -826,10 +826,11 @@ function PriorityBadge({ priority }: { priority: string }) {
   return <span style={{ fontSize: '10.5px', fontWeight: 500, color: '#64748B' }}>{priority}</span>;
 }
 
-function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }: {
+function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, onAvatarClick }: {
   items: R360WorkItem[]; name: string; role: string; avatarUrl?: string | null;
   onSelect: (i: R360WorkItem) => void; selected: R360WorkItem | null;
   overview?: { department?: string } | null;
+  onAvatarClick?: () => void;
 }) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const doneRef = useRef<HTMLDivElement>(null);
