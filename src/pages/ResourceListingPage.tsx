@@ -47,7 +47,7 @@ const COLUMNS: { key: SortKey | 'actions'; label: string; minWidth?: number; wid
   { key: 'job_role', label: 'JOB ROLE' },
   { key: 'assignment_name', label: 'ASSIGNMENT' },
   { key: 'location_type', label: 'LOCATION' },
-  { key: 'vendor_name', label: 'VENDOR' },
+  { key: 'actions', label: 'ACTIONS', width: 180, center: true },
   { key: 'actions', label: 'ACTIONS', width: 180, center: true },
 ];
 
