@@ -516,11 +516,24 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
       const age = Math.floor((nowMs - new Date(i.created_at).getTime()) / 86400000);
       return age > max.age ? { age, key: i.item_key ?? '—' } : max;
     }, { age: 0, key: '—' });
+    // Compute pickup speed from items that have moved past To Do/Backlog
+    const pickedUp = workItems.filter((i: any) => {
+      const cat = (i.status_category || '').toLowerCase();
+      return cat !== 'new' && cat !== 'backlog' && i.created_at && i.updated_at;
+    });
+    let pickupSpeedHours = 0;
+    if (pickedUp.length > 0) {
+      const totalH = pickedUp.reduce((sum: number, i: any) => {
+        const h = (new Date(i.updated_at).getTime() - new Date(i.created_at).getTime()) / 3600000;
+        return sum + Math.min(Math.max(h, 0), 240);
+      }, 0);
+      pickupSpeedHours = Math.round(totalH / pickedUp.length);
+    }
     return {
       total_open: open.length,
       closed_this_week: closedThisWeek,
       in_review: inRev.length,
-      pickup_speed_hours: 0,
+      pickup_speed_hours: pickupSpeedHours,
       in_progress_concurrent: inProg.length,
       closed_of_touched: closedThisWeek,
       total_touched: open.length + closedThisWeek,
