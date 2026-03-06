@@ -1,15 +1,17 @@
 /**
- * ResourceMainArea — main content area
- * Stage A: Shell only
+ * ResourceMainArea — placeholder when no resource selected
  */
-
-import { useEffect } from 'react';
 
 interface ResourceMainAreaProps {
   selectedResourceId: string | null;
 }
 
 export function ResourceMainArea({ selectedResourceId }: ResourceMainAreaProps) {
-  useEffect(() => { console.log('[R360] ResourceMainArea mounted'); }, []);
-  return <div data-component="ResourceMainArea" />;
+  return (
+    <div className="r3p-main">
+      <div className="r3p-main-placeholder">
+        Select a resource from the sidebar to view their 360° profile
+      </div>
+    </div>
+  );
 }
