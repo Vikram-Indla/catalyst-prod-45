@@ -514,19 +514,23 @@ export default function R360MemberDetail() {
       const style = document.createElement('style');
       style.id = styleId;
       style.textContent = `
-        [data-r360-page-content] {
-          width: 100% !important;
-          min-width: 0 !important;
-          flex-shrink: 0 !important;
-          flex-basis: 100% !important;
-          max-width: 100% !important;
-        }
+        /* Force R360 page content to always be full width */
+        [data-r360-page-content],
         #r360-root {
           width: 100% !important;
           min-width: 0 !important;
           flex-shrink: 0 !important;
           flex-basis: 100% !important;
           max-width: 100% !important;
+        }
+        /* Ensure CatalystShell main area stays full width */
+        [data-catalyst-main] {
+          width: 100% !important;
+          flex-shrink: 0 !important;
+        }
+        /* Prevent any parent flex from compressing */
+        [data-catalyst-main] > div {
+          width: 100% !important;
         }
       `;
       document.head.appendChild(style);
