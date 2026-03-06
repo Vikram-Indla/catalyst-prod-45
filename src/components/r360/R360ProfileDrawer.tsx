@@ -176,10 +176,12 @@ function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
+const SLATE = '#64748B';
+
 function computeLoadColour(openCount: number, roleAvg: number): string {
   if (openCount === 0) return SUCCESS;
-  if (openCount <= roleAvg) return INK1;
-  if (openCount <= roleAvg * 1.4) return WARNING;
+  if (openCount <= roleAvg) return SLATE;     // neutral — under avg
+  if (openCount <= roleAvg * 1.5) return WARNING;
   return DANGER;
 }
 
