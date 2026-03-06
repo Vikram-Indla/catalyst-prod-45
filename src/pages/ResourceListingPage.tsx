@@ -110,7 +110,6 @@ export default function ResourceListingPage() {
       const avatarMap = new Map((profiles || []).map((p: any) => [p.id, p.avatar_url]));
 
       return ((data || []) as any[])
-        .filter((r: any) => (r.resource_type || '').trim().toLowerCase() === 'variable')
         .map((r: any): Resource => ({
           id: r.id,
           rid: r.rid,
@@ -121,6 +120,7 @@ export default function ResourceListingPage() {
           assignment_name: assignMap.get(r.assignment_id) || null,
           vendor_name: r.vendor_name || null,
           avatar_url: r.avatar_url || (r.profile_id ? (avatarMap.get(r.profile_id) || null) : null),
+          resource_type: (r.resource_type || '').trim().toLowerCase() || null,
         }));
     },
   });
