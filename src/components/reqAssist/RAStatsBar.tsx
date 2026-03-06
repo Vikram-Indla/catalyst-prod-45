@@ -12,10 +12,10 @@ function StatCard({ label, value, subLabel, color, loading, animatedBadge }: Sta
     <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 3, background: '#FFFFFF' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {loading ? (
-          <div style={{ width: 40, height: 24, background: '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
+          <div style={{ width: 52, height: 30, background: '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
         ) : (
           <>
-            <span style={{ fontSize: 22, fontWeight: 700, color: color || '#0F172A', fontFamily: "'Sora', sans-serif" }}>{value}</span>
+            <span style={{ fontSize: 28, fontWeight: 700, color: color || '#111827', fontFamily: "'Sora', sans-serif" }}>{value}</span>
             {animatedBadge && (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#2563EB', animation: 'ra-pulse 1.5s ease-in-out infinite' }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'ra-spin 1s linear infinite' }}>
@@ -27,10 +27,10 @@ function StatCard({ label, value, subLabel, color, loading, animatedBadge }: Sta
           </>
         )}
       </div>
-      <span style={{ fontSize: 11, fontWeight: 500, color: '#64748B', marginTop: 3, fontFamily: "'Inter', sans-serif" }}>
+      <span style={{ fontSize: 12, fontWeight: 500, color: '#6B7280', marginTop: 3, fontFamily: "'Inter', sans-serif" }}>
         {label}
       </span>
-      {subLabel && <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>{subLabel}</span>}
+      {subLabel && <span style={{ fontSize: 11, color: '#9CA3AF', fontFamily: "'Inter', sans-serif" }}>{subLabel}</span>}
     </div>
   );
 }
@@ -53,7 +53,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden', marginBottom: 20 }}>
-      <StatCard label="Documents in Library" value={totalDocuments} subLabel="SEN · MDT · SIMP" loading={loading} />
+      <StatCard label="Documents in Library" value={totalDocuments} subLabel="SEN · MDT · SIMP" loading={loading} color="#111827" />
       <div style={{ borderLeft: '1px solid rgba(15,23,42,0.06)' }}>
         <StatCard label="Indexed in WikiHub" value={`${wikihubSynced} / ${totalDocuments}`} color="#16A34A" subLabel={chunkLabel} loading={loading} />
       </div>
@@ -61,7 +61,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
         <StatCard label="Artifacts Generated" value={artifactsGenerated} color="#7C3AED" subLabel="Epics · UAT · Initiatives" loading={loading} />
       </div>
       <div style={{ borderLeft: '1px solid rgba(15,23,42,0.06)' }}>
-        <StatCard label="Processing Now" value={processingCount > 0 ? processingCount : '—'} animatedBadge={processingCount > 0} loading={loading} />
+        <StatCard label="Processing Now" value={processingCount} color="#2563EB" animatedBadge={processingCount > 0} loading={loading} />
       </div>
       <style>{`
         @keyframes ra-spin { to { transform: rotate(360deg); } }

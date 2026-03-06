@@ -12,15 +12,11 @@ import RABackgroundModal from '@/components/reqAssist/RABackgroundModal';
 import RAImportDrawer from '@/components/reqAssist/RAImportDrawer';
 import { format } from 'date-fns';
 
-/* ── Domain lozenge mapping (DA-006) ── */
-const BLUE_DOMAINS = ['customs & trade', 'chemical', '4ir', 'environmental'];
-
-function domainLozenge(domain: string | null) {
-  if (!domain) return null;
-  const isBlue = BLUE_DOMAINS.includes(domain.toLowerCase());
+/* ── Domain lozenge mapping (neutral only) ── */
+function domainLozenge() {
   return {
-    bg: isBlue ? '#DEEBFF' : '#DFE1E6',
-    color: isBlue ? '#0747A6' : '#253858',
+    bg: '#F3F4F6',
+    color: '#374151',
   };
 }
 
@@ -74,10 +70,10 @@ export default function ReqAssistLibrary() {
       {/* ── PAGE HEADER ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>
-          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: '#111827', margin: 0 }}>
             Req Assist™
           </h1>
-          <p style={{ fontSize: 13, color: '#64748B', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>
+          <p style={{ fontSize: 13, color: '#6B7280', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>
             BRD library — sourced from Jira, enriched by AI, WikiHub-connected · Next sync: tonight 11:00 PM
           </p>
         </div>
@@ -123,15 +119,15 @@ export default function ReqAssistLibrary() {
       {/* EC-001: Empty library — no documents at all */}
       {!isLoading && totalCount === 0 && !isFiltering ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 0', border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)' }}>
-          <FileText size={36} color="#94A3B8" style={{ marginBottom: 12 }} />
-          <p style={{ fontSize: 15, fontWeight: 500, color: '#64748B', margin: '0 0 4px', fontFamily: "'Inter', sans-serif" }}>No documents yet</p>
-          <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate from text to get started</p>
+          <FileText size={32} color="#9CA3AF" style={{ marginBottom: 12 }} />
+          <p style={{ fontSize: 16, fontWeight: 600, color: '#374151', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>No documents yet</p>
+          <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate a BRD from text to get started.</p>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => setImportOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#334155', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+            <button onClick={() => setImportOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
               <Download size={14} /> Import from Jira
             </button>
             <button onClick={() => navigate('/product/req-assist/generate')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-              <Zap size={14} /> Generate BRD
+              <Zap size={14} /> Generate BRD from Text
             </button>
           </div>
         </div>
@@ -161,14 +157,14 @@ export default function ReqAssistLibrary() {
                   { label: 'Imported', w: 85 },
                   { label: 'Actions', w: 110 },
                 ].map((col, i) => (
-                  <th key={i} style={{
-                    padding: 'var(--ra-hd-pad)', height: 36,
-                    fontSize: 11, fontWeight: 600, color: '#64748B',
-                    textTransform: 'uppercase', letterSpacing: '0.04em',
-                    textAlign: 'left', width: col.w || undefined,
-                    background: '#FFFFFF',
-                    fontFamily: "'Inter', sans-serif",
-                  }}>
+                    <th key={i} style={{
+                      padding: 'var(--ra-hd-pad)', height: 36,
+                      fontSize: 11, fontWeight: 700, color: '#6B7280',
+                      textTransform: 'uppercase', letterSpacing: '0.06em',
+                      textAlign: 'left', width: col.w || undefined,
+                      background: '#FFFFFF',
+                      fontFamily: "'Inter', sans-serif",
+                    }}>
                     {col.label}
                   </th>
                 ))}
@@ -217,22 +213,22 @@ export default function ReqAssistLibrary() {
                         )}
                       </td>
                       {/* Title */}
-                      <td style={{ padding: 'var(--ra-cell-pad)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 0 }}>
-                        <span title={doc.title} style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
+                      <td style={{ padding: 'var(--ra-cell-pad)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 0, height: 36, minHeight: 36, maxHeight: 36 }}>
+                        <span title={doc.title} style={{ fontSize: 14, fontWeight: 500, color: '#111827', fontFamily: "'Inter', sans-serif" }}>
                           {doc.title.length > 52 ? doc.title.slice(0, 52) + '…' : doc.title}
                         </span>
                       </td>
                       {/* Domain (EC-003) */}
-                      <td style={{ padding: 'var(--ra-cell-pad)' }}>
+                      <td style={{ padding: 'var(--ra-cell-pad)', height: 36, minHeight: 36, maxHeight: 36 }}>
                         {doc.domain ? (() => {
-                          const lz = domainLozenge(doc.domain);
+                          const lz = domainLozenge();
                           return (
                             <span style={{
                               display: 'inline-flex', alignItems: 'center',
-                              padding: '0 6px', height: 20, borderRadius: 3,
+                              padding: '2px 8px', borderRadius: 3,
                               fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                              letterSpacing: '0.02em', whiteSpace: 'nowrap',
-                              background: lz!.bg, color: lz!.color,
+                              letterSpacing: '0.04em', whiteSpace: 'nowrap',
+                              background: lz.bg, color: lz.color,
                               fontFamily: "'Inter', sans-serif",
                             }}>
                               {doc.domain}
@@ -281,7 +277,7 @@ export default function ReqAssistLibrary() {
                       </td>
                       {/* Imported */}
                       <td style={{ padding: 'var(--ra-cell-pad)' }}>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#94A3B8' }}>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#6B7280' }}>
                           {doc.pulled_at ? formatImported(doc.pulled_at) : '—'}
                         </span>
                       </td>
@@ -301,9 +297,9 @@ export default function ReqAssistLibrary() {
                 /* EC-002: Filtered empty state */
                 <tr>
                   <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
-                    <FileSearch size={24} color="#94A3B8" style={{ margin: '0 auto 8px', display: 'block' }} />
-                    <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
-                      No documents match your search
+                    <FileSearch size={24} color="#9CA3AF" style={{ margin: '0 auto 8px', display: 'block' }} />
+                    <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
+                      No documents match "{search || 'your search term'}"
                     </p>
                     <button onClick={() => { setSearch(''); setTab('all'); }}
                       style={{ fontSize: 12, color: '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
@@ -404,7 +400,7 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
           borderRadius: 4, border: 'none', cursor: 'pointer',
-          background: '#DC2626', color: '#FFFFFF',
+          background: '#2563EB', color: '#FFFFFF',
           fontFamily: "'Inter', sans-serif",
         }}
       >
