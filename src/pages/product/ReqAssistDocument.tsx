@@ -10,7 +10,7 @@ import {
   BookOpen, Layers, ClipboardCheck, Download, Zap, TestTube,
   File, Printer, Send as SendIcon, Sparkles,
 } from 'lucide-react';
-import { useBrdDocument, useBrdEpics, useBrdQueueItems } from '@/hooks/useReqAssist';
+import { useBrdDocument, useBrdEpics, useBrdQueueItems } from '@/hooks/useReqAssistLegacy';
 import type { PipelineStage, BrdEpic, BrdQueueItem } from '@/types/reqAssist';
 import '@/styles/ra-styles.css';
 

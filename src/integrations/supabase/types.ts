@@ -5689,13 +5689,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "epics_source_ra_doc_id_fkey"
-            columns: ["source_ra_doc_id"]
-            isOneToOne: false
-            referencedRelation: "ra_documents"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "epics_theme_id_fkey"
             columns: ["theme_id"]
             isOneToOne: false
@@ -11510,13 +11503,6 @@ export type Database = {
             columns: ["initiative_type_id"]
             isOneToOne: false
             referencedRelation: "initiative_types"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "initiatives_source_ra_doc_id_fkey"
-            columns: ["source_ra_doc_id"]
-            isOneToOne: false
-            referencedRelation: "ra_documents"
             referencedColumns: ["id"]
           },
           {
@@ -32488,273 +32474,216 @@ export type Database = {
           started_at?: string
           status?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "ra_agent_runs_document_id_fkey"
-            columns: ["document_id"]
-            isOneToOne: false
-            referencedRelation: "ra_documents"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
-      ra_categories: {
+      ra_artifacts: {
         Row: {
-          created_at: string
-          created_by: string
+          artifact_type: string
+          catalyst_ref_id: string | null
+          content_json: Json | null
+          content_raw: string | null
+          generated_at: string | null
+          generated_by: string | null
           id: string
-          name: string
-          parent_id: string | null
-          sort_order: number
+          model_used: string | null
+          ra_document_id: string
+          status: string
+          title: string
         }
         Insert: {
-          created_at?: string
-          created_by: string
+          artifact_type: string
+          catalyst_ref_id?: string | null
+          content_json?: Json | null
+          content_raw?: string | null
+          generated_at?: string | null
+          generated_by?: string | null
           id?: string
-          name: string
-          parent_id?: string | null
-          sort_order?: number
+          model_used?: string | null
+          ra_document_id: string
+          status?: string
+          title: string
         }
         Update: {
-          created_at?: string
-          created_by?: string
+          artifact_type?: string
+          catalyst_ref_id?: string | null
+          content_json?: Json | null
+          content_raw?: string | null
+          generated_at?: string | null
+          generated_by?: string | null
           id?: string
-          name?: string
-          parent_id?: string | null
-          sort_order?: number
+          model_used?: string | null
+          ra_document_id?: string
+          status?: string
+          title?: string
         }
         Relationships: [
           {
-            foreignKeyName: "ra_categories_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: "ra_artifacts_ra_document_id_fkey"
+            columns: ["ra_document_id"]
             isOneToOne: false
-            referencedRelation: "ph_team_workload_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "ra_categories_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "planner_dashboard_team_workload"
-            referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "ra_categories_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ra_categories_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["auth_user_id"]
-          },
-          {
-            foreignKeyName: "ra_categories_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ra_categories_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["epic_owner_id"]
-          },
-          {
-            foreignKeyName: "ra_categories_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["goal_owner_id"]
-          },
-          {
-            foreignKeyName: "ra_categories_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["initiative_owner_id"]
-          },
-          {
-            foreignKeyName: "ra_categories_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["kr_owner_id"]
-          },
-          {
-            foreignKeyName: "ra_categories_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["theme_owner_id"]
-          },
-          {
-            foreignKeyName: "ra_categories_parent_id_fkey"
-            columns: ["parent_id"]
-            isOneToOne: false
-            referencedRelation: "ra_categories"
+            referencedRelation: "ra_documents"
             referencedColumns: ["id"]
           },
         ]
       }
       ra_documents: {
         Row: {
-          brd_number: string | null
-          category_id: string | null
-          content: Json | null
-          created_at: string
-          created_by: string
+          content_processed: string | null
+          content_raw: string | null
+          created_at: string | null
+          created_by: string | null
+          domain: string | null
           id: string
+          is_brd: boolean | null
+          jira_created_at: string | null
+          jira_project: string
+          jira_ticket_key: string
+          jira_ticket_url: string | null
           language: string
-          methodology: string | null
-          parent_version_id: string | null
-          project_id: string | null
-          quality_breakdown: Json | null
-          quality_score: number | null
-          source_doc_id: string | null
+          page_count: number | null
+          pdf_url: string | null
+          pulled_at: string | null
+          source_type: string
           status: string
           title: string
-          type: string
-          updated_at: string
-          verdict: string | null
-          version: number
+          updated_at: string | null
+          wikihub_chunk_count: number | null
+          wikihub_synced: boolean
+          wikihub_synced_at: string | null
+          word_count: number | null
         }
         Insert: {
-          brd_number?: string | null
-          category_id?: string | null
-          content?: Json | null
-          created_at?: string
-          created_by: string
+          content_processed?: string | null
+          content_raw?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          domain?: string | null
           id?: string
+          is_brd?: boolean | null
+          jira_created_at?: string | null
+          jira_project: string
+          jira_ticket_key: string
+          jira_ticket_url?: string | null
           language?: string
-          methodology?: string | null
-          parent_version_id?: string | null
-          project_id?: string | null
-          quality_breakdown?: Json | null
-          quality_score?: number | null
-          source_doc_id?: string | null
+          page_count?: number | null
+          pdf_url?: string | null
+          pulled_at?: string | null
+          source_type: string
           status?: string
           title: string
-          type: string
-          updated_at?: string
-          verdict?: string | null
-          version?: number
+          updated_at?: string | null
+          wikihub_chunk_count?: number | null
+          wikihub_synced?: boolean
+          wikihub_synced_at?: string | null
+          word_count?: number | null
         }
         Update: {
-          brd_number?: string | null
-          category_id?: string | null
-          content?: Json | null
-          created_at?: string
-          created_by?: string
+          content_processed?: string | null
+          content_raw?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          domain?: string | null
           id?: string
+          is_brd?: boolean | null
+          jira_created_at?: string | null
+          jira_project?: string
+          jira_ticket_key?: string
+          jira_ticket_url?: string | null
           language?: string
-          methodology?: string | null
-          parent_version_id?: string | null
-          project_id?: string | null
-          quality_breakdown?: Json | null
-          quality_score?: number | null
-          source_doc_id?: string | null
+          page_count?: number | null
+          pdf_url?: string | null
+          pulled_at?: string | null
+          source_type?: string
           status?: string
           title?: string
-          type?: string
-          updated_at?: string
-          verdict?: string | null
-          version?: number
+          updated_at?: string | null
+          wikihub_chunk_count?: number | null
+          wikihub_synced?: boolean
+          wikihub_synced_at?: string | null
+          word_count?: number | null
+        }
+        Relationships: []
+      }
+      ra_jira_sync_log: {
+        Row: {
+          duplicates_skipped: number | null
+          duration_ms: number | null
+          errors: Json | null
+          id: string
+          new_documents: number | null
+          pdfs_found: number | null
+          project_key: string
+          synced_at: string | null
+          tickets_found: number | null
+        }
+        Insert: {
+          duplicates_skipped?: number | null
+          duration_ms?: number | null
+          errors?: Json | null
+          id?: string
+          new_documents?: number | null
+          pdfs_found?: number | null
+          project_key: string
+          synced_at?: string | null
+          tickets_found?: number | null
+        }
+        Update: {
+          duplicates_skipped?: number | null
+          duration_ms?: number | null
+          errors?: Json | null
+          id?: string
+          new_documents?: number | null
+          pdfs_found?: number | null
+          project_key?: string
+          synced_at?: string | null
+          tickets_found?: number | null
+        }
+        Relationships: []
+      }
+      ra_processing_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          current_step: string | null
+          error_message: string | null
+          eta_seconds: number | null
+          id: string
+          job_type: string
+          progress_pct: number | null
+          ra_document_id: string
+          started_at: string | null
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          current_step?: string | null
+          error_message?: string | null
+          eta_seconds?: number | null
+          id?: string
+          job_type: string
+          progress_pct?: number | null
+          ra_document_id: string
+          started_at?: string | null
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          current_step?: string | null
+          error_message?: string | null
+          eta_seconds?: number | null
+          id?: string
+          job_type?: string
+          progress_pct?: number | null
+          ra_document_id?: string
+          started_at?: string | null
+          status?: string
         }
         Relationships: [
           {
-            foreignKeyName: "ra_documents_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "ra_categories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ra_documents_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "ph_team_workload_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "ra_documents_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "planner_dashboard_team_workload"
-            referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "ra_documents_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ra_documents_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["auth_user_id"]
-          },
-          {
-            foreignKeyName: "ra_documents_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ra_documents_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["epic_owner_id"]
-          },
-          {
-            foreignKeyName: "ra_documents_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["goal_owner_id"]
-          },
-          {
-            foreignKeyName: "ra_documents_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["initiative_owner_id"]
-          },
-          {
-            foreignKeyName: "ra_documents_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["kr_owner_id"]
-          },
-          {
-            foreignKeyName: "ra_documents_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["theme_owner_id"]
-          },
-          {
-            foreignKeyName: "ra_documents_parent_version_id_fkey"
-            columns: ["parent_version_id"]
-            isOneToOne: false
-            referencedRelation: "ra_documents"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ra_documents_source_doc_id_fkey"
-            columns: ["source_doc_id"]
+            foreignKeyName: "ra_processing_jobs_ra_document_id_fkey"
+            columns: ["ra_document_id"]
             isOneToOne: false
             referencedRelation: "ra_documents"
             referencedColumns: ["id"]
@@ -52557,13 +52486,6 @@ export type Database = {
             columns: ["release_version_id"]
             isOneToOne: false
             referencedRelation: "release_versions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tm_test_cases_source_ra_doc_id_fkey"
-            columns: ["source_ra_doc_id"]
-            isOneToOne: false
-            referencedRelation: "ra_documents"
             referencedColumns: ["id"]
           },
         ]
