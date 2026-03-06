@@ -25,6 +25,7 @@ interface Resource {
   assignment_name: string | null;
   vendor_name: string | null;
   avatar_url: string | null;
+  resource_type: string | null;
 }
 
 /* ── Constants ── */
