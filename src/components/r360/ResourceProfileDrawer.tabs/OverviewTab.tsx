@@ -54,7 +54,7 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
       open: data.open,
       closed: data.closed,
       total: data.open + data.closed,
-      closurePct: data.total > 0 ? Math.round((data.closed / (data.open + data.closed)) * 100) : 0,
+      closurePct: (data.open + data.closed) > 0 ? Math.round((data.closed / (data.open + data.closed)) * 100) : 0,
     }));
   }, [workItems]);
 
