@@ -5,7 +5,7 @@
 import { useEffect, useCallback } from 'react';
 import { ChevronLeft, X } from 'lucide-react';
 import { useR360Resources } from '@/hooks/useR360Profile';
-import type { R360ActiveTab } from '@/pages/R360ProfilePage';
+export type R360ActiveTab = 'overview' | 'behavioural' | 'weekly-story' | 'work-items';
 import { OverviewTab } from './ResourceProfileDrawer.tabs/OverviewTab';
 import { BehaviouralTab } from './ResourceProfileDrawer.tabs/BehaviouralTab';
 import { WeeklyStoryTab } from './ResourceProfileDrawer.tabs/WeeklyStoryTab';

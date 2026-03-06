@@ -7,7 +7,7 @@ import { useEffect, useRef, useMemo } from 'react';
 import { AlertTriangle, Info, BookOpen, ChevronRight } from 'lucide-react';
 import { useR360WeeklyStats, useR360WorkItems, useR360ClosureTrend, R360_CURRENT_WEEK } from '@/hooks/useR360Profile';
 import type { R360ProfileResource } from '@/types/r360';
-import type { R360ActiveTab } from '@/pages/R360ProfilePage';
+import type { R360ActiveTab } from '../ResourceProfileDrawer';
 import { WorkItemIcon } from '../R360WorkItemIcons';
 
 interface OverviewTabProps {

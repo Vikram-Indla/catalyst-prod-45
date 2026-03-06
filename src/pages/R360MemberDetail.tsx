@@ -691,6 +691,32 @@ export default function R360MemberDetail() {
           onClose={() => setAiOpen(false)}
         />
       )}
+
+      {/* R360 Profile Drawer Overlay */}
+      {r360DrawerOpen && resourceId && (
+        <>
+          <div
+            style={{
+              position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.20)',
+              zIndex: 40, cursor: 'pointer',
+            }}
+            onClick={() => setR360DrawerOpen(false)}
+          />
+          <div style={{
+            position: 'fixed', right: 0, top: 0, height: '100vh', width: 700,
+            zIndex: 50, boxShadow: '-4px 0 24px rgba(0,0,0,0.12)',
+          }}>
+            <ResourceProfileDrawer
+              selectedResourceId={resourceId}
+              onClose={() => setR360DrawerOpen(false)}
+              activeTab={r360ActiveTab}
+              onTabChange={setR360ActiveTab}
+              weekOffset={r360WeekOffset}
+              onWeekOffsetChange={setR360WeekOffset}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
