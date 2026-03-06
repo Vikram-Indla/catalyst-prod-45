@@ -360,7 +360,7 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
 
         <div className="r3p-hub-total">
           <span>Total open across all hubs</span>
-          <span style={{ fontWeight: 700, color: 'var(--r3-danger)' }}>{totalOpen}</span>
+          <span style={{ fontWeight: 700, color: loadColour }}>{totalOpen}</span>
         </div>
       </div>
     </>
