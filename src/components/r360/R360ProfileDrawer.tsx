@@ -1462,19 +1462,11 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
 // ══════════════════════════════════════════
 // WEEKLY STORY TAB
 // ══════════════════════════════════════════
-function WeeklyStoryTab({ workItems, openCount, showFilteredList }: { workItems: any[]; openCount: number; showFilteredList: (label: string, filterFn: (i: any) => boolean) => void }) {
-  const { weekStart, weekEnd } = useMemo(() => {
-    const now = new Date();
-    const day = now.getDay();
-    const daysSinceSunday = day === 0 ? 0 : day;
-    const ws = new Date(now);
-    ws.setDate(now.getDate() - daysSinceSunday);
-    ws.setHours(0, 0, 0, 0);
-    const we = new Date(ws);
-    we.setDate(ws.getDate() + 4);
-    we.setHours(23, 59, 59, 999);
-    return { weekStart: ws, weekEnd: we };
-  }, []);
+function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekStart, weekEnd, weekLabel }: {
+  workItems: any[]; openCount: number;
+  showFilteredList: (label: string, filterFn: (i: any) => boolean) => void;
+  weekStart: Date; weekEnd: Date; weekLabel: string;
+}) {
 
   const closedThisWeek = useMemo(() =>
     workItems.filter((i: any) => {
@@ -1543,7 +1535,7 @@ function WeeklyStoryTab({ workItems, openCount, showFilteredList }: { workItems:
           border: '1px solid #E2E8F0', borderRadius: 8, padding: 16, background: '#FFFFFF',
         }}>
           <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 8 }}>
-            W{R360_WEEK} · MAR 1–5, 2026
+            {weekLabel}
           </div>
           <div style={{ fontSize: 14, color: INK2, lineHeight: 1.5 }}>{headline}</div>
         </div>
