@@ -1572,7 +1572,8 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
         items={items}
         testId="r360-board-completed-bar"
         onViewClick={() => {
-          doneColRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const doneItem = items.find(i => i.status_category === 'done');
+          if (doneItem) onSelect(doneItem);
         }}
       />
       <div className="r3-board">
