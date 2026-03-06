@@ -1,10 +1,19 @@
+/**
+ * R360 Profile Service — queries r360_resources, r360_work_items, 
+ * r360_weekly_snapshots, r360_activity_log
+ * 
+ * Adapted to actual DB schema:
+ *   r360_resources: rid, full_name, job_role, initials, department_id, is_active
+ *   r360_work_items: item_key, title, status, work_item_type, source_hub, resource_id
+ */
+
 import { supabase } from '@/integrations/supabase/client';
 import type {
   R360ProfileResource, R360ProfileWorkItem, R360WeeklyStats,
   R360ClosureTrendPoint, ResourceAvailability, WorkItemStatus, WorkItemType,
 } from '@/types/r360';
 
-export const r360Service = {
+export const r360ProfileService = {
   async getResources(): Promise<R360ProfileResource[]> {
     const { data, error } = await supabase
       .from('r360_resources' as any)
@@ -30,11 +39,13 @@ export const r360Service = {
     let query = supabase
       .from('r360_work_items' as any)
       .select('*')
-      .eq('assignee_id', resourceId)
+      .eq('resource_id', resourceId)
       .order('updated_at', { ascending: false });
 
     if (!statusFilter || statusFilter === 'open') {
-      query = query.neq('status', 'DONE');
+      query = query.not('status', 'ilike', '%done%')
+                   .not('status', 'ilike', '%production%')
+                   .not('status', 'ilike', '%closed%');
     }
 
     const { data, error } = await query;
@@ -50,8 +61,9 @@ export const r360Service = {
       .order('week_number', { ascending: true })
       .limit(8);
     if (error) throw error;
-    const maxWeek = Math.max(...(data ?? []).map((r: any) => r.week_number));
-    return (data ?? []).map((row: any) => ({
+    const rows = data ?? [];
+    const maxWeek = rows.length ? Math.max(...rows.map((r: any) => r.week_number)) : 0;
+    return rows.map((row: any) => ({
       weekNumber: row.week_number,
       weekLabel: `W${row.week_number}`,
       closedCount: row.closed_this_week,
@@ -62,7 +74,7 @@ export const r360Service = {
   async getActivityLog(resourceId: string, weekStart: string, weekEnd: string) {
     const { data, error } = await supabase
       .from('r360_activity_log' as any)
-      .select('*, r360_work_items(item_key, title, item_type, status)')
+      .select('*, r360_work_items(item_key, title, work_item_type, status)')
       .eq('resource_id', resourceId)
       .gte('event_time', weekStart)
       .lte('event_time', weekEnd)
@@ -72,19 +84,20 @@ export const r360Service = {
   },
 };
 
-// ─── Mappers ───
+// ─── Mappers (actual DB schema → camelCase interfaces) ───
+
 function mapResource(r: any): R360ProfileResource {
   return {
     id: r.id,
-    resourceKey: r.resource_key,
+    resourceKey: r.rid ?? r.resource_key ?? '',
     fullName: r.full_name,
-    role: r.role,
-    department: r.department,
+    role: r.job_role ?? r.role ?? '',
+    department: r.department_id ?? r.department ?? 'Delivery',
     skills: r.skills ?? [],
     availability: 'available' as ResourceAvailability,
-    avatarInitials: r.avatar_initials,
-    avatarGradientStart: r.avatar_gradient_start,
-    avatarGradientEnd: r.avatar_gradient_end,
+    avatarInitials: r.initials ?? r.avatar_initials ?? '',
+    avatarGradientStart: r.avatar_gradient_start ?? '#3B82F6',
+    avatarGradientEnd: r.avatar_gradient_end ?? '#7C3AED',
     openItemCount: 0,
     roleAvgOpenCount: 5,
   };
@@ -112,17 +125,25 @@ function mapWeeklyStats(r: any): R360WeeklyStats {
 
 function mapWorkItem(r: any): R360ProfileWorkItem {
   const created = new Date(r.created_at);
-  const ageDays = Math.floor((Date.now() - created.getTime()) / 86400000);
+  const ageDays = Math.max(0, Math.floor((Date.now() - created.getTime()) / 86400000));
   return {
     id: r.id,
     itemKey: r.item_key,
     title: r.title,
-    status: r.status as WorkItemStatus,
-    itemType: r.item_type as WorkItemType,
-    hubSource: r.hub_source,
-    assigneeId: r.assignee_id,
+    status: mapStatus(r.status),
+    itemType: (r.work_item_type ?? r.item_type ?? 'Task') as WorkItemType,
+    hubSource: r.source_hub ?? r.hub_source ?? 'BAU',
+    assigneeId: r.resource_id ?? r.assignee_id ?? '',
     updatedAt: r.updated_at,
     createdAt: r.created_at,
     ageDays,
   };
+}
+
+function mapStatus(raw: string): WorkItemStatus {
+  const s = (raw ?? '').toLowerCase();
+  if (s.includes('done') || s.includes('production') || s.includes('closed')) return 'DONE';
+  if (s.includes('review') || s.includes('qa')) return 'IN_REVIEW';
+  if (s.includes('progress')) return 'IN_PROGRESS';
+  return 'TO_DO';
 }
