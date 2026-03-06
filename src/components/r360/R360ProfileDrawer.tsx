@@ -185,25 +185,28 @@ function computeLoadColour(openCount: number, roleAvg: number): string {
   return DANGER;
 }
 
-// ── StatusLozenge (3 colours — IMMUTABLE) ──
-function getStatusLozengeStyle(status: string) {
-  const s = (status || '').toLowerCase().replace(/[_\s-]/g, '');
-  if (['done', 'closed', 'completed', 'approved'].includes(s))
-    return { bg: '#E3FCEF', text: '#006644', label: (status || '').toUpperCase() };
-  if (['inprogress', 'inreview', 'active'].includes(s))
-    return { bg: '#DEEBFF', text: '#0747A6', label: (status || '').toUpperCase() };
-  return { bg: '#DFE1E6', text: '#253858', label: (status || '').toUpperCase() };
-}
-
-function DrawerLozenge({ status }: { status: string }) {
-  const s = getStatusLozengeStyle(status);
+// ── R360StatusLozenge (3 colours — IMMUTABLE) ──
+function R360StatusLozenge({ status }: { status: string }) {
+  const s = (status ?? '').toLowerCase().replace(/[\s_-]/g, '');
+  let bg = '#DFE1E6';
+  let color = '#253858';
+  if (['done', 'closed', 'completed', 'approved', 'resolved'].includes(s)) {
+    bg = '#E3FCEF'; color = '#006644';
+  } else if (['inprogress', 'inreview', 'active', 'started'].includes(s)) {
+    bg = '#DEEBFF'; color = '#0747A6';
+  }
   return (
     <span style={{
-      display: 'inline-flex', alignItems: 'center', height: 20,
-      padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700,
-      textTransform: 'uppercase', letterSpacing: '0.03em',
-      background: s.bg, color: s.text, whiteSpace: 'nowrap',
-    }}>{s.label}</span>
+      display: 'inline-flex', alignItems: 'center',
+      backgroundColor: bg, color,
+      fontSize: '11px', fontWeight: 700,
+      letterSpacing: '0.03em', textTransform: 'uppercase' as const,
+      padding: '0 6px', height: '20px', borderRadius: '3px',
+      lineHeight: '20px', whiteSpace: 'nowrap' as const,
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      {(status || '').toUpperCase()}
+    </span>
   );
 }
 
@@ -221,8 +224,8 @@ function Skeleton({ h = 20, w = '100%', r = 4 }: { h?: number; w?: string | numb
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      fontFamily: "'Inter', system-ui, sans-serif", fontSize: 11, fontWeight: 650,
-      textTransform: 'uppercase', letterSpacing: '0.06em', color: INK4, marginBottom: 12,
+      fontFamily: "'Inter', system-ui, sans-serif", fontSize: 11, fontWeight: 500,
+      textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 12,
     }}>{children}</div>
   );
 }
@@ -572,39 +575,39 @@ function OverviewTab({
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden' }}>
             {/* Total Open */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: loadColour }}>{openCount}</div>
-              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>TOTAL OPEN</div>
-              <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>vs role avg {roleAvg}</div>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: loadColour }}>{openCount}</div>
+              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>TOTAL OPEN</div>
+              <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>vs role avg {roleAvg}</div>
             </div>
             {/* Closed This Week */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: closedColour }}>{closedThisWeek}</span>
+                <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: closedColour }}>{closedThisWeek}</span>
                 {closedTrend && <span style={{ fontSize: 14, fontWeight: 700, color: closedTrendColor }}>{closedTrend}</span>}
               </div>
-              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>CLOSED THIS WEEK</div>
-              <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>vs {prevWeekClosed} last week</div>
+              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>CLOSED THIS WEEK</div>
+              <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>vs {prevWeekClosed} last week</div>
             </div>
             {/* In Review */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: INK1 }}>{inReview}</div>
-              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>IN REVIEW</div>
-              <div style={{ fontSize: 11, color: inReview === 0 ? WARNING : INK1, marginTop: 2 }}>{inReview === 0 ? 'None pending' : `${inReview} awaiting`}</div>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{inReview}</div>
+              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>IN REVIEW</div>
+              <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>{inReview === 0 ? 'None pending' : `${inReview} awaiting`}</div>
             </div>
             {/* Pickup Speed */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
                 {pickupHours > 0 ? (
                   <>
-                    <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: INK1 }}>{pickupHours}</span>
+                    <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{pickupHours}</span>
                     <span style={{ fontSize: 14, fontWeight: 500, color: INK4 }}>h</span>
                   </>
                 ) : (
-                  <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: MUTED }}>—</span>
+                  <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: MUTED }}>—</span>
                 )}
               </div>
-              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>PICKUP SPEED</div>
-              <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>team avg 38h</div>
+              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>PICKUP SPEED</div>
+              <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>team avg 38h</div>
             </div>
           </div>
         )}
@@ -996,9 +999,9 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
             <div key={i} style={{
               border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
             }}>
-              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 20, fontWeight: 700, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>
-              <div style={{ fontSize: 11, color: INK4, marginTop: 4 }}>{tile.sub}</div>
+              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>
+              <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 4 }}>{tile.sub}</div>
             </div>
           ))}
         </div>
@@ -1178,7 +1181,7 @@ function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount:
                   flex: 1, fontSize: 13, color: INK2, overflow: 'hidden',
                   textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
                 }}>{item.title}</span>
-                <DrawerLozenge status={item.status || statusKey(item.status_category)} />
+                <R360StatusLozenge status={item.status || statusKey(item.status_category)} />
                 <span style={{ fontSize: 11, color: MUTED, flexShrink: 0 }}>{relativeTime(item.updated_at)}</span>
               </div>
             ))}
@@ -1197,8 +1200,8 @@ function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount:
             <div key={i} style={{
               border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
             }}>
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 20, fontWeight: 700, color: INK1 }}>{tile.value}</div>
-              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 4 }}>{tile.label}</div>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{tile.value}</div>
+              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 4 }}>{tile.label}</div>
             </div>
           ))}
         </div>
@@ -1341,11 +1344,11 @@ function WorkItemsTab({ workItems }: { workItems: any[] }) {
             display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
             borderBottom: '0.75px solid #E2E8F0', background: '#FFFFFF',
           }}>
-            <span style={{ width: 40, textAlign: 'center' as const, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em' }}>TYPE</span>
-            <span style={{ width: 100, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em', paddingLeft: 8 }}>KEY</span>
-            <span style={{ flex: 1, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em' }}>TITLE</span>
-            <span style={{ width: 120, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em' }}>STATUS</span>
-            <span style={{ width: 90, textAlign: 'right' as const, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.06em' }}>UPDATED</span>
+            <span style={{ width: 40, textAlign: 'center' as const, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em' }}>TYPE</span>
+            <span style={{ width: 100, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em', paddingLeft: 8 }}>KEY</span>
+            <span style={{ flex: 1, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em' }}>TITLE</span>
+            <span style={{ width: 120, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em' }}>STATUS</span>
+            <span style={{ width: 90, textAlign: 'right' as const, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em' }}>UPDATED</span>
           </div>
           {/* Rows */}
           {display.map((item: any, idx: number) => (
@@ -1368,9 +1371,9 @@ function WorkItemsTab({ workItems }: { workItems: any[] }) {
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
               }}>{item.title}</span>
               <span style={{ width: 120 }}>
-                <DrawerLozenge status={item.status || item.status_category || 'To Do'} />
+                <R360StatusLozenge status={item.status || item.status_category || 'To Do'} />
               </span>
-              <span style={{ width: 90, textAlign: 'right' as const, fontSize: 12, color: MUTED }}>{relTime(item.updated_at)}</span>
+              <span style={{ width: 90, textAlign: 'right' as const, fontSize: 11, color: MUTED }}>{relTime(item.updated_at)}</span>
             </div>
           ))}
           {/* Count */}
