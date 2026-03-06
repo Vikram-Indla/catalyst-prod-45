@@ -1181,7 +1181,7 @@ function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount:
                   flex: 1, fontSize: 13, color: INK2, overflow: 'hidden',
                   textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
                 }}>{item.title}</span>
-                <DrawerLozenge status={item.status || statusKey(item.status_category)} />
+                <R360StatusLozenge status={item.status || statusKey(item.status_category)} />
                 <span style={{ fontSize: 11, color: MUTED, flexShrink: 0 }}>{relativeTime(item.updated_at)}</span>
               </div>
             ))}
