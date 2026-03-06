@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchRADocuments, fetchRAStats, createRADocument,
-  queueProcessingJob, fetchJiraProjectTickets, fetchRADocumentById
+  queueProcessingJob, fetchJiraProjectTickets, fetchRADocumentById,
+  fetchRAJobById, fetchRAJobsByDocId
 } from '@/services/reqAssistService';
 import type { RALibraryFilters } from '@/types/reqAssistV2';
 
@@ -11,6 +12,8 @@ export const RA_KEYS = {
   document: (id: string) => ['ra', 'document', id] as const,
   stats: () => ['ra', 'stats'] as const,
   jiraTickets: (project: string) => ['ra', 'jira', project] as const,
+  job: (id: string) => ['ra', 'job', id] as const,
+  jobsByDoc: (docId: string) => ['ra', 'jobs-doc', docId] as const,
 };
 
 export function useRADocuments(filters: RALibraryFilters) {
@@ -49,6 +52,36 @@ export function useJiraTickets(projectKey: string) {
     queryFn: () => fetchJiraProjectTickets(projectKey),
     enabled: !!projectKey,
     staleTime: 60_000,
+  });
+}
+
+export function useRAJobPolling(jobId: string | null) {
+  return useQuery({
+    queryKey: RA_KEYS.job(jobId ?? ''),
+    queryFn: () => fetchRAJobById(jobId!),
+    enabled: !!jobId,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (!data) return 3_000;
+      if (data.status === 'done' || data.status === 'failed') return false;
+      return 3_000;
+    },
+    staleTime: 0,
+  });
+}
+
+export function useRAJobsByDoc(docId: string | null) {
+  return useQuery({
+    queryKey: RA_KEYS.jobsByDoc(docId ?? ''),
+    queryFn: () => fetchRAJobsByDocId(docId!),
+    enabled: !!docId,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (!data || data.length === 0) return false;
+      const hasActive = data.some((j: any) => j.status === 'queued' || j.status === 'processing');
+      return hasActive ? 2_000 : false;
+    },
+    staleTime: 0,
   });
 }
 

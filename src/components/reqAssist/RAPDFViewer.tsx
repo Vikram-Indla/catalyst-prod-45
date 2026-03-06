@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { X, Download, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Zap, Globe } from 'lucide-react';
+import { X, Download, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Zap, Globe, Info } from 'lucide-react';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 
 interface Props {
@@ -12,6 +12,7 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
   const [page, setPage] = useState(1);
   const [zoom, setZoom] = useState(100);
   const totalPages = doc.page_count ?? 1;
+  const estimatedSize = doc.page_count ? `~${(doc.page_count * 0.07).toFixed(1)}MB` : '—';
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -25,8 +26,20 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
       <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 860, maxWidth: '95vw', height: '90vh', background: '#FFFFFF', borderRadius: 8, zIndex: 70, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 20px', borderBottom: '1px solid rgba(15,23,42,0.08)', flexShrink: 0 }}>
           <div>
-            <h3 style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', margin: 0, fontFamily: "'Inter', sans-serif" }}>{doc.title}</h3>
-            <span style={{ fontSize: 12, color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>{doc.jira_ticket_key}</span>
+            <h3 style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', margin: 0, fontFamily: "'Inter', sans-serif" }}>
+              {doc.title} — {doc.jira_ticket_key}
+            </h3>
+            <div style={{ display: 'flex', gap: 12, marginTop: 2 }}>
+              <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>
+                {doc.language === 'ar' ? 'Arabic' : 'English'}
+              </span>
+              <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>
+                {doc.page_count ? `${doc.page_count}pp` : '—'}
+              </span>
+              <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>
+                {estimatedSize}
+              </span>
+            </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button style={{ border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', borderRadius: 'var(--ra-radius-btn)', padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#334155' }}>
@@ -54,13 +67,26 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
             {doc.language === 'ar' && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16, padding: '6px 10px', background: '#FFFBEB', borderRadius: 4, border: '1px solid #FDE68A' }}>
                 <Globe size={13} color="#D97706" />
-                <span style={{ fontSize: 12, color: '#92400E', fontFamily: "'Inter', sans-serif" }}>Arabic document — content may display RTL</span>
+                <span style={{ fontSize: 12, color: '#92400E', fontFamily: "'Inter', sans-serif" }}>Original Arabic document — English translation available</span>
               </div>
             )}
             <h2 style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', margin: '0 0 16px', fontFamily: "'Sora', sans-serif" }}>{doc.title}</h2>
-            <p style={{ fontSize: 14, lineHeight: 1.7, color: '#334155', whiteSpace: 'pre-wrap', fontFamily: "'Inter', sans-serif" }}>
-              {doc.content_processed ? doc.content_processed.slice(0, 600) : `${doc.title}\n\nContent being extracted — please wait for processing to complete...`}
-            </p>
+            {doc.content_processed ? (
+              <p style={{ fontSize: 14, lineHeight: 1.7, color: '#334155', whiteSpace: 'pre-wrap', fontFamily: "'Inter', sans-serif" }}>
+                {doc.content_processed.slice(0, 800)}
+                {doc.content_processed.length > 800 ? '...' : ''}
+              </p>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 16px', background: '#EFF6FF', borderRadius: 'var(--ra-radius-card)', border: '1px solid #BFDBFE' }}>
+                <Info size={16} color="#2563EB" style={{ marginTop: 1, flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1E40AF', fontFamily: "'Inter', sans-serif" }}>Content is being extracted</div>
+                  <p style={{ fontSize: 12, color: '#3B82F6', margin: '4px 0 0', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>
+                    The document will be available shortly. Processing is underway.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

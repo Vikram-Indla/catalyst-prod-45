@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { X, ExternalLink, FileText, BookOpen } from 'lucide-react';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 
 interface Props {
   doc: RADocumentWithArtifacts;
@@ -53,11 +53,11 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate }:
           )}
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 16px', marginBottom: 16 }}>
-            <FieldItem label="Created in Jira" value={doc.jira_created_at ? formatDistanceToNow(new Date(doc.jira_created_at), { addSuffix: true }) : '—'} />
-            <FieldItem label="Project" value={doc.jira_project} />
-            <FieldItem label="Language" value={doc.language === 'ar' ? 'Arabic' : 'English'} />
+            <FieldItem label="Created in Jira" value={doc.jira_created_at ? format(new Date(doc.jira_created_at), 'd MMM yyyy, HH:mm') : '—'} />
+            <FieldItem label="Reporter" value="—" />
+            <FieldItem label="Priority" value="—" />
             <FieldItem label="Status" value={doc.status} isLozenge />
-            <FieldItem label="Source" value={doc.source_type.replace(/_/g, ' ')} />
+            <FieldItem label="Language" value={doc.language === 'ar' ? 'Arabic' : 'English'} />
             <FieldItem label="Imported" value={doc.pulled_at ? formatDistanceToNow(new Date(doc.pulled_at), { addSuffix: true }) : '—'} />
           </div>
 
@@ -65,7 +65,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate }:
           <div style={{ marginBottom: 16 }}>
             <span style={{ fontSize: 11, fontWeight: 500, color: '#64748B', textTransform: 'uppercase' as const, letterSpacing: '0.04em', fontFamily: "'Inter', sans-serif" }}>Description</span>
             <p style={{ fontSize: 13, color: '#334155', lineHeight: 1.6, margin: '6px 0 0', fontFamily: "'Inter', sans-serif" }}>
-              {doc.content_processed ? doc.content_processed.slice(0, 200) + '...' : 'No description available'}
+              {doc.content_processed ? doc.content_processed.slice(0, 300) + (doc.content_processed.length > 300 ? '...' : '') : 'Awaiting extraction'}
             </p>
           </div>
 
@@ -83,6 +83,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate }:
                   <div style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>{doc.jira_ticket_key}.pdf</div>
                   <div style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
                     {doc.page_count ? `${doc.page_count} pages` : 'PDF'} · {doc.language === 'ar' ? 'Arabic' : 'English'}
+                    {doc.page_count ? ` · ~${(doc.page_count * 0.07).toFixed(1)}MB` : ''}
                   </div>
                 </div>
               </button>

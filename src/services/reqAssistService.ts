@@ -85,6 +85,29 @@ export async function fetchRAStats() {
   };
 }
 
+// ── JOB POLLING ──
+
+export async function fetchRAJobById(jobId: string) {
+  const { data, error } = await (supabase as any)
+    .from('ra_processing_jobs')
+    .select('*')
+    .eq('id', jobId)
+    .single();
+  if (error) throw error;
+  return data as RAProcessingJob;
+}
+
+export async function fetchRAJobsByDocId(docId: string) {
+  const { data, error } = await (supabase as any)
+    .from('ra_processing_jobs')
+    .select('*')
+    .eq('ra_document_id', docId)
+    .in('status', ['queued', 'processing'])
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as RAProcessingJob[];
+}
+
 // ── MUTATIONS ──
 
 export async function createRADocument(payload: {
@@ -95,6 +118,8 @@ export async function createRADocument(payload: {
   jira_ticket_key?: string;
   jira_project?: string;
   page_count?: number;
+  content_raw?: string;
+  status?: string;
 }) {
   const { data, error } = await (supabase as any)
     .from('ra_documents')
@@ -102,7 +127,7 @@ export async function createRADocument(payload: {
       ...payload,
       jira_ticket_key: payload.jira_ticket_key ?? `GEN-${Date.now()}`,
       jira_project: payload.jira_project ?? 'MANUAL',
-      status: 'pending',
+      status: payload.status ?? 'pending',
       wikihub_synced: false,
     })
     .select()
@@ -113,11 +138,18 @@ export async function createRADocument(payload: {
 
 export async function queueProcessingJob(params: {
   ra_document_id: string;
-  job_type: RAProcessingJob['job_type'];
+  job_type: string;
+  eta_seconds?: number;
 }) {
   const { data, error } = await (supabase as any)
     .from('ra_processing_jobs')
-    .insert({ ...params, status: 'queued', progress_pct: 0 })
+    .insert({
+      ra_document_id: params.ra_document_id,
+      job_type: params.job_type,
+      status: 'queued',
+      progress_pct: 0,
+      eta_seconds: params.eta_seconds ?? 120,
+    })
     .select()
     .single();
   if (error) throw error;
