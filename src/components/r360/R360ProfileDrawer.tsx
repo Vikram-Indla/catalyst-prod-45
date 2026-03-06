@@ -1091,11 +1091,11 @@ function OverviewTab({
               >
                 <JiraIssueTypeIcon type={row.type} size={16} />
                 <span style={{ fontSize: 12, color: INK2, width: 72, flexShrink: 0 }}>{row.type}</span>
-                <div style={{ flex: 1, height: 18, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ flex: 1, height: 18, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{
                     height: '100%', borderRadius: 3,
                     width: `${row.pct}%`,
-                    background: tc.color, opacity: tc.opacity,
+                    background: row.pct > 0 ? '#0D9488' : 'transparent',
                     transition: 'width 300ms ease',
                   }} />
                 </div>
