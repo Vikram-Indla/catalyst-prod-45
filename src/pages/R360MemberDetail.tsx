@@ -603,7 +603,7 @@ export default function R360MemberDetail() {
             {/* Intelligence — brand blue standard */}
             <AIIntelligenceButton
               label="Intelligence"
-              onClick={() => setAiOpen(true)}
+              onClick={() => { setR360DrawerOpen(true); setR360ActiveTab('overview'); setR360WeekOffset(0); }}
             />
           </div>
         </div>
