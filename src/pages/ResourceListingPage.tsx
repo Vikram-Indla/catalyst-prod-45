@@ -299,7 +299,7 @@ export default function ResourceListingPage() {
               {showBadge && (
                 <span style={{
                   background: isActive ? 'rgba(0,0,0,0.06)' : '#E2E8F0',
-                  color: isActive ? undefined : '#64748B',
+                  color: isActive ? 'inherit' : '#64748B',
                   borderRadius: 10, padding: '1px 6px',
                   fontSize: 11, fontWeight: 600, marginLeft: 4,
                 }}>
