@@ -508,7 +508,7 @@ function OverviewTab({
   const oldestAgeDays = stats?.oldest_item_age_days ?? 0;
   const oldestKey = stats?.oldest_item_key ?? '—';
 
-  const closedColour = closedThisWeek > 0 ? SUCCESS : WARNING;
+  const closedColour = openCount === 0 ? INK1 : closedThisWeek === 0 ? WARNING : closedThisWeek >= 3 ? SUCCESS : INK1;
   const closedTrend = closedThisWeek > prevWeekClosed ? '↑' : closedThisWeek < prevWeekClosed ? '↓' : '';
   const closedTrendColor = closedThisWeek > prevWeekClosed ? SUCCESS : closedThisWeek < prevWeekClosed ? DANGER : INK1;
 
