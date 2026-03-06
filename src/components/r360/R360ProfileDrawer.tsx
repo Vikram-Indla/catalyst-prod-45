@@ -1205,7 +1205,7 @@ function OverviewTab({
 const WORK_DAYS = [0, 1, 2, 3, 4]; // Sun=0..Thu=4
 const DAY_ABBRS = ['Su', 'Mo', 'Tu', 'We', 'Th'];
 
-function BehaviouralTab({ workItems }: { workItems: any[] }) {
+function BehaviouralTab({ workItems, showFilteredList }: { workItems: any[]; showFilteredList: (label: string, filterFn: (i: any) => boolean) => void }) {
   // §1 Work Rhythm DNA
   const rhythmData = useMemo(() => {
     const counts: Record<number, number> = { 0:0, 1:0, 2:0, 3:0, 4:0 };
