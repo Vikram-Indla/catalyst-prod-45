@@ -140,12 +140,31 @@ export default function ResourceListingPage() {
     [deptCounts]
   );
 
+  // Resource type counts (within current dept filter)
+  const deptFiltered = useMemo(() => {
+    if (deptFilter === 'All') return resources;
+    return resources.filter(r => r.dept_name === deptFilter);
+  }, [resources, deptFilter]);
+
+  const resourceTypeCounts = useMemo(() => {
+    const counts = { all: deptFiltered.length, core: 0, project: 0, temporary: 0 };
+    deptFiltered.forEach(r => {
+      const rt = r.resource_type;
+      if (rt === 'variable' || rt === 'permanent') counts.core++;
+      else if (rt === 'fixed') counts.project++;
+      else if (rt === 'freelance') counts.temporary++;
+    });
+    return counts;
+  }, [deptFiltered]);
+
   // Filter
   const filtered = useMemo(() => {
-    let list = resources;
-    if (deptFilter !== 'All') {
-      list = list.filter(r => r.dept_name === deptFilter);
-    }
+    let list = deptFiltered;
+    // Resource type filter
+    if (resourceTypeFilter === 'core') list = list.filter(r => ['variable', 'permanent'].includes(r.resource_type || ''));
+    else if (resourceTypeFilter === 'project') list = list.filter(r => r.resource_type === 'fixed');
+    else if (resourceTypeFilter === 'temporary') list = list.filter(r => r.resource_type === 'freelance');
+    // Search
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(r =>
@@ -157,7 +176,7 @@ export default function ResourceListingPage() {
       );
     }
     return list;
-  }, [resources, deptFilter, search]);
+  }, [deptFiltered, resourceTypeFilter, search]);
 
   // Sort
   const sorted = useMemo(() => {
