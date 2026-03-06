@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import {
   fetchRADocuments, fetchRAStats, createRADocument,
   queueProcessingJob, fetchJiraProjectTickets, fetchRADocumentById,
@@ -12,6 +13,7 @@ export const RA_KEYS = {
   document: (id: string) => ['ra', 'document', id] as const,
   stats: () => ['ra', 'stats'] as const,
   jiraTickets: (project: string) => ['ra', 'jira', project] as const,
+  jiraConnections: () => ['ra', 'jira_connections'] as const,
   job: (id: string) => ['ra', 'job', id] as const,
   jobsByDoc: (docId: string) => ['ra', 'jobs-doc', docId] as const,
 };
@@ -52,6 +54,49 @@ export function useJiraTickets(projectKey: string) {
     queryFn: () => fetchJiraProjectTickets(projectKey),
     enabled: !!projectKey,
     staleTime: 60_000,
+  });
+}
+
+export function useJiraConnections() {
+  return useQuery({
+    queryKey: RA_KEYS.jiraConnections(),
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('ra_jira_connections')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as any[];
+    },
+    staleTime: 60_000,
+  });
+}
+
+export function useAddJiraConnection() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (conn: {
+      project_key: string;
+      project_name: string;
+      jira_url: string;
+      jira_email: string;
+      api_token_encrypted: string;
+      status?: string;
+      ticket_count?: number;
+      pdf_ticket_count?: number;
+    }) => {
+      const { data, error } = await (supabase as any)
+        .from('ra_jira_connections')
+        .insert(conn)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: RA_KEYS.jiraConnections() });
+      queryClient.invalidateQueries({ queryKey: RA_KEYS.all });
+    },
   });
 }
 
