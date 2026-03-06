@@ -575,7 +575,8 @@ const App = () => (
               {/* Req Assist V2 — Document Library */}
               <Route path="/product/req-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqAssistLibrary /></Suspense>} />
               <Route path="/product/req-assist/generate" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqAssistGenerate /></Suspense>} />
-
+              <Route path="/product-hub/req-assist" element={<Navigate to="/product/req-assist" replace />} />
+              <Route path="/product-hub/req-assist/generate" element={<Navigate to="/product/req-assist/generate" replace />} />
               {/* Legacy industry redirects */}
               <Route path="/industry/*" element={<Navigate to="/producthub" replace />} />
               
