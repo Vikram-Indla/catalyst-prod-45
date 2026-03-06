@@ -54,7 +54,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
       {
         title: 'Intelligence',
         items: [
-          { id: 'req-assist-pipeline', title: 'Req Assist™', path: '/product/req-assist', icon: FileText, exact: false },
+          { id: 'req-assist-pipeline', title: 'Req Assist™', path: '/product/req-assist', icon: FileText, exact: false, textBadge: 'AI' },
         ],
       },
     ],
