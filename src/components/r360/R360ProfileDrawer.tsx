@@ -185,25 +185,28 @@ function computeLoadColour(openCount: number, roleAvg: number): string {
   return DANGER;
 }
 
-// ── StatusLozenge (3 colours — IMMUTABLE) ──
-function getStatusLozengeStyle(status: string) {
-  const s = (status || '').toLowerCase().replace(/[_\s-]/g, '');
-  if (['done', 'closed', 'completed', 'approved'].includes(s))
-    return { bg: '#E3FCEF', text: '#006644', label: (status || '').toUpperCase() };
-  if (['inprogress', 'inreview', 'active'].includes(s))
-    return { bg: '#DEEBFF', text: '#0747A6', label: (status || '').toUpperCase() };
-  return { bg: '#DFE1E6', text: '#253858', label: (status || '').toUpperCase() };
-}
-
-function DrawerLozenge({ status }: { status: string }) {
-  const s = getStatusLozengeStyle(status);
+// ── R360StatusLozenge (3 colours — IMMUTABLE) ──
+function R360StatusLozenge({ status }: { status: string }) {
+  const s = (status ?? '').toLowerCase().replace(/[\s_-]/g, '');
+  let bg = '#DFE1E6';
+  let color = '#253858';
+  if (['done', 'closed', 'completed', 'approved', 'resolved'].includes(s)) {
+    bg = '#E3FCEF'; color = '#006644';
+  } else if (['inprogress', 'inreview', 'active', 'started'].includes(s)) {
+    bg = '#DEEBFF'; color = '#0747A6';
+  }
   return (
     <span style={{
-      display: 'inline-flex', alignItems: 'center', height: 20,
-      padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700,
-      textTransform: 'uppercase', letterSpacing: '0.03em',
-      background: s.bg, color: s.text, whiteSpace: 'nowrap',
-    }}>{s.label}</span>
+      display: 'inline-flex', alignItems: 'center',
+      backgroundColor: bg, color,
+      fontSize: '11px', fontWeight: 700,
+      letterSpacing: '0.03em', textTransform: 'uppercase' as const,
+      padding: '0 6px', height: '20px', borderRadius: '3px',
+      lineHeight: '20px', whiteSpace: 'nowrap' as const,
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      {(status || '').toUpperCase()}
+    </span>
   );
 }
 
