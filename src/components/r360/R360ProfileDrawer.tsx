@@ -3,7 +3,7 @@
  * V12 Hybrid Precision · No portal, no fixed, no overlay
  */
 import React, { useState, useMemo } from 'react';
-import { ChevronLeft, X, AlertTriangle, Info, BookOpen, ChevronRight, RefreshCw } from 'lucide-react';
+import { ChevronLeft, X, AlertTriangle, Info, BookOpen, ChevronRight, RefreshCw, CalendarX } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';
@@ -494,10 +494,10 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
           />
         )}
         {activeTab === 'behavioural' && (
-          <div style={{ padding: 16, fontSize: 13, color: INK4 }}>Behavioural Patterns — coming in Stage D</div>
+          <BehaviouralTab workItems={workItems} />
         )}
         {activeTab === 'weekly' && (
-          <div style={{ padding: 16, fontSize: 13, color: INK4 }}>Weekly Story — coming in Stage D</div>
+          <WeeklyStoryTab workItems={workItems} openCount={openCount} />
         )}
         {activeTab === 'items' && (
           <div style={{ padding: 16, fontSize: 13, color: INK4 }}>Work Items — coming in Stage D</div>
@@ -834,6 +834,365 @@ function OverviewTab({
             fontSize: 14, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace",
             color: totalOpenAcrossHubs > roleAvg ? DANGER : SUCCESS,
           }}>{totalOpenAcrossHubs}</span>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ══════════════════════════════════════════
+// BEHAVIOURAL PATTERNS TAB
+// ══════════════════════════════════════════
+function BehaviouralTab({ workItems }: { workItems: any[] }) {
+  const DAY_ABBRS = ['Su', 'Mo', 'Tu', 'We', 'Th'];
+  const WORK_DAYS = [0, 1, 2, 3, 4]; // Sun-Thu
+
+  // §1 Work Rhythm DNA — group by day_of_week(updated_at) for active items
+  const rhythmData = useMemo(() => {
+    const counts = [0, 0, 0, 0, 0]; // Sun-Thu
+    workItems.forEach((i: any) => {
+      if (!i.updated_at) return;
+      const sc = (i.status_category || '').toLowerCase();
+      if (sc !== 'in_progress' && sc !== 'done') return;
+      const d = new Date(i.updated_at).getDay();
+      if (d >= 0 && d <= 4) counts[d]++;
+    });
+    const max = Math.max(...counts, 1);
+    return { counts, max };
+  }, [workItems]);
+
+  // §2 Pickup Intelligence
+  const pickupStats = useMemo(() => {
+    let totalPickup = 0, pickupCount = 0, sameDayCount = 0;
+    const teamPickups: number[] = [];
+
+    workItems.forEach((i: any) => {
+      if (!i.created_at || !i.updated_at) return;
+      const sc = (i.status_category || '').toLowerCase();
+      if (sc === 'in_progress' || sc === 'done' || sc === 'in_review') {
+        // Approximate pickup: difference between created and first activity
+        const created = new Date(i.created_at);
+        const updated = new Date(i.updated_at);
+        // Use created→updated as proxy for pickup if status moved beyond to_do
+        const diffMs = updated.getTime() - created.getTime();
+        if (diffMs > 0) {
+          const hours = diffMs / 3600000;
+          totalPickup += hours;
+          pickupCount++;
+          teamPickups.push(hours);
+          if (created.toDateString() === updated.toDateString()) sameDayCount++;
+        }
+      }
+    });
+
+    const avgPickup = pickupCount > 0 ? totalPickup / pickupCount : null;
+    const teamAvg = 38; // benchmark
+    let vsTeam: { label: string; color: string } = { label: 'On par', color: SLATE };
+    if (avgPickup !== null) {
+      const diff = avgPickup - teamAvg;
+      if (diff > 2) vsTeam = { label: `+${Math.round(diff)}h slower`, color: DANGER };
+      else if (diff < -2) vsTeam = { label: `−${Math.round(Math.abs(diff))}h faster`, color: SUCCESS };
+    }
+
+    return {
+      avgPickup,
+      avgPickupLabel: avgPickup === null ? '—' : avgPickup < 24 ? `${Math.round(avgPickup)}h` : `${Math.round(avgPickup / 24)}d`,
+      sameDayCount,
+      vsTeam,
+    };
+  }, [workItems]);
+
+  // §3 Execution Style
+  const execStyle = useMemo(() => {
+    const closed = workItems.filter((i: any) => (i.status_category || '').toLowerCase() === 'done');
+    const total = workItems.length;
+    const inProg = workItems.filter((i: any) => (i.status_category || '').toLowerCase() === 'in_progress');
+    const completionRate = total > 0 ? Math.round((closed.length / total) * 100) : 0;
+
+    // Avg cycle: approximate from created→updated for done items
+    let totalCycleDays = 0, cycleCount = 0;
+    closed.forEach((i: any) => {
+      if (i.created_at && i.updated_at) {
+        const days = (new Date(i.updated_at).getTime() - new Date(i.created_at).getTime()) / 86400000;
+        if (days > 0) { totalCycleDays += days; cycleCount++; }
+      }
+    });
+    const avgCycle = cycleCount > 0 ? totalCycleDays / cycleCount : null;
+    const avgCycleLabel = avgCycle === null ? '—' : `${Math.floor(avgCycle)}d ${Math.round((avgCycle % 1) * 24)}h`;
+
+    return {
+      avgCycleLabel,
+      itemsClosed: closed.length,
+      concurrentAvg: inProg.length,
+      completionRate: `${completionRate}%`,
+    };
+  }, [workItems]);
+
+  // §4 Hub Breakdown — segmented bar
+  const HUB_COLORS: Record<string, string> = {
+    BAU: BRAND, bau: BRAND, incident: DANGER, Product: '#3F3F46', Task: '#D4D4D8',
+  };
+  const hubSegments = useMemo(() => {
+    const counts: Record<string, number> = {};
+    workItems.forEach((i: any) => {
+      const hub = i.source_hub || 'BAU';
+      counts[hub] = (counts[hub] || 0) + 1;
+    });
+    const total = workItems.length || 1;
+    return Object.entries(counts).map(([hub, count]) => ({
+      hub, count, pct: (count / total) * 100,
+      color: HUB_COLORS[hub] || MUTED,
+    }));
+  }, [workItems]);
+
+  const hasActivity = rhythmData.counts.some(c => c > 0);
+
+  return (
+    <>
+      {/* §1 Work Rhythm DNA */}
+      <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
+        <SectionTitle>WORK RHYTHM DNA</SectionTitle>
+        {!hasActivity ? (
+          <div style={{ fontSize: 13, color: MUTED, padding: '20px 0', textAlign: 'center' as const }}>No activity data yet</div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 120 }}>
+            {WORK_DAYS.map((d, idx) => {
+              const val = rhythmData.counts[d];
+              const barH = Math.max((val / rhythmData.max) * 90, 2);
+              const isPeak = val === rhythmData.max && val > 0;
+              return (
+                <div key={d} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? BRAND : INK2 }}>{val}</span>
+                  <div style={{
+                    width: '100%', maxWidth: 40, height: barH, borderRadius: 3,
+                    background: BRAND, opacity: isPeak ? 1 : 0.7,
+                    transition: 'height 300ms ease',
+                  }} />
+                  <span style={{ fontSize: 11, color: INK4, fontWeight: 500 }}>{DAY_ABBRS[idx]}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* §2 Pickup Intelligence */}
+      <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
+        <SectionTitle>PICKUP INTELLIGENCE</SectionTitle>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+          {[
+            { label: 'Avg Pickup Time', value: pickupStats.avgPickupLabel, sub: 'time to first touch' },
+            { label: 'Same-Day Pickups', value: String(pickupStats.sameDayCount), sub: 'picked up day of creation' },
+            { label: 'Avg vs Team', value: pickupStats.vsTeam.label, sub: 'vs team benchmark', valueColor: pickupStats.vsTeam.color },
+          ].map((tile, i) => (
+            <div key={i} style={{
+              border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 20, fontWeight: 700, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>
+              <div style={{ fontSize: 11, color: INK4, marginTop: 4 }}>{tile.sub}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* §3 Execution Style */}
+      <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
+        <SectionTitle>EXECUTION STYLE</SectionTitle>
+        <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+          {[
+            { label: 'Avg cycle time', value: execStyle.avgCycleLabel },
+            { label: 'Items closed', value: String(execStyle.itemsClosed) },
+            { label: 'Concurrent avg', value: String(execStyle.concurrentAvg) },
+            { label: 'Completion rate', value: execStyle.completionRate },
+          ].map((row, i, arr) => (
+            <div key={i} style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              height: 36, padding: '0 14px',
+              borderBottom: i < arr.length - 1 ? '0.75px solid #E2E8F0' : 'none',
+            }}>
+              <span style={{ fontSize: 12, color: INK2 }}>{row.label}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: INK1 }}>{row.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* §4 Hub Breakdown */}
+      <div style={{ padding: 16 }}>
+        <SectionTitle>HUB BREAKDOWN</SectionTitle>
+        {/* Segmented bar */}
+        <div style={{ display: 'flex', height: 10, borderRadius: 4, overflow: 'hidden', background: '#F1F5F9' }}>
+          {hubSegments.map((s, i) => (
+            <div key={i} style={{ width: `${s.pct}%`, height: '100%', background: s.color, transition: 'width 300ms' }} />
+          ))}
+        </div>
+        {/* Legend */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 10 }}>
+          {hubSegments.map((s, i) => (
+            <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
+              <span style={{ fontSize: 12, color: INK2 }}>{s.hub === 'incident' ? 'IncidentHub' : s.hub === 'bau' || s.hub === 'BAU' ? 'BAU' : s.hub}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: INK1 }}>{s.count}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ══════════════════════════════════════════
+// WEEKLY STORY TAB
+// ══════════════════════════════════════════
+function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount: number }) {
+  // Saudi work week bounds
+  const { weekStart, weekEnd } = useMemo(() => {
+    const now = new Date();
+    const day = now.getDay();
+    const daysSinceSunday = day === 0 ? 0 : day;
+    const ws = new Date(now);
+    ws.setDate(now.getDate() - daysSinceSunday);
+    ws.setHours(0, 0, 0, 0);
+    const we = new Date(ws);
+    we.setDate(ws.getDate() + 4);
+    we.setHours(23, 59, 59, 999);
+    return { weekStart: ws, weekEnd: we };
+  }, []);
+
+  const closedThisWeek = useMemo(() =>
+    workItems.filter((i: any) => {
+      if ((i.status_category || '').toLowerCase() !== 'done') return false;
+      const u = new Date(i.updated_at);
+      return u >= weekStart && u <= weekEnd;
+    }).length
+  , [workItems, weekStart, weekEnd]);
+
+  const oldestDays = useMemo(() => {
+    const open = workItems.filter((i: any) => (i.status_category || '').toLowerCase() !== 'done');
+    if (open.length === 0) return 0;
+    const now = Date.now();
+    return open.reduce((max: number, i: any) => {
+      const age = Math.floor((now - new Date(i.created_at).getTime()) / 86400000);
+      return age > max ? age : max;
+    }, 0);
+  }, [workItems]);
+
+  // §1 Week Headline
+  const headline = useMemo(() => {
+    if (closedThisWeek === 0 && openCount === 0) return 'Quiet week — no active items.';
+    if (closedThisWeek === 0 && openCount > 0) return `Carrying ${openCount} open items into this week, none closed yet.`;
+    if (closedThisWeek > 0 && openCount === 0) return `Strong week — closed ${closedThisWeek} item(s) with nothing outstanding.`;
+    return `Closed ${closedThisWeek} this week, ${openCount} still open. Oldest: ${oldestDays}d.`;
+  }, [closedThisWeek, openCount, oldestDays]);
+
+  // §2 Timeline items — updated this week
+  const timelineItems = useMemo(() =>
+    workItems
+      .filter((i: any) => {
+        const u = new Date(i.updated_at);
+        return u >= weekStart && u <= weekEnd;
+      })
+      .sort((a: any, b: any) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      .slice(0, 10)
+  , [workItems, weekStart, weekEnd]);
+
+  // §3 Summary tiles
+  const createdThisWeek = useMemo(() =>
+    workItems.filter((i: any) => {
+      const c = new Date(i.created_at);
+      return c >= weekStart && c <= weekEnd;
+    }).length
+  , [workItems, weekStart, weekEnd]);
+
+  const updatedOnly = useMemo(() => {
+    // Updated this week but NOT created this week
+    return workItems.filter((i: any) => {
+      const u = new Date(i.updated_at);
+      const c = new Date(i.created_at);
+      const inWeek = u >= weekStart && u <= weekEnd;
+      const createdInWeek = c >= weekStart && c <= weekEnd;
+      return inWeek && !createdInWeek;
+    }).length;
+  }, [workItems, weekStart, weekEnd]);
+
+  const relativeTime = (dateStr: string) => {
+    const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+    if (diff === 0) return 'Today';
+    if (diff === 1) return '1d ago';
+    return `${diff}d ago`;
+  };
+
+  const statusKey = (cat: string) => {
+    const c = (cat || '').toLowerCase();
+    if (c === 'done') return 'DONE';
+    if (c === 'in_progress' || c === 'in_review') return 'IN_PROGRESS';
+    return 'TO_DO';
+  };
+
+  return (
+    <>
+      {/* §1 Week Headline */}
+      <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
+        <div style={{
+          border: '1px solid #E2E8F0', borderRadius: 8, padding: 16, background: '#FFFFFF',
+        }}>
+          <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.06em', color: INK4, marginBottom: 8 }}>
+            W{R360_WEEK} · MAR 1–5, 2026
+          </div>
+          <div style={{ fontSize: 14, color: INK2, lineHeight: 1.5 }}>{headline}</div>
+        </div>
+      </div>
+
+      {/* §2 Timeline */}
+      <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
+        <SectionTitle>THIS WEEK'S ACTIVITY</SectionTitle>
+        {timelineItems.length === 0 ? (
+          <div style={{
+            border: '1px solid #E2E8F0', borderRadius: 8, padding: '24px 16px',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, background: '#FFFFFF',
+          }}>
+            <CalendarX size={20} color={MUTED} />
+            <span style={{ fontSize: 13, color: INK4 }}>No activity recorded this week</span>
+            <span style={{ fontSize: 12, color: MUTED }}>Items will appear as work progresses</span>
+          </div>
+        ) : (
+          <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+            {timelineItems.map((item: any, idx: number) => (
+              <div key={item.id || idx} style={{
+                display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px',
+                minHeight: 36,
+                borderBottom: idx < timelineItems.length - 1 ? '0.75px solid #E2E8F0' : 'none',
+              }}>
+                <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
+                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK4, flexShrink: 0 }}>{item.item_key}</span>
+                <span style={{
+                  flex: 1, fontSize: 13, color: INK2, overflow: 'hidden',
+                  textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
+                }}>{item.title}</span>
+                <DrawerLozenge status={statusKey(item.status_category)} />
+                <span style={{ fontSize: 11, color: MUTED, flexShrink: 0 }}>{relativeTime(item.updated_at)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* §3 Week Summary Tiles */}
+      <div style={{ padding: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+          {[
+            { label: 'Opened', value: createdThisWeek },
+            { label: 'Updated', value: updatedOnly },
+            { label: 'Closed', value: closedThisWeek },
+          ].map((tile, i) => (
+            <div key={i} style={{
+              border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
+            }}>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 20, fontWeight: 700, color: INK1 }}>{tile.value}</div>
+              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 4 }}>{tile.label}</div>
+            </div>
+          ))}
         </div>
       </div>
     </>
