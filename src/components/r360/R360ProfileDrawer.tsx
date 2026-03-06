@@ -1170,14 +1170,23 @@ function OverviewTab({
         {/* Per-hub cards */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {hubBreakdown.map((hub, i) => (
-            <div key={i} style={{
-              border: `1px solid ${BORDER}`, borderRadius: 6, padding: '10px 14px',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}>
+            <div key={i}
+              onClick={() => showFilteredList(`${hub.hub === 'incident' ? 'IncidentHub' : hub.hub === 'bau' || hub.hub === 'BAU' ? 'BAU' : hub.hub} Items`, (item: any) => {
+                const itemHub = item.source_hub || 'BAU';
+                return itemHub === hub.hub;
+              })}
+              style={{
+                border: `1px solid ${BORDER}`, borderRadius: 6, padding: '10px 14px',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                cursor: 'pointer', transition: 'background 150ms',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
                   width: 8, height: 8, borderRadius: '50%',
-                  background: hub.isIncident ? DANGER : BRAND,
+                  backgroundColor: hub.isIncident ? DANGER : '#0D9488',
                 }} />
                 <span style={{ fontSize: 12, fontWeight: 600, color: INK1 }}>
                   {hub.hub === 'incident' ? 'IncidentHub' : hub.hub === 'bau' || hub.hub === 'BAU' ? 'BAU / ProjectHub' : hub.hub}
