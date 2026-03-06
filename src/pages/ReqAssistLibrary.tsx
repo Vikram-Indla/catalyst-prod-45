@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { FileText, FileSearch, Download, Loader2, AlertCircle, ChevronDown, Zap, TestTube, Flag, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { FileText, FileSearch, Download, Loader2, AlertCircle, ChevronDown, Zap, TestTube, Flag, RefreshCw, CheckCircle2, RotateCcw } from 'lucide-react';
 import { useRADocuments, useRAStats } from '@/hooks/useReqAssist';
 import { useNavigate } from 'react-router-dom';
 import type { RAFilterTab, RADocumentWithArtifacts } from '@/types/reqAssistV2';
@@ -10,10 +10,10 @@ import RAJiraSidePanel from '@/components/reqAssist/RAJiraSidePanel';
 import RAPDFViewer from '@/components/reqAssist/RAPDFViewer';
 import RABackgroundModal from '@/components/reqAssist/RABackgroundModal';
 import RAImportDrawer from '@/components/reqAssist/RAImportDrawer';
-import { formatDistanceToNow, format } from 'date-fns';
+import { format } from 'date-fns';
 
-/* ── Domain lozenge mapping ── */
-const BLUE_DOMAINS = ['customs & trade', 'chemical', '4ir'];
+/* ── Domain lozenge mapping (DA-006) ── */
+const BLUE_DOMAINS = ['customs & trade', 'chemical', '4ir', 'environmental'];
 
 function domainLozenge(domain: string | null) {
   if (!domain) return null;
@@ -45,6 +45,19 @@ export default function ReqAssistLibrary() {
     return () => document.removeEventListener('click', handler);
   }, [dropdownOpen]);
 
+  /* INT-005: ESC key layering — only close topmost overlay */
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (pdfDoc) { setPdfDoc(null); return; }
+      if (bgModal) { setBgModal(null); return; }
+      if (selectedDoc) { setSelectedDoc(null); return; }
+      if (importOpen) { setImportOpen(false); return; }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [pdfDoc, bgModal, selectedDoc, importOpen]);
+
   const handleRowClick = useCallback((doc: RADocumentWithArtifacts, e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     if (target.closest('[data-col="pdf"]') || target.closest('[data-col="actions"]')) return;
@@ -52,6 +65,9 @@ export default function ReqAssistLibrary() {
   }, []);
 
   const totalCount = stats?.total_documents ?? 0;
+  const isFiltering = search.length > 0 || tab !== 'all';
+  const hasDocuments = documents && documents.length > 0;
+  const isEmpty = !isLoading && (!documents || documents.length === 0);
 
   return (
     <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px 28px' }}>
@@ -104,194 +120,214 @@ export default function ReqAssistLibrary() {
         loading={statsLoading}
       />
 
-      {/* ── SEARCH + FILTER + TABLE ── */}
-      <div style={{ border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden' }}>
-        <RASearchToolbar
-          tab={tab}
-          onTabChange={setTab}
-          search={search}
-          onSearchChange={setSearch}
-          resultCount={documents?.length}
-        />
-
-        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
-              {[
-                { label: 'Jira Ticket', w: 120 },
-                { label: 'Title', w: undefined },
-                { label: 'Domain', w: 130 },
-                { label: 'PDF', w: 70 },
-                { label: 'Status', w: 110 },
-                { label: 'Generation', w: 170 },
-                { label: 'Imported', w: 85 },
-                { label: 'Actions', w: 110 },
-              ].map((col, i) => (
-                <th key={i} style={{
-                  padding: 'var(--ra-hd-pad)', height: 36,
-                  fontSize: 11, fontWeight: 600, color: '#64748B',
-                  textTransform: 'uppercase', letterSpacing: '0.04em',
-                  textAlign: 'left', width: col.w || undefined,
-                  background: '#F8FAFC',
-                  fontFamily: "'Inter', sans-serif",
-                }}>
-                  {col.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} style={{ height: 36 }}>
-                  {Array.from({ length: 8 }).map((_, j) => (
-                    <td key={j} style={{ padding: 'var(--ra-cell-pad)' }}>
-                      <div className="h-3 bg-gray-200 rounded animate-pulse" style={{ width: j === 1 ? '80%' : '60%' }} />
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : documents && documents.length > 0 ? (
-              documents.map(doc => {
-                const isProcessingRow = doc.status === 'processing';
-                const processingJob = (doc as any).ra_processing_jobs?.find?.((j: any) => j.status === 'processing');
-                return (
-                  <tr
-                    key={doc.id}
-                    onClick={(e) => handleRowClick(doc, e)}
-                    style={{
-                      height: 36, minHeight: 36, maxHeight: 36,
-                      cursor: 'pointer',
-                      borderBottom: '1px solid rgba(15,23,42,0.04)',
-                      background: isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent',
-                      transition: 'background 120ms ease',
-                    }}
-                    onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = 'rgba(15,23,42,0.04)'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
-                  >
-                    {/* Jira Ticket */}
-                    <td style={{ padding: 'var(--ra-cell-pad)' }}>
-                      {doc.jira_ticket_url ? (
-                        <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-                          style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB', textDecoration: 'none' }}>
-                          {doc.jira_ticket_key}
-                        </a>
-                      ) : (
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
-                          {doc.jira_ticket_key}
-                        </span>
-                      )}
-                    </td>
-                    {/* Title */}
-                    <td style={{ padding: 'var(--ra-cell-pad)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 0 }}>
-                      <span title={doc.title} style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
-                        {doc.title.length > 52 ? doc.title.slice(0, 52) + '…' : doc.title}
-                      </span>
-                    </td>
-                    {/* Domain */}
-                    <td style={{ padding: 'var(--ra-cell-pad)' }}>
-                      {doc.domain ? (() => {
-                        const lz = domainLozenge(doc.domain);
-                        return (
-                          <span style={{
-                            display: 'inline-flex', alignItems: 'center',
-                            padding: '0 6px', height: 20, borderRadius: 3,
-                            fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                            letterSpacing: '0.02em', whiteSpace: 'nowrap',
-                            background: lz!.bg, color: lz!.color,
-                            fontFamily: "'Inter', sans-serif",
-                          }}>
-                            {doc.domain}
-                          </span>
-                        );
-                      })() : (
-                        <span style={{ color: '#94A3B8', fontSize: 12 }}>—</span>
-                      )}
-                    </td>
-                    {/* PDF */}
-                    <td data-col="pdf" style={{ padding: 'var(--ra-cell-pad)' }}>
-                      {doc.pdf_url ? (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setPdfDoc(doc); }}
-                          style={{
-                            display: 'inline-flex', alignItems: 'center', gap: 4,
-                            padding: '3px 6px', borderRadius: 4,
-                            background: '#FEF2F2', border: 'none', cursor: 'pointer',
-                            fontSize: 11, color: '#DC2626', fontWeight: 500,
-                            fontFamily: "'JetBrains Mono', monospace",
-                          }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
-                          onMouseLeave={e => (e.currentTarget.style.background = '#FEF2F2')}
-                        >
-                          <FileText size={13} strokeWidth={1.5} />
-                          {doc.page_count ? `${doc.page_count}pp` : '—pp'}
-                        </button>
-                      ) : (
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#94A3B8', fontSize: 11 }}>
-                          <FileText size={13} strokeWidth={1.5} style={{ opacity: 0.4 }} /> —
-                        </span>
-                      )}
-                    </td>
-                    {/* Status */}
-                    <td style={{ padding: 'var(--ra-cell-pad)' }}>
-                      <StatusBadge status={doc.status} />
-                    </td>
-                    {/* Generation */}
-                    <td style={{ padding: 'var(--ra-cell-pad)' }}>
-                      <RAGenerationBar
-                        slots={doc.generation_slots}
-                        artifactCounts={doc.artifact_counts}
-                        isProcessing={isProcessingRow}
-                        etaMinutes={processingJob ? Math.ceil((processingJob.eta_seconds ?? 240) / 60) : undefined}
-                      />
-                    </td>
-                    {/* Imported */}
-                    <td style={{ padding: 'var(--ra-cell-pad)' }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#94A3B8' }}>
-                        {doc.pulled_at ? formatImported(doc.pulled_at) : '—'}
-                      </span>
-                    </td>
-                    {/* Actions */}
-                    <td data-col="actions" style={{ padding: 'var(--ra-cell-pad)', position: 'relative' }}>
-                      <GenerateDropdown
-                        doc={doc}
-                        isOpen={dropdownOpen === doc.id}
-                        onToggle={(e) => { e.stopPropagation(); setDropdownOpen(dropdownOpen === doc.id ? null : doc.id); }}
-                        onSelect={(type) => { setDropdownOpen(null); setBgModal({ type, doc }); }}
-                      />
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
-                  <FileSearch size={24} color="#94A3B8" style={{ margin: '0 auto 8px', display: 'block' }} />
-                  <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
-                    No documents match your search
-                  </p>
-                  <button onClick={() => { setSearch(''); setTab('all'); }}
-                    style={{ fontSize: 12, color: '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-                    Clear search
-                  </button>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-
-        {/* Table footer */}
-        {!isLoading && documents && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#F8FAFC', borderTop: '1px solid rgba(15,23,42,0.06)' }}>
-            <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
-              Showing {documents.length} of {totalCount} documents
-            </span>
-            <button style={{ fontSize: 12, color: '#2563EB', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-              View all →
+      {/* EC-001: Empty library — no documents at all */}
+      {!isLoading && totalCount === 0 && !isFiltering ? (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 0', border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)' }}>
+          <FileText size={36} color="#94A3B8" style={{ marginBottom: 12 }} />
+          <p style={{ fontSize: 15, fontWeight: 500, color: '#64748B', margin: '0 0 4px', fontFamily: "'Inter', sans-serif" }}>No documents yet</p>
+          <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate from text to get started</p>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => setImportOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#334155', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+              <Download size={14} /> Import from Jira
+            </button>
+            <button onClick={() => navigate('/product/req-assist/generate')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+              <Zap size={14} /> Generate BRD
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        /* ── SEARCH + FILTER + TABLE ── */
+        <div style={{ border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden' }}>
+          <RASearchToolbar
+            tab={tab}
+            onTabChange={setTab}
+            search={search}
+            onSearchChange={setSearch}
+            resultCount={documents?.length}
+            totalCount={totalCount}
+            isFiltering={isFiltering}
+          />
+
+          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
+                {[
+                  { label: 'Jira Ticket', w: 120 },
+                  { label: 'Title', w: undefined },
+                  { label: 'Domain', w: 130 },
+                  { label: 'PDF', w: 70 },
+                  { label: 'Status', w: 110 },
+                  { label: 'Generation', w: 170 },
+                  { label: 'Imported', w: 85 },
+                  { label: 'Actions', w: 110 },
+                ].map((col, i) => (
+                  <th key={i} style={{
+                    padding: 'var(--ra-hd-pad)', height: 36,
+                    fontSize: 11, fontWeight: 600, color: '#64748B',
+                    textTransform: 'uppercase', letterSpacing: '0.04em',
+                    textAlign: 'left', width: col.w || undefined,
+                    background: '#F8FAFC',
+                    fontFamily: "'Inter', sans-serif",
+                  }}>
+                    {col.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} style={{ height: 36, minHeight: 36, maxHeight: 36 }}>
+                    {Array.from({ length: 8 }).map((_, j) => (
+                      <td key={j} style={{ padding: 'var(--ra-cell-pad)' }}>
+                        <div className="h-3 bg-gray-200 rounded animate-pulse" style={{ width: j === 1 ? '80%' : '60%' }} />
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : hasDocuments ? (
+                documents!.map(doc => {
+                  const isProcessingRow = doc.status === 'processing';
+                  const processingJob = (doc as any).ra_processing_jobs?.find?.((j: any) => j.status === 'processing');
+                  return (
+                    <tr
+                      key={doc.id}
+                      onClick={(e) => handleRowClick(doc, e)}
+                      style={{
+                        height: 36, minHeight: 36, maxHeight: 36,
+                        cursor: 'pointer',
+                        borderBottom: '1px solid rgba(15,23,42,0.04)',
+                        background: isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent',
+                        transition: 'background 120ms ease',
+                      }}
+                      onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = 'rgba(15,23,42,0.04)'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
+                    >
+                      {/* Jira Ticket */}
+                      <td style={{ padding: 'var(--ra-cell-pad)' }}>
+                        {doc.jira_ticket_url ? (
+                          <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
+                            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB', textDecoration: 'none' }}>
+                            {doc.jira_ticket_key}
+                          </a>
+                        ) : (
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                            {doc.jira_ticket_key}
+                          </span>
+                        )}
+                      </td>
+                      {/* Title */}
+                      <td style={{ padding: 'var(--ra-cell-pad)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 0 }}>
+                        <span title={doc.title} style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
+                          {doc.title.length > 52 ? doc.title.slice(0, 52) + '…' : doc.title}
+                        </span>
+                      </td>
+                      {/* Domain (EC-003) */}
+                      <td style={{ padding: 'var(--ra-cell-pad)' }}>
+                        {doc.domain ? (() => {
+                          const lz = domainLozenge(doc.domain);
+                          return (
+                            <span style={{
+                              display: 'inline-flex', alignItems: 'center',
+                              padding: '0 6px', height: 20, borderRadius: 3,
+                              fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                              letterSpacing: '0.02em', whiteSpace: 'nowrap',
+                              background: lz!.bg, color: lz!.color,
+                              fontFamily: "'Inter', sans-serif",
+                            }}>
+                              {doc.domain}
+                            </span>
+                          );
+                        })() : (
+                          <span style={{ color: '#94A3B8', fontSize: 12 }}>—</span>
+                        )}
+                      </td>
+                      {/* PDF (EC-004) */}
+                      <td data-col="pdf" style={{ padding: 'var(--ra-cell-pad)' }}>
+                        {doc.pdf_url ? (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setPdfDoc(doc); }}
+                            style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 4,
+                              padding: '3px 6px', borderRadius: 4,
+                              background: '#FEF2F2', border: 'none', cursor: 'pointer',
+                              fontSize: 11, color: '#DC2626', fontWeight: 500,
+                              fontFamily: "'JetBrains Mono', monospace",
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
+                            onMouseLeave={e => (e.currentTarget.style.background = '#FEF2F2')}
+                          >
+                            <FileText size={13} strokeWidth={1.5} />
+                            {doc.page_count ? `${doc.page_count}pp` : '—pp'}
+                          </button>
+                        ) : (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#94A3B8', fontSize: 11 }}>
+                            <FileText size={13} strokeWidth={1.5} style={{ opacity: 0.4 }} /> —
+                          </span>
+                        )}
+                      </td>
+                      {/* Status */}
+                      <td style={{ padding: 'var(--ra-cell-pad)' }}>
+                        <StatusBadge status={doc.status} />
+                      </td>
+                      {/* Generation */}
+                      <td style={{ padding: 'var(--ra-cell-pad)' }}>
+                        <RAGenerationBar
+                          slots={doc.generation_slots}
+                          artifactCounts={doc.artifact_counts}
+                          isProcessing={isProcessingRow}
+                          etaMinutes={processingJob ? Math.ceil((processingJob.eta_seconds ?? 240) / 60) : undefined}
+                        />
+                      </td>
+                      {/* Imported */}
+                      <td style={{ padding: 'var(--ra-cell-pad)' }}>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#94A3B8' }}>
+                          {doc.pulled_at ? formatImported(doc.pulled_at) : '—'}
+                        </span>
+                      </td>
+                      {/* Actions (INT-006) */}
+                      <td data-col="actions" style={{ padding: 'var(--ra-cell-pad)', position: 'relative' }}>
+                        <GenerateDropdown
+                          doc={doc}
+                          isOpen={dropdownOpen === doc.id}
+                          onToggle={(e) => { e.stopPropagation(); setDropdownOpen(dropdownOpen === doc.id ? null : doc.id); }}
+                          onSelect={(type) => { setDropdownOpen(null); setBgModal({ type, doc }); }}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                /* EC-002: Filtered empty state */
+                <tr>
+                  <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
+                    <FileSearch size={24} color="#94A3B8" style={{ margin: '0 auto 8px', display: 'block' }} />
+                    <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
+                      No documents match your search
+                    </p>
+                    <button onClick={() => { setSearch(''); setTab('all'); }}
+                      style={{ fontSize: 12, color: '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+                      Clear search
+                    </button>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          {/* Table footer */}
+          {!isLoading && documents && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#F8FAFC', borderTop: '1px solid rgba(15,23,42,0.06)' }}>
+              <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
+                Showing {documents.length} of {totalCount} documents
+              </span>
+              <button style={{ fontSize: 12, color: '#2563EB', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+                View all →
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Overlays */}
       {selectedDoc && <RAJiraSidePanel doc={selectedDoc} onClose={() => setSelectedDoc(null)} onOpenPdf={() => setPdfDoc(selectedDoc)} onGenerate={(type) => setBgModal({ type, doc: selectedDoc })} />}
@@ -344,13 +380,16 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+/* INT-006: Failed rows show Retry button (red) instead of disabled Generate */
 function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
   doc: RADocumentWithArtifacts;
   isOpen: boolean;
   onToggle: (e: React.MouseEvent) => void;
   onSelect: (type: string) => void;
 }) {
-  const disabled = doc.status === 'processing' || doc.status === 'failed';
+  const isProcessing = doc.status === 'processing';
+  const isFailed = doc.status === 'failed';
+  const disabled = isProcessing;
   const epicCount = doc.artifact_counts?.epics ?? 0;
   const uatCount = doc.artifact_counts?.uat ?? 0;
   const wikiChunks = doc.wikihub_chunk_count ?? 0;
@@ -362,6 +401,24 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
     { key: 'sep', label: '', desc: '' },
     { key: 'wikihub', icon: <RefreshCw size={13} color="#0D9488" />, label: 'Re-sync WikiHub', desc: wikiChunks > 0 ? `${wikiChunks} chunks` : 'not synced' },
   ];
+
+  /* INT-006: Failed → show Retry button */
+  if (isFailed) {
+    return (
+      <button
+        onClick={(e) => { e.stopPropagation(); onSelect('epics'); }}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+          borderRadius: 4, border: 'none', cursor: 'pointer',
+          background: '#DC2626', color: '#FFFFFF',
+          fontFamily: "'Inter', sans-serif",
+        }}
+      >
+        <RotateCcw size={12} /> Retry
+      </button>
+    );
+  }
 
   return (
     <div style={{ position: 'relative' }}>

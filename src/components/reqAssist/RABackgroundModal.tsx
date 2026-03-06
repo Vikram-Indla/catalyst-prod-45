@@ -26,7 +26,7 @@ const ETA_MAP: Record<string, number> = {
 };
 
 const TYPE_CONFIG: Record<string, { title: string; desc: string; steps: string[] }> = {
-  epics: { title: 'Generating Epic Statements', desc: 'AI is extracting epics and user stories from the BRD document.', steps: ['Parsing document structure', 'Extracting requirements', 'Generating epic statements', 'Mapping acceptance criteria', 'Quality validation'] },
+  epics: { title: 'Generating Epic Statements', desc: 'AI is extracting epics and user stories from the BRD document.', steps: ['Reading BRD content', 'Identifying functional domains', 'Drafting epic statements', 'Mapping to Catalyst epic fields', 'Quality validation'] },
   uat: { title: 'Generating UAT Scenarios', desc: 'AI is creating user acceptance test scenarios from the requirements.', steps: ['Analysing requirements', 'Identifying test boundaries', 'Generating scenarios', 'Cross-referencing epics', 'Validation complete'] },
   initiative: { title: 'Creating Catalyst Initiative', desc: 'Creating a new initiative in Catalyst from the BRD document.', steps: ['Extracting metadata', 'Mapping to initiative fields', 'Creating initiative record', 'Linking artefacts'] },
   wikihub: { title: 'Re-syncing WikiHub', desc: 'Updating knowledge base with latest document content.', steps: ['Chunking content', 'Generating embeddings', 'Updating index', 'Cache warm-up'] },
@@ -41,40 +41,32 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
 
   const { data: job } = useRAJobPolling(jobId);
 
-  // Queue the job on mount
   useEffect(() => {
     const jobType = JOB_TYPE_MAP[type] || 'generate_epics';
     const etaSeconds = ETA_MAP[type] || 120;
-
     queueJob.mutate(
       { ra_document_id: doc.id, job_type: jobType, eta_seconds: etaSeconds },
       {
-        onSuccess: (data: any) => {
-          setJobId(data.id);
-        },
-        onError: (err: any) => {
-          setError(err?.message || 'Failed to queue job');
-        },
+        onSuccess: (data: any) => setJobId(data.id),
+        onError: (err: any) => setError(err?.message || 'Failed to queue job'),
       }
     );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Derive progress from live job data
   const progress = job?.progress_pct ?? 0;
-  const etaSeconds = job?.eta_seconds ?? ETA_MAP[type] ?? 120;
-  const etaMinutes = Math.max(1, Math.ceil(etaSeconds / 60));
+  const etaSeconds = job?.eta_seconds;
+  /* EC-006: null eta → "Estimating..." */
+  const etaLabel = etaSeconds != null ? `~${Math.max(1, Math.ceil(etaSeconds / 60))} minutes` : 'Estimating...';
   const currentStep = job?.current_step ?? null;
   const jobStatus = job?.status ?? 'queued';
   const jobError = job?.error_message ?? error;
 
-  // Determine active step from progress
   const activeStep = Math.min(
     Math.floor((progress / 100) * config.steps.length),
     config.steps.length - 1
   );
 
-  // On job completion
   useEffect(() => {
     if (jobStatus === 'done') {
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
@@ -87,8 +79,14 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
 
   const handleLeave = () => {
     onClose();
-    if (jobStatus !== 'done') {
-      // Job continues in background; the polling in the table will pick it up
+    /* INT-007: Toast fires ~2s after leaving */
+    if (jobStatus !== 'done' && jobStatus !== 'failed') {
+      setTimeout(() => {
+        toast.success('Generation Complete', {
+          description: `${config.title.replace('Generating ', '')} ready for ${doc.jira_ticket_key}. View document →`,
+          duration: 6000,
+        });
+      }, 2000);
     }
   };
 
@@ -119,7 +117,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
             <Loader2 size={22} color="#2563EB" style={{ animation: 'ra-spin 1s linear infinite' }} />
           )}
         </div>
-        <h3 style={{ fontSize: 17, fontWeight: 650, color: '#0F172A', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>
+        <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>
           {jobStatus === 'done' ? 'Generation Complete' : jobStatus === 'failed' ? 'Generation Failed' : config.title}
         </h3>
         <p style={{ fontSize: 13, color: '#64748B', margin: '0 0 20px', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>
@@ -128,27 +126,31 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
           ) : jobStatus === 'done' ? (
             <>Artifacts have been generated and are ready for review.</>
           ) : (
-            <>{config.desc}<br /><span style={{ color: '#94A3B8' }}>You can leave this screen — we'll notify you when done</span></>
+            <>From: {doc.jira_ticket_key} · {doc.title}<br /><span style={{ color: '#94A3B8' }}>This typically takes {etaLabel}. You can leave this screen — we'll notify you when it's done.</span></>
           )}
         </p>
 
-        {/* Progress bar */}
         {jobStatus !== 'failed' && (
-          <div style={{ height: 6, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden', marginBottom: 20, position: 'relative' }}>
-            <div style={{
-              height: '100%', borderRadius: 3,
-              background: jobStatus === 'done' ? '#16A34A' : '#2563EB',
-              width: `${jobStatus === 'done' ? 100 : Math.min(progress, 99)}%`,
-              transition: 'width 400ms ease', position: 'relative', overflow: 'hidden',
-            }}>
-              {jobStatus !== 'done' && (
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)', animation: 'ra-shimmer 1.5s ease-in-out infinite' }} />
-              )}
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, padding: '0 0' }}>
+              <span style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>{currentStep || config.steps[activeStep]}</span>
+              <span style={{ fontSize: 12, color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>{jobStatus === 'done' ? '100' : Math.min(progress, 99)}%</span>
             </div>
-          </div>
+            <div style={{ height: 6, background: '#E5E5E5', borderRadius: 3, overflow: 'hidden', marginBottom: 20, position: 'relative' }}>
+              <div style={{
+                height: '100%', borderRadius: 3,
+                background: jobStatus === 'done' ? '#16A34A' : '#2563EB',
+                width: `${jobStatus === 'done' ? 100 : Math.min(progress, 99)}%`,
+                transition: 'width 800ms ease', position: 'relative', overflow: 'hidden',
+              }}>
+                {jobStatus !== 'done' && (
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)', animation: 'ra-shimmer 1.5s ease-in-out infinite' }} />
+                )}
+              </div>
+            </div>
+          </>
         )}
 
-        {/* Steps */}
         {jobStatus !== 'failed' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
             {config.steps.map((step, i) => {
@@ -156,7 +158,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
               const isActive = jobStatus !== 'done' && i === activeStep;
               return (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDone ? '#16A34A' : isActive ? '#2563EB' : '#E2E8F0', color: isDone || isActive ? '#FFFFFF' : '#94A3B8', fontSize: 11, fontWeight: 600, flexShrink: 0 }}>
+                  <div style={{ width: 22, height: 22, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDone ? '#DCFCE7' : isActive ? '#DBEAFE' : '#F5F5F5', color: isDone ? '#16A34A' : isActive ? '#2563EB' : '#A3A3A3', fontSize: 11, fontWeight: 600, flexShrink: 0 }}>
                     {isDone ? <Check size={12} /> : isActive ? <Loader2 size={12} style={{ animation: 'ra-spin 1s linear infinite' }} /> : i + 1}
                   </div>
                   <span style={{ fontSize: 13, color: isDone ? '#16A34A' : isActive ? '#0F172A' : '#94A3B8', fontWeight: isActive ? 500 : 400, fontFamily: "'Inter', sans-serif" }}>
@@ -168,16 +170,14 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
           </div>
         )}
 
-        {/* ETA footer */}
         {jobStatus !== 'done' && jobStatus !== 'failed' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#EFF6FF', borderRadius: 'var(--ra-radius-card)', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '14px 14px', background: '#EFF6FF', borderRadius: 'var(--ra-radius-card)', marginBottom: 20, borderTop: '1px solid #DBEAFE' }}>
             <Clock size={14} color="#2563EB" />
-            <span style={{ fontSize: 12, color: '#1E40AF', fontFamily: "'Inter', sans-serif" }}>Estimated: ~{etaMinutes} minutes · You'll be notified</span>
+            <span style={{ fontSize: 12, color: '#1E40AF', fontFamily: "'Inter', sans-serif" }}>Estimated: {etaLabel} · You'll be notified when done</span>
           </div>
         )}
 
-        {/* Buttons */}
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '1px solid rgba(15,23,42,0.06)', paddingTop: 16 }}>
           {jobStatus === 'failed' ? (
             <>
               <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#334155', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>Close</button>
