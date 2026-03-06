@@ -351,6 +351,9 @@ export default function R360MemberDetail() {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<R360WorkItem | null>(null);
   const [aiOpen, setAiOpen] = useState(false);
+  const [r360DrawerOpen, setR360DrawerOpen] = useState(false);
+  const [r360ActiveTab, setR360ActiveTab] = useState<R360ActiveTab>('overview');
+  const [r360WeekOffset, setR360WeekOffset] = useState(0);
   const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
 
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
