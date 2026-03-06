@@ -538,8 +538,8 @@ export default function R360MemberDetail() {
   const deptColor = R360_DEPT_COLORS[overview.department] || '#64748B';
 
   return (
-    <div id="r360-root">
-      <div className="r3-page" style={{ background: '#FFFFFF' }}>
+    <div id="r360-root" style={{ display: 'flex', height: '100%', overflow: 'hidden', minHeight: 0 }}>
+      <div className="r3-page" style={{ background: '#FFFFFF', flex: 1, minWidth: 0, overflow: 'auto' }}>
         {/* ── Sticky Header: Profile + Week Nav ── */}
         <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#FFFFFF' }}>
         {/* ── Profile Header ── */}
