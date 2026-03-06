@@ -317,7 +317,7 @@ export default function ReqAssistLibrary() {
 
           {/* Table footer */}
           {!isLoading && documents && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#F8FAFC', borderTop: '1px solid rgba(15,23,42,0.06)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#FFFFFF', borderTop: '1px solid rgba(15,23,42,0.06)' }}>
               <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
                 Showing {documents.length} of {totalCount} documents
               </span>
