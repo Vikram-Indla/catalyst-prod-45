@@ -2,12 +2,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search } from 'lucide-react';
 import type { RAFilterTab } from '@/types/reqAssistV2';
 
-const TABS: { key: RAFilterTab; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'ready', label: 'Ready' },
-  { key: 'processing', label: 'Processing' },
-  { key: 'pending', label: 'Pending' },
-  { key: 'failed', label: 'Failed' },
+const TABS: { key: RAFilterTab; label: string; dot: string }[] = [
+  { key: 'all', label: 'All', dot: '#64748B' },
+  { key: 'ready', label: 'Ready', dot: '#16A34A' },
+  { key: 'processing', label: 'Processing', dot: '#2563EB' },
+  { key: 'pending', label: 'Pending', dot: '#94A3B8' },
+  { key: 'failed', label: 'Failed', dot: '#DC2626' },
 ];
 
 interface Props {
@@ -33,13 +33,17 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12,
-      padding: '8px 12px', borderBottom: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF',
+      padding: '0 28px 14px', background: '#FFFFFF',
     }}>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8, maxWidth: 400, flex: 1,
         height: 34, borderRadius: 'var(--ra-radius-card)',
         border: '1px solid rgba(15,23,42,0.12)', padding: '0 10px', background: '#FFFFFF',
-      }}>
+        transition: 'border-color 150ms, box-shadow 150ms',
+      }}
+        onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(37,99,235,0.10)'; }}
+        onBlur={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)'; e.currentTarget.style.boxShadow = 'none'; }}
+      >
         <Search size={14} color="#94A3B8" strokeWidth={2} />
         <input
           type="text" value={local} onChange={e => handleChange(e.target.value)}
@@ -56,12 +60,14 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
           const active = tab === t.key;
           return (
             <button key={t.key} onClick={() => onTabChange(t.key)} style={{
-              padding: '4px 12px', fontSize: 12, fontWeight: active ? 600 : 400,
-              borderRadius: 'var(--ra-radius-card)',
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '0 12px', height: 30, fontSize: 12, fontWeight: active ? 600 : 400,
+              borderRadius: 5,
               border: `1px solid ${active ? '#BFDBFE' : 'rgba(15,23,42,0.12)'}`,
               background: active ? '#EFF6FF' : '#FFFFFF', color: active ? '#2563EB' : '#64748B',
               cursor: 'pointer', transition: 'all 120ms ease', fontFamily: "'Inter', sans-serif",
             }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: t.dot, flexShrink: 0 }} />
               {t.label}
             </button>
           );
