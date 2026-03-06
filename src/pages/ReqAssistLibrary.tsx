@@ -400,7 +400,7 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
           borderRadius: 4, border: 'none', cursor: 'pointer',
-          background: '#DC2626', color: '#FFFFFF',
+          background: '#2563EB', color: '#FFFFFF',
           fontFamily: "'Inter', sans-serif",
         }}
       >
