@@ -80,7 +80,7 @@ export function usePipelineStats() {
       (data ?? []).forEach((d: any) => {
         counts[d.pipeline_stage] = (counts[d.pipeline_stage] ?? 0) + 1;
       });
-      return counts;
+      return Object.entries(counts).map(([stage, count]) => ({ stage, count }));
     },
   });
 }
