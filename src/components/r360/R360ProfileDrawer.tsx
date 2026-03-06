@@ -185,16 +185,24 @@ function computeLoadColour(openCount: number, roleAvg: number): string {
   return DANGER;
 }
 
-// ── StatusLozenge (3 colours) ──
+// ── StatusLozenge (3 colours — IMMUTABLE) ──
+function getStatusLozengeStyle(status: string) {
+  const s = (status || '').toLowerCase().replace(/[_\s-]/g, '');
+  if (['done', 'closed', 'completed', 'approved'].includes(s))
+    return { bg: '#E3FCEF', text: '#006644', label: (status || '').toUpperCase() };
+  if (['inprogress', 'inreview', 'active'].includes(s))
+    return { bg: '#DEEBFF', text: '#0747A6', label: (status || '').toUpperCase() };
+  return { bg: '#DFE1E6', text: '#253858', label: (status || '').toUpperCase() };
+}
+
 function DrawerLozenge({ status }: { status: string }) {
-  const key = status.toUpperCase().replace(/ /g, '_');
-  const s = STATUS_MAP[key] || STATUS_MAP.TO_DO;
+  const s = getStatusLozengeStyle(status);
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20,
       padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700,
       textTransform: 'uppercase', letterSpacing: '0.03em',
-      background: s.bg, color: s.color, whiteSpace: 'nowrap',
+      background: s.bg, color: s.text, whiteSpace: 'nowrap',
     }}>{s.label}</span>
   );
 }
