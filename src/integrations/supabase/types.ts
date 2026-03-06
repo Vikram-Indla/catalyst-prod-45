@@ -31020,6 +31020,76 @@ export type Database = {
           },
         ]
       }
+      r360_activity_log: {
+        Row: {
+          created_at: string
+          event_time: string
+          id: string
+          new_status: string
+          resource_id: string
+          work_item_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_time?: string
+          id?: string
+          new_status: string
+          resource_id: string
+          work_item_id: string
+        }
+        Update: {
+          created_at?: string
+          event_time?: string
+          id?: string
+          new_status?: string
+          resource_id?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_activity_log_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_constellation_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_activity_log_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resource_summary_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_activity_log_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_activity_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360_gantt_view"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "r360_activity_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_activity_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360_work_items_enriched_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       r360_ai_behavioral_patterns: {
         Row: {
           created_at: string
@@ -31900,6 +31970,88 @@ export type Database = {
           vendor_code?: string
         }
         Relationships: []
+      }
+      r360_weekly_snapshots: {
+        Row: {
+          avg_cycle_time_days: number
+          closed_of_touched: number
+          closed_this_week: number
+          closure_rate_pct: number
+          created_at: string
+          id: string
+          in_progress_concurrent: number
+          in_review: number
+          oldest_item_age_days: number
+          oldest_item_key: string | null
+          pickup_speed_hours: number
+          resource_id: string
+          total_open: number
+          total_touched: number
+          week_end: string
+          week_number: number
+          week_start: string
+        }
+        Insert: {
+          avg_cycle_time_days?: number
+          closed_of_touched?: number
+          closed_this_week?: number
+          closure_rate_pct?: number
+          created_at?: string
+          id?: string
+          in_progress_concurrent?: number
+          in_review?: number
+          oldest_item_age_days?: number
+          oldest_item_key?: string | null
+          pickup_speed_hours?: number
+          resource_id: string
+          total_open?: number
+          total_touched?: number
+          week_end: string
+          week_number: number
+          week_start: string
+        }
+        Update: {
+          avg_cycle_time_days?: number
+          closed_of_touched?: number
+          closed_this_week?: number
+          closure_rate_pct?: number
+          created_at?: string
+          id?: string
+          in_progress_concurrent?: number
+          in_review?: number
+          oldest_item_age_days?: number
+          oldest_item_key?: string | null
+          pickup_speed_hours?: number
+          resource_id?: string
+          total_open?: number
+          total_touched?: number
+          week_end?: string
+          week_number?: number
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_weekly_snapshots_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_constellation_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_weekly_snapshots_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resource_summary_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_weekly_snapshots_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resources"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       r360_work_items: {
         Row: {

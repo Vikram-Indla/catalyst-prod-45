@@ -32,6 +32,7 @@ import '@/styles/r360.css';
 import '@/components/resource360/r360-member.css';
 import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
+import R360ProfileDrawer from '@/components/r360/R360ProfileDrawer';
 
 // ── Period helpers ──
 type PeriodType = 'weekly' | 'monthly';
@@ -351,6 +352,11 @@ export default function R360MemberDetail() {
   const [aiOpen, setAiOpen] = useState(false);
   const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
 
+  // ── R360 Profile Drawer state ──
+  const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
+  const openProfileDrawer = useCallback(() => { setProfileDrawerOpen(true); }, []);
+  const closeProfileDrawer = useCallback(() => { setProfileDrawerOpen(false); }, []);
+
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
 
   // Status filter is applied CLIENT-SIDE to avoid changing counts when a filter is active
@@ -493,10 +499,15 @@ export default function R360MemberDetail() {
 
   // Close panel on ESC
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setSelectedItem(null); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (profileDrawerOpen) closeProfileDrawer();
+        else setSelectedItem(null);
+      }
+    };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [profileDrawerOpen, closeProfileDrawer]);
 
   // Stale alert: compute oldest age (must be before early returns)
   const oldestAge = useMemo(() => {
@@ -527,8 +538,8 @@ export default function R360MemberDetail() {
   const deptColor = R360_DEPT_COLORS[overview.department] || '#64748B';
 
   return (
-    <div id="r360-root">
-      <div className="r3-page" style={{ background: '#FFFFFF' }}>
+    <div id="r360-root" style={{ display: 'flex', height: '100%', overflow: 'hidden', minHeight: 0 }}>
+      <div className="r3-page" style={{ background: '#FFFFFF', flex: 1, minWidth: 0, overflow: 'auto' }}>
         {/* ── Sticky Header: Profile + Week Nav ── */}
         <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#FFFFFF' }}>
         {/* ── Profile Header ── */}
@@ -598,7 +609,7 @@ export default function R360MemberDetail() {
             {/* Intelligence — brand blue standard */}
             <AIIntelligenceButton
               label="Intelligence"
-              onClick={() => setAiOpen(true)}
+              onClick={openProfileDrawer}
             />
           </div>
         </div>
@@ -657,7 +668,7 @@ export default function R360MemberDetail() {
           </div>
         ) : (
           <>
-            {view === 'ring' && <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} />}
+            {view === 'ring' && <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={openProfileDrawer} />}
             {view === 'chronology' && <ChronologyView items={filteredWeekItems} onSelect={setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
             {view === 'board' && <BoardView items={filteredWeekItems} onSelect={setSelectedItem} />}
           </>
@@ -686,6 +697,17 @@ export default function R360MemberDetail() {
           onClose={() => setAiOpen(false)}
         />
       )}
+
+    {/* ── R360 Profile Drawer — flex split-pane right column ── */}
+    {profileDrawerOpen && resourceId && (
+      <div style={{
+        width: 700, flexShrink: 0, borderLeft: '1px solid rgba(15,23,42,0.12)',
+        background: '#FFFFFF', display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        boxShadow: '-4px 0 20px rgba(15,23,42,0.10)',
+      }}>
+        <R360ProfileDrawer resourceId={resourceId} onClose={closeProfileDrawer} />
+      </div>
+    )}
     </div>
   );
 }
@@ -804,10 +826,11 @@ function PriorityBadge({ priority }: { priority: string }) {
   return <span style={{ fontSize: '10.5px', fontWeight: 500, color: '#64748B' }}>{priority}</span>;
 }
 
-function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }: {
+function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, onAvatarClick }: {
   items: R360WorkItem[]; name: string; role: string; avatarUrl?: string | null;
   onSelect: (i: R360WorkItem) => void; selected: R360WorkItem | null;
   overview?: { department?: string } | null;
+  onAvatarClick?: () => void;
 }) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const doneRef = useRef<HTMLDivElement>(null);
@@ -1099,9 +1122,11 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview }
       </svg>
 
       {/* CENTER AVATAR — 56px, z-index 2 */}
-      <div style={{
+      <div
+        onClick={onAvatarClick}
+        style={{
         position: 'absolute', left: `${CX}px`, top: `${CY}px`,
-        transform: 'translate(-50%,-50%)', zIndex: 2,
+        transform: 'translate(-50%,-50%)', zIndex: 2, cursor: onAvatarClick ? 'pointer' : 'default',
       }}>
         <div style={{
           width: '56px', height: '56px', borderRadius: '50%',
