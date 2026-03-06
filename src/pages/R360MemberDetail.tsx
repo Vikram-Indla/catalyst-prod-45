@@ -687,12 +687,15 @@ export default function R360MemberDetail() {
         )}
       </div>
 
-      {/* AI Intelligence Panel */}
+      {/* R360 Profile Drawer */}
       {aiOpen && resourceId && (
-        <AiIntelligencePanelV16
-          resourceName={overview?.name || 'Resource'}
-          onClose={() => setAiOpen(false)}
-        />
+        <div style={{
+          width: 700, flexShrink: 0, borderLeft: '1px solid rgba(15,23,42,0.12)',
+          background: '#FFFFFF', display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          boxShadow: '-4px 0 20px rgba(15,23,42,0.10)',
+        }}>
+          <R360ProfileDrawer resourceId={resourceId} onClose={() => setAiOpen(false)} />
+        </div>
       )}
 
     </div>
