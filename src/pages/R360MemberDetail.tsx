@@ -1122,9 +1122,11 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
       </svg>
 
       {/* CENTER AVATAR — 56px, z-index 2 */}
-      <div style={{
+      <div
+        onClick={onAvatarClick}
+        style={{
         position: 'absolute', left: `${CX}px`, top: `${CY}px`,
-        transform: 'translate(-50%,-50%)', zIndex: 2,
+        transform: 'translate(-50%,-50%)', zIndex: 2, cursor: onAvatarClick ? 'pointer' : 'default',
       }}>
         <div style={{
           width: '56px', height: '56px', borderRadius: '50%',
