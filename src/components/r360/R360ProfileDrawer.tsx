@@ -1386,7 +1386,7 @@ function BehaviouralTab({ workItems, showFilteredList }: { workItems: any[]; sho
 // ══════════════════════════════════════════
 // WEEKLY STORY TAB
 // ══════════════════════════════════════════
-function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount: number }) {
+function WeeklyStoryTab({ workItems, openCount, showFilteredList }: { workItems: any[]; openCount: number; showFilteredList: (label: string, filterFn: (i: any) => boolean) => void }) {
   const { weekStart, weekEnd } = useMemo(() => {
     const now = new Date();
     const day = now.getDay();
