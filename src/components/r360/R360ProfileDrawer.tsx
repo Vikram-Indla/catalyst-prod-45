@@ -738,10 +738,10 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
           />
         )}
         {activeTab === 'behavioural' && (
-          <BehaviouralTab workItems={workItems} />
+          <BehaviouralTab workItems={workItems} showFilteredList={showFilteredList} />
         )}
         {activeTab === 'weekly' && (
-          <WeeklyStoryTab workItems={workItems} openCount={openCount} />
+          <WeeklyStoryTab workItems={workItems} openCount={openCount} showFilteredList={showFilteredList} />
         )}
         {activeTab === 'items' && (
           <WorkItemsTab workItems={workItems} />
@@ -1140,9 +1140,9 @@ function OverviewTab({
               &ldquo;Focus on incident resolution and QA throughput&rdquo;
             </div>
             <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: SUCCESS }} />
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: WARNING }} />
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: INK4 }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#64748B' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
             </div>
           </div>
           <ChevronRight size={14} color={INK4} />
@@ -1170,14 +1170,23 @@ function OverviewTab({
         {/* Per-hub cards */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {hubBreakdown.map((hub, i) => (
-            <div key={i} style={{
-              border: `1px solid ${BORDER}`, borderRadius: 6, padding: '10px 14px',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}>
+            <div key={i}
+              onClick={() => showFilteredList(`${hub.hub === 'incident' ? 'IncidentHub' : hub.hub === 'bau' || hub.hub === 'BAU' ? 'BAU' : hub.hub} Items`, (item: any) => {
+                const itemHub = item.source_hub || 'BAU';
+                return itemHub === hub.hub;
+              })}
+              style={{
+                border: `1px solid ${BORDER}`, borderRadius: 6, padding: '10px 14px',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                cursor: 'pointer', transition: 'background 150ms',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
                   width: 8, height: 8, borderRadius: '50%',
-                  background: hub.isIncident ? DANGER : BRAND,
+                  backgroundColor: hub.isIncident ? DANGER : '#0D9488',
                 }} />
                 <span style={{ fontSize: 12, fontWeight: 600, color: INK1 }}>
                   {hub.hub === 'incident' ? 'IncidentHub' : hub.hub === 'bau' || hub.hub === 'BAU' ? 'BAU / ProjectHub' : hub.hub}
@@ -1205,7 +1214,7 @@ function OverviewTab({
 const WORK_DAYS = [0, 1, 2, 3, 4]; // Sun=0..Thu=4
 const DAY_ABBRS = ['Su', 'Mo', 'Tu', 'We', 'Th'];
 
-function BehaviouralTab({ workItems }: { workItems: any[] }) {
+function BehaviouralTab({ workItems, showFilteredList }: { workItems: any[]; showFilteredList: (label: string, filterFn: (i: any) => boolean) => void }) {
   // §1 Work Rhythm DNA
   const rhythmData = useMemo(() => {
     const counts: Record<number, number> = { 0:0, 1:0, 2:0, 3:0, 4:0 };
@@ -1273,7 +1282,7 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
 
   // §4 Hub Breakdown — segmented bar
   const HUB_COLORS: Record<string, string> = {
-    BAU: BRAND, bau: BRAND, incident: DANGER, Product: '#3F3F46', Task: '#D4D4D8',
+    BAU: '#0D9488', bau: '#0D9488', incident: DANGER, Product: '#3F3F46', Task: '#D4D4D8',
   };
   const hubSegments = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -1324,13 +1333,24 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
         <SectionTitle>PICKUP INTELLIGENCE</SectionTitle>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
           {[
-            { label: 'Avg Pickup Time', value: pickupStats.avgPickupLabel, sub: 'time to first touch' },
-            { label: 'Same-Day Pickups', value: String(pickupStats.sameDayCount), sub: 'picked up day of creation' },
-            { label: 'Avg vs Team', value: pickupStats.vsTeam.label, sub: 'vs team benchmark', valueColor: pickupStats.vsTeam.color },
+            { label: 'Avg Pickup Time', value: pickupStats.avgPickupLabel, sub: 'time to first touch',
+              onClick: () => showFilteredList('Pickup Time Detail', (i: any) => ['in_progress','in_review','done'].includes((i.status_category||'').toLowerCase())) },
+            { label: 'Same-Day Pickups', value: String(pickupStats.sameDayCount), sub: 'picked up day of creation',
+              onClick: () => showFilteredList('Same-Day Pickups', (i: any) => {
+                if (!i.created_at || !i.updated_at) return false;
+                return new Date(i.created_at).toDateString() === new Date(i.updated_at).toDateString() && ['in_progress','in_review','done'].includes((i.status_category||'').toLowerCase());
+              }) },
+            { label: 'Avg vs Team', value: pickupStats.vsTeam.label, sub: 'vs team benchmark', valueColor: pickupStats.vsTeam.color, onClick: undefined },
           ].map((tile, i) => (
-            <div key={i} style={{
-              border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
-            }}>
+            <div key={i}
+              onClick={tile.onClick}
+              style={{
+                border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
+                cursor: tile.onClick ? 'pointer' : 'default', transition: 'background 150ms',
+              }}
+              onMouseEnter={e => { if (tile.onClick) e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = '#FFFFFF'; }}
+            >
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
               <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>
               <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 4 }}>{tile.sub}</div>
@@ -1344,16 +1364,22 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
         <SectionTitle>EXECUTION STYLE</SectionTitle>
         <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
           {[
-            { label: 'Avg cycle time', value: execStyle.avgCycleLabel },
-            { label: 'Items closed', value: String(execStyle.itemsClosed) },
-            { label: 'Concurrent avg', value: String(execStyle.concurrentAvg) },
-            { label: 'Completion rate', value: execStyle.completionRate },
+            { label: 'Avg cycle time', value: execStyle.avgCycleLabel, onClick: undefined as (() => void) | undefined },
+            { label: 'Items closed', value: String(execStyle.itemsClosed), onClick: () => showFilteredList('All Closed Items', (i: any) => (i.status_category || '').toLowerCase() === 'done') },
+            { label: 'Concurrent avg', value: String(execStyle.concurrentAvg), onClick: undefined as (() => void) | undefined },
+            { label: 'Completion rate', value: execStyle.completionRate, onClick: undefined as (() => void) | undefined },
           ].map((row, i, arr) => (
-            <div key={i} style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              height: 36, padding: '0 14px',
-              borderBottom: i < arr.length - 1 ? '0.75px solid #E2E8F0' : 'none',
-            }}>
+            <div key={i}
+              onClick={row.onClick}
+              style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                height: 36, padding: '0 14px',
+                borderBottom: i < arr.length - 1 ? '0.75px solid #E2E8F0' : 'none',
+                cursor: row.onClick ? 'pointer' : 'default', transition: 'background 150ms',
+              }}
+              onMouseEnter={e => { if (row.onClick) e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseLeave={e => { if (row.onClick) e.currentTarget.style.background = 'transparent'; }}
+            >
               <span style={{ fontSize: 12, color: INK2 }}>{row.label}</span>
               <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: INK1 }}>{row.value}</span>
             </div>
@@ -1386,7 +1412,7 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
 // ══════════════════════════════════════════
 // WEEKLY STORY TAB
 // ══════════════════════════════════════════
-function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount: number }) {
+function WeeklyStoryTab({ workItems, openCount, showFilteredList }: { workItems: any[]; openCount: number; showFilteredList: (label: string, filterFn: (i: any) => boolean) => void }) {
   const { weekStart, weekEnd } = useMemo(() => {
     const now = new Date();
     const day = now.getDay();
@@ -1511,13 +1537,30 @@ function WeeklyStoryTab({ workItems, openCount }: { workItems: any[]; openCount:
       <div style={{ padding: 16 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
           {[
-            { label: 'Opened', value: createdThisWeek },
-            { label: 'Updated', value: updatedOnly },
-            { label: 'Closed', value: closedThisWeek },
+            { label: 'Opened', value: createdThisWeek, onClick: () => showFilteredList('Opened This Week', (i: any) => {
+              const c = new Date(i.created_at);
+              return c >= weekStart && c <= weekEnd;
+            }) },
+            { label: 'Updated', value: updatedOnly, onClick: () => showFilteredList('Updated This Week', (i: any) => {
+              const u = new Date(i.updated_at);
+              const c = new Date(i.created_at);
+              return u >= weekStart && u <= weekEnd && !(c >= weekStart && c <= weekEnd);
+            }) },
+            { label: 'Closed', value: closedThisWeek, onClick: () => showFilteredList('Closed This Week', (i: any) => {
+              if ((i.status_category || '').toLowerCase() !== 'done') return false;
+              const u = new Date(i.updated_at);
+              return u >= weekStart && u <= weekEnd;
+            }) },
           ].map((tile, i) => (
-            <div key={i} style={{
-              border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
-            }}>
+            <div key={i}
+              onClick={tile.onClick}
+              style={{
+                border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
+                cursor: 'pointer', transition: 'background 150ms',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+            >
               <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{tile.value}</div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 4 }}>{tile.label}</div>
             </div>
