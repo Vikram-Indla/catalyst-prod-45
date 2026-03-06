@@ -535,8 +535,39 @@ export default function R360MemberDetail() {
 
   const deptColor = R360_DEPT_COLORS[overview.department] || '#64748B';
 
+  // CSS injection to force full-width layout regardless of drawer state
+  useEffect(() => {
+    const styleId = 'r360-drawer-layout-fix';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = `
+        [data-r360-page-content] {
+          width: 100% !important;
+          min-width: 0 !important;
+          flex-shrink: 0 !important;
+          flex-basis: 100% !important;
+          max-width: 100% !important;
+        }
+        #r360-root {
+          width: 100% !important;
+          min-width: 0 !important;
+          flex-shrink: 0 !important;
+          flex-basis: 100% !important;
+          max-width: 100% !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    return () => {
+      const el = document.getElementById(styleId);
+      if (el) el.remove();
+    };
+  }, []);
+
   return (
-    <div id="r360-root" style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden' }}>
+    <>
+    <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden' }}>
       <div className="r3-page" style={{ background: '#FFFFFF', height: '100%', overflow: 'auto' }}>
         {/* ── Sticky Header: Profile + Week Nav ── */}
         <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#FFFFFF' }}>
