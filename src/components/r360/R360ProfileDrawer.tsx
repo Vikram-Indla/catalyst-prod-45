@@ -717,10 +717,9 @@ function OverviewTab({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {workMix.map(row => {
             const tc = TYPE_COLORS[row.type] || { color: '#94A3B8', opacity: 0.6 };
-            const icon = WORK_ITEM_ICONS[row.type];
             return (
               <div key={row.type} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                {icon && <span dangerouslySetInnerHTML={{ __html: icon }} style={{ flexShrink: 0, width: 16, height: 16, display: 'flex' }} />}
+                <JiraIssueTypeIcon type={row.type} size={16} />
                 <span style={{ fontSize: 12, color: INK2, width: 72, flexShrink: 0 }}>{row.type}</span>
                 <div style={{ flex: 1, height: 18, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{
