@@ -567,160 +567,160 @@ export default function R360MemberDetail() {
 
   return (
     <>
-    <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden' }}>
-      <div className="r3-page" style={{ background: '#FFFFFF', height: '100%', overflow: 'auto' }}>
-        {/* ── Sticky Header: Profile + Week Nav ── */}
-        <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#FFFFFF' }}>
-        {/* ── Profile Header ── */}
-        <div className="r3-profile">
-          <div className="r3-profile-top">
-            <div className="r3-profile-avatar" style={{ background: `linear-gradient(135deg, ${deptColor}, #0D9488)` }}>
-              {overview.avatar_url ? (
-                <img src={overview.avatar_url} alt={overview.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-              ) : null}
-              <span style={{ position: 'absolute', pointerEvents: 'none', ...(overview.avatar_url ? { display: 'none' } : {}) }}>{initials(overview.name)}</span>
-            </div>
-            <div>
-              <div className="r3-profile-name">{overview.name}</div>
-              <div className="r3-profile-role">{overview.role_name} · {overview.department}</div>
-            </div>
-            {/* §9 — OPEN (blue) + STALE (danger red) */}
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <div
-                onClick={() => setTicketListMode(bannerOpenCount > 0 ? 'open' : null)}
-                style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '#EFF6FF', cursor: bannerOpenCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
-                onMouseEnter={e => { if (bannerOpenCount > 0) (e.currentTarget.style.background = 'rgba(37,99,235,0.12)'); }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; }}
-              >
-                <div style={{ fontSize: '20px', fontWeight: 700, color: '#2563EB' }}>{bannerOpenCount}</div>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
+      <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden' }}>
+        <div className="r3-page" style={{ background: '#FFFFFF', height: '100%', overflow: 'auto' }}>
+          {/* ── Sticky Header: Profile + Week Nav ── */}
+          <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#FFFFFF' }}>
+            {/* ── Profile Header ── */}
+            <div className="r3-profile">
+              <div className="r3-profile-top">
+                <div className="r3-profile-avatar" style={{ background: `linear-gradient(135deg, ${deptColor}, #0D9488)` }}>
+                  {overview.avatar_url ? (
+                    <img src={overview.avatar_url} alt={overview.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  ) : null}
+                  <span style={{ position: 'absolute', pointerEvents: 'none', ...(overview.avatar_url ? { display: 'none' } : {}) }}>{initials(overview.name)}</span>
+                </div>
+                <div>
+                  <div className="r3-profile-name">{overview.name}</div>
+                  <div className="r3-profile-role">{overview.role_name} · {overview.department}</div>
+                </div>
+                {/* §9 — OPEN (blue) + STALE (danger red) */}
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <div
+                    onClick={() => setTicketListMode(bannerOpenCount > 0 ? 'open' : null)}
+                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '#EFF6FF', cursor: bannerOpenCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
+                    onMouseEnter={e => { if (bannerOpenCount > 0) (e.currentTarget.style.background = 'rgba(37,99,235,0.12)'); }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; }}
+                  >
+                    <div style={{ fontSize: '20px', fontWeight: 700, color: '#2563EB' }}>{bannerOpenCount}</div>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
+                  </div>
+                  <div
+                    onClick={() => setTicketListMode(bannerStaleCount > 0 ? 'stale' : null)}
+                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '#FEF2F2', cursor: bannerStaleCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
+                    onMouseEnter={e => { if (bannerStaleCount > 0) (e.currentTarget.style.background = 'rgba(220,38,38,0.12)'); }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#FEF2F2'; }}
+                  >
+                    <div style={{ fontSize: '20px', fontWeight: 700, color: '#DC2626' }}>{bannerStaleCount}</div>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#DC2626', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
+                  </div>
+                </div>
               </div>
-              <div
-                onClick={() => setTicketListMode(bannerStaleCount > 0 ? 'stale' : null)}
-                style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '#FEF2F2', cursor: bannerStaleCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
-                onMouseEnter={e => { if (bannerStaleCount > 0) (e.currentTarget.style.background = 'rgba(220,38,38,0.12)'); }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#FEF2F2'; }}
-              >
-                <div style={{ fontSize: '20px', fontWeight: 700, color: '#DC2626' }}>{bannerStaleCount}</div>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: '#DC2626', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
-              </div>
-            </div>
-          </div>
 
-          {/* §3 — Stale warning banner */}
-          {allStale && allOpenItems.length > 0 && (
-            <div style={{ margin: '8px 0 0', padding: '8px 12px', background: '#FFFBEB', borderLeft: '3px solid #D97706', borderRadius: '0 4px 4px 0', fontSize: '13px', color: '#92400E' }}>
-              ⚠️ All assigned items are stale. Oldest: {oldestAge} days.
+              {/* §3 — Stale warning banner */}
+              {allStale && allOpenItems.length > 0 && (
+                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: '#FFFBEB', borderLeft: '3px solid #D97706', borderRadius: '0 4px 4px 0', fontSize: '13px', color: '#92400E' }}>
+                  ⚠️ All assigned items are stale. Oldest: {oldestAge} days.
+                </div>
+              )}
+
+              {/* ── Tabs + Actions — §10 toolbar buttons ── */}
+              <div className="r3-tabs">
+                {(['ring', 'chronology', 'board'] as R360ViewType[]).map(v => (
+                  <button key={v} className={`r3-tab ${view === v ? 'active' : ''}`} onClick={() => setView(v)}>
+                    {v.charAt(0).toUpperCase() + v.slice(1)}
+                  </button>
+                ))}
+                <div className="r3-tab-spacer" />
+                {/* Back — text button */}
+                <button
+                  onClick={() => navigate('/project-hub/resources')}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: '#64748B', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
+                  onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
+                  onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
+                >
+                  <ChevronLeft size={14} /> Back
+                </button>
+                {/* Quarter label — computed from current date */}
+                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(15,23,42,0.05)', border: 'none', borderRadius: '6px', color: '#0F172A', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
+                  <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
+                </button>
+                {/* Intelligence — brand blue standard */}
+                <AIIntelligenceButton
+                  label="Intelligence"
+                  onClick={() => setAiOpen(true)}
+                />
+              </div>
             </div>
+
+            {/* ── Period Navigation — V12 Redesign ── */}
+            <WeekStripCollapsible
+              periodType={periodType}
+              onPeriodTypeChange={handlePeriodTypeChange}
+              weekOffset={weekOffset}
+              onNavigatePeriod={navigatePeriod}
+              period={period}
+              weekItems={weekItems}
+              allOpenItems={allOpenItems}
+              allStaleItems={allStaleItems}
+              counts={counts}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              selectedDay={selectedDay}
+              onDaySelect={setSelectedDay}
+            />
+          </div>{/* end sticky wrapper */}
+
+          {/* ── Views ── */}
+          {itemsLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {Array.from({ length: 5 }).map((_, i) => <div key={i} className="r3-skeleton" style={{ height: 60 }} />)}
+            </div>
+          ) : filteredWeekItems.length === 0 ? (
+            <div>
+              <div className="r3-empty">No work items assigned in this period.</div>
+              {workItems.length > 0 && lastActivityDate && (
+                <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', textAlign: 'center' }}>
+                  <div style={{ fontSize: '13px', color: '#334155', marginBottom: '10px' }}>
+                    <strong style={{ color: '#0F172A' }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
+                    {allStaleItems.length > 0 && <span> · {allStaleItems.length} stale</span>}
+                  </div>
+                  <div style={{ fontSize: '12.5px', color: '#64748B', marginBottom: '12px' }}>
+                    Last activity: <strong style={{ color: '#334155' }}>{lastActivityDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong>
+                  </div>
+                  <button
+                    onClick={jumpToLastActivity}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                      padding: '7px 18px', borderRadius: '6px', fontSize: '12.5px', fontWeight: 600,
+                      border: 'none', background: 'rgba(37,99,235,0.10)', color: '#2563EB',
+                      cursor: 'pointer', transition: 'all 80ms ease',
+                    }}
+                    onMouseOver={e => { (e.target as HTMLButtonElement).style.background = 'rgba(37,99,235,0.16)'; }}
+                    onMouseOut={e => { (e.target as HTMLButtonElement).style.background = 'rgba(37,99,235,0.10)'; }}
+                  >
+                    <Calendar size={13} />
+                    Jump to last activity
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              {view === 'ring' && <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={() => setAiOpen(true)} />}
+              {view === 'chronology' && <ChronologyView items={filteredWeekItems} onSelect={setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
+              {view === 'board' && <BoardView items={filteredWeekItems} onSelect={setSelectedItem} />}
+            </>
           )}
 
-          {/* ── Tabs + Actions — §10 toolbar buttons ── */}
-          <div className="r3-tabs">
-            {(['ring', 'chronology', 'board'] as R360ViewType[]).map(v => (
-              <button key={v} className={`r3-tab ${view === v ? 'active' : ''}`} onClick={() => setView(v)}>
-                {v.charAt(0).toUpperCase() + v.slice(1)}
-              </button>
-            ))}
-            <div className="r3-tab-spacer" />
-            {/* Back — text button */}
-            <button
-              onClick={() => navigate('/project-hub/resources')}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: '#64748B', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
-              onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
-              onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
-            >
-              <ChevronLeft size={14} /> Back
-            </button>
-            {/* Quarter label — computed from current date */}
-            <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(15,23,42,0.05)', border: 'none', borderRadius: '6px', color: '#0F172A', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
-              <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
-            </button>
-            {/* Intelligence — brand blue standard */}
-            <AIIntelligenceButton
-              label="Intelligence"
-              onClick={() => setAiOpen(true)}
+          {/* ── Detail Panel ── */}
+          {selectedItem && (
+            <DetailPanel item={selectedItem} onClose={() => setSelectedItem(null)} onSelectItem={setSelectedItem} />
+          )}
+
+          {/* ── Ticket List Drawer (OPEN / STALE) ── */}
+          {ticketListMode && (
+            <TicketListDrawer
+              mode={ticketListMode}
+              items={ticketListMode === 'open' ? allOpenItems : allStaleItems}
+              onClose={() => setTicketListMode(null)}
+              onSelectItem={(item) => { setTicketListMode(null); setSelectedItem(item); }}
             />
-          </div>
+          )}
         </div>
-
-        {/* ── Period Navigation — V12 Redesign ── */}
-        <WeekStripCollapsible
-          periodType={periodType}
-          onPeriodTypeChange={handlePeriodTypeChange}
-          weekOffset={weekOffset}
-          onNavigatePeriod={navigatePeriod}
-          period={period}
-          weekItems={weekItems}
-          allOpenItems={allOpenItems}
-          allStaleItems={allStaleItems}
-          counts={counts}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          selectedDay={selectedDay}
-          onDaySelect={setSelectedDay}
-        />
-        </div>{/* end sticky wrapper */}
-
-        {/* ── Views ── */}
-        {itemsLoading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {Array.from({ length: 5 }).map((_, i) => <div key={i} className="r3-skeleton" style={{ height: 60 }} />)}
-          </div>
-        ) : filteredWeekItems.length === 0 ? (
-          <div>
-            <div className="r3-empty">No work items assigned in this period.</div>
-            {workItems.length > 0 && lastActivityDate && (
-              <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', textAlign: 'center' }}>
-                <div style={{ fontSize: '13px', color: '#334155', marginBottom: '10px' }}>
-                  <strong style={{ color: '#0F172A' }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
-                  {allStaleItems.length > 0 && <span> · {allStaleItems.length} stale</span>}
-                </div>
-                <div style={{ fontSize: '12.5px', color: '#64748B', marginBottom: '12px' }}>
-                  Last activity: <strong style={{ color: '#334155' }}>{lastActivityDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong>
-                </div>
-                <button
-                  onClick={jumpToLastActivity}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: '6px',
-                    padding: '7px 18px', borderRadius: '6px', fontSize: '12.5px', fontWeight: 600,
-                    border: 'none', background: 'rgba(37,99,235,0.10)', color: '#2563EB',
-                    cursor: 'pointer', transition: 'all 80ms ease',
-                  }}
-                  onMouseOver={e => { (e.target as HTMLButtonElement).style.background = 'rgba(37,99,235,0.16)'; }}
-                  onMouseOut={e => { (e.target as HTMLButtonElement).style.background = 'rgba(37,99,235,0.10)'; }}
-                >
-                  <Calendar size={13} />
-                  Jump to last activity
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <>
-            {view === 'ring' && <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={() => setAiOpen(true)} />}
-            {view === 'chronology' && <ChronologyView items={filteredWeekItems} onSelect={setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
-            {view === 'board' && <BoardView items={filteredWeekItems} onSelect={setSelectedItem} />}
-          </>
-        )}
-
-        {/* ── Detail Panel ── */}
-        {selectedItem && (
-          <DetailPanel item={selectedItem} onClose={() => setSelectedItem(null)} onSelectItem={setSelectedItem} />
-        )}
-
-        {/* ── Ticket List Drawer (OPEN / STALE) ── */}
-        {ticketListMode && (
-          <TicketListDrawer
-            mode={ticketListMode}
-            items={ticketListMode === 'open' ? allOpenItems : allStaleItems}
-            onClose={() => setTicketListMode(null)}
-            onSelectItem={(item) => { setTicketListMode(null); setSelectedItem(item); }}
-          />
-        )}
       </div>
-    </div>
 
-      {/* R360 Profile Drawer — portal to body, OUTSIDE #r360-root */}
+      {/* R360 Profile Drawer — portal to document.body, completely outside DOM tree */}
       {aiOpen && resourceId && createPortal(
         <>
           <div
