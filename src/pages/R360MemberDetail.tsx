@@ -32,7 +32,7 @@ import '@/styles/r360.css';
 import '@/components/resource360/r360-member.css';
 import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
-import R360ProfileDrawer from '@/components/r360/R360ProfileDrawer';
+
 
 // ── Period helpers ──
 type PeriodType = 'weekly' | 'monthly';
@@ -352,10 +352,7 @@ export default function R360MemberDetail() {
   const [aiOpen, setAiOpen] = useState(() => searchParams.get('intel') === 'true');
   const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
 
-  // ── R360 Profile Drawer state ──
-  const [profileDrawerOpen, setProfileDrawerOpen] = useState(() => searchParams.get('intel') === 'true');
-  const openProfileDrawer = useCallback(() => { setProfileDrawerOpen(true); }, []);
-  const closeProfileDrawer = useCallback(() => { setProfileDrawerOpen(false); }, []);
+  // R360 Profile Drawer removed — intelligence icon now opens AIIntelligencePanel directly
 
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
 
@@ -501,13 +498,13 @@ export default function R360MemberDetail() {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (profileDrawerOpen) closeProfileDrawer();
+        if (aiOpen) setAiOpen(false);
         else setSelectedItem(null);
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [profileDrawerOpen, closeProfileDrawer]);
+  }, [aiOpen]);
 
   // Stale alert: compute oldest age (must be before early returns)
   const oldestAge = useMemo(() => {
@@ -609,7 +606,7 @@ export default function R360MemberDetail() {
             {/* Intelligence — brand blue standard */}
             <AIIntelligenceButton
               label="Intelligence"
-              onClick={openProfileDrawer}
+              onClick={() => setAiOpen(true)}
             />
           </div>
         </div>
@@ -668,7 +665,7 @@ export default function R360MemberDetail() {
           </div>
         ) : (
           <>
-            {view === 'ring' && <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={openProfileDrawer} />}
+            {view === 'ring' && <RingView items={filteredWeekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} overview={overview} onAvatarClick={() => setAiOpen(true)} />}
             {view === 'chronology' && <ChronologyView items={filteredWeekItems} onSelect={setSelectedItem} weekStart={period.start} weekEnd={period.end} />}
             {view === 'board' && <BoardView items={filteredWeekItems} onSelect={setSelectedItem} />}
           </>
@@ -698,16 +695,6 @@ export default function R360MemberDetail() {
         />
       )}
 
-    {/* ── R360 Profile Drawer — flex split-pane right column ── */}
-    {profileDrawerOpen && resourceId && (
-      <div style={{
-        width: 700, flexShrink: 0, borderLeft: '1px solid rgba(15,23,42,0.12)',
-        background: '#FFFFFF', display: 'flex', flexDirection: 'column', overflow: 'hidden',
-        boxShadow: '-4px 0 20px rgba(15,23,42,0.10)',
-      }}>
-        <R360ProfileDrawer resourceId={resourceId} onClose={closeProfileDrawer} />
-      </div>
-    )}
     </div>
   );
 }
