@@ -16,9 +16,11 @@ interface Props {
   search: string;
   onSearchChange: (s: string) => void;
   resultCount?: number;
+  totalCount?: number;
+  isFiltering?: boolean;
 }
 
-export default function RASearchToolbar({ tab, onTabChange, search, onSearchChange, resultCount }: Props) {
+export default function RASearchToolbar({ tab, onTabChange, search, onSearchChange, resultCount, totalCount, isFiltering }: Props) {
   const [local, setLocal] = useState(search);
   const timer = useRef<ReturnType<typeof setTimeout>>();
 
@@ -29,6 +31,10 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
   }, [onSearchChange]);
 
   useEffect(() => () => clearTimeout(timer.current), []);
+
+  const countLabel = isFiltering
+    ? `${resultCount ?? 0} results`
+    : `${totalCount ?? 0} documents`;
 
   return (
     <div style={{
@@ -50,9 +56,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
           placeholder="Search by title, Jira ticket, domain..."
           style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 13, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}
         />
-        {resultCount !== undefined && (
-          <span style={{ fontSize: 11, color: '#94A3B8', whiteSpace: 'nowrap', fontFamily: "'JetBrains Mono', monospace" }}>{resultCount}</span>
-        )}
+        <span style={{ fontSize: 12, color: '#94A3B8', whiteSpace: 'nowrap', fontFamily: "'JetBrains Mono', monospace" }}>{countLabel}</span>
       </div>
       <div style={{ width: 1, height: 22, background: 'rgba(15,23,42,0.12)' }} />
       <div style={{ display: 'flex', gap: 6 }}>

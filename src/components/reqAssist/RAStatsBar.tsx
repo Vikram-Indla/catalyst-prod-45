@@ -47,11 +47,15 @@ interface StatsBarProps {
 
 export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunks, artifactsGenerated, processingCount, loading }: StatsBarProps) {
   const pendingCount = totalDocuments - wikihubSynced;
+  const chunkLabel = wikihubChunks === 0 && wikihubSynced > 0
+    ? '0 chunks (sync may need review)'
+    : `${wikihubChunks} chunks · ${pendingCount > 0 ? pendingCount + ' pending' : 'all synced'}`;
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden', marginBottom: 20 }}>
       <StatCard label="Documents in Library" value={totalDocuments} subLabel="SEN · MDT · SIMP" loading={loading} />
       <div style={{ borderLeft: '1px solid rgba(15,23,42,0.06)' }}>
-        <StatCard label="Indexed in WikiHub" value={`${wikihubSynced} / ${totalDocuments}`} color="#16A34A" subLabel={`${wikihubChunks} chunks · ${pendingCount > 0 ? pendingCount + ' pending' : 'all synced'}`} loading={loading} />
+        <StatCard label="Indexed in WikiHub" value={`${wikihubSynced} / ${totalDocuments}`} color="#16A34A" subLabel={chunkLabel} loading={loading} />
       </div>
       <div style={{ borderLeft: '1px solid rgba(15,23,42,0.06)' }}>
         <StatCard label="Artifacts Generated" value={artifactsGenerated} color="#7C3AED" subLabel="Epics · UAT · Initiatives" loading={loading} />
