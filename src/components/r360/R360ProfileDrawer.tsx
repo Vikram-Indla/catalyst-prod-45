@@ -1528,13 +1528,30 @@ function WeeklyStoryTab({ workItems, openCount, showFilteredList }: { workItems:
       <div style={{ padding: 16 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
           {[
-            { label: 'Opened', value: createdThisWeek },
-            { label: 'Updated', value: updatedOnly },
-            { label: 'Closed', value: closedThisWeek },
+            { label: 'Opened', value: createdThisWeek, onClick: () => showFilteredList('Opened This Week', (i: any) => {
+              const c = new Date(i.created_at);
+              return c >= weekStart && c <= weekEnd;
+            }) },
+            { label: 'Updated', value: updatedOnly, onClick: () => showFilteredList('Updated This Week', (i: any) => {
+              const u = new Date(i.updated_at);
+              const c = new Date(i.created_at);
+              return u >= weekStart && u <= weekEnd && !(c >= weekStart && c <= weekEnd);
+            }) },
+            { label: 'Closed', value: closedThisWeek, onClick: () => showFilteredList('Closed This Week', (i: any) => {
+              if ((i.status_category || '').toLowerCase() !== 'done') return false;
+              const u = new Date(i.updated_at);
+              return u >= weekStart && u <= weekEnd;
+            }) },
           ].map((tile, i) => (
-            <div key={i} style={{
-              border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
-            }}>
+            <div key={i}
+              onClick={tile.onClick}
+              style={{
+                border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
+                cursor: 'pointer', transition: 'background 150ms',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+            >
               <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{tile.value}</div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 4 }}>{tile.label}</div>
             </div>
