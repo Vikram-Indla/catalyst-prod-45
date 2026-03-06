@@ -34,6 +34,7 @@ import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { ResourceProfileDrawer } from '@/components/r360/ResourceProfileDrawer';
 import type { R360ActiveTab } from '@/components/r360/ResourceProfileDrawer';
+import { R360DrawerPortal } from '@/components/r360/R360DrawerPortal';
 
 // ── Period helpers ──
 type PeriodType = 'weekly' | 'monthly';
@@ -692,45 +693,17 @@ export default function R360MemberDetail() {
         />
       )}
 
-      {/* R360 Profile Drawer Overlay */}
-      {r360DrawerOpen && resourceId && (
-        <>
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(15, 23, 42, 0.25)',
-              zIndex: 40,
-            }}
-            onClick={() => setR360DrawerOpen(false)}
-          />
-          <div
-            style={{
-              position: 'fixed',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              width: '700px',
-              zIndex: 50,
-              background: '#FFFFFF',
-              borderLeft: '1px solid rgba(15,23,42,0.12)',
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-              boxShadow: '-4px 0 24px rgba(15, 23, 42, 0.12)',
-            }}
-          >
-            <ResourceProfileDrawer
-              selectedResourceId={resourceId}
-              onClose={() => setR360DrawerOpen(false)}
-              activeTab={r360ActiveTab}
-              onTabChange={setR360ActiveTab}
-              weekOffset={r360WeekOffset}
-              onWeekOffsetChange={setR360WeekOffset}
-            />
-          </div>
-        </>
-      )}
+      {/* R360 Profile Drawer — Portal-based overlay */}
+      <R360DrawerPortal isOpen={r360DrawerOpen && !!resourceId} onClose={() => setR360DrawerOpen(false)}>
+        <ResourceProfileDrawer
+          selectedResourceId={resourceId!}
+          onClose={() => setR360DrawerOpen(false)}
+          activeTab={r360ActiveTab}
+          onTabChange={setR360ActiveTab}
+          weekOffset={r360WeekOffset}
+          onWeekOffsetChange={setR360WeekOffset}
+        />
+      </R360DrawerPortal>
     </div>
   );
 }
