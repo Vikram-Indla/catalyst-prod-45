@@ -309,7 +309,7 @@ export function OverviewTab({ resourceId, resource, weekOffset, onTabChange }: O
         <div className="r3p-sec-title">Hub Breakdown</div>
         <div className="r3p-hub-summary">
           <div className="r3p-kpi-cell">
-            <div className="r3p-kpi-value" style={{ color: 'var(--r3-danger)' }}>{totalOpen}</div>
+            <div className="r3p-kpi-value" style={{ color: loadColour }}>{totalOpen}</div>
             <div className="r3p-kpi-label">Total Backlog</div>
           </div>
           <div className="r3p-kpi-cell">
