@@ -30,8 +30,15 @@ export default function RAImportDrawer({ onClose }: Props) {
   const { data: senTickets = [] } = useJiraTickets('SEN');
   const { data: mdtTickets = [] } = useJiraTickets('MDT');
 
-  // Fetch existing library docs to mark "In Library"
-  const { data: existingDocs = [] } = useRADocuments({ tab: 'all', search: '' });
+  // Fetch existing library doc keys to mark "In Library"
+  const { data: existingDocs = [] } = useQuery({
+    queryKey: ['ra', 'existing-keys'],
+    queryFn: async () => {
+      const { data } = await supabase.from('ra_documents').select('jira_ticket_key') as any;
+      return data ?? [];
+    },
+    staleTime: 10_000,
+  });
   const existingKeys = useMemo(() => {
     return new Set((existingDocs as any[]).map((d: any) => d.jira_ticket_key));
   }, [existingDocs]);
