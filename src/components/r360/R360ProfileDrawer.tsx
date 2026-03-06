@@ -3,7 +3,7 @@
  * V12 Hybrid Precision · No portal, no fixed, no overlay
  */
 import React, { useState, useMemo } from 'react';
-import { ChevronLeft, X, AlertTriangle, Info, BookOpen, ChevronRight, RefreshCw } from 'lucide-react';
+import { ChevronLeft, X, AlertTriangle, Info, BookOpen, ChevronRight, RefreshCw, CalendarX } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';
