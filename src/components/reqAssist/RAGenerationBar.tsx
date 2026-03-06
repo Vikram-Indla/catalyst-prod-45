@@ -18,11 +18,25 @@ const SLOT_COLORS: Record<GenerationSlotState, string> = {
 
 export default function RAGenerationBar({ slots, artifactCounts, isProcessing, etaMinutes }: Props) {
   const slotValues: GenerationSlotState[] = [slots.brd, slots.epics, slots.uat, slots.wiki];
+
+  /* EC-005: All pending → "not started" */
+  const allPending = slotValues.every(s => s === 'pending');
+
   const summaryParts: string[] = [];
   if (artifactCounts) {
     if (artifactCounts.epics > 0) summaryParts.push(`E·${artifactCounts.epics}`);
     if (artifactCounts.uat > 0) summaryParts.push(`U·${artifactCounts.uat}`);
   }
+
+  /* DA-005: Processing label in blue */
+  const labelColor = isProcessing ? '#2563EB' : '#94A3B8';
+  const labelText = isProcessing
+    ? `~${etaMinutes ?? 4}m left`
+    : allPending
+      ? 'not started'
+      : summaryParts.length > 0
+        ? summaryParts.join(' ')
+        : '';
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -40,8 +54,8 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
           />
         ))}
       </div>
-      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#94A3B8', whiteSpace: 'nowrap' }}>
-        {isProcessing ? `~${etaMinutes ?? 4}m left` : summaryParts.length > 0 ? summaryParts.join(' ') : ''}
+      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: labelColor, whiteSpace: 'nowrap' }}>
+        {labelText}
       </span>
     </div>
   );

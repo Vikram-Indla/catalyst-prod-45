@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { X, Download, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Zap, Globe, Info } from 'lucide-react';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 
@@ -14,17 +14,14 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
   const totalPages = doc.page_count ?? 1;
   const estimatedSize = doc.page_count ? `~${(doc.page_count * 0.07).toFixed(1)}MB` : '—';
 
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [onClose]);
+  /* INT-005: ESC handled by parent ReqAssistLibrary */
 
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 60 }} />
       <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 860, maxWidth: '95vw', height: '90vh', background: '#FFFFFF', borderRadius: 8, zIndex: 70, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 20px', borderBottom: '1px solid rgba(15,23,42,0.08)', flexShrink: 0 }}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 20px', borderBottom: '1px solid rgba(15,23,42,0.08)', flexShrink: 0 }}>
           <div>
             <h3 style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', margin: 0, fontFamily: "'Inter', sans-serif" }}>
               {doc.title} — {doc.jira_ticket_key}
@@ -48,7 +45,8 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
             <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 4 }}><X size={18} color="#64748B" /></button>
           </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 20px', borderBottom: '1px solid rgba(15,23,42,0.06)', flexShrink: 0, background: '#FAFAFA' }}>
+        {/* Toolbar */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 20px', borderBottom: '1px solid rgba(15,23,42,0.06)', flexShrink: 0, background: '#F8FAFC' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} style={{ border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', borderRadius: 4, padding: '4px 6px', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}><ChevronLeft size={14} color={page <= 1 ? '#CBD5E1' : '#334155'} /></button>
             <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>Page {page} of {totalPages}</span>
@@ -62,22 +60,30 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
             <Zap size={13} /> Generate Epics from this PDF
           </button>
         </div>
+        {/* Body — DA-010: shadow on white page, grey bg */}
         <div style={{ flex: 1, overflowY: 'auto', background: '#E5E7EB', display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
-          <div style={{ width: 680, maxWidth: '90%', background: '#FFFFFF', borderRadius: 4, padding: '40px 48px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', transform: `scale(${zoom / 100})`, transformOrigin: 'top center' }}>
+          <div style={{
+            width: 680, maxWidth: '90%', background: '#FFFFFF', borderRadius: 4,
+            padding: '48px 56px',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+            transform: `scale(${zoom / 100})`, transformOrigin: 'top center',
+          }}>
             {doc.language === 'ar' && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16, padding: '6px 10px', background: '#FFFBEB', borderRadius: 4, border: '1px solid #FDE68A' }}>
                 <Globe size={13} color="#D97706" />
-                <span style={{ fontSize: 12, color: '#92400E', fontFamily: "'Inter', sans-serif" }}>Original Arabic document — English translation available</span>
+                <span style={{ fontSize: 12, color: '#92400E', fontFamily: "'Inter', sans-serif" }}>Original Arabic document — English translation shown</span>
               </div>
             )}
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', margin: '0 0 16px', fontFamily: "'Sora', sans-serif" }}>{doc.title}</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: '0 0 4px', textAlign: 'center', fontFamily: "'Sora', sans-serif" }}>{doc.title}</h2>
+            <p style={{ fontSize: 13, color: '#64748B', margin: '0 0 20px', textAlign: 'center', fontFamily: "'Inter', sans-serif" }}>Business Requirements Document · {doc.jira_project}</p>
+            {/* EC-008: null content_processed → info box */}
             {doc.content_processed ? (
-              <p style={{ fontSize: 14, lineHeight: 1.7, color: '#334155', whiteSpace: 'pre-wrap', fontFamily: "'Inter', sans-serif" }}>
+              <p style={{ fontSize: 13, lineHeight: 1.7, color: '#334155', whiteSpace: 'pre-wrap', fontFamily: "'Inter', sans-serif" }}>
                 {doc.content_processed.slice(0, 800)}
                 {doc.content_processed.length > 800 ? '...' : ''}
               </p>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 16px', background: '#EFF6FF', borderRadius: 'var(--ra-radius-card)', border: '1px solid #BFDBFE' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 16px', background: '#EFF6FF', borderRadius: 'var(--ra-radius-card)', border: '1px solid #DBEAFE' }}>
                 <Info size={16} color="#2563EB" style={{ marginTop: 1, flexShrink: 0 }} />
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#1E40AF', fontFamily: "'Inter', sans-serif" }}>Content is being extracted</div>

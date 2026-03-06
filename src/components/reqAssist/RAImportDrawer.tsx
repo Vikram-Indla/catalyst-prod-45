@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { X, Check, ChevronRight, ChevronDown, FileText } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { X, Check, ChevronRight, ChevronDown, FileText, AlertCircle } from 'lucide-react';
 import { useJiraTickets, useCreateRADocument, useQueueJob, RA_KEYS } from '@/hooks/useReqAssist';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -30,7 +30,6 @@ export default function RAImportDrawer({ onClose }: Props) {
   const { data: mdtTickets = [] } = useJiraTickets('MDT');
   const ticketsByProject: Record<string, any[]> = { SEN: senTickets, MDT: mdtTickets };
 
-  // Build ticket title map for import progress display
   useEffect(() => {
     const map: Record<string, { title: string; page_count: number | null; project: string }> = {};
     [...senTickets, ...mdtTickets].forEach((t: any) => {
@@ -39,11 +38,15 @@ export default function RAImportDrawer({ onClose }: Props) {
     setTicketTitleMap(map);
   }, [senTickets, mdtTickets]);
 
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [onClose]);
+  /* EC-009: Count selectable (not in library) tickets */
+  const selectableCount = useMemo(() => {
+    let count = 0;
+    [...senTickets, ...mdtTickets].forEach((t: any) => {
+      const inLib = t.status === 'ready' || t.status === 'processing';
+      if (!inLib) count++;
+    });
+    return count;
+  }, [senTickets, mdtTickets]);
 
   const toggleTicket = (key: string) => {
     const next = new Set(selected);
@@ -54,14 +57,11 @@ export default function RAImportDrawer({ onClose }: Props) {
   const handleImport = async () => {
     setImportState('importing');
     const keys = Array.from(selected);
-
-    // Initialize progress
     const initProgress: Record<string, { pct: number; status: string }> = {};
     keys.forEach(k => { initProgress[k] = { pct: 0, status: 'Queuing...' }; });
     setImportProgress(initProgress);
 
     let completedCount = 0;
-
     for (const key of keys) {
       const info = ticketTitleMap[key];
       const title = info?.title || key;
@@ -69,52 +69,32 @@ export default function RAImportDrawer({ onClose }: Props) {
       const pageCount = info?.page_count ?? null;
 
       setImportProgress(p => ({ ...p, [key]: { pct: 10, status: 'Creating document...' } }));
-
       try {
-        // INSERT into ra_documents
         const doc = await createDoc.mutateAsync({
-          title,
-          source_type: 'jira_pdf',
-          language: 'ar',
-          jira_ticket_key: key,
-          jira_project: project,
-          page_count: pageCount ?? undefined,
-          status: 'processing',
+          title, source_type: 'jira_pdf', language: 'ar',
+          jira_ticket_key: key, jira_project: project,
+          page_count: pageCount ?? undefined, status: 'processing',
         });
-
         setImportProgress(p => ({ ...p, [key]: { pct: 30, status: 'Extracting...' } }));
-
-        // Queue import job
-        await queueJob.mutateAsync({
-          ra_document_id: doc.id,
-          job_type: 'import',
-          eta_seconds: (pageCount ?? 10) * 3,
-        });
-
+        await queueJob.mutateAsync({ ra_document_id: doc.id, job_type: 'import', eta_seconds: (pageCount ?? 10) * 3 });
         setImportProgress(p => ({ ...p, [key]: { pct: 60, status: 'Translating...' } }));
-
-        // Simulate processing stages (the real processing happens server-side)
         await new Promise(r => setTimeout(r, 800));
         setImportProgress(p => ({ ...p, [key]: { pct: 85, status: 'WikiHub indexing...' } }));
         await new Promise(r => setTimeout(r, 600));
         setImportProgress(p => ({ ...p, [key]: { pct: 100, status: 'Done' } }));
-
         completedCount++;
       } catch (err: any) {
         setImportProgress(p => ({ ...p, [key]: { pct: 100, status: `Error: ${err.message}` } }));
       }
     }
 
-    // All done
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
     setImportState('done');
-
     setTimeout(() => {
-      toast.success(`${completedCount} documents imported`, {
-        description: 'WikiHub updated with new content',
-        duration: 6000,
-      });
+      toast.success(`${completedCount} documents imported`, { description: 'WikiHub updated with new content', duration: 6000 });
     }, 500);
+    /* Auto-close after 1.5s */
+    setTimeout(() => onClose(), 1500);
   };
 
   return (
@@ -135,6 +115,15 @@ export default function RAImportDrawer({ onClose }: Props) {
           {importState === 'select' && (
             <>
               <span style={{ fontSize: 11, fontWeight: 500, color: '#64748B', textTransform: 'uppercase' as const, letterSpacing: '0.04em', marginBottom: 12, display: 'block', fontFamily: "'Inter', sans-serif" }}>Connected Projects</span>
+
+              {/* EC-009: All tickets in library */}
+              {selectableCount === 0 && (senTickets.length > 0 || mdtTickets.length > 0) && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '14px 16px', background: '#F0FDF4', borderRadius: 'var(--ra-radius-card)', marginBottom: 16, border: '1px solid #DCFCE7' }}>
+                  <Check size={14} color="#16A34A" />
+                  <span style={{ fontSize: 13, color: '#16A34A', fontFamily: "'Inter', sans-serif" }}>All available tickets are already in your library</span>
+                </div>
+              )}
+
               {PROJECTS.map(proj => {
                 const tickets = ticketsByProject[proj.key] || [];
                 const isExp = expanded === proj.key;
@@ -185,6 +174,7 @@ export default function RAImportDrawer({ onClose }: Props) {
                   <div key={key} style={{ marginBottom: 16 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{key}</span>
+                      <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif", flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ticketTitleMap[key]?.title}</span>
                       {isDone && <Check size={14} color="#16A34A" />}
                     </div>
                     <div style={{ height: 4, background: '#E2E8F0', borderRadius: 2, overflow: 'hidden' }}>
@@ -206,7 +196,7 @@ export default function RAImportDrawer({ onClose }: Props) {
             {importState === 'select' && (
               <>
                 <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#334155', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>Cancel</button>
-                <button onClick={handleImport} disabled={selected.size === 0} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: selected.size > 0 ? '#2563EB' : '#E2E8F0', color: selected.size > 0 ? '#FFFFFF' : '#94A3B8', cursor: selected.size > 0 ? 'pointer' : 'not-allowed', fontFamily: "'Inter', sans-serif" }}>Import {selected.size} Selected</button>
+                <button onClick={handleImport} disabled={selected.size === 0} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: selected.size > 0 ? '#2563EB' : '#E2E8F0', color: selected.size > 0 ? '#FFFFFF' : '#94A3B8', cursor: selected.size > 0 ? 'pointer' : 'not-allowed', opacity: selected.size === 0 ? 0.5 : 1, fontFamily: "'Inter', sans-serif" }}>Import {selected.size} Selected</button>
               </>
             )}
             {importState === 'done' && (
