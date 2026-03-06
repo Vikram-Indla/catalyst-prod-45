@@ -687,15 +687,36 @@ export default function R360MemberDetail() {
         )}
       </div>
 
-      {/* R360 Profile Drawer */}
+      {/* R360 Profile Drawer — fixed overlay */}
       {aiOpen && resourceId && (
-        <div style={{
-          width: 700, flexShrink: 0, borderLeft: '1px solid rgba(15,23,42,0.12)',
-          background: '#FFFFFF', display: 'flex', flexDirection: 'column', overflow: 'hidden',
-          boxShadow: '-4px 0 20px rgba(15,23,42,0.10)',
-        }}>
-          <R360ProfileDrawer resourceId={resourceId} onClose={() => setAiOpen(false)} />
-        </div>
+        <>
+          <div
+            onClick={() => setAiOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              top: 48,
+              backgroundColor: 'rgba(0, 0, 0, 0.15)',
+              zIndex: 49,
+            }}
+          />
+          <div style={{
+            position: 'fixed',
+            top: 48,
+            right: 0,
+            width: 700,
+            height: 'calc(100vh - 48px)',
+            backgroundColor: '#FFFFFF',
+            borderLeft: '1px solid #E2E8F0',
+            boxShadow: '-4px 0 24px rgba(0, 0, 0, 0.08)',
+            zIndex: 50,
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+          }}>
+            <R360ProfileDrawer resourceId={resourceId} onClose={() => setAiOpen(false)} />
+          </div>
+        </>
       )}
 
     </div>
