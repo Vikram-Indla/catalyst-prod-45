@@ -1148,12 +1148,12 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
   // NORMAL RING VIEW (3+ open items)
   // ══════════════════════════════════════════
   return (
-    <div ref={canvasRef} className="r3-ring-canvas" style={{ marginTop: '8px' }}>
-      {/* SVG CONNECTORS — dynamic endpoints */}
-      <svg width={W} height={RING_CANVAS_H} style={{ position: 'absolute', top: 0, left: 0, zIndex: 0, pointerEvents: 'none' }}>
+    <div ref={canvasRef} className="r3-ring-canvas" style={{ marginTop: '8px', overflow: 'visible', position: 'relative' }}>
+      {/* SVG CONNECTORS — 2px solid #CBD5E1, avatar-edge to card-edge */}
+      <svg width={W} height={RING_CANVAS_H} style={{ position: 'absolute', top: 0, left: 0, zIndex: 0, pointerEvents: 'none', overflow: 'visible' }}>
         {spokes.map((s, i) => (
           <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
-            stroke="rgba(148,163,184,0.4)" strokeWidth={1} />
+            stroke="#CBD5E1" strokeWidth={2} opacity={1} />
         ))}
       </svg>
 
