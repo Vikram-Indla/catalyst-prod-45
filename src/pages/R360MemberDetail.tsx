@@ -352,6 +352,11 @@ export default function R360MemberDetail() {
   const [aiOpen, setAiOpen] = useState(false);
   const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
 
+  // ── R360 Profile Drawer state ──
+  const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
+  const openProfileDrawer = useCallback(() => { setProfileDrawerOpen(true); }, []);
+  const closeProfileDrawer = useCallback(() => { setProfileDrawerOpen(false); }, []);
+
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
 
   // Status filter is applied CLIENT-SIDE to avoid changing counts when a filter is active
