@@ -45,19 +45,22 @@ const BRAND = '#2563EB';
 const BORDER = 'rgba(15,23,42,0.12)';
 const BORDER_LIGHT = 'rgba(15,23,42,0.06)';
 
-// ── Hooks ──
+// ── Hooks — wired to existing Catalyst tables ──
+function mapStatus(jiraStatus: string) {
+  return R360_STATUS_MAP[jiraStatus] || R360_STATUS_DEFAULT;
+}
+
 function useR360WeeklyStats(resourceId: string) {
   return useQuery({
     queryKey: ['r360-profile-stats', resourceId],
     queryFn: async () => {
-      // Current week
+      // Try snapshot first
       const { data: current } = await supabase
         .from('r360_weekly_snapshots')
         .select('*')
         .eq('resource_id', resourceId)
         .eq('week_number', R360_WEEK)
         .maybeSingle();
-      // Previous week for comparison
       const { data: prev } = await supabase
         .from('r360_weekly_snapshots')
         .select('closed_this_week')
@@ -97,12 +100,31 @@ function useR360Resource(resourceId: string) {
   return useQuery({
     queryKey: ['r360-profile-resource', resourceId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('r360_resources')
-        .select('*, r360_departments(name)')
+      // Query resource_inventory (same table powering the ring view)
+      const { data: resource } = await (supabase as any).from('resource_inventory')
+        .select('id, rid, name, role_name, department_name, vendor_name, resource_type, profile_id, jira_account_id')
         .eq('id', resourceId)
         .maybeSingle();
-      return data;
+      if (!resource) return null;
+
+      // Fetch real avatar from profiles table
+      let avatar_url: string | null = null;
+      if (resource.profile_id) {
+        const { data: profile } = await supabase.from('profiles')
+          .select('avatar_url')
+          .eq('id', resource.profile_id)
+          .maybeSingle();
+        avatar_url = profile?.avatar_url ?? null;
+      }
+
+      return {
+        ...resource,
+        full_name: resource.name,
+        role: resource.role_name || 'Team Member',
+        department: resource.department_name || '',
+        avatar_url,
+        resource_key: `R-${String(resource.rid).padStart(3, '0')}`,
+      };
     },
     enabled: !!resourceId,
     staleTime: 5 * 60 * 1000,
@@ -113,12 +135,40 @@ function useR360ProfileWorkItems(resourceId: string) {
   return useQuery({
     queryKey: ['r360-profile-work-items', resourceId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('r360_work_items')
-        .select('*')
-        .eq('resource_id', resourceId)
-        .is('deleted_at', null);
-      return data || [];
+      // Get resource identity for querying ph_issues
+      const { data: resource } = await (supabase as any).from('resource_inventory')
+        .select('name, jira_account_id')
+        .eq('id', resourceId)
+        .maybeSingle();
+      if (!resource) return [];
+
+      let query = (supabase as any).from('ph_issues')
+        .select('issue_key, project_key, summary, issue_type, status, priority, assignee_display_name, jira_created_at, jira_updated_at');
+      if (resource.jira_account_id) {
+        query = query.eq('assignee_account_id', resource.jira_account_id);
+      } else {
+        query = query.eq('assignee_display_name', resource.name);
+      }
+      query = query.order('jira_updated_at', { ascending: false });
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      return (data || []).map((item: any) => {
+        const st = mapStatus(item.status);
+        return {
+          id: item.issue_key,
+          item_key: item.issue_key,
+          title: item.summary || '',
+          work_item_type: item.issue_type || 'Task',
+          status: item.status,
+          status_category: st.category,
+          source_hub: (item.project_key || '').toLowerCase().includes('inc') ? 'incident' : 'BAU',
+          priority: item.priority,
+          created_at: item.jira_created_at,
+          updated_at: item.jira_updated_at,
+        };
+      });
     },
     enabled: !!resourceId,
     staleTime: 5 * 60 * 1000,
