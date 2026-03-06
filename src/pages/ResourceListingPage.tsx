@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  Search, RotateCw, Clock, LayoutGrid,
+  Search, RotateCw, Clock, LayoutGrid, Zap,
   ChevronDown, ChevronUp,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -47,7 +47,7 @@ const COLUMNS: { key: SortKey | 'actions'; label: string; minWidth?: number; wid
   { key: 'assignment_name', label: 'ASSIGNMENT' },
   { key: 'location_type', label: 'LOCATION' },
   { key: 'vendor_name', label: 'VENDOR' },
-  { key: 'actions', label: 'ACTIONS', width: 140, center: true },
+  { key: 'actions', label: 'ACTIONS', width: 180, center: true },
 ];
 
 /* ── Helpers ── */
@@ -357,9 +357,20 @@ export default function ResourceListingPage() {
                   <td style={{ padding: '8px 16px', fontSize: '13px', color: '#374151' }}>
                     {r.vendor_name || <span style={{ color: '#d1d5db' }}>—</span>}
                   </td>
-                  {/* ACTIONS — 3 filled buttons */}
+                  {/* ACTIONS — 4 filled buttons */}
                   <td style={{ padding: '8px 16px', textAlign: 'center' }}>
                     <div style={{ display: 'inline-flex', gap: '8px' }}>
+                      <ActionBtn
+                        tooltip="Open Intelligence"
+                        bg="#7C3AED" bgHover="#6D28D9"
+                        shadowColor="rgba(124,58,237,0.2)"
+                        icon={<Zap size={16} strokeWidth={1.9} />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // TODO: auto-activate intelligence panel on open
+                          navTo(r.id, 'ring');
+                        }}
+                      />
                       <ActionBtn
                         tooltip="Resource 360°"
                         bg="#1e293b" bgHover="#0f172a"

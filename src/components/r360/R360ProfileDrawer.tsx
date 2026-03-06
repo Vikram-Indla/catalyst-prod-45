@@ -1364,11 +1364,11 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
               const isPeak = val === rhythmData.max && val > 0;
               return (
                 <div key={d} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? '#1D4ED8' : '#374151' }}>{val}</span>
+                  <span style={{ fontSize: isPeak ? 12 : 12, fontWeight: isPeak ? 600 : 400, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? '#1D4ED8' : '#374151' }}>{val}</span>
                   <div style={{
                     width: '100%', maxWidth: 40, height: barH, borderRadius: 3,
-                    background: isPeak ? '#1D4ED8' : '#3B82F6',
-                    transition: 'height 300ms ease',
+                    backgroundColor: isPeak ? '#1D4ED8' : '#3B82F6',
+                    transition: 'height 300ms ease, background-color 0ms',
                   }} />
                   <span style={{ fontSize: 11, color: INK4, fontWeight: 500 }}>{DAY_ABBRS[idx]}</span>
                 </div>
@@ -1440,15 +1440,15 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
       {/* §4 Hub Breakdown */}
       <div style={{ padding: 16 }}>
         <SectionTitle>HUB BREAKDOWN</SectionTitle>
-        <div style={{ display: 'flex', height: 10, borderRadius: 4, overflow: 'hidden', background: '#F1F5F9' }}>
+        <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', background: '#F1F5F9' }}>
           {hubSegments.map((s, i) => (
-            <div key={i} style={{ width: `${s.pct}%`, height: '100%', background: s.color, transition: 'width 300ms' }} />
+            <div key={i} style={{ width: `${s.pct}%`, height: 8, borderRadius: 4, backgroundColor: s.color, transition: 'width 300ms' }} />
           ))}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 10 }}>
           {hubSegments.map((s, i) => (
             <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: s.color, display: 'inline-block', flexShrink: 0 }} />
               <span style={{ fontSize: 12, color: INK2 }}>{s.hub === 'incident' ? 'IncidentHub' : s.hub === 'bau' || s.hub === 'BAU' ? 'BAU' : s.hub}</span>
               <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: INK1 }}>{s.count}</span>
             </div>
