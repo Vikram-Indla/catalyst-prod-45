@@ -576,8 +576,8 @@ function OverviewTab({
             {/* Total Open */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
               <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: loadColour }}>{openCount}</div>
-              <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>TOTAL OPEN</div>
-              <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>vs role avg {roleAvg}</div>
+              <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>TOTAL OPEN</div>
+              <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>vs role avg {roleAvg}</div>
             </div>
             {/* Closed This Week */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
