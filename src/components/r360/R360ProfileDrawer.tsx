@@ -1273,7 +1273,7 @@ function BehaviouralTab({ workItems }: { workItems: any[] }) {
 
   // §4 Hub Breakdown — segmented bar
   const HUB_COLORS: Record<string, string> = {
-    BAU: BRAND, bau: BRAND, incident: DANGER, Product: '#3F3F46', Task: '#D4D4D8',
+    BAU: '#0D9488', bau: '#0D9488', incident: DANGER, Product: '#3F3F46', Task: '#D4D4D8',
   };
   const hubSegments = useMemo(() => {
     const counts: Record<string, number> = {};
