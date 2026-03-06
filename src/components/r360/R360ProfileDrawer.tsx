@@ -494,10 +494,10 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
           />
         )}
         {activeTab === 'behavioural' && (
-          <div style={{ padding: 16, fontSize: 13, color: INK4 }}>Behavioural Patterns — coming in Stage D</div>
+          <BehaviouralTab workItems={workItems} />
         )}
         {activeTab === 'weekly' && (
-          <div style={{ padding: 16, fontSize: 13, color: INK4 }}>Weekly Story — coming in Stage D</div>
+          <WeeklyStoryTab workItems={workItems} openCount={openCount} />
         )}
         {activeTab === 'items' && (
           <div style={{ padding: 16, fontSize: 13, color: INK4 }}>Work Items — coming in Stage D</div>
