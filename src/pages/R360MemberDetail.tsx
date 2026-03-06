@@ -352,10 +352,7 @@ export default function R360MemberDetail() {
   const [aiOpen, setAiOpen] = useState(() => searchParams.get('intel') === 'true');
   const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
 
-  // ── R360 Profile Drawer state ──
-  const [profileDrawerOpen, setProfileDrawerOpen] = useState(() => searchParams.get('intel') === 'true');
-  const openProfileDrawer = useCallback(() => { setProfileDrawerOpen(true); }, []);
-  const closeProfileDrawer = useCallback(() => { setProfileDrawerOpen(false); }, []);
+  // R360 Profile Drawer removed — intelligence icon now opens AIIntelligencePanel directly
 
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
 
