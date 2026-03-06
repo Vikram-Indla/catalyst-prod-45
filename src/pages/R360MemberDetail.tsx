@@ -694,17 +694,32 @@ export default function R360MemberDetail() {
         />
       )}
 
-      {/* R360 Profile Drawer — Portal-based overlay */}
-      <R360DrawerPortal isOpen={r360DrawerOpen && !!resourceId} onClose={() => setR360DrawerOpen(false)}>
-        <ResourceProfileDrawer
-          selectedResourceId={resourceId!}
-          onClose={() => setR360DrawerOpen(false)}
-          activeTab={r360ActiveTab}
-          onTabChange={setR360ActiveTab}
-          weekOffset={r360WeekOffset}
-          onWeekOffsetChange={setR360WeekOffset}
-        />
-      </R360DrawerPortal>
+      </div>{/* end r3-page */}
+      </div>{/* end flex-left */}
+
+      {/* RIGHT: R360 Profile Drawer — flex split-pane */}
+      {r360DrawerOpen && resourceId && (
+        <div style={{
+          width: '700px',
+          flexShrink: 0,
+          borderLeft: '1px solid rgba(15,23,42,0.12)',
+          background: '#FFFFFF',
+          display: 'flex',
+          flexDirection: 'column' as const,
+          overflow: 'hidden',
+          boxShadow: '-4px 0 16px rgba(15,23,42,0.08)',
+        }}>
+          <ResourceProfileDrawer
+            selectedResourceId={resourceId}
+            onClose={() => setR360DrawerOpen(false)}
+            activeTab={r360ActiveTab}
+            onTabChange={setR360ActiveTab}
+            weekOffset={r360WeekOffset}
+            onWeekOffsetChange={setR360WeekOffset}
+          />
+        </div>
+      )}
+
     </div>
   );
 }
