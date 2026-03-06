@@ -75,7 +75,7 @@ export default function ResourceListingPage() {
   const [deptFilter, setDeptFilter] = useState<string>('Delivery');
   const [sortKey, setSortKey] = useState<SortKey>('full_name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
-  
+  const [resourceTypeFilter, setResourceTypeFilter] = useState<'all' | 'core' | 'project' | 'temporary'>('all');
 
 
 
