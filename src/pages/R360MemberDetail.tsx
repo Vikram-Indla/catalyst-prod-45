@@ -804,33 +804,11 @@ function getSpokeEndpoints(cx: number, cy: number, cardCx: number, cardCy: numbe
   // Start: avatar edge
   const x1 = cx + ux * AVATAR_R;
   const y1 = cy + uy * AVATAR_R;
-  // End: nearest card edge (rectangle intersection)
+  // End: card nearest edge (ray-rectangle intersection)
   const halfW = CARD_W / 2;
   const halfH = CARD_H / 2;
-  // Ray from card centre back toward avatar
-  const absDx = Math.abs(dx);
-  const absDy = Math.abs(dy);
-  let t: number;
-  if (absDx * halfH > absDy * halfW) {
-    t = halfW / absDx;
-  } else {
-    t = halfH / absDy;
-  }
-  const x2 = cardCx - ux * (t * dist > dist ? dist : t * dist);
-  const y2 = cardCy - uy * (t * dist > dist ? dist : t * dist);
-  // Clamp: card edge
-  const ex = cardCx - ux * Math.min(halfW / Math.max(Math.abs(ux), 0.001), dist);
-  const ey = cardCy - uy * Math.min(halfH / Math.max(Math.abs(uy), 0.001), dist);
-  // Use simpler approach: scale from card centre toward avatar by half-card
-  const scaleX = absDx > 0.001 ? halfW / absDx : Infinity;
-  const scaleY = absDy > 0.001 ? halfH / absDy : Infinity;
-  const scale = Math.min(scaleX, scaleY, 1);
-  const cardEdgeX = cardCx - ux * scale * dist;
-  const cardEdgeY = cardCy - uy * scale * dist;
-  // Final: use the point closest to avatar but still on card boundary
-  const fx = cardCx - ux * Math.min(scaleX, scaleY) * Math.min(dist, Math.sqrt(halfW * halfW + halfH * halfH));
-  const fy = cardCy - uy * Math.min(scaleX, scaleY) * Math.min(dist, Math.sqrt(halfW * halfW + halfH * halfH));
-  // Simplest correct approach:
+  const scaleX = Math.abs(ux) > 0.001 ? halfW / Math.abs(ux) : Infinity;
+  const scaleY = Math.abs(uy) > 0.001 ? halfH / Math.abs(uy) : Infinity;
   const edgeDist = Math.min(scaleX, scaleY);
   return {
     x1, y1,
