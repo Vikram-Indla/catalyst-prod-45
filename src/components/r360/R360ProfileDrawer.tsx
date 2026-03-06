@@ -1200,12 +1200,17 @@ function OverviewTab({
         {/* Summary grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden', marginBottom: 12 }}>
           {[
-            { label: 'Total Backlog', value: hubSummary.total, color: INK1 },
-            { label: 'In Progress', value: hubSummary.inProgress, color: INK1 },
-            { label: 'To Do', value: hubSummary.toDo, color: INK1 },
-            { label: 'Blocked', value: hubSummary.blocked, color: hubSummary.blocked > 0 ? DANGER : INK1 },
+            { label: 'Total Backlog', value: hubSummary.total, color: INK1, onClick: () => showFilteredList('Backlog Items', (i: any) => i.status_category !== 'done') },
+            { label: 'In Progress', value: hubSummary.inProgress, color: INK1, onClick: () => showFilteredList('In Progress Items', (i: any) => i.status_category === 'in_progress') },
+            { label: 'To Do', value: hubSummary.toDo, color: INK1, onClick: () => showFilteredList('To Do Items', (i: any) => i.status_category !== 'done' && i.status_category !== 'in_progress' && i.status_category !== 'blocked') },
+            { label: 'Blocked', value: hubSummary.blocked, color: hubSummary.blocked > 0 ? DANGER : INK1, onClick: () => showFilteredList('Blocked Items', (i: any) => i.status_category === 'blocked') },
           ].map((tile, i) => (
-            <div key={i} style={{ background: '#FFFFFF', padding: '10px 12px' }}>
+            <div key={i}
+              onClick={tile.onClick}
+              style={{ background: '#FFFFFF', padding: '10px 12px', cursor: 'pointer', transition: 'background 120ms' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+            >
               <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: tile.color }}>{tile.value}</div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>{tile.label}</div>
             </div>
