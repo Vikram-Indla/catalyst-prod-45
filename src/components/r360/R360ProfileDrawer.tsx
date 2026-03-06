@@ -249,15 +249,44 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
   const stats = statsData?.current;
   const prevWeekClosed = statsData?.prev?.closed_this_week ?? 0;
 
+  // Compute stats from live work items when snapshot is empty
+  const liveStats = useMemo(() => {
+    if (stats) return null; // snapshot exists, use it
+    const open = workItems.filter((i: any) => i.status_category !== 'done');
+    const done = workItems.filter((i: any) => i.status_category === 'done');
+    const inProg = workItems.filter((i: any) => i.status_category === 'in_progress');
+    const inRev = workItems.filter((i: any) => i.status_category === 'in_review');
+    const now = Date.now();
+    const oldest = open.reduce((max: { age: number; key: string }, i: any) => {
+      const age = Math.floor((now - new Date(i.created_at).getTime()) / 86400000);
+      return age > max.age ? { age, key: i.item_key ?? '—' } : max;
+    }, { age: 0, key: '—' });
+    return {
+      total_open: open.length,
+      closed_this_week: done.length,
+      in_review: inRev.length,
+      pickup_speed_hours: 0,
+      in_progress_concurrent: inProg.length,
+      closed_of_touched: done.length,
+      total_touched: workItems.length,
+      avg_cycle_time_days: 0,
+      oldest_item_age_days: oldest.age,
+      oldest_item_key: oldest.key,
+      closure_rate_pct: workItems.length > 0 ? Math.round((done.length / workItems.length) * 100) : 0,
+    };
+  }, [stats, workItems]);
+
+  const effectiveStats = stats || liveStats;
+
   // Derived
-  const openCount = stats?.total_open ?? 0;
+  const openCount = effectiveStats?.total_open ?? 0;
   const roleAvg = 5; // benchmark
   const loadColour = computeLoadColour(openCount, roleAvg);
 
-  const deptName = (resource as any)?.r360_departments?.name || '';
   const resourceName = resource?.full_name || '';
-  const resourceRole = resource?.job_role || '';
-  const resourceRid = resource?.rid || '';
+  const resourceRole = resource?.role || '';
+  const deptName = resource?.department || '';
+  const resourceRid = resource?.resource_key || '';
 
   // Work mix
   const workMix = useMemo(() => {
