@@ -2,7 +2,7 @@
  * R360 Profile Drawer — 700px inline split-pane intelligence view
  * V12 Hybrid Precision · No portal, no fixed, no overlay
  */
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { ChevronLeft, X, AlertTriangle, Info, BookOpen, ChevronRight, ChevronLeft as ChevronLeftIcon, RefreshCw, CalendarX, Inbox } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,9 +10,8 @@ import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { fetchItemDetail, calcDaysSitting } from '@/lib/r360/fetchItemDetail';
 import type { ItemDetailFull } from '@/lib/r360/fetchItemDetail';
-
-// ── Constants ──
-const R360_WEEK = 9;
+import { getWeekNumber } from '@/constants/r360WeekConfig';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const STATUS_MAP: Record<string, { bg: string; color: string; label: string }> = {
   TO_DO:       { bg: '#DFE1E6', color: '#253858', label: 'TO DO' },
@@ -46,21 +45,21 @@ function mapStatus(jiraStatus: string) {
   return R360_STATUS_MAP[jiraStatus] || R360_STATUS_DEFAULT;
 }
 
-function useR360WeeklyStats(resourceId: string) {
+function useR360WeeklyStats(resourceId: string, weekNumber: number) {
   return useQuery({
-    queryKey: ['r360-profile-stats', resourceId],
+    queryKey: ['r360-profile-stats', resourceId, weekNumber],
     queryFn: async () => {
       const { data: current } = await supabase
         .from('r360_weekly_snapshots')
         .select('*')
         .eq('resource_id', resourceId)
-        .eq('week_number', R360_WEEK)
+        .eq('week_number', weekNumber)
         .maybeSingle();
       const { data: prev } = await supabase
         .from('r360_weekly_snapshots')
         .select('closed_this_week')
         .eq('resource_id', resourceId)
-        .eq('week_number', R360_WEEK - 1)
+        .eq('week_number', weekNumber - 1)
         .maybeSingle();
       return { current, prev };
     },
@@ -69,9 +68,9 @@ function useR360WeeklyStats(resourceId: string) {
   });
 }
 
-function useR360ClosureTrend(resourceId: string) {
+function useR360ClosureTrend(resourceId: string, weekNumber: number) {
   return useQuery({
-    queryKey: ['r360-profile-trend', resourceId],
+    queryKey: ['r360-profile-trend', resourceId, weekNumber],
     queryFn: async () => {
       const { data } = await supabase
         .from('r360_weekly_snapshots')
@@ -83,7 +82,7 @@ function useR360ClosureTrend(resourceId: string) {
         weekNumber: d.week_number,
         weekLabel: `W${d.week_number}`,
         closedCount: d.closed_this_week,
-        isCurrent: d.week_number === R360_WEEK,
+        isCurrent: d.week_number === weekNumber,
       }));
     },
     enabled: !!resourceId,
@@ -463,6 +462,26 @@ const TABS: { key: TabKey; label: string }[] = [
 export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDrawerProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [panelStack, setPanelStack] = useState<PanelView[]>([]);
+  const [weekOffset, setWeekOffset] = useState(0);
+
+  // Shared week computation
+  const { weekStart, weekEnd, weekLabel, weekNumber } = useMemo(() => {
+    const now = new Date();
+    const day = now.getDay();
+    const daysSinceSunday = day === 0 ? 0 : day;
+    const ws = new Date(now);
+    ws.setDate(now.getDate() - daysSinceSunday + (weekOffset * 7));
+    ws.setHours(0, 0, 0, 0);
+    const we = new Date(ws);
+    we.setDate(ws.getDate() + 4);
+    we.setHours(23, 59, 59, 999);
+    const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const wn = getWeekNumber(ws);
+    return {
+      weekStart: ws, weekEnd: we, weekNumber: wn,
+      weekLabel: `W${wn} · ${fmt(ws)}–${fmt(we).split(' ')[1]}, ${we.getFullYear()}`,
+    };
+  }, [weekOffset]);
 
   const pushPanel = useCallback((view: PanelView) => {
     setPanelStack(prev => [...prev, view]);
@@ -475,8 +494,8 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
   }, []);
 
   const { data: resource, isLoading: resLoading, isError: resError } = useR360Resource(resourceId);
-  const { data: statsData, isLoading: statsLoading } = useR360WeeklyStats(resourceId);
-  const { data: trend = [], isLoading: trendLoading } = useR360ClosureTrend(resourceId);
+  const { data: statsData, isLoading: statsLoading } = useR360WeeklyStats(resourceId, weekNumber);
+  const { data: trend = [], isLoading: trendLoading } = useR360ClosureTrend(resourceId, weekNumber);
   const { data: workItems = [], isLoading: itemsLoading } = useR360ProfileWorkItems(resourceId);
 
   const stats = statsData?.current;
@@ -484,16 +503,6 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
 
   const liveStats = useMemo(() => {
     if (stats) return null;
-    const now = new Date();
-    const day = now.getDay();
-    const daysSinceSunday = day === 0 ? 0 : day;
-    const weekStart = new Date(now);
-    weekStart.setDate(now.getDate() - daysSinceSunday);
-    weekStart.setHours(0, 0, 0, 0);
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 4);
-    weekEnd.setHours(23, 59, 59, 999);
-
     const open = workItems.filter((i: any) => i.status_category !== 'done');
     const done = workItems.filter((i: any) => i.status_category === 'done');
     const closedThisWeek = done.filter((i: any) => {
@@ -520,7 +529,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
       oldest_item_key: oldest.key,
       closure_rate_pct: (open.length + closedThisWeek) > 0 ? Math.round((closedThisWeek / (open.length + closedThisWeek)) * 100) : 0,
     };
-  }, [stats, workItems]);
+  }, [stats, workItems, weekStart, weekEnd]);
 
   const effectiveStats = stats || liveStats;
 
@@ -605,6 +614,21 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
     clearPanels();
     setActiveTab(tab);
   }, [clearPanels]);
+
+  // Escape key handler (W22+W40)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (panelStack.length > 0) {
+          popPanel();
+        } else {
+          onClose();
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [panelStack, onClose, popPanel]);
 
   if (resError) {
     return (
@@ -735,16 +759,21 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
             workItems={workItems}
             showFilteredList={showFilteredList}
             showItemDetail={showItemDetail}
+            weekLabel={weekLabel}
+            weekStart={weekStart}
+            weekEnd={weekEnd}
+            weekOffset={weekOffset}
+            setWeekOffset={setWeekOffset}
           />
         )}
         {activeTab === 'behavioural' && (
-          <BehaviouralTab workItems={workItems} showFilteredList={showFilteredList} />
+          <BehaviouralTab workItems={workItems} showFilteredList={showFilteredList} weekStart={weekStart} weekEnd={weekEnd} weekLabel={weekLabel} />
         )}
         {activeTab === 'weekly' && (
-          <WeeklyStoryTab workItems={workItems} openCount={openCount} showFilteredList={showFilteredList} />
+          <WeeklyStoryTab workItems={workItems} openCount={openCount} showFilteredList={showFilteredList} weekStart={weekStart} weekEnd={weekEnd} weekLabel={weekLabel} />
         )}
         {activeTab === 'items' && (
-          <WorkItemsTab workItems={workItems} />
+          <WorkItemsTab workItems={workItems} weekStart={weekStart} weekEnd={weekEnd} weekLabel={weekLabel} weekOffset={weekOffset} setWeekOffset={setWeekOffset} />
         )}
 
         {/* ━━ STACKED DETAIL PANEL ━━ */}
@@ -783,6 +812,7 @@ function OverviewTab({
   stats, statsLoading, prevWeekClosed, openCount, roleAvg, loadColour,
   trend, trendLoading, workMix, hubBreakdown, hubSummary, totalOpenAcrossHubs,
   onTabSwitch, workItems, showFilteredList, showItemDetail,
+  weekLabel, weekStart, weekEnd, weekOffset, setWeekOffset,
 }: {
   stats: any; statsLoading: boolean; prevWeekClosed: number;
   openCount: number; roleAvg: number; loadColour: string;
@@ -795,6 +825,11 @@ function OverviewTab({
   workItems: any[];
   showFilteredList: (label: string, filterFn: (i: any) => boolean) => void;
   showItemDetail: (itemKey: string) => void;
+  weekLabel: string;
+  weekStart: Date;
+  weekEnd: Date;
+  weekOffset: number;
+  setWeekOffset: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const closedThisWeek = stats?.closed_this_week ?? 0;
   const inReview = stats?.in_review ?? 0;
@@ -822,20 +857,6 @@ function OverviewTab({
   const bugRow = workMix.find(w => w.type === 'Bug');
   const showBugInsight = bugRow && bugRow.pct > bugRow.roleAvgPct;
 
-  // Compute week bounds for "closed this week" filter
-  const { weekStart, weekEnd } = useMemo(() => {
-    const now = new Date();
-    const day = now.getDay();
-    const daysSinceSunday = day === 0 ? 0 : day;
-    const ws = new Date(now);
-    ws.setDate(now.getDate() - daysSinceSunday);
-    ws.setHours(0, 0, 0, 0);
-    const we = new Date(ws);
-    we.setDate(ws.getDate() + 4);
-    we.setHours(23, 59, 59, 999);
-    return { weekStart: ws, weekEnd: we };
-  }, []);
-
   // Clickable tile style
   const clickableTileHover = (e: React.MouseEvent, entering: boolean) => {
     (e.currentTarget as HTMLElement).style.background = entering ? 'rgba(37,99,235,0.04)' : '#FFFFFF';
@@ -860,7 +881,31 @@ function OverviewTab({
     <>
       {/* §1 — KPI Stats Bar */}
       <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
-        <SectionTitle>THIS WEEK · W{R360_WEEK} · MAR 1–5, 2026</SectionTitle>
+        {/* Week Navigator */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <SectionTitle>THIS WEEK</SectionTitle>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button
+              onClick={() => setWeekOffset(o => Math.max(o - 1, -52))}
+              disabled={weekOffset <= -52}
+              style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset <= -52 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset <= -52 ? 0.3 : 1 }}
+              onMouseEnter={e => { if (weekOffset > -52) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <ChevronLeft size={16} color={INK4} />
+            </button>
+            <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK2, whiteSpace: 'nowrap' as const }}>{weekLabel}</span>
+            <button
+              onClick={() => setWeekOffset(o => Math.min(o + 1, 0))}
+              disabled={weekOffset >= 0}
+              style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset >= 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset >= 0 ? 0.3 : 1 }}
+              onMouseEnter={e => { if (weekOffset < 0) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <ChevronRight size={16} color={INK4} />
+            </button>
+          </div>
+        </div>
         {statsLoading ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden' }}>
             {[1,2,3,4].map(i => <div key={i} style={{ background: '#FFFFFF', padding: '12px 14px' }}><Skeleton h={28} w="40%" /><Skeleton h={12} w="60%" /></div>)}
@@ -1135,7 +1180,7 @@ function OverviewTab({
             <BookOpen size={16} color={INK4} />
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4 }}>Weekly Story · W{R360_WEEK}</div>
+            <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4 }}>Weekly Story · {weekLabel}</div>
             <div style={{ fontSize: 13, fontWeight: 500, fontStyle: 'italic', color: INK1, marginTop: 2 }}>
               &ldquo;Focus on incident resolution and QA throughput&rdquo;
             </div>
@@ -1155,12 +1200,17 @@ function OverviewTab({
         {/* Summary grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden', marginBottom: 12 }}>
           {[
-            { label: 'Total Backlog', value: hubSummary.total, color: INK1 },
-            { label: 'In Progress', value: hubSummary.inProgress, color: INK1 },
-            { label: 'To Do', value: hubSummary.toDo, color: INK1 },
-            { label: 'Blocked', value: hubSummary.blocked, color: hubSummary.blocked > 0 ? DANGER : INK1 },
+            { label: 'Total Backlog', value: hubSummary.total, color: INK1, onClick: () => showFilteredList('Backlog Items', (i: any) => i.status_category !== 'done') },
+            { label: 'In Progress', value: hubSummary.inProgress, color: INK1, onClick: () => showFilteredList('In Progress Items', (i: any) => i.status_category === 'in_progress') },
+            { label: 'To Do', value: hubSummary.toDo, color: INK1, onClick: () => showFilteredList('To Do Items', (i: any) => i.status_category !== 'done' && i.status_category !== 'in_progress' && i.status_category !== 'blocked') },
+            { label: 'Blocked', value: hubSummary.blocked, color: hubSummary.blocked > 0 ? DANGER : INK1, onClick: () => showFilteredList('Blocked Items', (i: any) => i.status_category === 'blocked') },
           ].map((tile, i) => (
-            <div key={i} style={{ background: '#FFFFFF', padding: '10px 12px' }}>
+            <div key={i}
+              onClick={tile.onClick}
+              style={{ background: '#FFFFFF', padding: '10px 12px', cursor: 'pointer', transition: 'background 120ms' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+            >
               <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: tile.color }}>{tile.value}</div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>{tile.label}</div>
             </div>
@@ -1214,7 +1264,7 @@ function OverviewTab({
 const WORK_DAYS = [0, 1, 2, 3, 4]; // Sun=0..Thu=4
 const DAY_ABBRS = ['Su', 'Mo', 'Tu', 'We', 'Th'];
 
-function BehaviouralTab({ workItems, showFilteredList }: { workItems: any[]; showFilteredList: (label: string, filterFn: (i: any) => boolean) => void }) {
+function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekLabel }: { workItems: any[]; showFilteredList: (label: string, filterFn: (i: any) => boolean) => void; weekStart: Date; weekEnd: Date; weekLabel: string }) {
   // §1 Work Rhythm DNA
   const rhythmData = useMemo(() => {
     const counts: Record<number, number> = { 0:0, 1:0, 2:0, 3:0, 4:0 };
@@ -1412,19 +1462,11 @@ function BehaviouralTab({ workItems, showFilteredList }: { workItems: any[]; sho
 // ══════════════════════════════════════════
 // WEEKLY STORY TAB
 // ══════════════════════════════════════════
-function WeeklyStoryTab({ workItems, openCount, showFilteredList }: { workItems: any[]; openCount: number; showFilteredList: (label: string, filterFn: (i: any) => boolean) => void }) {
-  const { weekStart, weekEnd } = useMemo(() => {
-    const now = new Date();
-    const day = now.getDay();
-    const daysSinceSunday = day === 0 ? 0 : day;
-    const ws = new Date(now);
-    ws.setDate(now.getDate() - daysSinceSunday);
-    ws.setHours(0, 0, 0, 0);
-    const we = new Date(ws);
-    we.setDate(ws.getDate() + 4);
-    we.setHours(23, 59, 59, 999);
-    return { weekStart: ws, weekEnd: we };
-  }, []);
+function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekStart, weekEnd, weekLabel }: {
+  workItems: any[]; openCount: number;
+  showFilteredList: (label: string, filterFn: (i: any) => boolean) => void;
+  weekStart: Date; weekEnd: Date; weekLabel: string;
+}) {
 
   const closedThisWeek = useMemo(() =>
     workItems.filter((i: any) => {
@@ -1493,7 +1535,7 @@ function WeeklyStoryTab({ workItems, openCount, showFilteredList }: { workItems:
           border: '1px solid #E2E8F0', borderRadius: 8, padding: 16, background: '#FFFFFF',
         }}>
           <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 8 }}>
-            W{R360_WEEK} · MAR 1–5, 2026
+            {weekLabel}
           </div>
           <div style={{ fontSize: 14, color: INK2, lineHeight: 1.5 }}>{headline}</div>
         </div>
@@ -1574,38 +1616,21 @@ function WeeklyStoryTab({ workItems, openCount, showFilteredList }: { workItems:
 // ══════════════════════════════════════════
 // WORK ITEMS TAB
 // ══════════════════════════════════════════
-function WorkItemsTab({ workItems }: { workItems: any[] }) {
+function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOffset, setWeekOffset }: {
+  workItems: any[];
+  weekStart: Date; weekEnd: Date; weekLabel: string;
+  weekOffset: number;
+  setWeekOffset: React.Dispatch<React.SetStateAction<number>>;
+}) {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
-  const [weekOffset, setWeekOffset] = useState(0);
-
-  const { weekStart, weekEnd, weekLabel } = useMemo(() => {
-    const now = new Date();
-    const day = now.getDay();
-    const daysSinceSunday = day === 0 ? 0 : day;
-    const ws = new Date(now);
-    ws.setDate(now.getDate() - daysSinceSunday + (weekOffset * 7));
-    ws.setHours(0, 0, 0, 0);
-    const we = new Date(ws);
-    we.setDate(ws.getDate() + 4);
-    we.setHours(23, 59, 59, 999);
-    const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const wn = R360_WEEK + weekOffset;
-    return { weekStart: ws, weekEnd: we, weekLabel: `W${wn} · ${fmt(ws)}–${fmt(we).split(' ')[1]}` };
-  }, [weekOffset]);
 
   const filtered = useMemo(() => {
     return workItems
       .filter((i: any) => {
         const u = new Date(i.updated_at);
         if (u < weekStart || u > weekEnd) return false;
-        if (statusFilter !== 'all') {
-          const sc = (i.status_category || '').toLowerCase().replace(/[_\s-]/g, '');
-          if (statusFilter === 'todo' && sc !== 'todo' && sc !== 'backlog') return false;
-          if (statusFilter === 'inprogress' && sc !== 'inprogress') return false;
-          if (statusFilter === 'inreview' && sc !== 'inreview') return false;
-          if (statusFilter === 'done' && sc !== 'done') return false;
-        }
+        if (statusFilter !== 'all' && i.status_category !== statusFilter) return false;
         if (typeFilter !== 'all') {
           const t = (i.work_item_type || '').toLowerCase().replace(/[_\s-]/g, '');
           const f = typeFilter.toLowerCase().replace(/[_\s-]/g, '');
@@ -1626,17 +1651,6 @@ function WorkItemsTab({ workItems }: { workItems: any[] }) {
     return `${d}d ago`;
   };
 
-  const selectStyle: React.CSSProperties = {
-    height: 36, padding: '0 10px', fontSize: 12, fontWeight: 500,
-    color: INK2, background: '#FFFFFF', border: '1px solid #E2E8F0',
-    borderRadius: 6, cursor: 'pointer', fontFamily: "'Inter', system-ui, sans-serif",
-    appearance: 'none', WebkitAppearance: 'none',
-    backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'right 10px center',
-    paddingRight: 28,
-  };
-
   return (
     <>
       {/* Toolbar */}
@@ -1646,37 +1660,48 @@ function WorkItemsTab({ workItems }: { workItems: any[] }) {
         padding: '0 12px', gap: 8,
       }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={selectStyle}>
-            <option value="all">All Statuses</option>
-            <option value="todo">To Do</option>
-            <option value="inprogress">In Progress</option>
-            <option value="inreview">In Review</option>
-            <option value="done">Done</option>
-          </select>
-          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={selectStyle}>
-            <option value="all">All Types</option>
-            <option value="Bug">Bug</option>
-            <option value="Story">Story</option>
-            <option value="Subtask">Subtask</option>
-            <option value="Incident">Incident</option>
-            <option value="QA Bug">QA Bug</option>
-            <option value="Frontend">Frontend</option>
-          </select>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger style={{ height: 32, fontSize: 13, minWidth: 120 }}>
+              <SelectValue placeholder="All Statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="todo">To Do</SelectItem>
+              <SelectItem value="in_progress">In Progress</SelectItem>
+              <SelectItem value="backlog">Backlog</SelectItem>
+              <SelectItem value="done">Done</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger style={{ height: 32, fontSize: 13, minWidth: 100 }}>
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="Bug">Bug</SelectItem>
+              <SelectItem value="Story">Story</SelectItem>
+              <SelectItem value="Subtask">Subtask</SelectItem>
+              <SelectItem value="Incident">Incident</SelectItem>
+              <SelectItem value="QA Bug">QA Bug</SelectItem>
+              <SelectItem value="Frontend">Frontend</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button
-            onClick={() => setWeekOffset(o => o - 1)}
-            style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+            onClick={() => setWeekOffset(o => Math.max(o - 1, -52))}
+            disabled={weekOffset <= -52}
+            style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset <= -52 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset <= -52 ? 0.3 : 1 }}
+            onMouseEnter={e => { if (weekOffset > -52) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             <ChevronLeft size={16} color={INK4} />
           </button>
-          <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK2, whiteSpace: 'nowrap' }}>{weekLabel}</span>
+          <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK2, whiteSpace: 'nowrap' as const }}>{weekLabel}</span>
           <button
             onClick={() => setWeekOffset(o => Math.min(o + 1, 0))}
-            style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset >= 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset >= 0 ? 0.3 : 1 }}
             disabled={weekOffset >= 0}
+            style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset >= 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset >= 0 ? 0.3 : 1 }}
             onMouseEnter={e => { if (weekOffset < 0) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
