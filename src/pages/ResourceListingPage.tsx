@@ -47,7 +47,6 @@ const COLUMNS: { key: SortKey | 'actions'; label: string; minWidth?: number; wid
   { key: 'job_role', label: 'JOB ROLE' },
   { key: 'assignment_name', label: 'ASSIGNMENT' },
   { key: 'location_type', label: 'LOCATION' },
-  { key: 'vendor_name', label: 'VENDOR' },
   { key: 'actions', label: 'ACTIONS', width: 180, center: true },
 ];
 
@@ -366,7 +365,7 @@ export default function ResourceListingPage() {
                 ))
               ) : sorted.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '60px 20px' }}>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '60px 20px' }}>
                     <Search size={32} style={{ color: '#D1D5DB', margin: '0 auto 12px' }} />
                     <div style={{ fontSize: '15px', fontWeight: 700, color: '#0F172A', marginBottom: '4px' }}>No resources match your search.</div>
                     <div style={{ fontSize: '12px', color: '#94A3B8' }}>Try adjusting your search or filters</div>
@@ -433,10 +432,6 @@ export default function ResourceListingPage() {
                         </span>
                       </span>
                     ) : <span style={{ fontSize: '13px', color: '#d1d5db' }}>—</span>}
-                  </td>
-                  {/* VENDOR */}
-                  <td style={{ padding: '8px 16px', fontSize: '13px', color: '#374151' }}>
-                    {r.vendor_name || <span style={{ color: '#d1d5db' }}>—</span>}
                   </td>
                   {/* ACTIONS — 4 filled buttons */}
                   <td style={{ padding: '8px 16px', textAlign: 'center' }}>
