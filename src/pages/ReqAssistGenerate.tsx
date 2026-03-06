@@ -95,7 +95,7 @@ export default function ReqAssistGenerate() {
         </p>
 
         <div style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden', marginBottom: 20 }}>
-          <div style={{ padding: '12px 14px', background: '#F8FAFC', borderBottom: '1px solid rgba(15,23,42,0.06)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ padding: '12px 14px', background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.06)', display: 'flex', alignItems: 'center', gap: 8 }}>
             <FileText size={15} color="#2563EB" />
             <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>Requirements Input</span>
             <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>· Paste text from meetings, briefs, email threads, or scope documents</span>
