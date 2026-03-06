@@ -812,6 +812,7 @@ function OverviewTab({
   stats, statsLoading, prevWeekClosed, openCount, roleAvg, loadColour,
   trend, trendLoading, workMix, hubBreakdown, hubSummary, totalOpenAcrossHubs,
   onTabSwitch, workItems, showFilteredList, showItemDetail,
+  weekLabel, weekStart, weekEnd, weekOffset, setWeekOffset,
 }: {
   stats: any; statsLoading: boolean; prevWeekClosed: number;
   openCount: number; roleAvg: number; loadColour: string;
@@ -824,6 +825,11 @@ function OverviewTab({
   workItems: any[];
   showFilteredList: (label: string, filterFn: (i: any) => boolean) => void;
   showItemDetail: (itemKey: string) => void;
+  weekLabel: string;
+  weekStart: Date;
+  weekEnd: Date;
+  weekOffset: number;
+  setWeekOffset: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const closedThisWeek = stats?.closed_this_week ?? 0;
   const inReview = stats?.in_review ?? 0;
@@ -851,20 +857,6 @@ function OverviewTab({
   const bugRow = workMix.find(w => w.type === 'Bug');
   const showBugInsight = bugRow && bugRow.pct > bugRow.roleAvgPct;
 
-  // Compute week bounds for "closed this week" filter
-  const { weekStart, weekEnd } = useMemo(() => {
-    const now = new Date();
-    const day = now.getDay();
-    const daysSinceSunday = day === 0 ? 0 : day;
-    const ws = new Date(now);
-    ws.setDate(now.getDate() - daysSinceSunday);
-    ws.setHours(0, 0, 0, 0);
-    const we = new Date(ws);
-    we.setDate(ws.getDate() + 4);
-    we.setHours(23, 59, 59, 999);
-    return { weekStart: ws, weekEnd: we };
-  }, []);
-
   // Clickable tile style
   const clickableTileHover = (e: React.MouseEvent, entering: boolean) => {
     (e.currentTarget as HTMLElement).style.background = entering ? 'rgba(37,99,235,0.04)' : '#FFFFFF';
@@ -889,7 +881,31 @@ function OverviewTab({
     <>
       {/* §1 — KPI Stats Bar */}
       <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
-        <SectionTitle>THIS WEEK · W{R360_WEEK} · MAR 1–5, 2026</SectionTitle>
+        {/* Week Navigator */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <SectionTitle>THIS WEEK</SectionTitle>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button
+              onClick={() => setWeekOffset(o => Math.max(o - 1, -52))}
+              disabled={weekOffset <= -52}
+              style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset <= -52 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset <= -52 ? 0.3 : 1 }}
+              onMouseEnter={e => { if (weekOffset > -52) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <ChevronLeft size={16} color={INK4} />
+            </button>
+            <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK2, whiteSpace: 'nowrap' as const }}>{weekLabel}</span>
+            <button
+              onClick={() => setWeekOffset(o => Math.min(o + 1, 0))}
+              disabled={weekOffset >= 0}
+              style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: weekOffset >= 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, opacity: weekOffset >= 0 ? 0.3 : 1 }}
+              onMouseEnter={e => { if (weekOffset < 0) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <ChevronRight size={16} color={INK4} />
+            </button>
+          </div>
+        </div>
         {statsLoading ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden' }}>
             {[1,2,3,4].map(i => <div key={i} style={{ background: '#FFFFFF', padding: '12px 14px' }}><Skeleton h={28} w="40%" /><Skeleton h={12} w="60%" /></div>)}
