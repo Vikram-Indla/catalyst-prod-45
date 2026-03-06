@@ -5,9 +5,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export function useBrdDocuments() {
+export function useBrdDocuments(_filters?: any) {
   return useQuery({
-    queryKey: ['brd-documents'],
+    queryKey: ['brd-documents', _filters],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from('brd_documents')
