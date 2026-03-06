@@ -353,7 +353,7 @@ export default function R360MemberDetail() {
   const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
 
   // ── R360 Profile Drawer state ──
-  const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
+  const [profileDrawerOpen, setProfileDrawerOpen] = useState(() => searchParams.get('intel') === 'true');
   const openProfileDrawer = useCallback(() => { setProfileDrawerOpen(true); }, []);
   const closeProfileDrawer = useCallback(() => { setProfileDrawerOpen(false); }, []);
 
