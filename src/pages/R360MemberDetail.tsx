@@ -349,7 +349,7 @@ export default function R360MemberDetail() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<R360WorkItem | null>(null);
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(() => searchParams.get('intel') === 'true');
   const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
 
   // ── R360 Profile Drawer state ──

@@ -367,8 +367,7 @@ export default function ResourceListingPage() {
                         icon={<Zap size={16} strokeWidth={1.9} />}
                         onClick={(e) => {
                           e.stopPropagation();
-                          // TODO: auto-activate intelligence panel on open
-                          navTo(r.id, 'ring');
+                          navigate(`/project-hub/resources/${r.id}?view=ring&intel=true`);
                         }}
                       />
                       <ActionBtn
