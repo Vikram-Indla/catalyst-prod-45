@@ -773,17 +773,16 @@ const SLOT_POSITIONS: { left: string; top: string }[] = [
 ];
 
 // Compute connector endpoints dynamically from card positions
+// Returns card centre in pixel coords
 function getCardPixelPos(slotIdx: number, containerW: number): { x: number; y: number } {
   const slot = SLOT_POSITIONS[slotIdx];
   if (!slot) return { x: 0, y: 0 };
-  // Parse left
   let leftPx: number;
   if (slot.left.endsWith('%')) {
     leftPx = (parseFloat(slot.left) / 100) * containerW;
   } else {
     leftPx = parseFloat(slot.left);
   }
-  // Parse top
   let topPx: number;
   if (slot.top.endsWith('%')) {
     topPx = (parseFloat(slot.top) / 100) * RING_CANVAS_H;
@@ -791,6 +790,31 @@ function getCardPixelPos(slotIdx: number, containerW: number): { x: number; y: n
     topPx = parseFloat(slot.top);
   }
   return { x: leftPx + CARD_W / 2, y: topPx + CARD_H / 2 };
+}
+
+// Compute spoke endpoints offset from avatar edge → card nearest edge
+const AVATAR_R = 28; // half of 56px avatar
+function getSpokeEndpoints(cx: number, cy: number, cardCx: number, cardCy: number) {
+  const dx = cardCx - cx;
+  const dy = cardCy - cy;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist === 0) return { x1: cx, y1: cy, x2: cardCx, y2: cardCy };
+  const ux = dx / dist;
+  const uy = dy / dist;
+  // Start: avatar edge
+  const x1 = cx + ux * AVATAR_R;
+  const y1 = cy + uy * AVATAR_R;
+  // End: card nearest edge (ray-rectangle intersection)
+  const halfW = CARD_W / 2;
+  const halfH = CARD_H / 2;
+  const scaleX = Math.abs(ux) > 0.001 ? halfW / Math.abs(ux) : Infinity;
+  const scaleY = Math.abs(uy) > 0.001 ? halfH / Math.abs(uy) : Infinity;
+  const edgeDist = Math.min(scaleX, scaleY);
+  return {
+    x1, y1,
+    x2: cardCx - ux * edgeDist,
+    y2: cardCy - uy * edgeDist,
+  };
 }
 
 // From tag age escalation helper — uses age_days directly
@@ -875,11 +899,11 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
   };
   const isMediumPriority = (p: string) => (p || '').toLowerCase() === 'medium';
 
-  // Compute connector spokes dynamically
+  // Compute connector spokes with avatar-edge → card-edge offsets
   const spokes = useMemo(() => {
     return visible.map((_, i) => {
-      const pos = getCardPixelPos(i, W);
-      return { x1: CX, y1: CY, x2: pos.x, y2: pos.y };
+      const cardCenter = getCardPixelPos(i, W);
+      return getSpokeEndpoints(CX, CY, cardCenter.x, cardCenter.y);
     });
   }, [visible.length, W, CX, CY]);
 
@@ -1102,12 +1126,12 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
   // NORMAL RING VIEW (3+ open items)
   // ══════════════════════════════════════════
   return (
-    <div ref={canvasRef} className="r3-ring-canvas" style={{ marginTop: '8px' }}>
-      {/* SVG CONNECTORS — dynamic endpoints */}
-      <svg width={W} height={RING_CANVAS_H} style={{ position: 'absolute', top: 0, left: 0, zIndex: 0, pointerEvents: 'none' }}>
+    <div ref={canvasRef} className="r3-ring-canvas" style={{ marginTop: '8px', overflow: 'visible', position: 'relative' }}>
+      {/* SVG CONNECTORS — 2px solid #CBD5E1, avatar-edge to card-edge */}
+      <svg width={W} height={RING_CANVAS_H} style={{ position: 'absolute', top: 0, left: 0, zIndex: 0, pointerEvents: 'none', overflow: 'visible' }}>
         {spokes.map((s, i) => (
           <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
-            stroke="rgba(148,163,184,0.4)" strokeWidth={1} />
+            stroke="#CBD5E1" strokeWidth={2} opacity={1} />
         ))}
       </svg>
 
