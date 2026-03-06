@@ -921,11 +921,11 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
   };
   const isMediumPriority = (p: string) => (p || '').toLowerCase() === 'medium';
 
-  // Compute connector spokes dynamically
+  // Compute connector spokes with avatar-edge → card-edge offsets
   const spokes = useMemo(() => {
     return visible.map((_, i) => {
-      const pos = getCardPixelPos(i, W);
-      return { x1: CX, y1: CY, x2: pos.x, y2: pos.y };
+      const cardCenter = getCardPixelPos(i, W);
+      return getSpokeEndpoints(CX, CY, cardCenter.x, cardCenter.y);
     });
   }, [visible.length, W, CX, CY]);
 
