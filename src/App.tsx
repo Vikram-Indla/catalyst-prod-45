@@ -1223,6 +1223,8 @@ const App = () => (
               <Route path="/project-hub/resource360/:id" element={<Navigate to="/project-hub/resource-360/009" replace />} />
               <Route path="/project-hub/resource-360/:resourceId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><Resource360PageNew /></Suspense>} />
               <Route path="/resource360/members/:memberId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><Resource360MemberDetail /></Suspense>} />
+              {/* R360 Profile Module (Stage A) */}
+              <Route path="/resources" element={<Suspense fallback={<div className="p-8">Loading...</div>}><R360ProfilePageLazy /></Suspense>} />
               <Route path="/project-hub/:key" element={<Navigate to="dashboard" replace />} />
               <Route path="/project-hub/:key/dashboard" element={<Suspense fallback={<div />}><ProjectDashboardPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/settings" element={<Suspense fallback={<div />}><PHProjectSettingsPageLazy /></Suspense>} />
