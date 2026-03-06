@@ -6,6 +6,7 @@ import React, { useState, useMemo } from 'react';
 import { ChevronLeft, X, AlertTriangle, Info, BookOpen, ChevronRight, RefreshCw } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';
 
 // ── Constants ──
 const R360_WEEK = 9;
@@ -44,19 +45,22 @@ const BRAND = '#2563EB';
 const BORDER = 'rgba(15,23,42,0.12)';
 const BORDER_LIGHT = 'rgba(15,23,42,0.06)';
 
-// ── Hooks ──
+// ── Hooks — wired to existing Catalyst tables ──
+function mapStatus(jiraStatus: string) {
+  return R360_STATUS_MAP[jiraStatus] || R360_STATUS_DEFAULT;
+}
+
 function useR360WeeklyStats(resourceId: string) {
   return useQuery({
     queryKey: ['r360-profile-stats', resourceId],
     queryFn: async () => {
-      // Current week
+      // Try snapshot first
       const { data: current } = await supabase
         .from('r360_weekly_snapshots')
         .select('*')
         .eq('resource_id', resourceId)
         .eq('week_number', R360_WEEK)
         .maybeSingle();
-      // Previous week for comparison
       const { data: prev } = await supabase
         .from('r360_weekly_snapshots')
         .select('closed_this_week')
@@ -96,12 +100,31 @@ function useR360Resource(resourceId: string) {
   return useQuery({
     queryKey: ['r360-profile-resource', resourceId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('r360_resources')
-        .select('*, r360_departments(name)')
+      // Query resource_inventory (same table powering the ring view)
+      const { data: resource } = await (supabase as any).from('resource_inventory')
+        .select('id, rid, name, role_name, department_name, vendor_name, resource_type, profile_id, jira_account_id')
         .eq('id', resourceId)
         .maybeSingle();
-      return data;
+      if (!resource) return null;
+
+      // Fetch real avatar from profiles table
+      let avatar_url: string | null = null;
+      if (resource.profile_id) {
+        const { data: profile } = await supabase.from('profiles')
+          .select('avatar_url')
+          .eq('id', resource.profile_id)
+          .maybeSingle();
+        avatar_url = profile?.avatar_url ?? null;
+      }
+
+      return {
+        ...resource,
+        full_name: resource.name,
+        role: resource.role_name || 'Team Member',
+        department: resource.department_name || '',
+        avatar_url,
+        resource_key: `R-${String(resource.rid).padStart(3, '0')}`,
+      };
     },
     enabled: !!resourceId,
     staleTime: 5 * 60 * 1000,
@@ -112,12 +135,40 @@ function useR360ProfileWorkItems(resourceId: string) {
   return useQuery({
     queryKey: ['r360-profile-work-items', resourceId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('r360_work_items')
-        .select('*')
-        .eq('resource_id', resourceId)
-        .is('deleted_at', null);
-      return data || [];
+      // Get resource identity for querying ph_issues
+      const { data: resource } = await (supabase as any).from('resource_inventory')
+        .select('name, jira_account_id')
+        .eq('id', resourceId)
+        .maybeSingle();
+      if (!resource) return [];
+
+      let query = (supabase as any).from('ph_issues')
+        .select('issue_key, project_key, summary, issue_type, status, priority, assignee_display_name, jira_created_at, jira_updated_at');
+      if (resource.jira_account_id) {
+        query = query.eq('assignee_account_id', resource.jira_account_id);
+      } else {
+        query = query.eq('assignee_display_name', resource.name);
+      }
+      query = query.order('jira_updated_at', { ascending: false });
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      return (data || []).map((item: any) => {
+        const st = mapStatus(item.status);
+        return {
+          id: item.issue_key,
+          item_key: item.issue_key,
+          title: item.summary || '',
+          work_item_type: item.issue_type || 'Task',
+          status: item.status,
+          status_category: st.category,
+          source_hub: (item.project_key || '').toLowerCase().includes('inc') ? 'incident' : 'BAU',
+          priority: item.priority,
+          created_at: item.jira_created_at,
+          updated_at: item.jira_updated_at,
+        };
+      });
     },
     enabled: !!resourceId,
     staleTime: 5 * 60 * 1000,
@@ -198,15 +249,44 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
   const stats = statsData?.current;
   const prevWeekClosed = statsData?.prev?.closed_this_week ?? 0;
 
+  // Compute stats from live work items when snapshot is empty
+  const liveStats = useMemo(() => {
+    if (stats) return null; // snapshot exists, use it
+    const open = workItems.filter((i: any) => i.status_category !== 'done');
+    const done = workItems.filter((i: any) => i.status_category === 'done');
+    const inProg = workItems.filter((i: any) => i.status_category === 'in_progress');
+    const inRev = workItems.filter((i: any) => i.status_category === 'in_review');
+    const now = Date.now();
+    const oldest = open.reduce((max: { age: number; key: string }, i: any) => {
+      const age = Math.floor((now - new Date(i.created_at).getTime()) / 86400000);
+      return age > max.age ? { age, key: i.item_key ?? '—' } : max;
+    }, { age: 0, key: '—' });
+    return {
+      total_open: open.length,
+      closed_this_week: done.length,
+      in_review: inRev.length,
+      pickup_speed_hours: 0,
+      in_progress_concurrent: inProg.length,
+      closed_of_touched: done.length,
+      total_touched: workItems.length,
+      avg_cycle_time_days: 0,
+      oldest_item_age_days: oldest.age,
+      oldest_item_key: oldest.key,
+      closure_rate_pct: workItems.length > 0 ? Math.round((done.length / workItems.length) * 100) : 0,
+    };
+  }, [stats, workItems]);
+
+  const effectiveStats = stats || liveStats;
+
   // Derived
-  const openCount = stats?.total_open ?? 0;
+  const openCount = effectiveStats?.total_open ?? 0;
   const roleAvg = 5; // benchmark
   const loadColour = computeLoadColour(openCount, roleAvg);
 
-  const deptName = (resource as any)?.r360_departments?.name || '';
   const resourceName = resource?.full_name || '';
-  const resourceRole = resource?.job_role || '';
-  const resourceRid = resource?.rid || '';
+  const resourceRole = resource?.role || '';
+  const deptName = resource?.department || '';
+  const resourceRid = resource?.resource_key || '';
 
   // Work mix
   const workMix = useMemo(() => {
@@ -313,39 +393,36 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
           <><Skeleton h={52} w={52} r={26} /><div style={{ flex: 1 }}><Skeleton h={20} w="60%" /><Skeleton h={14} w="80%" /></div></>
         ) : (
           <>
+            {resource?.avatar_url ? (
+              <img
+                src={resource.avatar_url}
+                alt={resourceName}
+                style={{ width: 52, height: 52, borderRadius: '50%', objectFit: 'cover' as const, flexShrink: 0 }}
+                onError={(e) => { (e.currentTarget).style.display = 'none'; const sib = e.currentTarget.nextElementSibling as HTMLElement; if (sib) sib.style.display = 'flex'; }}
+              />
+            ) : null}
             <div style={{
               width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
-              background: 'linear-gradient(135deg, #2563EB, #7C3AED)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'linear-gradient(135deg, #475569, #334155)',
+              display: resource?.avatar_url ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center',
               color: '#FFFFFF', fontFamily: "'Sora', sans-serif", fontSize: 17, fontWeight: 700,
             }}>
-              {getInitials(resourceName)}
+              {getInitials(resourceName || '?')}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, color: INK1 }}>{resourceName}</div>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, color: INK1 }}>{resourceName || '—'}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: INK4, flexWrap: 'wrap', marginTop: 2 }}>
-                <span>{resourceRole}</span>
-                <span>·</span>
-                <span>{deptName}</span>
-                <span>·</span>
-                <span style={{
+                <span>{resourceRole || '—'}</span>
+                {deptName && <><span>·</span><span>{deptName}</span></>}
+                {resourceRid && <><span>·</span><span style={{
                   background: '#EFF6FF', border: '1px solid #DBEAFE', borderRadius: 3,
                   padding: '2px 7px', fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 11, fontWeight: 700, color: BRAND,
-                }}>{resourceRid}</span>
+                }}>{resourceRid}</span></>}
                 <span style={{
                   width: 7, height: 7, borderRadius: '50%',
-                  background: openCount > roleAvg ? WARNING : SUCCESS,
+                  background: openCount > roleAvg ? WARNING : openCount === 0 ? SUCCESS : INK1,
                 }} />
-              </div>
-              {/* Skills placeholder */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
-                {['Jira', 'QA', 'Incident Mgmt'].map(sk => (
-                  <span key={sk} style={{
-                    background: '#F1F5F9', border: `1px solid ${BORDER}`, borderRadius: 3,
-                    padding: '2px 8px', fontSize: 11, fontWeight: 500, color: INK2,
-                  }}>{sk}</span>
-                ))}
               </div>
             </div>
           </>
@@ -375,7 +452,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
         {activeTab === 'overview' && (
           <OverviewTab
-            stats={stats}
+            stats={effectiveStats}
             statsLoading={statsLoading}
             prevWeekClosed={prevWeekClosed}
             openCount={openCount}
@@ -431,7 +508,7 @@ function OverviewTab({
   const oldestAgeDays = stats?.oldest_item_age_days ?? 0;
   const oldestKey = stats?.oldest_item_key ?? '—';
 
-  const closedColour = closedThisWeek > 0 ? SUCCESS : WARNING;
+  const closedColour = openCount === 0 ? INK1 : closedThisWeek === 0 ? WARNING : closedThisWeek >= 3 ? SUCCESS : INK1;
   const closedTrend = closedThisWeek > prevWeekClosed ? '↑' : closedThisWeek < prevWeekClosed ? '↓' : '';
   const closedTrendColor = closedThisWeek > prevWeekClosed ? SUCCESS : closedThisWeek < prevWeekClosed ? DANGER : INK1;
 
