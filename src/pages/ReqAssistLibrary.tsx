@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { Search, FileText, FileSearch, Download, Loader2, AlertCircle, Clock, ChevronDown, Zap, TestTube, Flag, RefreshCw, ExternalLink } from 'lucide-react';
+import { FileText, FileSearch, Download, Loader2, AlertCircle, ChevronDown, Zap, TestTube, Flag, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useRADocuments, useRAStats } from '@/hooks/useReqAssist';
 import { useNavigate } from 'react-router-dom';
 import type { RAFilterTab, RADocumentWithArtifacts } from '@/types/reqAssistV2';
@@ -10,7 +10,19 @@ import RAJiraSidePanel from '@/components/reqAssist/RAJiraSidePanel';
 import RAPDFViewer from '@/components/reqAssist/RAPDFViewer';
 import RABackgroundModal from '@/components/reqAssist/RABackgroundModal';
 import RAImportDrawer from '@/components/reqAssist/RAImportDrawer';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
+
+/* ── Domain lozenge mapping ── */
+const BLUE_DOMAINS = ['customs & trade', 'chemical', '4ir'];
+
+function domainLozenge(domain: string | null) {
+  if (!domain) return null;
+  const isBlue = BLUE_DOMAINS.includes(domain.toLowerCase());
+  return {
+    bg: isBlue ? '#DEEBFF' : '#DFE1E6',
+    color: isBlue ? '#0747A6' : '#253858',
+  };
+}
 
 export default function ReqAssistLibrary() {
   const navigate = useNavigate();
@@ -26,7 +38,6 @@ export default function ReqAssistLibrary() {
   const [importOpen, setImportOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
     if (!dropdownOpen) return;
     const handler = () => setDropdownOpen(null);
@@ -40,16 +51,18 @@ export default function ReqAssistLibrary() {
     setSelectedDoc(doc);
   }, []);
 
+  const totalCount = stats?.total_documents ?? 0;
+
   return (
     <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px 28px' }}>
-      {/* Header */}
+      {/* ── PAGE HEADER ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>
           <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: '#0F172A', margin: 0 }}>
             Req Assist™
           </h1>
           <p style={{ fontSize: 13, color: '#64748B', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>
-            AI-powered requirements engineering — import, analyse, generate
+            BRD library — sourced from Jira, enriched by AI, WikiHub-connected · Next sync: tonight 11:00 PM
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -57,7 +70,7 @@ export default function ReqAssistLibrary() {
             onClick={() => setImportOpen(true)}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '7px 14px', fontSize: 13, fontWeight: 500,
+              padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500,
               border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)',
               background: '#FFFFFF', color: '#334155', cursor: 'pointer',
               fontFamily: "'Inter', sans-serif",
@@ -69,7 +82,7 @@ export default function ReqAssistLibrary() {
             onClick={() => navigate('/product/req-assist/generate')}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '7px 14px', fontSize: 13, fontWeight: 500,
+              padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500,
               border: 'none', borderRadius: 'var(--ra-radius-btn)',
               background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
               fontFamily: "'Inter', sans-serif",
@@ -80,7 +93,7 @@ export default function ReqAssistLibrary() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* ── STATS BAR ── */}
       <RAStatsBar
         totalDocuments={stats?.total_documents ?? 0}
         wikihubSynced={stats?.wikihub_synced ?? 0}
@@ -91,8 +104,8 @@ export default function ReqAssistLibrary() {
         loading={statsLoading}
       />
 
-      {/* Search + Filter + Table container */}
-      <div style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden' }}>
+      {/* ── SEARCH + FILTER + TABLE ── */}
+      <div style={{ border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden' }}>
         <RASearchToolbar
           tab={tab}
           onTabChange={setTab}
@@ -101,7 +114,6 @@ export default function ReqAssistLibrary() {
           resultCount={documents?.length}
         />
 
-        {/* Table */}
         <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
@@ -116,10 +128,11 @@ export default function ReqAssistLibrary() {
                 { label: 'Actions', w: 110 },
               ].map((col, i) => (
                 <th key={i} style={{
-                  padding: 'var(--ra-hd-pad)',
-                  fontSize: 10.5, fontWeight: 500, color: '#64748B',
+                  padding: 'var(--ra-hd-pad)', height: 36,
+                  fontSize: 11, fontWeight: 600, color: '#64748B',
                   textTransform: 'uppercase', letterSpacing: '0.04em',
                   textAlign: 'left', width: col.w || undefined,
+                  background: '#F8FAFC',
                   fontFamily: "'Inter', sans-serif",
                 }}>
                   {col.label}
@@ -130,10 +143,10 @@ export default function ReqAssistLibrary() {
           <tbody>
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i}>
+                <tr key={i} style={{ height: 36 }}>
                   {Array.from({ length: 8 }).map((_, j) => (
                     <td key={j} style={{ padding: 'var(--ra-cell-pad)' }}>
-                      <div style={{ height: 12, background: '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite', width: j === 1 ? '80%' : '60%' }} />
+                      <div className="h-3 bg-gray-200 rounded animate-pulse" style={{ width: j === 1 ? '80%' : '60%' }} />
                     </td>
                   ))}
                 </tr>
@@ -147,40 +160,52 @@ export default function ReqAssistLibrary() {
                     key={doc.id}
                     onClick={(e) => handleRowClick(doc, e)}
                     style={{
-                      height: 'var(--ra-row-h)', minHeight: 'var(--ra-row-h)', maxHeight: 'var(--ra-row-h)',
+                      height: 36, minHeight: 36, maxHeight: 36,
                       cursor: 'pointer',
                       borderBottom: '1px solid rgba(15,23,42,0.04)',
-                      background: isProcessingRow ? 'rgba(37,99,235,0.02)' : 'transparent',
+                      background: isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent',
                       transition: 'background 120ms ease',
                     }}
                     onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = 'rgba(15,23,42,0.04)'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isProcessingRow ? 'rgba(37,99,235,0.02)' : 'transparent'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
                   >
                     {/* Jira Ticket */}
                     <td style={{ padding: 'var(--ra-cell-pad)' }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
-                        {doc.jira_ticket_key}
-                      </span>
+                      {doc.jira_ticket_url ? (
+                        <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
+                          style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB', textDecoration: 'none' }}>
+                          {doc.jira_ticket_key}
+                        </a>
+                      ) : (
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                          {doc.jira_ticket_key}
+                        </span>
+                      )}
                     </td>
                     {/* Title */}
                     <td style={{ padding: 'var(--ra-cell-pad)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 0 }}>
                       <span title={doc.title} style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
-                        {doc.title}
+                        {doc.title.length > 52 ? doc.title.slice(0, 52) + '…' : doc.title}
                       </span>
                     </td>
                     {/* Domain */}
                     <td style={{ padding: 'var(--ra-cell-pad)' }}>
-                      {doc.domain && (
-                        <span style={{
-                          display: 'inline-flex', alignItems: 'center',
-                          padding: '0 6px', height: 20, borderRadius: 'var(--ra-radius-lozenge)',
-                          fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                          letterSpacing: '0.03em', whiteSpace: 'nowrap',
-                          background: '#DFE1E6', color: '#253858',
-                          fontFamily: "'Inter', sans-serif",
-                        }}>
-                          {doc.domain}
-                        </span>
+                      {doc.domain ? (() => {
+                        const lz = domainLozenge(doc.domain);
+                        return (
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center',
+                            padding: '0 6px', height: 20, borderRadius: 3,
+                            fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                            letterSpacing: '0.02em', whiteSpace: 'nowrap',
+                            background: lz!.bg, color: lz!.color,
+                            fontFamily: "'Inter', sans-serif",
+                          }}>
+                            {doc.domain}
+                          </span>
+                        );
+                      })() : (
+                        <span style={{ color: '#94A3B8', fontSize: 12 }}>—</span>
                       )}
                     </td>
                     {/* PDF */}
@@ -190,7 +215,7 @@ export default function ReqAssistLibrary() {
                           onClick={(e) => { e.stopPropagation(); setPdfDoc(doc); }}
                           style={{
                             display: 'inline-flex', alignItems: 'center', gap: 4,
-                            padding: '2px 6px', borderRadius: 4,
+                            padding: '3px 6px', borderRadius: 4,
                             background: '#FEF2F2', border: 'none', cursor: 'pointer',
                             fontSize: 11, color: '#DC2626', fontWeight: 500,
                             fontFamily: "'JetBrains Mono', monospace",
@@ -199,11 +224,11 @@ export default function ReqAssistLibrary() {
                           onMouseLeave={e => (e.currentTarget.style.background = '#FEF2F2')}
                         >
                           <FileText size={13} strokeWidth={1.5} />
-                          {doc.page_count ? `${doc.page_count}pp` : 'PDF'}
+                          {doc.page_count ? `${doc.page_count}pp` : '—pp'}
                         </button>
                       ) : (
-                        <span style={{ color: '#94A3B8', fontSize: 12 }}>
-                          <FileText size={13} strokeWidth={1.5} style={{ opacity: 0.4 }} />
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#94A3B8', fontSize: 11 }}>
+                          <FileText size={13} strokeWidth={1.5} style={{ opacity: 0.4 }} /> —
                         </span>
                       )}
                     </td>
@@ -223,7 +248,7 @@ export default function ReqAssistLibrary() {
                     {/* Imported */}
                     <td style={{ padding: 'var(--ra-cell-pad)' }}>
                       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#94A3B8' }}>
-                        {doc.pulled_at ? formatDistanceToNow(new Date(doc.pulled_at), { addSuffix: false }).replace('about ', '~') : '—'}
+                        {doc.pulled_at ? formatImported(doc.pulled_at) : '—'}
                       </span>
                     </td>
                     {/* Actions */}
@@ -241,49 +266,80 @@ export default function ReqAssistLibrary() {
             ) : (
               <tr>
                 <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
-                  <FileSearch size={28} color="#94A3B8" style={{ margin: '0 auto 8px' }} />
-                  <p style={{ fontSize: 13, color: '#94A3B8', margin: 0, fontFamily: "'Inter', sans-serif" }}>
+                  <FileSearch size={24} color="#94A3B8" style={{ margin: '0 auto 8px', display: 'block' }} />
+                  <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
                     No documents match your search
                   </p>
+                  <button onClick={() => { setSearch(''); setTab('all'); }}
+                    style={{ fontSize: 12, color: '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+                    Clear search
+                  </button>
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+
+        {/* Table footer */}
+        {!isLoading && documents && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#F8FAFC', borderTop: '1px solid rgba(15,23,42,0.06)' }}>
+            <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
+              Showing {documents.length} of {totalCount} documents
+            </span>
+            <button style={{ fontSize: 12, color: '#2563EB', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+              View all →
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Side Panel */}
+      {/* Overlays */}
       {selectedDoc && <RAJiraSidePanel doc={selectedDoc} onClose={() => setSelectedDoc(null)} onOpenPdf={() => setPdfDoc(selectedDoc)} onGenerate={(type) => setBgModal({ type, doc: selectedDoc })} />}
-
-      {/* PDF Viewer */}
       {pdfDoc && <RAPDFViewer doc={pdfDoc} onClose={() => setPdfDoc(null)} onGenerateEpics={() => { setPdfDoc(null); if (pdfDoc) setBgModal({ type: 'epics', doc: pdfDoc }); }} />}
-
-      {/* Background Modal */}
       {bgModal && <RABackgroundModal type={bgModal.type} doc={bgModal.doc} onClose={() => setBgModal(null)} />}
-
-      {/* Import Drawer */}
       {importOpen && <RAImportDrawer onClose={() => setImportOpen(false)} />}
     </div>
   );
 }
 
-/* ── Sub-components ─────────────────────────────── */
+/* ── Helpers ── */
+
+function formatImported(iso: string): string {
+  const d = new Date(iso);
+  const now = new Date();
+  const diffMs = now.getTime() - d.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return format(d, 'd MMM');
+}
 
 function StatusBadge({ status }: { status: string }) {
-  const configs: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
-    ready: { icon: <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A', display: 'inline-block' }} />, color: '#16A34A', label: 'Ready' },
-    processing: {
-      icon: <Loader2 size={12} color="#2563EB" style={{ animation: 'spin 1s linear infinite' }} />,
-      color: '#2563EB', label: 'Processing',
-    },
-    failed: { icon: <AlertCircle size={12} color="#DC2626" />, color: '#DC2626', label: 'Failed' },
-    pending: { icon: null, color: '#94A3B8', label: 'Pending' },
-  };
-  const c = configs[status] || configs.pending;
+  if (status === 'ready') {
+    return (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600, color: '#16A34A', fontFamily: "'Inter', sans-serif" }}>
+        <CheckCircle2 size={12} color="#16A34A" /> Ready
+      </span>
+    );
+  }
+  if (status === 'processing') {
+    return (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600, color: '#2563EB', fontFamily: "'Inter', sans-serif", animation: 'ra-pulse 1.5s ease-in-out infinite' }}>
+        <Loader2 size={12} color="#2563EB" style={{ animation: 'ra-spin 1s linear infinite' }} /> Processing
+      </span>
+    );
+  }
+  if (status === 'failed') {
+    return (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>
+        <AlertCircle size={12} color="#DC2626" /> Failed
+      </span>
+    );
+  }
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 500, color: c.color, fontFamily: "'Inter', sans-serif" }}>
-      {c.icon}
-      {c.label}
+    <span style={{ fontSize: 12, fontWeight: 500, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
+      Pending
     </span>
   );
 }
@@ -295,12 +351,16 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
   onSelect: (type: string) => void;
 }) {
   const disabled = doc.status === 'processing' || doc.status === 'failed';
+  const epicCount = doc.artifact_counts?.epics ?? 0;
+  const uatCount = doc.artifact_counts?.uat ?? 0;
+  const wikiChunks = doc.wikihub_chunk_count ?? 0;
+
   const items = [
-    { key: 'epics', icon: <Zap size={13} color="#7C3AED" />, label: 'Epic Statements', desc: 'Generate user stories' },
-    { key: 'uat', icon: <TestTube size={13} color="#D97706" />, label: 'UAT Scenarios', desc: 'Generate test scenarios' },
-    { key: 'initiative', icon: <Flag size={13} color="#0D9488" />, label: 'Create Initiative', desc: 'Create Catalyst initiative' },
+    { key: 'epics', icon: <Zap size={13} color="#7C3AED" />, label: 'Epic Statements', desc: epicCount > 0 ? `${epicCount} already` : 'none yet' },
+    { key: 'uat', icon: <TestTube size={13} color="#D97706" />, label: 'UAT Scenarios', desc: uatCount > 0 ? `${uatCount} already` : 'none yet' },
+    { key: 'initiative', icon: <Flag size={13} color="#0D9488" />, label: 'Create Initiative', desc: 'Push to StrategyHub' },
     { key: 'sep', label: '', desc: '' },
-    { key: 'wikihub', icon: <RefreshCw size={13} color="#0D9488" />, label: 'Re-sync WikiHub', desc: 'Update knowledge base' },
+    { key: 'wikihub', icon: <RefreshCw size={13} color="#0D9488" />, label: 'Re-sync WikiHub', desc: wikiChunks > 0 ? `${wikiChunks} chunks` : 'not synced' },
   ];
 
   return (
@@ -311,9 +371,9 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 'var(--ra-radius-btn)',
+          borderRadius: 4,
           border: 'none', cursor: disabled ? 'not-allowed' : 'pointer',
-          background: disabled ? '#E2E8F0' : '#2563EB',
+          background: disabled ? '#E5E5E5' : '#2563EB',
           color: disabled ? '#94A3B8' : '#FFFFFF',
           fontFamily: "'Inter', sans-serif",
         }}

@@ -9,16 +9,13 @@ interface StatCardProps {
 
 function StatCard({ label, value, subLabel, color, loading, animatedBadge }: StatCardProps) {
   return (
-    <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 4, background: '#FFFFFF' }}>
-      <span style={{ fontSize: 11, fontWeight: 500, color: '#64748B', textTransform: 'uppercase' as const, letterSpacing: '0.04em', fontFamily: "'Inter', sans-serif" }}>
-        {label}
-      </span>
+    <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 3, background: '#FFFFFF' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {loading ? (
           <div style={{ width: 40, height: 24, background: '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
         ) : (
           <>
-            <span style={{ fontSize: 22, fontWeight: 700, color: color || '#0F172A', fontFamily: "'JetBrains Mono', monospace" }}>{value}</span>
+            <span style={{ fontSize: 22, fontWeight: 700, color: color || '#0F172A', fontFamily: "'Sora', sans-serif" }}>{value}</span>
             {animatedBadge && (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#2563EB', animation: 'ra-pulse 1.5s ease-in-out infinite' }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'ra-spin 1s linear infinite' }}>
@@ -30,6 +27,9 @@ function StatCard({ label, value, subLabel, color, loading, animatedBadge }: Sta
           </>
         )}
       </div>
+      <span style={{ fontSize: 11, fontWeight: 500, color: '#64748B', marginTop: 3, fontFamily: "'Inter', sans-serif" }}>
+        {label}
+      </span>
       {subLabel && <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>{subLabel}</span>}
     </div>
   );
@@ -46,14 +46,15 @@ interface StatsBarProps {
 }
 
 export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunks, artifactsGenerated, processingCount, loading }: StatsBarProps) {
+  const pendingCount = totalDocuments - wikihubSynced;
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden', marginBottom: 20 }}>
-      <StatCard label="Total Documents" value={totalDocuments} loading={loading} />
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden', marginBottom: 20 }}>
+      <StatCard label="Documents in Library" value={totalDocuments} subLabel="SEN · MDT · SIMP" loading={loading} />
       <div style={{ borderLeft: '1px solid rgba(15,23,42,0.06)' }}>
-        <StatCard label="WikiHub Indexed" value={`${wikihubSynced} / ${totalDocuments}`} color="#0D9488" subLabel={`${wikihubChunks} chunks`} loading={loading} />
+        <StatCard label="Indexed in WikiHub" value={`${wikihubSynced} / ${totalDocuments}`} color="#16A34A" subLabel={`${wikihubChunks} chunks · ${pendingCount > 0 ? pendingCount + ' pending' : 'all synced'}`} loading={loading} />
       </div>
       <div style={{ borderLeft: '1px solid rgba(15,23,42,0.06)' }}>
-        <StatCard label="Artifacts Generated" value={artifactsGenerated} color="#7C3AED" loading={loading} />
+        <StatCard label="Artifacts Generated" value={artifactsGenerated} color="#7C3AED" subLabel="Epics · UAT · Initiatives" loading={loading} />
       </div>
       <div style={{ borderLeft: '1px solid rgba(15,23,42,0.06)' }}>
         <StatCard label="Processing Now" value={processingCount > 0 ? processingCount : '—'} animatedBadge={processingCount > 0} loading={loading} />
