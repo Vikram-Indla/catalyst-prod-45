@@ -965,13 +965,20 @@ function OverviewTab({
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>IN REVIEW</div>
               <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>{inReview === 0 ? 'None pending' : `${inReview} awaiting`}</div>
             </div>
-            {/* Pickup Speed — not clickable */}
+            {/* Pickup Speed — color-coded */}
             <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
                 {pickupHours > 0 ? (
                   <>
-                    <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{pickupHours}</span>
-                    <span style={{ fontSize: 14, fontWeight: 500, color: INK4 }}>h</span>
+                    <span style={{
+                      fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650,
+                      color: pickupHours > 38 ? DANGER : SUCCESS,
+                    }}>
+                      {pickupHours < 24 ? pickupHours : Math.round(pickupHours / 24)}
+                    </span>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: INK4 }}>
+                      {pickupHours < 24 ? 'h' : 'd'}
+                    </span>
                   </>
                 ) : (
                   <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: MUTED }}>—</span>
