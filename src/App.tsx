@@ -10,7 +10,7 @@ const Resource360MemberDetail = lazy(() => import("./pages/Resource360MemberDeta
 const ResourceListingPageLazy = lazy(() => import("./pages/ResourceListingPage"));
 const R360ResourcesListingLazy = lazy(() => import("./pages/R360ResourcesListing"));
 const R360MemberDetailLazy = lazy(() => import("./pages/R360MemberDetail"));
-// R360ProfilePage now integrated as overlay in R360MemberDetail
+const R360ProfilePageLazy = lazy(() => import("./pages/R360ProfilePage"));
 
 // ProjectHub V5 lazy imports
 const ProjectHubShellLazy = lazy(() => import("./components/project-hub/ProjectHubShell").then(m => ({ default: m.ProjectHubShell })));
@@ -1223,7 +1223,8 @@ const App = () => (
               <Route path="/project-hub/resource360/:id" element={<Navigate to="/project-hub/resource-360/009" replace />} />
               <Route path="/project-hub/resource-360/:resourceId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><Resource360PageNew /></Suspense>} />
               <Route path="/resource360/members/:memberId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><Resource360MemberDetail /></Suspense>} />
-              {/* R360 Profile Module — integrated into /project-hub/resources/:resourceId */}
+              {/* R360 Profile Module (Stage A) */}
+              <Route path="/resources" element={<Suspense fallback={<div className="p-8">Loading...</div>}><R360ProfilePageLazy /></Suspense>} />
               <Route path="/project-hub/:key" element={<Navigate to="dashboard" replace />} />
               <Route path="/project-hub/:key/dashboard" element={<Suspense fallback={<div />}><ProjectDashboardPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/settings" element={<Suspense fallback={<div />}><PHProjectSettingsPageLazy /></Suspense>} />

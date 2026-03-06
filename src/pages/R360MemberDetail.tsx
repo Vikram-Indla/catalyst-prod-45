@@ -32,9 +32,6 @@ import '@/styles/r360.css';
 import '@/components/resource360/r360-member.css';
 import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
-import { ResourceProfileDrawer } from '@/components/r360/ResourceProfileDrawer';
-import type { R360ActiveTab } from '@/components/r360/ResourceProfileDrawer';
-// R360 drawer uses flex split-pane (no portal, no overlay)
 
 // ── Period helpers ──
 type PeriodType = 'weekly' | 'monthly';
@@ -352,9 +349,6 @@ export default function R360MemberDetail() {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<R360WorkItem | null>(null);
   const [aiOpen, setAiOpen] = useState(false);
-  const [r360DrawerOpen, setR360DrawerOpen] = useState(false);
-  const [r360ActiveTab, setR360ActiveTab] = useState<R360ActiveTab>('overview');
-  const [r360WeekOffset, setR360WeekOffset] = useState(0);
   const [ticketListMode, setTicketListMode] = useState<'open' | 'stale' | null>(null);
 
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
@@ -533,8 +527,7 @@ export default function R360MemberDetail() {
   const deptColor = R360_DEPT_COLORS[overview.department] || '#64748B';
 
   return (
-    <div id="r360-root" style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
-      <div style={{ flex: 1, minWidth: 0, overflow: 'auto', transition: 'flex 200ms ease' }}>
+    <div id="r360-root">
       <div className="r3-page" style={{ background: '#FFFFFF' }}>
         {/* ── Sticky Header: Profile + Week Nav ── */}
         <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#FFFFFF' }}>
@@ -605,7 +598,7 @@ export default function R360MemberDetail() {
             {/* Intelligence — brand blue standard */}
             <AIIntelligenceButton
               label="Intelligence"
-              onClick={() => { setR360DrawerOpen(true); setR360ActiveTab('overview'); setR360WeekOffset(0); }}
+              onClick={() => setAiOpen(true)}
             />
           </div>
         </div>
@@ -684,7 +677,7 @@ export default function R360MemberDetail() {
             onSelectItem={(item) => { setTicketListMode(null); setSelectedItem(item); }}
           />
         )}
-      </div>{/* end r3-page */}
+      </div>
 
       {/* AI Intelligence Panel */}
       {aiOpen && resourceId && (
@@ -693,31 +686,6 @@ export default function R360MemberDetail() {
           onClose={() => setAiOpen(false)}
         />
       )}
-      </div>{/* end flex-left */}
-
-      {/* RIGHT: R360 Profile Drawer — flex split-pane */}
-      {r360DrawerOpen && resourceId && (
-        <div style={{
-          width: '700px',
-          flexShrink: 0,
-          borderLeft: '1px solid rgba(15,23,42,0.12)',
-          background: '#FFFFFF',
-          display: 'flex',
-          flexDirection: 'column' as const,
-          overflow: 'hidden',
-          boxShadow: '-4px 0 16px rgba(15,23,42,0.08)',
-        }}>
-          <ResourceProfileDrawer
-            selectedResourceId={resourceId}
-            onClose={() => setR360DrawerOpen(false)}
-            activeTab={r360ActiveTab}
-            onTabChange={setR360ActiveTab}
-            weekOffset={r360WeekOffset}
-            onWeekOffsetChange={setR360WeekOffset}
-          />
-        </div>
-      )}
-
     </div>
   );
 }
