@@ -684,7 +684,7 @@ export default function R360MemberDetail() {
             onSelectItem={(item) => { setTicketListMode(null); setSelectedItem(item); }}
           />
         )}
-      </div>
+      </div>{/* end r3-page inner content div */}
 
       {/* AI Intelligence Panel */}
       {aiOpen && resourceId && (
