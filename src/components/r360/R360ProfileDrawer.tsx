@@ -7,6 +7,7 @@ import { ChevronLeft, X, AlertTriangle, Info, BookOpen, ChevronRight, RefreshCw 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 // ── Constants ──
 const R360_WEEK = 9;
