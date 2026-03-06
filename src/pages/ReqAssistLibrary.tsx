@@ -70,10 +70,10 @@ export default function ReqAssistLibrary() {
       {/* ── PAGE HEADER ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>
-          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: '#111827', margin: 0 }}>
             Req Assist™
           </h1>
-          <p style={{ fontSize: 13, color: '#64748B', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>
+          <p style={{ fontSize: 13, color: '#6B7280', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>
             BRD library — sourced from Jira, enriched by AI, WikiHub-connected · Next sync: tonight 11:00 PM
           </p>
         </div>
@@ -119,15 +119,15 @@ export default function ReqAssistLibrary() {
       {/* EC-001: Empty library — no documents at all */}
       {!isLoading && totalCount === 0 && !isFiltering ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 0', border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)' }}>
-          <FileText size={36} color="#94A3B8" style={{ marginBottom: 12 }} />
-          <p style={{ fontSize: 15, fontWeight: 500, color: '#64748B', margin: '0 0 4px', fontFamily: "'Inter', sans-serif" }}>No documents yet</p>
-          <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate from text to get started</p>
+          <FileText size={32} color="#9CA3AF" style={{ marginBottom: 12 }} />
+          <p style={{ fontSize: 16, fontWeight: 600, color: '#374151', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>No documents yet</p>
+          <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate a BRD from text to get started.</p>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => setImportOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#334155', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+            <button onClick={() => setImportOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
               <Download size={14} /> Import from Jira
             </button>
             <button onClick={() => navigate('/product/req-assist/generate')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-              <Zap size={14} /> Generate BRD
+              <Zap size={14} /> Generate BRD from Text
             </button>
           </div>
         </div>
