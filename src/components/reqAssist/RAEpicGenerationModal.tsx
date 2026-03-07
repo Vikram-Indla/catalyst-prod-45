@@ -150,6 +150,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
 
       if (hasStarted.current) return;
       hasStarted.current = true;
+      setResolvedBrdId(brdId);
       invokeGeneration(brdId);
     }).catch(err => {
       console.error('[EpicModal] Resolution failed:', err?.message || err);
