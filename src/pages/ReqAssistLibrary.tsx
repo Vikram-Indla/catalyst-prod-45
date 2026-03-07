@@ -190,8 +190,9 @@ export default function ReqAssistLibrary() {
           .eq('id', doc.id);
 
         success++;
-      } catch {
+      } catch (err: unknown) {
         failed++;
+        console.error('[RA] Sync failed for doc:', sanitiseError(err));
       }
     }
     toast.dismiss('sync-all-progress');
