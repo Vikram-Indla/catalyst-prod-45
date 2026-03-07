@@ -10,14 +10,28 @@ const corsHeaders = {
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
+  let brd_id: string | undefined;
+  let supabase: ReturnType<typeof createClient>;
+
   try {
-    const { brd_id } = await req.json();
+    const body = await req.json();
+    brd_id = body.brd_id;
     if (!brd_id) throw new Error('brd_id is required');
 
-    const supabase = createClient(
+    supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
+
+    // FIX 6: Write to brd_processing_queue at START
+    await supabase
+      .from('brd_processing_queue')
+      .upsert({
+        brd_id: brd_id,
+        status: 'processing',
+        attempts: 1,
+        started_at: new Date().toISOString(),
+      }, { onConflict: 'brd_id' });
 
     // Read raw_text from brd_documents — NEVER "content"
     const { data: brdDoc, error: fetchErr } = await supabase
@@ -54,12 +68,12 @@ serve(async (req) => {
     });
     const qa = JSON.parse(qaResult);
 
-    // Step 4: Write epics to brd_epics table with ra_tag (H-05)
+    // Step 4: Write epics to brd_epics table with ra_tag
     const jiraKey = brdDoc.jira_key;
     const epicsToInsert = (epicsData.epics || []).map((epic: any, idx: number) => {
       const raTag = jiraKey
         ? `RA-${jiraKey}-E${String(idx + 1).padStart(2, '0')}`
-        : `RA-BRD-${brd_id.substring(0, 6).toUpperCase()}-E${String(idx + 1).padStart(2, '0')}`;
+        : `RA-BRD-${brd_id!.substring(0, 6).toUpperCase()}-E${String(idx + 1).padStart(2, '0')}`;
       return {
         brd_id: brd_id,
         epic_key: epic.id || `EPIC-${idx + 1}`,
@@ -87,7 +101,7 @@ serve(async (req) => {
       if (insertErr) throw new Error('Failed to save epics: ' + insertErr.message);
     }
 
-    // Update brd_documents — pipeline_stage = 'ready' (sole authority: C-04)
+    // Update brd_documents — pipeline_stage = 'ready' (sole authority)
     await supabase
       .from('brd_documents')
       .update({
@@ -95,6 +109,16 @@ serve(async (req) => {
         pipeline_stage: 'ready',
       })
       .eq('id', brd_id);
+
+    // FIX 6: Write to brd_processing_queue on SUCCESS
+    await supabase
+      .from('brd_processing_queue')
+      .update({
+        status: 'completed',
+        error_message: null,
+        completed_at: new Date().toISOString(),
+      })
+      .eq('brd_id', brd_id);
 
     return new Response(JSON.stringify({
       success: true,
@@ -106,6 +130,32 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('generate_epics_for_brd error:', error);
+
+    // FIX 5: Set pipeline_stage = 'failed' on error
+    if (brd_id && supabase!) {
+      try {
+        await supabase!
+          .from('brd_documents')
+          .update({ pipeline_stage: 'failed' })
+          .eq('id', brd_id);
+      } catch (updateErr) {
+        console.error('Failed to update pipeline_stage on error:', updateErr);
+      }
+
+      // FIX 6: Write to brd_processing_queue on FAILURE
+      try {
+        await supabase!
+          .from('brd_processing_queue')
+          .update({
+            status: 'failed',
+            error_message: (error as Error).message?.substring(0, 500),
+          })
+          .eq('brd_id', brd_id);
+      } catch (queueErr) {
+        console.error('Failed to update queue on error:', queueErr);
+      }
+    }
+
     return new Response(JSON.stringify({ error: (error as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
