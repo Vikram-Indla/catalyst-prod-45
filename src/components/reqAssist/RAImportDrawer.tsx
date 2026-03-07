@@ -56,6 +56,7 @@ export default function RAImportDrawer({ onClose }: Props) {
   const [pdfOnly, setPdfOnly] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [importing, setImporting] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const { data: projects = [], isLoading: projectsLoading } = useJiraProjects();
   const { data: tickets = [] } = useJiraProjectTickets(step === 2 ? selectedProject : null);
