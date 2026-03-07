@@ -171,7 +171,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   const handleClose = () => {
     setStep(1);
     setSelectedProject(null);
-    setSelectedTickets(new Set());
+    setSelectedTickets([]);
     setReImportKeys(new Set());
     setVerifyState('idle');
     setAddInput('');
