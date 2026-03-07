@@ -48,6 +48,7 @@ export default function ReqAssistLibrary() {
         .update({ kb_synced: true, kb_synced_at: new Date().toISOString() })
         .eq('id', docId);
       if (error) throw error;
+      qc.invalidateQueries({ queryKey: RA_KEYS.all });
       toast.success('Document synced to KB');
     } catch (err: any) {
       toast.error('Sync failed: ' + (err?.message ?? 'Unknown error'));
