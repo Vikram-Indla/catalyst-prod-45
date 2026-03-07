@@ -246,7 +246,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
         )}
 
         {/* ── IN PROGRESS STATE ── */}
-        {!done && step >= 0 && (
+        {!done && !hasFailed && (
           <>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
