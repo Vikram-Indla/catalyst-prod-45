@@ -98,9 +98,17 @@ serve(async (req) => {
     if (action === 'sync_tickets') {
       const { projectKey } = payload
       const jql = `project = ${projectKey} AND attachments is not EMPTY ORDER BY created DESC`
-      const url = `${jiraUrl}/rest/api/3/search?jql=${encodeURIComponent(jql)}&maxResults=100&fields=summary,status,priority,attachment,issuetype,created`
+      const url = `${jiraUrl}/rest/api/3/search/jql`
 
-      const res = await fetch(url, { headers: jiraHeaders })
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { ...jiraHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jql,
+          maxResults: 100,
+          fields: ['summary', 'status', 'priority', 'attachment', 'issuetype', 'created'],
+        }),
+      })
       if (!res.ok) {
         const t = await res.text()
         console.error(`Jira search failed for ${projectKey}: ${res.status} ${t}`)
