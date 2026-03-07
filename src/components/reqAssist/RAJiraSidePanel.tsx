@@ -195,7 +195,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     }} />
                     <span style={{
                       fontSize: 11,
-                      fontWeight: isActive ? 700 : 500,
+                      fontWeight: isActive ? 650 : 500,
                       color: isDone ? '#16A34A' : isActive ? '#2563EB' : '#94A3B8',
                       fontFamily: "'Inter', sans-serif",
                       textAlign: 'center',
