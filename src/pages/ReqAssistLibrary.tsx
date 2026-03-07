@@ -31,6 +31,7 @@ export default function ReqAssistLibrary() {
   const { data: documents, isLoading } = useRADocuments(filters);
   const { data: stats, isLoading: statsLoading } = useRAStats();
 
+  const qc = useQueryClient();
   const [selectedDoc, setSelectedDoc] = useState<RADocumentWithArtifacts | null>(null);
   const [pdfDoc, setPdfDoc] = useState<RADocumentWithArtifacts | null>(null);
   const [bgModal, setBgModal] = useState<{ type: string; doc: RADocumentWithArtifacts } | null>(null);
