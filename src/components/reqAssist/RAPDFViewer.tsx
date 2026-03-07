@@ -70,7 +70,7 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
           <div style={{
             width: 680, maxWidth: '90%', background: '#FFFFFF', borderRadius: 4,
             padding: '48px 56px',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+            border: '0.75px solid #E2E8F0',
             transform: `scale(${zoom / 100})`, transformOrigin: 'top center',
           }}>
             {doc.language === 'ar' && (
