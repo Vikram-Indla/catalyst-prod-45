@@ -330,10 +330,15 @@ export default function ReqAssistLibrary() {
                           </span>
                         )}
                       </td>
-                      {/* Title */}
-                      <td style={{ padding: '0 10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 0, height: 36, maxHeight: 36 }}>
-                        <span title={doc.title} style={{ fontSize: 14, fontWeight: 500, color: '#111827', fontFamily: "'Inter', sans-serif" }}>
-                          {doc.title.length > 52 ? doc.title.slice(0, 52) + '…' : doc.title}
+                      {/* Title — DEF-08: truncate + tooltip */}
+                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden', maxWidth: 0 }}>
+                        <span title={doc.title} style={{
+                          display: 'block', fontSize: 14, fontWeight: 500, color: '#111827',
+                          fontFamily: "'Inter', sans-serif",
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          maxWidth: 320,
+                        }}>
+                          {doc.title}
                         </span>
                       </td>
                       {/* Domain — D10: standardise empty cells */}
@@ -587,14 +592,14 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
         >
           View Drafts
+          <span style={{
+            display: 'inline-flex', alignItems: 'center',
+            padding: '1px 5px', borderRadius: 3,
+            fontSize: 10, fontWeight: 700,
+            background: '#DEEBFF', color: '#0747A6',
+            marginLeft: 6,
+          }}>{epicCount}</span>
         </button>
-        <span style={{
-          display: 'inline-flex', alignItems: 'center',
-          padding: '0 6px', height: 20, borderRadius: 3,
-          fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap',
-          background: '#F1F5F9', color: '#475569',
-          fontFamily: "'Inter', sans-serif",
-        }}>{epicCount} epics</span>
       </div>
     );
   }

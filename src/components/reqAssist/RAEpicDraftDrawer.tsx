@@ -107,33 +107,39 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
         boxShadow: '-8px 0 24px rgba(0,0,0,0.1)',
         fontFamily: "'Inter', sans-serif",
       }}>
-        {/* Header */}
-        <div style={{ padding: '20px 20px 16px', borderBottom: '0.75px solid #E2E8F0' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>
-                  Epic Drafts
-                </h2>
-                <StatusLozenge status={overallStatus} />
-              </div>
-              <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>
-                {docTitle} · {epics.length} epics{generatedAt ? ` · Generated ${daysAgo === 0 ? 'today' : daysAgo === 1 ? 'yesterday' : `${daysAgo}d ago`}` : ''}
-              </p>
+        {/* Header — 56px bar */}
+        <div style={{ height: 56, minHeight: 56, padding: '0 20px', borderBottom: '0.75px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FFFFFF' }}>
+          <div style={{ overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 650, color: '#1E293B', margin: 0, fontFamily: "'Inter', sans-serif" }}>
+                Epic Drafts
+              </h2>
+              <StatusLozenge status={overallStatus} />
             </div>
-            <button onClick={onClose} style={{
-              width: 28, height: 28, borderRadius: 4, border: 'none',
-              background: 'transparent', cursor: 'pointer', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', color: '#64748B',
-            }}>
-              <X size={16} />
-            </button>
+            <p style={{ fontSize: 12, fontWeight: 400, color: '#64748B', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: "'Inter', sans-serif" }}>
+              {jiraKey ? `${jiraKey} · ` : ''}{docTitle}
+            </p>
           </div>
+          <button onClick={onClose} style={{
+            width: 28, height: 28, borderRadius: 4, border: 'none', flexShrink: 0,
+            background: 'transparent', cursor: 'pointer', display: 'flex',
+            alignItems: 'center', justifyContent: 'center', color: '#64748B',
+          }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#1E293B')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
+          >
+            <X size={20} />
+          </button>
+        </div>
+        {/* Subtitle line below header */}
+        <div style={{ padding: '8px 20px 0', fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
+          {epics.length} epics{generatedAt ? ` · Generated ${daysAgo === 0 ? 'today' : daysAgo === 1 ? 'yesterday' : `${daysAgo}d ago`}` : ''}
+        </div>
 
           {/* Staleness banner */}
           {isStale && (
             <div style={{
-              marginTop: 12, background: '#FFFBEB', border: '1px solid #FDE68A',
+              margin: '8px 20px 0', background: '#FFFBEB', border: '1px solid #FDE68A',
               color: '#92400E', borderRadius: 6, padding: '8px 12px',
               display: 'flex', alignItems: 'center', gap: 8, fontSize: 12,
             }}>
@@ -141,7 +147,6 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
               Generated {daysAgo} days ago · Review before publishing
             </div>
           )}
-        </div>
 
         {/* Epic list */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px 20px' }}>
@@ -152,7 +157,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
           ) : epics.length === 0 ? (
             <p style={{ textAlign: 'center', color: '#94A3B8', fontSize: 13, padding: 40 }}>No epics found</p>
           ) : (
-            epics.map(epic => (
+            epics.map((epic, epicIdx) => (
               <div
                 key={epic.id}
                 style={{
@@ -162,20 +167,21 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                 onMouseEnter={() => setHoveredId(epic.id)}
                 onMouseLeave={() => setHoveredId(null)}
               >
-                {/* Top row */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                  {epic.ra_tag ? (
-                    <span style={{
-                      background: '#F1F5F9', color: '#475569',
-                      fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
-                      padding: '2px 8px', borderRadius: 2,
-                    }}>{epic.ra_tag}</span>
-                  ) : <span />}
+                {/* ra_tag chip */}
+                <div style={{ marginBottom: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    background: '#F1F5F9', color: '#475569',
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+                    padding: '2px 6px', borderRadius: 4,
+                  }}>
+                    {epic.ra_tag || `DFT-${String(epicIdx + 1).padStart(3, '0')}`}
+                  </span>
                   <StatusLozenge status={epic.publish_status} />
                 </div>
 
                 {/* Title */}
-                <p style={{ fontSize: 13, fontWeight: 650, color: '#0F172A', margin: '6px 0 0' }}>{epic.title}</p>
+                <p style={{ fontSize: 13, fontWeight: 650, color: '#0F172A', margin: '4px 0 0' }}>{epic.title}</p>
 
                 {/* Description */}
                 {epic.description && (
