@@ -266,6 +266,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
         </div>
       </SheetContent>
     </Sheet>
+    </>
   );
 }
 
