@@ -1,6 +1,9 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { FileText, FileSearch, Download, Loader2, AlertCircle, ChevronDown, Zap, TestTube, Flag, RefreshCw, CheckCircle2, RotateCcw } from 'lucide-react';
-import { useRADocuments, useRAStats } from '@/hooks/useReqAssist';
+import { FileText, FileSearch, Download, Loader2, AlertCircle, ChevronDown, Zap, TestTube, Flag, RefreshCw, CheckCircle2, RotateCcw, Eye } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useRADocuments, useRAStats, RA_KEYS } from '@/hooks/useReqAssist';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import type { RAFilterTab, RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import RAStatsBar from '@/components/reqAssist/RAStatsBar';
@@ -28,11 +31,51 @@ export default function ReqAssistLibrary() {
   const { data: documents, isLoading } = useRADocuments(filters);
   const { data: stats, isLoading: statsLoading } = useRAStats();
 
+  const qc = useQueryClient();
   const [selectedDoc, setSelectedDoc] = useState<RADocumentWithArtifacts | null>(null);
   const [pdfDoc, setPdfDoc] = useState<RADocumentWithArtifacts | null>(null);
   const [bgModal, setBgModal] = useState<{ type: string; doc: RADocumentWithArtifacts } | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
+  const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
+  const [syncingAll, setSyncingAll] = useState(false);
+
+  const handleSyncKb = useCallback(async (docId: string) => {
+    setSyncingIds(prev => new Set(prev).add(docId));
+    try {
+      const { error } = await (supabase as any)
+        .from('ra_documents')
+        .update({ kb_synced: true, kb_synced_at: new Date().toISOString() })
+        .eq('id', docId);
+      if (error) throw error;
+      qc.invalidateQueries({ queryKey: RA_KEYS.all });
+      toast.success('Document synced to KB');
+    } catch (err: any) {
+      toast.error('Sync failed: ' + (err?.message ?? 'Unknown error'));
+    } finally {
+      setSyncingIds(prev => { const n = new Set(prev); n.delete(docId); return n; });
+    }
+  }, []);
+
+  const handleSyncAll = useCallback(async () => {
+    if (!documents) return;
+    const unsyncedReady = documents.filter(d => (d.status === 'ready' || d.status === 'complete') && !(d as any).kb_synced);
+    if (!unsyncedReady.length) { toast.info('All documents already synced'); return; }
+    setSyncingAll(true);
+    let success = 0;
+    for (const doc of unsyncedReady) {
+      try {
+        const { error } = await (supabase as any)
+          .from('ra_documents')
+          .update({ kb_synced: true, kb_synced_at: new Date().toISOString() })
+          .eq('id', doc.id);
+        if (!error) success++;
+      } catch {}
+    }
+    toast.success(`Synced ${success} of ${unsyncedReady.length} documents to KB`);
+    qc.invalidateQueries({ queryKey: RA_KEYS.all });
+    setSyncingAll(false);
+  }, [documents, qc]);
 
   useEffect(() => {
     if (!dropdownOpen) return;
@@ -134,15 +177,36 @@ export default function ReqAssistLibrary() {
       ) : (
         /* ── SEARCH + FILTER + TABLE ── */
         <div style={{ border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden' }}>
-          <RASearchToolbar
-            tab={tab}
-            onTabChange={setTab}
-            search={search}
-            onSearchChange={setSearch}
-            resultCount={documents?.length}
-            totalCount={totalCount}
-            isFiltering={isFiltering}
-          />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ flex: 1 }}>
+              <RASearchToolbar
+                tab={tab}
+                onTabChange={setTab}
+                search={search}
+                onSearchChange={setSearch}
+                resultCount={documents?.length}
+                totalCount={totalCount}
+                isFiltering={isFiltering}
+              />
+            </div>
+            <div style={{ paddingRight: 28 }}>
+              <button
+                onClick={handleSyncAll}
+                disabled={syncingAll}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '0 12px', height: 32, fontSize: 13, fontWeight: 500,
+                  border: 'none', borderRadius: 6,
+                  background: '#7C3AED', color: '#FFFFFF',
+                  cursor: syncingAll ? 'not-allowed' : 'pointer',
+                  opacity: syncingAll ? 0.7 : 1,
+                  fontFamily: "'Inter', sans-serif",
+                }}
+              >
+                <Zap size={14} /> {syncingAll ? 'Syncing…' : 'Sync All to KB'}
+              </button>
+            </div>
+          </div>
 
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
             <thead>
@@ -288,6 +352,7 @@ export default function ReqAssistLibrary() {
                           isOpen={dropdownOpen === doc.id}
                           onToggle={(e) => { e.stopPropagation(); setDropdownOpen(dropdownOpen === doc.id ? null : doc.id); }}
                           onSelect={(type) => { setDropdownOpen(null); setBgModal({ type, doc }); }}
+                          onSyncKb={handleSyncKb}
                         />
                       </td>
                     </tr>
@@ -352,7 +417,13 @@ function StatusBadge({ status }: { status: string }) {
     ready:      { bg: '#E3FCEF', color: '#006644', label: 'READY' },
     processing: { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
     pending:    { bg: '#DFE1E6', color: '#253858', label: 'PENDING' },
-    failed:     { bg: '#FFEBE6', color: '#BF2600', label: 'FAILED' },
+    failed:     { bg: '#DFE1E6', color: '#253858', label: 'FAILED' },
+    intake:     { bg: '#DFE1E6', color: '#253858', label: 'INTAKE' },
+    extract:    { bg: '#DEEBFF', color: '#0747A6', label: 'EXTRACTING' },
+    process:    { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
+    validate:   { bg: '#DEEBFF', color: '#0747A6', label: 'VALIDATING' },
+    distribute: { bg: '#DEEBFF', color: '#0747A6', label: 'DISTRIBUTING' },
+    complete:   { bg: '#E3FCEF', color: '#006644', label: 'READY' },
   };
   const s = map[status] ?? map.pending;
   return (
@@ -369,29 +440,66 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-/* INT-006: Failed rows show Retry button (red) instead of disabled Generate */
-function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
+/* INT-006: Actions column — conditional CTA logic with KB sync */
+function GenerateDropdown({ doc, isOpen, onToggle, onSelect, onSyncKb }: {
   doc: RADocumentWithArtifacts;
   isOpen: boolean;
   onToggle: (e: React.MouseEvent) => void;
   onSelect: (type: string) => void;
+  onSyncKb: (docId: string) => void;
 }) {
-  const isProcessing = doc.status === 'processing';
+  const isReady = doc.status === 'ready' || doc.status === 'complete';
+  const isProcessing = doc.status === 'processing' || ['intake', 'extract', 'process', 'validate', 'distribute'].includes(doc.status);
   const isFailed = doc.status === 'failed';
-  const disabled = isProcessing;
-  const epicCount = doc.artifact_counts?.epics ?? 0;
-  const uatCount = doc.artifact_counts?.uat ?? 0;
-  const wikiChunks = doc.wikihub_chunk_count ?? 0;
+  const kbSynced = (doc as any).kb_synced === true;
 
-  const items = [
-    { key: 'epics', icon: <Zap size={13} color="#7C3AED" />, label: 'Epic Statements', desc: epicCount > 0 ? `${epicCount} already` : 'none yet' },
-    { key: 'uat', icon: <TestTube size={13} color="#D97706" />, label: 'UAT Scenarios', desc: uatCount > 0 ? `${uatCount} already` : 'none yet' },
-    { key: 'initiative', icon: <Flag size={13} color="#0D9488" />, label: 'Create Initiative', desc: 'Push to StrategyHub' },
-    { key: 'sep', label: '', desc: '' },
-    { key: 'wikihub', icon: <RefreshCw size={13} color="#0D9488" />, label: 'Re-sync WikiHub', desc: wikiChunks > 0 ? `${wikiChunks} chunks` : 'not synced' },
-  ];
+  /* READY + KB SYNCED → green lozenge + View */
+  if (isReady && kbSynced) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center',
+          padding: '0 6px', height: 20, borderRadius: 3,
+          fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+          letterSpacing: '0.03em', whiteSpace: 'nowrap',
+          background: '#E3FCEF', color: '#006644',
+          fontFamily: "'Inter', sans-serif",
+        }}>KB SYNCED</span>
+        <button
+          onClick={(e) => { e.stopPropagation(); onSelect('view'); }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 3,
+            height: 24, padding: '0 8px', fontSize: 11, fontWeight: 500,
+            borderRadius: 4, border: '1px solid #2563EB',
+            background: 'transparent', color: '#2563EB', cursor: 'pointer',
+            fontFamily: "'Inter', sans-serif",
+          }}
+        >
+          <Eye size={11} /> View
+        </button>
+      </div>
+    );
+  }
 
-  /* INT-006: Failed → show Retry button */
+  /* READY + NOT SYNCED → purple Sync to KB */
+  if (isReady && !kbSynced) {
+    return (
+      <button
+        onClick={(e) => { e.stopPropagation(); onSyncKb(doc.id); }}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+          borderRadius: 6, border: 'none', cursor: 'pointer',
+          background: '#7C3AED', color: '#FFFFFF',
+          fontFamily: "'Inter', sans-serif",
+        }}
+      >
+        <Zap size={12} /> Sync to KB
+      </button>
+    );
+  }
+
+  /* FAILED → red outline Retry */
   if (isFailed) {
     return (
       <button
@@ -399,8 +507,8 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 4, border: 'none', cursor: 'pointer',
-          background: '#2563EB', color: '#FFFFFF',
+          borderRadius: 4, border: '1px solid #DC2626',
+          background: 'transparent', color: '#DC2626', cursor: 'pointer',
           fontFamily: "'Inter', sans-serif",
         }}
       >
@@ -409,24 +517,40 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
     );
   }
 
-  return (
-    <div style={{ position: 'relative' }}>
+  /* PROCESSING → disabled Generate */
+  if (isProcessing) {
+    return (
       <button
-        onClick={onToggle}
-        disabled={disabled}
+        disabled
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 4,
-          border: 'none', cursor: disabled ? 'not-allowed' : 'pointer',
-          background: disabled ? '#E5E5E5' : '#2563EB',
-          color: disabled ? '#94A3B8' : '#FFFFFF',
+          borderRadius: 4, border: 'none', cursor: 'not-allowed',
+          background: '#E5E5E5', color: '#94A3B8',
           fontFamily: "'Inter', sans-serif",
         }}
       >
         Generate <ChevronDown size={12} />
       </button>
-      {isOpen && !disabled && (
+    );
+  }
+
+  /* PENDING / null → enabled Generate dropdown */
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        onClick={onToggle}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+          borderRadius: 4, border: 'none', cursor: 'pointer',
+          background: '#2563EB', color: '#FFFFFF',
+          fontFamily: "'Inter', sans-serif",
+        }}
+      >
+        Generate <ChevronDown size={12} />
+      </button>
+      {isOpen && (
         <div style={{
           position: 'absolute', top: '100%', right: 0, marginTop: 4,
           width: 260, background: '#FFFFFF',
@@ -435,7 +559,13 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
           boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
           zIndex: 50, overflow: 'hidden',
         }}>
-          {items.map((item, i) => {
+          {[
+            { key: 'epics', icon: <Zap size={13} color="#7C3AED" />, label: 'Epic Statements', desc: (doc.artifact_counts?.epics ?? 0) > 0 ? `${doc.artifact_counts.epics} already` : 'none yet' },
+            { key: 'uat', icon: <TestTube size={13} color="#D97706" />, label: 'UAT Scenarios', desc: (doc.artifact_counts?.uat ?? 0) > 0 ? `${doc.artifact_counts.uat} already` : 'none yet' },
+            { key: 'initiative', icon: <Flag size={13} color="#0D9488" />, label: 'Create Initiative', desc: 'Push to StrategyHub' },
+            { key: 'sep', label: '', desc: '' },
+            { key: 'wikihub', icon: <RefreshCw size={13} color="#0D9488" />, label: 'Re-sync WikiHub', desc: (doc.wikihub_chunk_count ?? 0) > 0 ? `${doc.wikihub_chunk_count} chunks` : 'not synced' },
+          ].map((item, i) => {
             if (item.key === 'sep') return <div key={i} style={{ height: 1, background: 'rgba(15,23,42,0.06)', margin: '4px 0' }} />;
             return (
               <button

@@ -3,7 +3,7 @@
  * Stage A: Type definitions only
  */
 
-export type DocumentStatus = 'processing' | 'ready' | 'failed' | 'pending';
+export type DocumentStatus = 'processing' | 'ready' | 'failed' | 'pending' | 'intake' | 'extract' | 'process' | 'validate' | 'distribute' | 'complete';
 
 export type ArtifactType = 'brd' | 'epics' | 'uat' | 'initiative';
 
@@ -30,6 +30,8 @@ export interface RADocument {
   wikihub_chunk_count: number | null;
   pdf_url: string | null;
   status: DocumentStatus;
+  kb_synced: boolean;
+  kb_synced_at: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
