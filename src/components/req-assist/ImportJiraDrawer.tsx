@@ -137,8 +137,6 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   }, [syncMutation]);
 
   const toggleTicket = (key: string) => {
-    const ticket = filteredTickets.find(t => t.ticket_key === key);
-    if (ticket?.already_imported && !reImportKeys.has(key)) return;
     setSelectedTickets(prev =>
       prev.includes(key)
         ? prev.filter(id => id !== key)
@@ -152,8 +150,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   };
 
   const toggleAll = (checked: boolean) => {
-    const selectable = filteredTickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key));
-    setSelectedTickets(checked ? selectable.map(t => t.ticket_key) : []);
+    setSelectedTickets(checked ? filteredTickets.map(t => t.ticket_key) : []);
   };
 
   const handleImport = useCallback(async () => {
