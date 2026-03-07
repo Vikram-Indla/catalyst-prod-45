@@ -435,7 +435,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
           width: 18px !important;
           height: 18px !important;
           border-radius: 50% !important;
-          border: 2px solid #7C3AED !important;
+          border: 2px solid #2563EB !important;
           border-top-color: transparent !important;
           animation: ra-epic-spin 0.8s linear infinite !important;
           flex-shrink: 0 !important;
@@ -444,7 +444,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
           width: 28px !important;
           height: 28px !important;
           border-radius: 50% !important;
-          border: 2.5px solid #7C3AED !important;
+          border: 2.5px solid #2563EB !important;
           border-top-color: transparent !important;
           animation: ra-epic-spin 0.8s linear infinite !important;
           flex-shrink: 0 !important;
