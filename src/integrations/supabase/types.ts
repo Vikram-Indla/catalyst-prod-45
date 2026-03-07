@@ -15892,6 +15892,7 @@ export type Database = {
           content_hash: string
           created_at: string | null
           embedding: string | null
+          fts_ar: unknown
           id: string
           language: string | null
           metadata: Json | null
@@ -15910,6 +15911,7 @@ export type Database = {
           content_hash: string
           created_at?: string | null
           embedding?: string | null
+          fts_ar?: unknown
           id?: string
           language?: string | null
           metadata?: Json | null
@@ -15928,6 +15930,7 @@ export type Database = {
           content_hash?: string
           created_at?: string | null
           embedding?: string | null
+          fts_ar?: unknown
           id?: string
           language?: string | null
           metadata?: Json | null
