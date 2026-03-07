@@ -22,7 +22,7 @@ const STEPS = [
 ];
 
 // step: -1=error, 0-4=in progress, 5=done
-export default function RAEpicGenerationModal({ doc, onClose }: Props) {
+export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Props) {
   const qc = useQueryClient();
   const [step, setStep] = useState(0);
   const [progress, setProgress] = useState(0);
