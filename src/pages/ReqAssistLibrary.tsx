@@ -513,8 +513,8 @@ function ActionsCell({ doc, onSyncKb, onSelect }: {
       style={{
         display: 'inline-flex', alignItems: 'center',
         height: 28, padding: '0 10px', fontSize: 13, fontWeight: 500,
-        borderRadius: 4, border: '0.75px solid #CBD5E1', cursor: 'pointer',
-        background: '#FFFFFF', color: '#374151',
+        borderRadius: 4, border: '0.75px solid #E2E8F0', cursor: 'pointer',
+        background: '#FFFFFF', color: '#253858',
         fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
         transition: 'background 120ms ease',
       }}

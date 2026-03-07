@@ -74,14 +74,14 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
               display: 'inline-flex', alignItems: 'center',
               padding: '4px 12px', height: 28, fontSize: 13, fontWeight: 500,
               borderRadius: 999,
-              border: `0.75px solid ${active ? '#BFDBFE' : '#E2E8F0'}`,
-              background: active ? '#EFF6FF' : 'transparent',
-              color: active ? '#1D4ED8' : '#6B7280',
+              border: `1px solid ${active ? '#0747A6' : '#DFE1E6'}`,
+              background: active ? '#DEEBFF' : '#FFFFFF',
+              color: active ? '#0747A6' : '#253858',
               cursor: 'pointer', transition: 'all 120ms ease',
               fontFamily: "'Inter', sans-serif",
             }}
               onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
-              onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; }}
+              onMouseLeave={e => { if (!active) e.currentTarget.style.background = active ? '#DEEBFF' : '#FFFFFF'; }}
             >
               {t.label}
             </button>
@@ -100,7 +100,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '0 12px', height: 32, fontSize: 13, fontWeight: 500,
               border: 'none', borderRadius: 6,
-              background: '#7C3AED', color: '#FFFFFF',
+              background: '#2563EB', color: '#FFFFFF',
               cursor: syncingAll ? 'not-allowed' : 'pointer',
               opacity: syncingAll ? 0.7 : 1,
               fontFamily: "'Inter', sans-serif",
