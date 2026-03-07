@@ -314,8 +314,20 @@ export default function ReqAssistGenerate() {
                   <h4 style={{ fontSize: 15, fontWeight: 650, color: '#0F172A', margin: '4px 0 8px', fontFamily: "'Sora', sans-serif" }}>
                     {section.title}
                   </h4>
-                  <div style={{ fontSize: 13, color: '#334155', lineHeight: 1.6, margin: 0, fontFamily: "'Inter', sans-serif", whiteSpace: 'pre-wrap' }}>
-                    {section.content}
+                  <div className="ra-brd-markdown">
+                    <ReactMarkdown
+                      components={{
+                        p: ({ children }) => <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.6, marginBottom: 12, fontFamily: "'Inter', sans-serif" }}>{children}</p>,
+                        strong: ({ children }) => <strong style={{ fontWeight: 650, color: '#111827' }}>{children}</strong>,
+                        ul: ({ children }) => <ul style={{ paddingLeft: 20, marginBottom: 12 }}>{children}</ul>,
+                        ol: ({ children }) => <ol style={{ paddingLeft: 20, marginBottom: 12 }}>{children}</ol>,
+                        li: ({ children }) => <li style={{ fontSize: 14, color: '#374151', lineHeight: 1.6, marginBottom: 4, listStyleType: 'disc', fontFamily: "'Inter', sans-serif" }}>{children}</li>,
+                        h3: ({ children }) => <h3 style={{ fontSize: 13, fontFamily: "'Sora', sans-serif", fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, marginTop: 16 }}>{children}</h3>,
+                        h4: ({ children }) => <h4 style={{ fontSize: 13, fontFamily: "'Sora', sans-serif", fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, marginTop: 16 }}>{children}</h4>,
+                      }}
+                    >
+                      {section.content}
+                    </ReactMarkdown>
                   </div>
                 </div>
               ))}
