@@ -625,7 +625,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
     );
   }
 
-  /* READY + KB SYNCED → green lozenge + View */
+  /* READY + AI INDEXED → green lozenge + View */
   if (isReady && kbSynced) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -636,7 +636,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           letterSpacing: '0.03em', whiteSpace: 'nowrap',
           background: '#E3FCEF', color: '#006644',
           fontFamily: "'Inter', sans-serif",
-        }}>KB SYNCED</span>
+        }}>AI INDEXED</span>
         <button
           onClick={(e) => { e.stopPropagation(); onSelect('view'); }}
           style={{
