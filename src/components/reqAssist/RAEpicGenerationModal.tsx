@@ -133,6 +133,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     qc.invalidateQueries({ queryKey: ['brd_documents'] });
     qc.invalidateQueries({ queryKey: ['brd-epics'] });
     qc.invalidateQueries({ queryKey: RA_KEYS.stats() });
+    qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
     setTimeout(() => toast.success(`Epics generated for ${doc.title}`), 600);
   };
 

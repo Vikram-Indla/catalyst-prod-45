@@ -394,7 +394,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
 function SectionHeader({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
     <span style={{
-      fontSize: 11, fontWeight: 700, color: '#94A3B8',
+      fontSize: 11, fontWeight: 650, color: '#94A3B8',
       textTransform: 'uppercase', letterSpacing: '0.08em',
       display: 'block', fontFamily: "'Inter', sans-serif",
       ...style,

@@ -203,6 +203,7 @@ export default function ReqAssistLibrary() {
       toast.success(`Synced ${success} documents for AI search`);
     }
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
+    qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
     setSyncingAll(false);
   }, [documents, qc]);
 

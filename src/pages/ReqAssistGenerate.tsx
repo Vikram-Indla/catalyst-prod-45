@@ -466,7 +466,12 @@ export default function ReqAssistGenerate() {
       {/* EPIC GENERATION MODAL */}
       {epicModalOpen && savedDocId && (
         <RAEpicGenerationModal
-          doc={{ id: savedDocId, title: text.trim().slice(0, 60) || 'Untitled BRD' } as any}
+          doc={{
+            id: savedDocId,
+            title: savedTitle || text.trim().slice(0, 60) || 'Untitled BRD',
+            jira_ticket_key: savedJiraKey || null,
+            language: savedLanguage || 'en',
+          } as any}
           onClose={() => { setEpicModalOpen(false); /* Re-check epics */ if (savedDocId) { (async () => { const { count } = await (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', savedDocId); if (count && count > 0) { setHasEpics(true); setEpicCount(count); } })(); } }}
         />
       )}
