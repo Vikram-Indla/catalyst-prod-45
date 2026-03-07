@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { RA_KEYS } from '@/hooks/useReqAssist';
@@ -28,6 +29,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
   const [done, setDone] = useState(false);
   const [hasFailed, setHasFailed] = useState(false);
   const [epicCount, setEpicCount] = useState(0);
+  const [resolvedBrdId, setResolvedBrdId] = useState<string | null>(null);
   const hasStarted = useRef(false);
 
   // ── EFFECT 1: Visual ticker — runs independently, always
@@ -121,7 +123,15 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
     setProgress(100);
     setDone(true);
     setEpicCount(data?.epic_count ?? data?.epics?.length ?? 0);
+
+    // FIX 2: Update pipeline_stage to 'ready' after successful generation
+    await (supabase as any)
+      .from('brd_documents')
+      .update({ pipeline_stage: 'ready' })
+      .eq('id', brdId);
+
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
+    qc.invalidateQueries({ queryKey: ['brd_documents'] });
     setTimeout(() => toast.success(`Epics generated for ${doc.title}`), 600);
   };
 
@@ -141,6 +151,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
 
       if (hasStarted.current) return;
       hasStarted.current = true;
+      setResolvedBrdId(brdId);
       invokeGeneration(brdId);
     }).catch(err => {
       console.error('[EpicModal] Resolution failed:', err?.message || err);
@@ -182,7 +193,8 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
     return 'pending';
   };
 
-  const progressColor = done ? '#16A34A' : step === -1 ? '#DC2626' : '#7C3AED';
+  const nav = useNavigate();
+  const progressColor = done ? '#16A34A' : step === -1 ? '#DC2626' : '#2563EB';
 
   return (
     <>
@@ -247,7 +259,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
                 Close
               </button>
               <button
-                onClick={onClose}
+                onClick={() => { onClose(); nav('/product/req-assist'); }}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
                   border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',

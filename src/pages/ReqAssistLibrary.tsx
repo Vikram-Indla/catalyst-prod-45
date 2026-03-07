@@ -36,6 +36,30 @@ export default function ReqAssistLibrary() {
   const [importOpen, setImportOpen] = useState(false);
   const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
   const [syncingAll, setSyncingAll] = useState(false);
+  const [regenConfirm, setRegenConfirm] = useState<{ doc: RADocumentWithArtifacts; count: number } | null>(null);
+
+  /** FIX 3: Check for existing epics before opening modal */
+  const handleGenerateClick = useCallback(async (doc: RADocumentWithArtifacts) => {
+    // Resolve brd_id
+    let brdId: string | null = null;
+    const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
+    if (direct?.id) brdId = direct.id;
+    if (!brdId) {
+      const jiraKey = (doc as any).jira_ticket_key;
+      if (jiraKey) {
+        const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+        if (jiraMatch?.id) brdId = jiraMatch.id;
+      }
+    }
+    if (brdId) {
+      const { count } = await (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdId);
+      if (count && count > 0) {
+        setRegenConfirm({ doc, count });
+        return;
+      }
+    }
+    setBgModal({ type: 'epics', doc });
+  }, []);
 
   const handleSyncKb = useCallback(async (docId: string) => {
     setSyncingIds(prev => new Set(prev).add(docId));
@@ -315,11 +339,11 @@ export default function ReqAssistLibrary() {
                         </span>
                       </td>
                       {/* Actions */}
-                      <td data-col="actions" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden', position: 'relative' }}>
+                      <td data-col="actions" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'visible', position: 'relative', minWidth: 140 }}>
                         <ActionsCell
                           doc={doc}
                           onSyncKb={handleSyncKb}
-                          onSelect={(type) => setBgModal({ type, doc })}
+                          onSelect={(type) => type === 'epics' ? handleGenerateClick(doc) : setBgModal({ type, doc })}
                         />
                       </td>
                     </tr>
@@ -365,6 +389,37 @@ export default function ReqAssistLibrary() {
       ) : bgModal ? (
         <RABackgroundModal type={bgModal.type} doc={bgModal.doc} onClose={() => setBgModal(null)} />
       ) : null}
+
+      {/* FIX 3: Regen confirmation dialog */}
+      {regenConfirm && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 80 }} onClick={() => setRegenConfirm(null)} />
+          <div style={{
+            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            width: 400, background: '#FFFFFF', borderRadius: 8, zIndex: 90,
+            padding: 24, boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+            fontFamily: "'Inter', sans-serif",
+          }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>
+              Epics Already Exist
+            </h3>
+            <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 20px', lineHeight: 1.5 }}>
+              This document already has {regenConfirm.count} epic{regenConfirm.count !== 1 ? 's' : ''} generated. Regenerating will replace them. Continue?
+            </p>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button onClick={() => setRegenConfirm(null)} style={{
+                padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
+                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+              }}>Cancel</button>
+              <button onClick={() => { const d = regenConfirm.doc; setRegenConfirm(null); setBgModal({ type: 'epics', doc: d }); }} style={{
+                padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
+                border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
+              }}>Regenerate</button>
+            </div>
+          </div>
+        </>
+      )}
+
       <ImportJiraDrawer open={importOpen} onOpenChange={setImportOpen} />
     </div>
   );
@@ -460,7 +515,7 @@ function ActionsCell({ doc, onSyncKb, onSelect }: {
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, minWidth: 96, padding: '0 10px', fontSize: 12, fontWeight: 500,
           borderRadius: 6, border: 'none', cursor: 'pointer',
-          background: '#7C3AED', color: '#FFFFFF',
+          background: '#2563EB', color: '#FFFFFF',
           fontFamily: "'Inter', sans-serif",
           whiteSpace: 'nowrap',
         }}
