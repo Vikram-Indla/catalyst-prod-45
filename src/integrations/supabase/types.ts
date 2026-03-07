@@ -32604,6 +32604,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ra_jira_connections: {
+        Row: {
+          avatar_color: string | null
+          created_at: string | null
+          id: string
+          last_synced_at: string | null
+          project_avatar: string | null
+          project_key: string
+          project_name: string
+          ticket_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_color?: string | null
+          created_at?: string | null
+          id?: string
+          last_synced_at?: string | null
+          project_avatar?: string | null
+          project_key: string
+          project_name: string
+          ticket_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_color?: string | null
+          created_at?: string | null
+          id?: string
+          last_synced_at?: string | null
+          project_avatar?: string | null
+          project_key?: string
+          project_name?: string
+          ticket_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       ra_jira_sync_log: {
         Row: {
           duplicates_skipped: number | null
@@ -32642,43 +32678,52 @@ export type Database = {
       }
       ra_jira_tickets: {
         Row: {
+          attachment_count: number | null
           created_at: string | null
           has_pdf: boolean | null
           id: number
+          jira_issue_id: string | null
           page_count: number | null
           pdf_filename: string | null
           priority: string | null
           project_key: string
           project_name: string
           status: string | null
+          synced_at: string | null
           ticket_key: string
           ticket_summary: string
           ticket_type: string | null
         }
         Insert: {
+          attachment_count?: number | null
           created_at?: string | null
           has_pdf?: boolean | null
           id?: number
+          jira_issue_id?: string | null
           page_count?: number | null
           pdf_filename?: string | null
           priority?: string | null
           project_key: string
           project_name: string
           status?: string | null
+          synced_at?: string | null
           ticket_key: string
           ticket_summary: string
           ticket_type?: string | null
         }
         Update: {
+          attachment_count?: number | null
           created_at?: string | null
           has_pdf?: boolean | null
           id?: number
+          jira_issue_id?: string | null
           page_count?: number | null
           pdf_filename?: string | null
           priority?: string | null
           project_key?: string
           project_name?: string
           status?: string | null
+          synced_at?: string | null
           ticket_key?: string
           ticket_summary?: string
           ticket_type?: string | null
