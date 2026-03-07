@@ -54,6 +54,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
           return;
         }
         if (!data || data.error) {
+          setHasFailed(true);
           setStep(-1);
           setErrorMsg(data?.error || data?.message || 'No data returned');
           return;
