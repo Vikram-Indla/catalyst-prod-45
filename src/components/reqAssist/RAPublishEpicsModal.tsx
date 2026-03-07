@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { RA_KEYS } from '@/hooks/useReqAssist';
+import { sanitiseError } from '@/lib/errorUtils';
 
 interface Epic {
   id: string;
