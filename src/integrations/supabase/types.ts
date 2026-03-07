@@ -5574,6 +5574,7 @@ export type Database = {
           program_rank: number | null
           quadrant: string | null
           quarters: string[] | null
+          ra_tag: string | null
           report_color: string | null
           reporter_id: string | null
           source_ra_doc_id: string | null
@@ -5633,6 +5634,7 @@ export type Database = {
           program_rank?: number | null
           quadrant?: string | null
           quarters?: string[] | null
+          ra_tag?: string | null
           report_color?: string | null
           reporter_id?: string | null
           source_ra_doc_id?: string | null
@@ -5692,6 +5694,7 @@ export type Database = {
           program_rank?: number | null
           quadrant?: string | null
           quarters?: string[] | null
+          ra_tag?: string | null
           report_color?: string | null
           reporter_id?: string | null
           source_ra_doc_id?: string | null
