@@ -170,7 +170,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   </a>
                 )}
               </div>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>{doc.title}</h3>
+              <h3 style={{ fontSize: 15, fontWeight: 650, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>{doc.title}</h3>
             </div>
             <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 4 }}>
               <X size={20} color="#64748B" />
@@ -179,7 +179,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         </div>
 
         {/* SECTION 1 — Pipeline Status Banner */}
-        <div style={{ padding: '16px 20px', background: '#F8FAFC', borderBottom: '0.75px solid #E2E8F0', flexShrink: 0 }}>
+        <div style={{ padding: '16px 20px', background: '#FFFFFF', borderBottom: '0.75px solid #E2E8F0', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
             {STEPS.map((step, i) => {
               const isDone = step.done;
@@ -231,7 +231,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
             {pipeline.rawText ? (
               <>
                 <div style={{
-                  padding: 12, background: '#F8FAFC', border: '0.75px solid #E2E8F0', borderRadius: 4,
+                  padding: 12, background: '#FFFFFF', border: '0.75px solid #E2E8F0', borderRadius: 4,
                   maxHeight: expanded ? 'none' : 120, overflowY: expanded ? 'auto' : 'hidden',
                   fontSize: 13, color: '#475569', lineHeight: 1.6, fontFamily: "'Inter', sans-serif",
                 }}>

@@ -372,8 +372,8 @@ export default function ReqAssistGenerate() {
                       ul: ({ children }) => <ul style={{ paddingLeft: 20, marginBottom: 12 }}>{children}</ul>,
                       ol: ({ children }) => <ol style={{ paddingLeft: 20, marginBottom: 12 }}>{children}</ol>,
                       li: ({ children }) => <li style={{ fontSize: 14, color: '#374151', lineHeight: 1.6, marginBottom: 4, listStyleType: 'disc', fontFamily: "'Inter', sans-serif" }}>{children}</li>,
-                      h3: ({ children }) => <h3 style={{ fontSize: 13, fontFamily: "'Sora', sans-serif", fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, marginTop: 16 }}>{children}</h3>,
-                      h4: ({ children }) => <h4 style={{ fontSize: 13, fontFamily: "'Sora', sans-serif", fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, marginTop: 16 }}>{children}</h4>,
+                      h3: ({ children }) => <h3 style={{ fontSize: 13, fontFamily: "'Sora', sans-serif", fontWeight: 650, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, marginTop: 16 }}>{children}</h3>,
+                      h4: ({ children }) => <h4 style={{ fontSize: 13, fontFamily: "'Sora', sans-serif", fontWeight: 650, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, marginTop: 16 }}>{children}</h4>,
                     }}>{section.content}</ReactMarkdown>
                   </div>
                 </div>
@@ -382,7 +382,7 @@ export default function ReqAssistGenerate() {
 
             {/* STATE BANNERS */}
             {brdState === 'generated' && (
-              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: '#FFFBEB', border: '0.75px solid #FDE68A', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: '#FEF2F2', border: '0.75px solid #FECACA', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <AlertTriangle size={15} color="#92400E" style={{ flexShrink: 0 }} />
                 <span style={{ fontSize: 13, color: '#92400E', fontFamily: "'Inter', sans-serif" }}>
                   This BRD has not been saved yet. Save to Library to enable Epics generation and WikiHub sync.
@@ -475,8 +475,8 @@ export default function ReqAssistGenerate() {
         <ModalOverlay>
           <div style={{ width: 480, background: '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: "'Inter', sans-serif" }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <AlertTriangle size={20} color="#D97706" />
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#111827', fontFamily: "'Sora', sans-serif" }}>Document Already Exists</span>
+              <AlertTriangle size={20} color="#64748B" />
+              <span style={{ fontSize: 16, fontWeight: 650, color: '#111827', fontFamily: "'Sora', sans-serif" }}>Document Already Exists</span>
             </div>
             <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.6, margin: '0 0 20px' }}>
               A BRD with identical content already exists in your library: <strong style={{ fontWeight: 650, color: '#111827' }}>"{duplicateDoc.title}"</strong>. What would you like to do?
@@ -584,9 +584,9 @@ function BtnPrimary({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
   return (
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
-      border: 'none', borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
+      border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#FFFFFF',
-      boxShadow: '0 1px 3px rgba(37,99,235,0.3)', fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Inter', sans-serif",
       opacity: props.disabled ? 0.6 : 1, transition: 'filter 120ms',
       ...props.style,
     }}>{children}</button>
@@ -597,9 +597,9 @@ function BtnAI({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElem
   return (
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
-      border: 'none', borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
+      border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: '#7C3AED', color: '#FFFFFF',
-      boxShadow: '0 1px 3px rgba(124,58,237,0.3)', fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Inter', sans-serif",
       opacity: props.disabled ? 0.6 : 1, transition: 'background 120ms',
       ...props.style,
     }}>{children}</button>

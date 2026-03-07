@@ -145,7 +145,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: 480,
         background: '#FFFFFF', zIndex: 70, display: 'flex', flexDirection: 'column',
-        boxShadow: '-8px 0 24px rgba(0,0,0,0.1)', fontFamily: "'Inter', sans-serif",
+        borderLeft: '0.75px solid #E2E8F0', fontFamily: "'Inter', sans-serif",
       }}>
         {/* Header — 56px */}
         <div style={{ height: 56, minHeight: 56, padding: '0 20px', borderBottom: '0.75px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FFFFFF' }}>
@@ -178,8 +178,8 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
         {/* Staleness banner */}
         {isStale && (
           <div style={{
-            margin: '8px 20px 0', background: '#FFFBEB', border: '1px solid #FDE68A',
-            color: '#92400E', borderRadius: 6, padding: '8px 12px',
+            margin: '8px 20px 0', background: '#DEEBFF', border: '1px solid #B3D4FF',
+            color: '#0747A6', borderRadius: 6, padding: '8px 12px',
             display: 'flex', alignItems: 'center', gap: 8, fontSize: 12,
           }}>
             <Clock size={14} style={{ flexShrink: 0 }} />

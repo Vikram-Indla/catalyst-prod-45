@@ -204,8 +204,8 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
       {/* Modal */}
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-        width: 480, background: '#FFFFFF', borderRadius: 10, zIndex: 70,
-        padding: 28, boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+        width: 480, background: '#FFFFFF', borderRadius: 8, zIndex: 70,
+        padding: 28, border: '0.75px solid #E2E8F0',
         fontFamily: "'Inter', sans-serif",
       }}>
 
@@ -219,7 +219,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               }}>
                 <CheckCircle2 size={40} color="#16A34A" />
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+              <h3 style={{ fontSize: 18, fontWeight: 650, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
                 Epics Generated Successfully
               </h3>
               <p style={{ fontSize: 14, color: '#6B7280', margin: 0, textAlign: 'center' }}>
@@ -288,7 +288,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               }}>
                 <XCircle size={32} color="#DC2626" />
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+              <h3 style={{ fontSize: 18, fontWeight: 650, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
                 Generation Failed
               </h3>
             </div>
@@ -349,7 +349,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 <div className="ra-epic-spinner-lg" />
               </div>
               <div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+                <h3 style={{ fontSize: 18, fontWeight: 650, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>
                   Generating Epic Statements
                 </h3>
                 <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0' }}>
