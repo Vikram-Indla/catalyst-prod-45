@@ -68,6 +68,13 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
   };
 
   const invokeGeneration = async (brdId: string) => {
+    if (!brdId || brdId.trim() === '') {
+      console.error('[EpicModal] Empty brdId passed to invokeGeneration — aborting');
+      setHasFailed(true);
+      setErrorMsg('Could not resolve BRD document ID.');
+      return;
+    }
+
     console.log('[EpicModal] Invoking generate_epics_for_brd with brd_id:', brdId);
     const { data, error } = await supabase.functions.invoke('generate_epics_for_brd', { body: { brd_id: brdId } });
     if (error) {
@@ -96,18 +103,20 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
     console.log('[EpicModal] brdId at mount:', doc.id);
     console.log('[EpicModal] hasStarted:', hasStarted.current);
     if (hasStarted.current) return;
-    hasStarted.current = true;
 
     resolveBrdId().then(brdId => {
       if (!brdId || brdId.trim() === '') {
-        console.error('FORGE: brdId is empty — aborting epic generation. doc.id was:', doc.id);
+        console.error('[EpicModal] Could not resolve brd_documents.id for doc.id:', doc.id);
         setHasFailed(true);
-        setErrorMsg('Could not resolve BRD document ID. The document may not have a corresponding BRD entry.');
+        setErrorMsg('Could not resolve BRD document ID. Document may not have a BRD entry.');
         return;
       }
+
+      if (hasStarted.current) return;
+      hasStarted.current = true;
       invokeGeneration(brdId);
     }).catch(err => {
-      console.error('[RAEpicModal] Resolution/generation failed:', err?.message || err);
+      console.error('[EpicModal] Resolution failed:', err?.message || err);
       setHasFailed(true);
       setErrorMsg(err?.message || String(err));
     });
