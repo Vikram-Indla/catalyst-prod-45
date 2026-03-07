@@ -157,7 +157,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   };
 
   const handleImport = useCallback(async () => {
-    const keys = Array.from(selectedTickets);
+    const keys = [...selectedTickets];
     if (!keys.length) return;
     try {
       const result = await importMutation.mutateAsync(keys);
