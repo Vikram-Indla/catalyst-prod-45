@@ -294,13 +294,13 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
               <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>← Back</button>
               <button
                 onClick={handleImport}
-                disabled={selectedTickets.size === 0 || importMutation.isPending}
+                disabled={selectedTickets.length === 0 || importMutation.isPending}
                 style={{
-                  background: selectedTickets.size > 0 ? '#2563EB' : '#93C5FD', color: '#FFFFFF',
+                  background: selectedTickets.length > 0 ? '#2563EB' : '#93C5FD', color: '#FFFFFF',
                   border: 'none', borderRadius: 6, padding: '0 16px', height: 36,
                   fontSize: 13, fontWeight: 600,
-                  cursor: selectedTickets.size > 0 ? 'pointer' : 'not-allowed',
-                  fontFamily: "'Inter', sans-serif", opacity: selectedTickets.size > 0 ? 1 : 0.6,
+                  cursor: selectedTickets.length > 0 ? 'pointer' : 'not-allowed',
+                  fontFamily: "'Inter', sans-serif", opacity: selectedTickets.length > 0 ? 1 : 0.6,
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}
               >
