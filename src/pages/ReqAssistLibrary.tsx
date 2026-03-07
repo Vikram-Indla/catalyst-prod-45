@@ -127,7 +127,7 @@ export default function ReqAssistLibrary() {
         .eq('id', docId);
       if (error) throw error;
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
-      toast.success('Document synced to KB');
+      toast.success('Document indexed for AI-powered search');
     } catch (err: any) {
       toast.error('Sync failed: ' + (err?.message ?? 'Unknown error'));
     } finally {
