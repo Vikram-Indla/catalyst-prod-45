@@ -48,6 +48,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
         if (cancelled) return;
 
         if (error) {
+          setHasFailed(true);
           setStep(-1);
           setErrorMsg(error.message || JSON.stringify(error));
           return;
