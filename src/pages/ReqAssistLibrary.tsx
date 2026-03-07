@@ -653,7 +653,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
     );
   }
 
-  /* READY + NOT SYNCED → Sync to KB */
+  /* READY + NOT SYNCED → Sync to AI */
   if (isReady && !kbSynced) {
     return (
       <button
@@ -667,7 +667,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           whiteSpace: 'nowrap',
         }}
       >
-        <Zap size={12} /> Sync to KB
+        <Zap size={12} /> Sync to AI
       </button>
     );
   }
