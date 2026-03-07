@@ -155,6 +155,26 @@ export default function ReqAssistLibrary() {
     setSyncingAll(false);
   }, [documents, qc]);
 
+  /* Supabase Realtime subscriptions for live updates */
+  useEffect(() => {
+    const channel1 = supabase.channel('req-assist-queue')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'brd_processing_queue' },
+        () => { qc.invalidateQueries({ queryKey: RA_KEYS.stats() }); qc.invalidateQueries({ queryKey: RA_KEYS.all }); })
+      .subscribe();
+
+    const channel2 = supabase.channel('req-assist-docs')
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'brd_documents' },
+        () => { qc.invalidateQueries({ queryKey: RA_KEYS.all }); })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel1);
+      supabase.removeChannel(channel2);
+    };
+  }, [qc]);
+
   /* INT-005: ESC key layering — only close topmost overlay */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -555,6 +575,7 @@ function StatusBadge({ status }: { status: string }) {
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
       background: s.bg, color: s.color,
       fontFamily: "'Inter', sans-serif",
+      transition: 'background-color 200ms ease, color 200ms ease',
     }}>
       {s.label}
     </span>
