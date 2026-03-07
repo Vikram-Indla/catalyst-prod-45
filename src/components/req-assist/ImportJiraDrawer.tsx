@@ -164,9 +164,10 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
     setStep(1);
     setSelectedProject(null);
     setSelectedTickets(new Set());
+    setReImportKeys(new Set());
     setVerifyState('idle');
     setAddInput('');
-    setPdfOnly(false);
+    setPdfOnly(true);
     setTicketSearch('');
     onOpenChange(false);
   };
