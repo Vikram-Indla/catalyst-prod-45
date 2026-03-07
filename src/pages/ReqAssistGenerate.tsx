@@ -352,13 +352,23 @@ export default function ReqAssistGenerate() {
                 {saving ? <Loader2 size={13} style={{ animation: 'ra-spin 1s linear infinite' }} /> : <BookOpen size={13} />}
                 {savedDocId ? 'View in Library' : 'Save to Library'}
               </button>
-              <button style={{
-                display: 'inline-flex', alignItems: 'center', gap: 5,
-                padding: '0 14px', height: 36, fontSize: 12, fontWeight: 500,
-                border: '0.75px solid #E2E8F0', borderRadius: 6,
-                background: '#FFFFFF', color: '#334155', cursor: 'pointer',
-                fontFamily: "'Inter', sans-serif",
-              }}>
+              <button
+                onClick={() => {
+                  setEpicWarning(false);
+                  if (!savedDocId) {
+                    setEpicWarning(true);
+                    return;
+                  }
+                  setEpicModalOpen(true);
+                }}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '0 14px', height: 36, fontSize: 12, fontWeight: 500,
+                  border: '0.75px solid #E2E8F0', borderRadius: 6,
+                  background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+                  fontFamily: "'Inter', sans-serif",
+                }}
+              >
                 <Flag size={13} /> Generate Epics
               </button>
               <button style={{
@@ -371,6 +381,11 @@ export default function ReqAssistGenerate() {
                 <RefreshCw size={13} /> Push to WikiHub
               </button>
             </div>
+            {epicWarning && (
+              <div style={{ padding: '8px 16px 12px', fontFamily: "'Inter', sans-serif" }}>
+                <span style={{ fontSize: 13, color: '#D97706' }}>Save to Library first before generating epics.</span>
+              </div>
+            )}
           </div>
         )}
       </div>
