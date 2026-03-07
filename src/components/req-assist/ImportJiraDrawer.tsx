@@ -164,19 +164,24 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   return (
     <>
       {open && <style>{`
-        [data-radix-dialog-overlay] {
+        .ra-import-overlay {
           top: 48px !important;
           right: 600px !important;
+          bottom: 0 !important;
+          left: 0 !important;
           z-index: 49 !important;
           background: rgba(0,0,0,0.4) !important;
           backdrop-filter: none !important;
           pointer-events: auto !important;
         }
-        [data-radix-dialog-content] {
+        .ra-import-content {
           z-index: 50 !important;
           top: 48px !important;
+          bottom: 0 !important;
           height: calc(100vh - 48px) !important;
           max-height: calc(100vh - 48px) !important;
+          inset: auto !important;
+          right: 0 !important;
         }
       `}</style>}
     <Sheet open={open} onOpenChange={handleClose}>
