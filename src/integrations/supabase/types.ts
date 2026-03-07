@@ -67911,6 +67911,7 @@ export type Database = {
           total_count: number
         }[]
       }
+      populate_r360_weekly_snapshots: { Args: never; Returns: number }
       pri_checkout_week: {
         Args: { p_decisions: Json; p_week_id: string }
         Returns: string
