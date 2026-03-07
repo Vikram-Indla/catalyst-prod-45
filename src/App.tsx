@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from "react";
 import KBAdminSetup from "./pages/KBAdminSetup";
 const KBAdminPage = lazy(() => import("./pages/KBAdminPage"));
 const KBDataAuditPage = lazy(() => import("./pages/KBDataAudit"));
+const RAGAuditPage = lazy(() => import("./pages/RAGAuditPage"));
 const WikiAdminPage = lazy(() => import("./pages/admin/WikiAdminPage"));
 const WikiDiagnosticPage = lazy(() => import("./pages/admin/WikiDiagnosticPage"));
 import { Resource360Redirect } from './components/workhub/resource360/Resource360Redirect';
