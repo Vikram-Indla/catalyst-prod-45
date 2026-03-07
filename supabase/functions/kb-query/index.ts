@@ -1280,12 +1280,15 @@ Return ONLY a JSON array of ${P.REWRITES} strings.`;
 // STAGE 3 — Hybrid Retrieval (Vector + Keyword + RRF)
 // ══════════════════════════════════════════════════════════════════
 async function retrieve(sb: any, emb: number[], text: string, rewrites: string[], src?: string, tags?: string[]) {
+  // Detect Arabic input to use simple-stemmer FTS column
+  const isArabic = /[\u0600-\u06FF]/.test(text);
   const { data: hybrid } = await sb.rpc("kb_hybrid_search", {
     query_embedding: emb, query_text: text,
     match_count: P.RERANK_IN,
     vector_weight: P.VEC_W, keyword_weight: P.KW_W,
     filter_source: src || null, filter_tags: tags || null,
     rrf_k: P.RRF_K,
+    use_simple_fts: isArabic,
   });
   const chunks = hybrid || [];
 
