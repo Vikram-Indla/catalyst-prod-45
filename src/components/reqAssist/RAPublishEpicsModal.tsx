@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Search, Loader2, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { RA_KEYS } from '@/hooks/useReqAssist';
 
 interface Epic {
   id: string;
