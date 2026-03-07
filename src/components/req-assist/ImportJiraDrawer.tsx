@@ -257,6 +257,8 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
           /> : <Step2
             projectName={selectedProjectData?.project_name ?? selectedProject ?? ''}
             tickets={filteredTickets}
+            totalIssueCount={allTickets.length}
+            pdfIssueCount={tickets.length}
             loading={loadingTickets}
             selectedTickets={selectedTickets}
             onToggle={toggleTicket}
