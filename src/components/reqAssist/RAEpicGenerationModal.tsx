@@ -26,6 +26,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
   const [progress, setProgress] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
   const [done, setDone] = useState(false);
+  const [hasFailed, setHasFailed] = useState(false);
   const [epicCount, setEpicCount] = useState(0);
   const invokeKey = useRef(0);
 
