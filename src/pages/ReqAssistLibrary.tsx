@@ -354,7 +354,13 @@ function StatusBadge({ status }: { status: string }) {
     ready:      { bg: '#E3FCEF', color: '#006644', label: 'READY' },
     processing: { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
     pending:    { bg: '#DFE1E6', color: '#253858', label: 'PENDING' },
-    failed:     { bg: '#FFEBE6', color: '#BF2600', label: 'FAILED' },
+    failed:     { bg: '#DFE1E6', color: '#253858', label: 'FAILED' },
+    intake:     { bg: '#DFE1E6', color: '#253858', label: 'INTAKE' },
+    extract:    { bg: '#DEEBFF', color: '#0747A6', label: 'EXTRACTING' },
+    process:    { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
+    validate:   { bg: '#DEEBFF', color: '#0747A6', label: 'VALIDATING' },
+    distribute: { bg: '#DEEBFF', color: '#0747A6', label: 'DISTRIBUTING' },
+    complete:   { bg: '#E3FCEF', color: '#006644', label: 'READY' },
   };
   const s = map[status] ?? map.pending;
   return (
