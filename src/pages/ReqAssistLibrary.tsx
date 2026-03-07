@@ -43,7 +43,6 @@ export default function ReqAssistLibrary() {
 
   /** FIX 3: Check for existing epics before opening modal */
   const handleGenerateClick = useCallback(async (doc: RADocumentWithArtifacts) => {
-    // Resolve brd_id
     let brdId: string | null = null;
     const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
     if (direct?.id) brdId = direct.id;
@@ -55,14 +54,69 @@ export default function ReqAssistLibrary() {
       }
     }
     if (brdId) {
-      const { count } = await (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdId);
+      const { count, data: epicRows } = await (supabase as any)
+        .from('brd_epics')
+        .select('id, generated_at', { count: 'exact' })
+        .eq('brd_id', brdId)
+        .limit(1);
       if (count && count > 0) {
-        setRegenConfirm({ doc, count });
+        const genAt = epicRows?.[0]?.generated_at || null;
+        setRegenConfirm({ doc, count, brdId, generatedAt: genAt });
         return;
       }
     }
     setBgModal({ type: 'epics', doc });
   }, []);
+
+  /** Resolve brdId for a doc (used by actions cell) */
+  const resolveBrdId = useCallback(async (doc: RADocumentWithArtifacts): Promise<string | null> => {
+    const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
+    if (direct?.id) return direct.id;
+    const jiraKey = (doc as any).jira_ticket_key;
+    if (jiraKey) {
+      const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+      if (jiraMatch?.id) return jiraMatch.id;
+    }
+    return null;
+  }, []);
+
+  /** Open draft drawer for a doc */
+  const handleOpenDrafts = useCallback(async (doc: RADocumentWithArtifacts) => {
+    const brdId = await resolveBrdId(doc);
+    if (brdId) {
+      setDraftDrawer({ brdId, docTitle: doc.title, jiraKey: (doc as any).jira_ticket_key || null });
+    }
+  }, [resolveBrdId]);
+
+  const handleOpenDraftsByBrdId = useCallback((brdId: string) => {
+    // Find doc from current documents list to get title/jiraKey
+    const doc = documents?.find(d => d.id === brdId || (d as any).jira_ticket_key);
+    setDraftDrawer({
+      brdId,
+      docTitle: doc?.title || 'Document',
+      jiraKey: (doc as any)?.jira_ticket_key || null,
+    });
+  }, [documents]);
+
+  // Fetch epic counts for docs that have brd_documents entries
+  useEffect(() => {
+    if (!documents || documents.length === 0) return;
+    const fetchCounts = async () => {
+      const counts: Record<string, number> = {};
+      for (const doc of documents) {
+        const brdId = await resolveBrdId(doc);
+        if (brdId) {
+          const { count } = await (supabase as any)
+            .from('brd_epics')
+            .select('id', { count: 'exact', head: true })
+            .eq('brd_id', brdId);
+          if (count && count > 0) counts[doc.id] = count;
+        }
+      }
+      setEpicCounts(counts);
+    };
+    fetchCounts();
+  }, [documents, resolveBrdId]);
 
   const handleSyncKb = useCallback(async (docId: string) => {
     setSyncingIds(prev => new Set(prev).add(docId));
