@@ -556,16 +556,48 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-/* Actions column — D02/D03/D04: conditional CTA, no chevrons, nowrap */
-function ActionsCell({ doc, onSyncKb, onSelect }: {
+/* Actions column — PART 6: lifecycle-aware actions */
+function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
   doc: RADocumentWithArtifacts;
+  epicCount: number;
   onSyncKb: (docId: string) => void;
   onSelect: (type: string) => void;
+  onViewDrafts: () => void;
 }) {
   const isReady = doc.status === 'ready' || doc.status === 'complete';
   const isProcessing = doc.status === 'processing' || ['intake', 'extract', 'process', 'validate', 'distribute'].includes(doc.status);
   const isFailed = doc.status === 'failed';
   const kbSynced = (doc as any).kb_synced === true;
+
+  /* Has epics generated → show View Drafts + count chip */
+  if (epicCount > 0 && !isProcessing) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <button
+          onClick={(e) => { e.stopPropagation(); onViewDrafts(); }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+            borderRadius: 4, border: '0.75px solid #E2E8F0',
+            background: '#FFFFFF', color: '#253858', cursor: 'pointer',
+            fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+            transition: 'background 120ms ease',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
+          onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
+        >
+          View Drafts
+        </button>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center',
+          padding: '0 6px', height: 20, borderRadius: 3,
+          fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap',
+          background: '#F1F5F9', color: '#475569',
+          fontFamily: "'Inter', sans-serif",
+        }}>{epicCount} epics</span>
+      </div>
+    );
+  }
 
   /* READY + KB SYNCED → green lozenge + View */
   if (isReady && kbSynced) {
@@ -595,7 +627,7 @@ function ActionsCell({ doc, onSyncKb, onSelect }: {
     );
   }
 
-  /* READY + NOT SYNCED → purple Sync to KB — D02/D03 nowrap fix */
+  /* READY + NOT SYNCED → Sync to KB */
   if (isReady && !kbSynced) {
     return (
       <button
@@ -632,7 +664,7 @@ function ActionsCell({ doc, onSyncKb, onSelect }: {
     );
   }
 
-  /* PROCESSING → disabled Generate — D04: no chevron */
+  /* PROCESSING → disabled Generate */
   if (isProcessing) {
     return (
       <button
@@ -650,7 +682,7 @@ function ActionsCell({ doc, onSyncKb, onSelect }: {
     );
   }
 
-  /* PENDING / null → enabled Generate — outline style, not primary blue */
+  /* PENDING / null → enabled Generate */
   return (
     <button
       onClick={(e) => { e.stopPropagation(); onSelect('epics'); }}
