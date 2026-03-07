@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, ExternalLink, FileText, Layers, BookOpen, TestTube, Copy, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
@@ -27,6 +28,7 @@ interface PipelineState {
 }
 
 export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, onViewDrafts, onSyncKb }: Props) {
+  const navigate = useNavigate();
   const [pipeline, setPipeline] = useState<PipelineState>({
     imported: true, processed: false, indexed: false,
     epicsGenerated: false, published: false, brdId: null,
@@ -79,9 +81,21 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         const { count: pc } = await (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdId).eq('publish_status', 'published');
         publishedCount = pc ?? 0;
 
-        // Chunk count from kb_embeddings
-        const { count: cc } = await (supabase as any).from('kb_embeddings').select('id', { count: 'exact', head: true }).eq('source_id', brdId);
+        // FIX 3: Chunk count from kb_embeddings via JSONB metadata
+        const { count: cc } = await (supabase as any)
+          .from('kb_embeddings')
+          .select('*', { count: 'exact', head: true })
+          .contains('metadata', { source_id: brdId });
         chunkCount = cc ?? 0;
+
+        // Fallback: try jira_key match
+        if (chunkCount === 0 && jiraKey) {
+          const { count: fallbackCc } = await (supabase as any)
+            .from('kb_embeddings')
+            .select('*', { count: 'exact', head: true })
+            .contains('metadata', { jira_key: jiraKey });
+          chunkCount = fallbackCc ?? 0;
+        }
       }
 
       // Fallback chunk count from doc
@@ -279,7 +293,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 : { bg: '#DFE1E6', color: '#253858', text: 'Not indexed' }
               }
               action={pipeline.chunkCount > 0
-                ? { label: 'View in WikiHub →', onClick: () => { window.location.href = `/wiki?filter=source:${doc.jira_ticket_key}`; } }
+                ? { label: 'View in WikiHub →', onClick: () => { navigate(`/wiki?filter=source:${doc.jira_ticket_key}`); } }
                 : { label: 'Sync to KB →', onClick: () => { if (onSyncKb) onSyncKb(doc.id); } }
               }
               borderBottom

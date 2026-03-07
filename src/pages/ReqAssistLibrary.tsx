@@ -3,7 +3,7 @@ import { FileText, FileSearch, Download, Loader2, AlertCircle, Zap, TestTube, Fl
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useRADocuments, useRAStats, RA_KEYS } from '@/hooks/useReqAssist';
-import { syncSingleBrdToKb } from '@/services/reqAssistService';
+import { syncSingleBrdToKb, fetchDocumentEpicCounts } from '@/services/reqAssistService';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import type { RAFilterTab, RADocumentWithArtifacts } from '@/types/reqAssistV2';
@@ -99,25 +99,25 @@ export default function ReqAssistLibrary() {
     });
   }, [documents]);
 
-  // Fetch epic counts for docs that have brd_documents entries
+  // FIX 2: Batch fetch epic counts (replaces N+1 loop)
   useEffect(() => {
     if (!documents || documents.length === 0) return;
-    const fetchCounts = async () => {
+    const jiraKeys = documents
+      .map(d => (d as any).jira_ticket_key)
+      .filter(Boolean) as string[];
+    if (!jiraKeys.length) return;
+
+    fetchDocumentEpicCounts(jiraKeys).then(countsMap => {
       const counts: Record<string, number> = {};
       for (const doc of documents) {
-        const brdId = await resolveBrdId(doc);
-        if (brdId) {
-          const { count } = await (supabase as any)
-            .from('brd_epics')
-            .select('id', { count: 'exact', head: true })
-            .eq('brd_id', brdId);
-          if (count && count > 0) counts[doc.id] = count;
+        const jk = (doc as any).jira_ticket_key;
+        if (jk && countsMap[jk]?.epicCount > 0) {
+          counts[doc.id] = countsMap[jk].epicCount;
         }
       }
       setEpicCounts(counts);
-    };
-    fetchCounts();
-  }, [documents, resolveBrdId]);
+    });
+  }, [documents]);
 
   const handleSyncKb = useCallback(async (docId: string) => {
     setSyncingIds(prev => new Set(prev).add(docId));
@@ -529,8 +529,11 @@ export default function ReqAssistLibrary() {
               <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
                 Showing {documents.length} of {totalCount} documents
               </span>
-              <button style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563EB', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-                View all <ArrowRight size={14} />
+              <button
+                onClick={() => { setTab('all'); setSearch(''); }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563EB', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}
+              >
+                Show all {totalCount} <ArrowRight size={14} />
               </button>
             </div>
           )}

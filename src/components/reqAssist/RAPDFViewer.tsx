@@ -39,9 +39,14 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button style={{ border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', borderRadius: 'var(--ra-radius-btn)', padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#334155' }}>
-              <Download size={13} /> Download
-            </button>
+            {doc.pdf_url && (
+              <button
+                onClick={() => window.open(doc.pdf_url!, '_blank')}
+                style={{ border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', borderRadius: 'var(--ra-radius-btn)', padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#334155' }}
+              >
+                <Download size={13} /> Download
+              </button>
+            )}
             <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 4 }}><X size={18} color="#64748B" /></button>
           </div>
         </div>

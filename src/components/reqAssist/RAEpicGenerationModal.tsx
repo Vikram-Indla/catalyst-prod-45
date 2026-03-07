@@ -306,7 +306,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </div>
 
             <p style={{ fontSize: 13, color: '#6B7280', margin: '0 0 20px', lineHeight: 1.5 }}>
-              Check Supabase Edge Function logs → generate_epics_for_brd
+              Generation failed. Please try again or contact your administrator.
             </p>
 
             {/* Progress bar red */}

@@ -4,6 +4,7 @@ import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { toast } from 'sonner';
 import { useQueueJob, useRAJobPolling, RA_KEYS } from '@/hooks/useReqAssist';
 import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Props {
   type: string;
@@ -38,8 +39,51 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
   const qc = useQueryClient();
   const [jobId, setJobId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [resolvedBrdId, setResolvedBrdId] = useState<string | null>(null);
 
   const { data: job } = useRAJobPolling(jobId);
+
+  // Resolve brd_documents.id for Realtime subscription
+  useEffect(() => {
+    const resolve = async () => {
+      const jiraKey = (doc as any)?.jira_ticket_key;
+      const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
+      if (direct?.id) { setResolvedBrdId(direct.id); return; }
+      if (jiraKey) {
+        const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+        if (jiraMatch?.id) { setResolvedBrdId(jiraMatch.id); return; }
+      }
+    };
+    resolve();
+  }, [doc]);
+
+  // FIX 1: Realtime listener on brd_processing_queue for background completion
+  useEffect(() => {
+    if (!resolvedBrdId) return;
+    const channel = supabase.channel(`epic-gen-${resolvedBrdId}`)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'brd_processing_queue',
+        filter: `brd_id=eq.${resolvedBrdId}`,
+      }, (payload: any) => {
+        if (payload.new.status === 'completed') {
+          toast.success('Generation completed successfully', {
+            description: `Artifacts ready for ${(doc as any).jira_ticket_key || doc.title}`,
+            duration: 6000,
+          });
+          qc.invalidateQueries({ queryKey: RA_KEYS.all });
+          qc.invalidateQueries({ queryKey: RA_KEYS.stats() });
+        }
+        if (payload.new.status === 'failed') {
+          toast.error('Generation failed', {
+            description: payload.new.error_message || 'Check administrator logs',
+          });
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [resolvedBrdId, doc, qc]);
 
   useEffect(() => {
     const jobType = JOB_TYPE_MAP[type] || 'generate_epics';
