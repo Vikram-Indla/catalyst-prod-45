@@ -163,15 +163,22 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
 
   return (
     <Sheet open={open} onOpenChange={handleClose}>
-      {/* Custom overlay starting below topnav */}
-      <div
-        onClick={handleClose}
-        style={{
-          display: open ? 'block' : 'none',
-          position: 'fixed', top: 48, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.3)', zIndex: 49,
-        }}
-      />
+      {/* Override Sheet overlay to start below topnav */}
+      <style>{`
+        [data-ra-import-drawer] ~ [data-radix-dialog-overlay],
+        [data-ra-import-drawer] ~ div[data-state] {
+          top: 48px !important;
+        }
+        .ra-import-overlay {
+          position: fixed !important;
+          top: 48px !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          z-index: 49 !important;
+          background: rgba(0,0,0,0.3) !important;
+        }
+      `}</style>
       <SheetContent
         side="right"
         hideClose
