@@ -70,6 +70,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
             program_id: selectedProject.id,
             status: 'funnel',
             source_ra_doc_id: brdId,
+            ra_tag: epic.ra_tag ?? null,
             description: epic.ra_tag
               ? `${epic.title}\n\n[RA: ${epic.ra_tag}]`
               : epic.title,
