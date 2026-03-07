@@ -249,13 +249,13 @@ export default function ReqAssistGenerate() {
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 padding: '0 16px', height: 36, fontSize: 13, fontWeight: 500,
                 border: 'none', borderRadius: 6, cursor: (qualifying || generating || !text.trim()) ? 'not-allowed' : 'pointer',
-                background: '#7C3AED', color: '#FFFFFF',
+                background: '#2563EB', color: '#FFFFFF',
                 opacity: (qualifying || generating || !text.trim()) ? 0.6 : 1,
                 fontFamily: "'Inter', sans-serif",
                 transition: 'background 120ms ease',
               }}
-              onMouseEnter={e => { if (!qualifying && !generating && text.trim()) e.currentTarget.style.background = '#6D28D9'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#7C3AED'; }}
+              onMouseEnter={e => { if (!qualifying && !generating && text.trim()) e.currentTarget.style.background = '#1D4ED8'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#2563EB'; }}
             >
               {qualifying || generating ? (
                 <Loader2 size={13} style={{ animation: 'ra-spin 1s linear infinite' }} />
