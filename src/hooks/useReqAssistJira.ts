@@ -190,7 +190,7 @@ export function useImportTickets() {
         jira_key: t.ticket_key,
         source_type: t.has_pdf ? 'jira_pdf' : 'jira',
         language: 'en',
-        pipeline_stage: 'pending',
+        pipeline_stage: 'intake',
       }));
 
       const { error: insertErr } = await (supabase as any)
