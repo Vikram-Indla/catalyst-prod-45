@@ -202,11 +202,11 @@ export default function RAImportDrawer({ onClose }: Props) {
   return (
     <>
       {/* Overlay */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 40 }} />
+      <div onClick={onClose} style={{ position: 'fixed', top: 48, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', zIndex: 40 }} />
 
       {/* Drawer */}
       <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, width: 600,
+        position: 'fixed', top: 48, right: 0, height: 'calc(100vh - 48px)', width: 600,
         background: '#FFFFFF', zIndex: 50, display: 'flex', flexDirection: 'column',
         borderLeft: '1px solid rgba(15,23,42,0.12)',
         animation: 'ra-slide-left 200ms ease-out',
