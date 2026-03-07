@@ -107,32 +107,10 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
       }
       invokeGeneration(brdId);
     }).catch(err => {
-        if (error) {
-          console.error('[RAEpicModal] Generation failed:', error.message || error);
-          setHasFailed(true);
-          setErrorMsg(error.message || JSON.stringify(error));
-          return;
-        }
-        if (!data || data.error) {
-          const msg = data?.error || data?.message || 'Empty response from Edge Function';
-          console.error('[RAEpicModal] Generation failed:', msg);
-          setHasFailed(true);
-          setErrorMsg(msg);
-          return;
-        }
-
-        setStep(5);
-        setProgress(100);
-        setDone(true);
-        setEpicCount(data?.epic_count ?? data?.epics?.length ?? 0);
-        qc.invalidateQueries({ queryKey: RA_KEYS.all });
-        setTimeout(() => toast.success(`Epics generated for ${doc.title}`), 600);
-      })
-      .catch(err => {
-        console.error('[RAEpicModal] Generation failed:', err?.message || err);
-        setHasFailed(true);
-        setErrorMsg(err?.message || String(err));
-      });
+      console.error('[RAEpicModal] Resolution/generation failed:', err?.message || err);
+      setHasFailed(true);
+      setErrorMsg(err?.message || String(err));
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
