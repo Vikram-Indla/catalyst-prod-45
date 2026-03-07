@@ -466,7 +466,7 @@ export default function ReqAssistLibrary() {
       )}
 
       {/* Overlays */}
-      {selectedDoc && <RAJiraSidePanel doc={selectedDoc} onClose={() => setSelectedDoc(null)} onOpenPdf={() => setPdfDoc(selectedDoc)} onGenerate={(type) => setBgModal({ type, doc: selectedDoc })} />}
+      {selectedDoc && <RAJiraSidePanel doc={selectedDoc} onClose={() => setSelectedDoc(null)} onOpenPdf={() => setPdfDoc(selectedDoc)} onGenerate={(type) => type === 'epics' ? handleGenerateClick(selectedDoc) : setBgModal({ type, doc: selectedDoc })} onViewDrafts={(brdId) => { setSelectedDoc(null); handleOpenDraftsByBrdId(brdId); }} onSyncKb={handleSyncKb} />}
       {pdfDoc && <RAPDFViewer doc={pdfDoc} onClose={() => setPdfDoc(null)} onGenerateEpics={() => { setPdfDoc(null); if (pdfDoc) setBgModal({ type: 'epics', doc: pdfDoc }); }} />}
       {bgModal && bgModal.type === 'epics' ? (
         <RAEpicGenerationModal
