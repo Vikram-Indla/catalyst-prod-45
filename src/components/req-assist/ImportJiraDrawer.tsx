@@ -480,12 +480,14 @@ function Step1({
 /* ════════════════════════════════════════════════════════════ */
 
 function Step2({
-  projectName, tickets, loading, selectedTickets, onToggle, onToggleAll,
+  projectName, tickets, totalIssueCount, pdfIssueCount, loading, selectedTickets, onToggle, onToggleAll,
   pdfOnly, onPdfToggle, search, onSearch, onSync, syncing, lastSyncedAt,
   reImportKeys, onReImport,
 }: {
   projectName: string;
   tickets: any[];
+  totalIssueCount: number;
+  pdfIssueCount: number;
   loading: boolean;
   selectedTickets: Set<string>;
   onToggle: (key: string) => void;
