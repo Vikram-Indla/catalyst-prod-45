@@ -345,8 +345,8 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
 
             {/* Progress bar */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <span style={{ fontSize: 12, color: '#7C3AED', fontWeight: 600 }}>{STEPS[Math.min(step, 4)]}</span>
-              <span style={{ fontSize: 12, color: '#7C3AED', fontWeight: 600 }}>{progress}%</span>
+              <span style={{ fontSize: 12, color: '#2563EB', fontWeight: 600 }}>{STEPS[Math.min(step, 4)]}</span>
+              <span style={{ fontSize: 12, color: '#2563EB', fontWeight: 600 }}>{progress}%</span>
             </div>
             <div style={{ width: '100%', height: 6, borderRadius: 999, background: '#F3F4F6', marginBottom: 20, overflow: 'hidden' }}>
               <div style={{
