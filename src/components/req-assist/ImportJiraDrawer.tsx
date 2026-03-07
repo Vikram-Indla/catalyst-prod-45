@@ -589,7 +589,7 @@ function Step2({
                   <Checkbox checked={checked} onCheckedChange={() => onToggle(t.ticket_key)} />
                 </div>
                 <div style={{ width: 96, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: '#374151', fontFamily: "'JetBrains Mono', monospace" }}>{t.ticket_key}</div>
-                <div style={{ flex: 1, padding: '8px 12px', fontSize: 13, color: '#111827', fontFamily: "'Inter', sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
+                <div dir="auto" style={{ flex: 1, padding: '8px 12px', fontSize: 13, color: '#111827', fontFamily: "'Inter', sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
                 <div style={{ width: 88, padding: '8px 12px' }}>
                   <Lozenge label={t.priority || 'MEDIUM'} styles={PRIORITY_STYLES} />
                 </div>
