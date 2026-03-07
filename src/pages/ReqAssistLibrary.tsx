@@ -1,9 +1,10 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { FileText, FileSearch, Download, Loader2, AlertCircle, Zap, TestTube, Flag, RefreshCw, CheckCircle2, RotateCcw, Eye, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useRADocuments, useRAStats, RA_KEYS } from '@/hooks/useReqAssist';
 import { syncSingleBrdToKb, fetchDocumentEpicCounts } from '@/services/reqAssistService';
+import { sanitiseError } from '@/lib/errorUtils';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import type { RAFilterTab, RADocumentWithArtifacts } from '@/types/reqAssistV2';
