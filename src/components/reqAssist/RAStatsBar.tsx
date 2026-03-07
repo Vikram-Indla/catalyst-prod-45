@@ -212,7 +212,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
               </div>
               {queueRows.length === 0 ? (
                 <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>
-                  No activity yet — trigger Sync All to KB to start
+                  No activity yet — trigger ✦ Sync All to AI to start
                 </div>
               ) : (
                 <>

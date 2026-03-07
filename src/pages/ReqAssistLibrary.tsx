@@ -150,7 +150,7 @@ export default function ReqAssistLibrary() {
         if (!error) success++;
       } catch {}
     }
-    toast.success(`Synced ${success} of ${unsyncedReady.length} documents to KB`);
+    toast.success(`Synced ${success} of ${unsyncedReady.length} documents for AI-powered search`);
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
     setSyncingAll(false);
   }, [documents, qc]);
