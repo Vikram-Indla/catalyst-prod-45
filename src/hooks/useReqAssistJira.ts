@@ -47,7 +47,26 @@ export function useProjectTickets(projectKey: string | null, pdfOnly = false) {
       q = q.order('ticket_key', { ascending: true });
       const { data, error } = await q;
       if (error) throw error;
-      return (data ?? []) as Array<{
+
+      const ticketKeys = (data ?? []).map((t: any) => t.ticket_key);
+      let importedMap: Record<string, string> = {};
+      if (ticketKeys.length > 0) {
+        const { data: docs } = await (supabase as any)
+          .from('ra_documents')
+          .select('jira_ticket_key, status')
+          .in('jira_ticket_key', ticketKeys);
+        if (docs) {
+          for (const d of docs) {
+            if (d.jira_ticket_key) importedMap[d.jira_ticket_key] = d.status || 'pending';
+          }
+        }
+      }
+
+      return (data ?? []).map((t: any) => ({
+        ...t,
+        already_imported: !!importedMap[t.ticket_key],
+        existing_status: importedMap[t.ticket_key] || null,
+      })) as Array<{
         id: number;
         ticket_key: string;
         project_key: string;
@@ -59,6 +78,8 @@ export function useProjectTickets(projectKey: string | null, pdfOnly = false) {
         attachment_count: number;
         jira_issue_id: string | null;
         synced_at: string | null;
+        already_imported: boolean;
+        existing_status: string | null;
       }>;
     },
     enabled: !!projectKey,
@@ -136,7 +157,7 @@ export function useImportTickets() {
 
       const { error: insertErr } = await (supabase as any)
         .from('ra_documents')
-        .insert(docs);
+        .upsert(docs, { onConflict: 'jira_ticket_key' });
       if (insertErr) throw insertErr;
 
       // Queue processing jobs for PDFs
