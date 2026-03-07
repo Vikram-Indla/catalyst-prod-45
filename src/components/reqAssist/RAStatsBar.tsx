@@ -58,7 +58,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
         <StatCard label="Indexed in WikiHub" value={`${wikihubSynced} / ${totalDocuments}`} color="#16A34A" subLabel={chunkLabel} loading={loading} />
       </div>
       <div style={{ borderLeft: '1px solid rgba(15,23,42,0.06)' }}>
-        <StatCard label="Artifacts Generated" value={artifactsGenerated} color="#7C3AED" subLabel="Epics · UAT · Initiatives" loading={loading} />
+        <StatCard label="Artifacts Generated" value={artifactsGenerated} color="#111827" subLabel="Epics · UAT · Initiatives" loading={loading} />
       </div>
       <div style={{ borderLeft: '1px solid rgba(15,23,42,0.06)' }}>
         <StatCard label="Processing Now" value={processingCount} color="#2563EB" animatedBadge={processingCount > 0} loading={loading} />

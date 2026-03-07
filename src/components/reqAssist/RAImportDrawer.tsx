@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { X, ChevronLeft, ChevronRight, FileText, Search, Inbox, Loader2, Check } from 'lucide-react';
+import { useState, useMemo, useCallback } from 'react';
+import { X, ChevronLeft, ChevronRight, FileText, Search, Inbox, Loader2, Check, RefreshCw } from 'lucide-react';
 import { useCreateRADocument, useQueueJob, useJiraProjects, useJiraProjectTickets, RA_KEYS } from '@/hooks/useReqAssist';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -56,6 +56,7 @@ export default function RAImportDrawer({ onClose }: Props) {
   const [pdfOnly, setPdfOnly] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [importing, setImporting] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const { data: projects = [], isLoading: projectsLoading } = useJiraProjects();
   const { data: tickets = [] } = useJiraProjectTickets(step === 2 ? selectedProject : null);
@@ -197,16 +198,31 @@ export default function RAImportDrawer({ onClose }: Props) {
     onClose();
   };
 
+  const handleSync = useCallback(async () => {
+    setSyncing(true);
+    try {
+      const { error } = await supabase.functions.invoke('ra-jira-sync');
+      if (error) throw error;
+      qc.invalidateQueries({ queryKey: ['ra'] });
+      toast.success('Jira tickets synced');
+    } catch (err: any) {
+      console.error('Sync failed:', err);
+      toast.error('Sync failed', { description: err?.message || 'Check integration settings' });
+    } finally {
+      setSyncing(false);
+    }
+  }, [qc]);
+
   const stepLabel = step === 1 ? 'Step 1 of 2' : 'Step 2 of 2';
 
   return (
     <>
       {/* Overlay */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 40 }} />
+      <div onClick={onClose} style={{ position: 'fixed', top: 48, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', zIndex: 40 }} />
 
       {/* Drawer */}
       <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, width: 600,
+        position: 'fixed', top: 48, right: 0, height: 'calc(100vh - 48px)', width: 600,
         background: '#FFFFFF', zIndex: 50, display: 'flex', flexDirection: 'column',
         borderLeft: '1px solid rgba(15,23,42,0.12)',
         animation: 'ra-slide-left 200ms ease-out',
@@ -253,11 +269,28 @@ export default function RAImportDrawer({ onClose }: Props) {
           {/* ══════ STEP 1 — SELECT PROJECT ══════ */}
           {step === 1 && (
             <div>
-              <span style={{
-                fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' as const,
-                letterSpacing: '0.04em', display: 'block', marginBottom: 12,
-                fontFamily: "'Inter', sans-serif",
-              }}>SELECT PROJECT</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' as const,
+                  letterSpacing: '0.04em', fontFamily: "'Inter', sans-serif",
+                }}>SELECT PROJECT</span>
+                <button
+                  onClick={handleSync}
+                  disabled={syncing}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                    padding: '4px 10px', borderRadius: 4,
+                    border: '0.75px solid #E5E7EB', background: 'transparent',
+                    fontSize: 12, fontWeight: 500, color: '#6B7280',
+                    cursor: syncing ? 'not-allowed' : 'pointer',
+                    opacity: syncing ? 0.6 : 1,
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                >
+                  <RefreshCw size={14} style={syncing ? { animation: 'ra-spin 1s linear infinite' } : undefined} />
+                  {syncing ? 'Syncing…' : 'Sync'}
+                </button>
+              </div>
 
               {projectsLoading && (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
@@ -542,6 +575,7 @@ export default function RAImportDrawer({ onClose }: Props) {
 
       <style>{`
         @keyframes ra-slide-left { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes ra-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </>
