@@ -206,10 +206,10 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
               padding: '14px 16px', marginBottom: 16, maxHeight: 120, overflowY: 'auto' as const,
             }}>
               <code style={{
-                fontSize: 13, color: '#991B1B', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-                fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                fontSize: 13, color: '#991B1B', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' as const,
+                fontFamily: 'monospace', display: 'block',
               }}>
-                {errorMsg}
+                {errorMsg || 'Unknown error — check browser console'}
               </code>
             </div>
 
