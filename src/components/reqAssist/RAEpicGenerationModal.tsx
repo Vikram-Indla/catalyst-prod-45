@@ -379,7 +379,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
                       <span style={{
                         fontSize: 13,
                         fontWeight: state === 'active' ? 600 : state === 'done' ? 500 : 400,
-                        color: state === 'done' ? '#374151' : state === 'active' ? '#7C3AED' : '#9CA3AF',
+                        color: state === 'done' ? '#374151' : state === 'active' ? '#2563EB' : '#9CA3AF',
                       }}>
                         {s}
                       </span>
