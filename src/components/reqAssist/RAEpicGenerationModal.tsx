@@ -359,7 +359,27 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
         )}
       </div>
 
-      <style>{`@keyframes ra-epic-spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes ra-epic-spin { to { transform: rotate(360deg); } }
+        .ra-epic-spinner {
+          width: 18px !important;
+          height: 18px !important;
+          border-radius: 50% !important;
+          border: 2px solid #7C3AED !important;
+          border-top-color: transparent !important;
+          animation: ra-epic-spin 0.8s linear infinite !important;
+          flex-shrink: 0 !important;
+        }
+        .ra-epic-spinner-lg {
+          width: 28px !important;
+          height: 28px !important;
+          border-radius: 50% !important;
+          border: 2.5px solid #7C3AED !important;
+          border-top-color: transparent !important;
+          animation: ra-epic-spin 0.8s linear infinite !important;
+          flex-shrink: 0 !important;
+        }
+      `}</style>
     </>
   );
 }
