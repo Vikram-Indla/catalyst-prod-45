@@ -66717,6 +66717,7 @@ export type Database = {
       execute_batch_update: { Args: { p_job_id: string }; Returns: Json }
       execute_permanent_delete: { Args: { p_job_id: string }; Returns: Json }
       execute_soft_delete: { Args: { p_job_id: string }; Returns: Json }
+      execute_sql_query: { Args: { query_text: string }; Returns: Json }
       extract_kb_tiptap_text: { Args: { content: Json }; Returns: string }
       fail_export_job: {
         Args: { p_error_message: string; p_job_id: string }

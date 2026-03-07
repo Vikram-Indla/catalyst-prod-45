@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from "react";
 import KBAdminSetup from "./pages/KBAdminSetup";
 const KBAdminPage = lazy(() => import("./pages/KBAdminPage"));
 const KBDataAuditPage = lazy(() => import("./pages/KBDataAudit"));
+const RAGAuditPage = lazy(() => import("./pages/RAGAuditPage"));
 const WikiAdminPage = lazy(() => import("./pages/admin/WikiAdminPage"));
 const WikiDiagnosticPage = lazy(() => import("./pages/admin/WikiDiagnosticPage"));
 import { Resource360Redirect } from './components/workhub/resource360/Resource360Redirect';
@@ -575,6 +576,7 @@ const App = () => (
               {/* Req Assist V2 — Document Library */}
               <Route path="/product/req-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqAssistLibrary /></Suspense>} />
               <Route path="/product/req-assist/generate" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqAssistGenerate /></Suspense>} />
+              <Route path="/req-assist/rag-audit" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RAGAuditPage /></Suspense>} />
               <Route path="/product-hub/req-assist" element={<Navigate to="/product/req-assist" replace />} />
               <Route path="/product-hub/req-assist/generate" element={<Navigate to="/product/req-assist/generate" replace />} />
               {/* Legacy industry redirects */}
