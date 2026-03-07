@@ -209,7 +209,7 @@ export default function ReqAssistLibrary() {
           </h1>
           {/* D12: Remove hardcoded sync time */}
           <p style={{ fontSize: 13, color: '#6B7280', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>
-            BRD library — sourced from Jira, enriched by AI, WikiHub-connected
+            BRD library — sourced from Jira, enriched by AI, indexed for AI-powered search
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
