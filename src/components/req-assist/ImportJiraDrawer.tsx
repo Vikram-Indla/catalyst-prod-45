@@ -511,6 +511,9 @@ function Step2({
       <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
         {projectName} · Showing tickets with attachments only
       </div>
+      <div style={{ fontSize: 12, color: '#64748B', margin: '8px 0 4px 0', fontFamily: "'Inter', sans-serif" }}>
+        Showing {pdfIssueCount} of {totalIssueCount} issues — PDF attachments only
+      </div>
       <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 16, fontFamily: "'JetBrains Mono', monospace" }}>
         {syncLabel}
       </div>
