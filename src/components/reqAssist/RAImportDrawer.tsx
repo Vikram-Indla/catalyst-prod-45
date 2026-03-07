@@ -44,7 +44,7 @@ function StatusLozenge({ label, styleMap }: { label: string; styleMap: Record<st
 // Jira project colour by key
 const PROJECT_COLORS: Record<string, string> = {
   SEN: '#2563EB',
-  MDT: '#7C3AED',
+  MDT: '#3F3F46',
 };
 
 export default function RAImportDrawer({ onClose }: Props) {
@@ -218,13 +218,15 @@ export default function RAImportDrawer({ onClose }: Props) {
   return (
     <>
       {/* Overlay */}
-      <div onClick={onClose} style={{ position: 'fixed', top: 48, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', zIndex: 40 }} />
+      <div onClick={onClose} style={{ position: 'fixed', top: 48, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', zIndex: 49 }} />
 
       {/* Drawer */}
       <div style={{
-        position: 'fixed', top: 48, right: 0, height: 'calc(100vh - 48px)', width: 600,
+        position: 'fixed', top: 48, right: 0, width: 600, height: 'calc(100vh - 48px)',
         background: '#FFFFFF', zIndex: 50, display: 'flex', flexDirection: 'column',
-        borderLeft: '1px solid rgba(15,23,42,0.12)',
+        borderLeft: '0.75px solid #E5E7EB',
+        boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
+        overflowY: 'auto',
         animation: 'ra-slide-left 200ms ease-out',
       }}>
 
