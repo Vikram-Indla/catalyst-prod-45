@@ -10,6 +10,7 @@ import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 interface Props {
   doc: RADocumentWithArtifacts;
   onClose: () => void;
+  onViewDrafts?: (brdId: string) => void;
 }
 
 const STEPS = [
