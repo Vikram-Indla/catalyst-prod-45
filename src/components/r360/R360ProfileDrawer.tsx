@@ -501,10 +501,27 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
     setPanelStack([]);
   }, []);
 
-  const { data: resource, isLoading: resLoading, isError: resError } = useR360Resource(resourceId);
-  const { data: statsData, isLoading: statsLoading } = useR360WeeklyStats(resourceId, weekNumber);
+  const { data: resource, isLoading: resLoading, isError: resError, dataUpdatedAt: resUpdatedAt } = useR360Resource(resourceId);
+  const { data: statsData, isLoading: statsLoading, dataUpdatedAt: statsUpdatedAt } = useR360WeeklyStats(resourceId, weekNumber);
   const { data: trend = [], isLoading: trendLoading } = useR360ClosureTrend(resourceId, weekNumber);
-  const { data: workItems = [], isLoading: itemsLoading } = useR360ProfileWorkItems(resourceId);
+  const { data: workItems = [], isLoading: itemsLoading, dataUpdatedAt: itemsUpdatedAt } = useR360ProfileWorkItems(resourceId);
+
+  // P2-02: Compute data freshness from most recent query update
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const iv = setInterval(() => setTick(t => t + 1), 60000);
+    return () => clearInterval(iv);
+  }, []);
+  const latestUpdatedAt = Math.max(resUpdatedAt || 0, statsUpdatedAt || 0, itemsUpdatedAt || 0);
+  const dataAge = latestUpdatedAt > 0
+    ? (() => {
+        const mins = Math.floor((Date.now() - latestUpdatedAt) / 60000);
+        if (mins < 1) return 'just now';
+        if (mins < 60) return `${mins}m ago`;
+        const hrs = Math.floor(mins / 60);
+        return `${hrs}h ago`;
+      })()
+    : '—';
 
   const stats = statsData?.current;
   const prevWeekClosed = statsData?.prev?.closed_this_week ?? 0;
