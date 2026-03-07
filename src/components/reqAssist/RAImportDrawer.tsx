@@ -198,6 +198,21 @@ export default function RAImportDrawer({ onClose }: Props) {
     onClose();
   };
 
+  const handleSync = useCallback(async () => {
+    setSyncing(true);
+    try {
+      const { error } = await supabase.functions.invoke('ra-jira-sync');
+      if (error) throw error;
+      qc.invalidateQueries({ queryKey: ['ra'] });
+      toast.success('Jira tickets synced');
+    } catch (err: any) {
+      console.error('Sync failed:', err);
+      toast.error('Sync failed', { description: err?.message || 'Check integration settings' });
+    } finally {
+      setSyncing(false);
+    }
+  }, [qc]);
+
   const stepLabel = step === 1 ? 'Step 1 of 2' : 'Step 2 of 2';
 
   return (
