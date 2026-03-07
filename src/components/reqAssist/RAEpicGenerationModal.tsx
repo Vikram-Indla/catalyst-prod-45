@@ -366,7 +366,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
                       <div style={{
                         width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: state === 'done' ? '#DCFCE7' : state === 'active' ? '#F5F3FF' : '#F3F4F6',
+                        background: state === 'done' ? '#DCFCE7' : state === 'active' ? '#EFF6FF' : '#F3F4F6',
                       }}>
                         {state === 'done' ? (
                           <Check size={14} color="#16A34A" strokeWidth={2.5} />
