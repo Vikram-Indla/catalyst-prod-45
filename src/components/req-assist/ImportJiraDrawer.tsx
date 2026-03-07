@@ -39,11 +39,12 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
 function Lozenge({ label, styles }: { label: string; styles: Record<string, { bg: string; color: string }> }) {
   const s = styles[label] || { bg: '#DFE1E6', color: '#253858' };
   return (
-    <span style={{
+    <span title={label} style={{
       display: 'inline-block', padding: '2px 6px', borderRadius: 3,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       background: s.bg, color: s.color, lineHeight: '16px', height: 20,
-      whiteSpace: 'nowrap',
+      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+      maxWidth: 130,
     }}>{label}</span>
   );
 }
