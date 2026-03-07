@@ -506,17 +506,20 @@ function ActionsCell({ doc, onSyncKb, onSelect }: {
     );
   }
 
-  /* PENDING / null → enabled Generate — D04: no chevron */
+  /* PENDING / null → enabled Generate — outline style, not primary blue */
   return (
     <button
       onClick={(e) => { e.stopPropagation(); onSelect('epics'); }}
       style={{
         display: 'inline-flex', alignItems: 'center',
-        height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-        borderRadius: 4, border: 'none', cursor: 'pointer',
-        background: '#2563EB', color: '#FFFFFF',
+        height: 28, padding: '0 10px', fontSize: 13, fontWeight: 500,
+        borderRadius: 4, border: '0.75px solid #CBD5E1', cursor: 'pointer',
+        background: '#FFFFFF', color: '#374151',
         fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+        transition: 'background 120ms ease',
       }}
+      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
+      onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
     >
       Generate
     </button>
