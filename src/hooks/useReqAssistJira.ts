@@ -2,10 +2,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { RA_KEYS } from '@/hooks/useReqAssist';
 
+/* ── Constants ── */
+const EXCLUDED_STATUSES = ['FIGMA DESIGN', 'CANCELED', 'CANCELLED'];
+
 /* ── Query Keys ── */
 const JIRA_KEYS = {
   connections: ['ra_jira_connections'] as const,
   tickets: (pk: string, pdfOnly: boolean) => ['ra_jira_tickets', pk, pdfOnly] as const,
+  ticketCount: (pk: string) => ['ra_jira_ticket_count', pk] as const,
 };
 
 /* ── Hook 1: useConnectedProjects ── */
@@ -45,10 +49,15 @@ export function useProjectTickets(projectKey: string | null, pdfOnly = false) {
         .eq('project_key', projectKey);
       if (pdfOnly) q = q.eq('has_pdf', true);
       q = q.order('ticket_key', { ascending: true });
-      const { data, error } = await q;
+      const { data: rawData, error } = await q;
       if (error) throw error;
 
-      const ticketKeys = (data ?? []).map((t: any) => t.ticket_key);
+      // Filter out junk statuses client-side
+      const data = (rawData ?? []).filter((t: any) =>
+        !EXCLUDED_STATUSES.includes((t.status || '').toUpperCase())
+      );
+
+      const ticketKeys = data.map((t: any) => t.ticket_key);
       let importedMap: Record<string, string> = {};
       if (ticketKeys.length > 0) {
         const { data: docs } = await (supabase as any)
@@ -81,6 +90,25 @@ export function useProjectTickets(projectKey: string | null, pdfOnly = false) {
         already_imported: boolean;
         existing_status: string | null;
       }>;
+    },
+    enabled: !!projectKey,
+    staleTime: 30_000,
+  });
+}
+
+/* ── Hook 2b: useProjectTicketCount ── */
+export function useProjectTicketCount(projectKey: string | null) {
+  return useQuery({
+    queryKey: JIRA_KEYS.ticketCount(projectKey ?? ''),
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('ra_jira_tickets')
+        .select('status')
+        .eq('project_key', projectKey);
+      if (error) throw error;
+      return (data ?? []).filter((t: any) =>
+        !EXCLUDED_STATUSES.includes((t.status || '').toUpperCase())
+      ).length;
     },
     enabled: !!projectKey,
     staleTime: 30_000,
