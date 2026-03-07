@@ -2,10 +2,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { RA_KEYS } from '@/hooks/useReqAssist';
 
+/* ── Constants ── */
+const EXCLUDED_STATUSES = ['FIGMA DESIGN', 'CANCELED', 'CANCELLED'];
+
 /* ── Query Keys ── */
 const JIRA_KEYS = {
   connections: ['ra_jira_connections'] as const,
   tickets: (pk: string, pdfOnly: boolean) => ['ra_jira_tickets', pk, pdfOnly] as const,
+  ticketCount: (pk: string) => ['ra_jira_ticket_count', pk] as const,
 };
 
 /* ── Hook 1: useConnectedProjects ── */
