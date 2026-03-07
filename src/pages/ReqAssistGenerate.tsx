@@ -584,9 +584,9 @@ function BtnPrimary({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
   return (
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
-      border: 'none', borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
+      border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#FFFFFF',
-      boxShadow: '0 1px 3px rgba(37,99,235,0.3)', fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Inter', sans-serif",
       opacity: props.disabled ? 0.6 : 1, transition: 'filter 120ms',
       ...props.style,
     }}>{children}</button>
