@@ -1,5 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { FileText, FileSearch, Download, Loader2, AlertCircle, ChevronDown, Zap, TestTube, Flag, RefreshCw, CheckCircle2, RotateCcw } from 'lucide-react';
+import { FileText, FileSearch, Download, Loader2, AlertCircle, ChevronDown, Zap, TestTube, Flag, RefreshCw, CheckCircle2, RotateCcw, Eye } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { useRADocuments, useRAStats } from '@/hooks/useReqAssist';
 import { useNavigate } from 'react-router-dom';
 import type { RAFilterTab, RADocumentWithArtifacts } from '@/types/reqAssistV2';
