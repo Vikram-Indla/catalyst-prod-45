@@ -108,8 +108,8 @@ serve(async (req) => {
 
 function mapPriorityToComplexity(priority: string): string {
   switch (priority) {
-    case 'P1': return 'high';
-    case 'P2': return 'medium';
-    default: return 'low';
+    case 'P1': return 'XL';
+    case 'P2': return 'M';
+    default: return 'S';
   }
 }
