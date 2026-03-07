@@ -390,9 +390,7 @@ function Step1({
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#111827', fontFamily: "'Inter', sans-serif", flex: 1 }}>
                   {p.project_name} <span style={{ fontSize: 12, color: '#6B7280', fontWeight: 400 }}>({p.project_key})</span>
                 </span>
-                <span style={{ background: '#DFE1E6', color: '#374151', fontSize: 11, fontWeight: 600, borderRadius: 3, padding: '2px 6px', fontFamily: "'Inter', sans-serif" }}>
-                  {p.ticket_count}
-                </span>
+                <ProjectTicketCountBadge projectKey={p.project_key} />
                 <button
                   onClick={e => { e.stopPropagation(); onSyncOne(p.project_key); }}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#6B7280' }}
