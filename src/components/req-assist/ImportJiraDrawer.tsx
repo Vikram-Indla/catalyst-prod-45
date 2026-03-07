@@ -137,8 +137,6 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   }, [syncMutation]);
 
   const toggleTicket = (key: string) => {
-    const ticket = filteredTickets.find(t => t.ticket_key === key);
-    if (ticket?.already_imported && !reImportKeys.has(key)) return;
     setSelectedTickets(prev =>
       prev.includes(key)
         ? prev.filter(id => id !== key)
@@ -152,8 +150,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   };
 
   const toggleAll = (checked: boolean) => {
-    const selectable = filteredTickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key));
-    setSelectedTickets(checked ? selectable.map(t => t.ticket_key) : []);
+    setSelectedTickets(checked ? filteredTickets.map(t => t.ticket_key) : []);
   };
 
   const handleImport = useCallback(async () => {
@@ -305,7 +302,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
                 }}
               >
                 {importMutation.isPending && <Loader2 size={14} className="animate-spin" />}
-                Import {selectedTickets.length} Ticket{selectedTickets.length !== 1 ? 's' : ''}
+                Import {selectedTickets.length}
               </button>
             </>
           )}
@@ -581,7 +578,7 @@ function Step2({
             <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <input
                 type="checkbox"
-                checked={selectedTickets.length === tickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key)).length && tickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key)).length > 0}
+                checked={selectedTickets.length === tickets.length && tickets.length > 0}
                 onChange={e => onToggleAll(e.target.checked)}
                 style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#2563EB' }}
               />
@@ -610,25 +607,24 @@ function Step2({
             return (
               <div
                 key={t.ticket_key}
-                onClick={() => !imported && onToggle(t.ticket_key)}
+                onClick={() => onToggle(t.ticket_key)}
                 className="group"
                 style={{
                   display: 'flex', alignItems: 'center', height: 36,
                   borderBottom: '0.75px solid #F3F4F6',
-                  cursor: imported ? 'default' : 'pointer',
+                  cursor: 'pointer',
                   background: checked ? 'rgba(37,99,235,0.04)' : 'transparent',
                   transition: 'background 0.1s',
                 }}
-                onMouseEnter={e => { if (!checked && !imported) (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.02)'; }}
-                onMouseLeave={e => { if (!checked && !imported) (e.currentTarget as HTMLElement).style.background = checked ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
+                onMouseEnter={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.02)'; }}
+                onMouseLeave={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = checked ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
               >
                 <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <input
                     type="checkbox"
                     checked={checked}
-                    disabled={imported}
-                    onChange={e => { e.stopPropagation(); if (!imported) onToggle(t.ticket_key); }}
-                    style={{ width: 16, height: 16, cursor: imported ? 'not-allowed' : 'pointer', accentColor: '#2563EB', opacity: imported ? 0.4 : 1 }}
+                    onChange={e => { e.stopPropagation(); onToggle(t.ticket_key); }}
+                    style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#2563EB', opacity: 1 }}
                   />
                 </div>
                 <div style={{ width: 96, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: muted ? '#9CA3AF' : '#374151', fontFamily: "'JetBrains Mono', monospace" }}>{t.ticket_key}</div>
