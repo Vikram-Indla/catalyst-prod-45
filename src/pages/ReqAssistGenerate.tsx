@@ -384,8 +384,8 @@ export default function ReqAssistGenerate() {
             {/* STATE BANNERS */}
             {brdState === 'generated' && (
               <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: '#FEF2F2', border: '0.75px solid #FECACA', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <AlertTriangle size={15} color="#92400E" style={{ flexShrink: 0 }} />
-                <span style={{ fontSize: 13, color: '#92400E', fontFamily: "'Inter', sans-serif" }}>
+                <AlertTriangle size={15} color="#DC2626" style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: 13, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>
                   This BRD has not been saved yet. Save to Library to enable Epics generation and WikiHub sync.
                 </span>
               </div>
@@ -465,9 +465,10 @@ export default function ReqAssistGenerate() {
 
       {/* EPIC GENERATION MODAL */}
       {epicModalOpen && savedDocId && (
-        <RAEpicGenerationModal
-          doc={{ id: savedDocId, title: text.trim().slice(0, 60) || 'Untitled BRD' } as any}
-          onClose={() => { setEpicModalOpen(false); /* Re-check epics */ if (savedDocId) { (async () => { const { count } = await (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', savedDocId); if (count && count > 0) { setHasEpics(true); setEpicCount(count); } })(); } }}
+        <RAEpicGenerationModalWrapper
+          savedDocId={savedDocId}
+          fallbackTitle={text.trim().slice(0, 60) || 'Untitled BRD'}
+          onClose={() => { setEpicModalOpen(false); if (savedDocId) { (async () => { const { count } = await (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', savedDocId); if (count && count > 0) { setHasEpics(true); setEpicCount(count); } })(); } }}
         />
       )}
 
@@ -678,4 +679,21 @@ function CatalystTopNav() {
       })}
     </nav>
   );
+}
+
+/** Wrapper that fetches full brd_documents row before opening EpicGenerationModal */
+function RAEpicGenerationModalWrapper({ savedDocId, fallbackTitle, onClose }: { savedDocId: string; fallbackTitle: string; onClose: () => void }) {
+  const [doc, setDoc] = useState<any>(null);
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase as any)
+        .from('brd_documents')
+        .select('id, title, jira_key, language, pipeline_stage')
+        .eq('id', savedDocId)
+        .single();
+      setDoc(data ? { ...data, jira_ticket_key: data.jira_key } : { id: savedDocId, title: fallbackTitle });
+    })();
+  }, [savedDocId, fallbackTitle]);
+  if (!doc) return null;
+  return <RAEpicGenerationModal doc={doc} onClose={onClose} />;
 }

@@ -103,6 +103,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
       queryClient.invalidateQueries({ queryKey: ['brd-epics'] });
       queryClient.invalidateQueries({ queryKey: RA_KEYS.stats() });
       queryClient.invalidateQueries({ queryKey: RA_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
 
       onPublished();
     } catch (err: any) {

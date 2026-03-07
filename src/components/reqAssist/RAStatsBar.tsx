@@ -206,7 +206,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
 
             {/* Right: Live Activity Feed */}
             <div style={{ padding: '16px 20px', borderLeft: '0.75px solid #E2E8F0' }}>
-              <div style={{ fontSize: 11, color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.08em', fontFamily: "'Inter', sans-serif", marginBottom: 8 }}>
+              <div style={{ fontSize: 11, color: '#94A3B8', textTransform: 'uppercase', fontWeight: 650, letterSpacing: '0.08em', fontFamily: "'Inter', sans-serif", marginBottom: 8 }}>
                 Live Activity
               </div>
               {queueRows.length === 0 ? (
