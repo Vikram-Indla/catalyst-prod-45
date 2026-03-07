@@ -32539,6 +32539,8 @@ export type Database = {
           jira_project: string
           jira_ticket_key: string
           jira_ticket_url: string | null
+          kb_synced: boolean | null
+          kb_synced_at: string | null
           language: string
           page_count: number | null
           pdf_url: string | null
@@ -32564,6 +32566,8 @@ export type Database = {
           jira_project: string
           jira_ticket_key: string
           jira_ticket_url?: string | null
+          kb_synced?: boolean | null
+          kb_synced_at?: string | null
           language?: string
           page_count?: number | null
           pdf_url?: string | null
@@ -32589,6 +32593,8 @@ export type Database = {
           jira_project?: string
           jira_ticket_key?: string
           jira_ticket_url?: string | null
+          kb_synced?: boolean | null
+          kb_synced_at?: string | null
           language?: string
           page_count?: number | null
           pdf_url?: string | null
