@@ -282,6 +282,30 @@ export default function ReqAssistLibrary() {
             syncingAll={syncingAll}
           />
 
+          {/* FIX 4: Filter info bar */}
+          {isFiltering && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '8px 28px', fontSize: 12, color: '#64748B',
+              background: '#F8FAFC', borderBottom: '0.75px solid #E2E8F0',
+              fontFamily: "'Inter', sans-serif",
+            }}>
+              Showing {documents?.length ?? 0} of {totalCount} documents
+              <span style={{ color: '#94A3B8' }}>·</span>
+              Filtered by: <strong style={{ color: '#334155', fontWeight: 600 }}>{tab !== 'all' ? tab.charAt(0).toUpperCase() + tab.slice(1) : search}</strong>
+              <button
+                onClick={() => { setSearch(''); setTab('all'); }}
+                style={{
+                  border: 'none', background: 'transparent', cursor: 'pointer',
+                  fontSize: 12, color: '#2563EB', fontWeight: 500, padding: 0,
+                  fontFamily: "'Inter', sans-serif",
+                }}
+              >
+                Clear filter ×
+              </button>
+            </div>
+          )}
+
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
             <thead>
               <tr style={{ borderBottom: '0.75px solid #E2E8F0' }}>
