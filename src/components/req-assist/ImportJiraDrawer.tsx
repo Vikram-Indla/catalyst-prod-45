@@ -664,7 +664,7 @@ function Step2({
 
           {/* Footer */}
           <div style={{ padding: '8px 0', marginTop: 8, fontSize: 13, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>
-            {selectedTickets.size} of {tickets.length} tickets selected
+            {selectedTickets.length} of {tickets.length} tickets selected
           </div>
         </>
       )}

@@ -184,10 +184,24 @@ export function useImportTickets() {
         wikihub_synced: false,
       }));
 
+      // Also upsert into brd_documents for the RAG pipeline
+      const brdDocs = (tickets ?? []).map((t: any) => ({
+        title: t.ticket_summary || t.ticket_key,
+        jira_key: t.ticket_key,
+        source_type: t.has_pdf ? 'jira_pdf' : 'jira',
+        language: 'en',
+        pipeline_stage: 'pending',
+      }));
+
       const { error: insertErr } = await (supabase as any)
         .from('ra_documents')
         .upsert(docs, { onConflict: 'jira_ticket_key' });
       if (insertErr) throw insertErr;
+
+      const { error: brdErr } = await (supabase as any)
+        .from('brd_documents')
+        .upsert(brdDocs, { onConflict: 'jira_key', ignoreDuplicates: false });
+      if (brdErr) throw brdErr;
 
       // Queue processing jobs for PDFs
       const pdfTickets = (tickets ?? []).filter((t: any) => t.has_pdf);
