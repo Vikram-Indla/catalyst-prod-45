@@ -37,7 +37,9 @@ export default function ReqAssistLibrary() {
   const [importOpen, setImportOpen] = useState(false);
   const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
   const [syncingAll, setSyncingAll] = useState(false);
-  const [regenConfirm, setRegenConfirm] = useState<{ doc: RADocumentWithArtifacts; count: number } | null>(null);
+  const [regenConfirm, setRegenConfirm] = useState<{ doc: RADocumentWithArtifacts; count: number; brdId: string; generatedAt: string | null } | null>(null);
+  const [draftDrawer, setDraftDrawer] = useState<{ brdId: string; docTitle: string; jiraKey: string | null } | null>(null);
+  const [epicCounts, setEpicCounts] = useState<Record<string, number>>({});
 
   /** FIX 3: Check for existing epics before opening modal */
   const handleGenerateClick = useCallback(async (doc: RADocumentWithArtifacts) => {
