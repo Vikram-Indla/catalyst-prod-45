@@ -163,38 +163,37 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
 
   return (
     <>
-      {open && <style>{`
-        .ra-import-overlay {
-          top: 48px !important;
-          right: 600px !important;
-          bottom: 0 !important;
-          left: 0 !important;
-          z-index: 49 !important;
-          background: rgba(0,0,0,0.4) !important;
-          backdrop-filter: none !important;
-          pointer-events: auto !important;
-        }
-        .ra-import-content {
-          z-index: 50 !important;
-          top: 48px !important;
-          bottom: 0 !important;
-          height: calc(100vh - 48px) !important;
-          max-height: calc(100vh - 48px) !important;
-          inset: auto !important;
-          right: 0 !important;
-        }
-      `}</style>}
-    <Sheet open={open} onOpenChange={handleClose}>
-      <SheetPortal>
-        <SheetOverlay className="ra-import-overlay" />
-        <SheetPrimitive.Content
-          className="ra-import-content fixed !w-[600px] !rounded-none flex flex-col overflow-hidden focus:outline-none"
+      {open && (
+        <div
+          onClick={handleClose}
           style={{
-            background: '#FFFFFF',
-            display: 'flex', flexDirection: 'column',
+            position: 'fixed',
+            top: 48,
+            left: 0,
+            right: 600,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.4)',
+            zIndex: 49,
+          }}
+        />
+      )}
+      <Sheet open={open} onOpenChange={handleClose} modal={false}>
+        <SheetContent
+          side="right"
+          hideClose
+          style={{
+            position: 'fixed',
+            top: 48,
+            right: 0,
+            width: 600,
+            height: 'calc(100vh - 48px)',
+            zIndex: 50,
+            padding: 0,
+            display: 'flex',
+            flexDirection: 'column',
             borderLeft: '0.75px solid #E5E7EB',
             boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
-            padding: 0,
+            background: '#FFFFFF',
           }}
         >
         {/* HEADER */}
