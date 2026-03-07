@@ -335,7 +335,7 @@ export default function ReqAssistLibrary() {
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '8px 28px', fontSize: 12, color: '#64748B',
-              background: '#F8FAFC', borderBottom: '0.75px solid #E2E8F0',
+              background: '#FFFFFF', borderBottom: '0.75px solid #E2E8F0',
               fontFamily: "'Inter', sans-serif",
             }}>
               Showing {documents?.length ?? 0} of {totalCount} documents
