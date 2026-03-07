@@ -680,3 +680,20 @@ function CatalystTopNav() {
     </nav>
   );
 }
+
+/** Wrapper that fetches full brd_documents row before opening EpicGenerationModal */
+function RAEpicGenerationModalWrapper({ savedDocId, fallbackTitle, onClose }: { savedDocId: string; fallbackTitle: string; onClose: () => void }) {
+  const [doc, setDoc] = useState<any>(null);
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase as any)
+        .from('brd_documents')
+        .select('id, title, jira_key, language, pipeline_stage')
+        .eq('id', savedDocId)
+        .single();
+      setDoc(data ? { ...data, jira_ticket_key: data.jira_key } : { id: savedDocId, title: fallbackTitle });
+    })();
+  }, [savedDocId, fallbackTitle]);
+  if (!doc) return null;
+  return <RAEpicGenerationModal doc={doc} onClose={onClose} />;
+}
