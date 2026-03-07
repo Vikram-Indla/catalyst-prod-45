@@ -178,9 +178,10 @@ export function useImportTickets() {
         title: t.ticket_summary || t.ticket_key,
         jira_ticket_key: t.ticket_key,
         jira_project: t.project_key,
-        source_type: 'jira',
+        source_type: t.has_pdf ? 'jira_pdf' : 'jira',
         status: 'pending',
         language: 'en',
+        wikihub_synced: false,
       }));
 
       const { error: insertErr } = await (supabase as any)
