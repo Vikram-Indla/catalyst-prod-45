@@ -596,7 +596,7 @@ function Step2({
                 <div style={{ width: 48, padding: '8px 12px', display: 'flex', alignItems: 'center' }}>
                   {t.has_pdf && <FileText size={14} style={{ color: '#2563EB' }} />}
                 </div>
-                <div style={{ width: 80, padding: '8px 12px' }}>
+                <div style={{ minWidth: 140, width: 140, padding: '8px 12px' }} title={t.status || 'Open'}>
                   <Lozenge label={t.status || 'Open'} styles={STATUS_STYLES} />
                 </div>
               </div>
