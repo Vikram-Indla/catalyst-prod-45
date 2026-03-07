@@ -92,6 +92,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
 
   const handleRetry = () => {
     setErrorMsg('');
+    setHasFailed(false);
     setStep(0);
     setProgress(0);
     setDone(false);
