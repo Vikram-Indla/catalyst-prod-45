@@ -101,12 +101,19 @@ function useR360Resource(resourceId: string) {
       if (!resource) return null;
 
       let avatar_url: string | null = null;
+      let skills: string[] = [];
       if (resource.profile_id) {
-        const { data: profile } = await supabase.from('profiles')
-          .select('avatar_url')
+        const { data: profile } = await (supabase as any).from('profiles')
+          .select('avatar_url, skills')
           .eq('id', resource.profile_id)
           .maybeSingle();
         avatar_url = profile?.avatar_url ?? null;
+        const rawSkills = profile?.skills;
+        if (Array.isArray(rawSkills)) {
+          skills = rawSkills.filter(Boolean);
+        } else if (typeof rawSkills === 'string' && rawSkills) {
+          skills = rawSkills.split(',').map((s: string) => s.trim()).filter(Boolean);
+        }
       }
 
       return {
@@ -115,6 +122,7 @@ function useR360Resource(resourceId: string) {
         role: resource.role_name || 'Team Member',
         department: resource.department_name || '',
         avatar_url,
+        skills,
         resource_key: `R-${String(resource.rid).padStart(3, '0')}`,
       };
     },
@@ -493,10 +501,27 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
     setPanelStack([]);
   }, []);
 
-  const { data: resource, isLoading: resLoading, isError: resError } = useR360Resource(resourceId);
-  const { data: statsData, isLoading: statsLoading } = useR360WeeklyStats(resourceId, weekNumber);
+  const { data: resource, isLoading: resLoading, isError: resError, dataUpdatedAt: resUpdatedAt } = useR360Resource(resourceId);
+  const { data: statsData, isLoading: statsLoading, dataUpdatedAt: statsUpdatedAt } = useR360WeeklyStats(resourceId, weekNumber);
   const { data: trend = [], isLoading: trendLoading } = useR360ClosureTrend(resourceId, weekNumber);
-  const { data: workItems = [], isLoading: itemsLoading } = useR360ProfileWorkItems(resourceId);
+  const { data: workItems = [], isLoading: itemsLoading, dataUpdatedAt: itemsUpdatedAt } = useR360ProfileWorkItems(resourceId);
+
+  // P2-02: Compute data freshness from most recent query update
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const iv = setInterval(() => setTick(t => t + 1), 60000);
+    return () => clearInterval(iv);
+  }, []);
+  const latestUpdatedAt = Math.max(resUpdatedAt || 0, statsUpdatedAt || 0, itemsUpdatedAt || 0);
+  const dataAge = latestUpdatedAt > 0
+    ? (() => {
+        const mins = Math.floor((Date.now() - latestUpdatedAt) / 60000);
+        if (mins < 1) return 'just now';
+        if (mins < 60) return `${mins}m ago`;
+        const hrs = Math.floor(mins / 60);
+        return `${hrs}h ago`;
+      })()
+    : '—';
 
   const stats = statsData?.current;
   const prevWeekClosed = statsData?.prev?.closed_this_week ?? 0;
@@ -679,7 +704,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
           <ChevronLeft size={16} /> Resources
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 11, color: MUTED }}>Data: 1h ago</span>
+          <span style={{ fontSize: 11, color: MUTED }}>Data: {dataAge}</span>
           <button
             onClick={onClose}
             style={{
@@ -728,6 +753,21 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
                   fontSize: 11, fontWeight: 700, color: BRAND,
                 }}>{resourceRid}</span></>}
               </div>
+              {/* P2-05: Skills chips */}
+              {resource?.skills && (resource.skills as string[]).length > 0 && (
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
+                  {(resource.skills as string[]).map((skill: string) => (
+                    <span key={skill} style={{
+                      fontSize: 11, fontWeight: 500,
+                      background: '#F1F5F9', color: '#334155',
+                      border: '0.75px solid #E2E8F0',
+                      borderRadius: 4, padding: '2px 6px',
+                    }}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </>
         )}
@@ -1049,7 +1089,7 @@ function OverviewTab({
               boxShadow: '0 1px 2px rgba(15,23,42,0.06)',
             }}>
               <span style={{ fontSize: 12, color: INK2 }}>Avg cycle time</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: cycleColour, fontFamily: "'JetBrains Mono', monospace" }}>{avgDays}d per item</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: (avgDays === 0 || avgDays == null) ? MUTED : cycleColour, fontFamily: "'JetBrains Mono', monospace" }}>{(avgDays === 0 || avgDays == null) ? '—' : `${avgDays}d per item`}</span>
             </div>
             {/* Oldest open item — SINGLE ITEM CLICK */}
             <div
