@@ -51,6 +51,10 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
     },
   });
 
+  const filtered = (projects || []).filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const handlePublish = async () => {
     if (!selectedProject) return;
     setPublishing(true);
