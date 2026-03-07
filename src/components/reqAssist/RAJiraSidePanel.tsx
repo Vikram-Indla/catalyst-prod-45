@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, ExternalLink, FileText, Layers, BookOpen, TestTube, Copy, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
