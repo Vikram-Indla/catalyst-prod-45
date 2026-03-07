@@ -188,7 +188,7 @@ export function useImportTickets() {
       const brdDocs = (tickets ?? []).map((t: any) => ({
         title: t.ticket_summary || t.ticket_key,
         jira_key: t.ticket_key,
-        source_type: t.has_pdf ? 'jira_pdf' : 'jira',
+        source_type: 'jira_bulk',
         language: 'en',
         pipeline_stage: 'intake',
       }));
