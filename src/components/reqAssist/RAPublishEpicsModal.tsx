@@ -1,0 +1,208 @@
+import { useState } from 'react';
+import { Search, Loader2, CheckCircle2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+interface Epic {
+  id: string;
+  title: string;
+  ra_tag: string | null;
+  publish_status: string | null;
+}
+
+interface Props {
+  brdId: string;
+  epics: Epic[];
+  onClose: () => void;
+  onPublished: () => void;
+}
+
+function StatusLozenge({ status }: { status: string }) {
+  const map: Record<string, { bg: string; color: string }> = {
+    active:    { bg: '#DEEBFF', color: '#0747A6' },
+    completed: { bg: '#E3FCEF', color: '#006644' },
+    planning:  { bg: '#DFE1E6', color: '#253858' },
+  };
+  const m = map[status] ?? map.planning;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center',
+      padding: '0 6px', height: 18, borderRadius: 3,
+      fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+      background: m.bg, color: m.color,
+    }}>{status}</span>
+  );
+}
+
+export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished }: Props) {
+  const [step, setStep] = useState<1 | 2>(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedProject, setSelectedProject] = useState<{ id: string; name: string; status: string } | null>(null);
+  const [publishing, setPublishing] = useState(false);
+
+  const { data: projects } = useQuery({
+    queryKey: ['projects-for-publish'],
+    queryFn: async () => {
+      const { data } = await supabase.from('projects').select('id, name, status').order('name');
+      return (data || []) as { id: string; name: string; status: string }[];
+    },
+  });
+
+  const filtered = (projects || []).filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handlePublish = async () => {
+    if (!selectedProject) return;
+    setPublishing(true);
+    try {
+      // Update brd_epics
+      await (supabase as any)
+        .from('brd_epics')
+        .update({
+          publish_status: 'published',
+          project_id: selectedProject.id,
+          published_at: new Date().toISOString(),
+        })
+        .eq('brd_id', brdId);
+
+      // Insert into project epics (ph_epics or epics table)
+      for (const epic of epics) {
+        await (supabase as any).from('epics').insert({
+          title: epic.title,
+          project_id: selectedProject.id,
+          status: 'to_do',
+          source: 'req_assist',
+        }).then(() => {});
+      }
+
+      toast.success(`${epics.length} epics published to ${selectedProject.name}`);
+      onPublished();
+    } catch (err: any) {
+      toast.error('Publish failed: ' + (err?.message || 'Unknown error'));
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  return (
+    <>
+      {/* Backdrop on top of drawer */}
+      <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 80 }} onClick={onClose} />
+
+      <div style={{
+        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+        width: 440, background: '#FFFFFF', borderRadius: 10, zIndex: 90,
+        padding: 24, boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+        fontFamily: "'Inter', sans-serif",
+      }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: '0 0 16px', fontFamily: "'Sora', sans-serif" }}>
+          Publish Epics to Project
+        </h3>
+
+        {step === 1 && (
+          <>
+            {/* Search */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              border: '0.75px solid #E2E8F0', borderRadius: 6,
+              padding: '0 10px', height: 36, marginBottom: 12, background: '#FFFFFF',
+            }}>
+              <Search size={14} color="#94A3B8" />
+              <input
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                placeholder="Search projects..."
+                style={{
+                  flex: 1, border: 'none', outline: 'none', fontSize: 13,
+                  color: '#0F172A', background: 'transparent',
+                  fontFamily: "'Inter', sans-serif",
+                }}
+              />
+            </div>
+
+            {/* Project list */}
+            <div style={{ maxHeight: 240, overflowY: 'auto', marginBottom: 16 }}>
+              {filtered.map(p => (
+                <div
+                  key={p.id}
+                  onClick={() => { setSelectedProject(p); setStep(2); }}
+                  style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '8px 10px', borderRadius: 4, cursor: 'pointer',
+                    background: selectedProject?.id === p.id ? 'rgba(37,99,235,0.08)' : 'transparent',
+                    transition: 'background 100ms',
+                  }}
+                  onMouseEnter={e => { if (selectedProject?.id !== p.id) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+                  onMouseLeave={e => { if (selectedProject?.id !== p.id) e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>{p.name}</span>
+                  <StatusLozenge status={p.status || 'planning'} />
+                </div>
+              ))}
+              {filtered.length === 0 && (
+                <p style={{ textAlign: 'center', color: '#94A3B8', fontSize: 13, padding: 20 }}>No projects found</p>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={onClose} style={{
+                padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
+                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+              }}>Cancel</button>
+            </div>
+          </>
+        )}
+
+        {step === 2 && selectedProject && (
+          <>
+            <p style={{ fontSize: 14, color: '#334155', margin: '0 0 12px' }}>
+              <strong>{epics.length}</strong> epics will be added to <strong>{selectedProject.name}</strong>
+            </p>
+
+            {/* Compact list */}
+            <div style={{
+              maxHeight: 200, overflowY: 'auto', marginBottom: 12,
+              border: '0.75px solid #E2E8F0', borderRadius: 6, padding: 8,
+            }}>
+              {epics.map(e => (
+                <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
+                  <span style={{
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
+                    color: '#475569', background: '#F1F5F9', padding: '1px 6px', borderRadius: 2,
+                  }}>{e.ra_tag || '—'}</span>
+                  <span style={{ fontSize: 12, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {e.title}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <p style={{ fontSize: 11, color: '#475569', margin: '0 0 16px' }}>
+              Each epic will carry a Req Assist™ tag for traceability
+            </p>
+
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button onClick={() => setStep(1)} style={{
+                padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
+                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+              }}>Back</button>
+              <button
+                onClick={handlePublish}
+                disabled={publishing}
+                style={{
+                  padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
+                  border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
+                  opacity: publishing ? 0.7 : 1,
+                }}
+              >
+                {publishing ? 'Publishing…' : `Publish ${epics.length} Epics`}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  );
+}

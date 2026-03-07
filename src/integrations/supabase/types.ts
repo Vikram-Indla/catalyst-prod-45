@@ -344,8 +344,12 @@ export type Database = {
           created_at: string
           description: string | null
           epic_key: string
+          generated_at: string | null
           id: string
           invest_score: Json | null
+          project_id: string | null
+          publish_status: string | null
+          ra_tag: string | null
           stories: Json | null
           title: string
         }
@@ -357,8 +361,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           epic_key: string
+          generated_at?: string | null
           id?: string
           invest_score?: Json | null
+          project_id?: string | null
+          publish_status?: string | null
+          ra_tag?: string | null
           stories?: Json | null
           title: string
         }
@@ -370,8 +378,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           epic_key?: string
+          generated_at?: string | null
           id?: string
           invest_score?: Json | null
+          project_id?: string | null
+          publish_status?: string | null
+          ra_tag?: string | null
           stories?: Json | null
           title?: string
         }
@@ -381,6 +393,20 @@ export type Database = {
             columns: ["brd_id"]
             isOneToOne: false
             referencedRelation: "brd_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "brd_epics_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "brd_epics_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
             referencedColumns: ["id"]
           },
         ]

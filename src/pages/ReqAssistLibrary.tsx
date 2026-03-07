@@ -13,6 +13,7 @@ import RAJiraSidePanel from '@/components/reqAssist/RAJiraSidePanel';
 import RAPDFViewer from '@/components/reqAssist/RAPDFViewer';
 import RABackgroundModal from '@/components/reqAssist/RABackgroundModal';
 import RAEpicGenerationModal from '@/components/reqAssist/RAEpicGenerationModal';
+import RAEpicDraftDrawer from '@/components/reqAssist/RAEpicDraftDrawer';
 import ImportJiraDrawer from '@/components/req-assist/ImportJiraDrawer';
 import { format } from 'date-fns';
 
@@ -36,11 +37,12 @@ export default function ReqAssistLibrary() {
   const [importOpen, setImportOpen] = useState(false);
   const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
   const [syncingAll, setSyncingAll] = useState(false);
-  const [regenConfirm, setRegenConfirm] = useState<{ doc: RADocumentWithArtifacts; count: number } | null>(null);
+  const [regenConfirm, setRegenConfirm] = useState<{ doc: RADocumentWithArtifacts; count: number; brdId: string; generatedAt: string | null } | null>(null);
+  const [draftDrawer, setDraftDrawer] = useState<{ brdId: string; docTitle: string; jiraKey: string | null } | null>(null);
+  const [epicCounts, setEpicCounts] = useState<Record<string, number>>({});
 
   /** FIX 3: Check for existing epics before opening modal */
   const handleGenerateClick = useCallback(async (doc: RADocumentWithArtifacts) => {
-    // Resolve brd_id
     let brdId: string | null = null;
     const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
     if (direct?.id) brdId = direct.id;
@@ -52,14 +54,69 @@ export default function ReqAssistLibrary() {
       }
     }
     if (brdId) {
-      const { count } = await (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdId);
+      const { count, data: epicRows } = await (supabase as any)
+        .from('brd_epics')
+        .select('id, generated_at', { count: 'exact' })
+        .eq('brd_id', brdId)
+        .limit(1);
       if (count && count > 0) {
-        setRegenConfirm({ doc, count });
+        const genAt = epicRows?.[0]?.generated_at || null;
+        setRegenConfirm({ doc, count, brdId, generatedAt: genAt });
         return;
       }
     }
     setBgModal({ type: 'epics', doc });
   }, []);
+
+  /** Resolve brdId for a doc (used by actions cell) */
+  const resolveBrdId = useCallback(async (doc: RADocumentWithArtifacts): Promise<string | null> => {
+    const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
+    if (direct?.id) return direct.id;
+    const jiraKey = (doc as any).jira_ticket_key;
+    if (jiraKey) {
+      const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+      if (jiraMatch?.id) return jiraMatch.id;
+    }
+    return null;
+  }, []);
+
+  /** Open draft drawer for a doc */
+  const handleOpenDrafts = useCallback(async (doc: RADocumentWithArtifacts) => {
+    const brdId = await resolveBrdId(doc);
+    if (brdId) {
+      setDraftDrawer({ brdId, docTitle: doc.title, jiraKey: (doc as any).jira_ticket_key || null });
+    }
+  }, [resolveBrdId]);
+
+  const handleOpenDraftsByBrdId = useCallback((brdId: string) => {
+    // Find doc from current documents list to get title/jiraKey
+    const doc = documents?.find(d => d.id === brdId || (d as any).jira_ticket_key);
+    setDraftDrawer({
+      brdId,
+      docTitle: doc?.title || 'Document',
+      jiraKey: (doc as any)?.jira_ticket_key || null,
+    });
+  }, [documents]);
+
+  // Fetch epic counts for docs that have brd_documents entries
+  useEffect(() => {
+    if (!documents || documents.length === 0) return;
+    const fetchCounts = async () => {
+      const counts: Record<string, number> = {};
+      for (const doc of documents) {
+        const brdId = await resolveBrdId(doc);
+        if (brdId) {
+          const { count } = await (supabase as any)
+            .from('brd_epics')
+            .select('id', { count: 'exact', head: true })
+            .eq('brd_id', brdId);
+          if (count && count > 0) counts[doc.id] = count;
+        }
+      }
+      setEpicCounts(counts);
+    };
+    fetchCounts();
+  }, [documents, resolveBrdId]);
 
   const handleSyncKb = useCallback(async (docId: string) => {
     setSyncingIds(prev => new Set(prev).add(docId));
@@ -342,8 +399,10 @@ export default function ReqAssistLibrary() {
                       <td data-col="actions" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'visible', position: 'relative', minWidth: 140 }}>
                         <ActionsCell
                           doc={doc}
+                          epicCount={epicCounts[doc.id] || 0}
                           onSyncKb={handleSyncKb}
                           onSelect={(type) => type === 'epics' ? handleGenerateClick(doc) : setBgModal({ type, doc })}
+                          onViewDrafts={() => handleOpenDrafts(doc)}
                         />
                       </td>
                     </tr>
@@ -385,18 +444,35 @@ export default function ReqAssistLibrary() {
       {selectedDoc && <RAJiraSidePanel doc={selectedDoc} onClose={() => setSelectedDoc(null)} onOpenPdf={() => setPdfDoc(selectedDoc)} onGenerate={(type) => setBgModal({ type, doc: selectedDoc })} />}
       {pdfDoc && <RAPDFViewer doc={pdfDoc} onClose={() => setPdfDoc(null)} onGenerateEpics={() => { setPdfDoc(null); if (pdfDoc) setBgModal({ type: 'epics', doc: pdfDoc }); }} />}
       {bgModal && bgModal.type === 'epics' ? (
-        <RAEpicGenerationModal doc={bgModal.doc} onClose={() => setBgModal(null)} />
+        <RAEpicGenerationModal
+          doc={bgModal.doc}
+          onClose={() => setBgModal(null)}
+          onViewDrafts={(brdId) => {
+            setBgModal(null);
+            handleOpenDraftsByBrdId(brdId);
+          }}
+        />
       ) : bgModal ? (
         <RABackgroundModal type={bgModal.type} doc={bgModal.doc} onClose={() => setBgModal(null)} />
       ) : null}
 
-      {/* FIX 3: Regen confirmation dialog */}
+      {/* Draft drawer */}
+      {draftDrawer && (
+        <RAEpicDraftDrawer
+          brdId={draftDrawer.brdId}
+          docTitle={draftDrawer.docTitle}
+          jiraKey={draftDrawer.jiraKey}
+          onClose={() => { setDraftDrawer(null); qc.invalidateQueries({ queryKey: RA_KEYS.all }); }}
+        />
+      )}
+
+      {/* PART 2: Regen confirmation dialog — 3 buttons */}
       {regenConfirm && (
         <>
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 80 }} onClick={() => setRegenConfirm(null)} />
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            width: 400, background: '#FFFFFF', borderRadius: 8, zIndex: 90,
+            width: 420, background: '#FFFFFF', borderRadius: 8, zIndex: 90,
             padding: 24, boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
             fontFamily: "'Inter', sans-serif",
           }}>
@@ -404,13 +480,26 @@ export default function ReqAssistLibrary() {
               Epics Already Exist
             </h3>
             <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 20px', lineHeight: 1.5 }}>
-              This document already has {regenConfirm.count} epic{regenConfirm.count !== 1 ? 's' : ''} generated. Regenerating will replace them. Continue?
+              This document already has {regenConfirm.count} epic{regenConfirm.count !== 1 ? 's' : ''} generated
+              {regenConfirm.generatedAt ? (() => {
+                const days = Math.floor((Date.now() - new Date(regenConfirm.generatedAt!).getTime()) / 86400000);
+                return days === 0 ? ' today' : days === 1 ? ' yesterday' : ` ${days} days ago`;
+              })() : ''}. What would you like to do?
             </p>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => setRegenConfirm(null)} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+                border: 'none', background: 'transparent', color: '#475569', cursor: 'pointer',
               }}>Cancel</button>
+              <button onClick={() => {
+                const brdId = regenConfirm.brdId;
+                const doc = regenConfirm.doc;
+                setRegenConfirm(null);
+                setDraftDrawer({ brdId, docTitle: doc.title, jiraKey: (doc as any).jira_ticket_key || null });
+              }} style={{
+                padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
+                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+              }}>View Drafts</button>
               <button onClick={() => { const d = regenConfirm.doc; setRegenConfirm(null); setBgModal({ type: 'epics', doc: d }); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
                 border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
@@ -467,16 +556,48 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-/* Actions column — D02/D03/D04: conditional CTA, no chevrons, nowrap */
-function ActionsCell({ doc, onSyncKb, onSelect }: {
+/* Actions column — PART 6: lifecycle-aware actions */
+function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
   doc: RADocumentWithArtifacts;
+  epicCount: number;
   onSyncKb: (docId: string) => void;
   onSelect: (type: string) => void;
+  onViewDrafts: () => void;
 }) {
   const isReady = doc.status === 'ready' || doc.status === 'complete';
   const isProcessing = doc.status === 'processing' || ['intake', 'extract', 'process', 'validate', 'distribute'].includes(doc.status);
   const isFailed = doc.status === 'failed';
   const kbSynced = (doc as any).kb_synced === true;
+
+  /* Has epics generated → show View Drafts + count chip */
+  if (epicCount > 0 && !isProcessing) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <button
+          onClick={(e) => { e.stopPropagation(); onViewDrafts(); }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+            borderRadius: 4, border: '0.75px solid #E2E8F0',
+            background: '#FFFFFF', color: '#253858', cursor: 'pointer',
+            fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+            transition: 'background 120ms ease',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
+          onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
+        >
+          View Drafts
+        </button>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center',
+          padding: '0 6px', height: 20, borderRadius: 3,
+          fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap',
+          background: '#F1F5F9', color: '#475569',
+          fontFamily: "'Inter', sans-serif",
+        }}>{epicCount} epics</span>
+      </div>
+    );
+  }
 
   /* READY + KB SYNCED → green lozenge + View */
   if (isReady && kbSynced) {
@@ -506,7 +627,7 @@ function ActionsCell({ doc, onSyncKb, onSelect }: {
     );
   }
 
-  /* READY + NOT SYNCED → purple Sync to KB — D02/D03 nowrap fix */
+  /* READY + NOT SYNCED → Sync to KB */
   if (isReady && !kbSynced) {
     return (
       <button
@@ -543,7 +664,7 @@ function ActionsCell({ doc, onSyncKb, onSelect }: {
     );
   }
 
-  /* PROCESSING → disabled Generate — D04: no chevron */
+  /* PROCESSING → disabled Generate */
   if (isProcessing) {
     return (
       <button
@@ -561,7 +682,7 @@ function ActionsCell({ doc, onSyncKb, onSelect }: {
     );
   }
 
-  /* PENDING / null → enabled Generate — outline style, not primary blue */
+  /* PENDING / null → enabled Generate */
   return (
     <button
       onClick={(e) => { e.stopPropagation(); onSelect('epics'); }}

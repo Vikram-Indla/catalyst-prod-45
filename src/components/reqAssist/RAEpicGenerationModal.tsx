@@ -10,6 +10,7 @@ import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 interface Props {
   doc: RADocumentWithArtifacts;
   onClose: () => void;
+  onViewDrafts?: (brdId: string) => void;
 }
 
 const STEPS = [
@@ -21,7 +22,7 @@ const STEPS = [
 ];
 
 // step: -1=error, 0-4=in progress, 5=done
-export default function RAEpicGenerationModal({ doc, onClose }: Props) {
+export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Props) {
   const qc = useQueryClient();
   const [step, setStep] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -129,6 +130,29 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
       .from('brd_documents')
       .update({ pipeline_stage: 'ready' })
       .eq('id', brdId);
+
+    // PART 5: Auto-generate ra_tags for inserted epics
+    try {
+      const jiraKey = (doc as any).jira_ticket_key;
+      const { data: insertedEpics } = await (supabase as any)
+        .from('brd_epics')
+        .select('id')
+        .eq('brd_id', brdId)
+        .order('created_at', { ascending: true });
+
+      if (insertedEpics && insertedEpics.length > 0) {
+        const prefix = jiraKey ? `RA-${jiraKey}` : `RA-BRD-${brdId.substring(0, 6).toUpperCase()}`;
+        for (let idx = 0; idx < insertedEpics.length; idx++) {
+          const tag = `${prefix}-E${String(idx + 1).padStart(2, '0')}`;
+          await (supabase as any)
+            .from('brd_epics')
+            .update({ ra_tag: tag })
+            .eq('id', insertedEpics[idx].id);
+        }
+      }
+    } catch (tagErr) {
+      console.warn('[EpicModal] ra_tag assignment failed (non-critical):', tagErr);
+    }
 
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
     qc.invalidateQueries({ queryKey: ['brd_documents'] });
@@ -259,7 +283,14 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
                 Close
               </button>
               <button
-                onClick={() => { onClose(); nav('/product/req-assist'); }}
+                onClick={() => {
+                  onClose();
+                  if (onViewDrafts && resolvedBrdId) {
+                    onViewDrafts(resolvedBrdId);
+                  } else {
+                    nav('/product/req-assist');
+                  }
+                }}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
                   border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
