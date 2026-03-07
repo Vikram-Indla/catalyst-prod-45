@@ -81,9 +81,21 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         const { count: pc } = await (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdId).eq('publish_status', 'published');
         publishedCount = pc ?? 0;
 
-        // Chunk count from kb_embeddings
-        const { count: cc } = await (supabase as any).from('kb_embeddings').select('id', { count: 'exact', head: true }).eq('source_id', brdId);
+        // FIX 3: Chunk count from kb_embeddings via JSONB metadata
+        const { count: cc } = await (supabase as any)
+          .from('kb_embeddings')
+          .select('*', { count: 'exact', head: true })
+          .contains('metadata', { source_id: brdId });
         chunkCount = cc ?? 0;
+
+        // Fallback: try jira_key match
+        if (chunkCount === 0 && jiraKey) {
+          const { count: fallbackCc } = await (supabase as any)
+            .from('kb_embeddings')
+            .select('*', { count: 'exact', head: true })
+            .contains('metadata', { jira_key: jiraKey });
+          chunkCount = fallbackCc ?? 0;
+        }
       }
 
       // Fallback chunk count from doc
