@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { FileText, FileSearch, Download, Loader2, AlertCircle, ChevronDown, Zap, TestTube, Flag, RefreshCw, CheckCircle2, RotateCcw, Eye } from 'lucide-react';
+import { FileText, FileSearch, Download, Loader2, AlertCircle, Zap, TestTube, Flag, RefreshCw, CheckCircle2, RotateCcw, Eye, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useRADocuments, useRAStats, RA_KEYS } from '@/hooks/useReqAssist';
@@ -17,10 +17,7 @@ import { format } from 'date-fns';
 
 /* ── Domain lozenge mapping (neutral only) ── */
 function domainLozenge() {
-  return {
-    bg: '#F3F4F6',
-    color: '#374151',
-  };
+  return { bg: '#F3F4F6', color: '#374151' };
 }
 
 export default function ReqAssistLibrary() {
@@ -36,7 +33,6 @@ export default function ReqAssistLibrary() {
   const [pdfDoc, setPdfDoc] = useState<RADocumentWithArtifacts | null>(null);
   const [bgModal, setBgModal] = useState<{ type: string; doc: RADocumentWithArtifacts } | null>(null);
   const [importOpen, setImportOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
   const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
   const [syncingAll, setSyncingAll] = useState(false);
 
@@ -55,7 +51,7 @@ export default function ReqAssistLibrary() {
     } finally {
       setSyncingIds(prev => { const n = new Set(prev); n.delete(docId); return n; });
     }
-  }, []);
+  }, [qc]);
 
   const handleSyncAll = useCallback(async () => {
     if (!documents) return;
@@ -76,13 +72,6 @@ export default function ReqAssistLibrary() {
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
     setSyncingAll(false);
   }, [documents, qc]);
-
-  useEffect(() => {
-    if (!dropdownOpen) return;
-    const handler = () => setDropdownOpen(null);
-    document.addEventListener('click', handler);
-    return () => document.removeEventListener('click', handler);
-  }, [dropdownOpen]);
 
   /* INT-005: ESC key layering — only close topmost overlay */
   useEffect(() => {
@@ -106,18 +95,19 @@ export default function ReqAssistLibrary() {
   const totalCount = stats?.total_documents ?? 0;
   const isFiltering = search.length > 0 || tab !== 'all';
   const hasDocuments = documents && documents.length > 0;
-  const isEmpty = !isLoading && (!documents || documents.length === 0);
 
   return (
-    <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px 28px' }}>
+    <div style={{ background: '#F8FAFC', minHeight: '100%', padding: '24px 28px' }}>
       {/* ── PAGE HEADER ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>
-          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: '#111827', margin: 0 }}>
-            Req Assist™
+          {/* D19: Trademark typography */}
+          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 20, fontWeight: 650, color: '#111827', margin: 0 }}>
+            <span style={{ fontFamily: "'Sora', sans-serif" }}>Req Assist™</span>
           </h1>
+          {/* D12: Remove hardcoded sync time */}
           <p style={{ fontSize: 13, color: '#6B7280', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>
-            BRD library — sourced from Jira, enriched by AI, WikiHub-connected · Next sync: tonight 11:00 PM
+            BRD library — sourced from Jira, enriched by AI, WikiHub-connected
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -126,7 +116,7 @@ export default function ReqAssistLibrary() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500,
-              border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)',
+              border: '0.75px solid #E2E8F0', borderRadius: 6,
               background: '#FFFFFF', color: '#334155', cursor: 'pointer',
               fontFamily: "'Inter', sans-serif",
             }}
@@ -138,7 +128,7 @@ export default function ReqAssistLibrary() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500,
-              border: 'none', borderRadius: 'var(--ra-radius-btn)',
+              border: 'none', borderRadius: 6,
               background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
               fontFamily: "'Inter', sans-serif",
             }}
@@ -148,7 +138,7 @@ export default function ReqAssistLibrary() {
         </div>
       </div>
 
-      {/* ── STATS BAR ── */}
+      {/* ── STATS BAR ── D05: cards with border */}
       <RAStatsBar
         totalDocuments={stats?.total_documents ?? 0}
         wikihubSynced={stats?.wikihub_synced ?? 0}
@@ -161,74 +151,56 @@ export default function ReqAssistLibrary() {
 
       {/* EC-001: Empty library — no documents at all */}
       {!isLoading && totalCount === 0 && !isFiltering ? (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 0', border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 0', background: '#FFFFFF', border: '0.75px solid #E2E8F0', borderRadius: 6 }}>
           <FileText size={32} color="#9CA3AF" style={{ marginBottom: 12 }} />
           <p style={{ fontSize: 16, fontWeight: 600, color: '#374151', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>No documents yet</p>
           <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate a BRD from text to get started.</p>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => setImportOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+            <button onClick={() => setImportOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 6, background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
               <Download size={14} /> Import from Jira
             </button>
-            <button onClick={() => navigate('/product/req-assist/generate')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+            <button onClick={() => navigate('/product/req-assist/generate')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 6, background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
               <Zap size={14} /> Generate BRD from Text
             </button>
           </div>
         </div>
       ) : (
         /* ── SEARCH + FILTER + TABLE ── */
-        <div style={{ border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ flex: 1 }}>
-              <RASearchToolbar
-                tab={tab}
-                onTabChange={setTab}
-                search={search}
-                onSearchChange={setSearch}
-                resultCount={documents?.length}
-                totalCount={totalCount}
-                isFiltering={isFiltering}
-              />
-            </div>
-            <div style={{ paddingRight: 28 }}>
-              <button
-                onClick={handleSyncAll}
-                disabled={syncingAll}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  padding: '0 12px', height: 32, fontSize: 13, fontWeight: 500,
-                  border: 'none', borderRadius: 6,
-                  background: '#7C3AED', color: '#FFFFFF',
-                  cursor: syncingAll ? 'not-allowed' : 'pointer',
-                  opacity: syncingAll ? 0.7 : 1,
-                  fontFamily: "'Inter', sans-serif",
-                }}
-              >
-                <Zap size={14} /> {syncingAll ? 'Syncing…' : 'Sync All to KB'}
-              </button>
-            </div>
-          </div>
+        <div style={{ background: '#FFFFFF', border: '0.75px solid #E2E8F0', borderRadius: 6, overflow: 'hidden' }}>
+          {/* D13: Sync All inside toolbar row */}
+          <RASearchToolbar
+            tab={tab}
+            onTabChange={setTab}
+            search={search}
+            onSearchChange={setSearch}
+            resultCount={documents?.length}
+            totalCount={totalCount}
+            isFiltering={isFiltering}
+            onSyncAll={handleSyncAll}
+            syncingAll={syncingAll}
+          />
 
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
+              <tr style={{ borderBottom: '0.75px solid #E2E8F0' }}>
                 {[
                   { label: 'Jira Ticket', w: 120 },
                   { label: 'Title', w: undefined },
-                  { label: 'Domain', w: 130 },
-                  { label: 'PDF', w: 70 },
+                  { label: 'Domain', w: 110 },
+                  { label: 'PDF', w: 60 },
                   { label: 'Status', w: 110 },
-                  { label: 'Generation', w: 170 },
+                  { label: 'Generation', w: 160 },
                   { label: 'Imported', w: 85 },
-                  { label: 'Actions', w: 110 },
+                  { label: 'Actions', w: 140 },
                 ].map((col, i) => (
-                    <th key={i} style={{
-                      padding: 'var(--ra-hd-pad)', height: 36,
-                      fontSize: 11, fontWeight: 700, color: '#6B7280',
-                      textTransform: 'uppercase', letterSpacing: '0.06em',
-                      textAlign: 'left', width: col.w || undefined,
-                      background: '#FFFFFF',
-                      fontFamily: "'Inter', sans-serif",
-                    }}>
+                  <th key={i} style={{
+                    padding: '0 10px', height: 36,
+                    fontSize: 11, fontWeight: 700, color: '#6B7280',
+                    textTransform: 'uppercase', letterSpacing: '0.06em',
+                    textAlign: 'left', width: col.w || undefined,
+                    background: '#FFFFFF',
+                    fontFamily: "'Inter', sans-serif",
+                  }}>
                     {col.label}
                   </th>
                 ))}
@@ -237,10 +209,10 @@ export default function ReqAssistLibrary() {
             <tbody>
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={i} style={{ height: 36, minHeight: 36, maxHeight: 36 }}>
+                  <tr key={i} style={{ height: 36, maxHeight: 36 }}>
                     {Array.from({ length: 8 }).map((_, j) => (
-                      <td key={j} style={{ padding: 'var(--ra-cell-pad)' }}>
-                        <div className="h-3 bg-gray-200 rounded animate-pulse" style={{ width: j === 1 ? '80%' : '60%' }} />
+                      <td key={j} style={{ padding: '0 10px' }}>
+                        <div style={{ width: j === 1 ? '80%' : '60%', height: 12, background: '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
                       </td>
                     ))}
                   </tr>
@@ -254,17 +226,17 @@ export default function ReqAssistLibrary() {
                       key={doc.id}
                       onClick={(e) => handleRowClick(doc, e)}
                       style={{
-                        height: 36, minHeight: 36, maxHeight: 36,
+                        height: 36, maxHeight: 36,
                         cursor: 'pointer',
-                        borderBottom: '1px solid rgba(15,23,42,0.04)',
+                        borderBottom: '0.75px solid #E2E8F0',
                         background: isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent',
                         transition: 'background 120ms ease',
                       }}
-                      onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = 'rgba(15,23,42,0.04)'; }}
+                      onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.04)'; }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
                     >
                       {/* Jira Ticket */}
-                      <td style={{ padding: 'var(--ra-cell-pad)' }}>
+                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden' }}>
                         {doc.jira_ticket_url ? (
                           <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
                             style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB', textDecoration: 'none' }}>
@@ -277,33 +249,30 @@ export default function ReqAssistLibrary() {
                         )}
                       </td>
                       {/* Title */}
-                      <td style={{ padding: 'var(--ra-cell-pad)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 0, height: 36, minHeight: 36, maxHeight: 36 }}>
+                      <td style={{ padding: '0 10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 0, height: 36, maxHeight: 36 }}>
                         <span title={doc.title} style={{ fontSize: 14, fontWeight: 500, color: '#111827', fontFamily: "'Inter', sans-serif" }}>
                           {doc.title.length > 52 ? doc.title.slice(0, 52) + '…' : doc.title}
                         </span>
                       </td>
-                      {/* Domain (EC-003) */}
-                      <td style={{ padding: 'var(--ra-cell-pad)', height: 36, minHeight: 36, maxHeight: 36 }}>
-                        {doc.domain ? (() => {
-                          const lz = domainLozenge();
-                          return (
-                            <span style={{
-                              display: 'inline-flex', alignItems: 'center',
-                              padding: '2px 8px', borderRadius: 3,
-                              fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                              letterSpacing: '0.04em', whiteSpace: 'nowrap',
-                              background: lz.bg, color: lz.color,
-                              fontFamily: "'Inter', sans-serif",
-                            }}>
-                              {doc.domain}
-                            </span>
-                          );
-                        })() : (
-                          <span style={{ color: '#94A3B8', fontSize: 12 }}>—</span>
+                      {/* Domain — D10: standardise empty cells */}
+                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden' }}>
+                        {doc.domain ? (
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center',
+                            padding: '2px 8px', borderRadius: 3,
+                            fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                            letterSpacing: '0.04em', whiteSpace: 'nowrap',
+                            background: '#F3F4F6', color: '#374151',
+                            fontFamily: "'Inter', sans-serif",
+                          }}>
+                            {doc.domain}
+                          </span>
+                        ) : (
+                          <span style={{ color: '#94A3B8', fontSize: 13 }}>—</span>
                         )}
                       </td>
-                      {/* PDF (EC-004) */}
-                      <td data-col="pdf" style={{ padding: 'var(--ra-cell-pad)' }}>
+                      {/* PDF — D10: remove icon from empty state */}
+                      <td data-col="pdf" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden' }}>
                         {doc.pdf_url ? (
                           <button
                             onClick={(e) => { e.stopPropagation(); setPdfDoc(doc); }}
@@ -321,38 +290,35 @@ export default function ReqAssistLibrary() {
                             {doc.page_count ? `${doc.page_count}pp` : '—pp'}
                           </button>
                         ) : (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#94A3B8', fontSize: 11 }}>
-                            <FileText size={13} strokeWidth={1.5} style={{ opacity: 0.4 }} /> —
-                          </span>
+                          <span style={{ color: '#94A3B8', fontSize: 13 }}>—</span>
                         )}
                       </td>
                       {/* Status */}
-                      <td style={{ padding: 'var(--ra-cell-pad)' }}>
+                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden' }}>
                         <StatusBadge status={doc.status} />
                       </td>
-                      {/* Generation */}
-                      <td style={{ padding: 'var(--ra-cell-pad)' }}>
+                      {/* Generation — D07/D08/D18 */}
+                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden', maxWidth: 160 }}>
                         <RAGenerationBar
                           slots={doc.generation_slots}
                           artifactCounts={doc.artifact_counts}
                           isProcessing={isProcessingRow}
                           etaMinutes={processingJob ? Math.ceil((processingJob.eta_seconds ?? 240) / 60) : undefined}
+                          docStatus={doc.status}
                         />
                       </td>
                       {/* Imported */}
-                      <td style={{ padding: 'var(--ra-cell-pad)' }}>
+                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden' }}>
                         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#6B7280' }}>
                           {doc.pulled_at ? formatImported(doc.pulled_at) : '—'}
                         </span>
                       </td>
-                      {/* Actions (INT-006) */}
-                      <td data-col="actions" style={{ padding: 'var(--ra-cell-pad)', position: 'relative' }}>
-                        <GenerateDropdown
+                      {/* Actions */}
+                      <td data-col="actions" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden', position: 'relative' }}>
+                        <ActionsCell
                           doc={doc}
-                          isOpen={dropdownOpen === doc.id}
-                          onToggle={(e) => { e.stopPropagation(); setDropdownOpen(dropdownOpen === doc.id ? null : doc.id); }}
-                          onSelect={(type) => { setDropdownOpen(null); setBgModal({ type, doc }); }}
                           onSyncKb={handleSyncKb}
+                          onSelect={(type) => setBgModal({ type, doc })}
                         />
                       </td>
                     </tr>
@@ -376,14 +342,14 @@ export default function ReqAssistLibrary() {
             </tbody>
           </table>
 
-          {/* Table footer */}
+          {/* Table footer — D17: ArrowRight icon */}
           {!isLoading && documents && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#FFFFFF', borderTop: '1px solid rgba(15,23,42,0.06)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#FFFFFF', borderTop: '0.75px solid #E2E8F0' }}>
               <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
                 Showing {documents.length} of {totalCount} documents
               </span>
-              <button style={{ fontSize: 12, color: '#2563EB', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-                View all →
+              <button style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563EB', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+                View all <ArrowRight size={14} />
               </button>
             </div>
           )}
@@ -412,9 +378,11 @@ function formatImported(iso: string): string {
   return format(d, 'd MMM');
 }
 
+/* D15: StatusLozenge — 700 weight, 3px radius, 20px height, no dots */
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string; label: string }> = {
     ready:      { bg: '#E3FCEF', color: '#006644', label: 'READY' },
+    complete:   { bg: '#E3FCEF', color: '#006644', label: 'READY' },
     processing: { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
     pending:    { bg: '#DFE1E6', color: '#253858', label: 'PENDING' },
     failed:     { bg: '#DFE1E6', color: '#253858', label: 'FAILED' },
@@ -423,7 +391,6 @@ function StatusBadge({ status }: { status: string }) {
     process:    { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
     validate:   { bg: '#DEEBFF', color: '#0747A6', label: 'VALIDATING' },
     distribute: { bg: '#DEEBFF', color: '#0747A6', label: 'DISTRIBUTING' },
-    complete:   { bg: '#E3FCEF', color: '#006644', label: 'READY' },
   };
   const s = map[status] ?? map.pending;
   return (
@@ -440,13 +407,11 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-/* INT-006: Actions column — conditional CTA logic with KB sync */
-function GenerateDropdown({ doc, isOpen, onToggle, onSelect, onSyncKb }: {
+/* Actions column — D02/D03/D04: conditional CTA, no chevrons, nowrap */
+function ActionsCell({ doc, onSyncKb, onSelect }: {
   doc: RADocumentWithArtifacts;
-  isOpen: boolean;
-  onToggle: (e: React.MouseEvent) => void;
-  onSelect: (type: string) => void;
   onSyncKb: (docId: string) => void;
+  onSelect: (type: string) => void;
 }) {
   const isReady = doc.status === 'ready' || doc.status === 'complete';
   const isProcessing = doc.status === 'processing' || ['intake', 'extract', 'process', 'validate', 'distribute'].includes(doc.status);
@@ -470,9 +435,9 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect, onSyncKb }: {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 3,
             height: 24, padding: '0 8px', fontSize: 11, fontWeight: 500,
-            borderRadius: 4, border: '1px solid #2563EB',
+            borderRadius: 4, border: '0.75px solid #2563EB',
             background: 'transparent', color: '#2563EB', cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
           }}
         >
           <Eye size={11} /> View
@@ -481,17 +446,18 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect, onSyncKb }: {
     );
   }
 
-  /* READY + NOT SYNCED → purple Sync to KB */
+  /* READY + NOT SYNCED → purple Sync to KB — D02/D03 nowrap fix */
   if (isReady && !kbSynced) {
     return (
       <button
         onClick={(e) => { e.stopPropagation(); onSyncKb(doc.id); }}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
-          height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+          height: 28, minWidth: 96, padding: '0 10px', fontSize: 12, fontWeight: 500,
           borderRadius: 6, border: 'none', cursor: 'pointer',
           background: '#7C3AED', color: '#FFFFFF',
           fontFamily: "'Inter', sans-serif",
+          whiteSpace: 'nowrap',
         }}
       >
         <Zap size={12} /> Sync to KB
@@ -507,9 +473,9 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect, onSyncKb }: {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 4, border: '1px solid #DC2626',
+          borderRadius: 4, border: '0.75px solid #DC2626',
           background: 'transparent', color: '#DC2626', cursor: 'pointer',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
         }}
       >
         <RotateCcw size={12} /> Retry
@@ -517,79 +483,37 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect, onSyncKb }: {
     );
   }
 
-  /* PROCESSING → disabled Generate */
+  /* PROCESSING → disabled Generate — D04: no chevron */
   if (isProcessing) {
     return (
       <button
         disabled
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4,
+          display: 'inline-flex', alignItems: 'center',
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
           borderRadius: 4, border: 'none', cursor: 'not-allowed',
-          background: '#E5E5E5', color: '#94A3B8',
-          fontFamily: "'Inter', sans-serif",
+          background: '#E2E8F0', color: '#94A3B8',
+          fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
         }}
       >
-        Generate <ChevronDown size={12} />
+        Generate
       </button>
     );
   }
 
-  /* PENDING / null → enabled Generate dropdown */
+  /* PENDING / null → enabled Generate — D04: no chevron */
   return (
-    <div style={{ position: 'relative' }}>
-      <button
-        onClick={onToggle}
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4,
-          height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 4, border: 'none', cursor: 'pointer',
-          background: '#2563EB', color: '#FFFFFF',
-          fontFamily: "'Inter', sans-serif",
-        }}
-      >
-        Generate <ChevronDown size={12} />
-      </button>
-      {isOpen && (
-        <div style={{
-          position: 'absolute', top: '100%', right: 0, marginTop: 4,
-          width: 260, background: '#FFFFFF',
-          border: '1px solid rgba(15,23,42,0.12)',
-          borderRadius: 'var(--ra-radius-card)',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-          zIndex: 50, overflow: 'hidden',
-        }}>
-          {[
-            { key: 'epics', icon: <Zap size={13} color="#7C3AED" />, label: 'Epic Statements', desc: (doc.artifact_counts?.epics ?? 0) > 0 ? `${doc.artifact_counts.epics} already` : 'none yet' },
-            { key: 'uat', icon: <TestTube size={13} color="#D97706" />, label: 'UAT Scenarios', desc: (doc.artifact_counts?.uat ?? 0) > 0 ? `${doc.artifact_counts.uat} already` : 'none yet' },
-            { key: 'initiative', icon: <Flag size={13} color="#0D9488" />, label: 'Create Initiative', desc: 'Push to StrategyHub' },
-            { key: 'sep', label: '', desc: '' },
-            { key: 'wikihub', icon: <RefreshCw size={13} color="#0D9488" />, label: 'Re-sync WikiHub', desc: (doc.wikihub_chunk_count ?? 0) > 0 ? `${doc.wikihub_chunk_count} chunks` : 'not synced' },
-          ].map((item, i) => {
-            if (item.key === 'sep') return <div key={i} style={{ height: 1, background: 'rgba(15,23,42,0.06)', margin: '4px 0' }} />;
-            return (
-              <button
-                key={item.key}
-                onClick={(e) => { e.stopPropagation(); onSelect(item.key); }}
-                style={{
-                  display: 'flex', alignItems: 'flex-start', gap: 10,
-                  width: '100%', padding: '8px 12px', border: 'none',
-                  background: 'transparent', cursor: 'pointer', textAlign: 'left',
-                  transition: 'background 100ms',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.03)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                <div style={{ marginTop: 2 }}>{item.icon}</div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>{item.label}</div>
-                  <div style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>{item.desc}</div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
+    <button
+      onClick={(e) => { e.stopPropagation(); onSelect('epics'); }}
+      style={{
+        display: 'inline-flex', alignItems: 'center',
+        height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+        borderRadius: 4, border: 'none', cursor: 'pointer',
+        background: '#2563EB', color: '#FFFFFF',
+        fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+      }}
+    >
+      Generate
+    </button>
   );
 }
