@@ -79,6 +79,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   const { data: projects = [], isLoading: loadingProjects } = useConnectedProjects();
   const selectedProjectData = projects.find(p => p.project_key === selectedProject);
   const { data: tickets = [], isLoading: loadingTickets } = useProjectTickets(step === 2 ? selectedProject : null, pdfOnly);
+  const { data: allTickets = [] } = useProjectTickets(step === 2 ? selectedProject : null, false);
   const verifyMutation = useVerifyProject();
   const syncMutation = useSyncTickets();
   const importMutation = useImportTickets();
