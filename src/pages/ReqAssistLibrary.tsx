@@ -377,29 +377,66 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-/* INT-006: Failed rows show Retry button (red) instead of disabled Generate */
-function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
+/* INT-006: Actions column — conditional CTA logic with KB sync */
+function GenerateDropdown({ doc, isOpen, onToggle, onSelect, onSyncKb }: {
   doc: RADocumentWithArtifacts;
   isOpen: boolean;
   onToggle: (e: React.MouseEvent) => void;
   onSelect: (type: string) => void;
+  onSyncKb: (docId: string) => void;
 }) {
-  const isProcessing = doc.status === 'processing';
+  const isReady = doc.status === 'ready' || doc.status === 'complete';
+  const isProcessing = doc.status === 'processing' || ['intake', 'extract', 'process', 'validate', 'distribute'].includes(doc.status);
   const isFailed = doc.status === 'failed';
-  const disabled = isProcessing;
-  const epicCount = doc.artifact_counts?.epics ?? 0;
-  const uatCount = doc.artifact_counts?.uat ?? 0;
-  const wikiChunks = doc.wikihub_chunk_count ?? 0;
+  const kbSynced = (doc as any).kb_synced === true;
 
-  const items = [
-    { key: 'epics', icon: <Zap size={13} color="#7C3AED" />, label: 'Epic Statements', desc: epicCount > 0 ? `${epicCount} already` : 'none yet' },
-    { key: 'uat', icon: <TestTube size={13} color="#D97706" />, label: 'UAT Scenarios', desc: uatCount > 0 ? `${uatCount} already` : 'none yet' },
-    { key: 'initiative', icon: <Flag size={13} color="#0D9488" />, label: 'Create Initiative', desc: 'Push to StrategyHub' },
-    { key: 'sep', label: '', desc: '' },
-    { key: 'wikihub', icon: <RefreshCw size={13} color="#0D9488" />, label: 'Re-sync WikiHub', desc: wikiChunks > 0 ? `${wikiChunks} chunks` : 'not synced' },
-  ];
+  /* READY + KB SYNCED → green lozenge + View */
+  if (isReady && kbSynced) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center',
+          padding: '0 6px', height: 20, borderRadius: 3,
+          fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+          letterSpacing: '0.03em', whiteSpace: 'nowrap',
+          background: '#E3FCEF', color: '#006644',
+          fontFamily: "'Inter', sans-serif",
+        }}>KB SYNCED</span>
+        <button
+          onClick={(e) => { e.stopPropagation(); onSelect('view'); }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 3,
+            height: 24, padding: '0 8px', fontSize: 11, fontWeight: 500,
+            borderRadius: 4, border: '1px solid #2563EB',
+            background: 'transparent', color: '#2563EB', cursor: 'pointer',
+            fontFamily: "'Inter', sans-serif",
+          }}
+        >
+          <Eye size={11} /> View
+        </button>
+      </div>
+    );
+  }
 
-  /* INT-006: Failed → show Retry button */
+  /* READY + NOT SYNCED → purple Sync to KB */
+  if (isReady && !kbSynced) {
+    return (
+      <button
+        onClick={(e) => { e.stopPropagation(); onSyncKb(doc.id); }}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+          borderRadius: 6, border: 'none', cursor: 'pointer',
+          background: '#7C3AED', color: '#FFFFFF',
+          fontFamily: "'Inter', sans-serif",
+        }}
+      >
+        <Zap size={12} /> Sync to KB
+      </button>
+    );
+  }
+
+  /* FAILED → red outline Retry */
   if (isFailed) {
     return (
       <button
@@ -407,8 +444,8 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 4, border: 'none', cursor: 'pointer',
-          background: '#2563EB', color: '#FFFFFF',
+          borderRadius: 4, border: '1px solid #DC2626',
+          background: 'transparent', color: '#DC2626', cursor: 'pointer',
           fontFamily: "'Inter', sans-serif",
         }}
       >
@@ -417,24 +454,40 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
     );
   }
 
-  return (
-    <div style={{ position: 'relative' }}>
+  /* PROCESSING → disabled Generate */
+  if (isProcessing) {
+    return (
       <button
-        onClick={onToggle}
-        disabled={disabled}
+        disabled
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 4,
-          border: 'none', cursor: disabled ? 'not-allowed' : 'pointer',
-          background: disabled ? '#E5E5E5' : '#2563EB',
-          color: disabled ? '#94A3B8' : '#FFFFFF',
+          borderRadius: 4, border: 'none', cursor: 'not-allowed',
+          background: '#E5E5E5', color: '#94A3B8',
           fontFamily: "'Inter', sans-serif",
         }}
       >
         Generate <ChevronDown size={12} />
       </button>
-      {isOpen && !disabled && (
+    );
+  }
+
+  /* PENDING / null → enabled Generate dropdown */
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        onClick={onToggle}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+          borderRadius: 4, border: 'none', cursor: 'pointer',
+          background: '#2563EB', color: '#FFFFFF',
+          fontFamily: "'Inter', sans-serif",
+        }}
+      >
+        Generate <ChevronDown size={12} />
+      </button>
+      {isOpen && (
         <div style={{
           position: 'absolute', top: '100%', right: 0, marginTop: 4,
           width: 260, background: '#FFFFFF',
@@ -443,7 +496,13 @@ function GenerateDropdown({ doc, isOpen, onToggle, onSelect }: {
           boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
           zIndex: 50, overflow: 'hidden',
         }}>
-          {items.map((item, i) => {
+          {[
+            { key: 'epics', icon: <Zap size={13} color="#7C3AED" />, label: 'Epic Statements', desc: (doc.artifact_counts?.epics ?? 0) > 0 ? `${doc.artifact_counts.epics} already` : 'none yet' },
+            { key: 'uat', icon: <TestTube size={13} color="#D97706" />, label: 'UAT Scenarios', desc: (doc.artifact_counts?.uat ?? 0) > 0 ? `${doc.artifact_counts.uat} already` : 'none yet' },
+            { key: 'initiative', icon: <Flag size={13} color="#0D9488" />, label: 'Create Initiative', desc: 'Push to StrategyHub' },
+            { key: 'sep', label: '', desc: '' },
+            { key: 'wikihub', icon: <RefreshCw size={13} color="#0D9488" />, label: 'Re-sync WikiHub', desc: (doc.wikihub_chunk_count ?? 0) > 0 ? `${doc.wikihub_chunk_count} chunks` : 'not synced' },
+          ].map((item, i) => {
             if (item.key === 'sep') return <div key={i} style={{ height: 1, background: 'rgba(15,23,42,0.06)', margin: '4px 0' }} />;
             return (
               <button
