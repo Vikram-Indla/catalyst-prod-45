@@ -178,36 +178,29 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
               zIndex: 49,
             }}
           />
-          <style>{`
-            .ra-drawer-hide-overlay > [data-radix-dialog-overlay],
-            .ra-drawer-hide-overlay > div[data-state]:not([role]) {
-              display: none !important;
-            }
-          `}</style>
         </>
       )}
       <Sheet open={open} onOpenChange={handleClose} modal={false}>
-        <SheetContent
-          side="right"
-          hideClose
-          className="ra-drawer-hide-overlay"
-          style={{
-            position: 'fixed',
-            top: 48,
-            right: 0,
-            width: '600px',
-            minWidth: '600px',
-            maxWidth: '600px',
-            height: 'calc(100vh - 48px)',
-            zIndex: 50,
-            padding: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            borderLeft: '0.75px solid #E5E7EB',
-            boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
-            background: '#FFFFFF',
-          }}
-        >
+        <SheetPortal>
+          <SheetPrimitive.Content
+            style={{
+              position: 'fixed',
+              top: 48,
+              right: 0,
+              width: '600px',
+              minWidth: '600px',
+              maxWidth: '600px',
+              height: 'calc(100vh - 48px)',
+              zIndex: 50,
+              padding: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              borderLeft: '0.75px solid #E5E7EB',
+              boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
+              background: '#FFFFFF',
+              outline: 'none',
+            }}
+          >
         <SheetTitle className="sr-only">Import from Jira</SheetTitle>
         <SheetDescription className="sr-only">Import Jira tickets into Req Assist</SheetDescription>
         {/* HEADER */}
