@@ -205,12 +205,20 @@ export default function ReqAssistLibrary() {
     setSyncingAll(false);
   }, [documents, qc]);
 
-  /* Supabase Realtime subscriptions for live updates */
+  /* Supabase Realtime subscriptions for live updates — debounced */
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     const channel1 = supabase.channel('req-assist-queue')
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'brd_processing_queue' },
-        () => { qc.invalidateQueries({ queryKey: RA_KEYS.stats() }); qc.invalidateQueries({ queryKey: RA_KEYS.all }); })
+        () => {
+          if (debounceRef.current) clearTimeout(debounceRef.current);
+          debounceRef.current = setTimeout(() => {
+            qc.invalidateQueries({ queryKey: RA_KEYS.stats() });
+            qc.invalidateQueries({ queryKey: RA_KEYS.all });
+            qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
+          }, 2000);
+        })
       .subscribe();
 
     const channel2 = supabase.channel('req-assist-docs')
@@ -220,6 +228,7 @@ export default function ReqAssistLibrary() {
       .subscribe();
 
     return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
       supabase.removeChannel(channel1);
       supabase.removeChannel(channel2);
     };
