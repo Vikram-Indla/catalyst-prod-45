@@ -219,7 +219,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               }}>
                 <CheckCircle2 size={40} color="#16A34A" />
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+              <h3 style={{ fontSize: 18, fontWeight: 650, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
                 Epics Generated Successfully
               </h3>
               <p style={{ fontSize: 14, color: '#6B7280', margin: 0, textAlign: 'center' }}>
