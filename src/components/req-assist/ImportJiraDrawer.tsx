@@ -587,32 +587,58 @@ function Step2({
           {/* Table rows */}
           {tickets.map(t => {
             const checked = selectedTickets.has(t.ticket_key);
+            const imported = t.already_imported && !reImportKeys.has(t.ticket_key);
+            const reActivated = t.already_imported && reImportKeys.has(t.ticket_key);
+            const muted = imported;
             return (
               <div
                 key={t.ticket_key}
-                onClick={() => onToggle(t.ticket_key)}
+                onClick={() => !imported && onToggle(t.ticket_key)}
+                className="group"
                 style={{
                   display: 'flex', alignItems: 'center', height: 36,
-                  borderBottom: '0.75px solid #F3F4F6', cursor: 'pointer',
+                  borderBottom: '0.75px solid #F3F4F6',
+                  cursor: imported ? 'default' : 'pointer',
                   background: checked ? 'rgba(37,99,235,0.04)' : 'transparent',
                   transition: 'background 0.1s',
                 }}
-                onMouseEnter={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.02)'; }}
-                onMouseLeave={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                onMouseEnter={e => { if (!checked && !imported) (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.02)'; }}
+                onMouseLeave={e => { if (!checked && !imported) (e.currentTarget as HTMLElement).style.background = checked ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
               >
                 <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Checkbox checked={checked} onCheckedChange={() => onToggle(t.ticket_key)} />
+                  <Checkbox
+                    checked={checked}
+                    disabled={imported}
+                    onCheckedChange={() => !imported && onToggle(t.ticket_key)}
+                    style={imported ? { cursor: 'not-allowed', opacity: 0.4 } : undefined}
+                  />
                 </div>
-                <div style={{ width: 96, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: '#374151', fontFamily: "'JetBrains Mono', monospace" }}>{t.ticket_key}</div>
-                <div dir="auto" style={{ flex: 1, padding: '8px 12px', fontSize: 13, color: '#111827', fontFamily: "'Inter', sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
-                <div style={{ width: 88, padding: '8px 12px' }}>
+                <div style={{ width: 96, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: muted ? '#9CA3AF' : '#374151', fontFamily: "'JetBrains Mono', monospace" }}>{t.ticket_key}</div>
+                <div dir="auto" style={{ flex: 1, padding: '8px 12px', fontSize: 13, color: muted ? '#9CA3AF' : '#111827', fontFamily: "'Inter', sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
+                <div style={{ width: 88, padding: '8px 12px', opacity: muted ? 0.4 : 1 }}>
                   <Lozenge label={t.priority || 'MEDIUM'} styles={PRIORITY_STYLES} />
                 </div>
-                <div style={{ width: 48, padding: '8px 12px', display: 'flex', alignItems: 'center' }}>
+                <div style={{ width: 48, padding: '8px 12px', display: 'flex', alignItems: 'center', opacity: muted ? 0.4 : 1 }}>
                   {t.has_pdf && <FileText size={14} style={{ color: '#2563EB' }} />}
                 </div>
-                <div style={{ minWidth: 140, width: 140, padding: '8px 12px' }} title={t.status || 'Open'}>
+                <div style={{ minWidth: 140, width: 140, padding: '8px 12px', opacity: muted ? 0.5 : 1 }} title={t.status || 'Open'}>
                   <Lozenge label={t.status || 'Open'} styles={STATUS_STYLES} />
+                </div>
+                <div style={{ width: 100, padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                  {reActivated ? (
+                    <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 3, background: '#DEEBFF', color: '#0747A6', fontFamily: "'Inter', sans-serif" }}>Re-import</span>
+                  ) : imported ? (
+                    <>
+                      <span className="group-hover:hidden" style={{ fontSize: 11, padding: '2px 6px', borderRadius: 3, background: '#F3F4F6', color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Imported</span>
+                      <button
+                        className="hidden group-hover:inline-flex"
+                        onClick={(e) => { e.stopPropagation(); onReImport(t.ticket_key); }}
+                        style={{ fontSize: 12, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}
+                        onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                        onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                      >↻ Re-import</button>
+                    </>
+                  ) : null}
                 </div>
               </div>
             );
