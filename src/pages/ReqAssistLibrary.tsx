@@ -444,18 +444,35 @@ export default function ReqAssistLibrary() {
       {selectedDoc && <RAJiraSidePanel doc={selectedDoc} onClose={() => setSelectedDoc(null)} onOpenPdf={() => setPdfDoc(selectedDoc)} onGenerate={(type) => setBgModal({ type, doc: selectedDoc })} />}
       {pdfDoc && <RAPDFViewer doc={pdfDoc} onClose={() => setPdfDoc(null)} onGenerateEpics={() => { setPdfDoc(null); if (pdfDoc) setBgModal({ type: 'epics', doc: pdfDoc }); }} />}
       {bgModal && bgModal.type === 'epics' ? (
-        <RAEpicGenerationModal doc={bgModal.doc} onClose={() => setBgModal(null)} />
+        <RAEpicGenerationModal
+          doc={bgModal.doc}
+          onClose={() => setBgModal(null)}
+          onViewDrafts={(brdId) => {
+            setBgModal(null);
+            handleOpenDraftsByBrdId(brdId);
+          }}
+        />
       ) : bgModal ? (
         <RABackgroundModal type={bgModal.type} doc={bgModal.doc} onClose={() => setBgModal(null)} />
       ) : null}
 
-      {/* FIX 3: Regen confirmation dialog */}
+      {/* Draft drawer */}
+      {draftDrawer && (
+        <RAEpicDraftDrawer
+          brdId={draftDrawer.brdId}
+          docTitle={draftDrawer.docTitle}
+          jiraKey={draftDrawer.jiraKey}
+          onClose={() => { setDraftDrawer(null); qc.invalidateQueries({ queryKey: RA_KEYS.all }); }}
+        />
+      )}
+
+      {/* PART 2: Regen confirmation dialog — 3 buttons */}
       {regenConfirm && (
         <>
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 80 }} onClick={() => setRegenConfirm(null)} />
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            width: 400, background: '#FFFFFF', borderRadius: 8, zIndex: 90,
+            width: 420, background: '#FFFFFF', borderRadius: 8, zIndex: 90,
             padding: 24, boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
             fontFamily: "'Inter', sans-serif",
           }}>
@@ -463,13 +480,26 @@ export default function ReqAssistLibrary() {
               Epics Already Exist
             </h3>
             <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 20px', lineHeight: 1.5 }}>
-              This document already has {regenConfirm.count} epic{regenConfirm.count !== 1 ? 's' : ''} generated. Regenerating will replace them. Continue?
+              This document already has {regenConfirm.count} epic{regenConfirm.count !== 1 ? 's' : ''} generated
+              {regenConfirm.generatedAt ? (() => {
+                const days = Math.floor((Date.now() - new Date(regenConfirm.generatedAt!).getTime()) / 86400000);
+                return days === 0 ? ' today' : days === 1 ? ' yesterday' : ` ${days} days ago`;
+              })() : ''}. What would you like to do?
             </p>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => setRegenConfirm(null)} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+                border: 'none', background: 'transparent', color: '#475569', cursor: 'pointer',
               }}>Cancel</button>
+              <button onClick={() => {
+                const brdId = regenConfirm.brdId;
+                const doc = regenConfirm.doc;
+                setRegenConfirm(null);
+                setDraftDrawer({ brdId, docTitle: doc.title, jiraKey: (doc as any).jira_ticket_key || null });
+              }} style={{
+                padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
+                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+              }}>View Drafts</button>
               <button onClick={() => { const d = regenConfirm.doc; setRegenConfirm(null); setBgModal({ type: 'epics', doc: d }); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
                 border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
