@@ -421,7 +421,7 @@ export default function ReqAssistLibrary() {
                         </span>
                       </td>
                       {/* Actions */}
-                      <td data-col="actions" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'visible', position: 'relative', minWidth: 140 }}>
+                      <td data-col="actions" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'visible', position: 'relative', minWidth: 220, whiteSpace: 'nowrap' }}>
                         <ActionsCell
                           doc={doc}
                           epicCount={epicCounts[doc.id] || 0}

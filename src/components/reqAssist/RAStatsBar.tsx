@@ -36,7 +36,11 @@ function StatCard({ icon, label, value, subLabel, extra, loading, style }: {
 }
 
 function Arrow() {
-  return <ChevronRight size={16} color="#CBD5E1" style={{ flexShrink: 0, margin: '0 2px' }} />;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', padding: '0 8px', flexShrink: 0 }}>
+      <ChevronRight size={16} color="#CBD5E1" />
+    </div>
+  );
 }
 
 interface QueueRow {
@@ -84,7 +88,6 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
       .select('id', { count: 'exact', head: true })
       .eq('status', 'processing');
 
-    // Fetch last 10 queue rows for activity feed
     const { data: qRows } = await (supabase as any)
       .from('brd_processing_queue')
       .select('id, brd_id, status, updated_at, started_at, completed_at, created_at')
@@ -93,7 +96,6 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
 
     const rows: QueueRow[] = qRows ?? [];
 
-    // Resolve brd_id → jira_key for display
     const brdIds = [...new Set(rows.map(r => r.brd_id))];
     if (brdIds.length > 0) {
       const { data: brdDocs } = await (supabase as any)
@@ -114,26 +116,22 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
 
   useEffect(() => { loadData(); }, []);
 
-  // Realtime for queue updates
   useEffect(() => {
     const channel = supabase
       .channel('ra-statsbar-queue')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'brd_processing_queue' }, () => {
-        loadData();
-      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'brd_processing_queue' }, () => { loadData(); })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, []);
 
   const isLoading = loading && !fetched;
   const brdPct = brdStats.total > 0 ? (brdStats.ready / brdStats.total) * 100 : 0;
-
   const lastCompleted = queueRows.find(r => r.status === 'completed');
 
   return (
     <div style={{ marginBottom: 20 }}>
       {/* ROW 1 — Pipeline Funnel */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'stretch', gap: 0, width: '100%' }}>
         <StatCard
           icon={<Download size={16} />}
           label="Jira Tickets Imported"
@@ -175,97 +173,87 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
         />
       </div>
 
-      {/* ROW 2 — KB Indexed (full width) + Attachments */}
+      {/* ROW 2 — 2 cards side by side: KB+Activity (left) | Attachments (right) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
-        {/* KB Indexed — full width with activity feed */}
+        {/* Card 5: KB Indexed + Live Activity — ONE card, 2-col internal */}
         <div style={{
-          gridColumn: '1 / -1',
-          display: 'grid', gridTemplateColumns: '1fr 1fr',
           background: '#FFFFFF', border: '0.75px solid #E2E8F0', borderRadius: 6,
           overflow: 'hidden',
         }}>
-          {/* Left: KB stats */}
-          <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ flexShrink: 0, color: '#64748B' }}><Brain size={16} /></span>
-              <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>KB Indexed</span>
-            </div>
-            {isLoading ? (
-              <div style={{ width: 52, height: 28, background: '#E2E8F0', borderRadius: 4, marginTop: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
-            ) : (
-              <span style={{ fontSize: 28, fontWeight: 650, color: '#0F172A', fontFamily: "'Sora', sans-serif", marginTop: 2 }}>
-                {wikihubSynced} / {brdStats.total} docs
-              </span>
-            )}
-            <div style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>{wikihubChunks} chunks indexed</div>
-            <span className={queueRunning > 0 ? 'ra-running-pill' : ''} style={{
-              display: 'inline-flex', alignItems: 'center', alignSelf: 'flex-start',
-              padding: '1px 6px', borderRadius: 3, fontSize: 10, fontWeight: 700,
-              background: queueRunning > 0 ? '#DEEBFF' : '#DFE1E6',
-              color: queueRunning > 0 ? '#0747A6' : '#253858',
-              marginTop: 4,
-            }}>
-              {queueRunning > 0 ? `${queueRunning} running` : 'Idle'}
-            </span>
-          </div>
-
-          {/* Right: Live Activity Feed */}
-          <div style={{ padding: '16px 20px', borderLeft: '0.75px solid #E2E8F0' }}>
-            <div style={{ fontSize: 11, color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.08em', fontFamily: "'Inter', sans-serif", marginBottom: 8 }}>
-              Live Activity
-            </div>
-            {queueRows.length === 0 ? (
-              <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>
-                No activity yet — trigger Sync All to KB to start
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            {/* Left: KB stats */}
+            <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ flexShrink: 0, color: '#64748B' }}><Brain size={16} /></span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>KB Indexed</span>
               </div>
-            ) : (
-              <>
-                <div style={{ maxHeight: 120, overflowY: 'auto' }}>
-                  {queueRows.map((row, idx) => (
-                    <div key={row.id} className="ra-activity-row" style={{
-                      display: 'flex', alignItems: 'center', gap: 8,
-                      height: 24, fontSize: 12, color: '#475569', fontFamily: "'Inter', sans-serif",
-                      animation: idx === 0 ? 'ra-slide-up 200ms ease-out' : undefined,
-                    }}>
-                      <QueueStatusIcon status={row.status} />
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: '#334155' }}>
-                        {jiraKeyMap[row.brd_id] || row.brd_id.substring(0, 8)}
-                      </span>
-                      <span style={{ color: '#94A3B8' }}>→</span>
-                      <span style={{ fontSize: 11 }}>{row.status}</span>
-                      <span style={{ fontSize: 11, color: '#94A3B8', marginLeft: 'auto', whiteSpace: 'nowrap' }}>
-                        {formatTimeAbbreviated(row.updated_at || row.created_at)}
-                      </span>
-                    </div>
-                  ))}
+              {isLoading ? (
+                <div style={{ width: 52, height: 28, background: '#E2E8F0', borderRadius: 4, marginTop: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
+              ) : (
+                <span style={{ fontSize: 28, fontWeight: 650, color: '#0F172A', fontFamily: "'Sora', sans-serif", marginTop: 2 }}>
+                  {wikihubSynced} / {brdStats.total} docs
+                </span>
+              )}
+              <div style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>{wikihubChunks} chunks indexed</div>
+              <span className={queueRunning > 0 ? 'ra-running-pill' : ''} style={{
+                display: 'inline-flex', alignItems: 'center', alignSelf: 'flex-start',
+                padding: '1px 6px', borderRadius: 3, fontSize: 10, fontWeight: 700,
+                background: queueRunning > 0 ? '#DEEBFF' : '#DFE1E6',
+                color: queueRunning > 0 ? '#0747A6' : '#253858',
+                marginTop: 4,
+              }}>
+                {queueRunning > 0 ? `${queueRunning} running` : 'Idle'}
+              </span>
+            </div>
+
+            {/* Right: Live Activity Feed */}
+            <div style={{ padding: '16px 20px', borderLeft: '0.75px solid #E2E8F0' }}>
+              <div style={{ fontSize: 11, color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.08em', fontFamily: "'Inter', sans-serif", marginBottom: 8 }}>
+                Live Activity
+              </div>
+              {queueRows.length === 0 ? (
+                <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>
+                  No activity yet — trigger Sync All to KB to start
                 </div>
-                {lastCompleted && (
-                  <div style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif", marginTop: 6 }}>
-                    Last sync: {formatTimeAbbreviated(lastCompleted.completed_at || lastCompleted.updated_at)}
+              ) : (
+                <>
+                  <div style={{ maxHeight: 120, overflowY: 'auto' }}>
+                    {queueRows.map((row, idx) => (
+                      <div key={row.id} style={{
+                        display: 'flex', alignItems: 'center', gap: 8,
+                        height: 24, fontSize: 12, color: '#475569', fontFamily: "'Inter', sans-serif",
+                        animation: idx === 0 ? 'ra-slide-up 200ms ease-out' : undefined,
+                      }}>
+                        <QueueStatusIcon status={row.status} />
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: '#334155' }}>
+                          {jiraKeyMap[row.brd_id] || row.brd_id.substring(0, 8)}
+                        </span>
+                        <span style={{ color: '#94A3B8' }}>→</span>
+                        <span style={{ fontSize: 11 }}>{row.status}</span>
+                        <span style={{ fontSize: 11, color: '#94A3B8', marginLeft: 'auto', whiteSpace: 'nowrap' }}>
+                          {formatTimeAbbreviated(row.updated_at || row.created_at)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                )}
-              </>
-            )}
+                  {lastCompleted && (
+                    <div style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif", marginTop: 6 }}>
+                      Last sync: {formatTimeAbbreviated(lastCompleted.completed_at || lastCompleted.updated_at)}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Attachments Migrated */}
-        <div style={{ gridColumn: '1 / -1' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div /> {/* spacer to align right */}
-          </div>
-        </div>
-      </div>
-
-      {/* Attachments card as separate row */}
-      <div style={{ marginTop: 12 }}>
+        {/* Card 6: Attachments Migrated */}
         <StatCard
           icon={<Paperclip size={16} />}
           label="Attachments Migrated"
           value="0 files"
           subLabel={<span style={{ color: '#94A3B8', fontSize: 12 }}>Attachment sync coming</span>}
           loading={isLoading}
-          style={{ maxWidth: '50%' }}
         />
       </div>
 
