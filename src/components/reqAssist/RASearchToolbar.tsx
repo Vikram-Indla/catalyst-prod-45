@@ -70,16 +70,19 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
         {TABS.map(t => {
           const active = tab === t.key;
           return (
-            <button key={t.key} onClick={() => onTabChange(t.key)} style={{
+             <button key={t.key} onClick={() => onTabChange(t.key)} style={{
               display: 'inline-flex', alignItems: 'center',
-              padding: '0 10px', height: 28, fontSize: 12, fontWeight: 500,
-              borderRadius: 4,
-              border: `0.75px solid ${active ? '#2563EB' : '#E2E8F0'}`,
-              background: active ? '#EFF6FF' : '#FFFFFF',
-              color: active ? '#2563EB' : '#374151',
+              padding: '4px 12px', height: 28, fontSize: 13, fontWeight: 500,
+              borderRadius: 999,
+              border: `0.75px solid ${active ? '#BFDBFE' : '#E2E8F0'}`,
+              background: active ? '#EFF6FF' : 'transparent',
+              color: active ? '#1D4ED8' : '#6B7280',
               cursor: 'pointer', transition: 'all 120ms ease',
               fontFamily: "'Inter', sans-serif",
-            }}>
+            }}
+              onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+              onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; }}
+            >
               {t.label}
             </button>
           );
