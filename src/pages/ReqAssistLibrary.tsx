@@ -152,6 +152,7 @@ export default function ReqAssistLibrary() {
         .eq('id', docId);
 
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
+      qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
       toast.success('Document indexed for AI search');
     } catch (err: any) {
       toast.error(sanitiseError(err));
