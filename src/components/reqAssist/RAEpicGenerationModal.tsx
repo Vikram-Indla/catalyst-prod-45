@@ -187,7 +187,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
         )}
 
         {/* ── ERROR STATE ── */}
-        {!done && step === -1 && (
+        {hasFailed && (
           <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginBottom: 20 }}>
               <div style={{
