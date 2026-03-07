@@ -278,9 +278,8 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
             </>
           )}
         </div>
-        </SheetPrimitive.Content>
-      </SheetPortal>
-    </Sheet>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }
