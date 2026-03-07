@@ -71,12 +71,17 @@ export function useVerifyProject() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (projectKey: string) => {
-      const { data, error } = await supabase.functions.invoke('ra-jira-proxy', {
-        body: { action: 'verify_project', payload: { projectKey } },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      return data as { project_key: string; project_name: string; avatar_url: string | null };
+      try {
+        const { data, error } = await supabase.functions.invoke('ra-jira-proxy', {
+          body: { action: 'verify_project', payload: { projectKey } },
+        });
+        if (error) throw error;
+        if (data?.error) throw new Error(data.error);
+        return data as { project_key: string; project_name: string; avatar_url: string | null };
+      } catch (e: any) {
+        console.warn('[useVerifyProject] Edge function error:', e?.message);
+        throw new Error(e?.message || 'Jira proxy not available');
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: JIRA_KEYS.connections });
