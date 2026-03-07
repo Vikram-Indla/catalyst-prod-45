@@ -60,15 +60,19 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
     if (!selectedProject) return;
     setPublishing(true);
     try {
-      // Insert into project epics with Promise.allSettled (H-04)
+      // Insert into project epics — use correct column names per schema:
+      // epics table uses: name (not title), source_ra_doc_id, description
+      // ra_tag stored in description suffix for traceability
       const results = await Promise.allSettled(
         epics.map(epic =>
           (supabase as any).from('epics').insert({
-            title: epic.title,
-            project_id: selectedProject.id,
-            status: 'to_do',
-            source: 'req_assist',
-            ra_tag: epic.ra_tag,
+            name: epic.title,
+            program_id: selectedProject.id,
+            status: 'funnel',
+            source_ra_doc_id: brdId,
+            description: epic.ra_tag
+              ? `${epic.title}\n\n[RA: ${epic.ra_tag}]`
+              : epic.title,
           })
         )
       );
