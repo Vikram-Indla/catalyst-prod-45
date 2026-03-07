@@ -71,7 +71,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   const [addInput, setAddInput] = useState('');
   const [verifyState, setVerifyState] = useState<'idle' | 'loading' | 'success' | 'not_found' | 'not_configured'>('idle');
   const [verifyResult, setVerifyResult] = useState<{ project_name: string; count: number } | null>(null);
-  const [selectedTickets, setSelectedTickets] = useState<Set<string>>(new Set());
+  const [selectedTickets, setSelectedTickets] = useState<string[]>([]);
   const [pdfOnly, setPdfOnly] = useState(true);
   const [ticketSearch, setTicketSearch] = useState('');
   const [reImportKeys, setReImportKeys] = useState<Set<string>>(new Set());
@@ -138,30 +138,26 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
 
   const toggleTicket = (key: string) => {
     const ticket = filteredTickets.find(t => t.ticket_key === key);
-    if (ticket?.already_imported && !reImportKeys.has(key)) return; // disabled unless re-import activated
-    setSelectedTickets(prev => {
-      const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
-      return next;
-    });
+    if (ticket?.already_imported && !reImportKeys.has(key)) return;
+    setSelectedTickets(prev =>
+      prev.includes(key)
+        ? prev.filter(id => id !== key)
+        : [...prev, key]
+    );
   };
 
   const activateReImport = (key: string) => {
     setReImportKeys(prev => { const n = new Set(prev); n.add(key); return n; });
-    setSelectedTickets(prev => { const n = new Set(prev); n.add(key); return n; });
+    setSelectedTickets(prev => prev.includes(key) ? prev : [...prev, key]);
   };
 
-  const toggleAll = () => {
+  const toggleAll = (checked: boolean) => {
     const selectable = filteredTickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key));
-    if (selectedTickets.size === selectable.length) {
-      setSelectedTickets(new Set());
-    } else {
-      setSelectedTickets(new Set(selectable.map(t => t.ticket_key)));
-    }
+    setSelectedTickets(checked ? selectable.map(t => t.ticket_key) : []);
   };
 
   const handleImport = useCallback(async () => {
-    const keys = Array.from(selectedTickets);
+    const keys = [...selectedTickets];
     if (!keys.length) return;
     try {
       const result = await importMutation.mutateAsync(keys);
@@ -175,7 +171,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   const handleClose = () => {
     setStep(1);
     setSelectedProject(null);
-    setSelectedTickets(new Set());
+    setSelectedTickets([]);
     setReImportKeys(new Set());
     setVerifyState('idle');
     setAddInput('');
@@ -283,7 +279,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
             <>
               <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Cancel</button>
               <button
-                onClick={() => { if (selectedProject) { setStep(2); setSelectedTickets(new Set()); } }}
+                onClick={() => { if (selectedProject) { setStep(2); setSelectedTickets([]); } }}
                 disabled={!selectedProject}
                 style={{
                   background: selectedProject ? '#2563EB' : '#93C5FD', color: '#FFFFFF',
@@ -298,18 +294,18 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
               <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>← Back</button>
               <button
                 onClick={handleImport}
-                disabled={selectedTickets.size === 0 || importMutation.isPending}
+                disabled={selectedTickets.length === 0 || importMutation.isPending}
                 style={{
-                  background: selectedTickets.size > 0 ? '#2563EB' : '#93C5FD', color: '#FFFFFF',
+                  background: selectedTickets.length > 0 ? '#2563EB' : '#93C5FD', color: '#FFFFFF',
                   border: 'none', borderRadius: 6, padding: '0 16px', height: 36,
                   fontSize: 13, fontWeight: 600,
-                  cursor: selectedTickets.size > 0 ? 'pointer' : 'not-allowed',
-                  fontFamily: "'Inter', sans-serif", opacity: selectedTickets.size > 0 ? 1 : 0.6,
+                  cursor: selectedTickets.length > 0 ? 'pointer' : 'not-allowed',
+                  fontFamily: "'Inter', sans-serif", opacity: selectedTickets.length > 0 ? 1 : 0.6,
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}
               >
                 {importMutation.isPending && <Loader2 size={14} className="animate-spin" />}
-                Import {selectedTickets.size} Ticket{selectedTickets.size !== 1 ? 's' : ''}
+                Import {selectedTickets.length} Ticket{selectedTickets.length !== 1 ? 's' : ''}
               </button>
             </>
           )}
@@ -491,9 +487,9 @@ function Step2({
   totalIssueCount: number;
   pdfIssueCount: number;
   loading: boolean;
-  selectedTickets: Set<string>;
+  selectedTickets: string[];
   onToggle: (key: string) => void;
-  onToggleAll: () => void;
+  onToggleAll: (checked: boolean) => void;
   pdfOnly: boolean;
   onPdfToggle: () => void;
   search: string;
@@ -585,8 +581,8 @@ function Step2({
             <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <input
                 type="checkbox"
-                checked={selectedTickets.size === tickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key)).length && tickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key)).length > 0}
-                onChange={() => onToggleAll()}
+                checked={selectedTickets.length === tickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key)).length && tickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key)).length > 0}
+                onChange={e => onToggleAll(e.target.checked)}
                 style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#2563EB' }}
               />
             </div>
@@ -607,7 +603,7 @@ function Step2({
 
           {/* Table rows */}
           {tickets.map(t => {
-            const checked = selectedTickets.has(t.ticket_key);
+            const checked = selectedTickets.includes(t.ticket_key);
             const imported = t.already_imported && !reImportKeys.has(t.ticket_key);
             const reActivated = t.already_imported && reImportKeys.has(t.ticket_key);
             const muted = imported;
@@ -668,7 +664,7 @@ function Step2({
 
           {/* Footer */}
           <div style={{ padding: '8px 0', marginTop: 8, fontSize: 13, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>
-            {selectedTickets.size} of {tickets.length} tickets selected
+            {selectedTickets.length} of {tickets.length} tickets selected
           </div>
         </>
       )}
