@@ -587,14 +587,14 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
         >
           View Drafts
+          <span style={{
+            display: 'inline-flex', alignItems: 'center',
+            padding: '1px 5px', borderRadius: 3,
+            fontSize: 10, fontWeight: 700,
+            background: '#DEEBFF', color: '#0747A6',
+            marginLeft: 6,
+          }}>{epicCount}</span>
         </button>
-        <span style={{
-          display: 'inline-flex', alignItems: 'center',
-          padding: '0 6px', height: 20, borderRadius: 3,
-          fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap',
-          background: '#F1F5F9', color: '#475569',
-          fontFamily: "'Inter', sans-serif",
-        }}>{epicCount} epics</span>
       </div>
     );
   }
