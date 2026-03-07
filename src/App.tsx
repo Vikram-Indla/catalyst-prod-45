@@ -5,6 +5,7 @@ const KBDataAuditPage = lazy(() => import("./pages/KBDataAudit"));
 const RAGAuditPage = lazy(() => import("./pages/RAGAuditPage"));
 const WikiAdminPage = lazy(() => import("./pages/admin/WikiAdminPage"));
 const WikiDiagnosticPage = lazy(() => import("./pages/admin/WikiDiagnosticPage"));
+const AdminDiagnosticPage = lazy(() => import("./pages/admin/AdminDiagnosticPage"));
 import { Resource360Redirect } from './components/workhub/resource360/Resource360Redirect';
 const Resource360PageNew = lazy(() => import("./components/resource360/Resource360PageNew"));
 const Resource360MemberDetail = lazy(() => import("./pages/Resource360MemberDetail"));
@@ -1201,6 +1202,7 @@ const App = () => (
                 {/* Wiki Admin */}
                 <Route path="wiki" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiAdminPage /></Suspense>} />
                 <Route path="wiki-diagnostic" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiDiagnosticPage /></Suspense>} />
+                <Route path="diagnostic" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AdminDiagnosticPage /></Suspense>} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
