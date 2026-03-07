@@ -128,7 +128,7 @@ export function useVerifyProject() {
         if (data?.error) throw new Error(data.error);
         return data as { project_key: string; project_name: string; avatar_url: string | null };
       } catch (e: any) {
-        console.warn('[useVerifyProject] Edge function error:', e?.message);
+        console.warn('[RA] External service error');
         throw new Error(e?.message || 'Jira proxy not available');
       }
     },
