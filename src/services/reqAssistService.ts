@@ -14,7 +14,8 @@ export async function fetchRADocuments(params?: {
       ra_artifacts(id, artifact_type, status),
       ra_processing_jobs(id, job_type, status, progress_pct, current_step, eta_seconds)
     `)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(200);
 
   if (params?.status && params.status !== 'all') {
     query = query.eq('status', params.status);
