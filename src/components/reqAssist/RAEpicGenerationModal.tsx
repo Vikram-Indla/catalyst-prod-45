@@ -6,6 +6,7 @@ import { RA_KEYS } from '@/hooks/useReqAssist';
 import { CheckCircle2, XCircle, Sparkles, Check, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
+import { sanitiseError } from '@/lib/errorUtils';
 
 interface Props {
   doc: RADocumentWithArtifacts;
