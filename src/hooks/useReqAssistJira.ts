@@ -151,7 +151,7 @@ export function useSyncTickets() {
         if (data?.error) throw new Error(data.error);
         return data as { synced: number; tickets: any[] };
       } catch (e: any) {
-        console.warn('[useSyncTickets] Edge function error:', e?.message);
+        console.warn('[RA] External service error');
         throw new Error(e?.message || 'Jira proxy not available');
       }
     },
