@@ -453,7 +453,7 @@ function Step1({
 
 function Step2({
   projectName, tickets, loading, selectedTickets, onToggle, onToggleAll,
-  pdfOnly, onPdfToggle, search, onSearch, onSync, syncing,
+  pdfOnly, onPdfToggle, search, onSearch, onSync, syncing, lastSyncedAt,
 }: {
   projectName: string;
   tickets: any[];
@@ -467,11 +467,19 @@ function Step2({
   onSearch: (v: string) => void;
   onSync: () => void;
   syncing: boolean;
+  lastSyncedAt: string | null;
 }) {
+  const syncLabel = lastSyncedAt
+    ? `Last synced: ${new Date(lastSyncedAt).toLocaleString()}`
+    : 'Not yet synced';
+
   return (
     <>
-      <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 16, fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
         {projectName} · Showing tickets with attachments only
+      </div>
+      <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 16, fontFamily: "'JetBrains Mono', monospace" }}>
+        {syncLabel}
       </div>
 
       {/* Filter bar */}
@@ -505,18 +513,32 @@ function Step2({
       </div>
 
       {/* Table */}
-      {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} style={{ height: 36, background: '#F3F4F6', marginBottom: 1, borderRadius: 2, animation: 'pulse 1.5s ease-in-out infinite' }} />
+      {loading || syncing ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {[1, 2, 3].map(i => (
+            <div key={i} className="animate-pulse" style={{ height: 36, background: '#F3F4F6', borderRadius: 4 }} />
           ))}
         </div>
       ) : tickets.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
-          <Inbox size={32} style={{ color: '#9CA3AF' }} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: '#374151', marginTop: 12, fontFamily: "'Inter', sans-serif" }}>No tickets with attachments found</span>
-          <span style={{ fontSize: 13, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Only Jira tickets with file attachments appear here.</span>
-          <button onClick={onSync} style={{ marginTop: 8, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#2563EB', textDecoration: 'underline', fontFamily: "'Inter', sans-serif" }}>Sync Now →</button>
+          <RefreshCw size={32} style={{ color: '#6B7280' }} />
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginTop: 12, fontFamily: "'Inter', sans-serif" }}>No tickets found</span>
+          <span style={{ fontSize: 13, color: '#6B7280', fontFamily: "'Inter', sans-serif", textAlign: 'center', maxWidth: 280, marginTop: 4 }}>
+            No Jira tickets with attachments were found for this project. Tickets must have at least one attachment to appear here.
+          </span>
+          <button
+            onClick={onSync}
+            disabled={syncing}
+            style={{
+              marginTop: 12, height: 32, borderRadius: 6, padding: '0 16px',
+              fontSize: 13, fontWeight: 600, fontFamily: "'Inter', sans-serif",
+              color: '#2563EB', background: 'transparent', border: '1px solid #2563EB',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+            }}
+          >
+            {syncing && <Loader2 size={14} className="animate-spin" />}
+            Sync Now
+          </button>
         </div>
       ) : (
         <>
