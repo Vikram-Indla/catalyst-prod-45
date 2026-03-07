@@ -34,9 +34,44 @@ export default function ReqAssistLibrary() {
   const [pdfDoc, setPdfDoc] = useState<RADocumentWithArtifacts | null>(null);
   const [bgModal, setBgModal] = useState<{ type: string; doc: RADocumentWithArtifacts } | null>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
   const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
   const [syncingAll, setSyncingAll] = useState(false);
-  const queryClient = (await import('@tanstack/react-query')).useQueryClient();
+
+  const handleSyncKb = useCallback(async (docId: string) => {
+    setSyncingIds(prev => new Set(prev).add(docId));
+    try {
+      const { error } = await (supabase as any)
+        .from('ra_documents')
+        .update({ kb_synced: true, kb_synced_at: new Date().toISOString() })
+        .eq('id', docId);
+      if (error) throw error;
+      toast.success('Document synced to KB');
+    } catch (err: any) {
+      toast.error('Sync failed: ' + (err?.message ?? 'Unknown error'));
+    } finally {
+      setSyncingIds(prev => { const n = new Set(prev); n.delete(docId); return n; });
+    }
+  }, []);
+
+  const handleSyncAll = useCallback(async () => {
+    if (!documents) return;
+    const unsyncedReady = documents.filter(d => (d.status === 'ready' || d.status === 'complete') && !(d as any).kb_synced);
+    if (!unsyncedReady.length) { toast.info('All documents already synced'); return; }
+    setSyncingAll(true);
+    let success = 0;
+    for (const doc of unsyncedReady) {
+      try {
+        const { error } = await (supabase as any)
+          .from('ra_documents')
+          .update({ kb_synced: true, kb_synced_at: new Date().toISOString() })
+          .eq('id', doc.id);
+        if (!error) success++;
+      } catch {}
+    }
+    toast.success(`Synced ${success} of ${unsyncedReady.length} documents to KB`);
+    setSyncingAll(false);
+  }, [documents]);
 
   useEffect(() => {
     if (!dropdownOpen) return;
