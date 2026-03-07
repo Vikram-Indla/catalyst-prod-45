@@ -26,6 +26,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
   const [progress, setProgress] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
   const [done, setDone] = useState(false);
+  const [hasFailed, setHasFailed] = useState(false);
   const [epicCount, setEpicCount] = useState(0);
   const invokeKey = useRef(0);
 
@@ -47,11 +48,13 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
         if (cancelled) return;
 
         if (error) {
+          setHasFailed(true);
           setStep(-1);
           setErrorMsg(error.message || JSON.stringify(error));
           return;
         }
         if (!data || data.error) {
+          setHasFailed(true);
           setStep(-1);
           setErrorMsg(data?.error || data?.message || 'No data returned');
           return;
@@ -70,6 +73,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
       .catch((err) => {
         clearInterval(ticker);
         if (cancelled) return;
+        setHasFailed(true);
         setStep(-1);
         setErrorMsg(err?.message || String(err));
       });
@@ -88,6 +92,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
 
   const handleRetry = () => {
     setErrorMsg('');
+    setHasFailed(false);
     setStep(0);
     setProgress(0);
     setDone(false);
@@ -182,7 +187,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
         )}
 
         {/* ── ERROR STATE ── */}
-        {!done && step === -1 && (
+        {hasFailed && (
           <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginBottom: 20 }}>
               <div style={{
@@ -197,14 +202,14 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
             </div>
 
             <div style={{
-              padding: '12px 14px', borderRadius: 6,
-              background: '#FEF2F2', border: '0.75px solid #FECACA', marginBottom: 12,
+              background: '#FEF2F2', border: '1.5px solid #DC2626', borderRadius: 6,
+              padding: '14px 16px', marginBottom: 16, maxHeight: 120, overflowY: 'auto' as const,
             }}>
               <code style={{
-                fontSize: 13, color: '#991B1B', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-                fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                fontSize: 13, color: '#991B1B', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' as const,
+                fontFamily: 'monospace', display: 'block',
               }}>
-                {errorMsg}
+                {errorMsg || 'Unknown error — check browser console'}
               </code>
             </div>
 
@@ -241,7 +246,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
         )}
 
         {/* ── IN PROGRESS STATE ── */}
-        {!done && step >= 0 && (
+        {!done && !hasFailed && (
           <>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
