@@ -288,7 +288,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               }}>
                 <XCircle size={32} color="#DC2626" />
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+              <h3 style={{ fontSize: 18, fontWeight: 650, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
                 Generation Failed
               </h3>
             </div>
