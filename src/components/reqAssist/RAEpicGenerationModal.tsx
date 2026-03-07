@@ -349,7 +349,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 <div className="ra-epic-spinner-lg" />
               </div>
               <div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+                <h3 style={{ fontSize: 18, fontWeight: 650, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>
                   Generating Epic Statements
                 </h3>
                 <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0' }}>

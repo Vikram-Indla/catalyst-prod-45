@@ -170,7 +170,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   </a>
                 )}
               </div>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>{doc.title}</h3>
+              <h3 style={{ fontSize: 15, fontWeight: 650, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>{doc.title}</h3>
             </div>
             <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 4 }}>
               <X size={20} color="#64748B" />

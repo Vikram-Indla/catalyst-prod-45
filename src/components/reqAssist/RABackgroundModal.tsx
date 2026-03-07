@@ -156,7 +156,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
             <Loader2 size={22} color="#2563EB" style={{ animation: 'ra-spin 1s linear infinite' }} />
           )}
         </div>
-        <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>
+        <h3 style={{ fontSize: 18, fontWeight: 650, color: '#0F172A', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>
           {jobStatus === 'done' ? 'Generation Complete' : jobStatus === 'failed' ? 'Generation Failed' : config.title}
         </h3>
         <p style={{ fontSize: 13, color: '#64748B', margin: '0 0 20px', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>

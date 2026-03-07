@@ -576,7 +576,7 @@ export default function ReqAssistLibrary() {
             padding: 24, border: '0.75px solid #E2E8F0',
             fontFamily: "'Inter', sans-serif",
           }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 650, color: '#0F172A', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>
               Epics Already Exist
             </h3>
             <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 20px', lineHeight: 1.5 }}>
