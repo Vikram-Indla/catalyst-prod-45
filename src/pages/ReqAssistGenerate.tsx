@@ -475,8 +475,8 @@ export default function ReqAssistGenerate() {
         <ModalOverlay>
           <div style={{ width: 480, background: '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: "'Inter', sans-serif" }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <AlertTriangle size={20} color="#D97706" />
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#111827', fontFamily: "'Sora', sans-serif" }}>Document Already Exists</span>
+              <AlertTriangle size={20} color="#64748B" />
+              <span style={{ fontSize: 16, fontWeight: 650, color: '#111827', fontFamily: "'Sora', sans-serif" }}>Document Already Exists</span>
             </div>
             <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.6, margin: '0 0 20px' }}>
               A BRD with identical content already exists in your library: <strong style={{ fontWeight: 650, color: '#111827' }}>"{duplicateDoc.title}"</strong>. What would you like to do?
