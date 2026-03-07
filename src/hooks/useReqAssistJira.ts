@@ -45,10 +45,10 @@ export function useProjectTickets(projectKey: string | null, pdfOnly = false) {
     queryFn: async () => {
       let q = (supabase as any)
         .from('ra_jira_tickets')
-        .select('*')
+        .select('ticket_key, ticket_summary, ticket_type, has_pdf, attachment_count, status, project_key, project_name, jira_issue_id, synced_at')
         .eq('project_key', projectKey);
       if (pdfOnly) q = q.eq('has_pdf', true);
-      q = q.order('ticket_key', { ascending: true });
+      q = q.order('ticket_key', { ascending: true }).limit(500);
       const { data: rawData, error } = await q;
       if (error) throw error;
 
@@ -128,7 +128,7 @@ export function useVerifyProject() {
         if (data?.error) throw new Error(data.error);
         return data as { project_key: string; project_name: string; avatar_url: string | null };
       } catch (e: any) {
-        console.warn('[useVerifyProject] Edge function error:', e?.message);
+        console.warn('[RA] External service error');
         throw new Error(e?.message || 'Jira proxy not available');
       }
     },
@@ -151,7 +151,7 @@ export function useSyncTickets() {
         if (data?.error) throw new Error(data.error);
         return data as { synced: number; tickets: any[] };
       } catch (e: any) {
-        console.warn('[useSyncTickets] Edge function error:', e?.message);
+        console.warn('[RA] External service error');
         throw new Error(e?.message || 'Jira proxy not available');
       }
     },

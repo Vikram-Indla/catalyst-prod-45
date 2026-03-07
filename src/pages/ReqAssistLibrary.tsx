@@ -1,9 +1,10 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { FileText, FileSearch, Download, Loader2, AlertCircle, Zap, TestTube, Flag, RefreshCw, CheckCircle2, RotateCcw, Eye, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useRADocuments, useRAStats, RA_KEYS } from '@/hooks/useReqAssist';
 import { syncSingleBrdToKb, fetchDocumentEpicCounts } from '@/services/reqAssistService';
+import { sanitiseError } from '@/lib/errorUtils';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import type { RAFilterTab, RADocumentWithArtifacts } from '@/types/reqAssistV2';
@@ -153,7 +154,7 @@ export default function ReqAssistLibrary() {
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
       toast.success('Document indexed for AI search');
     } catch (err: any) {
-      toast.error('Sync failed: ' + (err?.message ?? 'Unknown error'));
+      toast.error(sanitiseError(err));
     } finally {
       setSyncingIds(prev => { const n = new Set(prev); n.delete(docId); return n; });
     }
@@ -189,8 +190,9 @@ export default function ReqAssistLibrary() {
           .eq('id', doc.id);
 
         success++;
-      } catch {
+      } catch (err: unknown) {
         failed++;
+        console.error('[RA] Sync failed for doc:', sanitiseError(err));
       }
     }
     toast.dismiss('sync-all-progress');
@@ -203,12 +205,20 @@ export default function ReqAssistLibrary() {
     setSyncingAll(false);
   }, [documents, qc]);
 
-  /* Supabase Realtime subscriptions for live updates */
+  /* Supabase Realtime subscriptions for live updates — debounced */
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     const channel1 = supabase.channel('req-assist-queue')
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'brd_processing_queue' },
-        () => { qc.invalidateQueries({ queryKey: RA_KEYS.stats() }); qc.invalidateQueries({ queryKey: RA_KEYS.all }); })
+        () => {
+          if (debounceRef.current) clearTimeout(debounceRef.current);
+          debounceRef.current = setTimeout(() => {
+            qc.invalidateQueries({ queryKey: RA_KEYS.stats() });
+            qc.invalidateQueries({ queryKey: RA_KEYS.all });
+            qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
+          }, 2000);
+        })
       .subscribe();
 
     const channel2 = supabase.channel('req-assist-docs')
@@ -218,6 +228,7 @@ export default function ReqAssistLibrary() {
       .subscribe();
 
     return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
       supabase.removeChannel(channel1);
       supabase.removeChannel(channel2);
     };
@@ -634,7 +645,7 @@ function StatusBadge({ status }: { status: string }) {
     complete:   { bg: '#E3FCEF', color: '#006644', label: 'READY' },
     processing: { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
     pending:    { bg: '#DFE1E6', color: '#253858', label: 'PENDING' },
-    failed:     { bg: '#DFE1E6', color: '#253858', label: 'FAILED' },
+    failed:     { bg: '#FFEAEA', color: '#DC2626', label: 'FAILED' },
     intake:     { bg: '#DFE1E6', color: '#253858', label: 'INTAKE' },
     extract:    { bg: '#DEEBFF', color: '#0747A6', label: 'EXTRACTING' },
     process:    { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },

@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { RA_KEYS } from '@/hooks/useReqAssist';
 import { syncSingleBrdToKb } from '@/services/reqAssistService';
+import { sanitiseError } from '@/lib/errorUtils';
 import ReactMarkdown from 'react-markdown';
 import RAEpicGenerationModal from '@/components/reqAssist/RAEpicGenerationModal';
 
@@ -146,8 +147,8 @@ export default function ReqAssistGenerate() {
 
       setGenResult(gData as GenerateResult);
     } catch (err: any) {
-      setGenError(err.message || 'An unexpected error occurred');
-      toast.error('Generation failed', { description: err.message });
+      setGenError(sanitiseError(err));
+      toast.error('Generation failed', { description: sanitiseError(err) });
     } finally {
       setQualifying(false);
       setGenerating(false);
@@ -234,7 +235,7 @@ export default function ReqAssistGenerate() {
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
     } catch (err: any) {
       setWikiState('failed');
-      toast.error('Sync failed: ' + (err?.message ?? 'Unknown error'));
+      toast.error(sanitiseError(err));
     }
   }, [savedDocId, qc]);
 
@@ -315,7 +316,7 @@ export default function ReqAssistGenerate() {
           {genError && (
             <div style={{ marginTop: 12, padding: '14px 16px', background: '#FEF2F2', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>Generation Error</div>
-              <p style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>{genError}</p>
+              <p style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>{sanitiseError(genError)}</p>
             </div>
           )}
 

@@ -6,6 +6,7 @@ import { RA_KEYS } from '@/hooks/useReqAssist';
 import { CheckCircle2, XCircle, Sparkles, Check, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
+import { sanitiseError } from '@/lib/errorUtils';
 
 interface Props {
   doc: RADocumentWithArtifacts;
@@ -108,16 +109,16 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     console.log('[EpicModal] Invoking generate_epics_for_brd with brd_id:', brdId);
     const { data, error } = await supabase.functions.invoke('generate_epics_for_brd', { body: { brd_id: brdId } });
     if (error) {
-      console.error('[RAEpicModal] Generation failed:', error.message || error);
+      console.error('[RA] Generation failed');
       setHasFailed(true);
-      setErrorMsg(error.message || JSON.stringify(error));
+      setErrorMsg(sanitiseError(error));
       return;
     }
     if (!data || data.error) {
-      const msg = data?.error || data?.message || 'Empty response from Edge Function';
-      console.error('[RAEpicModal] Generation failed:', msg);
+      const msg = data?.error || data?.message || 'Generation returned no data';
+      console.error('[RA] Generation failed');
       setHasFailed(true);
-      setErrorMsg(msg);
+      setErrorMsg(sanitiseError(msg));
       return;
     }
     setStep(5);
@@ -154,9 +155,9 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
       setResolvedBrdId(brdId);
       invokeGeneration(brdId);
     }).catch(err => {
-      console.error('[EpicModal] Resolution failed:', err?.message || err);
+      console.error('[RA] Resolution failed');
       setHasFailed(true);
-      setErrorMsg(err?.message || String(err));
+      setErrorMsg(sanitiseError(err));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -178,9 +179,9 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
       hasStarted.current = true;
       invokeGeneration(brdId);
     }).catch(err => {
-      console.error('[RAEpicModal] Retry failed:', err?.message || err);
+      console.error('[RA] Retry failed');
       setHasFailed(true);
-      setErrorMsg(err?.message || String(err));
+      setErrorMsg(sanitiseError(err));
     });
   };
 
