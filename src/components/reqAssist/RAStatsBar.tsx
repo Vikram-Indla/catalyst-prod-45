@@ -72,8 +72,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
   const [fetched, setFetched] = useState(false);
 
   const loadData = async () => {
-    const [{ count: brdTotal }, { count: brdReady }] = await Promise.all([
-      (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }),
+    const [{ count: brdReady }] = await Promise.all([
       (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }).eq('pipeline_stage', 'ready'),
     ]);
 
@@ -107,14 +106,14 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
       setJiraKeyMap(map);
     }
 
-    setBrdStats({ ready: brdReady ?? 0, total: brdTotal ?? 0 });
+    setBrdStats({ ready: brdReady ?? 0, total: totalDocuments });
     setEpicStats({ draft, reviewed, published, total: epics.length });
     setQueueRunning(running ?? 0);
     setQueueRows(rows);
     setFetched(true);
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [totalDocuments]);
 
   useEffect(() => {
     const channel = supabase
@@ -122,7 +121,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
       .on('postgres_changes', { event: '*', schema: 'public', table: 'brd_processing_queue' }, () => { loadData(); })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, []);
+  }, [totalDocuments]);
 
   const isLoading = loading && !fetched;
   const brdPct = brdStats.total > 0 ? (brdStats.ready / brdStats.total) * 100 : 0;
