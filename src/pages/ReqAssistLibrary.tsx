@@ -9,7 +9,7 @@ import RAGenerationBar from '@/components/reqAssist/RAGenerationBar';
 import RAJiraSidePanel from '@/components/reqAssist/RAJiraSidePanel';
 import RAPDFViewer from '@/components/reqAssist/RAPDFViewer';
 import RABackgroundModal from '@/components/reqAssist/RABackgroundModal';
-import RAImportDrawer from '@/components/reqAssist/RAImportDrawer';
+import ImportJiraDrawer from '@/components/req-assist/ImportJiraDrawer';
 import { format } from 'date-fns';
 
 /* ── Domain lozenge mapping (neutral only) ── */

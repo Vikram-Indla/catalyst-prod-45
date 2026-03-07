@@ -371,7 +371,7 @@ function Step1({
         <div style={{ display: 'flex', gap: 8 }}>
           <input
             value={addInput}
-            onChange={e => { onAddInput(e.target.value.toUpperCase()); setVerifyState && undefined; }}
+            onChange={e => onAddInput(e.target.value.toUpperCase())}
             placeholder="Project key (e.g. SEN, MDT)"
             style={{
               flex: 1, height: 36, border: '0.75px solid #E5E7EB', borderRadius: 4,
