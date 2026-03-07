@@ -3,6 +3,7 @@ import { FileText, FileSearch, Download, Loader2, AlertCircle, Zap, TestTube, Fl
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useRADocuments, useRAStats, RA_KEYS } from '@/hooks/useReqAssist';
+import { syncSingleBrdToKb } from '@/services/reqAssistService';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import type { RAFilterTab, RADocumentWithArtifacts } from '@/types/reqAssistV2';
