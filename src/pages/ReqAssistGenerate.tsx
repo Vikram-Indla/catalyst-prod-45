@@ -384,8 +384,8 @@ export default function ReqAssistGenerate() {
             {/* STATE BANNERS */}
             {brdState === 'generated' && (
               <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: '#FEF2F2', border: '0.75px solid #FECACA', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <AlertTriangle size={15} color="#92400E" style={{ flexShrink: 0 }} />
-                <span style={{ fontSize: 13, color: '#92400E', fontFamily: "'Inter', sans-serif" }}>
+                <AlertTriangle size={15} color="#DC2626" style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: 13, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>
                   This BRD has not been saved yet. Save to Library to enable Epics generation and WikiHub sync.
                 </span>
               </div>
