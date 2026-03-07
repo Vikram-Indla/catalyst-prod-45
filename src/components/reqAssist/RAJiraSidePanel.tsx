@@ -28,6 +28,7 @@ interface PipelineState {
 }
 
 export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, onViewDrafts, onSyncKb }: Props) {
+  const navigate = useNavigate();
   const [pipeline, setPipeline] = useState<PipelineState>({
     imported: true, processed: false, indexed: false,
     epicsGenerated: false, published: false, brdId: null,
