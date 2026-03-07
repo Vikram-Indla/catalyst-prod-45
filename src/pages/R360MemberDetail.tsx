@@ -734,7 +734,7 @@ export default function R360MemberDetail() {
               inset: 0,
               top: 48,
               backgroundColor: 'rgba(0, 0, 0, 0.15)',
-              zIndex: 49,
+              zIndex: 300,
             }}
           />
           <div
@@ -745,7 +745,7 @@ export default function R360MemberDetail() {
               width: 700,
               height: 'calc(100vh - 48px)',
               backgroundColor: '#FFFFFF',
-              zIndex: 50,
+              zIndex: 301,
               overflowY: 'auto',
               boxShadow: '-4px 0 24px rgba(0, 0, 0, 0.10)',
               display: 'flex',
