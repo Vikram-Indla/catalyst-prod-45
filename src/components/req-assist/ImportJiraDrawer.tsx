@@ -578,7 +578,7 @@ function Step2({
             <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <input
                 type="checkbox"
-                checked={selectedTickets.length === tickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key)).length && tickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key)).length > 0}
+                checked={selectedTickets.length === tickets.length && tickets.length > 0}
                 onChange={e => onToggleAll(e.target.checked)}
                 style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#2563EB' }}
               />
