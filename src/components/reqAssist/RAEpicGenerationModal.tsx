@@ -283,7 +283,14 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 Close
               </button>
               <button
-                onClick={() => { onClose(); nav('/product/req-assist'); }}
+                onClick={() => {
+                  onClose();
+                  if (onViewDrafts && resolvedBrdId) {
+                    onViewDrafts(resolvedBrdId);
+                  } else {
+                    nav('/product/req-assist');
+                  }
+                }}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
                   border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
