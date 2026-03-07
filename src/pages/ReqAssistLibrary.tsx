@@ -330,10 +330,15 @@ export default function ReqAssistLibrary() {
                           </span>
                         )}
                       </td>
-                      {/* Title */}
-                      <td style={{ padding: '0 10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 0, height: 36, maxHeight: 36 }}>
-                        <span title={doc.title} style={{ fontSize: 14, fontWeight: 500, color: '#111827', fontFamily: "'Inter', sans-serif" }}>
-                          {doc.title.length > 52 ? doc.title.slice(0, 52) + '…' : doc.title}
+                      {/* Title — DEF-08: truncate + tooltip */}
+                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden', maxWidth: 0 }}>
+                        <span title={doc.title} style={{
+                          display: 'block', fontSize: 14, fontWeight: 500, color: '#111827',
+                          fontFamily: "'Inter', sans-serif",
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          maxWidth: 320,
+                        }}>
+                          {doc.title}
                         </span>
                       </td>
                       {/* Domain — D10: standardise empty cells */}
