@@ -392,41 +392,14 @@
   max-width: 100% !important;
 }
 
-/* Any panel/drawer inside r360 must be fixed overlay, never flex sibling */
-#r360-root .r3-panel-overlay,
-#r360-root [class*="r3-panel"],
-#r360-root [class*="drawer"],
-#r360-root [class*="profile-panel"],
-#r360-root [class*="side-panel"] {
-  position: fixed !important;
-  top: 48px !important;
-  right: 0 !important;
-  width: 700px !important;
-  height: calc(100vh - 48px) !important;
-  z-index: 50 !important;
-  background: #FFFFFF !important;
-  overflow-y: auto !important;
-  box-shadow: -4px 0 24px rgba(0,0,0,0.10) !important;
-}
-
 /* Main content area always full width regardless of drawer state */
 #r360-root .r3-ring-container,
 #r360-root .r3-chrono-container,
 #r360-root .r3-board-container,
-#r360-root [class*="r3-ring"],
-#r360-root [class*="r3-view"] {
+#r360-root .r3-ring-canvas {
   width: 100% !important;
   flex-shrink: 0 !important;
   flex-basis: 100% !important;
-}
-
-/* Backdrop */
-#r360-root .r3-panel-backdrop {
-  position: fixed !important;
-  inset: 0 !important;
-  top: 48px !important;
-  background: rgba(0,0,0,0.15) !important;
-  z-index: 49 !important;
 }
 
 /* ── END DRAWER OVERLAY FIX ─────────────────────────── */
