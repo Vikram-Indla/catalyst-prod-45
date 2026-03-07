@@ -343,7 +343,7 @@ export default function ReqAssistLibrary() {
                         <ActionsCell
                           doc={doc}
                           onSyncKb={handleSyncKb}
-                          onSelect={(type) => setBgModal({ type, doc })}
+                          onSelect={(type) => type === 'epics' ? handleGenerateClick(doc) : setBgModal({ type, doc })}
                         />
                       </td>
                     </tr>
