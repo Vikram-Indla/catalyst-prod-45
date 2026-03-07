@@ -79,6 +79,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   const { data: projects = [], isLoading: loadingProjects } = useConnectedProjects();
   const selectedProjectData = projects.find(p => p.project_key === selectedProject);
   const { data: tickets = [], isLoading: loadingTickets } = useProjectTickets(step === 2 ? selectedProject : null, pdfOnly);
+  const { data: allTickets = [] } = useProjectTickets(step === 2 ? selectedProject : null, false);
   const verifyMutation = useVerifyProject();
   const syncMutation = useSyncTickets();
   const importMutation = useImportTickets();
@@ -256,6 +257,8 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
           /> : <Step2
             projectName={selectedProjectData?.project_name ?? selectedProject ?? ''}
             tickets={filteredTickets}
+            totalIssueCount={allTickets.length}
+            pdfIssueCount={tickets.length}
             loading={loadingTickets}
             selectedTickets={selectedTickets}
             onToggle={toggleTicket}
@@ -477,12 +480,14 @@ function Step1({
 /* ════════════════════════════════════════════════════════════ */
 
 function Step2({
-  projectName, tickets, loading, selectedTickets, onToggle, onToggleAll,
+  projectName, tickets, totalIssueCount, pdfIssueCount, loading, selectedTickets, onToggle, onToggleAll,
   pdfOnly, onPdfToggle, search, onSearch, onSync, syncing, lastSyncedAt,
   reImportKeys, onReImport,
 }: {
   projectName: string;
   tickets: any[];
+  totalIssueCount: number;
+  pdfIssueCount: number;
   loading: boolean;
   selectedTickets: Set<string>;
   onToggle: (key: string) => void;
@@ -505,6 +510,9 @@ function Step2({
     <>
       <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
         {projectName} · Showing tickets with attachments only
+      </div>
+      <div style={{ fontSize: 12, color: '#64748B', margin: '8px 0 4px 0', fontFamily: "'Inter', sans-serif" }}>
+        Showing {pdfIssueCount} of {totalIssueCount} issues — PDF attachments only
       </div>
       <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 16, fontFamily: "'JetBrains Mono', monospace" }}>
         {syncLabel}
