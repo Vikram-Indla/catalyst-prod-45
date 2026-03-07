@@ -179,7 +179,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         </div>
 
         {/* SECTION 1 — Pipeline Status Banner */}
-        <div style={{ padding: '16px 20px', background: '#F8FAFC', borderBottom: '0.75px solid #E2E8F0', flexShrink: 0 }}>
+        <div style={{ padding: '16px 20px', background: '#FFFFFF', borderBottom: '0.75px solid #E2E8F0', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
             {STEPS.map((step, i) => {
               const isDone = step.done;
