@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
 import { Download, FileCheck, Layers, Send, Brain, Paperclip, ChevronRight, Loader2, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
+import { sanitiseError } from '@/lib/errorUtils';
 import { formatTimeAbbreviated } from '@/lib/formatTimeAgo';
 
 /* ── Shared card shell ── */
@@ -63,67 +64,65 @@ interface StatsBarProps {
   loading?: boolean;
 }
 
-export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunks, loading }: StatsBarProps) {
-  const [brdStats, setBrdStats] = useState({ ready: 0, total: 0 });
-  const [epicStats, setEpicStats] = useState({ draft: 0, reviewed: 0, published: 0, total: 0 });
-  const [queueRunning, setQueueRunning] = useState(0);
-  const [queueRows, setQueueRows] = useState<QueueRow[]>([]);
-  const [jiraKeyMap, setJiraKeyMap] = useState<Record<string, string>>({});
-  const [fetched, setFetched] = useState(false);
+export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: StatsBarProps) {
+  const { data: statsData, isLoading: statsLoading, error } = useQuery({
+    queryKey: ['req-assist-stats-bar', totalDocuments],
+    queryFn: async () => {
+      const [
+        brdReadyRes,
+        epicRowsRes,
+        runningRes,
+        qRowsRes,
+      ] = await Promise.all([
+        (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }).eq('pipeline_stage', 'ready'),
+        (supabase as any).from('brd_epics').select('publish_status').limit(1000),
+        (supabase as any).from('brd_processing_queue').select('id', { count: 'exact', head: true }).eq('status', 'processing'),
+        (supabase as any).from('brd_processing_queue').select('id, brd_id, status, updated_at, started_at, completed_at, created_at').order('created_at', { ascending: false }).limit(10),
+      ]);
 
-  const loadData = async () => {
-    const [{ count: brdReady }] = await Promise.all([
-      (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }).eq('pipeline_stage', 'ready'),
-    ]);
+      const epics = epicRowsRes.data ?? [];
+      const draft = epics.filter((e: any) => !e.publish_status || e.publish_status === 'draft').length;
+      const reviewed = epics.filter((e: any) => e.publish_status === 'reviewed').length;
+      const published = epics.filter((e: any) => e.publish_status === 'published').length;
+      const rows: QueueRow[] = qRowsRes.data ?? [];
 
-    const { data: epicRows } = await (supabase as any).from('brd_epics').select('publish_status');
-    const epics = epicRows ?? [];
-    const draft = epics.filter((e: any) => !e.publish_status || e.publish_status === 'draft').length;
-    const reviewed = epics.filter((e: any) => e.publish_status === 'reviewed').length;
-    const published = epics.filter((e: any) => e.publish_status === 'published').length;
+      // Fetch jira_key mapping for queue rows
+      const brdIds = [...new Set(rows.map(r => r.brd_id))];
+      let jiraKeyMap: Record<string, string> = {};
+      if (brdIds.length > 0) {
+        const { data: brdDocs } = await (supabase as any)
+          .from('brd_documents')
+          .select('id, jira_key')
+          .in('id', brdIds);
+        (brdDocs ?? []).forEach((d: any) => { if (d.jira_key) jiraKeyMap[d.id] = d.jira_key; });
+      }
 
-    const { count: running } = await (supabase as any)
-      .from('brd_processing_queue')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'processing');
+      return {
+        brdReady: brdReadyRes.count ?? 0,
+        epicDraft: draft,
+        epicReviewed: reviewed,
+        epicPublished: published,
+        epicTotal: epics.length,
+        queueRunning: runningRes.count ?? 0,
+        queueRows: rows,
+        jiraKeyMap,
+      };
+    },
+    staleTime: 15_000,
+    refetchInterval: 30_000,
+  });
 
-    const { data: qRows } = await (supabase as any)
-      .from('brd_processing_queue')
-      .select('id, brd_id, status, updated_at, started_at, completed_at, created_at')
-      .order('created_at', { ascending: false })
-      .limit(10);
+  if (error) {
+    console.error('[RAStatsBar] Stats load failed:', sanitiseError(error));
+  }
 
-    const rows: QueueRow[] = qRows ?? [];
+  const isLoading = loading || statsLoading;
+  const brdStats = { ready: statsData?.brdReady ?? 0, total: totalDocuments };
+  const epicStats = { draft: statsData?.epicDraft ?? 0, reviewed: statsData?.epicReviewed ?? 0, published: statsData?.epicPublished ?? 0, total: statsData?.epicTotal ?? 0 };
+  const queueRunning = statsData?.queueRunning ?? 0;
+  const queueRows = statsData?.queueRows ?? [];
+  const jiraKeyMap = statsData?.jiraKeyMap ?? {};
 
-    const brdIds = [...new Set(rows.map(r => r.brd_id))];
-    if (brdIds.length > 0) {
-      const { data: brdDocs } = await (supabase as any)
-        .from('brd_documents')
-        .select('id, jira_key')
-        .in('id', brdIds);
-      const map: Record<string, string> = {};
-      (brdDocs ?? []).forEach((d: any) => { if (d.jira_key) map[d.id] = d.jira_key; });
-      setJiraKeyMap(map);
-    }
-
-    setBrdStats({ ready: brdReady ?? 0, total: totalDocuments });
-    setEpicStats({ draft, reviewed, published, total: epics.length });
-    setQueueRunning(running ?? 0);
-    setQueueRows(rows);
-    setFetched(true);
-  };
-
-  useEffect(() => { loadData(); }, [totalDocuments]);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel('ra-statsbar-queue')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'brd_processing_queue' }, () => { loadData(); })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [totalDocuments]);
-
-  const isLoading = loading && !fetched;
   const brdPct = brdStats.total > 0 ? (brdStats.ready / brdStats.total) * 100 : 0;
   const lastCompleted = queueRows.find(r => r.status === 'completed');
 

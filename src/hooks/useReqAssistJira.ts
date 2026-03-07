@@ -45,10 +45,10 @@ export function useProjectTickets(projectKey: string | null, pdfOnly = false) {
     queryFn: async () => {
       let q = (supabase as any)
         .from('ra_jira_tickets')
-        .select('*')
+        .select('ticket_key, ticket_summary, ticket_type, has_pdf, attachment_count, status, project_key, project_name, jira_issue_id, synced_at')
         .eq('project_key', projectKey);
       if (pdfOnly) q = q.eq('has_pdf', true);
-      q = q.order('ticket_key', { ascending: true });
+      q = q.order('ticket_key', { ascending: true }).limit(500);
       const { data: rawData, error } = await q;
       if (error) throw error;
 

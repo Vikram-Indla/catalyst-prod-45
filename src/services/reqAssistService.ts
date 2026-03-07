@@ -68,9 +68,9 @@ export async function fetchRADocumentById(id: string) {
 
 export async function fetchRAStats() {
   const [docs, artifacts, jobs, sync] = await Promise.all([
-    (supabase as any).from('ra_documents').select('id, status, wikihub_synced, wikihub_chunk_count'),
-    (supabase as any).from('ra_artifacts').select('id, artifact_type').eq('status', 'ready'),
-    (supabase as any).from('ra_processing_jobs').select('id').eq('status', 'processing'),
+    (supabase as any).from('ra_documents').select('id, status, wikihub_synced, wikihub_chunk_count').limit(2000),
+    (supabase as any).from('ra_artifacts').select('id, artifact_type').eq('status', 'ready').limit(1000),
+    (supabase as any).from('ra_processing_jobs').select('id').eq('status', 'processing').limit(100),
     (supabase as any).from('ra_jira_sync_log').select('synced_at, project_key').order('synced_at', { ascending: false }).limit(1),
   ]);
   const total = docs.data?.length ?? 0;
