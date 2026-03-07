@@ -1202,6 +1202,7 @@ const App = () => (
                 {/* Wiki Admin */}
                 <Route path="wiki" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiAdminPage /></Suspense>} />
                 <Route path="wiki-diagnostic" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiDiagnosticPage /></Suspense>} />
+                <Route path="diagnostic" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AdminDiagnosticPage /></Suspense>} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
