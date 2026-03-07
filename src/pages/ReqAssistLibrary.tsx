@@ -173,15 +173,36 @@ export default function ReqAssistLibrary() {
       ) : (
         /* ── SEARCH + FILTER + TABLE ── */
         <div style={{ border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden' }}>
-          <RASearchToolbar
-            tab={tab}
-            onTabChange={setTab}
-            search={search}
-            onSearchChange={setSearch}
-            resultCount={documents?.length}
-            totalCount={totalCount}
-            isFiltering={isFiltering}
-          />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ flex: 1 }}>
+              <RASearchToolbar
+                tab={tab}
+                onTabChange={setTab}
+                search={search}
+                onSearchChange={setSearch}
+                resultCount={documents?.length}
+                totalCount={totalCount}
+                isFiltering={isFiltering}
+              />
+            </div>
+            <div style={{ paddingRight: 28 }}>
+              <button
+                onClick={handleSyncAll}
+                disabled={syncingAll}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '0 12px', height: 32, fontSize: 13, fontWeight: 500,
+                  border: 'none', borderRadius: 6,
+                  background: '#7C3AED', color: '#FFFFFF',
+                  cursor: syncingAll ? 'not-allowed' : 'pointer',
+                  opacity: syncingAll ? 0.7 : 1,
+                  fontFamily: "'Inter', sans-serif",
+                }}
+              >
+                <Zap size={14} /> {syncingAll ? 'Syncing…' : 'Sync All to KB'}
+              </button>
+            </div>
+          </div>
 
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
             <thead>
