@@ -388,15 +388,21 @@ export default function PlatformDiagnosticsPage() {
     ];
     for (const fn of edgeFns) {
       try {
-        // Just check if function is reachable (OPTIONS request essentially)
-        const { error } = await supabase.functions.invoke(fn.name, {
+        const { data, error } = await supabase.functions.invoke(fn.name, {
           body: { _health_check: true },
         });
+        // Known validation errors prove the function is alive & responding
+        const knownValidationErrors = [
+          'brd_id is required', 'Query required', 'Insufficient text provided.',
+          'No text provided.', 'text is required',
+        ];
+        const errMsg = error?.message || (data as any)?.error || '';
+        const isAlive = !error || knownValidationErrors.some(v => errMsg.includes(v));
         edgeFnChecks.push({
           id: `ef-${fn.name}`,
           label: `${fn.name} — ${fn.desc}`,
-          status: error ? 'warn' : 'pass',
-          detail: error ? `Error: ${error.message?.substring(0, 80)}` : 'Reachable',
+          status: isAlive ? 'pass' : 'warn',
+          detail: isAlive ? 'Reachable (validated)' : `Error: ${errMsg.substring(0, 80)}`,
         });
       } catch (err: any) {
         edgeFnChecks.push({
