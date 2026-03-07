@@ -315,7 +315,7 @@ export default function ReqAssistLibrary() {
                         </span>
                       </td>
                       {/* Actions */}
-                      <td data-col="actions" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden', position: 'relative' }}>
+                      <td data-col="actions" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'visible', position: 'relative', minWidth: 140 }}>
                         <ActionsCell
                           doc={doc}
                           onSyncKb={handleSyncKb}
