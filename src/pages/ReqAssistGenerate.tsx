@@ -48,6 +48,8 @@ export default function ReqAssistGenerate() {
   // Save state
   const [saving, setSaving] = useState(false);
   const [savedDocId, setSavedDocId] = useState<string | null>(null);
+  const [epicModalOpen, setEpicModalOpen] = useState(false);
+  const [epicWarning, setEpicWarning] = useState(false);
 
   const handleQualifyAndGenerate = useCallback(async () => {
     if (!text.trim()) return;
