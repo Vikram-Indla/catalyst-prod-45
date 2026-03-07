@@ -139,7 +139,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
           {/* Staleness banner */}
           {isStale && (
             <div style={{
-              marginTop: 12, background: '#FFFBEB', border: '1px solid #FDE68A',
+              margin: '8px 20px 0', background: '#FFFBEB', border: '1px solid #FDE68A',
               color: '#92400E', borderRadius: 6, padding: '8px 12px',
               display: 'flex', alignItems: 'center', gap: 8, fontSize: 12,
             }}>
@@ -147,7 +147,6 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
               Generated {daysAgo} days ago · Review before publishing
             </div>
           )}
-        </div>
 
         {/* Epic list */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px 20px' }}>
