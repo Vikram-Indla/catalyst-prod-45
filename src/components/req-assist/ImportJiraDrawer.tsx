@@ -71,7 +71,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   const [addInput, setAddInput] = useState('');
   const [verifyState, setVerifyState] = useState<'idle' | 'loading' | 'success' | 'not_found' | 'not_configured'>('idle');
   const [verifyResult, setVerifyResult] = useState<{ project_name: string; count: number } | null>(null);
-  const [selectedTickets, setSelectedTickets] = useState<Set<string>>(new Set());
+  const [selectedTickets, setSelectedTickets] = useState<string[]>([]);
   const [pdfOnly, setPdfOnly] = useState(true);
   const [ticketSearch, setTicketSearch] = useState('');
   const [reImportKeys, setReImportKeys] = useState<Set<string>>(new Set());
