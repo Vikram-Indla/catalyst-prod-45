@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { X, FileText, Search, Inbox, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -185,7 +185,9 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
             position: 'fixed',
             top: 48,
             right: 0,
-            width: 600,
+            width: '600px',
+            minWidth: '600px',
+            maxWidth: '600px',
             height: 'calc(100vh - 48px)',
             zIndex: 50,
             padding: 0,
@@ -196,6 +198,8 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
             background: '#FFFFFF',
           }}
         >
+        <SheetTitle className="sr-only">Import from Jira</SheetTitle>
+        <SheetDescription className="sr-only">Import Jira tickets into Req Assist</SheetDescription>
         {/* HEADER */}
         <div style={{ padding: '0 24px', height: 64, borderBottom: '0.75px solid #E5E7EB', display: 'flex', flexDirection: 'column', justifyContent: 'center', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
