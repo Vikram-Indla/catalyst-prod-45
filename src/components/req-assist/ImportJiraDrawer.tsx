@@ -60,7 +60,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   const [verifyState, setVerifyState] = useState<'idle' | 'loading' | 'success' | 'not_found' | 'not_configured'>('idle');
   const [verifyResult, setVerifyResult] = useState<{ project_name: string; count: number } | null>(null);
   const [selectedTickets, setSelectedTickets] = useState<Set<string>>(new Set());
-  const [pdfOnly, setPdfOnly] = useState(false);
+  const [pdfOnly, setPdfOnly] = useState(true);
   const [ticketSearch, setTicketSearch] = useState('');
 
   const qc = useQueryClient();
