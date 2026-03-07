@@ -155,9 +155,9 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
       setResolvedBrdId(brdId);
       invokeGeneration(brdId);
     }).catch(err => {
-      console.error('[EpicModal] Resolution failed:', err?.message || err);
+      console.error('[RA] Resolution failed');
       setHasFailed(true);
-      setErrorMsg(err?.message || String(err));
+      setErrorMsg(sanitiseError(err));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
