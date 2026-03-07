@@ -235,7 +235,7 @@ export default function ReqAssistGenerate() {
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
     } catch (err: any) {
       setWikiState('failed');
-      toast.error('Sync failed: ' + (err?.message ?? 'Unknown error'));
+      toast.error(sanitiseError(err));
     }
   }, [savedDocId, qc]);
 
