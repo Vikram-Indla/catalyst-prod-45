@@ -30,42 +30,38 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
   const [epicCount, setEpicCount] = useState(0);
   const hasStarted = useRef(false);
 
-  const startGeneration = () => {
-    let stepIndex = 0;
-    let tickerStopped = false;
-
-    const ticker = setInterval(() => {
-      if (tickerStopped) return;
-      stepIndex = Math.min(stepIndex + 1, 3);
-      setStep(stepIndex);
-      setProgress(Math.round((stepIndex / 5) * 80));
+  // ── EFFECT 1: Visual ticker — runs independently, always
+  useEffect(() => {
+    if (done || hasFailed) return;
+    const id = setInterval(() => {
+      setStep(prev => {
+        if (prev >= 3) { clearInterval(id); return 3; }
+        return prev + 1;
+      });
+      setProgress(prev => Math.min(prev + 20, 80));
     }, 1400);
+    return () => clearInterval(id);
+  }, [done, hasFailed]);
 
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Edge Function timed out after 45s')), 45000)
-    );
+  // ── EFFECT 2: Edge Function call — runs once only
+  useEffect(() => {
+    if (hasStarted.current) return;
+    hasStarted.current = true;
 
-    Promise.race([
-      supabase.functions.invoke('generate_epics_for_brd', {
-        body: { brd_id: doc.id },
-      }),
-      timeoutPromise,
-    ])
-      .then((result: any) => {
-        tickerStopped = true;
-        clearInterval(ticker);
-        const { data, error } = result;
-
+    supabase.functions
+      .invoke('generate_epics_for_brd', { body: { brd_id: doc.id } })
+      .then(({ data, error }) => {
         if (error) {
+          console.error('[RAEpicModal] Generation failed:', error.message || error);
           setHasFailed(true);
-          setStep(-1);
           setErrorMsg(error.message || JSON.stringify(error));
           return;
         }
         if (!data || data.error) {
+          const msg = data?.error || data?.message || 'Empty response from Edge Function';
+          console.error('[RAEpicModal] Generation failed:', msg);
           setHasFailed(true);
-          setStep(-1);
-          setErrorMsg(data?.error || data?.message || 'No data returned from Edge Function');
+          setErrorMsg(msg);
           return;
         }
 
@@ -74,23 +70,13 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
         setDone(true);
         setEpicCount(data?.epic_count ?? data?.epics?.length ?? 0);
         qc.invalidateQueries({ queryKey: RA_KEYS.all });
-        setTimeout(() => {
-          toast.success(`Epics generated for ${doc.title}`);
-        }, 600);
+        setTimeout(() => toast.success(`Epics generated for ${doc.title}`), 600);
       })
-      .catch((err: any) => {
-        tickerStopped = true;
-        clearInterval(ticker);
+      .catch(err => {
+        console.error('[RAEpicModal] Generation failed:', err?.message || err);
         setHasFailed(true);
-        setStep(-1);
         setErrorMsg(err?.message || String(err));
       });
-  };
-
-  useEffect(() => {
-    if (hasStarted.current) return;
-    hasStarted.current = true;
-    startGeneration();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -100,7 +86,36 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
     setStep(0);
     setProgress(0);
     setDone(false);
-    startGeneration();
+    hasStarted.current = false;
+    // Re-trigger effect 2 won't work with ref reset alone, so call inline
+    supabase.functions
+      .invoke('generate_epics_for_brd', { body: { brd_id: doc.id } })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('[RAEpicModal] Retry failed:', error.message || error);
+          setHasFailed(true);
+          setErrorMsg(error.message || JSON.stringify(error));
+          return;
+        }
+        if (!data || data.error) {
+          const msg = data?.error || data?.message || 'Empty response from Edge Function';
+          console.error('[RAEpicModal] Retry failed:', msg);
+          setHasFailed(true);
+          setErrorMsg(msg);
+          return;
+        }
+        setStep(5);
+        setProgress(100);
+        setDone(true);
+        setEpicCount(data?.epic_count ?? data?.epics?.length ?? 0);
+        qc.invalidateQueries({ queryKey: RA_KEYS.all });
+        setTimeout(() => toast.success(`Epics generated for ${doc.title}`), 600);
+      })
+      .catch(err => {
+        console.error('[RAEpicModal] Retry failed:', err?.message || err);
+        setHasFailed(true);
+        setErrorMsg(err?.message || String(err));
+      });
   };
 
   // Derive step states for rendering
