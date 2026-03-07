@@ -174,15 +174,13 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
       />
       <SheetContent
         side="right"
-        className="p-0 border-0 shadow-none"
+        hideClose
+        className="!p-0 !border-0 !shadow-none !top-[48px] !bottom-0 !h-[calc(100vh-48px)] !max-h-[calc(100vh-48px)] !w-[600px] !z-50 !rounded-none"
         style={{
-          position: 'fixed', top: 48, right: 0,
-          width: 600, height: 'calc(100vh - 48px)',
-          background: '#FFFFFF', zIndex: 50,
+          background: '#FFFFFF',
           display: 'flex', flexDirection: 'column',
           borderLeft: '0.75px solid #E5E7EB',
           boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
-          padding: 0,
         }}
       >
         {/* HEADER */}
