@@ -157,7 +157,7 @@ export function useImportTickets() {
 
       const { error: insertErr } = await (supabase as any)
         .from('ra_documents')
-        .insert(docs);
+        .upsert(docs, { onConflict: 'jira_ticket_key' });
       if (insertErr) throw insertErr;
 
       // Queue processing jobs for PDFs
