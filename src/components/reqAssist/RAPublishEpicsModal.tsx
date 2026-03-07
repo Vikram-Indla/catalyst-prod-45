@@ -106,7 +106,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
 
       onPublished();
     } catch (err: any) {
-      toast.error('Publish failed: ' + (err?.message || 'Unknown error'));
+      toast.error(sanitiseError(err));
     } finally {
       setPublishing(false);
     }
