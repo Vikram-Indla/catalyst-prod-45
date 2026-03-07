@@ -575,6 +575,7 @@ function StatusBadge({ status }: { status: string }) {
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
       background: s.bg, color: s.color,
       fontFamily: "'Inter', sans-serif",
+      transition: 'background-color 200ms ease, color 200ms ease',
     }}>
       {s.label}
     </span>
