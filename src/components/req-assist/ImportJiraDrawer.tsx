@@ -39,11 +39,12 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
 function Lozenge({ label, styles }: { label: string; styles: Record<string, { bg: string; color: string }> }) {
   const s = styles[label] || { bg: '#DFE1E6', color: '#253858' };
   return (
-    <span style={{
+    <span title={label} style={{
       display: 'inline-block', padding: '2px 6px', borderRadius: 3,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       background: s.bg, color: s.color, lineHeight: '16px', height: 20,
-      whiteSpace: 'nowrap',
+      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+      maxWidth: 130,
     }}>{label}</span>
   );
 }
@@ -60,7 +61,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   const [verifyState, setVerifyState] = useState<'idle' | 'loading' | 'success' | 'not_found' | 'not_configured'>('idle');
   const [verifyResult, setVerifyResult] = useState<{ project_name: string; count: number } | null>(null);
   const [selectedTickets, setSelectedTickets] = useState<Set<string>>(new Set());
-  const [pdfOnly, setPdfOnly] = useState(false);
+  const [pdfOnly, setPdfOnly] = useState(true);
   const [ticketSearch, setTicketSearch] = useState('');
 
   const qc = useQueryClient();
@@ -559,7 +560,7 @@ function Step2({
               { label: 'SUMMARY', w: undefined },
               { label: 'PRIORITY', w: 88 },
               { label: 'PDF', w: 48 },
-              { label: 'STATUS', w: 80 },
+              { label: 'STATUS', w: 140 },
             ].map(col => (
               <div key={col.label} style={{
                 width: col.w, flex: col.w ? undefined : 1,
@@ -589,14 +590,14 @@ function Step2({
                   <Checkbox checked={checked} onCheckedChange={() => onToggle(t.ticket_key)} />
                 </div>
                 <div style={{ width: 96, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: '#374151', fontFamily: "'JetBrains Mono', monospace" }}>{t.ticket_key}</div>
-                <div style={{ flex: 1, padding: '8px 12px', fontSize: 13, color: '#111827', fontFamily: "'Inter', sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
+                <div dir="auto" style={{ flex: 1, padding: '8px 12px', fontSize: 13, color: '#111827', fontFamily: "'Inter', sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
                 <div style={{ width: 88, padding: '8px 12px' }}>
                   <Lozenge label={t.priority || 'MEDIUM'} styles={PRIORITY_STYLES} />
                 </div>
                 <div style={{ width: 48, padding: '8px 12px', display: 'flex', alignItems: 'center' }}>
                   {t.has_pdf && <FileText size={14} style={{ color: '#2563EB' }} />}
                 </div>
-                <div style={{ width: 80, padding: '8px 12px' }}>
+                <div style={{ minWidth: 140, width: 140, padding: '8px 12px' }} title={t.status || 'Open'}>
                   <Lozenge label={t.status || 'Open'} styles={STATUS_STYLES} />
                 </div>
               </div>
