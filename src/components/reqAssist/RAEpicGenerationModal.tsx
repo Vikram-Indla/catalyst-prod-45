@@ -109,16 +109,16 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     console.log('[EpicModal] Invoking generate_epics_for_brd with brd_id:', brdId);
     const { data, error } = await supabase.functions.invoke('generate_epics_for_brd', { body: { brd_id: brdId } });
     if (error) {
-      console.error('[RAEpicModal] Generation failed:', error.message || error);
+      console.error('[RA] Generation failed');
       setHasFailed(true);
-      setErrorMsg(error.message || JSON.stringify(error));
+      setErrorMsg(sanitiseError(error));
       return;
     }
     if (!data || data.error) {
-      const msg = data?.error || data?.message || 'Empty response from Edge Function';
-      console.error('[RAEpicModal] Generation failed:', msg);
+      const msg = data?.error || data?.message || 'Generation returned no data';
+      console.error('[RA] Generation failed');
       setHasFailed(true);
-      setErrorMsg(msg);
+      setErrorMsg(sanitiseError(msg));
       return;
     }
     setStep(5);
