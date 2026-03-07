@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { X, FileText, Search, Inbox, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
-import { Sheet, SheetContent, SheetOverlay } from '@/components/ui/sheet';
+import { Sheet, SheetPortal, SheetOverlay, SheetContent } from '@/components/ui/sheet';
+import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
