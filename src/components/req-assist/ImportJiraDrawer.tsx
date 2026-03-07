@@ -470,6 +470,7 @@ function Step1({
 function Step2({
   projectName, tickets, loading, selectedTickets, onToggle, onToggleAll,
   pdfOnly, onPdfToggle, search, onSearch, onSync, syncing, lastSyncedAt,
+  reImportKeys, onReImport,
 }: {
   projectName: string;
   tickets: any[];
@@ -484,6 +485,8 @@ function Step2({
   onSync: () => void;
   syncing: boolean;
   lastSyncedAt: string | null;
+  reImportKeys: Set<string>;
+  onReImport: (key: string) => void;
 }) {
   const syncLabel = lastSyncedAt
     ? `Last synced: ${new Date(lastSyncedAt).toLocaleString()}`
