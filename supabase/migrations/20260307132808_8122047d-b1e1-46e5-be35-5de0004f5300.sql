@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS ra_documents_jira_ticket_key_idx ON public.ra_documents (jira_ticket_key);
