@@ -151,13 +151,9 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
     setSelectedTickets(prev => prev.includes(key) ? prev : [...prev, key]);
   };
 
-  const toggleAll = () => {
+  const toggleAll = (checked: boolean) => {
     const selectable = filteredTickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key));
-    if (selectedTickets.size === selectable.length) {
-      setSelectedTickets(new Set());
-    } else {
-      setSelectedTickets(new Set(selectable.map(t => t.ticket_key)));
-    }
+    setSelectedTickets(checked ? selectable.map(t => t.ticket_key) : []);
   };
 
   const handleImport = useCallback(async () => {
