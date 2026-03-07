@@ -132,11 +132,12 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
     hasStarted.current = false;
     resolveBrdId().then(brdId => {
       if (!brdId || brdId.trim() === '') {
-        console.error('FORGE: brdId is empty on retry — aborting. doc.id was:', doc.id);
+        console.error('[EpicModal] Retry failed — could not resolve brd_documents.id for doc.id:', doc.id);
         setHasFailed(true);
         setErrorMsg('Could not resolve BRD document ID.');
         return;
       }
+      hasStarted.current = true;
       invokeGeneration(brdId);
     }).catch(err => {
       console.error('[RAEpicModal] Retry failed:', err?.message || err);
