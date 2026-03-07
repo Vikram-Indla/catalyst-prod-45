@@ -324,7 +324,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
               <div style={{
-                width: 48, height: 48, borderRadius: 8, background: '#F5F3FF',
+                width: 48, height: 48, borderRadius: 8, background: '#EFF6FF',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <div className="ra-epic-spinner-lg" />
@@ -345,12 +345,12 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
 
             {/* Progress bar */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <span style={{ fontSize: 12, color: '#7C3AED', fontWeight: 600 }}>{STEPS[Math.min(step, 4)]}</span>
-              <span style={{ fontSize: 12, color: '#7C3AED', fontWeight: 600 }}>{progress}%</span>
+              <span style={{ fontSize: 12, color: '#2563EB', fontWeight: 600 }}>{STEPS[Math.min(step, 4)]}</span>
+              <span style={{ fontSize: 12, color: '#2563EB', fontWeight: 600 }}>{progress}%</span>
             </div>
             <div style={{ width: '100%', height: 6, borderRadius: 999, background: '#F3F4F6', marginBottom: 20, overflow: 'hidden' }}>
               <div style={{
-                height: '100%', borderRadius: 999, background: '#7C3AED',
+                height: '100%', borderRadius: 999, background: '#2563EB',
                 width: `${Math.max(progress, 8)}%`,
                 transition: 'width 0.5s ease',
               }} />
@@ -366,7 +366,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
                       <div style={{
                         width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: state === 'done' ? '#DCFCE7' : state === 'active' ? '#F5F3FF' : '#F3F4F6',
+                        background: state === 'done' ? '#DCFCE7' : state === 'active' ? '#EFF6FF' : '#F3F4F6',
                       }}>
                         {state === 'done' ? (
                           <Check size={14} color="#16A34A" strokeWidth={2.5} />
@@ -379,7 +379,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
                       <span style={{
                         fontSize: 13,
                         fontWeight: state === 'active' ? 600 : state === 'done' ? 500 : 400,
-                        color: state === 'done' ? '#374151' : state === 'active' ? '#7C3AED' : '#9CA3AF',
+                        color: state === 'done' ? '#374151' : state === 'active' ? '#2563EB' : '#9CA3AF',
                       }}>
                         {s}
                       </span>
@@ -397,9 +397,9 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
 
             {/* Info strip */}
             <div style={{
-              background: '#F5F3FF', borderRadius: 6, padding: '8px 12px', marginBottom: 20,
+              background: '#EFF6FF', borderRadius: 6, padding: '8px 12px', marginBottom: 20,
             }}>
-              <span style={{ fontSize: 12, color: '#7C3AED' }}>
+              <span style={{ fontSize: 12, color: '#1D4ED8' }}>
                 ⏱ Estimated: ~2 minutes · You'll be notified when done
               </span>
             </div>
@@ -435,7 +435,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
           width: 18px !important;
           height: 18px !important;
           border-radius: 50% !important;
-          border: 2px solid #7C3AED !important;
+          border: 2px solid #2563EB !important;
           border-top-color: transparent !important;
           animation: ra-epic-spin 0.8s linear infinite !important;
           flex-shrink: 0 !important;
@@ -444,7 +444,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
           width: 28px !important;
           height: 28px !important;
           border-radius: 50% !important;
-          border: 2.5px solid #7C3AED !important;
+          border: 2.5px solid #2563EB !important;
           border-top-color: transparent !important;
           animation: ra-epic-spin 0.8s linear infinite !important;
           flex-shrink: 0 !important;
