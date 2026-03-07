@@ -177,7 +177,12 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
               zIndex: 49,
             }}
           />
-          <style>{`.ra-drawer-hide-overlay [data-state] { display: none; }`}</style>
+          <style>{`
+            .ra-drawer-hide-overlay > [data-radix-dialog-overlay],
+            .ra-drawer-hide-overlay > div[data-state]:not([role]) {
+              display: none !important;
+            }
+          `}</style>
         </>
       )}
       <Sheet open={open} onOpenChange={handleClose} modal={false}>
