@@ -279,7 +279,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
             <>
               <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Cancel</button>
               <button
-                onClick={() => { if (selectedProject) { setStep(2); setSelectedTickets(new Set()); } }}
+                onClick={() => { if (selectedProject) { setStep(2); setSelectedTickets([]); } }}
                 disabled={!selectedProject}
                 style={{
                   background: selectedProject ? '#2563EB' : '#93C5FD', color: '#FFFFFF',
