@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { X, ChevronLeft, ChevronRight, FileText, Search, Inbox, Loader2, Check } from 'lucide-react';
+import { useState, useMemo, useCallback } from 'react';
+import { X, ChevronLeft, ChevronRight, FileText, Search, Inbox, Loader2, Check, RefreshCw } from 'lucide-react';
 import { useCreateRADocument, useQueueJob, useJiraProjects, useJiraProjectTickets, RA_KEYS } from '@/hooks/useReqAssist';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
