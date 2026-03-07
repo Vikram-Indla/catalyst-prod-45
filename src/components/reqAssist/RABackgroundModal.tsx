@@ -146,7 +146,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 60 }} />
-      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 500, background: '#FFFFFF', borderRadius: 12, zIndex: 70, padding: 28, boxShadow: '0 8px 32px rgba(0,0,0,0.12)' }}>
+      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 500, background: '#FFFFFF', borderRadius: 8, zIndex: 70, padding: 28, border: '0.75px solid #E2E8F0' }}>
         <div style={{ width: 48, height: 48, borderRadius: 12, background: jobStatus === 'failed' ? '#FEF2F2' : jobStatus === 'done' ? '#F0FDF4' : '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
           {jobStatus === 'failed' ? (
             <AlertTriangle size={22} color="#DC2626" />

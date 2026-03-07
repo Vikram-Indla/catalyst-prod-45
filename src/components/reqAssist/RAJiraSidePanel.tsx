@@ -231,7 +231,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
             {pipeline.rawText ? (
               <>
                 <div style={{
-                  padding: 12, background: '#F8FAFC', border: '0.75px solid #E2E8F0', borderRadius: 4,
+                  padding: 12, background: '#FFFFFF', border: '0.75px solid #E2E8F0', borderRadius: 4,
                   maxHeight: expanded ? 'none' : 120, overflowY: expanded ? 'auto' : 'hidden',
                   fontSize: 13, color: '#475569', lineHeight: 1.6, fontFamily: "'Inter', sans-serif",
                 }}>

@@ -573,7 +573,7 @@ export default function ReqAssistLibrary() {
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
             width: 420, background: '#FFFFFF', borderRadius: 8, zIndex: 90,
-            padding: 24, boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+            padding: 24, border: '0.75px solid #E2E8F0',
             fontFamily: "'Inter', sans-serif",
           }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>

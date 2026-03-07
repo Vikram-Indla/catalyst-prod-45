@@ -204,8 +204,8 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
       {/* Modal */}
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-        width: 480, background: '#FFFFFF', borderRadius: 10, zIndex: 70,
-        padding: 28, boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+        width: 480, background: '#FFFFFF', borderRadius: 8, zIndex: 70,
+        padding: 28, border: '0.75px solid #E2E8F0',
         fontFamily: "'Inter', sans-serif",
       }}>
 

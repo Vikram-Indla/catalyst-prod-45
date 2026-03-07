@@ -118,7 +118,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
         padding: 24, border: '0.75px solid #E2E8F0',
         fontFamily: "'Inter', sans-serif",
       }}>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: '0 0 16px', fontFamily: "'Sora', sans-serif" }}>
+        <h3 style={{ fontSize: 16, fontWeight: 650, color: '#0F172A', margin: '0 0 16px', fontFamily: "'Sora', sans-serif" }}>
           Publish Epics to Project
         </h3>
 

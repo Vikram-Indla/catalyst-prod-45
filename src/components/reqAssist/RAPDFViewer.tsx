@@ -74,9 +74,9 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
             transform: `scale(${zoom / 100})`, transformOrigin: 'top center',
           }}>
             {doc.language === 'ar' && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16, padding: '6px 10px', background: '#FFFBEB', borderRadius: 4, border: '1px solid #FDE68A' }}>
-                <Globe size={13} color="#D97706" />
-                <span style={{ fontSize: 12, color: '#92400E', fontFamily: "'Inter', sans-serif" }}>Original Arabic document — English translation shown</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16, padding: '6px 10px', background: '#DEEBFF', borderRadius: 4, border: '1px solid #B3D4FF' }}>
+                <Globe size={13} color="#0747A6" />
+                <span style={{ fontSize: 12, color: '#0747A6', fontFamily: "'Inter', sans-serif" }}>Original Arabic document — English translation shown</span>
               </div>
             )}
             <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: '0 0 4px', textAlign: 'center', fontFamily: "'Sora', sans-serif" }}>{doc.title}</h2>
