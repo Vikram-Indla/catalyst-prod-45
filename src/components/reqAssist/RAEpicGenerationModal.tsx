@@ -73,6 +73,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
       .catch((err) => {
         clearInterval(ticker);
         if (cancelled) return;
+        setHasFailed(true);
         setStep(-1);
         setErrorMsg(err?.message || String(err));
       });
