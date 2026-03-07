@@ -316,7 +316,7 @@ export default function ReqAssistGenerate() {
           {genError && (
             <div style={{ marginTop: 12, padding: '14px 16px', background: '#FEF2F2', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>Generation Error</div>
-              <p style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>{genError}</p>
+              <p style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>{sanitiseError(genError)}</p>
             </div>
           )}
 

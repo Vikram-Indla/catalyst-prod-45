@@ -179,9 +179,9 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
       hasStarted.current = true;
       invokeGeneration(brdId);
     }).catch(err => {
-      console.error('[RAEpicModal] Retry failed:', err?.message || err);
+      console.error('[RA] Retry failed');
       setHasFailed(true);
-      setErrorMsg(err?.message || String(err));
+      setErrorMsg(sanitiseError(err));
     });
   };
 
