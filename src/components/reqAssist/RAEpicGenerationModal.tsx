@@ -254,10 +254,10 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
               <div style={{
-                width: 32, height: 32, borderRadius: '50%', background: '#F5F3FF',
+                width: 48, height: 48, borderRadius: 8, background: '#F5F3FF',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <Sparkles size={16} color="#7C3AED" />
+                <div className="ra-epic-spinner-lg" />
               </div>
               <div>
                 <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>
