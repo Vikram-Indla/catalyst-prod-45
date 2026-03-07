@@ -44,7 +44,7 @@ function StatusLozenge({ label, styleMap }: { label: string; styleMap: Record<st
 // Jira project colour by key
 const PROJECT_COLORS: Record<string, string> = {
   SEN: '#2563EB',
-  MDT: '#7C3AED',
+  MDT: '#3F3F46',
 };
 
 export default function RAImportDrawer({ onClose }: Props) {
