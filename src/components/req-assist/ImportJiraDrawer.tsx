@@ -186,17 +186,18 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
         }
       `}</style>}
     <Sheet open={open} onOpenChange={handleClose}>
-      <SheetContent
-        side="right"
-        hideClose
-        className="!p-0 !border-0 !shadow-none !top-[48px] !bottom-0 !h-[calc(100vh-48px)] !max-h-[calc(100vh-48px)] !w-[600px] !z-50 !rounded-none"
-        style={{
-          background: '#FFFFFF',
-          display: 'flex', flexDirection: 'column',
-          borderLeft: '0.75px solid #E5E7EB',
-          boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
-        }}
-      >
+      <SheetPortal>
+        <SheetOverlay className="ra-import-overlay" />
+        <SheetPrimitive.Content
+          className="ra-import-content fixed !w-[600px] !rounded-none flex flex-col overflow-hidden focus:outline-none"
+          style={{
+            background: '#FFFFFF',
+            display: 'flex', flexDirection: 'column',
+            borderLeft: '0.75px solid #E5E7EB',
+            boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
+            padding: 0,
+          }}
+        >
         {/* HEADER */}
         <div style={{ padding: '0 24px', height: 64, borderBottom: '0.75px solid #E5E7EB', display: 'flex', flexDirection: 'column', justifyContent: 'center', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
