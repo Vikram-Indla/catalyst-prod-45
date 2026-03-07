@@ -460,7 +460,7 @@ function ActionsCell({ doc, onSyncKb, onSelect }: {
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, minWidth: 96, padding: '0 10px', fontSize: 12, fontWeight: 500,
           borderRadius: 6, border: 'none', cursor: 'pointer',
-          background: '#7C3AED', color: '#FFFFFF',
+          background: '#2563EB', color: '#FFFFFF',
           fontFamily: "'Inter', sans-serif",
           whiteSpace: 'nowrap',
         }}

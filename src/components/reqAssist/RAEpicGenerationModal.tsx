@@ -259,7 +259,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
                 Close
               </button>
               <button
-                onClick={onClose}
+                onClick={() => { onClose(); nav('/product/req-assist'); }}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
                   border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
