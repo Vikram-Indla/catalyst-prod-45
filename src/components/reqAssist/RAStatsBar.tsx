@@ -184,7 +184,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
             <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 4 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ flexShrink: 0, color: '#64748B' }}><Brain size={16} /></span>
-                <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>KB Indexed</span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>AI Indexed</span>
               </div>
               {isLoading ? (
                 <div style={{ width: 52, height: 28, background: '#E2E8F0', borderRadius: 4, marginTop: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
@@ -193,7 +193,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
                   {wikihubSynced} / {brdStats.total} docs
                 </span>
               )}
-              <div style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>{wikihubChunks} chunks indexed</div>
+              <div style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>Searchable via Knowledge Assistant</div>
               <span className={queueRunning > 0 ? 'ra-running-pill' : ''} style={{
                 display: 'inline-flex', alignItems: 'center', alignSelf: 'flex-start',
                 padding: '1px 6px', borderRadius: 3, fontSize: 10, fontWeight: 700,
