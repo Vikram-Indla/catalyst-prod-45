@@ -18,14 +18,16 @@ export default function R360ProfilePage() {
   // weekOffset 0 = current week, -1 = previous week, etc. Range: 0 to -7
 
   return (
-    <div style={{ display: 'flex', height: '100%' }}>
-      <ResourceSidebar
-        selectedResourceId={selectedResourceId}
-        onSelectResource={setSelectedResourceId}
-      />
-      <ResourceMainArea
-        selectedResourceId={selectedResourceId}
-      />
+    <>
+      <div style={{ display: 'flex', height: '100%' }}>
+        <ResourceSidebar
+          selectedResourceId={selectedResourceId}
+          onSelectResource={setSelectedResourceId}
+        />
+        <ResourceMainArea
+          selectedResourceId={selectedResourceId}
+        />
+      </div>
       <ResourceProfileDrawer
         selectedResourceId={selectedResourceId}
         onClose={() => setSelectedResourceId(null)}
@@ -34,6 +36,6 @@ export default function R360ProfilePage() {
         weekOffset={weekOffset}
         onWeekOffsetChange={setWeekOffset}
       />
-    </div>
+    </>
   );
 }
