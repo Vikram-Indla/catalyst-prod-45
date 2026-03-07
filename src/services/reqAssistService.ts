@@ -175,3 +175,62 @@ export async function fetchJiraProjectTickets(projectKey: string) {
     status: null,
   }));
 }
+
+// ── SYNC SINGLE BRD TO KB (C-01/C-02/C-06) ──
+
+export async function syncSingleBrdToKb(brdDocumentId: string): Promise<void> {
+  // 1. Fetch the document
+  const { data: doc, error: fetchErr } = await (supabase as any)
+    .from('brd_documents')
+    .select('id, raw_text, jira_key, language')
+    .eq('id', brdDocumentId)
+    .single();
+
+  if (fetchErr || !doc) throw new Error(fetchErr?.message || 'BRD document not found');
+  if (!doc.raw_text || doc.raw_text.trim() === '') throw new Error('Document has no content to index');
+
+  // 2. Insert processing queue job
+  await (supabase as any).from('brd_processing_queue').insert({
+    brd_id: brdDocumentId,
+    status: 'processing',
+    attempts: 0,
+  });
+
+  // 3. Invoke kb-sync Edge Function
+  const { error: invokeErr } = await supabase.functions.invoke('kb-sync', {
+    body: {
+      action: 'sync_single',
+      table: 'brd_documents',
+      record_id: brdDocumentId,
+      content_field: 'raw_text',
+      source_type: 'brd',
+      metadata: {
+        source_id: brdDocumentId,
+        jira_key: doc.jira_key,
+        language: doc.language || 'ar',
+      },
+    },
+  });
+
+  if (invokeErr) {
+    // Mark queue as failed
+    await (supabase as any)
+      .from('brd_processing_queue')
+      .update({ status: 'failed', error_message: invokeErr.message })
+      .eq('brd_id', brdDocumentId)
+      .eq('status', 'processing');
+    throw invokeErr;
+  }
+
+  // 4. On success: update brd_documents and queue
+  await (supabase as any)
+    .from('brd_documents')
+    .update({ kb_synced: true, kb_synced_at: new Date().toISOString() })
+    .eq('id', brdDocumentId);
+
+  await (supabase as any)
+    .from('brd_processing_queue')
+    .update({ status: 'completed', completed_at: new Date().toISOString() })
+    .eq('brd_id', brdDocumentId)
+    .eq('status', 'processing');
+}

@@ -78,16 +78,11 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
   }, [jobStatus, doc.jira_ticket_key, config.title, qc]);
 
   const handleLeave = () => {
-    onClose();
-    /* INT-007: Toast fires ~2s after leaving */
+    // Do NOT fire a fake success toast — only show informational message
     if (jobStatus !== 'done' && jobStatus !== 'failed') {
-      setTimeout(() => {
-        toast.success('Generation Complete', {
-          description: `${config.title.replace('Generating ', '')} ready for ${doc.jira_ticket_key}. View document →`,
-          duration: 6000,
-        });
-      }, 2000);
+      toast.info('Generation running in background. Check back shortly.', { duration: 4000 });
     }
+    onClose();
   };
 
   const handleRetry = () => {

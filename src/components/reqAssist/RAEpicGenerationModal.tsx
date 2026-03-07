@@ -125,37 +125,13 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     setDone(true);
     setEpicCount(data?.epic_count ?? data?.epics?.length ?? 0);
 
-    // FIX 2: Update pipeline_stage to 'ready' after successful generation
-    await (supabase as any)
-      .from('brd_documents')
-      .update({ pipeline_stage: 'ready' })
-      .eq('id', brdId);
-
-    // PART 5: Auto-generate ra_tags for inserted epics
-    try {
-      const jiraKey = (doc as any).jira_ticket_key;
-      const { data: insertedEpics } = await (supabase as any)
-        .from('brd_epics')
-        .select('id')
-        .eq('brd_id', brdId)
-        .order('created_at', { ascending: true });
-
-      if (insertedEpics && insertedEpics.length > 0) {
-        const prefix = jiraKey ? `RA-${jiraKey}` : `RA-BRD-${brdId.substring(0, 6).toUpperCase()}`;
-        for (let idx = 0; idx < insertedEpics.length; idx++) {
-          const tag = `${prefix}-E${String(idx + 1).padStart(2, '0')}`;
-          await (supabase as any)
-            .from('brd_epics')
-            .update({ ra_tag: tag })
-            .eq('id', insertedEpics[idx].id);
-        }
-      }
-    } catch (tagErr) {
-      console.warn('[EpicModal] ra_tag assignment failed (non-critical):', tagErr);
-    }
+    // pipeline_stage is set by the Edge Function (sole authority) — no client update
+    // ra_tag is set by the Edge Function on INSERT — no client assignment needed
 
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
     qc.invalidateQueries({ queryKey: ['brd_documents'] });
+    qc.invalidateQueries({ queryKey: ['brd-epics'] });
+    qc.invalidateQueries({ queryKey: RA_KEYS.stats() });
     setTimeout(() => toast.success(`Epics generated for ${doc.title}`), 600);
   };
 

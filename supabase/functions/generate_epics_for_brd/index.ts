@@ -22,7 +22,7 @@ serve(async (req) => {
     // Read raw_text from brd_documents — NEVER "content"
     const { data: brdDoc, error: fetchErr } = await supabase
       .from('brd_documents')
-      .select('id, title, raw_text, domain_tag, methodology')
+      .select('id, title, raw_text, domain_tag, methodology, jira_key')
       .eq('id', brd_id)
       .single();
 

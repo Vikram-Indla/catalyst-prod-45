@@ -228,17 +228,15 @@ export default function ReqAssistGenerate() {
     if (!savedDocId) return;
     setWikiState('pushing');
     try {
-      const { error } = await (supabase as any)
-        .from('brd_documents')
-        .update({ kb_synced: true, kb_synced_at: new Date().toISOString() })
-        .eq('id', savedDocId);
-      if (error) throw error;
+      await syncSingleBrdToKb(savedDocId);
       setWikiState('success');
-      toast.success('Pushed to WikiHub');
-    } catch {
+      toast.success('Indexed for AI search');
+      qc.invalidateQueries({ queryKey: RA_KEYS.all });
+    } catch (err: any) {
       setWikiState('failed');
+      toast.error('Sync failed: ' + (err?.message ?? 'Unknown error'));
     }
-  }, [savedDocId]);
+  }, [savedDocId, qc]);
 
   const handleReset = useCallback(() => {
     setText('');
