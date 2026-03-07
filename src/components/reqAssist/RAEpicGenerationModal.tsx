@@ -202,8 +202,8 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
             </div>
 
             <div style={{
-              padding: '12px 14px', borderRadius: 6,
-              background: '#FEF2F2', border: '0.75px solid #FECACA', marginBottom: 12,
+              background: '#FEF2F2', border: '1.5px solid #DC2626', borderRadius: 6,
+              padding: '14px 16px', marginBottom: 16, maxHeight: 120, overflowY: 'auto' as const,
             }}>
               <code style={{
                 fontSize: 13, color: '#991B1B', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word',
