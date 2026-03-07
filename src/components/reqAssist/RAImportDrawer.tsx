@@ -291,7 +291,6 @@ export default function RAImportDrawer({ onClose }: Props) {
                   {syncing ? 'Syncing…' : 'Sync'}
                 </button>
               </div>
-              }}>SELECT PROJECT</span>
 
               {projectsLoading && (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
