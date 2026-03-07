@@ -753,6 +753,21 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
                   fontSize: 11, fontWeight: 700, color: BRAND,
                 }}>{resourceRid}</span></>}
               </div>
+              {/* P2-05: Skills chips */}
+              {resource?.skills && (resource.skills as string[]).length > 0 && (
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
+                  {(resource.skills as string[]).map((skill: string) => (
+                    <span key={skill} style={{
+                      fontSize: 11, fontWeight: 500,
+                      background: '#F1F5F9', color: '#334155',
+                      border: '0.75px solid #E2E8F0',
+                      borderRadius: 4, padding: '2px 6px',
+                    }}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </>
         )}
