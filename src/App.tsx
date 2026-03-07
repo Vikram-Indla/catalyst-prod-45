@@ -1258,6 +1258,7 @@ const App = () => (
               <CatyWidgetRouteGuard />
               <QAAssistantRouteGuard />
               <KAFabRouteGuard />
+              <DxFab />
               
           </BrowserRouter>
         </TooltipProvider>
