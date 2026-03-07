@@ -5574,6 +5574,7 @@ export type Database = {
           program_rank: number | null
           quadrant: string | null
           quarters: string[] | null
+          ra_tag: string | null
           report_color: string | null
           reporter_id: string | null
           source_ra_doc_id: string | null
@@ -5633,6 +5634,7 @@ export type Database = {
           program_rank?: number | null
           quadrant?: string | null
           quarters?: string[] | null
+          ra_tag?: string | null
           report_color?: string | null
           reporter_id?: string | null
           source_ra_doc_id?: string | null
@@ -5692,6 +5694,7 @@ export type Database = {
           program_rank?: number | null
           quadrant?: string | null
           quarters?: string[] | null
+          ra_tag?: string | null
           report_color?: string | null
           reporter_id?: string | null
           source_ra_doc_id?: string | null
@@ -15889,6 +15892,7 @@ export type Database = {
           content_hash: string
           created_at: string | null
           embedding: string | null
+          fts_ar: unknown
           id: string
           language: string | null
           metadata: Json | null
@@ -15907,6 +15911,7 @@ export type Database = {
           content_hash: string
           created_at?: string | null
           embedding?: string | null
+          fts_ar?: unknown
           id?: string
           language?: string | null
           metadata?: Json | null
@@ -15925,6 +15930,7 @@ export type Database = {
           content_hash?: string
           created_at?: string | null
           embedding?: string | null
+          fts_ar?: unknown
           id?: string
           language?: string | null
           metadata?: Json | null
@@ -67723,31 +67729,58 @@ export type Database = {
         Args: { required_codes: string[] }
         Returns: boolean
       }
-      kb_hybrid_search: {
-        Args: {
-          filter_source?: string
-          filter_tags?: string[]
-          keyword_weight?: number
-          match_count?: number
-          query_embedding: string
-          query_text: string
-          rrf_k?: number
-          vector_weight?: number
-        }
-        Returns: {
-          content: string
-          id: string
-          keyword_rank: number
-          metadata: Json
-          rrf_score: number
-          section_title: string
-          source_type: string
-          source_url: string
-          tags: string[]
-          vector_rank: number
-          vector_similarity: number
-        }[]
-      }
+      kb_hybrid_search:
+        | {
+            Args: {
+              filter_source?: string
+              filter_tags?: string[]
+              keyword_weight?: number
+              match_count?: number
+              query_embedding: string
+              query_text: string
+              rrf_k?: number
+              vector_weight?: number
+            }
+            Returns: {
+              content: string
+              id: string
+              keyword_rank: number
+              metadata: Json
+              rrf_score: number
+              section_title: string
+              source_type: string
+              source_url: string
+              tags: string[]
+              vector_rank: number
+              vector_similarity: number
+            }[]
+          }
+        | {
+            Args: {
+              filter_source?: string
+              filter_tags?: string[]
+              keyword_weight?: number
+              match_count?: number
+              query_embedding: string
+              query_text: string
+              rrf_k?: number
+              use_simple_fts?: boolean
+              vector_weight?: number
+            }
+            Returns: {
+              content: string
+              id: string
+              keyword_rank: number
+              metadata: Json
+              rrf_score: number
+              section_title: string
+              source_type: string
+              source_url: string
+              tags: string[]
+              vector_rank: number
+              vector_similarity: number
+            }[]
+          }
       kb_is_admin: { Args: never; Returns: boolean }
       kb_is_lead_or_above: { Args: never; Returns: boolean }
       kb_log_query: {

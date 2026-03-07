@@ -1,0 +1,2 @@
+ALTER TABLE epics ADD COLUMN IF NOT EXISTS ra_tag TEXT DEFAULT NULL;
+CREATE INDEX IF NOT EXISTS idx_epics_ra_tag ON epics (ra_tag) WHERE ra_tag IS NOT NULL;
