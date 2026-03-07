@@ -575,6 +575,7 @@ export default function RAImportDrawer({ onClose }: Props) {
 
       <style>{`
         @keyframes ra-slide-left { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes ra-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </>
