@@ -389,6 +389,37 @@ export default function ReqAssistLibrary() {
       ) : bgModal ? (
         <RABackgroundModal type={bgModal.type} doc={bgModal.doc} onClose={() => setBgModal(null)} />
       ) : null}
+
+      {/* FIX 3: Regen confirmation dialog */}
+      {regenConfirm && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 80 }} onClick={() => setRegenConfirm(null)} />
+          <div style={{
+            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            width: 400, background: '#FFFFFF', borderRadius: 8, zIndex: 90,
+            padding: 24, boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+            fontFamily: "'Inter', sans-serif",
+          }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>
+              Epics Already Exist
+            </h3>
+            <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 20px', lineHeight: 1.5 }}>
+              This document already has {regenConfirm.count} epic{regenConfirm.count !== 1 ? 's' : ''} generated. Regenerating will replace them. Continue?
+            </p>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button onClick={() => setRegenConfirm(null)} style={{
+                padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
+                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+              }}>Cancel</button>
+              <button onClick={() => { const d = regenConfirm.doc; setRegenConfirm(null); setBgModal({ type: 'epics', doc: d }); }} style={{
+                padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
+                border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
+              }}>Regenerate</button>
+            </div>
+          </div>
+        </>
+      )}
+
       <ImportJiraDrawer open={importOpen} onOpenChange={setImportOpen} />
     </div>
   );
