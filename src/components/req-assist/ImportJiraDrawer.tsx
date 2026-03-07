@@ -148,7 +148,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
 
   const activateReImport = (key: string) => {
     setReImportKeys(prev => { const n = new Set(prev); n.add(key); return n; });
-    setSelectedTickets(prev => { const n = new Set(prev); n.add(key); return n; });
+    setSelectedTickets(prev => prev.includes(key) ? prev : [...prev, key]);
   };
 
   const toggleAll = () => {
