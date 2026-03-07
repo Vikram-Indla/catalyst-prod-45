@@ -73,8 +73,9 @@ export default function ReqAssistLibrary() {
       } catch {}
     }
     toast.success(`Synced ${success} of ${unsyncedReady.length} documents to KB`);
+    qc.invalidateQueries({ queryKey: RA_KEYS.all });
     setSyncingAll(false);
-  }, [documents]);
+  }, [documents, qc]);
 
   useEffect(() => {
     if (!dropdownOpen) return;
