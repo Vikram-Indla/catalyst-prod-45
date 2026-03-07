@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { X, FileText, Search, Inbox, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Sheet, SheetPortal, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import * as SheetPrimitive from "@radix-ui/react-dialog";
-import { Checkbox } from '@/components/ui/checkbox';
+// Checkbox replaced with native <input type="checkbox"> to avoid Radix Dialog event interception
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
