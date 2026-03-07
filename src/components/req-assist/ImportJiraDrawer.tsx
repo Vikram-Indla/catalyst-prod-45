@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { X, FileText, Search, Inbox, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
-import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Sheet, SheetPortal, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -164,40 +165,42 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   return (
     <>
       {open && (
-        <div
-          onClick={handleClose}
-          style={{
-            position: 'fixed',
-            top: 48,
-            left: 0,
-            right: 600,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.4)',
-            zIndex: 49,
-          }}
-        />
+        <>
+          <div
+            onClick={handleClose}
+            style={{
+              position: 'fixed',
+              top: 48,
+              left: 0,
+              right: 600,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.4)',
+              zIndex: 49,
+            }}
+          />
+        </>
       )}
       <Sheet open={open} onOpenChange={handleClose} modal={false}>
-        <SheetContent
-          side="right"
-          hideClose
-          style={{
-            position: 'fixed',
-            top: 48,
-            right: 0,
-            width: '600px',
-            minWidth: '600px',
-            maxWidth: '600px',
-            height: 'calc(100vh - 48px)',
-            zIndex: 50,
-            padding: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            borderLeft: '0.75px solid #E5E7EB',
-            boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
-            background: '#FFFFFF',
-          }}
-        >
+        <SheetPortal>
+          <SheetPrimitive.Content
+            style={{
+              position: 'fixed',
+              top: 48,
+              right: 0,
+              width: '600px',
+              minWidth: '600px',
+              maxWidth: '600px',
+              height: 'calc(100vh - 48px)',
+              zIndex: 50,
+              padding: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              borderLeft: '0.75px solid #E5E7EB',
+              boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
+              background: '#FFFFFF',
+              outline: 'none',
+            }}
+          >
         <SheetTitle className="sr-only">Import from Jira</SheetTitle>
         <SheetDescription className="sr-only">Import Jira tickets into Req Assist</SheetDescription>
         {/* HEADER */}
@@ -283,7 +286,8 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
             </>
           )}
         </div>
-        </SheetContent>
+        </SheetPrimitive.Content>
+        </SheetPortal>
       </Sheet>
     </>
   );
