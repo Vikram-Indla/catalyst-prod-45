@@ -72,8 +72,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
   const [fetched, setFetched] = useState(false);
 
   const loadData = async () => {
-    const [{ count: brdTotal }, { count: brdReady }] = await Promise.all([
-      (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }),
+    const [{ count: brdReady }] = await Promise.all([
       (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }).eq('pipeline_stage', 'ready'),
     ]);
 
@@ -107,14 +106,14 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
       setJiraKeyMap(map);
     }
 
-    setBrdStats({ ready: brdReady ?? 0, total: brdTotal ?? 0 });
+    setBrdStats({ ready: brdReady ?? 0, total: totalDocuments });
     setEpicStats({ draft, reviewed, published, total: epics.length });
     setQueueRunning(running ?? 0);
     setQueueRows(rows);
     setFetched(true);
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [totalDocuments]);
 
   useEffect(() => {
     const channel = supabase
@@ -122,7 +121,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
       .on('postgres_changes', { event: '*', schema: 'public', table: 'brd_processing_queue' }, () => { loadData(); })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, []);
+  }, [totalDocuments]);
 
   const isLoading = loading && !fetched;
   const brdPct = brdStats.total > 0 ? (brdStats.ready / brdStats.total) * 100 : 0;
@@ -185,7 +184,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
             <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 4 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ flexShrink: 0, color: '#64748B' }}><Brain size={16} /></span>
-                <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>KB Indexed</span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>AI Indexed</span>
               </div>
               {isLoading ? (
                 <div style={{ width: 52, height: 28, background: '#E2E8F0', borderRadius: 4, marginTop: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
@@ -194,7 +193,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
                   {wikihubSynced} / {brdStats.total} docs
                 </span>
               )}
-              <div style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>{wikihubChunks} chunks indexed</div>
+              <div style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>Searchable via Knowledge Assistant</div>
               <span className={queueRunning > 0 ? 'ra-running-pill' : ''} style={{
                 display: 'inline-flex', alignItems: 'center', alignSelf: 'flex-start',
                 padding: '1px 6px', borderRadius: 3, fontSize: 10, fontWeight: 700,
@@ -213,7 +212,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
               </div>
               {queueRows.length === 0 ? (
                 <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>
-                  No activity yet — trigger Sync All to KB to start
+                  No activity yet — trigger ✦ Sync All to AI to start
                 </div>
               ) : (
                 <>

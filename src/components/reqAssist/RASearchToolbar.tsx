@@ -107,7 +107,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
               whiteSpace: 'nowrap', flexShrink: 0,
             }}
           >
-            <Zap size={14} /> {syncingAll ? 'Syncing…' : 'Sync All to KB'}
+            <Zap size={14} /> {syncingAll ? 'Syncing…' : '✦ Sync All to AI'}
           </button>
         </>
       )}

@@ -127,7 +127,7 @@ export default function ReqAssistLibrary() {
         .eq('id', docId);
       if (error) throw error;
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
-      toast.success('Document synced to KB');
+      toast.success('Document indexed for AI-powered search');
     } catch (err: any) {
       toast.error('Sync failed: ' + (err?.message ?? 'Unknown error'));
     } finally {
@@ -150,7 +150,7 @@ export default function ReqAssistLibrary() {
         if (!error) success++;
       } catch {}
     }
-    toast.success(`Synced ${success} of ${unsyncedReady.length} documents to KB`);
+    toast.success(`Synced ${success} of ${unsyncedReady.length} documents for AI-powered search`);
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
     setSyncingAll(false);
   }, [documents, qc]);
@@ -209,7 +209,7 @@ export default function ReqAssistLibrary() {
           </h1>
           {/* D12: Remove hardcoded sync time */}
           <p style={{ fontSize: 13, color: '#6B7280', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>
-            BRD library — sourced from Jira, enriched by AI, WikiHub-connected
+            BRD library — sourced from Jira, enriched by AI, indexed for AI-powered search
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -281,6 +281,30 @@ export default function ReqAssistLibrary() {
             onSyncAll={handleSyncAll}
             syncingAll={syncingAll}
           />
+
+          {/* FIX 4: Filter info bar */}
+          {isFiltering && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '8px 28px', fontSize: 12, color: '#64748B',
+              background: '#F8FAFC', borderBottom: '0.75px solid #E2E8F0',
+              fontFamily: "'Inter', sans-serif",
+            }}>
+              Showing {documents?.length ?? 0} of {totalCount} documents
+              <span style={{ color: '#94A3B8' }}>·</span>
+              Filtered by: <strong style={{ color: '#334155', fontWeight: 600 }}>{tab !== 'all' ? tab.charAt(0).toUpperCase() + tab.slice(1) : search}</strong>
+              <button
+                onClick={() => { setSearch(''); setTab('all'); }}
+                style={{
+                  border: 'none', background: 'transparent', cursor: 'pointer',
+                  fontSize: 12, color: '#2563EB', fontWeight: 500, padding: 0,
+                  fontFamily: "'Inter', sans-serif",
+                }}
+              >
+                Clear filter ×
+              </button>
+            </div>
+          )}
 
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
             <thead>
@@ -625,7 +649,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
     );
   }
 
-  /* READY + KB SYNCED → green lozenge + View */
+  /* READY + AI INDEXED → green lozenge + View */
   if (isReady && kbSynced) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -636,7 +660,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           letterSpacing: '0.03em', whiteSpace: 'nowrap',
           background: '#E3FCEF', color: '#006644',
           fontFamily: "'Inter', sans-serif",
-        }}>KB SYNCED</span>
+        }}>AI INDEXED</span>
         <button
           onClick={(e) => { e.stopPropagation(); onSelect('view'); }}
           style={{
@@ -653,7 +677,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
     );
   }
 
-  /* READY + NOT SYNCED → Sync to KB */
+  /* READY + NOT SYNCED → Sync to AI */
   if (isReady && !kbSynced) {
     return (
       <button
@@ -667,7 +691,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           whiteSpace: 'nowrap',
         }}
       >
-        <Zap size={12} /> Sync to KB
+        <Zap size={12} /> Sync to AI
       </button>
     );
   }
