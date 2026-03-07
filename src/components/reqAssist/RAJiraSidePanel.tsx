@@ -293,7 +293,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 : { bg: '#DFE1E6', color: '#253858', text: 'Not indexed' }
               }
               action={pipeline.chunkCount > 0
-                ? { label: 'View in WikiHub →', onClick: () => { window.location.href = `/wiki?filter=source:${doc.jira_ticket_key}`; } }
+                ? { label: 'View in WikiHub →', onClick: () => { navigate(`/wiki?filter=source:${doc.jira_ticket_key}`); } }
                 : { label: 'Sync to KB →', onClick: () => { if (onSyncKb) onSyncKb(doc.id); } }
               }
               borderBottom

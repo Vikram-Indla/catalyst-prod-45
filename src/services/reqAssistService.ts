@@ -234,3 +234,40 @@ export async function syncSingleBrdToKb(brdDocumentId: string): Promise<void> {
     .eq('brd_id', brdDocumentId)
     .eq('status', 'processing');
 }
+
+// ── BATCH EPIC COUNTS (FIX 2: replaces N+1 loop) ──
+
+export async function fetchDocumentEpicCounts(
+  jiraKeys: string[]
+): Promise<Record<string, { epicCount: number; published: number; reviewed: number; draft: number }>> {
+  if (!jiraKeys.length) return {};
+
+  const { data: brdDocs } = await (supabase as any)
+    .from('brd_documents')
+    .select('id, jira_key')
+    .in('jira_key', jiraKeys);
+
+  if (!brdDocs?.length) return {};
+
+  const brdIds = brdDocs.map((d: any) => d.id);
+  const keyById: Record<string, string> = {};
+  brdDocs.forEach((d: any) => { keyById[d.id] = d.jira_key; });
+
+  const { data: epics } = await (supabase as any)
+    .from('brd_epics')
+    .select('brd_id, publish_status')
+    .in('brd_id', brdIds);
+
+  const result: Record<string, { epicCount: number; published: number; reviewed: number; draft: number }> = {};
+  (epics || []).forEach((e: any) => {
+    const key = keyById[e.brd_id];
+    if (!key) return;
+    if (!result[key]) result[key] = { epicCount: 0, published: 0, reviewed: 0, draft: 0 };
+    result[key].epicCount++;
+    if (e.publish_status === 'published') result[key].published++;
+    else if (e.publish_status === 'reviewed') result[key].reviewed++;
+    else result[key].draft++;
+  });
+
+  return result;
+}

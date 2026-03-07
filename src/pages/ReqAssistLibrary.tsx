@@ -529,8 +529,11 @@ export default function ReqAssistLibrary() {
               <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
                 Showing {documents.length} of {totalCount} documents
               </span>
-              <button style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563EB', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-                View all <ArrowRight size={14} />
+              <button
+                onClick={() => { setTab('all'); setSearch(''); }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563EB', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}
+              >
+                Show all {totalCount} <ArrowRight size={14} />
               </button>
             </div>
           )}
