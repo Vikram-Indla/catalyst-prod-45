@@ -99,25 +99,25 @@ export default function ReqAssistLibrary() {
     });
   }, [documents]);
 
-  // Fetch epic counts for docs that have brd_documents entries
+  // FIX 2: Batch fetch epic counts (replaces N+1 loop)
   useEffect(() => {
     if (!documents || documents.length === 0) return;
-    const fetchCounts = async () => {
+    const jiraKeys = documents
+      .map(d => (d as any).jira_ticket_key)
+      .filter(Boolean) as string[];
+    if (!jiraKeys.length) return;
+
+    fetchDocumentEpicCounts(jiraKeys).then(countsMap => {
       const counts: Record<string, number> = {};
       for (const doc of documents) {
-        const brdId = await resolveBrdId(doc);
-        if (brdId) {
-          const { count } = await (supabase as any)
-            .from('brd_epics')
-            .select('id', { count: 'exact', head: true })
-            .eq('brd_id', brdId);
-          if (count && count > 0) counts[doc.id] = count;
+        const jk = (doc as any).jira_ticket_key;
+        if (jk && countsMap[jk]?.epicCount > 0) {
+          counts[doc.id] = countsMap[jk].epicCount;
         }
       }
       setEpicCounts(counts);
-    };
-    fetchCounts();
-  }, [documents, resolveBrdId]);
+    });
+  }, [documents]);
 
   const handleSyncKb = useCallback(async (docId: string) => {
     setSyncingIds(prev => new Set(prev).add(docId));
