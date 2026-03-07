@@ -103,12 +103,12 @@ function useR360Resource(resourceId: string) {
       let avatar_url: string | null = null;
       let skills: string[] = [];
       if (resource.profile_id) {
-        const { data: profile } = await supabase.from('profiles')
+        const { data: profile } = await (supabase as any).from('profiles')
           .select('avatar_url, skills')
           .eq('id', resource.profile_id)
           .maybeSingle();
         avatar_url = profile?.avatar_url ?? null;
-        const rawSkills = (profile as any)?.skills;
+        const rawSkills = profile?.skills;
         if (Array.isArray(rawSkills)) {
           skills = rawSkills.filter(Boolean);
         } else if (typeof rawSkills === 'string' && rawSkills) {
