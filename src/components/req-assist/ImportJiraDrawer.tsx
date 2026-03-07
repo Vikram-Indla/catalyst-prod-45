@@ -164,23 +164,27 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   return (
     <>
       {open && (
-        <div
-          onClick={handleClose}
-          style={{
-            position: 'fixed',
-            top: 48,
-            left: 0,
-            right: 600,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.4)',
-            zIndex: 49,
-          }}
-        />
+        <>
+          <div
+            onClick={handleClose}
+            style={{
+              position: 'fixed',
+              top: 48,
+              left: 0,
+              right: 600,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.4)',
+              zIndex: 49,
+            }}
+          />
+          <style>{`.ra-drawer-hide-overlay [data-state] { display: none; }`}</style>
+        </>
       )}
       <Sheet open={open} onOpenChange={handleClose} modal={false}>
         <SheetContent
           side="right"
           hideClose
+          className="ra-drawer-hide-overlay"
           style={{
             position: 'fixed',
             top: 48,
