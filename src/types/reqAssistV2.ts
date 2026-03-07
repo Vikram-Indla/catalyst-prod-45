@@ -3,7 +3,7 @@
  * Stage A: Type definitions only
  */
 
-export type DocumentStatus = 'processing' | 'ready' | 'failed' | 'pending';
+export type DocumentStatus = 'processing' | 'ready' | 'failed' | 'pending' | 'intake' | 'extract' | 'process' | 'validate' | 'distribute' | 'complete';
 
 export type ArtifactType = 'brd' | 'epics' | 'uat' | 'initiative';
 
