@@ -305,7 +305,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
                 }}
               >
                 {importMutation.isPending && <Loader2 size={14} className="animate-spin" />}
-                Import {selectedTickets.size} Ticket{selectedTickets.size !== 1 ? 's' : ''}
+                Import {selectedTickets.length} Ticket{selectedTickets.length !== 1 ? 's' : ''}
               </button>
             </>
           )}
