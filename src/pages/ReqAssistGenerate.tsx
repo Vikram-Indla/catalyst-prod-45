@@ -147,8 +147,8 @@ export default function ReqAssistGenerate() {
 
       setGenResult(gData as GenerateResult);
     } catch (err: any) {
-      setGenError(err.message || 'An unexpected error occurred');
-      toast.error('Generation failed', { description: err.message });
+      setGenError(sanitiseError(err));
+      toast.error('Generation failed', { description: sanitiseError(err) });
     } finally {
       setQualifying(false);
       setGenerating(false);
