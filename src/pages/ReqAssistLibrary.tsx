@@ -399,8 +399,10 @@ export default function ReqAssistLibrary() {
                       <td data-col="actions" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'visible', position: 'relative', minWidth: 140 }}>
                         <ActionsCell
                           doc={doc}
+                          epicCount={epicCounts[doc.id] || 0}
                           onSyncKb={handleSyncKb}
                           onSelect={(type) => type === 'epics' ? handleGenerateClick(doc) : setBgModal({ type, doc })}
+                          onViewDrafts={() => handleOpenDrafts(doc)}
                         />
                       </td>
                     </tr>
