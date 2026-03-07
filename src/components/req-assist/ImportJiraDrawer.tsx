@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { X, FileText, Search, Inbox, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
-import { Sheet, SheetContent, SheetOverlay } from '@/components/ui/sheet';
+import { Sheet, SheetPortal, SheetOverlay, SheetContent } from '@/components/ui/sheet';
+import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -164,33 +165,39 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
   return (
     <>
       {open && <style>{`
-        [data-radix-dialog-overlay] {
+        .ra-import-overlay {
           top: 48px !important;
           right: 600px !important;
+          bottom: 0 !important;
+          left: 0 !important;
           z-index: 49 !important;
           background: rgba(0,0,0,0.4) !important;
           backdrop-filter: none !important;
           pointer-events: auto !important;
         }
-        [data-radix-dialog-content] {
+        .ra-import-content {
           z-index: 50 !important;
           top: 48px !important;
+          bottom: 0 !important;
           height: calc(100vh - 48px) !important;
           max-height: calc(100vh - 48px) !important;
+          inset: auto !important;
+          right: 0 !important;
         }
       `}</style>}
     <Sheet open={open} onOpenChange={handleClose}>
-      <SheetContent
-        side="right"
-        hideClose
-        className="!p-0 !border-0 !shadow-none !top-[48px] !bottom-0 !h-[calc(100vh-48px)] !max-h-[calc(100vh-48px)] !w-[600px] !z-50 !rounded-none"
-        style={{
-          background: '#FFFFFF',
-          display: 'flex', flexDirection: 'column',
-          borderLeft: '0.75px solid #E5E7EB',
-          boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
-        }}
-      >
+      <SheetPortal>
+        <SheetOverlay className="ra-import-overlay" />
+        <SheetPrimitive.Content
+          className="ra-import-content fixed !w-[600px] !rounded-none flex flex-col overflow-hidden focus:outline-none"
+          style={{
+            background: '#FFFFFF',
+            display: 'flex', flexDirection: 'column',
+            borderLeft: '0.75px solid #E5E7EB',
+            boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
+            padding: 0,
+          }}
+        >
         {/* HEADER */}
         <div style={{ padding: '0 24px', height: 64, borderBottom: '0.75px solid #E5E7EB', display: 'flex', flexDirection: 'column', justifyContent: 'center', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -273,7 +280,8 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
             </>
           )}
         </div>
-      </SheetContent>
+        </SheetPrimitive.Content>
+      </SheetPortal>
     </Sheet>
     </>
   );
