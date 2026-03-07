@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { X, FileText, Search, Inbox, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Sheet, SheetPortal, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import * as SheetPrimitive from "@radix-ui/react-dialog";
-import { Checkbox } from '@/components/ui/checkbox';
+// Checkbox replaced with native <input type="checkbox"> to avoid Radix Dialog event interception
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
@@ -205,6 +205,8 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
       <Sheet open={open} onOpenChange={handleClose} modal={false}>
         <SheetPortal>
           <SheetPrimitive.Content
+            onOpenAutoFocus={e => e.preventDefault()}
+            onCloseAutoFocus={e => e.preventDefault()}
             style={{
               position: 'fixed',
               top: 48,
@@ -581,9 +583,11 @@ function Step2({
           {/* Table header */}
           <div style={{ display: 'flex', alignItems: 'center', height: 36, background: '#F9FAFB', borderBottom: '0.75px solid #E5E7EB', position: 'sticky', top: 0, zIndex: 1 }}>
             <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Checkbox
-                checked={selectedTickets.size === tickets.length && tickets.length > 0}
-                onCheckedChange={onToggleAll}
+              <input
+                type="checkbox"
+                checked={selectedTickets.size === tickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key)).length && tickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key)).length > 0}
+                onChange={() => onToggleAll()}
+                style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#2563EB' }}
               />
             </div>
             {[
@@ -623,11 +627,12 @@ function Step2({
                 onMouseLeave={e => { if (!checked && !imported) (e.currentTarget as HTMLElement).style.background = checked ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
               >
                 <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     checked={checked}
                     disabled={imported}
-                    onCheckedChange={() => !imported && onToggle(t.ticket_key)}
-                    style={imported ? { cursor: 'not-allowed', opacity: 0.4 } : undefined}
+                    onChange={e => { e.stopPropagation(); if (!imported) onToggle(t.ticket_key); }}
+                    style={{ width: 16, height: 16, cursor: imported ? 'not-allowed' : 'pointer', accentColor: '#2563EB', opacity: imported ? 0.4 : 1 }}
                   />
                 </div>
                 <div style={{ width: 96, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: muted ? '#9CA3AF' : '#374151', fontFamily: "'JetBrains Mono', monospace" }}>{t.ticket_key}</div>

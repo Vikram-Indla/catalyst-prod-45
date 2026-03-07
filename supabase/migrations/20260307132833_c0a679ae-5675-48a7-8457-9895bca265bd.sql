@@ -1,0 +1,2 @@
+ALTER TABLE public.ra_documents DROP CONSTRAINT ra_documents_source_type_check;
+ALTER TABLE public.ra_documents ADD CONSTRAINT ra_documents_source_type_check CHECK (source_type = ANY (ARRAY['jira_pdf'::text, 'jira'::text, 'manual_upload'::text, 'text_generated'::text]));
