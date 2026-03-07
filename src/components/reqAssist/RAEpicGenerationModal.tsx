@@ -45,7 +45,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
 
   // ── Resolve brd_documents.id from ra_documents (linked via jira_key) ──
   const resolveBrdId = async (): Promise<string | null> => {
-    // First check if doc.id is already a brd_documents id
+    // PATH 1: doc.id already exists in brd_documents (Generate page flow)
     const { data: directCheck } = await (supabase as any)
       .from('brd_documents')
       .select('id')
@@ -53,18 +53,45 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
       .maybeSingle();
     if (directCheck?.id) return directCheck.id;
 
-    // If not, resolve via jira_ticket_key → brd_documents.jira_key
+    // PATH 2: resolve via jira_ticket_key → brd_documents.jira_key
     const jiraKey = (doc as any).jira_ticket_key;
     if (jiraKey) {
-      const { data: brdDoc } = await (supabase as any)
+      const { data: existing } = await (supabase as any)
         .from('brd_documents')
         .select('id')
         .eq('jira_key', jiraKey)
         .maybeSingle();
-      if (brdDoc?.id) return brdDoc.id;
+      if (existing?.id) return existing.id;
     }
 
-    return null;
+    // PATH 3: no brd_documents entry exists — seed one from ra_documents data
+    console.log('[EpicModal] No brd_documents entry found — seeding from ra_document:', doc.id);
+
+    const rawText = (doc as any).content_raw
+      || (doc as any).content_processed
+      || (doc as any).description
+      || doc.title;
+
+    const { data: inserted, error: insertError } = await (supabase as any)
+      .from('brd_documents')
+      .insert({
+        title: doc.title,
+        raw_text: rawText,
+        jira_key: jiraKey || null,
+        pipeline_stage: 'intake',
+        source_type: 'jira_bulk',
+        language: (doc as any).language || 'en',
+      })
+      .select('id')
+      .single();
+
+    if (insertError) {
+      console.error('[EpicModal] Failed to seed brd_documents:', insertError.message);
+      return null;
+    }
+
+    console.log('[EpicModal] Seeded brd_documents entry:', inserted.id);
+    return inserted.id;
   };
 
   const invokeGeneration = async (brdId: string) => {
