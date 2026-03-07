@@ -327,6 +327,7 @@ export default function ReqAssistLibrary() {
                           isOpen={dropdownOpen === doc.id}
                           onToggle={(e) => { e.stopPropagation(); setDropdownOpen(dropdownOpen === doc.id ? null : doc.id); }}
                           onSelect={(type) => { setDropdownOpen(null); setBgModal({ type, doc }); }}
+                          onSyncKb={handleSyncKb}
                         />
                       </td>
                     </tr>
