@@ -365,11 +365,31 @@
 
 /* ── DRAWER OVERLAY FIX ─────────────────────────────── */
 
+/* CatalystShell level: main content must NEVER compress */
+[data-catalyst-main] {
+  width: 100% !important;
+  flex-shrink: 0 !important;
+  min-width: 0 !important;
+}
+[data-catalyst-main] > div {
+  width: 100% !important;
+}
+
 /* The page wrapper must be position:relative, NOT flex-row */
 #r360-root .r3-page {
   position: relative !important;
   display: block !important;
   width: 100% !important;
+}
+
+/* R360 root always full width */
+#r360-root,
+[data-r360-page-content] {
+  width: 100% !important;
+  min-width: 0 !important;
+  flex-shrink: 0 !important;
+  flex-basis: 100% !important;
+  max-width: 100% !important;
 }
 
 /* Any panel/drawer inside r360 must be fixed overlay, never flex sibling */
