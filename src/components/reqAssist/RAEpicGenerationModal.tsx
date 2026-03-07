@@ -122,7 +122,15 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
     setProgress(100);
     setDone(true);
     setEpicCount(data?.epic_count ?? data?.epics?.length ?? 0);
+
+    // FIX 2: Update pipeline_stage to 'ready' after successful generation
+    await (supabase as any)
+      .from('brd_documents')
+      .update({ pipeline_stage: 'ready' })
+      .eq('id', brdId);
+
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
+    qc.invalidateQueries({ queryKey: ['brd_documents'] });
     setTimeout(() => toast.success(`Epics generated for ${doc.title}`), 600);
   };
 
