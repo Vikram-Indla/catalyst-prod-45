@@ -269,10 +269,28 @@ export default function RAImportDrawer({ onClose }: Props) {
           {/* ══════ STEP 1 — SELECT PROJECT ══════ */}
           {step === 1 && (
             <div>
-              <span style={{
-                fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' as const,
-                letterSpacing: '0.04em', display: 'block', marginBottom: 12,
-                fontFamily: "'Inter', sans-serif",
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' as const,
+                  letterSpacing: '0.04em', fontFamily: "'Inter', sans-serif",
+                }}>SELECT PROJECT</span>
+                <button
+                  onClick={handleSync}
+                  disabled={syncing}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                    padding: '4px 10px', borderRadius: 4,
+                    border: '0.75px solid #E5E7EB', background: 'transparent',
+                    fontSize: 12, fontWeight: 500, color: '#6B7280',
+                    cursor: syncing ? 'not-allowed' : 'pointer',
+                    opacity: syncing ? 0.6 : 1,
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                >
+                  <RefreshCw size={14} style={syncing ? { animation: 'ra-spin 1s linear infinite' } : undefined} />
+                  {syncing ? 'Syncing…' : 'Sync'}
+                </button>
+              </div>
               }}>SELECT PROJECT</span>
 
               {projectsLoading && (
