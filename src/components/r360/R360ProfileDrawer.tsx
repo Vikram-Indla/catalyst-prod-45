@@ -1057,7 +1057,7 @@ function OverviewTab({
               boxShadow: '0 1px 2px rgba(15,23,42,0.06)',
             }}>
               <span style={{ fontSize: 12, color: INK2 }}>Avg cycle time</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: cycleColour, fontFamily: "'JetBrains Mono', monospace" }}>{avgDays}d per item</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: (avgDays === 0 || avgDays == null) ? MUTED : cycleColour, fontFamily: "'JetBrains Mono', monospace" }}>{(avgDays === 0 || avgDays == null) ? '—' : `${avgDays}d per item`}</span>
             </div>
             {/* Oldest open item — SINGLE ITEM CLICK */}
             <div
