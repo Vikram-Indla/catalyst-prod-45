@@ -162,20 +162,21 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                 onMouseEnter={() => setHoveredId(epic.id)}
                 onMouseLeave={() => setHoveredId(null)}
               >
-                {/* Top row */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                  {epic.ra_tag ? (
-                    <span style={{
-                      background: '#F1F5F9', color: '#475569',
-                      fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
-                      padding: '2px 8px', borderRadius: 2,
-                    }}>{epic.ra_tag}</span>
-                  ) : <span />}
+                {/* ra_tag chip */}
+                <div style={{ marginBottom: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    background: '#F1F5F9', color: '#475569',
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+                    padding: '2px 6px', borderRadius: 4,
+                  }}>
+                    {epic.ra_tag || `DFT-${String(epicIdx + 1).padStart(3, '0')}`}
+                  </span>
                   <StatusLozenge status={epic.publish_status} />
                 </div>
 
                 {/* Title */}
-                <p style={{ fontSize: 13, fontWeight: 650, color: '#0F172A', margin: '6px 0 0' }}>{epic.title}</p>
+                <p style={{ fontSize: 13, fontWeight: 650, color: '#0F172A', margin: '4px 0 0' }}>{epic.title}</p>
 
                 {/* Description */}
                 {epic.description && (
