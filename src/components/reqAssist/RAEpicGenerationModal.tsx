@@ -301,7 +301,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
                         {state === 'done' ? (
                           <Check size={14} color="#16A34A" strokeWidth={2.5} />
                         ) : state === 'active' ? (
-                          <Loader2 size={14} color="#7C3AED" style={{ animation: 'ra-epic-spin 1s linear infinite' }} />
+                          <div className="ra-epic-spinner" />
                         ) : (
                           <span style={{ fontSize: 12, fontWeight: 600, color: '#9CA3AF' }}>{i + 1}</span>
                         )}
