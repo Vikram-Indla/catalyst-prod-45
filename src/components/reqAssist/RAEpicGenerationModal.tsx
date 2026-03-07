@@ -43,14 +43,70 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
     return () => clearInterval(id);
   }, [done, hasFailed]);
 
+  // ── Resolve brd_documents.id from ra_documents (linked via jira_key) ──
+  const resolveBrdId = async (): Promise<string | null> => {
+    // First check if doc.id is already a brd_documents id
+    const { data: directCheck } = await (supabase as any)
+      .from('brd_documents')
+      .select('id')
+      .eq('id', doc.id)
+      .maybeSingle();
+    if (directCheck?.id) return directCheck.id;
+
+    // If not, resolve via jira_ticket_key → brd_documents.jira_key
+    const jiraKey = (doc as any).jira_ticket_key;
+    if (jiraKey) {
+      const { data: brdDoc } = await (supabase as any)
+        .from('brd_documents')
+        .select('id')
+        .eq('jira_key', jiraKey)
+        .maybeSingle();
+      if (brdDoc?.id) return brdDoc.id;
+    }
+
+    return null;
+  };
+
+  const invokeGeneration = async (brdId: string) => {
+    console.log('[EpicModal] Invoking generate_epics_for_brd with brd_id:', brdId);
+    const { data, error } = await supabase.functions.invoke('generate_epics_for_brd', { body: { brd_id: brdId } });
+    if (error) {
+      console.error('[RAEpicModal] Generation failed:', error.message || error);
+      setHasFailed(true);
+      setErrorMsg(error.message || JSON.stringify(error));
+      return;
+    }
+    if (!data || data.error) {
+      const msg = data?.error || data?.message || 'Empty response from Edge Function';
+      console.error('[RAEpicModal] Generation failed:', msg);
+      setHasFailed(true);
+      setErrorMsg(msg);
+      return;
+    }
+    setStep(5);
+    setProgress(100);
+    setDone(true);
+    setEpicCount(data?.epic_count ?? data?.epics?.length ?? 0);
+    qc.invalidateQueries({ queryKey: RA_KEYS.all });
+    setTimeout(() => toast.success(`Epics generated for ${doc.title}`), 600);
+  };
+
   // ── EFFECT 2: Edge Function call — runs once only
   useEffect(() => {
+    console.log('[EpicModal] brdId at mount:', doc.id);
+    console.log('[EpicModal] hasStarted:', hasStarted.current);
     if (hasStarted.current) return;
     hasStarted.current = true;
 
-    supabase.functions
-      .invoke('generate_epics_for_brd', { body: { brd_id: doc.id } })
-      .then(({ data, error }) => {
+    resolveBrdId().then(brdId => {
+      if (!brdId || brdId.trim() === '') {
+        console.error('FORGE: brdId is empty — aborting epic generation. doc.id was:', doc.id);
+        setHasFailed(true);
+        setErrorMsg('Could not resolve BRD document ID. The document may not have a corresponding BRD entry.');
+        return;
+      }
+      invokeGeneration(brdId);
+    }).catch(err => {
         if (error) {
           console.error('[RAEpicModal] Generation failed:', error.message || error);
           setHasFailed(true);
