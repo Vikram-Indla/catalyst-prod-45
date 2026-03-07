@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { FileText, Search, Sparkles, CheckCircle, Database, Check, X, Loader2, XCircle } from 'lucide-react';
+import { FileText, Search, Sparkles, CheckCircle2, Database, Check, Loader2, XCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { RA_KEYS } from '@/hooks/useReqAssist';
+import { toast } from 'sonner';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 
 interface Props {
@@ -11,12 +12,13 @@ interface Props {
 }
 
 type StepState = 'pending' | 'active' | 'complete' | 'error';
+type ModalState = 'running' | 'success' | 'error';
 
 const STEPS = [
   { label: 'Analysing document structure', icon: FileText },
   { label: 'Extracting key themes', icon: Search },
   { label: 'Generating epic statements', icon: Sparkles },
-  { label: 'Validating against BRD criteria', icon: CheckCircle },
+  { label: 'Validating against BRD criteria', icon: CheckCircle2 },
   { label: 'Saving epics to workspace', icon: Database },
 ];
 
@@ -25,19 +27,21 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
   const [stepStates, setStepStates] = useState<StepState[]>(
     ['active', 'pending', 'pending', 'pending', 'pending']
   );
+  const [modalState, setModalState] = useState<ModalState>('running');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [result, setResult] = useState<{ epic_count: number } | null>(null);
+  const [epicCount, setEpicCount] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const promiseResolved = useRef(false);
   const currentSimStep = useRef(0);
 
+  const clearTimer = useCallback(() => {
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+  }, []);
+
   const advanceSimStep = useCallback(() => {
     if (promiseResolved.current) return;
     const next = currentSimStep.current + 1;
-    if (next >= 4) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      return;
-    }
+    if (next >= 4) { clearTimer(); return; }
     currentSimStep.current = next;
     setStepStates(prev => {
       const ns = [...prev];
@@ -45,7 +49,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
       ns[next] = 'active';
       return ns;
     });
-  }, []);
+  }, [clearTimer]);
 
   const invokeGeneration = useCallback(() => {
     (async () => {
@@ -55,39 +59,48 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
         });
 
         if (error) {
-          setErrorMsg(error.message || 'Edge Function returned an error');
           promiseResolved.current = true;
-          if (timerRef.current) clearInterval(timerRef.current);
+          clearTimer();
           setStepStates(prev => {
             const ns = [...prev];
             const idx = ns.findIndex(s => s === 'active');
             if (idx >= 0) ns[idx] = 'error';
             return ns;
           });
+          setErrorMsg(error.message || 'Edge Function returned an error');
+          setModalState('error');
           return;
         }
 
         if (!data || data.error) {
-          setErrorMsg(data?.error || 'No data returned from generation');
           promiseResolved.current = true;
-          if (timerRef.current) clearInterval(timerRef.current);
+          clearTimer();
           setStepStates(prev => {
             const ns = [...prev];
             const idx = ns.findIndex(s => s === 'active');
             if (idx >= 0) ns[idx] = 'error';
             return ns;
           });
+          setErrorMsg(data?.error || 'No data returned from generation');
+          setModalState('error');
           return;
         }
 
+        // SUCCESS — complete all steps
         promiseResolved.current = true;
-        if (timerRef.current) clearInterval(timerRef.current);
+        clearTimer();
         setStepStates(['complete', 'complete', 'complete', 'complete', 'complete']);
-        setResult({ epic_count: data?.epic_count ?? 0 });
+        setEpicCount(data?.epic_count ?? 0);
+        setModalState('success');
         qc.invalidateQueries({ queryKey: RA_KEYS.all });
+
+        // Fire toast 600ms after modal success state
+        setTimeout(() => {
+          toast.success(`${data?.epic_count ?? 0} epics generated successfully`);
+        }, 600);
       } catch (err: any) {
         promiseResolved.current = true;
-        if (timerRef.current) clearInterval(timerRef.current);
+        clearTimer();
         setStepStates(prev => {
           const ns = [...prev];
           const idx = ns.findIndex(s => s === 'active');
@@ -95,24 +108,21 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
           return ns;
         });
         setErrorMsg(err?.message || 'An unexpected error occurred');
+        setModalState('error');
       }
     })();
-  }, [doc.id, qc]);
+  }, [doc.id, qc, clearTimer]);
 
   useEffect(() => {
     timerRef.current = setInterval(advanceSimStep, 1200);
     invokeGeneration();
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    return clearTimer;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const isComplete = result !== null;
-  const isError = errorMsg !== null;
-  const isRunning = !isComplete && !isError;
-
   const handleRetry = () => {
     setErrorMsg(null);
-    setResult(null);
+    setModalState('running');
     promiseResolved.current = false;
     currentSimStep.current = 0;
     setStepStates(['active', 'pending', 'pending', 'pending', 'pending']);
@@ -122,8 +132,8 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
 
   // Progress bar
   const completedCount = stepStates.filter(s => s === 'complete').length;
-  const progress = isComplete ? 100 : isError ? (completedCount / 5) * 100 : (completedCount / 5) * 100;
-  const progressColor = isComplete ? '#16A34A' : isError ? '#DC2626' : '#7C3AED';
+  const progress = modalState === 'success' ? 100 : (completedCount / 5) * 100;
+  const progressColor = modalState === 'success' ? '#16A34A' : modalState === 'error' ? '#DC2626' : '#7C3AED';
 
   return (
     <>
@@ -134,8 +144,36 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
         padding: 28, boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
         fontFamily: "'Inter', sans-serif",
       }}>
-        {/* Header */}
-        {!isError ? (
+        {/* ═══ ERROR HEADER ═══ */}
+        {modalState === 'error' && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+            <XCircle size={32} color="#DC2626" />
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+              Epic Generation Failed
+            </h3>
+          </div>
+        )}
+
+        {/* ═══ SUCCESS HEADER ═══ */}
+        {modalState === 'success' && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+            <div style={{
+              width: 64, height: 64, borderRadius: '50%', background: '#F0FDF4',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <CheckCircle2 size={40} color="#16A34A" />
+            </div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+              Epics Generated Successfully
+            </h3>
+            <p style={{ fontSize: 14, color: '#6B7280', margin: 0, textAlign: 'center' }}>
+              {epicCount} epic statement{epicCount !== 1 ? 's' : ''} created for {doc.title}
+            </p>
+          </div>
+        )}
+
+        {/* ═══ RUNNING HEADER ═══ */}
+        {modalState === 'running' && (
           <>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
               <Sparkles size={20} color="#7C3AED" />
@@ -147,16 +185,9 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
               {doc.title}
             </p>
           </>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-            <XCircle size={32} color="#DC2626" />
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
-              Epic Generation Failed
-            </h3>
-          </div>
         )}
 
-        {/* Progress bar */}
+        {/* ═══ PROGRESS BAR ═══ */}
         <div style={{
           width: '100%', height: 6, borderRadius: 999,
           background: '#F3F4F6', marginBottom: 20, overflow: 'hidden',
@@ -164,13 +195,13 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
           <div style={{
             height: '100%', borderRadius: 999,
             background: progressColor,
-            width: `${Math.max(progress, isRunning ? 10 : 0)}%`,
+            width: `${Math.max(progress, modalState === 'running' ? 10 : progress)}%`,
             transition: 'width 0.4s ease, background 0.3s ease',
           }} />
         </div>
 
-        {/* Error state replaces stepper */}
-        {isError ? (
+        {/* ═══ ERROR BODY ═══ */}
+        {modalState === 'error' && (
           <>
             <div style={{
               padding: '12px 14px', borderRadius: 6,
@@ -188,8 +219,10 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
               This is usually caused by a missing AI key, cold function start, or an invalid document. Check the Edge Function logs for details.
             </p>
           </>
-        ) : (
-          /* Stepper */
+        )}
+
+        {/* ═══ STEPPER (running + success) ═══ */}
+        {(modalState === 'running' || modalState === 'success') && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 24 }}>
             {STEPS.map((step, i) => {
               const state = stepStates[i];
@@ -215,8 +248,8 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
                     </div>
                     <span style={{
                       fontSize: 13,
-                      fontWeight: state === 'active' ? 600 : 400,
-                      color: state === 'complete' ? '#16A34A'
+                      fontWeight: state === 'active' ? 600 : state === 'complete' ? 500 : 400,
+                      color: state === 'complete' ? '#374151'
                         : state === 'active' ? '#7C3AED'
                         : '#9CA3AF',
                     }}>
@@ -235,25 +268,12 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
           </div>
         )}
 
-        {/* Success message */}
-        {isComplete && (
-          <div style={{
-            padding: '10px 14px', borderRadius: 6,
-            background: '#F0FDF4', border: '0.75px solid #BBF7D0',
-            marginBottom: 20,
-          }}>
-            <p style={{ fontSize: 13, color: '#166534', margin: 0, lineHeight: 1.5 }}>
-              {result.epic_count} epic{result.epic_count !== 1 ? 's' : ''} generated successfully.
-            </p>
-          </div>
-        )}
-
-        {/* Footer */}
+        {/* ═══ FOOTER ═══ */}
         <div style={{
           display: 'flex', gap: 8, justifyContent: 'flex-end',
           borderTop: '0.75px solid #E2E8F0', paddingTop: 16,
         }}>
-          {isRunning && (
+          {modalState === 'running' && (
             <button
               disabled
               style={{
@@ -265,7 +285,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
               Cancel
             </button>
           )}
-          {isComplete && (
+          {modalState === 'success' && (
             <>
               <button
                 onClick={onClose}
@@ -289,7 +309,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
               </button>
             </>
           )}
-          {isError && (
+          {modalState === 'error' && (
             <>
               <button
                 onClick={onClose}
