@@ -350,7 +350,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
             </div>
             <div style={{ width: '100%', height: 6, borderRadius: 999, background: '#F3F4F6', marginBottom: 20, overflow: 'hidden' }}>
               <div style={{
-                height: '100%', borderRadius: 999, background: '#7C3AED',
+                height: '100%', borderRadius: 999, background: '#2563EB',
                 width: `${Math.max(progress, 8)}%`,
                 transition: 'width 0.5s ease',
               }} />
