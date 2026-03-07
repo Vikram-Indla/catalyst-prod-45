@@ -3,6 +3,7 @@ import { FileText, FileSearch, Download, Loader2, AlertCircle, Zap, TestTube, Fl
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useRADocuments, useRAStats, RA_KEYS } from '@/hooks/useReqAssist';
+import { syncSingleBrdToKb } from '@/services/reqAssistService';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import type { RAFilterTab, RADocumentWithArtifacts } from '@/types/reqAssistV2';
@@ -121,19 +122,42 @@ export default function ReqAssistLibrary() {
   const handleSyncKb = useCallback(async (docId: string) => {
     setSyncingIds(prev => new Set(prev).add(docId));
     try {
-      const { error } = await (supabase as any)
+      // Resolve the brd_documents.id from the ra_documents row
+      const doc = documents?.find(d => d.id === docId);
+      const jiraKey = (doc as any)?.jira_ticket_key;
+      let brdId: string | null = null;
+
+      // Check direct match
+      const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', docId).maybeSingle();
+      if (direct?.id) brdId = direct.id;
+
+      // Check via jira_key
+      if (!brdId && jiraKey) {
+        const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+        if (jiraMatch?.id) brdId = jiraMatch.id;
+      }
+
+      if (!brdId) {
+        toast.error('Document not yet processed — generate BRDs first');
+        return;
+      }
+
+      await syncSingleBrdToKb(brdId);
+
+      // Also update ra_documents for UI consistency
+      await (supabase as any)
         .from('ra_documents')
         .update({ kb_synced: true, kb_synced_at: new Date().toISOString() })
         .eq('id', docId);
-      if (error) throw error;
+
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
-      toast.success('Document indexed for AI-powered search');
+      toast.success('Document indexed for AI search');
     } catch (err: any) {
       toast.error('Sync failed: ' + (err?.message ?? 'Unknown error'));
     } finally {
       setSyncingIds(prev => { const n = new Set(prev); n.delete(docId); return n; });
     }
-  }, [qc]);
+  }, [qc, documents]);
 
   const handleSyncAll = useCallback(async () => {
     if (!documents) return;
@@ -141,16 +165,40 @@ export default function ReqAssistLibrary() {
     if (!unsyncedReady.length) { toast.info('All documents already synced'); return; }
     setSyncingAll(true);
     let success = 0;
-    for (const doc of unsyncedReady) {
+    let failed = 0;
+    for (let i = 0; i < unsyncedReady.length; i++) {
+      const doc = unsyncedReady[i];
+      toast.loading(`Syncing ${i + 1} of ${unsyncedReady.length}...`, { id: 'sync-all-progress' });
       try {
-        const { error } = await (supabase as any)
+        const jiraKey = (doc as any)?.jira_ticket_key;
+        let brdId: string | null = null;
+        const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
+        if (direct?.id) brdId = direct.id;
+        if (!brdId && jiraKey) {
+          const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+          if (jiraMatch?.id) brdId = jiraMatch.id;
+        }
+        if (!brdId) { failed++; continue; }
+
+        await syncSingleBrdToKb(brdId);
+
+        // Update ra_documents for UI consistency
+        await (supabase as any)
           .from('ra_documents')
           .update({ kb_synced: true, kb_synced_at: new Date().toISOString() })
           .eq('id', doc.id);
-        if (!error) success++;
-      } catch {}
+
+        success++;
+      } catch {
+        failed++;
+      }
     }
-    toast.success(`Synced ${success} of ${unsyncedReady.length} documents for AI-powered search`);
+    toast.dismiss('sync-all-progress');
+    if (failed > 0) {
+      toast.warning(`Synced ${success} of ${unsyncedReady.length}. ${failed} failed.`);
+    } else {
+      toast.success(`Synced ${success} documents for AI search`);
+    }
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
     setSyncingAll(false);
   }, [documents, qc]);

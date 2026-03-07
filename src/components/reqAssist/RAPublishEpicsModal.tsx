@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Search, Loader2, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { RA_KEYS } from '@/hooks/useReqAssist';
 
 interface Epic {
   id: string;
@@ -40,6 +41,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProject, setSelectedProject] = useState<{ id: string; name: string; status: string } | null>(null);
   const [publishing, setPublishing] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: projects } = useQuery({
     queryKey: ['projects-for-publish'],
@@ -57,27 +59,46 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
     if (!selectedProject) return;
     setPublishing(true);
     try {
-      // Update brd_epics
+      // Insert into project epics with Promise.allSettled (H-04)
+      const results = await Promise.allSettled(
+        epics.map(epic =>
+          (supabase as any).from('epics').insert({
+            title: epic.title,
+            project_id: selectedProject.id,
+            status: 'to_do',
+            source: 'req_assist',
+            ra_tag: epic.ra_tag,
+          })
+        )
+      );
+
+      const successes = results.filter(r => r.status === 'fulfilled');
+      const failures = results.filter(r => r.status === 'rejected');
+
+      if (failures.length > 0 && successes.length > 0) {
+        // Partial success — still mark succeeded ones
+        toast.warning(`Published ${successes.length} of ${epics.length} epics. ${failures.length} failed.`);
+      } else if (failures.length > 0 && successes.length === 0) {
+        toast.error('Publish failed — no epics were created');
+        return;
+      } else {
+        toast.success(`${successes.length} epics published to ${selectedProject.name}`);
+      }
+
+      // Update brd_epics.publish_status = 'published'
       await (supabase as any)
         .from('brd_epics')
         .update({
           publish_status: 'published',
           project_id: selectedProject.id,
-          published_at: new Date().toISOString(),
         })
-        .eq('brd_id', brdId);
+        .in('id', epics.map(e => e.id));
 
-      // Insert into project epics (ph_epics or epics table)
-      for (const epic of epics) {
-        await (supabase as any).from('epics').insert({
-          title: epic.title,
-          project_id: selectedProject.id,
-          status: 'to_do',
-          source: 'req_assist',
-        }).then(() => {});
-      }
+      // Invalidate all related queries
+      queryClient.invalidateQueries({ queryKey: ['brd-epics'] });
+      queryClient.invalidateQueries({ queryKey: RA_KEYS.stats() });
+      queryClient.invalidateQueries({ queryKey: RA_KEYS.all });
 
-      toast.success(`${epics.length} epics published to ${selectedProject.name}`);
       onPublished();
     } catch (err: any) {
       toast.error('Publish failed: ' + (err?.message || 'Unknown error'));
