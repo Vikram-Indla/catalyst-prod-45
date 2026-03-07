@@ -205,6 +205,8 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
       <Sheet open={open} onOpenChange={handleClose} modal={false}>
         <SheetPortal>
           <SheetPrimitive.Content
+            onOpenAutoFocus={e => e.preventDefault()}
+            onCloseAutoFocus={e => e.preventDefault()}
             style={{
               position: 'fixed',
               top: 48,
