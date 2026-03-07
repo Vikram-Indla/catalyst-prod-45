@@ -487,9 +487,9 @@ function Step2({
   totalIssueCount: number;
   pdfIssueCount: number;
   loading: boolean;
-  selectedTickets: Set<string>;
+  selectedTickets: string[];
   onToggle: (key: string) => void;
-  onToggleAll: () => void;
+  onToggleAll: (checked: boolean) => void;
   pdfOnly: boolean;
   onPdfToggle: () => void;
   search: string;
