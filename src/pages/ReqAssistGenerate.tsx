@@ -390,6 +390,14 @@ export default function ReqAssistGenerate() {
         )}
       </div>
 
+      {/* ── EPIC GENERATION MODAL ── */}
+      {epicModalOpen && savedDocId && (
+        <RAEpicGenerationModal
+          doc={{ id: savedDocId, title: text.trim().slice(0, 60) || 'Untitled BRD' } as any}
+          onClose={() => setEpicModalOpen(false)}
+        />
+      )}
+
       <style>{`
         @keyframes ra-spin { to { transform: rotate(360deg); } }
       `}</style>
