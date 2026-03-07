@@ -292,8 +292,8 @@ export default function ReqAssistLibrary() {
                   { label: 'PDF', w: 60 },
                   { label: 'Status', w: 110 },
                   { label: 'Generation', w: 160 },
-                  { label: 'Imported', w: 85 },
-                  { label: 'Actions', w: 140 },
+                  { label: 'Imported', w: 80 },
+                  { label: 'Actions', w: 220 },
                 ].map((col, i) => (
                   <th key={i} style={{
                     padding: '0 10px', height: 36,
