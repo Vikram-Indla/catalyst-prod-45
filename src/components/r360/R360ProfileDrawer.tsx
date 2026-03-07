@@ -101,12 +101,19 @@ function useR360Resource(resourceId: string) {
       if (!resource) return null;
 
       let avatar_url: string | null = null;
+      let skills: string[] = [];
       if (resource.profile_id) {
         const { data: profile } = await supabase.from('profiles')
-          .select('avatar_url')
+          .select('avatar_url, skills')
           .eq('id', resource.profile_id)
           .maybeSingle();
         avatar_url = profile?.avatar_url ?? null;
+        const rawSkills = (profile as any)?.skills;
+        if (Array.isArray(rawSkills)) {
+          skills = rawSkills.filter(Boolean);
+        } else if (typeof rawSkills === 'string' && rawSkills) {
+          skills = rawSkills.split(',').map((s: string) => s.trim()).filter(Boolean);
+        }
       }
 
       return {
@@ -115,6 +122,7 @@ function useR360Resource(resourceId: string) {
         role: resource.role_name || 'Team Member',
         department: resource.department_name || '',
         avatar_url,
+        skills,
         resource_key: `R-${String(resource.rid).padStart(3, '0')}`,
       };
     },
