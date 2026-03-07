@@ -28,6 +28,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
   const [done, setDone] = useState(false);
   const [hasFailed, setHasFailed] = useState(false);
   const [epicCount, setEpicCount] = useState(0);
+  const [resolvedBrdId, setResolvedBrdId] = useState<string | null>(null);
   const hasStarted = useRef(false);
 
   // ── EFFECT 1: Visual ticker — runs independently, always
