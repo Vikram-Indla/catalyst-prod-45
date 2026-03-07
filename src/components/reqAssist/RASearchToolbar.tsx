@@ -100,7 +100,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '0 12px', height: 32, fontSize: 13, fontWeight: 500,
               border: 'none', borderRadius: 6,
-              background: '#7C3AED', color: '#FFFFFF',
+              background: '#2563EB', color: '#FFFFFF',
               cursor: syncingAll ? 'not-allowed' : 'pointer',
               opacity: syncingAll ? 0.7 : 1,
               fontFamily: "'Inter', sans-serif",
