@@ -242,6 +242,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
             onSearch={setTicketSearch}
             onSync={() => selectedProject && handleSyncOne(selectedProject)}
             syncing={syncMutation.isPending}
+            lastSyncedAt={selectedProjectData?.last_synced_at ?? null}
           />}
         </div>
 
