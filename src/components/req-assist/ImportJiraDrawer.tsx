@@ -198,6 +198,8 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
             background: '#FFFFFF',
           }}
         >
+        <SheetTitle className="sr-only">Import from Jira</SheetTitle>
+        <SheetDescription className="sr-only">Import Jira tickets into Req Assist</SheetDescription>
         {/* HEADER */}
         <div style={{ padding: '0 24px', height: 64, borderBottom: '0.75px solid #E5E7EB', display: 'flex', flexDirection: 'column', justifyContent: 'center', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
