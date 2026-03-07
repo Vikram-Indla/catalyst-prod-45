@@ -96,6 +96,25 @@ export function useProjectTickets(projectKey: string | null, pdfOnly = false) {
   });
 }
 
+/* ── Hook 2b: useProjectTicketCount ── */
+export function useProjectTicketCount(projectKey: string | null) {
+  return useQuery({
+    queryKey: JIRA_KEYS.ticketCount(projectKey ?? ''),
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('ra_jira_tickets')
+        .select('status')
+        .eq('project_key', projectKey);
+      if (error) throw error;
+      return (data ?? []).filter((t: any) =>
+        !EXCLUDED_STATUSES.includes((t.status || '').toUpperCase())
+      ).length;
+    },
+    enabled: !!projectKey,
+    staleTime: 30_000,
+  });
+}
+
 /* ── Hook 3: useVerifyProject (mutation) ── */
 export function useVerifyProject() {
   const qc = useQueryClient();
