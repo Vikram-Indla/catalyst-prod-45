@@ -603,7 +603,7 @@ function Step2({
 
           {/* Table rows */}
           {tickets.map(t => {
-            const checked = selectedTickets.has(t.ticket_key);
+            const checked = selectedTickets.includes(t.ticket_key);
             const imported = t.already_imported && !reImportKeys.has(t.ticket_key);
             const reActivated = t.already_imported && reImportKeys.has(t.ticket_key);
             const muted = imported;
