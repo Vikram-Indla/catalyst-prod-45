@@ -154,7 +154,7 @@ export default function ReqAssistLibrary() {
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
       toast.success('Document indexed for AI search');
     } catch (err: any) {
-      toast.error('Sync failed: ' + (err?.message ?? 'Unknown error'));
+      toast.error(sanitiseError(err));
     } finally {
       setSyncingIds(prev => { const n = new Set(prev); n.delete(docId); return n; });
     }
