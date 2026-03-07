@@ -55,13 +55,13 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, wikihubChunk
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', border: '1px solid #E2E8F0', borderRadius: 'var(--ra-radius-card)', overflow: 'hidden', marginBottom: 20 }}>
       <StatCard label="Documents in Library" value={totalDocuments} subLabel="SEN · MDT · SIMP" loading={loading} color="#111827" />
       <div style={{ borderLeft: '1px solid rgba(15,23,42,0.06)' }}>
-        <StatCard label="Indexed in WikiHub" value={`${wikihubSynced} / ${totalDocuments}`} color="#16A34A" subLabel={chunkLabel} loading={loading} />
+        <StatCard label="Indexed in WikiHub" value={`${wikihubSynced} / ${totalDocuments}`} color="#111827" subLabel={chunkLabel} loading={loading} />
       </div>
       <div style={{ borderLeft: '1px solid rgba(15,23,42,0.06)' }}>
         <StatCard label="Artifacts Generated" value={artifactsGenerated} color="#111827" subLabel="Epics · UAT · Initiatives" loading={loading} />
       </div>
       <div style={{ borderLeft: '1px solid rgba(15,23,42,0.06)' }}>
-        <StatCard label="Processing Now" value={processingCount} color="#2563EB" animatedBadge={processingCount > 0} loading={loading} />
+        <StatCard label="Processing Now" value={processingCount} color="#111827" animatedBadge={processingCount > 0} loading={loading} />
       </div>
       <style>{`
         @keyframes ra-spin { to { transform: rotate(360deg); } }

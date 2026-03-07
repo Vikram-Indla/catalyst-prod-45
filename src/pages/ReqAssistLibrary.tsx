@@ -9,7 +9,7 @@ import RAGenerationBar from '@/components/reqAssist/RAGenerationBar';
 import RAJiraSidePanel from '@/components/reqAssist/RAJiraSidePanel';
 import RAPDFViewer from '@/components/reqAssist/RAPDFViewer';
 import RABackgroundModal from '@/components/reqAssist/RABackgroundModal';
-import RAImportDrawer from '@/components/reqAssist/RAImportDrawer';
+import ImportJiraDrawer from '@/components/req-assist/ImportJiraDrawer';
 import { format } from 'date-fns';
 
 /* ── Domain lozenge mapping (neutral only) ── */
@@ -329,7 +329,7 @@ export default function ReqAssistLibrary() {
       {selectedDoc && <RAJiraSidePanel doc={selectedDoc} onClose={() => setSelectedDoc(null)} onOpenPdf={() => setPdfDoc(selectedDoc)} onGenerate={(type) => setBgModal({ type, doc: selectedDoc })} />}
       {pdfDoc && <RAPDFViewer doc={pdfDoc} onClose={() => setPdfDoc(null)} onGenerateEpics={() => { setPdfDoc(null); if (pdfDoc) setBgModal({ type: 'epics', doc: pdfDoc }); }} />}
       {bgModal && <RABackgroundModal type={bgModal.type} doc={bgModal.doc} onClose={() => setBgModal(null)} />}
-      {importOpen && <RAImportDrawer onClose={() => setImportOpen(false)} />}
+      <ImportJiraDrawer open={importOpen} onOpenChange={setImportOpen} />
     </div>
   );
 }
