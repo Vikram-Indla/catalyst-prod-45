@@ -54,20 +54,27 @@ serve(async (req) => {
     });
     const qa = JSON.parse(qaResult);
 
-    // Step 4: Write epics to brd_epics table
-    const epicsToInsert = (epicsData.epics || []).map((epic: any, idx: number) => ({
-      brd_id: brd_id,
-      epic_key: epic.id || `EPIC-${idx + 1}`,
-      title: epic.title,
-      description: epic.description || '',
-      complexity: mapPriorityToComplexity(epic.priority),
-      stories: epic.stories || [],
-      invest_score: epic.stories?.[0]?.invest || {},
-      acceptance_criteria: epic.stories?.map((s: any) => ({
-        given: s.given, when: s.when, then: s.then,
-      })) || [],
-      brd_sections: [epic.sourceRef].filter(Boolean),
-    }));
+    // Step 4: Write epics to brd_epics table with ra_tag (H-05)
+    const jiraKey = brdDoc.jira_key;
+    const epicsToInsert = (epicsData.epics || []).map((epic: any, idx: number) => {
+      const raTag = jiraKey
+        ? `RA-${jiraKey}-E${String(idx + 1).padStart(2, '0')}`
+        : `RA-BRD-${brd_id.substring(0, 6).toUpperCase()}-E${String(idx + 1).padStart(2, '0')}`;
+      return {
+        brd_id: brd_id,
+        epic_key: epic.id || `EPIC-${idx + 1}`,
+        title: epic.title,
+        description: epic.description || '',
+        complexity: mapPriorityToComplexity(epic.priority),
+        stories: epic.stories || [],
+        invest_score: epic.stories?.[0]?.invest || {},
+        acceptance_criteria: epic.stories?.map((s: any) => ({
+          given: s.given, when: s.when, then: s.then,
+        })) || [],
+        brd_sections: [epic.sourceRef].filter(Boolean),
+        ra_tag: raTag,
+      };
+    });
 
     if (epicsToInsert.length > 0) {
       // Delete existing epics for this BRD first
@@ -80,12 +87,12 @@ serve(async (req) => {
       if (insertErr) throw new Error('Failed to save epics: ' + insertErr.message);
     }
 
-    // Update brd_documents quality
+    // Update brd_documents — pipeline_stage = 'ready' (sole authority: C-04)
     await supabase
       .from('brd_documents')
       .update({
         quality_score: qa.qualityScore,
-        pipeline_stage: 'complete',
+        pipeline_stage: 'ready',
       })
       .eq('id', brd_id);
 
