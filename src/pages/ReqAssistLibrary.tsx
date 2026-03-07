@@ -36,6 +36,30 @@ export default function ReqAssistLibrary() {
   const [importOpen, setImportOpen] = useState(false);
   const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
   const [syncingAll, setSyncingAll] = useState(false);
+  const [regenConfirm, setRegenConfirm] = useState<{ doc: RADocumentWithArtifacts; count: number } | null>(null);
+
+  /** FIX 3: Check for existing epics before opening modal */
+  const handleGenerateClick = useCallback(async (doc: RADocumentWithArtifacts) => {
+    // Resolve brd_id
+    let brdId: string | null = null;
+    const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
+    if (direct?.id) brdId = direct.id;
+    if (!brdId) {
+      const jiraKey = (doc as any).jira_ticket_key;
+      if (jiraKey) {
+        const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+        if (jiraMatch?.id) brdId = jiraMatch.id;
+      }
+    }
+    if (brdId) {
+      const { count } = await (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdId);
+      if (count && count > 0) {
+        setRegenConfirm({ doc, count });
+        return;
+      }
+    }
+    setBgModal({ type: 'epics', doc });
+  }, []);
 
   const handleSyncKb = useCallback(async (docId: string) => {
     setSyncingIds(prev => new Set(prev).add(docId));
