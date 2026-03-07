@@ -49,10 +49,15 @@ export function useProjectTickets(projectKey: string | null, pdfOnly = false) {
         .eq('project_key', projectKey);
       if (pdfOnly) q = q.eq('has_pdf', true);
       q = q.order('ticket_key', { ascending: true });
-      const { data, error } = await q;
+      const { data: rawData, error } = await q;
       if (error) throw error;
 
-      const ticketKeys = (data ?? []).map((t: any) => t.ticket_key);
+      // Filter out junk statuses client-side
+      const data = (rawData ?? []).filter((t: any) =>
+        !EXCLUDED_STATUSES.includes((t.status || '').toUpperCase())
+      );
+
+      const ticketKeys = data.map((t: any) => t.ticket_key);
       let importedMap: Record<string, string> = {};
       if (ticketKeys.length > 0) {
         const { data: docs } = await (supabase as any)
