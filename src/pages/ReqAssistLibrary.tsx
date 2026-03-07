@@ -34,7 +34,9 @@ export default function ReqAssistLibrary() {
   const [pdfDoc, setPdfDoc] = useState<RADocumentWithArtifacts | null>(null);
   const [bgModal, setBgModal] = useState<{ type: string; doc: RADocumentWithArtifacts } | null>(null);
   const [importOpen, setImportOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
+  const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
+  const [syncingAll, setSyncingAll] = useState(false);
+  const queryClient = (await import('@tanstack/react-query')).useQueryClient();
 
   useEffect(() => {
     if (!dropdownOpen) return;
