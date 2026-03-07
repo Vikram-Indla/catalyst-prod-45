@@ -4,6 +4,7 @@ import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { toast } from 'sonner';
 import { useQueueJob, useRAJobPolling, RA_KEYS } from '@/hooks/useReqAssist';
 import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Props {
   type: string;
