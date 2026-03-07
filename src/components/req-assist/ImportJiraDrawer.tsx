@@ -559,7 +559,7 @@ function Step2({
               { label: 'SUMMARY', w: undefined },
               { label: 'PRIORITY', w: 88 },
               { label: 'PDF', w: 48 },
-              { label: 'STATUS', w: 80 },
+              { label: 'STATUS', w: 140 },
             ].map(col => (
               <div key={col.label} style={{
                 width: col.w, flex: col.w ? undefined : 1,
