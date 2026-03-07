@@ -152,7 +152,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
           ) : epics.length === 0 ? (
             <p style={{ textAlign: 'center', color: '#94A3B8', fontSize: 13, padding: 40 }}>No epics found</p>
           ) : (
-            epics.map(epic => (
+            epics.map((epic, epicIdx) => (
               <div
                 key={epic.id}
                 style={{
