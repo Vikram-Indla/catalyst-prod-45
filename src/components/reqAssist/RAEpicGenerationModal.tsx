@@ -193,7 +193,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
     return 'pending';
   };
 
-  const navigate = (await import('react-router-dom')).useNavigate ? undefined : undefined;
+  const nav = useNavigate();
   const progressColor = done ? '#16A34A' : step === -1 ? '#DC2626' : '#2563EB';
 
   return (
