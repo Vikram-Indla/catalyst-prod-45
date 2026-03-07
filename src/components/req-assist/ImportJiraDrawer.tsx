@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import {
   useConnectedProjects,
   useProjectTickets,
+  useProjectTicketCount,
   useVerifyProject,
   useSyncTickets,
   useImportTickets,
