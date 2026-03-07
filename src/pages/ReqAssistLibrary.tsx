@@ -12,6 +12,7 @@ import RAGenerationBar from '@/components/reqAssist/RAGenerationBar';
 import RAJiraSidePanel from '@/components/reqAssist/RAJiraSidePanel';
 import RAPDFViewer from '@/components/reqAssist/RAPDFViewer';
 import RABackgroundModal from '@/components/reqAssist/RABackgroundModal';
+import RAEpicGenerationModal from '@/components/reqAssist/RAEpicGenerationModal';
 import ImportJiraDrawer from '@/components/req-assist/ImportJiraDrawer';
 import { format } from 'date-fns';
 
