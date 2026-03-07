@@ -645,7 +645,7 @@ function StatusBadge({ status }: { status: string }) {
     complete:   { bg: '#E3FCEF', color: '#006644', label: 'READY' },
     processing: { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
     pending:    { bg: '#DFE1E6', color: '#253858', label: 'PENDING' },
-    failed:     { bg: '#DFE1E6', color: '#253858', label: 'FAILED' },
+    failed:     { bg: '#FFEAEA', color: '#DC2626', label: 'FAILED' },
     intake:     { bg: '#DFE1E6', color: '#253858', label: 'INTAKE' },
     extract:    { bg: '#DEEBFF', color: '#0747A6', label: 'EXTRACTING' },
     process:    { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
