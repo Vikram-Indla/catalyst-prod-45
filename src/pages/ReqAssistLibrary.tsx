@@ -292,8 +292,8 @@ export default function ReqAssistLibrary() {
                   { label: 'PDF', w: 60 },
                   { label: 'Status', w: 110 },
                   { label: 'Generation', w: 160 },
-                  { label: 'Imported', w: 85 },
-                  { label: 'Actions', w: 140 },
+                  { label: 'Imported', w: 80 },
+                  { label: 'Actions', w: 220 },
                 ].map((col, i) => (
                   <th key={i} style={{
                     padding: '0 10px', height: 36,
@@ -421,7 +421,7 @@ export default function ReqAssistLibrary() {
                         </span>
                       </td>
                       {/* Actions */}
-                      <td data-col="actions" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'visible', position: 'relative', minWidth: 140 }}>
+                      <td data-col="actions" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'visible', position: 'relative', minWidth: 220, whiteSpace: 'nowrap' }}>
                         <ActionsCell
                           doc={doc}
                           epicCount={epicCounts[doc.id] || 0}
@@ -640,14 +640,14 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         <button
           onClick={(e) => { e.stopPropagation(); onSelect('view'); }}
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: 3,
-            height: 24, padding: '0 8px', fontSize: 11, fontWeight: 500,
-            borderRadius: 4, border: '0.75px solid #2563EB',
-            background: 'transparent', color: '#2563EB', cursor: 'pointer',
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            height: 28, padding: '4px 10px', fontSize: 13, fontWeight: 500,
+            borderRadius: 4, border: '0.75px solid #E2E8F0',
+            background: '#FFFFFF', color: '#475569', cursor: 'pointer',
             fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
           }}
         >
-          <Eye size={11} /> View
+          <Eye size={12} /> View
         </button>
       </div>
     );
