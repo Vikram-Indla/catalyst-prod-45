@@ -640,14 +640,14 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         <button
           onClick={(e) => { e.stopPropagation(); onSelect('view'); }}
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: 3,
-            height: 24, padding: '0 8px', fontSize: 11, fontWeight: 500,
-            borderRadius: 4, border: '0.75px solid #2563EB',
-            background: 'transparent', color: '#2563EB', cursor: 'pointer',
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            height: 28, padding: '4px 10px', fontSize: 13, fontWeight: 500,
+            borderRadius: 4, border: '0.75px solid #E2E8F0',
+            background: '#FFFFFF', color: '#475569', cursor: 'pointer',
             fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
           }}
         >
-          <Eye size={11} /> View
+          <Eye size={12} /> View
         </button>
       </div>
     );
