@@ -627,11 +627,12 @@ function Step2({
                 onMouseLeave={e => { if (!checked && !imported) (e.currentTarget as HTMLElement).style.background = checked ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
               >
                 <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     checked={checked}
                     disabled={imported}
-                    onCheckedChange={() => !imported && onToggle(t.ticket_key)}
-                    style={imported ? { cursor: 'not-allowed', opacity: 0.4 } : undefined}
+                    onChange={e => { e.stopPropagation(); if (!imported) onToggle(t.ticket_key); }}
+                    style={{ width: 16, height: 16, cursor: imported ? 'not-allowed' : 'pointer', accentColor: '#2563EB', opacity: imported ? 0.4 : 1 }}
                   />
                 </div>
                 <div style={{ width: 96, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: muted ? '#9CA3AF' : '#374151', fontFamily: "'JetBrains Mono', monospace" }}>{t.ticket_key}</div>
