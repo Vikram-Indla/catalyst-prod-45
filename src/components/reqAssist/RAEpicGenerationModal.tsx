@@ -28,24 +28,33 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
   const [done, setDone] = useState(false);
   const [hasFailed, setHasFailed] = useState(false);
   const [epicCount, setEpicCount] = useState(0);
-  const invokeKey = useRef(0);
+  const hasStarted = useRef(false);
 
-  const runGeneration = (key: number) => {
-    let cancelled = false;
+  const startGeneration = () => {
     let stepIndex = 0;
+    let tickerStopped = false;
 
     const ticker = setInterval(() => {
-      if (cancelled) return;
+      if (tickerStopped) return;
       stepIndex = Math.min(stepIndex + 1, 3);
       setStep(stepIndex);
       setProgress(Math.round((stepIndex / 5) * 80));
     }, 1400);
 
-    supabase.functions
-      .invoke('generate_epics_for_brd', { body: { brd_id: doc.id } })
-      .then(({ data, error }) => {
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Edge Function timed out after 45s')), 45000)
+    );
+
+    Promise.race([
+      supabase.functions.invoke('generate_epics_for_brd', {
+        body: { brd_id: doc.id },
+      }),
+      timeoutPromise,
+    ])
+      .then((result: any) => {
+        tickerStopped = true;
         clearInterval(ticker);
-        if (cancelled) return;
+        const { data, error } = result;
 
         if (error) {
           setHasFailed(true);
@@ -56,37 +65,32 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
         if (!data || data.error) {
           setHasFailed(true);
           setStep(-1);
-          setErrorMsg(data?.error || data?.message || 'No data returned');
+          setErrorMsg(data?.error || data?.message || 'No data returned from Edge Function');
           return;
         }
 
-        // SUCCESS
         setStep(5);
         setProgress(100);
         setDone(true);
-        setEpicCount(data?.epic_count ?? 0);
+        setEpicCount(data?.epic_count ?? data?.epics?.length ?? 0);
         qc.invalidateQueries({ queryKey: RA_KEYS.all });
         setTimeout(() => {
-          toast.success(`${data?.epic_count ?? 0} epics generated successfully`);
+          toast.success(`Epics generated for ${doc.title}`);
         }, 600);
       })
-      .catch((err) => {
+      .catch((err: any) => {
+        tickerStopped = true;
         clearInterval(ticker);
-        if (cancelled) return;
         setHasFailed(true);
         setStep(-1);
         setErrorMsg(err?.message || String(err));
       });
-
-    return () => {
-      cancelled = true;
-      clearInterval(ticker);
-    };
   };
 
   useEffect(() => {
-    const cleanup = runGeneration(invokeKey.current);
-    return cleanup;
+    if (hasStarted.current) return;
+    hasStarted.current = true;
+    startGeneration();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -96,8 +100,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
     setStep(0);
     setProgress(0);
     setDone(false);
-    invokeKey.current += 1;
-    runGeneration(invokeKey.current);
+    startGeneration();
   };
 
   // Derive step states for rendering
