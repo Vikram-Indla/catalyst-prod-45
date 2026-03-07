@@ -687,7 +687,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
           <ChevronLeft size={16} /> Resources
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 11, color: MUTED }}>Data: 1h ago</span>
+          <span style={{ fontSize: 11, color: MUTED }}>Data: {dataAge}</span>
           <button
             onClick={onClose}
             style={{
