@@ -397,9 +397,9 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
 
             {/* Info strip */}
             <div style={{
-              background: '#F5F3FF', borderRadius: 6, padding: '8px 12px', marginBottom: 20,
+              background: '#EFF6FF', borderRadius: 6, padding: '8px 12px', marginBottom: 20,
             }}>
-              <span style={{ fontSize: 12, color: '#7C3AED' }}>
+              <span style={{ fontSize: 12, color: '#1D4ED8' }}>
                 ⏱ Estimated: ~2 minutes · You'll be notified when done
               </span>
             </div>
