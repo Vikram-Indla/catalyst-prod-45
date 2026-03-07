@@ -256,6 +256,8 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
             onSync={() => selectedProject && handleSyncOne(selectedProject)}
             syncing={syncMutation.isPending}
             lastSyncedAt={selectedProjectData?.last_synced_at ?? null}
+            reImportKeys={reImportKeys}
+            onReImport={activateReImport}
           />}
         </div>
 
