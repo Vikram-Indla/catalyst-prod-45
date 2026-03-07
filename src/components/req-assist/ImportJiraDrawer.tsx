@@ -583,9 +583,11 @@ function Step2({
           {/* Table header */}
           <div style={{ display: 'flex', alignItems: 'center', height: 36, background: '#F9FAFB', borderBottom: '0.75px solid #E5E7EB', position: 'sticky', top: 0, zIndex: 1 }}>
             <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Checkbox
-                checked={selectedTickets.size === tickets.length && tickets.length > 0}
-                onCheckedChange={onToggleAll}
+              <input
+                type="checkbox"
+                checked={selectedTickets.size === tickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key)).length && tickets.filter(t => !t.already_imported || reImportKeys.has(t.ticket_key)).length > 0}
+                onChange={() => onToggleAll()}
+                style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#2563EB' }}
               />
             </div>
             {[
