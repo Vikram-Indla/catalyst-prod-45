@@ -324,7 +324,7 @@ export default function RAEpicGenerationModal({ doc, onClose }: Props) {
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
               <div style={{
-                width: 48, height: 48, borderRadius: 8, background: '#F5F3FF',
+                width: 48, height: 48, borderRadius: 8, background: '#EFF6FF',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <div className="ra-epic-spinner-lg" />
