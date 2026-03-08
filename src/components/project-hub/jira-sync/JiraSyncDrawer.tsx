@@ -1,9 +1,9 @@
 /**
  * JiraSyncDrawer — Right drawer: sync log + status + write-back queue
- * C8: Width 480px
+ * C8: Width 480px. Slide 250ms in, 200ms out.
  */
-import React from 'react';
-import { X, RefreshCw, Check, Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, RefreshCw, Check, Clock, AlertCircle, CheckCircle2, Inbox } from 'lucide-react';
 
 interface SyncLogEntry {
   id: string;
@@ -75,17 +75,41 @@ export function JiraSyncDrawer({
   open, onClose, projectKey, jiraProjectKey, lastSyncedAt,
   syncLogs, writeBackQueue, onSyncNow, onApproveWriteBack, isSyncing,
 }: JiraSyncDrawerProps) {
-  if (!open) return null;
+  const [visible, setVisible] = useState(false);
+  const [animating, setAnimating] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setVisible(true);
+      requestAnimationFrame(() => setAnimating(true));
+    } else if (visible) {
+      setAnimating(false);
+      const timer = setTimeout(() => setVisible(false), 200);
+      return () => clearTimeout(timer);
+    }
+  }, [open]);
+
+  if (!visible) return null;
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(15,23,42,0.30)' }} />
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 50,
+          background: 'rgba(15,23,42,0.30)',
+          opacity: animating ? 1 : 0,
+          transition: 'opacity 200ms ease',
+        }}
+      />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 51,
         width: 480, background: '#FFFFFF',
         boxShadow: '-8px 0 24px rgba(0,0,0,0.12)',
         display: 'flex', flexDirection: 'column',
         fontFamily: 'Inter, sans-serif',
+        transform: animating ? 'translateX(0)' : 'translateX(100%)',
+        transition: animating ? 'transform 250ms ease-out' : 'transform 200ms ease-in',
       }}>
         {/* Header */}
         <div style={{
@@ -123,10 +147,10 @@ export function JiraSyncDrawer({
               className="inline-flex items-center gap-1.5"
               style={{
                 height: 32, padding: '0 14px', borderRadius: 4,
-                background: '#2563EB', color: '#FFFFFF', border: 'none',
+                background: isSyncing ? '#93C5FD' : '#2563EB',
+                color: '#FFFFFF', border: 'none',
                 fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif',
                 cursor: isSyncing ? 'not-allowed' : 'pointer',
-                opacity: isSyncing ? 0.7 : 1,
               }}
             >
               <RefreshCw size={13} className={isSyncing ? 'animate-spin' : ''} />
@@ -143,7 +167,10 @@ export function JiraSyncDrawer({
               Recent Sync Runs
             </div>
             {syncLogs.length === 0 ? (
-              <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>No sync runs yet</div>
+              <div className="flex flex-col items-center py-6">
+                <Inbox size={24} style={{ color: '#CBD5E1', marginBottom: 6 }} />
+                <span style={{ fontSize: 12, color: '#94A3B8' }}>No sync runs yet</span>
+              </div>
             ) : (
               syncLogs.map(log => (
                 <div
@@ -176,7 +203,10 @@ export function JiraSyncDrawer({
               Write-back Queue ({writeBackQueue.length})
             </div>
             {writeBackQueue.length === 0 ? (
-              <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>No pending write-backs</div>
+              <div className="flex flex-col items-center py-6">
+                <Inbox size={24} style={{ color: '#CBD5E1', marginBottom: 6 }} />
+                <span style={{ fontSize: 12, color: '#94A3B8' }}>No pending write-backs</span>
+              </div>
             ) : (
               writeBackQueue.map(item => (
                 <div

@@ -1,8 +1,8 @@
 /**
  * SyncBanner — Top banner for conflict warnings
- * C3: Full-width strip below project tab bar
+ * C3: Full-width strip below project tab bar. Fades out 200ms on dismiss.
  */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 interface SyncBannerProps {
@@ -25,7 +25,20 @@ function relativeTime(iso?: string | null): string {
 }
 
 export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onSyncNow, onDismiss }: SyncBannerProps) {
-  if (conflictCount === 0) return null;
+  const [fading, setFading] = useState(false);
+
+  if (conflictCount === 0 && !fading) return null;
+
+  const handleDismiss = () => {
+    setFading(true);
+  };
+
+  // After fade completes, call parent dismiss
+  useEffect(() => {
+    if (!fading) return;
+    const timer = setTimeout(() => onDismiss(), 200);
+    return () => clearTimeout(timer);
+  }, [fading, onDismiss]);
 
   return (
     <div
@@ -37,6 +50,8 @@ export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onS
         fontFamily: 'Inter, sans-serif',
         fontSize: 12,
         color: '#92400E',
+        opacity: fading ? 0 : 1,
+        transition: 'opacity 200ms ease',
       }}
     >
       <div className="flex items-center gap-2 min-w-0">
@@ -82,7 +97,7 @@ export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onS
           Sync Now
         </button>
         <button
-          onClick={onDismiss}
+          onClick={handleDismiss}
           style={{
             background: 'none',
             border: 'none',

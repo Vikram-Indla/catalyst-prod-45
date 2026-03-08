@@ -1,6 +1,6 @@
 /**
  * SourceFilterPills — All / Catalyst / Jira filter pills
- * C5: Inside toolbar, left section
+ * C5: Inside toolbar, left section. 150ms ease transition.
  */
 import React from 'react';
 
@@ -31,8 +31,8 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
 
   const pills: PillConfig[] = [
     { key: 'all', label: 'All', count: total, activeBg: '#0F172A', activeText: '#FFFFFF', activeBorder: '#0F172A' },
-    { key: 'catalyst', label: 'Catalyst', count: catalystCount, activeBg: 'var(--src-catalyst-bg)', activeText: 'var(--src-catalyst-text)', activeBorder: 'var(--src-catalyst-border)', icon: 'catalyst' },
-    { key: 'jira', label: 'Jira', count: jiraCount, activeBg: 'var(--src-jira-bg)', activeText: 'var(--src-jira-text)', activeBorder: 'var(--src-jira-border)', icon: 'jira' },
+    { key: 'catalyst', label: 'Catalyst', count: catalystCount, activeBg: 'var(--src-catalyst-bg, #EFF6FF)', activeText: 'var(--src-catalyst-text, #2563EB)', activeBorder: 'var(--src-catalyst-border, #BFDBFE)', icon: 'catalyst' },
+    { key: 'jira', label: 'Jira', count: jiraCount, activeBg: 'var(--src-jira-bg, #FFF7ED)', activeText: 'var(--src-jira-text, #9A3412)', activeBorder: 'var(--src-jira-border, #FED7AA)', icon: 'jira' },
   ];
 
   return (
@@ -51,7 +51,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
           <button
             key={pill.key}
             onClick={() => onChange(pill.key)}
-            className="inline-flex items-center gap-[4px] transition-colors"
+            className="inline-flex items-center gap-[4px]"
             style={{
               height: 26,
               padding: '0 10px',
@@ -63,6 +63,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
               background: isActive ? pill.activeBg : '#FFFFFF',
               color: isActive ? pill.activeText : 'var(--cp-text-secondary, #475569)',
               cursor: 'pointer',
+              transition: 'background 150ms ease, color 150ms ease, border-color 150ms ease',
             }}
           >
             {pill.icon === 'catalyst' && (
