@@ -59,6 +59,8 @@ export interface Initiative {
   business_value?: string | null;
   ea_review?: string | null;
   priority?: string | null;
+  source?: string | null;
+  jira_issue_key?: string | null;
 }
 
 export interface FilterCondition {
