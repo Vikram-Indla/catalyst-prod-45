@@ -74,7 +74,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
     >
       {/* Header row: TypeIcon | Key | SourceBadge | ⋯ */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-        <WorkItemTypeIcon type={card.type} size={16} />
+        <JiraIssueTypeIcon type={card.type} size={16} />
         <span style={{
           fontSize: 11, fontWeight: 500,
           fontFamily: "'JetBrains Mono', monospace", color: '#64748B',
