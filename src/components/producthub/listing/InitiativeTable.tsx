@@ -185,8 +185,8 @@ export function InitiativeTable({
       ),
     }),
     col.accessor('initiative_key', {
-      id: 'initiative_key', size: 90, minSize: 72, header: 'ID',
-      cell: ({ getValue }) => <IDCell value={getValue()} />,
+      id: 'initiative_key', size: 110, minSize: 90, header: 'ID',
+      cell: ({ getValue, row }) => <IDCell value={getValue()} typeKey={row.original.initiative_type_key} />,
     }),
     col.accessor('title', {
       id: 'title', size: 240, minSize: 200, header: 'Title',
