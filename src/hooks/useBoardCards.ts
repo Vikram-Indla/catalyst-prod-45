@@ -31,7 +31,7 @@ export function useBoardCards(boardId: string | undefined) {
       const itemMap = new Map((items ?? []).map((i: any) => [i.id, i]));
 
       return ranks.map((r: any) => {
-        const item = itemMap.get(r.work_item_id);
+        const item: any = itemMap.get(r.work_item_id);
         if (!item) {
           return {
             id: r.work_item_id,
