@@ -70,20 +70,6 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             { id: 'timeline',        title: 'Timeline',        path: `${base}/timeline`,        icon: GanttChart, exact: false },
           ],
         },
-        {
-          title: 'Tracking',
-          items: [
-            { id: 'reports',  title: 'Reports',   path: `${base}/reports`,  icon: BarChart3, exact: false },
-            { id: 'releases', title: 'Releases',  path: `${base}/releases`, icon: Rocket,    exact: false, badge: 3, badgeVariant: 'info' },
-          ],
-        },
-        {
-          title: 'AI Intelligence',
-          items: [
-            { id: 'sprint-predictor', title: 'Sprint Predictor', path: `${base}/sprint-predictor`, icon: Sparkles, exact: false, textBadge: 'AI' },
-            { id: 'risk-scanner',     title: 'Risk Scanner',     path: `${base}/risk-scanner`,     icon: Activity, exact: false, textBadge: 'AI' },
-          ],
-        },
       ],
       footerItem: {
         id: 'settings',
