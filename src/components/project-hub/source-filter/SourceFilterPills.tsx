@@ -1,0 +1,105 @@
+/**
+ * SourceFilterPills — All / Catalyst / Jira filter pills
+ * C5: Inside toolbar, left section
+ */
+import React from 'react';
+
+type WorkItemSource = 'catalyst' | 'jira';
+type SourceFilterValue = WorkItemSource | 'all';
+
+interface SourceFilterPillsProps {
+  value: SourceFilterValue;
+  onChange: (v: SourceFilterValue) => void;
+  catalystCount: number;
+  jiraCount: number;
+}
+
+const JIRA_DIAMOND_SVG_SMALL = `<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24"><path fill="currentColor" d="M11.53 2c0 2.4 1.97 4.35 4.35 4.35h1.78v1.7c0 2.4 1.96 4.34 4.34 4.35V2.84a.84.84 0 0 0-.84-.84zM6.77 6.8a4.362 4.362 0 0 0 4.34 4.34h1.78v1.71a4.362 4.362 0 0 0 4.35 4.35V7.63a.839.839 0 0 0-.84-.83zM2 11.6c0 2.4 1.96 4.34 4.35 4.34h1.78v1.72c.01 2.39 1.97 4.34 4.35 4.34v-9.57a.84.84 0 0 0-.84-.83z"/></svg>`;
+
+interface PillConfig {
+  key: SourceFilterValue;
+  label: string;
+  count: number;
+  activeBg: string;
+  activeText: string;
+  activeBorder: string;
+  icon?: 'catalyst' | 'jira';
+}
+
+export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }: SourceFilterPillsProps) {
+  const total = catalystCount + jiraCount;
+
+  const pills: PillConfig[] = [
+    { key: 'all', label: 'All', count: total, activeBg: '#0F172A', activeText: '#FFFFFF', activeBorder: '#0F172A' },
+    { key: 'catalyst', label: 'Catalyst', count: catalystCount, activeBg: 'var(--src-catalyst-bg)', activeText: 'var(--src-catalyst-text)', activeBorder: 'var(--src-catalyst-border)', icon: 'catalyst' },
+    { key: 'jira', label: 'Jira', count: jiraCount, activeBg: 'var(--src-jira-bg)', activeText: 'var(--src-jira-text)', activeBorder: 'var(--src-jira-border)', icon: 'jira' },
+  ];
+
+  return (
+    <div className="inline-flex items-center gap-[6px]">
+      <span style={{
+        fontSize: 11.5,
+        fontWeight: 500,
+        color: 'var(--cp-text-tertiary, #94A3B8)',
+        fontFamily: 'Inter, sans-serif',
+      }}>
+        Source:
+      </span>
+      {pills.map(pill => {
+        const isActive = value === pill.key;
+        return (
+          <button
+            key={pill.key}
+            onClick={() => onChange(pill.key)}
+            className="inline-flex items-center gap-[4px] transition-colors"
+            style={{
+              height: 26,
+              padding: '0 10px',
+              borderRadius: 13,
+              fontSize: 11.5,
+              fontWeight: 500,
+              fontFamily: 'Inter, sans-serif',
+              border: `0.75px solid ${isActive ? pill.activeBorder : 'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
+              background: isActive ? pill.activeBg : '#FFFFFF',
+              color: isActive ? pill.activeText : 'var(--cp-text-secondary, #475569)',
+              cursor: 'pointer',
+            }}
+          >
+            {pill.icon === 'catalyst' && (
+              <span
+                className="flex items-center justify-center shrink-0"
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 1.5,
+                  background: isActive ? '#2563EB' : '#94A3B8',
+                  color: '#FFFFFF',
+                  fontSize: 6,
+                  fontWeight: 700,
+                  lineHeight: '8px',
+                }}
+              >
+                C
+              </span>
+            )}
+            {pill.icon === 'jira' && (
+              <span
+                className="flex items-center"
+                style={{ color: isActive ? 'var(--src-jira-text)' : '#94A3B8' }}
+                dangerouslySetInnerHTML={{ __html: JIRA_DIAMOND_SVG_SMALL }}
+              />
+            )}
+            {pill.label}
+            <span style={{
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: 10.5,
+              opacity: 0.8,
+            }}>
+              {pill.count}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
