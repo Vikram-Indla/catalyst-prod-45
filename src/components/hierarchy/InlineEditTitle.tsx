@@ -24,11 +24,11 @@ export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (editing) {
+    if (isEditing) {
       inputRef.current?.focus();
       inputRef.current?.select();
     }
-  }, [editing]);
+  }, [isEditing]);
 
   useEffect(() => {
     setDraft(value);
@@ -40,14 +40,16 @@ export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500
       onSave(trimmed);
     }
     setEditing(false);
-  }, [draft, value, onSave]);
+    onCancelForceEdit?.();
+  }, [draft, value, onSave, onCancelForceEdit]);
 
   const cancel = useCallback(() => {
     setDraft(value);
     setEditing(false);
-  }, [value]);
+    onCancelForceEdit?.();
+  }, [value, onCancelForceEdit]);
 
-  if (editing) {
+  if (isEditing) {
     return (
       <input
         ref={inputRef}
