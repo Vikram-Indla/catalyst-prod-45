@@ -79,7 +79,6 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
         jira_key: jiraKey || null,
         title: doc.title,
         raw_text: rawText,
-        pipeline_stage: 'intake',
         source_type: 'jira_bulk',
         language: (doc as any).language || 'ar',
       })
