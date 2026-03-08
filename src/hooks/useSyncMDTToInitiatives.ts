@@ -59,7 +59,7 @@ export function useSyncMDTToInitiatives() {
         const existingKeys = new Set((existing || []).map((r: any) => r.jira_issue_key));
 
         // 3. Filter to only new issues
-        const newIssues = mdtIssues.filter(i => !existingKeys.has(i.issue_key));
+        const newIssues = filteredIssues.filter((i: any) => !existingKeys.has(i.issue_key));
         if (!newIssues.length) return;
 
         // 4. Insert as ph_initiatives
