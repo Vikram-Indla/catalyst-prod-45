@@ -26,7 +26,7 @@ export default function KanbanColumn({ column, cards, maxWip, onCardClick }: Pro
       <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
           {cards.map(card => (
-            <KanbanCardComponent key={card.id} card={card} />
+            <KanbanCardComponent key={card.id} card={card} onCardClick={onCardClick} />
           ))}
         </div>
       </SortableContext>
