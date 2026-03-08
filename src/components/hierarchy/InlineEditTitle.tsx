@@ -11,19 +11,24 @@ interface InlineEditTitleProps {
   fontWeight?: number;
   color?: string;
   style?: React.CSSProperties;
+  forceEdit?: boolean;
+  onCancelForceEdit?: () => void;
 }
 
-export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500, color = '#0F172A', style }: InlineEditTitleProps) {
+export { type InlineEditTitleProps };
+
+export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500, color = '#0F172A', style, forceEdit, onCancelForceEdit }: InlineEditTitleProps) {
   const [editing, setEditing] = useState(false);
+  const isEditing = editing || forceEdit;
   const [draft, setDraft] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (editing) {
+    if (isEditing) {
       inputRef.current?.focus();
       inputRef.current?.select();
     }
-  }, [editing]);
+  }, [isEditing]);
 
   useEffect(() => {
     setDraft(value);
@@ -35,14 +40,16 @@ export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500
       onSave(trimmed);
     }
     setEditing(false);
-  }, [draft, value, onSave]);
+    onCancelForceEdit?.();
+  }, [draft, value, onSave, onCancelForceEdit]);
 
   const cancel = useCallback(() => {
     setDraft(value);
     setEditing(false);
-  }, [value]);
+    onCancelForceEdit?.();
+  }, [value, onCancelForceEdit]);
 
-  if (editing) {
+  if (isEditing) {
     return (
       <input
         ref={inputRef}

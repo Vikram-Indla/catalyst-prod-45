@@ -1,8 +1,7 @@
 /**
  * WorkItemTable — Jira-parity flat/hierarchical table view
  * 44px rows, sortable columns, expandable hierarchy, load-more pagination
- * F1: Inline status change  F2: Inline priority change
- * F3: Inline assignee change  F4: Inline title editing
+ * F1-F4: Inline editing  F5: Bulk actions  F6: Bulk move  F15+F16: Context menu
  */
 
 import { useState, useMemo, useCallback } from 'react';
@@ -14,7 +13,11 @@ import { StatusDropdown } from './StatusDropdown';
 import { PriorityDropdown } from './PriorityDropdown';
 import { AssigneeDropdown, type AssigneeOption } from './AssigneeDropdown';
 import { InlineEditTitle } from './InlineEditTitle';
+import { BulkActionBar } from './BulkActionBar';
+import { BulkMoveModal } from './BulkMoveModal';
+import { HierarchyContextMenu } from './HierarchyContextMenu';
 import { useUpdateIssueField } from '@/hooks/useUpdateIssueField';
+import { useBulkUpdateIssues, useBulkDeleteIssues } from '@/hooks/useBulkUpdateIssues';
 import { toast } from 'sonner';
 
 interface WorkItemTableProps {
@@ -26,6 +29,7 @@ interface WorkItemTableProps {
   allStatuses: string[];
   onCreateClick?: () => void;
   onRefresh?: () => void;
+  onAddChild?: (parentItem: WorkItem) => void;
 }
 
 type SortKey = 'key' | 'title' | 'status' | 'parent' | 'assignee' | 'created';
@@ -84,17 +88,6 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
   );
 }
 
-/* ── Priority bars (clickable) ── */
-function PriorityBarsCell({ level, onClick }: { level: number; onClick?: (e: React.MouseEvent) => void }) {
-  return (
-    <div style={{ display: 'flex', gap: 2, alignItems: 'center', cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} style={{ width: 12, height: 4, borderRadius: 1, background: i <= level ? '#64748B' : '#E2E8F0' }} />
-      ))}
-    </div>
-  );
-}
-
 function priorityToLevel(name?: string): number {
   if (!name) return 0;
   const n = name.toLowerCase();
@@ -128,14 +121,35 @@ function ColHeader({ label, sortKey, currentSort, currentDir, onSort, width, fle
 
 type ActiveDropdown = { type: 'status' | 'priority' | 'assignee'; itemId: string } | null;
 
-export function WorkItemTable({ items, search, onSelect, selectedId, projectKey, allStatuses, onCreateClick, onRefresh }: WorkItemTableProps) {
+interface ContextMenuState {
+  x: number;
+  y: number;
+  item: WorkItem;
+}
+
+function findItemByKey(items: WorkItem[], key: string): WorkItem | null {
+  for (const item of items) {
+    if (item.key === key) return item;
+    const found = findItemByKey(item.children, key);
+    if (found) return found;
+  }
+  return null;
+}
+
+export function WorkItemTable({ items, search, onSelect, selectedId, projectKey, allStatuses, onCreateClick, onRefresh, onAddChild }: WorkItemTableProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey] = useState<SortKey>('key');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [perPage, setPerPage] = useState(50);
   const [activeDropdown, setActiveDropdown] = useState<ActiveDropdown>(null);
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+  const [showMoveModal, setShowMoveModal] = useState(false);
+  const [editingTitleKey, setEditingTitleKey] = useState<string | null>(null);
 
   const updateField = useUpdateIssueField(projectKey);
+  const bulkUpdate = useBulkUpdateIssues(projectKey);
+  const bulkDelete = useBulkDeleteIssues(projectKey);
   const allAssignees = useMemo(() => collectAssignees(items), [items]);
 
   const toggle = useCallback((id: string) => {
@@ -155,6 +169,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
     setActiveDropdown(prev => prev?.type === type && prev.itemId === itemId ? null : { type, itemId });
   }, []);
 
+  /* ── Single-item handlers ── */
   const handleStatusChange = useCallback((issueKey: string, newStatus: string) => {
     updateField.mutate({ issueKey, fields: { status: newStatus } });
     setActiveDropdown(null);
@@ -182,14 +197,104 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
 
   const handleTitleSave = useCallback((issueKey: string, newTitle: string) => {
     updateField.mutate({ issueKey, fields: { summary: newTitle } });
+    setEditingTitleKey(null);
     toast.success('Title updated');
   }, [updateField]);
 
+  /* ── Checkbox selection ── */
+  const toggleSelect = useCallback((key: string) => {
+    setSelectedKeys(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  }, []);
+
+  const selectAll = useCallback(() => {
+    setSelectedKeys(new Set(visibleRows.map(r => r.item.key)));
+  }, [visibleRows]);
+
+  const clearSelection = useCallback(() => setSelectedKeys(new Set()), []);
+
+  const selectedKeysArray = useMemo(() => Array.from(selectedKeys), [selectedKeys]);
+
+  /* ── Bulk handlers ── */
+  const handleBulkStatusChange = useCallback((status: string) => {
+    bulkUpdate.mutate({ issueKeys: selectedKeysArray, fields: { status } });
+    clearSelection();
+  }, [bulkUpdate, selectedKeysArray, clearSelection]);
+
+  const handleBulkAssigneeChange = useCallback((assignee: AssigneeOption | null) => {
+    bulkUpdate.mutate({
+      issueKeys: selectedKeysArray,
+      fields: {
+        assignee_display_name: assignee?.displayName || null,
+        assignee_email: assignee?.email || null,
+        assignee_account_id: assignee?.accountId || null,
+      },
+    });
+    clearSelection();
+  }, [bulkUpdate, selectedKeysArray, clearSelection]);
+
+  const handleBulkPriorityChange = useCallback((priority: string) => {
+    bulkUpdate.mutate({ issueKeys: selectedKeysArray, fields: { priority: priority === 'None' ? null : priority } });
+    clearSelection();
+  }, [bulkUpdate, selectedKeysArray, clearSelection]);
+
+  const handleBulkDelete = useCallback(() => {
+    bulkDelete.mutate({ issueKeys: selectedKeysArray });
+    clearSelection();
+  }, [bulkDelete, selectedKeysArray, clearSelection]);
+
+  const handleBulkMove = useCallback((parentKey: string) => {
+    bulkUpdate.mutate({ issueKeys: selectedKeysArray, fields: { parent_key: parentKey } });
+    setShowMoveModal(false);
+    clearSelection();
+  }, [bulkUpdate, selectedKeysArray, clearSelection]);
+
+  /* ── Context menu ── */
+  const handleContextMenu = useCallback((e: React.MouseEvent, item: WorkItem) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({ x: e.clientX, y: e.clientY, item });
+  }, []);
+
+  const openContextMenuFor3Dot = useCallback((e: React.MouseEvent, item: WorkItem) => {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    setContextMenu({ x: rect.left, y: rect.bottom + 4, item });
+  }, []);
+
+  /* ── Header checkbox state ── */
+  const allVisibleSelected = visibleRows.length > 0 && visibleRows.every(r => selectedKeys.has(r.item.key));
+  const someSelected = visibleRows.some(r => selectedKeys.has(r.item.key));
+
   return (
     <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
+      {/* Bulk action bar */}
+      <BulkActionBar
+        selectedCount={selectedKeys.size}
+        allStatuses={allStatuses}
+        allAssignees={allAssignees}
+        onClear={clearSelection}
+        onBulkStatusChange={handleBulkStatusChange}
+        onBulkAssigneeChange={handleBulkAssigneeChange}
+        onBulkPriorityChange={handleBulkPriorityChange}
+        onBulkDelete={handleBulkDelete}
+        onBulkMove={() => setShowMoveModal(true)}
+      />
+
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', height: 36, background: '#FAFAFA', borderBottom: '1px solid #E2E8F0' }}>
-        <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
+        <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <input
+            type="checkbox"
+            checked={allVisibleSelected}
+            ref={el => { if (el) el.indeterminate = someSelected && !allVisibleSelected; }}
+            onChange={() => allVisibleSelected ? clearSelection() : selectAll()}
+            style={{ width: 16, height: 16, cursor: 'pointer' }}
+          />
+        </div>
         <ColHeader label="Work" sortKey="key" currentSort={sortKey} currentDir={sortDir} onSort={handleSort} flex={1} />
         <ColHeader label="Status" sortKey="status" currentSort={sortKey} currentDir={sortDir} onSort={handleSort} width={150} />
         <ColHeader label="Parent" sortKey="parent" currentSort={sortKey} currentDir={sortDir} onSort={handleSort} width={120} />
@@ -202,22 +307,30 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
       {visibleRows.map(({ item, depth, hasChildren }) => {
         const isExpanded = expandedIds.has(item.id);
         const isSelected = selectedId === item.id;
+        const isChecked = selectedKeys.has(item.key);
 
         return (
           <div
             key={item.id}
             className="hi-table-row"
             onClick={() => onSelect(item)}
+            onContextMenu={(e) => handleContextMenu(e, item)}
             style={{
               height: 44, maxHeight: 44, display: 'flex', alignItems: 'center',
               borderBottom: '1px solid #F1F5F9', cursor: 'pointer',
-              background: isSelected ? '#EFF6FF' : undefined,
+              background: isChecked ? '#F0F9FF' : isSelected ? '#EFF6FF' : undefined,
               fontFamily: "'Inter', sans-serif",
             }}
           >
             {/* Checkbox */}
             <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <input type="checkbox" style={{ width: 16, height: 16, cursor: 'pointer' }} onClick={e => e.stopPropagation()} />
+              <input
+                type="checkbox"
+                checked={isChecked}
+                onChange={() => toggleSelect(item.key)}
+                onClick={e => e.stopPropagation()}
+                style={{ width: 16, height: 16, cursor: 'pointer' }}
+              />
             </div>
 
             {/* Work column */}
@@ -237,6 +350,8 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
               <InlineEditTitle
                 value={item.title}
                 onSave={(newTitle) => handleTitleSave(item.key, newTitle)}
+                forceEdit={editingTitleKey === item.key}
+                onCancelForceEdit={() => setEditingTitleKey(null)}
               />
             </div>
 
@@ -286,9 +401,10 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
               </span>
             </div>
 
-            {/* Actions */}
+            {/* 3-dot actions (F16) */}
             <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <button className="hi-row-action" onClick={e => e.stopPropagation()}
+              <button className="hi-row-action"
+                onClick={(e) => openContextMenuFor3Dot(e, item)}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
                 <MoreHorizontal size={16} color="#64748B" />
               </button>
@@ -326,6 +442,42 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
           </button>
         )}
       </div>
+
+      {/* Context menu (F15 + F16) */}
+      {contextMenu && (
+        <HierarchyContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          itemKey={contextMenu.item.key}
+          currentStatus={contextMenu.item.status.name}
+          currentPriority={contextMenu.item.priority?.name}
+          currentAssignee={contextMenu.item.assignee?.displayName}
+          allStatuses={allStatuses}
+          allAssignees={allAssignees}
+          onClose={() => setContextMenu(null)}
+          onEditTitle={() => setEditingTitleKey(contextMenu.item.key)}
+          onCopyKey={() => { navigator.clipboard.writeText(contextMenu.item.key); toast.success(`Copied ${contextMenu.item.key}`); }}
+          onCopyLink={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
+          onChangeStatus={(s) => handleStatusChange(contextMenu.item.key, s)}
+          onChangePriority={(p) => handlePriorityChange(contextMenu.item.key, p)}
+          onChangeAssignee={(a) => handleAssigneeChange(contextMenu.item.key, a)}
+          onMoveToParent={() => { setSelectedKeys(new Set([contextMenu.item.key])); setShowMoveModal(true); }}
+          onAddChild={() => onAddChild?.(contextMenu.item)}
+          onDelete={() => {
+            bulkDelete.mutate({ issueKeys: [contextMenu.item.key] });
+          }}
+        />
+      )}
+
+      {/* Bulk move modal (F6) */}
+      {showMoveModal && (
+        <BulkMoveModal
+          items={items}
+          selectedKeys={selectedKeysArray}
+          onConfirm={handleBulkMove}
+          onClose={() => setShowMoveModal(false)}
+        />
+      )}
 
       <style>{`
         .hi-table-row:hover { background: #F8FAFC !important; }
