@@ -492,6 +492,16 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
           onClose={() => setSettingsOpen(false)}
         />
       )}
+
+      {/* Work Item Detail Modal */}
+      <WorkItemDetailModal
+        open={!!detailItemId}
+        itemId={detailItemId}
+        projectId={projectId || ''}
+        projectKey={board?.name || ''}
+        onClose={() => setDetailItemId(null)}
+        onNavigate={(id) => setDetailItemId(id)}
+      />
     </div>
   );
 }
