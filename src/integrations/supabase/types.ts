@@ -283,6 +283,7 @@ export type Database = {
           id: string
           is_backlog: boolean
           is_done: boolean
+          jira_mapped: boolean | null
           name: string
           position: number
           status_ids: string[]
@@ -295,6 +296,7 @@ export type Database = {
           id?: string
           is_backlog?: boolean
           is_done?: boolean
+          jira_mapped?: boolean | null
           name: string
           position: number
           status_ids?: string[]
@@ -307,6 +309,7 @@ export type Database = {
           id?: string
           is_backlog?: boolean
           is_done?: boolean
+          jira_mapped?: boolean | null
           name?: string
           position?: number
           status_ids?: string[]
@@ -457,6 +460,10 @@ export type Database = {
           id: string
           is_personal: boolean
           is_starred: boolean
+          jira_board_id: string | null
+          jira_project_key: string | null
+          jira_sync_enabled: boolean | null
+          last_jira_sync: string | null
           last_viewed_at: string | null
           name: string
           project_id: string | null
@@ -480,6 +487,10 @@ export type Database = {
           id?: string
           is_personal?: boolean
           is_starred?: boolean
+          jira_board_id?: string | null
+          jira_project_key?: string | null
+          jira_sync_enabled?: boolean | null
+          last_jira_sync?: string | null
           last_viewed_at?: string | null
           name: string
           project_id?: string | null
@@ -503,6 +514,10 @@ export type Database = {
           id?: string
           is_personal?: boolean
           is_starred?: boolean
+          jira_board_id?: string | null
+          jira_project_key?: string | null
+          jira_sync_enabled?: boolean | null
+          last_jira_sync?: string | null
           last_viewed_at?: string | null
           name?: string
           project_id?: string | null
@@ -69215,6 +69230,17 @@ export type Database = {
           p_width?: number
         }
         Returns: Json
+      }
+      upsert_jira_board: {
+        Args: {
+          p_columns: Json
+          p_jira_board_id: string
+          p_jira_project_key: string
+          p_name: string
+          p_project_id: string
+          p_user_id: string
+        }
+        Returns: string
       }
       user_in_program: {
         Args: { _program_id: string; _user_id: string }
