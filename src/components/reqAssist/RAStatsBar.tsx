@@ -120,7 +120,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
   }
 
   const isLoading = loading || statsLoading;
-  const brdStats = { ready: statsData?.brdReady ?? 0, total: totalDocuments };
+  const brdStats = { ready: statsData?.brdReady ?? 0, total: statsData?.brdTotal ?? 0 };
   const epicStats = { draft: statsData?.epicDraft ?? 0, reviewed: statsData?.epicReviewed ?? 0, published: statsData?.epicPublished ?? 0, total: statsData?.epicTotal ?? 0 };
   const queueRunning = statsData?.queueRunning ?? 0;
   const queueRows = statsData?.queueRows ?? [];
