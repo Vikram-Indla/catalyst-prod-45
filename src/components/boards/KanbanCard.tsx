@@ -60,6 +60,12 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
       {...listeners}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      onClick={(e) => {
+        if (!isDragging && onCardClick) {
+          e.stopPropagation();
+          onCardClick(card.id);
+        }
+      }}
       style={{
         ...style,
         transform: finalTransform,
