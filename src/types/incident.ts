@@ -178,7 +178,7 @@ export interface Incident {
   reporter_name?: string | null;
   assignee_workgroup?: Workgroup | null;
   project?: { id: string; name: string; key: string } | null;
-  release_version?: { id: string; name: string; version: string } | null;
+  release_version?: { id: string; name: string; version: string; release_date?: string | null } | null;
   change_request?: ChangeRequest | null;
   environment?: IncidentEnvironment | null;
   business_process?: BusinessProcess | null;
