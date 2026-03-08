@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Settings, ChevronDown, ArrowLeft } from 'lucide-react';
+import { Settings, ChevronDown, ArrowLeft, User } from 'lucide-react';
 import { DndContext, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useBoard } from '@/hooks/useBoard';
 import { useBoardCards } from '@/hooks/useBoardCards';
+import { useBoards } from '@/hooks/useBoards';
 import { useUpdateCardRank, useUpdateBoardLastViewed } from '@/hooks/useBoardMutations';
 import { useBoardStore } from '@/stores/boardStore';
 import KanbanColumn from './KanbanColumn';
@@ -14,6 +15,14 @@ import KanbanCardComponent from './KanbanCard';
 import BoardQuickFilters from './BoardQuickFilters';
 import BoardSettingsDrawer from './BoardSettingsDrawer';
 import type { KanbanCard, BoardColumn } from '@/types/board';
+
+/* Board accent colors — canonical order */
+const BOARD_ACCENT: Record<string, string> = {
+  'Delivery Board': '#2563EB',
+  'QA Board': '#16A34A',
+  'Design Board': '#7C3AED',
+  'My Planning Board': '#D97706',
+};
 
 /* ── StatusLozenge V12 3-color guardrail ── */
 function StatusLozenge({ status }: { status: string }) {
