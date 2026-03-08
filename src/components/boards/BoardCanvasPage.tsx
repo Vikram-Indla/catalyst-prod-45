@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Settings, ChevronDown, ArrowLeft } from 'lucide-react';
+import { Settings, ChevronDown, ArrowLeft, User } from 'lucide-react';
 import { DndContext, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useBoard } from '@/hooks/useBoard';
 import { useBoardCards } from '@/hooks/useBoardCards';
+import { useBoards } from '@/hooks/useBoards';
 import { useUpdateCardRank, useUpdateBoardLastViewed } from '@/hooks/useBoardMutations';
 import { useBoardStore } from '@/stores/boardStore';
 import KanbanColumn from './KanbanColumn';
@@ -14,6 +15,14 @@ import KanbanCardComponent from './KanbanCard';
 import BoardQuickFilters from './BoardQuickFilters';
 import BoardSettingsDrawer from './BoardSettingsDrawer';
 import type { KanbanCard, BoardColumn } from '@/types/board';
+
+/* Board accent colors — canonical order */
+const BOARD_ACCENT: Record<string, string> = {
+  'Delivery Board': '#2563EB',
+  'QA Board': '#16A34A',
+  'Design Board': '#7C3AED',
+  'My Planning Board': '#D97706',
+};
 
 /* ── StatusLozenge V12 3-color guardrail ── */
 function StatusLozenge({ status }: { status: string }) {
@@ -48,10 +57,22 @@ export default function BoardCanvasPage() {
   const qc = useQueryClient();
   const { data: boardData, isLoading } = useBoard(boardId);
   const { data: cards = [] } = useBoardCards(boardId);
+  const { data: siblingBoards = [] } = useBoards(projectId);
   const { collapsedSwimlanes, toggleSwimlane, draggingCardId, setDraggingCardId } = useBoardStore();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const updateCardRank = useUpdateCardRank();
   const updateLastViewed = useUpdateBoardLastViewed();
+
+  // Canonical board order for tab bar
+  const CANONICAL_ORDER = ['Delivery Board', 'QA Board', 'Design Board', 'My Planning Board'];
+  const boardTabs = useMemo(() => {
+    const ordered: typeof siblingBoards = [];
+    for (const name of CANONICAL_ORDER) {
+      const found = siblingBoards.find(b => b.name === name);
+      if (found) ordered.push(found);
+    }
+    return ordered;
+  }, [siblingBoards]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
   const dragCard = cards.find(c => c.id === draggingCardId) ?? null;
@@ -186,7 +207,7 @@ export default function BoardCanvasPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#F8FAFC' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0, padding: '12px 24px' }}>
+      <div style={{ background: '#FFFFFF', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0, padding: '12px 24px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontFamily: "'Inter', sans-serif", color: '#64748B', marginBottom: 6 }}>
           <button onClick={() => navigate(`/projects/${projectId}/boards`)} style={{
             border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
@@ -197,19 +218,49 @@ export default function BoardCanvasPage() {
           <span style={{ color: '#CBD5E1' }}>›</span>
           <span>{board.name}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+
+        {/* ── Board Switcher Tabs ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 0 }}>
+          {boardTabs.map(tab => {
+            const active = tab.id === boardId;
+            const accent = BOARD_ACCENT[tab.name] || tab.color || '#64748B';
+            const isPersonal = tab.name === 'My Planning Board';
+            return (
+              <button
+                key={tab.id}
+                onClick={() => navigate(`/projects/${projectId}/boards/${tab.id}`)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  height: 30, padding: '0 12px', borderRadius: 4,
+                  border: 'none', background: 'transparent', cursor: 'pointer',
+                  fontSize: 12.5, fontWeight: active ? 600 : 500,
+                  color: active ? '#0F172A' : '#64748B',
+                  fontFamily: "'Inter', sans-serif",
+                  borderBottom: active ? `3px solid ${accent}` : '3px solid transparent',
+                  marginBottom: -1,
+                  transition: 'color 150ms, border-color 150ms',
+                }}
+              >
+                {isPersonal && <User size={12} color={active ? '#D97706' : '#94A3B8'} />}
+                {tab.name}
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10, paddingBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <h1 style={{ fontSize: 15, fontFamily: "'Sora', sans-serif", fontWeight: 700, color: '#0F172A', margin: 0 }}>
               {board.name}
             </h1>
             <span style={{
               fontSize: 10.5, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
-              background: board.color + '18', color: board.color,
+              background: (BOARD_ACCENT[board.name] || board.color) + '18',
+              color: BOARD_ACCENT[board.name] || board.color,
               fontFamily: "'Inter', sans-serif",
             }}>Kanban</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {/* Group by selector */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               height: 28, padding: '0 10px', borderRadius: 4,
