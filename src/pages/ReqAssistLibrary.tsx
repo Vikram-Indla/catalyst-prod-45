@@ -104,15 +104,24 @@ export default function ReqAssistLibrary() {
     fetchDocumentEpicCounts(jiraKeys).then(countsMap => {
       const counts: Record<string, number> = {};
       const stages: Record<string, string | null> = {};
+      const parents: Record<string, string | null> = {};
+      const types: Record<string, string | null> = {};
+      const sources: Record<string, string | null> = {};
       for (const doc of documents) {
         const jk = (doc as any).jira_ticket_key;
         if (jk && countsMap[jk]) {
           counts[doc.id] = countsMap[jk].epicCount;
           stages[doc.id] = countsMap[jk].pipelineStage;
+          parents[doc.id] = countsMap[jk].parentJiraKey;
+          types[doc.id] = countsMap[jk].ticketType;
+          sources[doc.id] = countsMap[jk].rawTextSource;
         }
       }
       setEpicCounts(counts);
       setPipelineStages(stages);
+      setParentKeys(parents);
+      setTicketTypes(types);
+      setRawTextSources(sources);
     });
   }, [documents]);
 
