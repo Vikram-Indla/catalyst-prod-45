@@ -461,9 +461,6 @@ export default function ReqAssistLibrary() {
                               )}
                               <TicketTypeBadge type={ticketTypes[doc.id]} />
                             </div>
-                          )}
-                            </span>
-                          )}
                         </td>
                         {/* Title */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden', maxWidth: 0 }}>
