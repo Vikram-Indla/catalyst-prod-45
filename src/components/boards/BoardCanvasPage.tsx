@@ -207,7 +207,7 @@ export default function BoardCanvasPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#F8FAFC' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0, padding: '12px 24px' }}>
+      <div style={{ background: '#FFFFFF', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0, padding: '12px 24px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontFamily: "'Inter', sans-serif", color: '#64748B', marginBottom: 6 }}>
           <button onClick={() => navigate(`/projects/${projectId}/boards`)} style={{
             border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
@@ -218,19 +218,49 @@ export default function BoardCanvasPage() {
           <span style={{ color: '#CBD5E1' }}>›</span>
           <span>{board.name}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+
+        {/* ── Board Switcher Tabs ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 0 }}>
+          {boardTabs.map(tab => {
+            const active = tab.id === boardId;
+            const accent = BOARD_ACCENT[tab.name] || tab.color || '#64748B';
+            const isPersonal = tab.name === 'My Planning Board';
+            return (
+              <button
+                key={tab.id}
+                onClick={() => navigate(`/projects/${projectId}/boards/${tab.id}`)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  height: 30, padding: '0 12px', borderRadius: 4,
+                  border: 'none', background: 'transparent', cursor: 'pointer',
+                  fontSize: 12.5, fontWeight: active ? 600 : 500,
+                  color: active ? '#0F172A' : '#64748B',
+                  fontFamily: "'Inter', sans-serif",
+                  borderBottom: active ? `3px solid ${accent}` : '3px solid transparent',
+                  marginBottom: -1,
+                  transition: 'color 150ms, border-color 150ms',
+                }}
+              >
+                {isPersonal && <User size={12} color={active ? '#D97706' : '#94A3B8'} />}
+                {tab.name}
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10, paddingBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <h1 style={{ fontSize: 15, fontFamily: "'Sora', sans-serif", fontWeight: 700, color: '#0F172A', margin: 0 }}>
               {board.name}
             </h1>
             <span style={{
               fontSize: 10.5, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
-              background: board.color + '18', color: board.color,
+              background: (BOARD_ACCENT[board.name] || board.color) + '18',
+              color: BOARD_ACCENT[board.name] || board.color,
               fontFamily: "'Inter', sans-serif",
             }}>Kanban</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {/* Group by selector */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               height: 28, padding: '0 10px', borderRadius: 4,
