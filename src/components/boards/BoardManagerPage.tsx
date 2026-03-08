@@ -19,7 +19,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
   const projectId = projectIdOverride || paramProjectId;
   const boardBasePath = basePath || `/projects/${projectId}/boards`;
   const navigate = useNavigate();
-  const { data: boards = [], isLoading } = useBoards(projectId);
+  const { data: boards = [], isLoading, error } = useBoards(projectId);
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
   const [createOpen, setCreateOpen] = useState(false);
