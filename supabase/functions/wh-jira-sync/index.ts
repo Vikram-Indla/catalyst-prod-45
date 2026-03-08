@@ -205,6 +205,66 @@ serve(async (req) => {
       return ''
     }
 
+    // Helper: resolve parent key from issuelinks (for BRD Tasks and similar types without standard parent)
+    function resolveParentFromLinks(issue: any): string | null {
+      const links = issue.fields?.issuelinks || []
+      for (const link of links) {
+        // "is caused by", "is child of", "is part of", etc.
+        if (link.inwardIssue && (
+          link.type?.inward?.toLowerCase().includes('is caused by') ||
+          link.type?.inward?.toLowerCase().includes('is child of') ||
+          link.type?.inward?.toLowerCase().includes('is part of') ||
+          link.type?.inward?.toLowerCase().includes('is subtask of') ||
+          link.type?.name?.toLowerCase().includes('parent')
+        )) {
+          return link.inwardIssue.key
+        }
+        // Also check outward: "causes", "is parent of"
+        if (link.outwardIssue && (
+          link.type?.outward?.toLowerCase().includes('is parent of') ||
+          link.type?.outward?.toLowerCase().includes('causes')
+        )) {
+          return link.outwardIssue.key
+        }
+      }
+      // Fallback: any inward link from the same project for BRD Tasks
+      const issueType = (issue.fields?.issuetype?.name || '').toLowerCase()
+      if (issueType.includes('brd') || issueType.includes('sub')) {
+        for (const link of links) {
+          if (link.inwardIssue) return link.inwardIssue.key
+        }
+      }
+      return null
+    }
+
+    function resolveParentSummaryFromLinks(issue: any): string | null {
+      const links = issue.fields?.issuelinks || []
+      for (const link of links) {
+        if (link.inwardIssue && (
+          link.type?.inward?.toLowerCase().includes('is caused by') ||
+          link.type?.inward?.toLowerCase().includes('is child of') ||
+          link.type?.inward?.toLowerCase().includes('is part of') ||
+          link.type?.inward?.toLowerCase().includes('is subtask of') ||
+          link.type?.name?.toLowerCase().includes('parent')
+        )) {
+          return link.inwardIssue.fields?.summary || null
+        }
+        if (link.outwardIssue && (
+          link.type?.outward?.toLowerCase().includes('is parent of') ||
+          link.type?.outward?.toLowerCase().includes('causes')
+        )) {
+          return link.outwardIssue.fields?.summary || null
+        }
+      }
+      const issueType = (issue.fields?.issuetype?.name || '').toLowerCase()
+      if (issueType.includes('brd') || issueType.includes('sub')) {
+        for (const link of links) {
+          if (link.inwardIssue) return link.inwardIssue.fields?.summary || null
+        }
+      }
+      return null
+    }
+
     // 7. Transform and upsert issues
     const rows = allIssues.map((issue: any) => {
       const descAdf = issue.fields.description || null
