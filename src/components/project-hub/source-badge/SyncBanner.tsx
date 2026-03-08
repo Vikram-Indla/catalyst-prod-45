@@ -27,18 +27,17 @@ function relativeTime(iso?: string | null): string {
 export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onSyncNow, onDismiss }: SyncBannerProps) {
   const [fading, setFading] = useState(false);
 
-  if (conflictCount === 0 && !fading) return null;
-
-  const handleDismiss = () => {
-    setFading(true);
-  };
-
-  // After fade completes, call parent dismiss
   useEffect(() => {
     if (!fading) return;
     const timer = setTimeout(() => onDismiss(), 200);
     return () => clearTimeout(timer);
   }, [fading, onDismiss]);
+
+  if (conflictCount === 0 && !fading) return null;
+
+  const handleDismiss = () => {
+    setFading(true);
+  };
 
   return (
     <div
