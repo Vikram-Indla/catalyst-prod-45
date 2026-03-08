@@ -204,6 +204,10 @@ export function WorkItemsTable({
           onInlineUpdate={onInlineUpdate}
           statuses={statuses}
           profiles={profiles}
+          source={item.source || 'catalyst'}
+          syncStatus={item.sync_status as any}
+          lastSyncedAt={item.last_synced_at}
+          releaseLabel={item.release_name || undefined}
         />
       );
     });
