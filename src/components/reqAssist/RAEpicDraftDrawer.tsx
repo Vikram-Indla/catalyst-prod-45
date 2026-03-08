@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Clock, Pencil, Archive, Loader2 } from 'lucide-react';
+import { X, Clock, Pencil, Archive, Loader2, ChevronLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { RA_KEYS } from '@/hooks/useReqAssist';
@@ -141,30 +141,29 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
         borderLeft: '0.75px solid rgba(15,23,42,0.10)', fontFamily: "'Inter', sans-serif",
       }}>
 
-        {/* ── Panel Header (sticky) ── */}
+        {/* D10: Panel Header — STICKY */}
         <div style={{
           padding: '16px 20px',
-          borderBottom: '0.75px solid rgba(15,23,42,0.08)',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+          borderBottom: '0.75px solid #E2E8F0',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           background: '#FFFFFF', flexShrink: 0,
+          position: 'sticky', top: 0, zIndex: 10,
         }}>
-          <div style={{ overflow: 'hidden', flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden', flex: 1 }}>
+            <button onClick={onClose} style={{
+              width: 28, height: 28, borderRadius: 4, border: 'none', flexShrink: 0,
+              background: 'transparent', cursor: 'pointer', display: 'flex',
+              alignItems: 'center', justifyContent: 'center', color: '#64748B',
+            }}>
+              <ChevronLeft size={18} />
+            </button>
             <h2 style={{
               fontSize: 16, fontWeight: 650, color: '#0F172A', margin: 0,
-              fontFamily: "'Sora', sans-serif",
+              fontFamily: "'Sora', sans-serif", whiteSpace: 'nowrap',
+              overflow: 'hidden', textOverflow: 'ellipsis',
             }}>
-              Epic Drafts
+              Epics{jiraKey ? ` · ${jiraKey}` : ''}
             </h2>
-            <p style={{
-              fontSize: 12, fontWeight: 400, color: '#64748B', margin: '2px 0 0',
-              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-              fontFamily: "'Inter', sans-serif",
-            }}>
-              {jiraKey ? `${jiraKey} · ` : ''}{docTitle}
-            </p>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-            {/* Count pill */}
             <span style={{
               display: 'inline-flex', alignItems: 'center',
               padding: '1px 8px', borderRadius: 10,
@@ -172,21 +171,16 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
               fontSize: 12, fontWeight: 600, color: '#374151',
               fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
             }}>
-              {epics.length} draft{epics.length !== 1 ? 's' : ''}
+              {epics.length}
             </span>
-            {/* Close */}
-            <button onClick={onClose} style={{
-              width: 28, height: 28, borderRadius: 4, border: 'none', flexShrink: 0,
-              background: 'transparent', cursor: 'pointer', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', color: '#64748B',
-              transition: 'color 80ms ease',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#0F172A')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
-            >
-              <X size={18} />
-            </button>
           </div>
+          <button onClick={onClose} style={{
+            width: 28, height: 28, borderRadius: 4, border: 'none', flexShrink: 0,
+            background: 'transparent', cursor: 'pointer', display: 'flex',
+            alignItems: 'center', justifyContent: 'center', color: '#64748B',
+          }}>
+            <X size={18} />
+          </button>
         </div>
 
         {/* Staleness banner */}
@@ -225,7 +219,8 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                     background: isHovered ? 'rgba(37,99,235,0.02)' : '#FFFFFF',
                     border: `0.75px solid ${isHovered ? 'rgba(15,23,42,0.16)' : 'rgba(15,23,42,0.10)'}`,
                     borderRadius: 6,
-                    borderLeft: '3px solid #7C3AED',
+                    /* D02: Blue border for default, no purple */
+                    borderLeft: '3px solid #E2E8F0',
                     padding: '14px 16px',
                     marginBottom: 8,
                     boxShadow: isHovered
@@ -236,14 +231,15 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                 >
                   {/* Top row: ra_tag chip + status lozenge */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    {/* D01: Epic key badge — neutral grey, not purple */}
                     <span style={{
                       display: 'inline-flex', alignItems: 'center',
-                      background: '#F5F3FF',
-                      border: '0.75px solid #DDD6FE',
-                      borderRadius: 4,
+                      background: '#F1F5F9',
+                      border: '0.75px solid #CBD5E1',
+                      borderRadius: 3,
                       padding: '2px 8px',
                       fontFamily: "'JetBrains Mono', monospace",
-                      fontSize: 11, fontWeight: 500, color: '#6D28D9',
+                      fontSize: 11, fontWeight: 600, color: '#475569',
                     }}>
                       {epic.ra_tag || `DFT-${String(epicIdx + 1).padStart(3, '0')}`}
                     </span>
@@ -251,7 +247,6 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                   </div>
 
                   {isEditing ? (
-                    /* ── Inline edit mode ── */
                     <div style={{ marginTop: 8 }}>
                       <input
                         value={editTitle}
@@ -260,7 +255,6 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                           width: '100%', fontSize: 14, fontWeight: 650, color: '#0F172A',
                           border: '1px solid #CBD5E1', borderRadius: 4, padding: '6px 8px',
                           fontFamily: "'Inter', sans-serif", outline: 'none',
-                          transition: 'border-color 80ms ease',
                         }}
                         onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
                         onBlur={e => (e.currentTarget.style.borderColor = '#CBD5E1')}
@@ -273,7 +267,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                           width: '100%', fontSize: 13, color: '#475569', marginTop: 6,
                           border: '1px solid #CBD5E1', borderRadius: 4, padding: '6px 8px',
                           fontFamily: "'Inter', sans-serif", resize: 'vertical', outline: 'none',
-                          lineHeight: 1.5, transition: 'border-color 80ms ease',
+                          lineHeight: 1.5,
                         }}
                         onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
                         onBlur={e => (e.currentTarget.style.borderColor = '#CBD5E1')}
@@ -292,7 +286,6 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                       </div>
                     </div>
                   ) : (
-                    /* ── Display mode ── */
                     <>
                       <p style={{
                         fontSize: 14, fontWeight: 650, color: '#0F172A',
@@ -310,36 +303,24 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                           {epic.description}
                         </p>
                       )}
-
-                      {/* Action row */}
                       {isArchiveConfirm ? (
                         <div style={{
                           display: 'flex', alignItems: 'center', gap: 8,
                           marginTop: 10, fontSize: 12,
                         }}>
                           <span style={{ color: '#475569', fontFamily: "'Inter', sans-serif" }}>Archive this epic?</span>
-                          <button
-                            onClick={() => setArchiveConfirmId(null)}
-                            style={{
-                              height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-                              borderRadius: 5, border: '0.75px solid rgba(15,23,42,0.15)',
-                              background: '#FFFFFF', color: '#374151', cursor: 'pointer',
-                              fontFamily: "'Inter', sans-serif",
-                            }}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => handleArchiveEpic(epic.id)}
-                            style={{
-                              height: 28, padding: '0 10px', fontSize: 12, fontWeight: 600,
-                              borderRadius: 5, border: '0.75px solid rgba(220,38,38,0.3)',
-                              background: 'rgba(220,38,38,0.04)', color: '#DC2626',
-                              cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-                            }}
-                          >
-                            Confirm
-                          </button>
+                          <button onClick={() => setArchiveConfirmId(null)} style={{
+                            height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+                            borderRadius: 5, border: '0.75px solid rgba(15,23,42,0.15)',
+                            background: '#FFFFFF', color: '#374151', cursor: 'pointer',
+                            fontFamily: "'Inter', sans-serif",
+                          }}>Cancel</button>
+                          <button onClick={() => handleArchiveEpic(epic.id)} style={{
+                            height: 28, padding: '0 10px', fontSize: 12, fontWeight: 600,
+                            borderRadius: 5, border: '0.75px solid rgba(220,38,38,0.3)',
+                            background: 'rgba(220,38,38,0.04)', color: '#DC2626',
+                            cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                          }}>Confirm</button>
                         </div>
                       ) : (
                         <div style={{ display: 'flex', gap: 4, marginTop: 10 }}>
@@ -352,7 +333,6 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                               border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 5,
                               background: '#FFFFFF', cursor: 'pointer',
                               fontFamily: "'Inter', sans-serif",
-                              transition: 'background 80ms ease',
                             }}
                             onMouseEnter={e => (e.currentTarget.style.background = 'rgba(37,99,235,0.04)')}
                             onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
@@ -368,7 +348,6 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                               border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 5,
                               background: '#FFFFFF', cursor: 'pointer',
                               fontFamily: "'Inter', sans-serif",
-                              transition: 'background 80ms ease, color 80ms ease',
                             }}
                             onMouseEnter={e => {
                               e.currentTarget.style.background = 'rgba(220,38,38,0.04)';
@@ -413,7 +392,6 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                   borderRadius: 6, border: '0.75px solid rgba(15,23,42,0.15)',
                   background: '#FFFFFF', color: '#334155',
                   cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-                  transition: 'background 80ms ease',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
@@ -428,7 +406,6 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                 borderRadius: 6, border: 'none',
                 background: '#2563EB', color: '#FFFFFF',
                 cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-                transition: 'background 80ms ease',
               }}
               onMouseEnter={e => (e.currentTarget.style.background = '#1D4ED8')}
               onMouseLeave={e => (e.currentTarget.style.background = '#2563EB')}

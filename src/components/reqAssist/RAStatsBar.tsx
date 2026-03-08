@@ -1,18 +1,9 @@
+import { useState, useEffect } from 'react';
 import { FileText, CheckCircle, Zap, Send, Database } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { sanitiseError } from '@/lib/errorUtils';
 import { formatTimeAbbreviated } from '@/lib/formatTimeAgo';
-
-interface QueueRow {
-  id: string;
-  brd_id: string;
-  status: string;
-  updated_at?: string;
-  started_at?: string;
-  completed_at?: string;
-  created_at?: string;
-}
 
 interface StatsBarProps {
   totalDocuments: number;
@@ -24,7 +15,17 @@ interface StatsBarProps {
   loading?: boolean;
 }
 
+interface ActivityEvent {
+  id: string;
+  brd_id: string | null;
+  event_type: string;
+  message: string;
+  created_at: string;
+}
+
 export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: StatsBarProps) {
+  const [activityEvents, setActivityEvents] = useState<ActivityEvent[]>([]);
+
   const { data: statsData, isLoading: statsLoading, error } = useQuery({
     queryKey: ['req-assist-stats-bar', totalDocuments],
     queryFn: async () => {
@@ -33,30 +34,17 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
         brdTotalRes,
         epicRowsRes,
         runningRes,
-        qRowsRes,
       ] = await Promise.all([
         (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }).like('jira_key', 'MDT-%').eq('pipeline_stage', 'complete'),
         (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }).like('jira_key', 'MDT-%'),
         (supabase as any).from('brd_epics').select('publish_status').limit(1000),
         (supabase as any).from('brd_processing_queue').select('id', { count: 'exact', head: true }).eq('status', 'processing'),
-        (supabase as any).from('brd_processing_queue').select('id, brd_id, status, started_at, completed_at, created_at').order('created_at', { ascending: false }).limit(10),
       ]);
 
       const epics = epicRowsRes.data ?? [];
       const draft = epics.filter((e: any) => !e.publish_status || e.publish_status === 'draft').length;
       const reviewed = epics.filter((e: any) => e.publish_status === 'reviewed').length;
       const published = epics.filter((e: any) => e.publish_status === 'published').length;
-      const rows: QueueRow[] = qRowsRes.data ?? [];
-
-      const brdIds = [...new Set(rows.map(r => r.brd_id))];
-      let jiraKeyMap: Record<string, string> = {};
-      if (brdIds.length > 0) {
-        const { data: brdDocs } = await (supabase as any)
-          .from('brd_documents')
-          .select('id, jira_key')
-          .in('id', brdIds);
-        (brdDocs ?? []).forEach((d: any) => { if (d.jira_key) jiraKeyMap[d.id] = d.jira_key; });
-      }
 
       return {
         brdReady: brdReadyRes.count ?? 0,
@@ -66,13 +54,32 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
         epicPublished: published,
         epicTotal: epics.length,
         queueRunning: runningRes.count ?? 0,
-        queueRows: rows,
-        jiraKeyMap,
       };
     },
     staleTime: 15_000,
     refetchInterval: 30_000,
   });
+
+  // D09: Fetch activity log + realtime subscription
+  useEffect(() => {
+    const fetchActivity = async () => {
+      const { data } = await (supabase as any)
+        .from('ra_activity_log')
+        .select('id, brd_id, event_type, message, created_at')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (data) setActivityEvents(data);
+    };
+    fetchActivity();
+
+    const channel = supabase.channel('ra-activity-live')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ra_activity_log' }, (payload: any) => {
+        setActivityEvents(prev => [payload.new as ActivityEvent, ...prev].slice(0, 10));
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   if (error) {
     console.error('[RAStatsBar] Stats load failed:', sanitiseError(error));
@@ -82,18 +89,9 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
   const brdStats = { ready: statsData?.brdReady ?? 0, total: statsData?.brdTotal ?? 0 };
   const epicStats = { draft: statsData?.epicDraft ?? 0, reviewed: statsData?.epicReviewed ?? 0, published: statsData?.epicPublished ?? 0, total: statsData?.epicTotal ?? 0 };
   const queueRunning = statsData?.queueRunning ?? 0;
-  const queueRows = statsData?.queueRows ?? [];
-  const jiraKeyMap = statsData?.jiraKeyMap ?? {};
 
   const brdPct = brdStats.total > 0 ? (brdStats.ready / brdStats.total) * 100 : 0;
   const kbPct = brdStats.total > 0 ? (wikihubSynced / brdStats.total) * 100 : 0;
-
-  // Filter out BRD-00x seed data from live activity
-  const filteredRows = queueRows.filter(row => {
-    const jk = jiraKeyMap[row.brd_id];
-    if (!jk) return true; // show unknown rows
-    return jk.startsWith('MDT-') || jk.startsWith('SEN-') || jk.startsWith('SIMP-');
-  });
 
   const Skeleton = () => (
     <div style={{ width: 52, height: 32, background: '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
@@ -138,11 +136,11 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
           <span style={{ fontSize: 11, color: '#16A34A', fontFamily: "'Inter', sans-serif", marginTop: 4 }}>Pipeline stage: Complete</span>
         </div>
 
-        {/* Card 3: Epics Generated */}
+        {/* Card 3: Epics Generated — D01/D03: blue icon, not purple */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ ...iconContainerStyle, background: '#F5F3FF' }}>
-              <Zap size={16} color="#7C3AED" />
+            <div style={{ ...iconContainerStyle, background: '#EFF6FF' }}>
+              <Zap size={16} color="#2563EB" />
             </div>
           </div>
           {isLoading ? <Skeleton /> : (
@@ -176,13 +174,12 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
       {/* ── ROW 2: AI Indexed (1fr) + Live Activity (2fr) ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12, padding: '0 28px' }}>
 
-        {/* AI Indexed Card */}
+        {/* AI Indexed Card — D03: blue progress bar */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ ...iconContainerStyle, background: '#F5F3FF' }}>
-              <Database size={16} color="#7C3AED" />
+            <div style={{ ...iconContainerStyle, background: '#EFF6FF' }}>
+              <Database size={16} color="#2563EB" />
             </div>
-            {/* Status chip */}
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               background: '#F1F5F9', border: '0.75px solid rgba(15,23,42,0.12)',
@@ -196,7 +193,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
                 boxShadow: queueRunning > 0 ? '0 0 0 3px rgba(22,163,74,0.15)' : 'none',
                 animation: queueRunning > 0 ? 'ra-pulse-dot 1.2s ease-in-out infinite' : 'none',
               }} />
-              {queueRunning > 0 ? 'Syncing...' : 'Idle'}
+              {queueRunning > 0 ? 'Indexing...' : 'Idle'}
             </span>
           </div>
           {isLoading ? <Skeleton /> : (
@@ -208,12 +205,16 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
           <span style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif", marginTop: 4 }}>
             Searchable via Knowledge Assistant
           </span>
-          <div style={{ width: '100%', height: 4, background: '#E5E7EB', borderRadius: 2, marginTop: 8 }}>
-            <div style={{ width: `${kbPct}%`, height: 4, borderRadius: 2, background: 'linear-gradient(90deg, #7C3AED, #8B5CF6)', transition: 'width 400ms ease' }} />
+          <div style={{ width: '100%', height: 4, background: '#EFF6FF', borderRadius: 2, marginTop: 8 }}>
+            <div style={{
+              width: `${kbPct}%`, height: 4, borderRadius: 2,
+              background: '#2563EB',
+              transition: 'width 400ms ease',
+            }} />
           </div>
         </div>
 
-        {/* Live Activity Card */}
+        {/* D09: Live Activity Card — real data from ra_activity_log */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <span style={{
@@ -223,51 +224,31 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             }}>
               LIVE ACTIVITY
             </span>
-            <button style={{
-              fontSize: 11, fontWeight: 500, color: '#2563EB',
-              background: 'transparent', border: 'none', cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif", padding: 0,
-            }}
-              onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-              onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
-            >
-              View all →
-            </button>
           </div>
 
-          {filteredRows.length === 0 ? (
+          {activityEvents.length === 0 ? (
             <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>
-              No activity yet — trigger ✦ Sync All to AI to start
+              No activity yet in this session
             </div>
           ) : (
             <div style={{ maxHeight: 140, overflowY: 'auto' }}>
-              {filteredRows.map((row, idx) => (
-                <div key={row.id} style={{
+              {activityEvents.map((evt, idx) => (
+                <div key={evt.id} style={{
                   display: 'flex', alignItems: 'center', gap: 10,
                   height: 32, fontSize: 12, color: '#475569',
                   fontFamily: "'Inter', sans-serif",
                   borderTop: idx > 0 ? '0.75px solid rgba(15,23,42,0.06)' : 'none',
                   animation: idx === 0 ? 'ra-slide-up 200ms ease-out' : undefined,
                 }}>
-                  {/* Status dot */}
                   <span style={{
                     width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
-                    background: dotColor(row.status),
-                    animation: row.status === 'processing' ? 'ra-pulse-dot 1.2s ease-in-out infinite' : 'none',
+                    background: activityDotColor(evt.event_type),
                   }} />
-                  {/* Ticket key */}
-                  <span style={{
-                    fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500,
-                    color: '#2563EB', minWidth: 72,
-                  }}>
-                    {jiraKeyMap[row.brd_id] || row.brd_id.substring(0, 8)}
+                  <span style={{ fontSize: 12, color: '#475569', flex: 1 }}>
+                    {evt.message}
                   </span>
-                  <span style={{ color: '#CBD5E1' }}>→</span>
-                  <span style={{ fontSize: 12, color: '#475569' }}>
-                    {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
-                  </span>
-                  <span style={{ fontSize: 11, color: '#94A3B8', marginInlineStart: 'auto', whiteSpace: 'nowrap' }}>
-                    {formatTimeAbbreviated(row.completed_at || row.started_at || row.created_at)}
+                  <span style={{ fontSize: 11, color: '#94A3B8', whiteSpace: 'nowrap' }}>
+                    {formatTimeAbbreviated(evt.created_at)}
                   </span>
                 </div>
               ))}
@@ -292,13 +273,12 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
   );
 }
 
-function dotColor(status: string): string {
-  switch (status) {
-    case 'processing': return '#2563EB';
-    case 'completed': return '#16A34A';
-    case 'failed': return '#DC2626';
-    default: return '#FCD34D';
-  }
+function activityDotColor(eventType: string): string {
+  if (eventType === 'index_start' || eventType === 'index_complete') return '#0D9488';
+  if (eventType === 'import') return '#2563EB';
+  if (eventType === 'epic_generated' || eventType === 'published') return '#16A34A';
+  if (eventType === 'uat_generated') return '#0D9488';
+  return '#94A3B8';
 }
 
 const cardStyle: React.CSSProperties = {

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, FileText, Zap, BookOpen, FlaskConical, Copy, Check, Paperclip, ArrowDownToLine, ExternalLink, Loader2 } from 'lucide-react';
+import { X, FileText, Zap, BookOpen, FlaskConical, Copy, Check, Paperclip, ArrowDownToLine, ExternalLink, Loader2, FileUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { formatTimestamp } from '@/lib/formatTimestamp';
@@ -22,18 +22,38 @@ interface BrdData {
   epicCount: number;
   wikiCount: number;
   publishedCount: number;
+  uatCount: number;
+}
+
+// D07: Domain derivation from jira_ticket_key prefix
+function deriveDomain(jiraKey: string | null | undefined, docDomain: string | null | undefined): string | null {
+  if (docDomain) return docDomain;
+  if (!jiraKey) return null;
+  const prefix = jiraKey.split('-')[0]?.toUpperCase();
+  const map: Record<string, string> = {
+    'MDT': 'Ministry Digital Transformation',
+    'SEN': 'Senaei Platform',
+    'SIMP': 'Industrial Monitoring',
+  };
+  return map[prefix] || null;
 }
 
 export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, onViewDrafts, onSyncKb }: Props) {
   const navigate = useNavigate();
   const [brdData, setBrdData] = useState<BrdData>({
     id: null, pipeline_stage: null, raw_text: null,
-    epicCount: 0, wikiCount: 0, publishedCount: 0,
+    epicCount: 0, wikiCount: 0, publishedCount: 0, uatCount: 0,
   });
   const [contentExpanded, setContentExpanded] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [generatingUat, setGeneratingUat] = useState(false);
+  const [uatScenarios, setUatScenarios] = useState<any[]>([]);
+  const [showUatPanel, setShowUatPanel] = useState(false);
+  // D08: PDF upload
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -41,7 +61,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
     return () => document.removeEventListener('keydown', handler);
   }, [onClose]);
 
-  // Load BRD data chain: ra_documents.jira_ticket_key → brd_documents.jira_key → brd_epics
+  // Load BRD data chain
   useEffect(() => {
     const load = async () => {
       const jiraKey = doc.jira_ticket_key;
@@ -54,14 +74,15 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         .maybeSingle();
 
       if (!brdRow?.id) {
-        setBrdData({ id: null, pipeline_stage: null, raw_text: null, epicCount: 0, wikiCount: 0, publishedCount: 0 });
+        setBrdData({ id: null, pipeline_stage: null, raw_text: null, epicCount: 0, wikiCount: 0, publishedCount: 0, uatCount: 0 });
         return;
       }
 
-      const [epicRes, pubRes, wikiRes] = await Promise.all([
+      const [epicRes, pubRes, wikiRes, uatRes] = await Promise.all([
         (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdRow.id),
         (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdRow.id).not('ra_tag', 'is', null),
         (supabase as any).from('kb_embeddings').select('id', { count: 'exact', head: true }).eq('source_id', brdRow.id),
+        (supabase as any).from('brd_uat_scenarios').select('id', { count: 'exact', head: true }).eq('brd_id', brdRow.id),
       ]);
 
       let finalWikiCount = wikiRes.count ?? 0;
@@ -76,7 +97,18 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         epicCount: epicRes.count ?? 0,
         wikiCount: finalWikiCount,
         publishedCount: pubRes.count ?? 0,
+        uatCount: uatRes.count ?? 0,
       });
+
+      // Fetch UAT scenarios if they exist
+      if ((uatRes.count ?? 0) > 0) {
+        const { data: scenarios } = await (supabase as any)
+          .from('brd_uat_scenarios')
+          .select('*')
+          .eq('brd_id', brdRow.id)
+          .order('created_at', { ascending: true });
+        if (scenarios) setUatScenarios(scenarios);
+      }
     };
     load();
   }, [doc]);
@@ -89,12 +121,11 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
     }
   };
 
-  // ── FIX 2: Sync to KB handler with brd_id resolution ──
-  const handleSyncToKB = async () => {
+  // D04: Renamed handler + D05: loading state
+  const handleIndexToKA = async () => {
     if (syncing) return;
     setSyncing(true);
     try {
-      // Step 1: resolve brd_id from jira_ticket_key
       const { data: brdRow, error: brdError } = await (supabase as any)
         .from('brd_documents')
         .select('id')
@@ -102,37 +133,105 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         .maybeSingle();
 
       if (brdError || !brdRow?.id) {
-        toast.error('Could not find BRD document to sync');
+        toast.error('Could not find BRD document to index');
         setSyncing(false);
         return;
       }
 
-      // Step 2: invoke kb-sync
       const { error } = await supabase.functions.invoke('kb-sync', {
-        body: {
-          brd_id: brdRow.id,
-          source_type: 'jira_bulk',
-        },
+        body: { brd_id: brdRow.id, source_type: 'jira_bulk' },
       });
 
       if (error) {
-        toast.error('KB sync failed: ' + error.message);
+        toast.error('Indexing failed: ' + error.message);
         setSyncing(false);
         return;
       }
 
-      toast.success('Sync started — KB will update shortly');
+      // Log activity
+      await (supabase as any).from('ra_activity_log').insert({
+        brd_id: brdRow.id,
+        event_type: 'index_start',
+        message: `Indexing started for ${doc.jira_ticket_key}`,
+      });
+
+      toast.success('Indexing started — documents will be searchable shortly');
     } catch (err) {
-      toast.error('Sync failed. Please try again.');
-      console.error('[SyncToKB]', err);
+      toast.error('Indexing failed. Please try again.');
+      console.error('[IndexToKA]', err);
     } finally {
       setSyncing(false);
     }
   };
 
-  // ── Pipeline stepper logic ──
+  // D06: Generate UAT scenarios
+  const handleGenerateUAT = async () => {
+    if (!brdData.id || !brdData.raw_text) {
+      toast.error('No BRD content to generate UAT scenarios from');
+      return;
+    }
+    setGeneratingUat(true);
+    try {
+      // Generate simple UAT scenarios from BRD content
+      const scenarios = generateUATFromText(brdData.raw_text, doc.jira_ticket_key);
+      
+      const inserts = scenarios.map((s, i) => ({
+        brd_id: brdData.id!,
+        scenario_key: `${doc.jira_ticket_key}-UAT-${String(i + 1).padStart(2, '0')}`,
+        title: s.title,
+        steps: s.steps,
+        expected_result: s.expected_result,
+        status: 'draft',
+      }));
+
+      const { error } = await (supabase as any).from('brd_uat_scenarios').insert(inserts);
+      if (error) throw error;
+
+      // Log activity
+      await (supabase as any).from('ra_activity_log').insert({
+        brd_id: brdData.id,
+        event_type: 'uat_generated',
+        message: `UAT scenarios generated for ${doc.jira_ticket_key}`,
+      });
+
+      setBrdData(prev => ({ ...prev, uatCount: inserts.length }));
+      setUatScenarios(inserts.map((s, i) => ({ ...s, id: `temp-${i}` })));
+      toast.success(`Generated ${inserts.length} UAT scenarios`);
+    } catch (err: any) {
+      toast.error('UAT generation failed: ' + (err.message || 'Unknown error'));
+    } finally {
+      setGeneratingUat(false);
+    }
+  };
+
+  // D08: PDF upload handler
+  const handlePdfUpload = async (file: File) => {
+    if (!brdData.id) {
+      toast.error('BRD document not found — cannot attach PDF');
+      return;
+    }
+    setUploadingPdf(true);
+    try {
+      const path = `${brdData.id}/source.pdf`;
+      const { error: uploadErr } = await supabase.storage
+        .from('brd-attachments')
+        .upload(path, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+
+      const { data: urlData } = supabase.storage.from('brd-attachments').getPublicUrl(path);
+      
+      await (supabase as any).from('brd_documents').update({ pdf_url: urlData.publicUrl }).eq('id', brdData.id);
+      toast.success('PDF attached successfully');
+    } catch (err: any) {
+      toast.error('Upload failed: ' + (err.message || 'Unknown error'));
+    } finally {
+      setUploadingPdf(false);
+    }
+  };
+
+  // Pipeline stepper logic
   const stage = brdData.pipeline_stage;
-  const { epicCount, wikiCount, publishedCount } = brdData;
+  const { epicCount, wikiCount, publishedCount, uatCount } = brdData;
 
   const stepsRaw: { label: string; state: 'complete' | 'active' | 'pending' }[] = [
     { label: 'Imported', state: 'complete' },
@@ -156,7 +255,6 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
     },
   ];
 
-  // ── Status lozenge — V12 3-color guardrail ──
   const getStageLozenge = () => {
     if (!stage) return { bg: '#DFE1E6', color: '#253858', label: 'PENDING' };
     if (stage === 'complete') return { bg: '#E3FCEF', color: '#006644', label: 'COMPLETE' };
@@ -165,15 +263,13 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
   };
   const lozenge = getStageLozenge();
 
-  // ── Description fallback chain ──
   const description =
-    (doc as any).description
-    || (doc as any).summary
-    || (doc as any).body
-    || (doc as any).content_raw
+    (doc as any).description || (doc as any).summary || (doc as any).body || (doc as any).content_raw
     || (brdData.raw_text ? brdData.raw_text.substring(0, 300) + (brdData.raw_text.length > 300 ? '…' : '') : null)
     || null;
   const descTruncated = description && description.length > 300;
+
+  const domain = deriveDomain(doc.jira_ticket_key, doc.domain);
 
   return (
     <>
@@ -187,7 +283,6 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
       }}>
         {/* ── HEADER ── */}
         <div style={{ padding: '16px 20px 14px', borderBottom: '0.75px solid rgba(15,23,42,0.10)', flexShrink: 0 }}>
-          {/* Row 1: Jira chip + close */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <a
               href={doc.jira_ticket_url || '#'}
@@ -212,13 +307,11 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               <X size={16} color="#64748B" />
             </button>
           </div>
-          {/* Row 2: Title */}
           <h3 style={{
             fontSize: 18, fontWeight: 700, color: '#0F172A', margin: '10px 0 0', fontFamily: "'Sora', sans-serif",
             lineHeight: 1.3,
             display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden',
           }}>{doc.title}</h3>
-          {/* Row 3: Status + meta */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
             <span style={{
               display: 'inline-flex', alignItems: 'center', padding: '0 6px', borderRadius: 3, height: 20,
@@ -303,9 +396,8 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               <MetaRow label="Title">
                 <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>{doc.title}</span>
               </MetaRow>
-              {/* Description with fallback chain */}
-              <MetaRow label="Description">
-                {description ? (
+              {description && (
+                <MetaRow label="Description">
                   <div style={{ flex: 1 }}>
                     <div style={{
                       background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.08)', borderRadius: 6,
@@ -327,19 +419,54 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                       </button>
                     )}
                   </div>
-                ) : (
-                  <span style={{ fontSize: 13, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>No description available</span>
-                )}
-              </MetaRow>
+                </MetaRow>
+              )}
               <MetaRow label="Imported">
                 <span style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
                   {formatTimestamp(doc.created_at)}
                 </span>
               </MetaRow>
+              {/* D07: Domain populated */}
               <MetaRow label="Domain">
-                <span style={{ fontSize: 13, color: doc.domain ? '#475569' : '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
-                  {doc.domain || '—'}
+                <span style={{ fontSize: 13, color: domain ? '#475569' : '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
+                  {domain || (
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
+                      background: '#F1F5F9', borderRadius: 3, fontSize: 11, color: '#94A3B8',
+                      fontFamily: "'Inter', sans-serif",
+                    }}>Uncategorised</span>
+                  )}
                 </span>
+              </MetaRow>
+              {/* D08: Source PDF in metadata */}
+              <MetaRow label="Source PDF">
+                {doc.pdf_url ? (
+                  <a href={doc.pdf_url} target="_blank" rel="noopener noreferrer" style={{
+                    fontSize: 12, fontWeight: 500, color: '#2563EB', textDecoration: 'none',
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                    onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                    onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                  >Open PDF ↗</a>
+                ) : (
+                  <>
+                    <button onClick={() => fileInputRef.current?.click()} disabled={uploadingPdf} style={{
+                      fontSize: 12, fontWeight: 500, color: '#2563EB', background: 'transparent',
+                      border: 'none', cursor: 'pointer', padding: 0, fontFamily: "'Inter', sans-serif",
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                    }}>
+                      {uploadingPdf ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <FileUp size={12} />}
+                      {uploadingPdf ? 'Uploading...' : 'Attach PDF'}
+                    </button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf"
+                      style={{ display: 'none' }}
+                      onChange={e => { if (e.target.files?.[0]) handlePdfUpload(e.target.files[0]); }}
+                    />
+                  </>
+                )}
               </MetaRow>
             </div>
           </div>
@@ -418,14 +545,6 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   <FileText size={20} color="#CBD5E1" />
                   <span style={{ fontSize: 13, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>Content not yet extracted</span>
                   <span style={{ fontSize: 12, color: '#CBD5E1', fontFamily: "'Inter', sans-serif" }}>Upload a PDF or extract from Jira attachments</span>
-                  {doc.pdf_url && (
-                    <button onClick={() => onGenerate('extract')} style={{
-                      marginTop: 6, height: 28, padding: '0 12px', borderRadius: 5,
-                      border: '0.75px solid rgba(15,23,42,0.15)', background: '#FFFFFF',
-                      fontSize: 12, fontWeight: 500, color: '#374151', cursor: 'pointer',
-                      fontFamily: "'Inter', sans-serif",
-                    }}>Extract from PDF</button>
-                  )}
                 </div>
               )}
             </div>
@@ -436,7 +555,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
             <SectionHeader>Generated Artifacts</SectionHeader>
             <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column' }}>
 
-              {/* Epics Row — ALL BLUE, zero purple */}
+              {/* Epics Row — ALL BLUE */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Zap size={15} color="#2563EB" />
@@ -475,7 +594,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 </button>
               </div>
 
-              {/* Wiki Chunks Row */}
+              {/* Wiki Chunks Row — D04: renamed link */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: '#F0FDFA', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <BookOpen size={16} color="#0D9488" />
@@ -501,7 +620,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     if (wikiCount > 0) {
                       navigate(`/wiki?source=${doc.jira_ticket_key}`);
                     } else {
-                      handleSyncToKB();
+                      handleIndexToKA();
                     }
                   }}
                   style={{
@@ -515,35 +634,94 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   {syncing ? (
                     <>
                       <Loader2 size={12} color="#2563EB" style={{ animation: 'spin 1s linear infinite' }} />
-                      Syncing...
+                      Indexing...
                     </>
                   ) : (
-                    wikiCount > 0 ? 'View in WikiHub →' : 'Sync to KB →'
+                    wikiCount > 0 ? 'View in WikiHub →' : 'Index to Knowledge Assistant →'
                   )}
                 </button>
               </div>
 
-              {/* UAT Cases Row — single line, no wrap */}
+              {/* D06: UAT Scenarios Row — real generate action */}
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0',
                 minHeight: 40, flexWrap: 'nowrap',
               }}>
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <FlaskConical size={15} color="#94A3B8" />
+                  <FlaskConical size={15} color="#64748B" />
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0, minWidth: 70 }}>UAT Cases</span>
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 10,
-                  background: '#F1F5F9', color: '#94A3B8', border: '0.75px solid rgba(15,23,42,0.12)',
-                  fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0,
-                }}>Not generated</span>
-                <span style={{
-                  marginLeft: 'auto', fontSize: 11, color: '#CBD5E1', fontFamily: "'Inter', sans-serif",
-                  whiteSpace: 'nowrap',
-                }}>
-                  Planned for future release
-                </span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0, minWidth: 70 }}>UAT Scenarios</span>
+                {uatCount > 0 ? (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 10,
+                    background: '#F0FDF4', border: '0.75px solid #BBF7D0',
+                    fontSize: 11, fontWeight: 700, color: '#16A34A',
+                    fontFamily: "'Inter', sans-serif",
+                  }}>{uatCount} scenarios</span>
+                ) : (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 10,
+                    background: '#F1F5F9', color: '#94A3B8', border: '0.75px solid rgba(15,23,42,0.12)',
+                    fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0,
+                  }}>Not generated</span>
+                )}
+                <button
+                  disabled={generatingUat}
+                  onClick={() => {
+                    if (uatCount > 0) {
+                      setShowUatPanel(!showUatPanel);
+                    } else {
+                      handleGenerateUAT();
+                    }
+                  }}
+                  style={{
+                    marginLeft: 'auto', border: uatCount > 0 ? 'none' : '0.75px solid #2563EB',
+                    background: 'transparent', cursor: generatingUat ? 'default' : 'pointer', padding: uatCount > 0 ? 0 : '0 10px',
+                    fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                    color: '#2563EB', whiteSpace: 'nowrap', height: uatCount > 0 ? 'auto' : 28,
+                    borderRadius: 5, display: 'inline-flex', alignItems: 'center', gap: 4,
+                    opacity: generatingUat ? 0.6 : 1,
+                  }}
+                >
+                  {generatingUat ? (
+                    <>
+                      <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} />
+                      Generating...
+                    </>
+                  ) : uatCount > 0 ? (
+                    `${showUatPanel ? 'Hide' : 'View'} →`
+                  ) : (
+                    'Generate UAT →'
+                  )}
+                </button>
               </div>
+
+              {/* D06: UAT Scenarios inline panel */}
+              {showUatPanel && uatScenarios.length > 0 && (
+                <div style={{ padding: '8px 0 0 40px' }}>
+                  {uatScenarios.map((s, i) => (
+                    <div key={s.id || i} style={{
+                      padding: '8px 12px', marginBottom: 6,
+                      background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.08)', borderRadius: 6,
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{
+                          fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 600, color: '#475569',
+                          background: '#F1F5F9', border: '0.75px solid #CBD5E1', borderRadius: 3, padding: '1px 6px',
+                        }}>{s.scenario_key}</span>
+                      </div>
+                      <p style={{ fontSize: 12, fontWeight: 500, color: '#0F172A', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>
+                        {s.title}
+                      </p>
+                      {s.expected_result && (
+                        <p style={{ fontSize: 11, color: '#64748B', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
+                          Expected: {s.expected_result}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
 
             </div>
           </div>
@@ -576,6 +754,16 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
       `}</style>
     </>
   );
+}
+
+// D06: Simple UAT scenario generation from text
+function generateUATFromText(rawText: string, jiraKey: string | null): { title: string; steps: string; expected_result: string }[] {
+  const sentences = rawText.split(/[.!?]+/).filter(s => s.trim().length > 20).slice(0, 8);
+  return sentences.map((sentence, i) => ({
+    title: `Verify: ${sentence.trim().substring(0, 80)}${sentence.trim().length > 80 ? '...' : ''}`,
+    steps: `1. Navigate to the relevant module\n2. Verify the described functionality\n3. Confirm expected behavior`,
+    expected_result: `The system should correctly implement: ${sentence.trim().substring(0, 120)}`,
+  }));
 }
 
 function SectionHeader({ children }: { children: React.ReactNode }) {
