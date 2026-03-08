@@ -188,7 +188,7 @@ export function SidebarProjectNav({
             key={item.path}
             icon={item.icon}
             label={item.label}
-            active={isPathActive(item.path)}
+            isActive={isPathActive(item.path)}
             collapsed={collapsed}
             onClick={() => navigate(`${basePath}/${item.path}`)}
           />
