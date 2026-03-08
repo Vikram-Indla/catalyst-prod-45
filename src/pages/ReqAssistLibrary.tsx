@@ -38,6 +38,9 @@ export default function ReqAssistLibrary() {
   const [draftDrawer, setDraftDrawer] = useState<{ brdId: string; docTitle: string; jiraKey: string | null } | null>(null);
   const [epicCounts, setEpicCounts] = useState<Record<string, number>>({});
   const [pipelineStages, setPipelineStages] = useState<Record<string, string | null>>({});
+  const [parentKeys, setParentKeys] = useState<Record<string, string | null>>({});
+  const [ticketTypes, setTicketTypes] = useState<Record<string, string | null>>({});
+  const [rawTextSources, setRawTextSources] = useState<Record<string, string | null>>({});
 
   const handleGenerateClick = useCallback(async (doc: RADocumentWithArtifacts) => {
     let brdId: string | null = null;
