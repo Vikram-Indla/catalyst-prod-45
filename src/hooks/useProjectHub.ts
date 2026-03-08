@@ -41,7 +41,7 @@ export function useProjects() {
         .order('total_issues', { ascending: false });
 
       if (error) throw new Error(`Failed to fetch projects: ${error.message}`);
-      return ((data ?? []) as ProjectListItem[]).filter((project) => !isExcludedProject(project));
+      return ((data ?? []) as ProjectListItem[]).filter((project) => isAllowedProject(project));
     },
     staleTime: 30_000,
     refetchOnWindowFocus: true,
