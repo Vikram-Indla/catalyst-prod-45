@@ -1,0 +1,46 @@
+
+DROP VIEW IF EXISTS public.ph_backlog_initiatives_view CASCADE;
+
+CREATE VIEW public.ph_backlog_initiatives_view AS
+SELECT i.id,
+    i.initiative_key,
+    i.title,
+    i.description,
+    i.status,
+    i.assignee_id,
+    i.business_owner_id,
+    i.reporter_id,
+    i.department_id,
+    i.target_quarter,
+    i.business_ask_date,
+    i.kickoff_date,
+    i.target_complete,
+    i.progress,
+    i.sort_order,
+    i.risk_count,
+    i.is_archived,
+    i.is_deleted,
+    i.created_at,
+    i.updated_at,
+    i.budget_allocated,
+    i.initiative_type_id,
+    i.on_roadmap,
+    i.roadmap_added_at,
+    i.roadmap_added_by,
+    i.business_value,
+    i.estimated_budget,
+    i.roadmap_priority,
+    i.health_status,
+    i.tags,
+    i.ea_review,
+    i.priority,
+    i.source,
+    i.jira_issue_key,
+    it.key AS initiative_type_key,
+    it.label AS initiative_type_label,
+    it.icon AS initiative_type_icon,
+    it.color_token AS initiative_type_color_token,
+    it.color_hex AS initiative_type_color_hex
+   FROM ph_initiatives i
+     LEFT JOIN initiative_types it ON i.initiative_type_id = it.id
+  ORDER BY i.created_at DESC;
