@@ -104,7 +104,6 @@ export function JiraBacklogTable({ issues, title, showParent = false }: Props) {
               <th className={`${thClass} w-[150px]`} onClick={() => toggleSort('assignee_display_name')}>
                 <span className="flex items-center gap-1">Assignee <SortIcon col="assignee_display_name" /></span>
               </th>
-              <th className={`${thClass} w-[50px]`}>SP</th>
               <th className={`${thClass} w-[100px]`}>Type</th>
               <th className={`${thClass} w-[110px]`} onClick={() => toggleSort('jira_updated_at')}>
                 <span className="flex items-center gap-1">Updated <SortIcon col="jira_updated_at" /></span>
