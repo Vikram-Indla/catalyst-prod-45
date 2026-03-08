@@ -320,29 +320,40 @@ export function WorkItemsTable({
                   {hasSearchOrFilter ? (
                     /* No search results */
                     <div className="flex flex-col items-center justify-center py-16">
-                      <SearchX size={40} className="text-[#CBD5E1] mb-3" />
-                      <p className="text-[14px] font-medium mb-1" style={{ color: '#64748B' }}>No items match your search</p>
+                      <SearchX size={32} style={{ color: '#CBD5E1', marginBottom: 8 }} />
+                      <p style={{ fontSize: 14, fontWeight: 500, color: '#64748B', marginBottom: 4 }}>No items match your search</p>
                       <button
                         onClick={onClearFilters}
-                        className="text-[12px] font-medium hover:underline"
-                        style={{ color: '#2563EB' }}
+                        style={{ fontSize: 12, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}
                       >
                         Clear filters
                       </button>
                     </div>
+                  ) : sourceFilter === 'jira' ? (
+                    /* Jira filter with no Jira items */
+                    <div className="flex flex-col items-center justify-center py-16">
+                      <Link2 size={32} style={{ color: '#CBD5E1', marginBottom: 8 }} />
+                      <p style={{ fontSize: 14, fontWeight: 500, color: '#64748B', marginBottom: 4 }}>No Jira-sourced items in this project</p>
+                      <p style={{ fontSize: 12, color: '#94A3B8' }}>Connect Jira to start syncing.</p>
+                    </div>
+                  ) : sourceFilter === 'catalyst' ? (
+                    /* Catalyst filter with no Catalyst items */
+                    <div className="flex flex-col items-center justify-center py-16">
+                      <FileText size={32} style={{ color: '#CBD5E1', marginBottom: 8 }} />
+                      <p style={{ fontSize: 14, fontWeight: 500, color: '#64748B', marginBottom: 4 }}>All items in this project come from Jira.</p>
+                    </div>
                   ) : (
                     /* No items at all */
                     <div className="flex flex-col items-center justify-center py-16">
-                      <div className="w-16 h-16 rounded-full flex items-center justify-center mb-3" style={{ background: '#F1F5F9' }}>
-                        <FileText size={28} className="text-[#94A3B8]" />
+                      <div className="flex items-center justify-center mb-3" style={{ width: 56, height: 56, borderRadius: '50%', background: '#F1F5F9' }}>
+                        <FileText size={28} style={{ color: '#94A3B8' }} />
                       </div>
-                      <p className="text-[14px] font-semibold mb-1" style={{ color: '#334155' }}>No work items yet</p>
-                      <p className="text-[12px] mb-3" style={{ color: '#94A3B8' }}>Create your first work item to get started</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No work items yet</p>
+                      <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 12 }}>Create your first work item to get started</p>
                       {onCreateClick && (
                         <button
                           onClick={onCreateClick}
-                          className="px-4 py-1.5 text-[12px] font-semibold rounded text-white"
-                          style={{ background: '#2563EB' }}
+                          style={{ padding: '6px 16px', fontSize: 12, fontWeight: 600, borderRadius: 4, color: '#FFFFFF', background: '#2563EB', border: 'none', cursor: 'pointer' }}
                         >
                           Create work item
                         </button>
