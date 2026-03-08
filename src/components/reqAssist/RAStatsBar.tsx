@@ -101,6 +101,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
 
       return {
         brdReady: brdReadyRes.count ?? 0,
+        brdTotal: brdTotalRes.count ?? 0,
         epicDraft: draft,
         epicReviewed: reviewed,
         epicPublished: published,
