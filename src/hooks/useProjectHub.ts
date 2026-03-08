@@ -26,7 +26,7 @@ const QUERY_KEYS = {
 // 1. Fetch all projects from v_project_list view
 // ─────────────────────────────────────────────
 // Only these projects are visible in ProjectHub
-const ALLOWED_PROJECT_KEYS = new Set(['BAU', 'IRP', 'MWR', 'DATA', 'IN', 'TAH']);
+const ALLOWED_PROJECT_KEYS = new Set(['BAU', 'IRP', 'MWR', 'DATA', 'IN', 'TAH', 'ICP']);
 
 const isAllowedProject = (project: Pick<ProjectListItem, 'project_key'>) =>
   ALLOWED_PROJECT_KEYS.has((project.project_key ?? '').trim().toUpperCase());
