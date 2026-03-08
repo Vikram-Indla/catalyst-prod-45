@@ -772,7 +772,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
         }}
       >
-        <Zap size={12} /> Sync to AI
+        <Zap size={12} /> Index to KA
       </button>
     );
   }
