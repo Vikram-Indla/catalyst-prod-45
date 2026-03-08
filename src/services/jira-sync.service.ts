@@ -65,13 +65,13 @@ export const jiraSyncService = {
 
   /** Get current sync status for a project via the aggregation view */
   async getSyncSummary(projectId: string) {
-    const { data, error } = await supabase
-      .from('project_sync_summary' as any)
+    const { data, error } = await (supabase as any)
+      .from('project_sync_summary')
       .select('*')
       .eq('project_id', projectId)
       .maybeSingle();
     if (error) throw error;
-    return data as {
+    return data as unknown as {
       project_id: string;
       project_key: string;
       catalyst_count: number;
