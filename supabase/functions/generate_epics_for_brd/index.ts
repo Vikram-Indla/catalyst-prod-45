@@ -51,10 +51,21 @@ serve(async (req) => {
     });
     const context = JSON.parse(contextResult);
 
-    // Step 2: Generate epics
+    // Step 2: Generate epics — B1: description must derive from raw_text, NOT echo the title
     const epicsResult = await callLovableAI({
-      systemPrompt: `You are an Agile epic decomposer. Break down the BRD requirements into epics with user stories. Each story must have: As a/I want/So that format, Given/When/Then acceptance criteria, story points estimate, and INVEST validation. Return valid JSON: { "epics": [{ "id": string, "title": string, "sourceRef": string, "priority": "P1"|"P2"|"P3", "description": string, "stories": [{ "id": string, "name": string, "points": number, "asA": string, "iWant": string, "soThat": string, "given": string, "when": string, "then": string, "invest": { "I": boolean, "N": boolean, "V": boolean, "E": boolean, "S": boolean, "T": boolean } }] }] }`,
-      userPrompt: JSON.stringify({ title: brdDoc.title, context }),
+      systemPrompt: `You are an Agile epic decomposer. Break down the BRD requirements into epics with user stories.
+
+CRITICAL RULE FOR DESCRIPTIONS:
+For each epic's "description" field, write exactly 2–3 sentences using this structure:
+  Sentence 1: Describe the business problem this epic solves, using specific language from the source document. Do NOT restate or paraphrase the epic title.
+  Sentence 2: State the measurable outcome or success condition (be specific and quantifiable where possible).
+  Sentence 3 (optional): Name any dependency, constraint, or integration requirement.
+The description MUST add information beyond the title. If it echoes the title, it is WRONG.
+
+Each story must have: As a/I want/So that format, Given/When/Then acceptance criteria, story points estimate, and INVEST validation.
+
+Return valid JSON: { "epics": [{ "id": string, "title": string, "sourceRef": string, "priority": "P1"|"P2"|"P3", "description": string, "stories": [{ "id": string, "name": string, "points": number, "asA": string, "iWant": string, "soThat": string, "given": string, "when": string, "then": string, "invest": { "I": boolean, "N": boolean, "V": boolean, "E": boolean, "S": boolean, "T": boolean } }] }] }`,
+      userPrompt: JSON.stringify({ title: brdDoc.title, rawText: brdDoc.raw_text, context }),
       jsonMode: true,
       maxTokens: 16384,
     });

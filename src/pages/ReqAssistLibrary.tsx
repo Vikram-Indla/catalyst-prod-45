@@ -451,26 +451,33 @@ export default function ReqAssistLibrary() {
                             );
                           })()}
                         </td>
-                        {/* PDF */}
-                        <td data-col="pdf" style={{ padding: '8px 12px', overflow: 'hidden' }}>
+                        {/* B2: SOURCE PDF — upload or signed-URL view */}
+                        <td data-col="pdf" style={{ padding: '8px 12px', overflow: 'hidden', textAlign: 'center', width: 80 }}>
                           {doc.pdf_url ? (
                             <button
-                              onClick={(e) => { e.stopPropagation(); setPdfDoc(doc); }}
+                              title={(doc as any).pdf_filename || 'source.pdf'}
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                // Generate signed URL and open in new tab
+                                const path = doc.pdf_url!;
+                                const { data } = await supabase.storage.from('brd-attachments').createSignedUrl(path, 3600);
+                                if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+                              }}
                               style={{
                                 display: 'inline-flex', alignItems: 'center', gap: 4,
                                 padding: '3px 6px', borderRadius: 4,
-                                background: '#FEF2F2', border: 'none', cursor: 'pointer',
-                                fontSize: 11, color: '#DC2626', fontWeight: 500,
-                                fontFamily: "'JetBrains Mono', monospace",
+                                background: 'transparent', border: 'none', cursor: 'pointer',
+                                fontSize: 12, color: '#2563EB', fontWeight: 500,
+                                fontFamily: "'Inter', sans-serif",
                               }}
-                              onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
-                              onMouseLeave={e => (e.currentTarget.style.background = '#FEF2F2')}
+                              onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                              onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                             >
-                              <FileText size={13} strokeWidth={1.5} />
-                              {doc.page_count ? `${doc.page_count}pp` : '—pp'}
+                              <FileText size={14} color="#2563EB" />
+                              PDF
                             </button>
                           ) : (
-                            <span style={{ color: '#CBD5E1', fontSize: 13 }}>—</span>
+                            <PdfUploadCell brdId={brdData_forRow_id(doc)} jiraKey={doc.jira_ticket_key} />
                           )}
                         </td>
                         {/* Status — computed from epicCount + pipeline_stage */}
