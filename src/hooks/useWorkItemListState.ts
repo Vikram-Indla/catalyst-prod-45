@@ -56,12 +56,12 @@ export const DEFAULT_COLUMNS: ColumnDef[] = [
   { key: 'type', label: 'TYPE', field: 'type_name', width: 46, visible: true, sortable: true },
   { key: 'key', label: 'KEY', field: 'item_key', width: 70, visible: true, sortable: true },
   { key: 'summary', label: 'SUMMARY', field: 'title', width: undefined, visible: true, sortable: true },
+  { key: 'source', label: 'SOURCE', field: null, width: 160, visible: true, sortable: false },
   { key: 'status', label: 'STATUS', field: 'status_name', width: 102, visible: true, sortable: true },
-  { key: 'comments', label: 'COMMENTS', field: null, width: 60, visible: true, sortable: false },
-  { key: 'assignee', label: 'ASSIGNEE', field: 'assignee_name', width: 136, visible: true, sortable: true },
-  { key: 'dueDate', label: 'DUE DATE', field: 'due_date', width: 100, visible: true, sortable: true },
+  { key: 'release', label: 'RELEASE', field: 'release_id', width: 100, visible: true, sortable: false },
   { key: 'priority', label: 'PRIORITY', field: 'priority', width: 84, visible: true, sortable: true },
-  { key: 'labels', label: 'LABELS', field: null, width: 74, visible: true, sortable: false },
+  { key: 'assignee', label: 'ASSIGNEE', field: 'assignee_name', width: 136, visible: true, sortable: true },
+  { key: 'dueDate', label: 'UPDATED', field: 'due_date', width: 100, visible: true, sortable: true },
 ];
 
 // ─── Hook ─────────────────────────────────────────────────
