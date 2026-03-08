@@ -1,4 +1,4 @@
-export type InitiativeTypeKey = 'project' | 'enhancement' | 'improvement' | 'entity_integration';
+export type InitiativeTypeKey = 'project' | 'enhancement' | 'improvement' | 'entity_integration' | 'business_request';
 export type HealthStatus = 'on_track' | 'at_risk' | 'off_track';
 export type BusinessValue = 'high' | 'medium' | 'low';
 
