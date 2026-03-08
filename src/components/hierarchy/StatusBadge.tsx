@@ -1,34 +1,75 @@
 /**
- * StatusBadge — Shared filled status badge (Jira-style)
- * Used in WorkItemTree, WorkItemTable, and DetailPanel
+ * StatusBadge — 3-color Jira/Atlassian lozenge system
+ * GREY (#DFE1E6) = not started / waiting
+ * BLUE (#DEEBFF) = in progress / active
+ * GREEN (#E3FCEF) = done / resolved
  */
 
 import React from 'react';
 
-export const STATUS_COLORS: Record<string, string> = {
-  'Backlog': '#64748B',
-  'Todo': '#2563EB',
-  'To Do': '#2563EB',
-  'In Progress': '#0D9488',
-  'In Development': '#0D9488',
-  'In Review': '#D97706',
-  'In QA': '#D97706',
-  'In UAT': '#8B5CF6',
-  'UAT Ready': '#8B5CF6',
-  'Ready for QA': '#D946EF',
-  'Ready for Production': '#F97316',
-  'In BETA': '#F97316',
-  'Portfolio Review': '#6366F1',
-  'Awaiting Info': '#D97706',
-  'Done': '#16A34A',
-  'Closed': '#475569',
-  'Resolved': '#475569',
-  'Blocked': '#DC2626',
-  'Deferred for INT': '#94A3B8',
+type StatusCategory = 'grey' | 'blue' | 'green';
+
+const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
+  'Backlog': 'grey',
+  'To Do': 'grey',
+  'Todo': 'grey',
+  'Ready for QA': 'grey',
+  'Ready For QA': 'grey',
+  'Awaiting Info': 'grey',
+  'Awaiting Information': 'grey',
+  'Blocked': 'grey',
+  'Deferred': 'grey',
+  'Deferred for INT': 'grey',
+  'Portfolio Review': 'grey',
+  'In Requirements': 'grey',
+  'On Hold': 'grey',
+  'Reopened': 'grey',
+  'New': 'grey',
+
+  'In Progress': 'blue',
+  'In Development': 'blue',
+  'In Review': 'blue',
+  'In QA': 'blue',
+  'In UAT': 'blue',
+  'UAT Ready': 'blue',
+  'In BETA': 'blue',
+  'Beta Ready': 'blue',
+  'In Testing': 'blue',
+  'Code Review': 'blue',
+  'In Analysis': 'blue',
+  'In Design': 'blue',
+  'Selected for Development': 'blue',
+
+  'Done': 'green',
+  'Closed': 'green',
+  'Resolved': 'green',
+  'Ready for Production': 'green',
+  'In Production': 'green',
+  'Released': 'green',
+  'Verified': 'green',
+  'Accepted': 'green',
+  'Deployed': 'green',
 };
 
+const STATUS_STYLES: Record<StatusCategory, { background: string; color: string }> = {
+  grey:  { background: '#DFE1E6', color: '#42526E' },
+  blue:  { background: '#DEEBFF', color: '#0747A6' },
+  green: { background: '#E3FCEF', color: '#006644' },
+};
+
+export function getStatusCategory(status: string): StatusCategory {
+  return STATUS_CATEGORY_MAP[status] || 'grey';
+}
+
+export function getStatusStyle(status: string) {
+  return STATUS_STYLES[getStatusCategory(status)];
+}
+
+/** @deprecated Use getStatusStyle instead */
+export const STATUS_COLORS: Record<string, string> = {};
+/** @deprecated Use getStatusStyle instead */
 export function getStatusColor(status: string): string {
-  return STATUS_COLORS[status] || '#64748B';
+  return getStatusStyle(status).background;
 }
 
 interface StatusBadgeProps {
@@ -38,8 +79,8 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps) {
-  const color = getStatusColor(status);
-  const h = mini ? 18 : 24;
+  const style = getStatusStyle(status);
+  const h = mini ? 20 : 24;
 
   return (
     <button
@@ -47,9 +88,9 @@ export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps)
       style={{
         height: h,
         padding: mini ? '0 6px' : '0 8px',
-        borderRadius: 4,
-        background: color,
-        color: '#FFFFFF',
+        borderRadius: 3,
+        background: style.background,
+        color: style.color,
         border: 'none',
         cursor: onClick ? 'pointer' : 'default',
         fontFamily: "'Inter', sans-serif",
@@ -61,11 +102,12 @@ export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps)
         alignItems: 'center',
         gap: 4,
         whiteSpace: 'nowrap' as const,
+        lineHeight: 1,
         flexShrink: 0,
       }}
     >
       {status}
-      {onClick && !mini && <span style={{ opacity: 0.7, fontSize: 8 }}>▾</span>}
+      {onClick && !mini && <span style={{ opacity: 0.6, fontSize: 8, color: style.color }}>▾</span>}
     </button>
   );
 }

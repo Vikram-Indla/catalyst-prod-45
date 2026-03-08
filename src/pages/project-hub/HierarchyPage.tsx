@@ -187,7 +187,7 @@ export default function HierarchyPage() {
       {/* PAGE HEADER */}
       <div style={{ padding: '20px 24px 16px', borderBottom: '1px solid #E2E8F0', background: '#FFFFFF' }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.025em', lineHeight: 1.2 }}>
-          All Work Items
+         Work Item Hierarchy
         </h1>
         <p style={{ fontSize: 13, color: '#64748B', margin: '4px 0 0' }}>
           {projectKey?.toUpperCase() || 'Project'} · {totalItems} items · {completedItems} completed
