@@ -184,9 +184,14 @@ export function InitiativeTable({
         </button>
       ),
     }),
+    col.display({
+      id: 'type_icon', size: 28, minSize: 28, maxSize: 28, enableResizing: false,
+      header: () => null,
+      cell: ({ row }) => <TypeIconCell typeKey={row.original.initiative_type_key} />,
+    }),
     col.accessor('initiative_key', {
-      id: 'initiative_key', size: 110, minSize: 90, header: 'ID',
-      cell: ({ getValue, row }) => <IDCell value={getValue()} typeKey={row.original.initiative_type_key} />,
+      id: 'initiative_key', size: 90, minSize: 72, header: 'ID',
+      cell: ({ getValue }) => <IDCell value={getValue()} />,
     }),
     col.accessor('title', {
       id: 'title', size: 240, minSize: 200, header: 'Title',
@@ -200,10 +205,6 @@ export function InitiativeTable({
     col.accessor('status', {
       id: 'status', size: 190, minSize: 170, header: 'Status',
       cell: ({ getValue }) => <StatusCell status={getValue()} />,
-    }),
-    col.display({
-      id: 'type', size: 120, minSize: 100, header: 'Type',
-      cell: ({ row }) => <InitiativeTypeBadge typeKey={row.original.initiative_type_key} />,
     }),
     col.accessor('computed_score', {
       id: 'priority', size: 110, minSize: 90, header: 'Priority',
