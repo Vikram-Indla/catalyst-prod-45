@@ -88,6 +88,14 @@
   --cp-lozenge-blue-text: #0747A6;
   --cp-lozenge-green-bg: #E3FCEF;
   --cp-lozenge-green-text: #006644;
+
+  /* ═══ Source Badge Tokens ═══ */
+  --src-catalyst-bg: #EFF6FF;
+  --src-catalyst-text: #2563EB;
+  --src-catalyst-border: #BFDBFE;
+  --src-jira-bg: #FFF7ED;
+  --src-jira-text: #9A3412;
+  --src-jira-border: #FED7AA;
   --cp-font-heading: 'Sora', sans-serif;
   --cp-font-body: 'Inter', sans-serif;
   --cp-font-mono: 'JetBrains Mono', monospace;
