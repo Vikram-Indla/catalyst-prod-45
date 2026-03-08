@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, FileText, Zap, BookOpen, TestTube, Copy, Check, Paperclip, ArrowDownToLine, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, FileText, Zap, BookOpen, FlaskConical, Copy, Check, Paperclip, ArrowDownToLine, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { formatTimestamp } from '@/lib/formatTimestamp';
@@ -45,7 +45,6 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
       const jiraKey = doc.jira_ticket_key;
       if (!jiraKey) return;
 
-      // Step 1 — resolve brd_id via jira_key
       const { data: brdRow } = await (supabase as any)
         .from('brd_documents')
         .select('id, pipeline_stage, raw_text')
@@ -57,27 +56,13 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         return;
       }
 
-      // Step 2 — count epics
-      const { count: epicCount } = await (supabase as any)
-        .from('brd_epics')
-        .select('id', { count: 'exact', head: true })
-        .eq('brd_id', brdRow.id);
+      const [epicRes, pubRes, wikiRes] = await Promise.all([
+        (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdRow.id),
+        (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdRow.id).not('ra_tag', 'is', null),
+        (supabase as any).from('kb_embeddings').select('id', { count: 'exact', head: true }).eq('source_id', brdRow.id),
+      ]);
 
-      // Step 2b — count published epics (ra_tag IS NOT NULL)
-      const { count: publishedCount } = await (supabase as any)
-        .from('brd_epics')
-        .select('id', { count: 'exact', head: true })
-        .eq('brd_id', brdRow.id)
-        .not('ra_tag', 'is', null);
-
-      // Step 3 — count wiki chunks
-      const { count: wikiCount } = await (supabase as any)
-        .from('kb_embeddings')
-        .select('id', { count: 'exact', head: true })
-        .eq('source_id', brdRow.id);
-
-      // Fallback wiki count
-      let finalWikiCount = wikiCount ?? 0;
+      let finalWikiCount = wikiRes.count ?? 0;
       if (finalWikiCount === 0 && doc.wikihub_chunk_count) {
         finalWikiCount = doc.wikihub_chunk_count;
       }
@@ -86,9 +71,9 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         id: brdRow.id,
         pipeline_stage: brdRow.pipeline_stage,
         raw_text: brdRow.raw_text,
-        epicCount: epicCount ?? 0,
+        epicCount: epicRes.count ?? 0,
         wikiCount: finalWikiCount,
-        publishedCount: publishedCount ?? 0,
+        publishedCount: pubRes.count ?? 0,
       });
     };
     load();
@@ -102,41 +87,33 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
     }
   };
 
-  // Pipeline stepper logic
+  // ── FIX 2: Pipeline stepper logic ──
   const stage = brdData.pipeline_stage;
-  const steps = [
-    {
-      label: 'Imported',
-      state: 'complete' as const, // always complete if ra_documents row exists
-    },
+  const { epicCount, wikiCount, publishedCount } = brdData;
+
+  const stepsRaw: { label: string; state: 'complete' | 'active' | 'pending' }[] = [
+    { label: 'Imported', state: 'complete' },
     {
       label: 'Processed',
       state: (stage && ['extract', 'process', 'validate', 'distribute', 'complete'].includes(stage))
-        ? 'complete' as const : (stage === 'intake' ? 'active' as const : 'pending' as const),
+        ? 'complete' : 'active', // intake = active, no pending possible
     },
     {
       label: 'Indexed',
-      state: (stage && ['validate', 'distribute', 'complete'].includes(stage)) || brdData.wikiCount > 0
-        ? 'complete' as const : 'pending' as const,
+      state: (wikiCount > 0 || (stage && ['validate', 'distribute', 'complete'].includes(stage)))
+        ? 'complete' : (stage === 'process' && wikiCount === 0) ? 'active' : 'pending',
     },
     {
       label: 'Epics',
-      state: brdData.epicCount > 0 ? 'complete' as const : 'pending' as const,
+      state: epicCount > 0 ? 'complete' : (stage === 'complete' && epicCount === 0) ? 'active' : 'pending',
     },
     {
       label: 'Published',
-      state: brdData.epicCount > 0 && brdData.publishedCount > 0 ? 'complete' as const : 'pending' as const,
+      state: (epicCount > 0 && publishedCount > 0) ? 'complete' : (epicCount > 0 && publishedCount === 0) ? 'active' : 'pending',
     },
   ];
 
-  // Determine active step (first pending becomes active)
-  const activeIdx = steps.findIndex(s => s.state === 'pending');
-  const computedSteps = steps.map((s, i) => ({
-    ...s,
-    state: s.state === 'pending' && i === activeIdx ? 'active' as const : s.state,
-  }));
-
-  // Status lozenge from pipeline_stage
+  // ── FIX 1: Status lozenge from pipeline_stage — V12 3-color guardrail ONLY ──
   const getStageLozenge = () => {
     if (!stage) return { bg: '#DFE1E6', color: '#253858', label: 'PENDING' };
     if (stage === 'complete') return { bg: '#E3FCEF', color: '#006644', label: 'COMPLETE' };
@@ -146,7 +123,14 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
   };
   const lozenge = getStageLozenge();
 
-  const description = (doc as any).description || doc.content_raw || null;
+  // ── FIX 3: Description fallback chain ──
+  const description =
+    (doc as any).description
+    || (doc as any).summary
+    || (doc as any).body
+    || (doc as any).content_raw
+    || (brdData.raw_text ? brdData.raw_text.substring(0, 300) + (brdData.raw_text.length > 300 ? '…' : '') : null)
+    || null;
   const descTruncated = description && description.length > 300;
 
   return (
@@ -159,9 +143,10 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         boxShadow: '-4px 0 24px rgba(15,23,42,0.08)',
         animation: 'ra-slide-left 200ms ease-out',
       }}>
-        {/* ── HEADER ── */}
+        {/* ── FIX 6: HEADER ── */}
         <div style={{ padding: '16px 20px 14px', borderBottom: '0.75px solid rgba(15,23,42,0.10)', flexShrink: 0 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          {/* Row 1: Jira chip + close */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <a
               href={doc.jira_ticket_url || '#'}
               target="_blank"
@@ -177,60 +162,73 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               </span>
               {doc.jira_ticket_url && <ExternalLink size={11} color="#2563EB" />}
             </a>
-            <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 4 }}>
-              <X size={18} color="#64748B" />
+            <button onClick={onClose} style={{
+              width: 28, height: 28, border: 'none', borderRadius: 6,
+              background: 'transparent', cursor: 'pointer', display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+            }}>
+              <X size={16} color="#64748B" />
             </button>
           </div>
+          {/* Row 2: Title */}
           <h3 style={{
-            fontSize: 17, fontWeight: 700, color: '#0F172A', margin: '6px 0 0', fontFamily: "'Sora', sans-serif",
+            fontSize: 18, fontWeight: 700, color: '#0F172A', margin: '10px 0 0', fontFamily: "'Sora', sans-serif",
+            lineHeight: 1.3,
             display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden',
           }}>{doc.title}</h3>
-          <div style={{ marginTop: 8 }}>
+          {/* Row 3: Status + meta */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
             <span style={{
-              display: 'inline-block', padding: '0 6px', borderRadius: 3, height: 20,
+              display: 'inline-flex', alignItems: 'center', padding: '0 6px', borderRadius: 3, height: 20,
               lineHeight: '20px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
               background: lozenge.bg, color: lozenge.color, fontFamily: "'Inter', sans-serif",
             }}>{lozenge.label}</span>
+            <span style={{ width: 3, height: 3, borderRadius: '50%', background: '#CBD5E1', flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
+              Imported {formatTimestamp(doc.created_at)}
+            </span>
           </div>
         </div>
 
         {/* ── BODY (scrollable) ── */}
         <div style={{ flex: 1, overflowY: 'auto' }}>
 
-          {/* ── PIPELINE STEPPER ── */}
+          {/* ── FIX 2: PIPELINE STEPPER ── */}
           <div style={{ padding: '16px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
             <div style={{
-              background: '#FAFAFA', border: '0.75px solid rgba(15,23,42,0.08)', borderRadius: 8,
-              padding: '14px 20px',
+              background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.08)', borderRadius: 8,
+              padding: '14px 16px',
             }}>
               <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                {computedSteps.map((step, i) => (
+                {stepsRaw.map((step, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                       <div style={{
-                        width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: step.state === 'complete' ? '#16A34A' : step.state === 'active' ? '#2563EB' : 'transparent',
+                        width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: step.state === 'complete' ? '#16A34A' : step.state === 'active' ? '#2563EB' : '#FFFFFF',
                         border: step.state === 'pending' ? '1.5px solid #CBD5E1' : 'none',
                       }}>
                         {step.state === 'complete' && (
                           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         )}
                         {step.state === 'active' && (
-                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'white' }} />
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'white' }} />
                         )}
                       </div>
                       <span style={{
                         fontSize: 11, textAlign: 'center', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif",
-                        fontWeight: step.state === 'active' ? 600 : 500,
+                        fontWeight: step.state === 'active' ? 600 : step.state === 'complete' ? 500 : 400,
                         color: step.state === 'complete' ? '#16A34A' : step.state === 'active' ? '#2563EB' : '#94A3B8',
                       }}>{step.label}</span>
                     </div>
-                    {i < computedSteps.length - 1 && (
+                    {i < stepsRaw.length - 1 && (
                       <div style={{
-                        flex: 1, height: 0, marginTop: -16,
-                        borderTop: step.state === 'complete' && computedSteps[i + 1].state !== 'pending'
-                          ? '1.5px solid #16A34A'
-                          : '1.5px dashed #E5E7EB',
+                        flex: 1, height: 0, marginTop: -18,
+                        borderTop: step.state === 'complete' && stepsRaw[i + 1].state === 'complete'
+                          ? '2px solid #16A34A'
+                          : step.state === 'complete'
+                            ? '2px dashed #CBD5E1'
+                            : '2px dashed #E5E7EB',
                         marginInline: 4,
                       }} />
                     )}
@@ -263,6 +261,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               <MetaRow label="Title">
                 <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>{doc.title}</span>
               </MetaRow>
+              {/* FIX 3: Description with fallback chain */}
               <MetaRow label="Description">
                 {description ? (
                   <div style={{ flex: 1 }}>
@@ -270,16 +269,17 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                       background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.08)', borderRadius: 6,
                       padding: '10px 12px', fontSize: 13, color: '#374151', lineHeight: 1.6,
                       fontFamily: "'Inter', sans-serif",
-                      display: '-webkit-box', WebkitLineClamp: descExpanded ? 999 : 4,
-                      WebkitBoxOrient: 'vertical' as any, overflow: 'hidden',
+                      maxHeight: descExpanded ? 'none' : 100, overflow: 'hidden',
+                      display: descExpanded ? 'block' : '-webkit-box',
+                      WebkitLineClamp: descExpanded ? undefined : 4,
+                      WebkitBoxOrient: descExpanded ? undefined : 'vertical' as any,
                     }}>
                       {description}
                     </div>
                     {descTruncated && (
                       <button onClick={() => setDescExpanded(!descExpanded)} style={{
                         border: 'none', background: 'transparent', cursor: 'pointer', padding: '4px 0',
-                        fontSize: 12, fontWeight: 500, color: '#2563EB', fontFamily: "'Inter', sans-serif",
-                        display: 'flex', alignItems: 'center', gap: 4,
+                        fontSize: 11, fontWeight: 500, color: '#2563EB', fontFamily: "'Inter', sans-serif",
                       }}>
                         {descExpanded ? 'Show less' : 'Show more'}
                       </button>
@@ -389,7 +389,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
             </div>
           </div>
 
-          {/* ── GENERATED ARTIFACTS ── */}
+          {/* ── FIX 4 & 5: GENERATED ARTIFACTS ── */}
           <div style={{ padding: '16px 20px' }}>
             <SectionHeader>Generated Artifacts</SectionHeader>
             <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column' }}>
@@ -399,23 +399,24 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Zap size={16} color="#7C3AED" />
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>Epics</span>
-                {brdData.epicCount > 0 ? (
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif", flexShrink: 0, minWidth: 40 }}>Epics</span>
+                {epicCount > 0 ? (
                   <span style={{
-                    display: 'inline-flex', alignItems: 'center', padding: '1px 8px', borderRadius: 10,
-                    background: '#7C3AED', color: 'white', fontSize: 11, fontWeight: 700,
+                    display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 10,
+                    background: '#F5F3FF', border: '0.75px solid #DDD6FE',
+                    fontSize: 11, fontWeight: 700, color: '#6D28D9',
                     fontFamily: "'Inter', sans-serif",
-                  }}>{brdData.epicCount} generated</span>
+                  }}>{epicCount} generated</span>
                 ) : (
                   <span style={{
-                    display: 'inline-flex', alignItems: 'center', padding: '1px 8px', borderRadius: 10,
-                    background: '#F1F5F9', color: '#64748B', border: '0.75px solid rgba(15,23,42,0.12)',
+                    display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 10,
+                    background: '#F1F5F9', color: '#94A3B8', border: '0.75px solid rgba(15,23,42,0.12)',
                     fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
                   }}>None yet</span>
                 )}
                 <button
                   onClick={() => {
-                    if (brdData.epicCount > 0 && brdData.id && onViewDrafts) {
+                    if (epicCount > 0 && brdData.id && onViewDrafts) {
                       onClose();
                       onViewDrafts(brdData.id);
                     } else {
@@ -425,10 +426,10 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   style={{
                     marginLeft: 'auto', border: 'none', background: 'transparent', cursor: 'pointer', padding: 0,
                     fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
-                    color: brdData.epicCount > 0 ? '#7C3AED' : '#2563EB',
+                    color: epicCount > 0 ? '#7C3AED' : '#2563EB', whiteSpace: 'nowrap',
                   }}
                 >
-                  {brdData.epicCount > 0 ? 'View Drafts →' : 'Generate Epics →'}
+                  {epicCount > 0 ? 'View Drafts →' : 'Generate Epics →'}
                 </button>
               </div>
 
@@ -437,23 +438,24 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: '#F0FDFA', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <BookOpen size={16} color="#0D9488" />
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>Wiki Chunks</span>
-                {brdData.wikiCount > 0 ? (
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif", flexShrink: 0, minWidth: 80 }}>Wiki Chunks</span>
+                {wikiCount > 0 ? (
                   <span style={{
-                    display: 'inline-flex', alignItems: 'center', padding: '1px 8px', borderRadius: 10,
-                    background: '#CCFBF1', color: '#0F766E', border: '0.75px solid #99F6E4',
-                    fontSize: 11, fontWeight: 600, fontFamily: "'Inter', sans-serif",
-                  }}>{brdData.wikiCount} indexed</span>
+                    display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 10,
+                    background: '#F0FDFA', border: '0.75px solid #99F6E4',
+                    fontSize: 11, fontWeight: 700, color: '#0F766E',
+                    fontFamily: "'Inter', sans-serif",
+                  }}>{wikiCount} indexed</span>
                 ) : (
                   <span style={{
-                    display: 'inline-flex', alignItems: 'center', padding: '1px 8px', borderRadius: 10,
-                    background: '#F1F5F9', color: '#64748B', border: '0.75px solid rgba(15,23,42,0.12)',
+                    display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 10,
+                    background: '#F1F5F9', color: '#94A3B8', border: '0.75px solid rgba(15,23,42,0.12)',
                     fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
                   }}>Not indexed</span>
                 )}
                 <button
                   onClick={() => {
-                    if (brdData.wikiCount > 0) {
+                    if (wikiCount > 0) {
                       navigate(`/wiki?source=${doc.jira_ticket_key}`);
                     } else if (onSyncKb) {
                       onSyncKb(doc.id);
@@ -462,26 +464,32 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   style={{
                     marginLeft: 'auto', border: 'none', background: 'transparent', cursor: 'pointer', padding: 0,
                     fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
-                    color: brdData.wikiCount > 0 ? '#0D9488' : '#2563EB',
+                    color: wikiCount > 0 ? '#0D9488' : '#2563EB', whiteSpace: 'nowrap',
                   }}
                 >
-                  {brdData.wikiCount > 0 ? 'View in WikiHub →' : 'Sync to KB →'}
+                  {wikiCount > 0 ? 'View in WikiHub →' : 'Sync to KB →'}
                 </button>
               </div>
 
-              {/* UAT Cases Row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0' }}>
+              {/* FIX 5: UAT Cases Row — single line, no wrap */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0',
+                minHeight: 40, flexWrap: 'nowrap',
+              }}>
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <TestTube size={16} color="#64748B" />
+                  <FlaskConical size={15} color="#94A3B8" />
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>UAT Cases</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0, minWidth: 70 }}>UAT Cases</span>
                 <span style={{
-                  display: 'inline-flex', alignItems: 'center', padding: '1px 8px', borderRadius: 10,
-                  background: '#F1F5F9', color: '#94A3B8',
-                  fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                  display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 10,
+                  background: '#F1F5F9', color: '#94A3B8', border: '0.75px solid rgba(15,23,42,0.12)',
+                  fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0,
                 }}>Not generated</span>
-                <span style={{ marginLeft: 'auto', fontSize: 11, color: '#CBD5E1', fontFamily: "'Inter', sans-serif" }}>
-                  UAT generation coming in a future release
+                <span style={{
+                  marginLeft: 'auto', fontSize: 11, color: '#CBD5E1', fontFamily: "'Inter', sans-serif",
+                  whiteSpace: 'nowrap',
+                }}>
+                  Planned for future release
                 </span>
               </div>
 
@@ -491,7 +499,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
 
         {/* ── FOOTER CTA ── */}
         <div style={{ padding: '14px 20px', borderTop: '0.75px solid rgba(15,23,42,0.10)', flexShrink: 0, background: '#FFFFFF' }}>
-          {brdData.epicCount === 0 ? (
+          {epicCount === 0 ? (
             <button onClick={() => onGenerate('epics')} style={{
               width: '100%', height: 40, fontSize: 14, fontWeight: 600, borderRadius: 6,
               border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
@@ -517,14 +525,15 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
   );
 }
 
-/* ── Helpers ── */
+/* ── FIX 7: Section header — lighter color #94A3B8 ── */
 
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
     <span style={{
-      fontSize: 11, fontWeight: 600, color: '#64748B',
+      fontSize: 11, fontWeight: 600, color: '#94A3B8',
       textTransform: 'uppercase', letterSpacing: '0.06em',
       display: 'block', fontFamily: "'Inter', sans-serif",
+      marginBottom: 0,
     }}>{children}</span>
   );
 }
