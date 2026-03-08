@@ -14,6 +14,7 @@ import KanbanColumn from './KanbanColumn';
 import KanbanCardComponent from './KanbanCard';
 import BoardQuickFilters from './BoardQuickFilters';
 import BoardSettingsDrawer from './BoardSettingsDrawer';
+import { WorkItemDetailModal } from '@/components/project-hub/work-items/WorkItemDetailModal';
 import type { KanbanCard, BoardColumn } from '@/types/board';
 
 /* Board accent colors — use board.color from DB, fallback map */
