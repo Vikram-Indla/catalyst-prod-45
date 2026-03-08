@@ -363,61 +363,82 @@ export default function BoardCanvasPage() {
                   <span style={{ transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', display: 'flex' }}>
                     <ChevronDown size={14} color="#94A3B8" />
                   </span>
-                  {/* Release pill in swimlane header */}
-                  {lane.id !== 'default' && (
-                    <span style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 5,
-                      height: 20, padding: '0 8px', borderRadius: 10,
-                      background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.08)',
-                    }}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0D9488' }} />
-                      <span style={{
-                        fontSize: 12, fontWeight: 600, color: '#0F172A',
-                        fontFamily: "'JetBrains Mono', monospace",
-                      }}>{lane.name}</span>
-                    </span>
-                  )}
-                  {lane.id === 'default' && (
+                {/* Release pill in swimlane header */}
+                {lane.id !== 'default' && (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                    height: 20, padding: '0 8px', borderRadius: 10,
+                    background: '#F1F5F9', border: '0.75px solid rgba(15,23,42,0.10)',
+                  }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0D9488' }} />
                     <span style={{
                       fontSize: 12, fontWeight: 600, color: '#0F172A',
                       fontFamily: "'JetBrains Mono', monospace",
                     }}>{lane.name}</span>
-                  )}
+                  </span>
+                )}
+                {lane.id === 'default' && (
                   <span style={{
-                    fontSize: 10.5, fontWeight: 600, padding: '1px 6px', borderRadius: 8,
-                    background: '#F8FAFC', color: '#94A3B8',
+                    fontSize: 12, fontWeight: 600, color: '#0F172A',
                     fontFamily: "'JetBrains Mono', monospace",
-                  }}>{lane.count} issues</span>
-                  {/* Progress bar */}
-                  {lane.count > 0 && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}>
+                  }}>{lane.name}</span>
+                )}
+                <span style={{
+                  fontSize: 10.5, fontWeight: 600, padding: '1px 6px', borderRadius: 8,
+                  background: '#F1F5F9', color: '#94A3B8',
+                  fontFamily: "'JetBrains Mono', monospace",
+                }}>{lane.count} {lane.count === 1 ? 'issue' : 'issues'}</span>
+                {/* Progress bar */}
+                {lane.count > 0 && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}>
+                    <div style={{
+                      width: 64, height: 5, background: '#F1F5F9',
+                      borderRadius: 3, overflow: 'hidden',
+                    }}>
                       <div style={{
-                        width: 64, height: 5, background: '#F8FAFC',
-                        borderRadius: 3, overflow: 'hidden',
-                      }}>
-                        <div style={{
-                          width: `${pct}%`, height: '100%',
-                          background: '#16A34A', borderRadius: 3,
-                          transition: 'width 300ms ease',
-                        }} />
-                      </div>
-                      <span style={{ fontSize: 11, fontWeight: 500, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
-                        {pct}%
-                      </span>
+                        width: `${pct}%`, height: '100%',
+                        background: '#16A34A', borderRadius: 3,
+                        transition: 'width 300ms ease',
+                      }} />
                     </div>
-                  )}
-                </button>
-
-                {!collapsed && (
-                  <div style={{
-                    display: 'flex', gap: 12, padding: '0 12px 12px',
-                    overflowX: 'auto',
-                  }}>
-                    {columns.map(col => (
-                      <KanbanColumn key={col.id} column={col} cards={getCardsForSwimlane(lane.id, col.id)} />
-                    ))}
+                    <span style={{ fontSize: 11, fontWeight: 500, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
+                      {pct}%
+                    </span>
                   </div>
                 )}
+              </button>
+
+              {!collapsed && (
+                <div style={{
+                  display: 'flex', gap: 12, padding: '12px 12px',
+                  overflowX: 'auto',
+                }}>
+                  {columns.map(col => {
+                    const laneCards = getCardsForSwimlane(lane.id, col.id);
+                    return (
+                      <div key={col.id} style={{ width: 272, flexShrink: 0 }}>
+                        {/* Column sub-header inside swimlane */}
+                        <div style={{
+                          display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8,
+                        }}>
+                          <span style={{
+                            fontSize: 11, fontWeight: 650, textTransform: 'uppercase' as const,
+                            color: col.isDone ? '#16A34A' : '#64748B',
+                            fontFamily: "'Inter', sans-serif", letterSpacing: '0.05em',
+                          }}>{col.name}</span>
+                          <span style={{
+                            fontSize: 10, fontWeight: 600, padding: '1px 5px', borderRadius: 6,
+                            background: col.isDone ? '#F0FDF4' : '#F8FAFC',
+                            color: col.isDone ? '#16A34A' : '#94A3B8',
+                            fontFamily: "'JetBrains Mono', monospace",
+                          }}>{laneCards.length}</span>
+                        </div>
+                        <KanbanColumn column={col} cards={laneCards} />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
               </div>
             );
           })}
