@@ -1,5 +1,4 @@
 import type { GenerationSlotState } from '@/types/reqAssistV2';
-import type { DocumentStatus } from '@/types/reqAssistV2';
 
 interface Props {
   slots: { brd: GenerationSlotState; epics: GenerationSlotState; uat: GenerationSlotState; wiki: GenerationSlotState };
@@ -7,10 +6,12 @@ interface Props {
   isProcessing?: boolean;
   etaMinutes?: number;
   docStatus?: string;
+  epicCount?: number;
+  pipelineStage?: string | null;
 }
 
 /* D08: Map status to progress percentage */
-const STATUS_PROGRESS: Record<string, number> = {
+const STAGE_PROGRESS: Record<string, number> = {
   pending: 0,
   intake: 10,
   extract: 30,
@@ -23,35 +24,38 @@ const STATUS_PROGRESS: Record<string, number> = {
   failed: 100,
 };
 
-export default function RAGenerationBar({ slots, artifactCounts, isProcessing, etaMinutes, docStatus }: Props) {
-  const slotValues: GenerationSlotState[] = [slots.brd, slots.epics, slots.uat, slots.wiki];
-  const allPending = slotValues.every(s => s === 'pending');
+export default function RAGenerationBar({ slots, artifactCounts, isProcessing, etaMinutes, docStatus, epicCount = 0, pipelineStage }: Props) {
+  const ps = pipelineStage ?? docStatus ?? 'pending';
 
-  const summaryParts: string[] = [];
-  if (artifactCounts) {
-    if (artifactCounts.epics > 0) summaryParts.push(`E·${artifactCounts.epics}`);
-    if (artifactCounts.uat > 0) summaryParts.push(`U·${artifactCounts.uat}`);
-  }
+  // If epicCount > 0 → complete regardless of pipeline_stage
+  const isComplete = epicCount > 0 || ps === 'ready' || ps === 'complete';
+  const isFailed = ps === 'failed';
+  const pct = epicCount > 0 ? 100 : (STAGE_PROGRESS[ps] ?? 0);
 
-  const status = docStatus ?? 'pending';
-  const pct = STATUS_PROGRESS[status] ?? 0;
-  const isComplete = status === 'ready' || status === 'complete';
-  const isFailed = status === 'failed';
-
-  /* D07: Replace "not started" with em-dash */
-  const labelColor = isProcessing ? '#2563EB' : '#64748B';
-  const labelText = isProcessing
-    ? `~${etaMinutes ?? 4}m left`
-    : isComplete
-      ? (summaryParts.length > 0 ? summaryParts.join(' ') : 'Complete')
-      : allPending
-        ? ''
-        : summaryParts.length > 0
-          ? summaryParts.join(' ')
-          : '';
-
-  /* D08: Progress bar color */
   const barColor = isComplete ? '#16A34A' : isFailed ? '#DC2626' : '#2563EB';
+
+  let labelText = '';
+  let labelColor = '#64748B';
+
+  if (isProcessing) {
+    labelText = `~${etaMinutes ?? 4}m left`;
+    labelColor = '#2563EB';
+  } else if (isComplete) {
+    if (epicCount > 0) {
+      labelText = 'Complete';
+      labelColor = '#16A34A';
+    } else {
+      const parts: string[] = [];
+      if (artifactCounts?.epics) parts.push(`E·${artifactCounts.epics}`);
+      if (artifactCounts?.uat) parts.push(`U·${artifactCounts.uat}`);
+      labelText = parts.length > 0 ? parts.join(' ') : 'Complete';
+      labelColor = '#16A34A';
+    }
+  } else if (isFailed) {
+    labelText = 'Failed';
+    labelColor = '#DC2626';
+  }
+  // intake + epicCount=0 → empty bar, show em-dash
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, maxWidth: 160 }}>
@@ -64,9 +68,9 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: labelColor, whiteSpace: 'nowrap' }}>
           {labelText}
         </span>
-      ) : allPending ? (
+      ) : (
         <span style={{ color: '#94A3B8', fontSize: 13 }}>—</span>
-      ) : null}
+      )}
     </div>
   );
 }

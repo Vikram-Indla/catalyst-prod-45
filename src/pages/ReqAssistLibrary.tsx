@@ -37,6 +37,7 @@ export default function ReqAssistLibrary() {
   const [regenConfirm, setRegenConfirm] = useState<{ doc: RADocumentWithArtifacts; count: number; brdId: string; generatedAt: string | null } | null>(null);
   const [draftDrawer, setDraftDrawer] = useState<{ brdId: string; docTitle: string; jiraKey: string | null } | null>(null);
   const [epicCounts, setEpicCounts] = useState<Record<string, number>>({});
+  const [pipelineStages, setPipelineStages] = useState<Record<string, string | null>>({});
 
   const handleGenerateClick = useCallback(async (doc: RADocumentWithArtifacts) => {
     let brdId: string | null = null;
@@ -99,13 +100,16 @@ export default function ReqAssistLibrary() {
     if (!jiraKeys.length) return;
     fetchDocumentEpicCounts(jiraKeys).then(countsMap => {
       const counts: Record<string, number> = {};
+      const stages: Record<string, string | null> = {};
       for (const doc of documents) {
         const jk = (doc as any).jira_ticket_key;
-        if (jk && countsMap[jk]?.epicCount > 0) {
+        if (jk && countsMap[jk]) {
           counts[doc.id] = countsMap[jk].epicCount;
+          stages[doc.id] = countsMap[jk].pipelineStage;
         }
       }
       setEpicCounts(counts);
+      setPipelineStages(stages);
     });
   }, [documents]);
 
@@ -465,9 +469,9 @@ export default function ReqAssistLibrary() {
                             <span style={{ color: '#CBD5E1', fontSize: 13 }}>—</span>
                           )}
                         </td>
-                        {/* Status */}
+                        {/* Status — computed from epicCount + pipeline_stage */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
-                          <StatusBadge status={doc.status} />
+                          <StatusBadge status={doc.status} epicCount={epicCounts[doc.id] || 0} pipelineStage={pipelineStages[doc.id] ?? null} />
                         </td>
                         {/* Generation */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden', maxWidth: 160 }}>
@@ -477,6 +481,8 @@ export default function ReqAssistLibrary() {
                             isProcessing={isProcessingRow}
                             etaMinutes={processingJob ? Math.ceil((processingJob.eta_seconds ?? 240) / 60) : undefined}
                             docStatus={doc.status}
+                            epicCount={epicCounts[doc.id] || 0}
+                            pipelineStage={pipelineStages[doc.id] ?? null}
                           />
                         </td>
                         {/* Imported */}
@@ -632,31 +638,33 @@ function formatImported(iso: string): string {
   return format(d, 'd MMM');
 }
 
-/* V12 StatusLozenge — IMMUTABLE GUARDRAIL */
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { bg: string; color: string; label: string }> = {
-    ready:      { bg: '#E3FCEF', color: '#006644', label: 'READY' },
-    complete:   { bg: '#E3FCEF', color: '#006644', label: 'READY' },
-    processing: { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
-    pending:    { bg: '#DEEBFF', color: '#0747A6', label: 'PENDING' },
-    failed:     { bg: '#DFE1E6', color: '#253858', label: 'FAILED' },
-    intake:     { bg: '#DEEBFF', color: '#0747A6', label: 'INTAKE' },
-    extract:    { bg: '#DEEBFF', color: '#0747A6', label: 'EXTRACTING' },
-    process:    { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
-    validate:   { bg: '#DEEBFF', color: '#0747A6', label: 'VALIDATING' },
-    distribute: { bg: '#DEEBFF', color: '#0747A6', label: 'DISTRIBUTING' },
-  };
-  const s = map[status] ?? map.pending;
+/* V12 StatusLozenge — IMMUTABLE GUARDRAIL — computed from epicCount + pipeline_stage */
+function StatusBadge({ status, epicCount, pipelineStage }: { status: string; epicCount: number; pipelineStage: string | null }) {
+  let bg: string, color: string, label: string;
+
+  const ps = pipelineStage ?? status;
+
+  if (ps === 'failed') {
+    bg = '#DFE1E6'; color = '#253858'; label = 'FAILED';
+  } else if (epicCount > 0) {
+    bg = '#E3FCEF'; color = '#006644'; label = 'READY';
+  } else if (['extract', 'process', 'validate', 'distribute', 'complete', 'processing'].includes(ps)) {
+    bg = '#DEEBFF'; color = '#0747A6'; label = 'PROCESSING';
+  } else {
+    // intake, pending, or unknown
+    bg = '#DFE1E6'; color = '#253858'; label = 'PENDING';
+  }
+
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center',
       padding: '0 6px', height: 20, borderRadius: 3,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
-      background: s.bg, color: s.color,
+      background: bg, color: color,
       fontFamily: "'Inter', sans-serif",
     }}>
-      {s.label}
+      {label}
     </span>
   );
 }
@@ -796,9 +804,9 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         transition: 'all 80ms ease',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.background = 'rgba(124,58,237,0.04)';
-        e.currentTarget.style.borderColor = '#DDD6FE';
-        e.currentTarget.style.color = '#6D28D9';
+        e.currentTarget.style.background = 'rgba(37,99,235,0.04)';
+        e.currentTarget.style.borderColor = '#BFDBFE';
+        e.currentTarget.style.color = '#1D4ED8';
       }}
       onMouseLeave={e => {
         e.currentTarget.style.background = '#FFFFFF';
