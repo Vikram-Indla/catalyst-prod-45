@@ -145,24 +145,73 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     setTimeout(() => toast.success(`Epics generated for ${doc.title}`), 600);
   };
 
-  // ── EFFECT 2: Edge Function call — runs once only (ref guard)
   useEffect(() => {
-    if (hasStarted.current) return;
-    hasStarted.current = true;
 
-    resolveBrdId().then(brdId => {
-      if (!brdId) {
+    // Hard reset ref on every mount
+    hasStarted.current = false;
+    const run = async () => {
+
+      if (hasStarted.current) return;
+      hasStarted.current = true;
+
+      console.log('[EpicModal] INVOCATION STARTED — doc keys:', Object.keys(doc));
+
+      let brdId: string | null = null;
+
+      try {
+
+        brdId = await resolveBrdId();
+
+        console.log('[EpicModal] resolveBrdId result:', brdId);
+
+      } catch (err) {
+
+        console.error('[EpicModal] resolveBrdId threw:', err);
+
         setHasFailed(true);
-        setErrorMsg('Could not find or create BRD document entry.');
+
+        setErrorMsg('Failed to resolve BRD document. Please retry.');
+
         return;
+
       }
+
+      if (!brdId) {
+
+        console.error('[EpicModal] resolveBrdId returned null — no brd_id');
+
+        setHasFailed(true);
+
+        setErrorMsg('Could not find or create BRD document entry. Check jira_ticket_key on this document.');
+
+        return;
+
+      }
+
+      console.log('[EpicModal] INVOKING EDGE FUNCTION with brdId:', brdId);
+
       setResolvedBrdId(brdId);
-      return invokeGeneration(brdId);
-    }).catch(err => {
-      setHasFailed(true);
-      setErrorMsg(sanitiseError(err) || 'Generation failed. Please retry.');
-    });
+
+      try {
+
+        await invokeGeneration(brdId);
+
+      } catch (err) {
+
+        console.error('[EpicModal] invokeGeneration threw:', err);
+
+        setHasFailed(true);
+
+        setErrorMsg(sanitiseError(err) || 'Generation failed. Please retry.');
+
+      }
+
+    };
+
+    run();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, []);
 
   const handleRetry = () => {
