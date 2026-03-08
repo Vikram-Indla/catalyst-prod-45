@@ -225,6 +225,7 @@ export interface IncidentWithJoins extends Incident {
   history: IncidentHistoryEntry[];
   work_items: IncidentWorkItem[];
   watchers: IncidentWatcher[];
+  field_values: IncidentFieldValue[];   // Dynamic JIRA custom fields
 }
 
 // ─────────────────────────────────────────────
