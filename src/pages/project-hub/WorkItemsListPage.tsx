@@ -130,7 +130,7 @@ export default function WorkItemsListPage() {
         for (const [field, value] of Object.entries(changes)) {
           await jiraSyncService.queueWriteBack(id, field, String(value));
         }
-        toast.success('Edit queued for Jira write-back');
+        toast.info('Change queued for Jira sync approval');
       }
       // Always update locally
       await updateWorkItem(id, changes);
