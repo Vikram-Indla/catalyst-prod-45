@@ -25,10 +25,11 @@ const QUERY_KEYS = {
 // ─────────────────────────────────────────────
 // 1. Fetch all projects from v_project_list view
 // ─────────────────────────────────────────────
-const EXCLUDED_PROJECT_KEYS = new Set(['MDT']);
+// Only these projects are visible in ProjectHub
+const ALLOWED_PROJECT_KEYS = new Set(['BAU', 'IRP', 'MWR', 'DATA', 'IN', 'TAH']);
 
-const isExcludedProject = (project: Pick<ProjectListItem, 'project_key'>) =>
-  EXCLUDED_PROJECT_KEYS.has((project.project_key ?? '').trim().toUpperCase());
+const isAllowedProject = (project: Pick<ProjectListItem, 'project_key'>) =>
+  ALLOWED_PROJECT_KEYS.has((project.project_key ?? '').trim().toUpperCase());
 
 export function useProjects() {
   return useQuery({
@@ -40,7 +41,7 @@ export function useProjects() {
         .order('total_issues', { ascending: false });
 
       if (error) throw new Error(`Failed to fetch projects: ${error.message}`);
-      return ((data ?? []) as ProjectListItem[]).filter((project) => !isExcludedProject(project));
+      return ((data ?? []) as ProjectListItem[]).filter((project) => isAllowedProject(project));
     },
     staleTime: 30_000,
     refetchOnWindowFocus: true,
