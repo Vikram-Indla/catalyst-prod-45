@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { FileText, FileSearch, Download, Loader2, AlertCircle, Zap, TestTube, Flag, RefreshCw, CheckCircle2, RotateCcw, Eye, ArrowRight } from 'lucide-react';
+import { FileText, FileSearch, Download, Loader2, Zap, RotateCcw, Eye, ArrowRight, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useRADocuments, useRAStats, RA_KEYS } from '@/hooks/useReqAssist';
@@ -18,11 +18,6 @@ import RAEpicGenerationModal from '@/components/reqAssist/RAEpicGenerationModal'
 import RAEpicDraftDrawer from '@/components/reqAssist/RAEpicDraftDrawer';
 import ImportJiraDrawer from '@/components/req-assist/ImportJiraDrawer';
 import { format } from 'date-fns';
-
-/* ── Domain lozenge mapping (neutral only) ── */
-function domainLozenge() {
-  return { bg: '#F3F4F6', color: '#374151' };
-}
 
 export default function ReqAssistLibrary() {
   const navigate = useNavigate();
@@ -43,7 +38,6 @@ export default function ReqAssistLibrary() {
   const [draftDrawer, setDraftDrawer] = useState<{ brdId: string; docTitle: string; jiraKey: string | null } | null>(null);
   const [epicCounts, setEpicCounts] = useState<Record<string, number>>({});
 
-  /** FIX 3: Check for existing epics before opening modal */
   const handleGenerateClick = useCallback(async (doc: RADocumentWithArtifacts) => {
     let brdId: string | null = null;
     const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
@@ -70,7 +64,6 @@ export default function ReqAssistLibrary() {
     setBgModal({ type: 'epics', doc });
   }, []);
 
-  /** Resolve brdId for a doc (used by actions cell) */
   const resolveBrdId = useCallback(async (doc: RADocumentWithArtifacts): Promise<string | null> => {
     const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', doc.id).maybeSingle();
     if (direct?.id) return direct.id;
@@ -82,7 +75,6 @@ export default function ReqAssistLibrary() {
     return null;
   }, []);
 
-  /** Open draft drawer for a doc */
   const handleOpenDrafts = useCallback(async (doc: RADocumentWithArtifacts) => {
     const brdId = await resolveBrdId(doc);
     if (brdId) {
@@ -91,7 +83,6 @@ export default function ReqAssistLibrary() {
   }, [resolveBrdId]);
 
   const handleOpenDraftsByBrdId = useCallback((brdId: string) => {
-    // Find doc from current documents list to get title/jiraKey
     const doc = documents?.find(d => d.id === brdId || (d as any).jira_ticket_key);
     setDraftDrawer({
       brdId,
@@ -100,14 +91,12 @@ export default function ReqAssistLibrary() {
     });
   }, [documents]);
 
-  // FIX 2: Batch fetch epic counts (replaces N+1 loop)
   useEffect(() => {
     if (!documents || documents.length === 0) return;
     const jiraKeys = documents
       .map(d => (d as any).jira_ticket_key)
       .filter(Boolean) as string[];
     if (!jiraKeys.length) return;
-
     fetchDocumentEpicCounts(jiraKeys).then(countsMap => {
       const counts: Record<string, number> = {};
       for (const doc of documents) {
@@ -123,34 +112,18 @@ export default function ReqAssistLibrary() {
   const handleSyncKb = useCallback(async (docId: string) => {
     setSyncingIds(prev => new Set(prev).add(docId));
     try {
-      // Resolve the brd_documents.id from the ra_documents row
       const doc = documents?.find(d => d.id === docId);
       const jiraKey = (doc as any)?.jira_ticket_key;
       let brdId: string | null = null;
-
-      // Check direct match
       const { data: direct } = await (supabase as any).from('brd_documents').select('id').eq('id', docId).maybeSingle();
       if (direct?.id) brdId = direct.id;
-
-      // Check via jira_key
       if (!brdId && jiraKey) {
         const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
         if (jiraMatch?.id) brdId = jiraMatch.id;
       }
-
-      if (!brdId) {
-        toast.error('Document not yet processed — generate BRDs first');
-        return;
-      }
-
+      if (!brdId) { toast.error('Document not yet processed — generate BRDs first'); return; }
       await syncSingleBrdToKb(brdId);
-
-      // Also update ra_documents for UI consistency
-      await (supabase as any)
-        .from('ra_documents')
-        .update({ kb_synced: true, kb_synced_at: new Date().toISOString() })
-        .eq('id', docId);
-
+      await (supabase as any).from('ra_documents').update({ kb_synced: true, kb_synced_at: new Date().toISOString() }).eq('id', docId);
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
       qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
       toast.success('Document indexed for AI search');
@@ -181,15 +154,8 @@ export default function ReqAssistLibrary() {
           if (jiraMatch?.id) brdId = jiraMatch.id;
         }
         if (!brdId) { failed++; continue; }
-
         await syncSingleBrdToKb(brdId);
-
-        // Update ra_documents for UI consistency
-        await (supabase as any)
-          .from('ra_documents')
-          .update({ kb_synced: true, kb_synced_at: new Date().toISOString() })
-          .eq('id', doc.id);
-
+        await (supabase as any).from('ra_documents').update({ kb_synced: true, kb_synced_at: new Date().toISOString() }).eq('id', doc.id);
         success++;
       } catch (err: unknown) {
         failed++;
@@ -207,28 +173,21 @@ export default function ReqAssistLibrary() {
     setSyncingAll(false);
   }, [documents, qc]);
 
-  /* Supabase Realtime subscriptions for live updates — debounced */
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     const channel1 = supabase.channel('req-assist-queue')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'brd_processing_queue' },
-        () => {
-          if (debounceRef.current) clearTimeout(debounceRef.current);
-          debounceRef.current = setTimeout(() => {
-            qc.invalidateQueries({ queryKey: RA_KEYS.stats() });
-            qc.invalidateQueries({ queryKey: RA_KEYS.all });
-            qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
-          }, 2000);
-        })
-      .subscribe();
-
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'brd_processing_queue' }, () => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => {
+          qc.invalidateQueries({ queryKey: RA_KEYS.stats() });
+          qc.invalidateQueries({ queryKey: RA_KEYS.all });
+          qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
+        }, 2000);
+      }).subscribe();
     const channel2 = supabase.channel('req-assist-docs')
-      .on('postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'brd_documents' },
-        () => { qc.invalidateQueries({ queryKey: RA_KEYS.all }); })
-      .subscribe();
-
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'brd_documents' }, () => {
+        qc.invalidateQueries({ queryKey: RA_KEYS.all });
+      }).subscribe();
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
       supabase.removeChannel(channel1);
@@ -236,7 +195,6 @@ export default function ReqAssistLibrary() {
     };
   }, [qc]);
 
-  /* INT-005: ESC key layering — only close topmost overlay */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
@@ -260,16 +218,14 @@ export default function ReqAssistLibrary() {
   const hasDocuments = documents && documents.length > 0;
 
   return (
-    <div style={{ background: '#F8FAFC', minHeight: '100%', padding: '24px 28px' }}>
-      {/* ── PAGE HEADER ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+    <div style={{ background: '#F8FAFC', minHeight: '100%' }}>
+      {/* ── ZONE 1: PAGE HEADER ── */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '24px 28px 0' }}>
         <div>
-          {/* D19: Trademark typography */}
-          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 20, fontWeight: 650, color: '#111827', margin: 0 }}>
-            <span style={{ fontFamily: "'Sora', sans-serif" }}>Req Assist™</span>
+          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+            Req Assist™
           </h1>
-          {/* D12: Remove hardcoded sync time */}
-          <p style={{ fontSize: 13, color: '#6B7280', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>
+          <p style={{ fontSize: 13, fontWeight: 400, color: '#64748B', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
             BRD library — sourced from Jira, enriched by AI, indexed for AI-powered search
           </p>
         </div>
@@ -279,29 +235,37 @@ export default function ReqAssistLibrary() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500,
-              border: '0.75px solid #E2E8F0', borderRadius: 6,
-              background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+              border: '1px solid rgba(15,23,42,0.18)', borderRadius: 6,
+              background: '#FFFFFF', color: '#374151', cursor: 'pointer',
               fontFamily: "'Inter', sans-serif",
+              transition: 'background 80ms ease',
             }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
           >
-            <Download size={14} /> Import from Jira
+            <Download size={14} color="#374151" /> Import from Jira
           </button>
           <button
             onClick={() => navigate('/product/req-assist/generate')}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500,
+              padding: '0 14px', height: 36, fontSize: 13, fontWeight: 600,
               border: 'none', borderRadius: 6,
-              background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              boxShadow: '0 1px 3px rgba(37,99,235,0.35)',
+              color: '#FFFFFF', cursor: 'pointer',
               fontFamily: "'Inter', sans-serif",
+              transition: 'box-shadow 150ms ease',
             }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px rgba(37,99,235,0.45)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(37,99,235,0.35)'; }}
           >
-            <Zap size={14} /> Generate BRD from Text
+            <Sparkles size={14} /> Generate BRD from Text
           </button>
         </div>
       </div>
 
-      {/* ── STATS BAR ── D05: cards with border */}
+      {/* ── ZONE 2+3: STATS BAR ── */}
       <RAStatsBar
         totalDocuments={stats?.total_documents ?? 0}
         wikihubSynced={stats?.wikihub_synced ?? 0}
@@ -312,246 +276,274 @@ export default function ReqAssistLibrary() {
         loading={statsLoading}
       />
 
-      {/* EC-001: Empty library — no documents at all */}
-      {!isLoading && totalCount === 0 && !isFiltering ? (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 0', background: '#FFFFFF', border: '0.75px solid #E2E8F0', borderRadius: 6 }}>
-          <FileText size={32} color="#9CA3AF" style={{ marginBottom: 12 }} />
-          <p style={{ fontSize: 16, fontWeight: 600, color: '#374151', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>No documents yet</p>
-          <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate a BRD from text to get started.</p>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => setImportOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 6, background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-              <Download size={14} /> Import from Jira
-            </button>
-            <button onClick={() => navigate('/product/req-assist/generate')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36, fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 6, background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-              <Zap size={14} /> Generate BRD from Text
-            </button>
+      {/* ── ZONE 4: DOCUMENT TABLE SECTION ── */}
+      <div style={{ padding: '20px 28px 28px' }}>
+        {!isLoading && totalCount === 0 && !isFiltering ? (
+          /* Empty state */
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            padding: '80px 0', background: '#FFFFFF',
+            border: '0.75px solid rgba(15,23,42,0.10)', borderRadius: 8,
+          }}>
+            <FileText size={32} color="#94A3B8" style={{ marginBottom: 12 }} />
+            <p style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>No documents yet</p>
+            <p style={{ fontSize: 14, color: '#64748B', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate a BRD from text to get started.</p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => setImportOpen(true)} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 36,
+                fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 6,
+                background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+              }}>
+                <Download size={14} /> Import from Jira
+              </button>
+            </div>
           </div>
-        </div>
-      ) : (
-        /* ── SEARCH + FILTER + TABLE ── */
-        <div style={{ background: '#FFFFFF', border: '0.75px solid #E2E8F0', borderRadius: 6, overflow: 'hidden' }}>
-          {/* D13: Sync All inside toolbar row */}
-          <RASearchToolbar
-            tab={tab}
-            onTabChange={setTab}
-            search={search}
-            onSearchChange={setSearch}
-            resultCount={documents?.length}
-            totalCount={totalCount}
-            isFiltering={isFiltering}
-            onSyncAll={handleSyncAll}
-            syncingAll={syncingAll}
-          />
+        ) : (
+          /* Table container */
+          <div style={{
+            background: '#FFFFFF',
+            border: '0.75px solid rgba(15,23,42,0.10)',
+            borderRadius: 8,
+            overflow: 'hidden',
+          }}>
+            {/* Toolbar */}
+            <RASearchToolbar
+              tab={tab}
+              onTabChange={setTab}
+              search={search}
+              onSearchChange={setSearch}
+              resultCount={documents?.length}
+              totalCount={totalCount}
+              isFiltering={isFiltering}
+              onSyncAll={handleSyncAll}
+              syncingAll={syncingAll}
+            />
 
-          {/* FIX 4: Filter info bar */}
-          {isFiltering && (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '8px 28px', fontSize: 12, color: '#64748B',
-              background: '#FFFFFF', borderBottom: '0.75px solid #E2E8F0',
-              fontFamily: "'Inter', sans-serif",
-            }}>
-              Showing {documents?.length ?? 0} of {totalCount} documents
-              <span style={{ color: '#94A3B8' }}>·</span>
-              Filtered by: <strong style={{ color: '#334155', fontWeight: 600 }}>{tab !== 'all' ? tab.charAt(0).toUpperCase() + tab.slice(1) : search}</strong>
-              <button
-                onClick={() => { setSearch(''); setTab('all'); }}
-                style={{
-                  border: 'none', background: 'transparent', cursor: 'pointer',
-                  fontSize: 12, color: '#2563EB', fontWeight: 500, padding: 0,
-                  fontFamily: "'Inter', sans-serif",
-                }}
-              >
-                Clear filter ×
-              </button>
-            </div>
-          )}
-
-          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
-            <thead>
-              <tr style={{ borderBottom: '0.75px solid #E2E8F0' }}>
-                {[
-                  { label: 'Jira Ticket', w: 120 },
-                  { label: 'Title', w: undefined },
-                  { label: 'Domain', w: 110 },
-                  { label: 'PDF', w: 60 },
-                  { label: 'Status', w: 110 },
-                  { label: 'Generation', w: 160 },
-                  { label: 'Imported', w: 80 },
-                  { label: 'Actions', w: 220 },
-                ].map((col, i) => (
-                  <th key={i} style={{
-                    padding: '0 10px', height: 36,
-                    fontSize: 11, fontWeight: 700, color: '#6B7280',
-                    textTransform: 'uppercase', letterSpacing: '0.06em',
-                    textAlign: 'left', width: col.w || undefined,
-                    background: '#FFFFFF',
+            {/* Filter info bar */}
+            {isFiltering && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '8px 28px', fontSize: 12, color: '#64748B',
+                background: '#FFFFFF', borderBottom: '0.75px solid rgba(15,23,42,0.08)',
+                fontFamily: "'Inter', sans-serif",
+              }}>
+                Showing {documents?.length ?? 0} of {totalCount} documents
+                <span style={{ color: '#94A3B8' }}>·</span>
+                Filtered by: <strong style={{ color: '#334155', fontWeight: 600 }}>{tab !== 'all' ? tab.charAt(0).toUpperCase() + tab.slice(1) : search}</strong>
+                <button
+                  onClick={() => { setSearch(''); setTab('all'); }}
+                  style={{
+                    border: 'none', background: 'transparent', cursor: 'pointer',
+                    fontSize: 12, color: '#2563EB', fontWeight: 500, padding: 0,
                     fontFamily: "'Inter', sans-serif",
-                  }}>
-                    {col.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={i} style={{ height: 36, maxHeight: 36 }}>
-                    {Array.from({ length: 8 }).map((_, j) => (
-                      <td key={j} style={{ padding: '0 10px' }}>
-                        <div style={{ width: j === 1 ? '80%' : '60%', height: 12, background: '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              ) : hasDocuments ? (
-                documents!.map(doc => {
-                  const isProcessingRow = doc.status === 'processing';
-                  const processingJob = (doc as any).ra_processing_jobs?.find?.((j: any) => j.status === 'processing');
-                  return (
-                    <tr
-                      key={doc.id}
-                      onClick={(e) => handleRowClick(doc, e)}
-                      style={{
-                        height: 36, maxHeight: 36,
-                        cursor: 'pointer',
-                        borderBottom: '0.75px solid #E2E8F0',
-                        background: isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent',
-                        transition: 'background 120ms ease',
-                      }}
-                      onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.04)'; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
-                    >
-                      {/* Jira Ticket */}
-                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden' }}>
-                        {doc.jira_ticket_url ? (
-                          <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-                            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB', textDecoration: 'none' }}>
-                            {doc.jira_ticket_key}
-                          </a>
-                        ) : (
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
-                            {doc.jira_ticket_key}
-                          </span>
-                        )}
-                      </td>
-                      {/* Title — DEF-08: truncate + tooltip */}
-                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden', maxWidth: 0 }}>
-                        <span title={doc.title} style={{
-                          display: 'block', fontSize: 14, fontWeight: 500, color: '#111827',
-                          fontFamily: "'Inter', sans-serif",
-                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                          maxWidth: 320,
-                        }}>
-                          {doc.title}
-                        </span>
-                      </td>
-                      {/* Domain — D10: standardise empty cells */}
-                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden' }}>
-                        {doc.domain ? (
-                          <span style={{
-                            display: 'inline-flex', alignItems: 'center',
-                            padding: '2px 8px', borderRadius: 3,
-                            fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                            letterSpacing: '0.04em', whiteSpace: 'nowrap',
-                            background: '#F3F4F6', color: '#374151',
-                            fontFamily: "'Inter', sans-serif",
-                          }}>
-                            {doc.domain}
-                          </span>
-                        ) : (
-                          <span style={{ color: '#94A3B8', fontSize: 13 }}>—</span>
-                        )}
-                      </td>
-                      {/* PDF — D10: remove icon from empty state */}
-                      <td data-col="pdf" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden' }}>
-                        {doc.pdf_url ? (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); setPdfDoc(doc); }}
-                            style={{
-                              display: 'inline-flex', alignItems: 'center', gap: 4,
-                              padding: '3px 6px', borderRadius: 4,
-                              background: '#FEF2F2', border: 'none', cursor: 'pointer',
-                              fontSize: 11, color: '#DC2626', fontWeight: 500,
-                              fontFamily: "'JetBrains Mono', monospace",
-                            }}
-                            onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
-                            onMouseLeave={e => (e.currentTarget.style.background = '#FEF2F2')}
-                          >
-                            <FileText size={13} strokeWidth={1.5} />
-                            {doc.page_count ? `${doc.page_count}pp` : '—pp'}
-                          </button>
-                        ) : (
-                          <span style={{ color: '#94A3B8', fontSize: 13 }}>—</span>
-                        )}
-                      </td>
-                      {/* Status */}
-                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden' }}>
-                        <StatusBadge status={doc.status} />
-                      </td>
-                      {/* Generation — D07/D08/D18 */}
-                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden', maxWidth: 160 }}>
-                        <RAGenerationBar
-                          slots={doc.generation_slots}
-                          artifactCounts={doc.artifact_counts}
-                          isProcessing={isProcessingRow}
-                          etaMinutes={processingJob ? Math.ceil((processingJob.eta_seconds ?? 240) / 60) : undefined}
-                          docStatus={doc.status}
-                        />
-                      </td>
-                      {/* Imported */}
-                      <td style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'hidden' }}>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#6B7280' }}>
-                          {doc.pulled_at ? formatImported(doc.pulled_at) : '—'}
-                        </span>
-                      </td>
-                      {/* Actions */}
-                      <td data-col="actions" style={{ padding: '0 10px', height: 36, maxHeight: 36, overflow: 'visible', position: 'relative', minWidth: 220, whiteSpace: 'nowrap' }}>
-                        <ActionsCell
-                          doc={doc}
-                          epicCount={epicCounts[doc.id] || 0}
-                          onSyncKb={handleSyncKb}
-                          onSelect={(type) => type === 'epics' ? handleGenerateClick(doc) : setBgModal({ type, doc })}
-                          onViewDrafts={() => handleOpenDrafts(doc)}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                /* EC-002: Filtered empty state */
-                <tr>
-                  <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
-                    <FileSearch size={24} color="#9CA3AF" style={{ margin: '0 auto 8px', display: 'block' }} />
-                    <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
-                      No documents match "{search || 'your search term'}"
-                    </p>
-                    <button onClick={() => { setSearch(''); setTab('all'); }}
-                      style={{ fontSize: 12, color: '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-                      Clear search
-                    </button>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                  }}
+                >
+                  Clear filter ×
+                </button>
+              </div>
+            )}
 
-          {/* Table footer — D17: ArrowRight icon */}
-          {!isLoading && documents && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#FFFFFF', borderTop: '0.75px solid #E2E8F0' }}>
-              <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
-                Showing {documents.length} of {totalCount} documents
-              </span>
-              <button
-                onClick={() => { setTab('all'); setSearch(''); }}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563EB', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}
-              >
-                Show all {totalCount} <ArrowRight size={14} />
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+            {/* Table */}
+            <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+              <thead>
+                <tr style={{ borderBottom: '0.75px solid rgba(15,23,42,0.10)' }}>
+                  {[
+                    { label: 'JIRA TICKET', w: 120 },
+                    { label: 'TITLE', w: undefined },
+                    { label: 'DOMAIN', w: 110 },
+                    { label: 'PDF', w: 60 },
+                    { label: 'STATUS', w: 110 },
+                    { label: 'GENERATION', w: 160 },
+                    { label: 'IMPORTED', w: 80 },
+                    { label: 'ACTIONS', w: 220 },
+                  ].map((col, i) => (
+                    <th key={i} style={{
+                      padding: '10px 12px', height: 36,
+                      fontSize: 11, fontWeight: 600, color: '#64748B',
+                      textTransform: 'uppercase', letterSpacing: '0.06em',
+                      textAlign: 'left', width: col.w || undefined,
+                      background: '#F8FAFC',
+                      fontFamily: "'Inter', sans-serif",
+                    }}>
+                      {col.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={i} style={{ height: 36 }}>
+                      {Array.from({ length: 8 }).map((_, j) => (
+                        <td key={j} style={{ padding: '8px 12px' }}>
+                          <div style={{ width: j === 1 ? '80%' : '60%', height: 12, background: '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : hasDocuments ? (
+                  documents!.map((doc, docIdx) => {
+                    const isProcessingRow = doc.status === 'processing';
+                    const processingJob = (doc as any).ra_processing_jobs?.find?.((j: any) => j.status === 'processing');
+                    const isLast = docIdx === documents!.length - 1;
+                    return (
+                      <tr
+                        key={doc.id}
+                        onClick={(e) => handleRowClick(doc, e)}
+                        style={{
+                          height: 36, cursor: 'pointer',
+                          borderBottom: isLast ? 'none' : '0.75px solid rgba(15,23,42,0.06)',
+                          background: isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent',
+                          transition: 'background 120ms ease',
+                        }}
+                        onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = 'rgba(15,23,42,0.02)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
+                      >
+                        {/* Jira Ticket */}
+                        <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
+                          {doc.jira_ticket_url ? (
+                            <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
+                              style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB', textDecoration: 'none' }}
+                              onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                              onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                            >
+                              {doc.jira_ticket_key}
+                            </a>
+                          ) : (
+                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB' }}>
+                              {doc.jira_ticket_key}
+                            </span>
+                          )}
+                        </td>
+                        {/* Title */}
+                        <td style={{ padding: '8px 12px', overflow: 'hidden', maxWidth: 0 }}>
+                          <span title={doc.title} style={{
+                            display: 'block', fontSize: 13, fontWeight: 400, color: '#0F172A',
+                            fontFamily: "'Inter', sans-serif",
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                            maxWidth: 320,
+                          }}>
+                            {doc.title}
+                          </span>
+                        </td>
+                        {/* Domain */}
+                        <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
+                          {doc.domain ? (
+                            <span style={{
+                              display: 'inline-flex', alignItems: 'center',
+                              padding: '2px 8px', borderRadius: 3,
+                              fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                              letterSpacing: '0.04em', whiteSpace: 'nowrap',
+                              background: '#F3F4F6', color: '#374151',
+                              fontFamily: "'Inter', sans-serif",
+                            }}>
+                              {doc.domain}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#CBD5E1', fontSize: 13 }}>—</span>
+                          )}
+                        </td>
+                        {/* PDF */}
+                        <td data-col="pdf" style={{ padding: '8px 12px', overflow: 'hidden' }}>
+                          {doc.pdf_url ? (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setPdfDoc(doc); }}
+                              style={{
+                                display: 'inline-flex', alignItems: 'center', gap: 4,
+                                padding: '3px 6px', borderRadius: 4,
+                                background: '#FEF2F2', border: 'none', cursor: 'pointer',
+                                fontSize: 11, color: '#DC2626', fontWeight: 500,
+                                fontFamily: "'JetBrains Mono', monospace",
+                              }}
+                              onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
+                              onMouseLeave={e => (e.currentTarget.style.background = '#FEF2F2')}
+                            >
+                              <FileText size={13} strokeWidth={1.5} />
+                              {doc.page_count ? `${doc.page_count}pp` : '—pp'}
+                            </button>
+                          ) : (
+                            <span style={{ color: '#CBD5E1', fontSize: 13 }}>—</span>
+                          )}
+                        </td>
+                        {/* Status */}
+                        <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
+                          <StatusBadge status={doc.status} />
+                        </td>
+                        {/* Generation */}
+                        <td style={{ padding: '8px 12px', overflow: 'hidden', maxWidth: 160 }}>
+                          <RAGenerationBar
+                            slots={doc.generation_slots}
+                            artifactCounts={doc.artifact_counts}
+                            isProcessing={isProcessingRow}
+                            etaMinutes={processingJob ? Math.ceil((processingJob.eta_seconds ?? 240) / 60) : undefined}
+                            docStatus={doc.status}
+                          />
+                        </td>
+                        {/* Imported */}
+                        <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#64748B' }}>
+                            {doc.pulled_at ? formatImported(doc.pulled_at) : '—'}
+                          </span>
+                        </td>
+                        {/* Actions */}
+                        <td data-col="actions" style={{ padding: '8px 12px', overflow: 'visible', position: 'relative', minWidth: 220, whiteSpace: 'nowrap' }}>
+                          <ActionsCell
+                            doc={doc}
+                            epicCount={epicCounts[doc.id] || 0}
+                            onSyncKb={handleSyncKb}
+                            onSelect={(type) => type === 'epics' ? handleGenerateClick(doc) : setBgModal({ type, doc })}
+                            onViewDrafts={() => handleOpenDrafts(doc)}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
+                      <FileSearch size={24} color="#94A3B8" style={{ margin: '0 auto 8px', display: 'block' }} />
+                      <p style={{ fontSize: 14, color: '#64748B', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
+                        No documents match "{search || 'your search term'}"
+                      </p>
+                      <button onClick={() => { setSearch(''); setTab('all'); }}
+                        style={{ fontSize: 12, color: '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+                        Clear search
+                      </button>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {/* Table footer */}
+            {!isLoading && documents && (
+              <div style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                height: 36, padding: '0 12px',
+                background: '#FAFAFA',
+                borderTop: '0.75px solid rgba(15,23,42,0.08)',
+              }}>
+                <span style={{ fontSize: 12, fontWeight: 400, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
+                  Showing {documents.length} of {totalCount} documents
+                </span>
+                <button
+                  onClick={() => { setTab('all'); setSearch(''); }}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    fontSize: 12, fontWeight: 500, color: '#2563EB',
+                    background: 'transparent', border: 'none', cursor: 'pointer',
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                  onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                >
+                  Show all {totalCount} →
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Overlays */}
       {selectedDoc && <RAJiraSidePanel doc={selectedDoc} onClose={() => setSelectedDoc(null)} onOpenPdf={() => setPdfDoc(selectedDoc)} onGenerate={(type) => type === 'epics' ? handleGenerateClick(selectedDoc) : setBgModal({ type, doc: selectedDoc })} onViewDrafts={(brdId) => { setSelectedDoc(null); handleOpenDraftsByBrdId(brdId); }} onSyncKb={handleSyncKb} />}
@@ -560,16 +552,12 @@ export default function ReqAssistLibrary() {
         <RAEpicGenerationModal
           doc={bgModal.doc}
           onClose={() => setBgModal(null)}
-          onViewDrafts={(brdId) => {
-            setBgModal(null);
-            handleOpenDraftsByBrdId(brdId);
-          }}
+          onViewDrafts={(brdId) => { setBgModal(null); handleOpenDraftsByBrdId(brdId); }}
         />
       ) : bgModal ? (
         <RABackgroundModal type={bgModal.type} doc={bgModal.doc} onClose={() => setBgModal(null)} />
       ) : null}
 
-      {/* Draft drawer */}
       {draftDrawer && (
         <RAEpicDraftDrawer
           brdId={draftDrawer.brdId}
@@ -579,20 +567,20 @@ export default function ReqAssistLibrary() {
         />
       )}
 
-      {/* PART 2: Regen confirmation dialog — 3 buttons */}
+      {/* Regen confirmation */}
       {regenConfirm && (
         <>
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 80 }} onClick={() => setRegenConfirm(null)} />
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.30)', zIndex: 80 }} onClick={() => setRegenConfirm(null)} />
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
             width: 420, background: '#FFFFFF', borderRadius: 8, zIndex: 90,
-            padding: 24, border: '0.75px solid #E2E8F0',
+            padding: 24, border: '0.75px solid rgba(15,23,42,0.10)',
             fontFamily: "'Inter', sans-serif",
           }}>
             <h3 style={{ fontSize: 16, fontWeight: 650, color: '#0F172A', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>
               Epics Already Exist
             </h3>
-            <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 20px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 14, color: '#64748B', margin: '0 0 20px', lineHeight: 1.5 }}>
               This document already has {regenConfirm.count} epic{regenConfirm.count !== 1 ? 's' : ''} generated
               {regenConfirm.generatedAt ? (() => {
                 const days = Math.floor((Date.now() - new Date(regenConfirm.generatedAt!).getTime()) / 86400000);
@@ -611,7 +599,7 @@ export default function ReqAssistLibrary() {
                 setDraftDrawer({ brdId, docTitle: doc.title, jiraKey: (doc as any).jira_ticket_key || null });
               }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+                border: '0.75px solid rgba(15,23,42,0.15)', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
               }}>View Drafts</button>
               <button onClick={() => { const d = regenConfirm.doc; setRegenConfirm(null); setBgModal({ type: 'epics', doc: d }); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
@@ -623,6 +611,10 @@ export default function ReqAssistLibrary() {
       )}
 
       <ImportJiraDrawer open={importOpen} onOpenChange={setImportOpen} />
+
+      <style>{`
+        @keyframes ra-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+      `}</style>
     </div>
   );
 }
@@ -640,15 +632,15 @@ function formatImported(iso: string): string {
   return format(d, 'd MMM');
 }
 
-/* D15: StatusLozenge — 700 weight, 3px radius, 20px height, no dots */
+/* V12 StatusLozenge — IMMUTABLE GUARDRAIL */
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string; label: string }> = {
     ready:      { bg: '#E3FCEF', color: '#006644', label: 'READY' },
     complete:   { bg: '#E3FCEF', color: '#006644', label: 'READY' },
     processing: { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
-    pending:    { bg: '#DFE1E6', color: '#253858', label: 'PENDING' },
-    failed:     { bg: '#FFEAEA', color: '#DC2626', label: 'FAILED' },
-    intake:     { bg: '#DFE1E6', color: '#253858', label: 'INTAKE' },
+    pending:    { bg: '#DEEBFF', color: '#0747A6', label: 'PENDING' },
+    failed:     { bg: '#DFE1E6', color: '#253858', label: 'FAILED' },
+    intake:     { bg: '#DEEBFF', color: '#0747A6', label: 'INTAKE' },
     extract:    { bg: '#DEEBFF', color: '#0747A6', label: 'EXTRACTING' },
     process:    { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
     validate:   { bg: '#DEEBFF', color: '#0747A6', label: 'VALIDATING' },
@@ -663,14 +655,13 @@ function StatusBadge({ status }: { status: string }) {
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
       background: s.bg, color: s.color,
       fontFamily: "'Inter', sans-serif",
-      transition: 'background-color 200ms ease, color 200ms ease',
     }}>
       {s.label}
     </span>
   );
 }
 
-/* Actions column — PART 6: lifecycle-aware actions */
+/* Actions column — V12 restyled */
 function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
   doc: RADocumentWithArtifacts;
   epicCount: number;
@@ -683,7 +674,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
   const isFailed = doc.status === 'failed';
   const kbSynced = (doc as any).kb_synced === true;
 
-  /* Has epics generated → show View Drafts + count chip */
+  /* Has epics → View Drafts (purple) + count badge */
   if (epicCount > 0 && !isProcessing) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -692,28 +683,28 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-            borderRadius: 4, border: '0.75px solid #E2E8F0',
-            background: '#FFFFFF', color: '#253858', cursor: 'pointer',
+            borderRadius: 5, border: '0.75px solid #DDD6FE',
+            background: '#F5F3FF', color: '#6D28D9', cursor: 'pointer',
             fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
-            transition: 'background 120ms ease',
+            transition: 'background 80ms ease',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
-          onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
+          onMouseEnter={e => (e.currentTarget.style.background = '#EDE9FE')}
+          onMouseLeave={e => (e.currentTarget.style.background = '#F5F3FF')}
         >
           View Drafts
-          <span style={{
-            display: 'inline-flex', alignItems: 'center',
-            padding: '1px 5px', borderRadius: 3,
-            fontSize: 10, fontWeight: 700,
-            background: '#DEEBFF', color: '#0747A6',
-            marginLeft: 6,
-          }}>{epicCount}</span>
         </button>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 18, height: 18, borderRadius: 9,
+          background: '#7C3AED', color: '#FFFFFF',
+          fontSize: 11, fontWeight: 700,
+          fontFamily: "'Inter', sans-serif",
+        }}>{epicCount}</span>
       </div>
     );
   }
 
-  /* READY + AI INDEXED → green lozenge + View */
+  /* READY + AI INDEXED */
   if (isReady && kbSynced) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -729,9 +720,9 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           onClick={(e) => { e.stopPropagation(); onSelect('view'); }}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            height: 28, padding: '4px 10px', fontSize: 13, fontWeight: 500,
-            borderRadius: 4, border: '0.75px solid #E2E8F0',
-            background: '#FFFFFF', color: '#475569', cursor: 'pointer',
+            height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+            borderRadius: 5, border: '0.75px solid rgba(15,23,42,0.15)',
+            background: '#FFFFFF', color: '#374151', cursor: 'pointer',
             fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
           }}
         >
@@ -741,18 +732,17 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
     );
   }
 
-  /* READY + NOT SYNCED → Sync to AI */
+  /* READY + NOT SYNCED */
   if (isReady && !kbSynced) {
     return (
       <button
         onClick={(e) => { e.stopPropagation(); onSyncKb(doc.id); }}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
-          height: 28, minWidth: 96, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 6, border: 'none', cursor: 'pointer',
+          height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+          borderRadius: 5, border: 'none', cursor: 'pointer',
           background: '#2563EB', color: '#FFFFFF',
-          fontFamily: "'Inter', sans-serif",
-          whiteSpace: 'nowrap',
+          fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
         }}
       >
         <Zap size={12} /> Sync to AI
@@ -760,7 +750,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
     );
   }
 
-  /* FAILED → red outline Retry */
+  /* FAILED → Retry */
   if (isFailed) {
     return (
       <button
@@ -768,7 +758,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 4, border: '0.75px solid #DC2626',
+          borderRadius: 5, border: '0.75px solid #DC2626',
           background: 'transparent', color: '#DC2626', cursor: 'pointer',
           fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
         }}
@@ -778,40 +768,45 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
     );
   }
 
-  /* PROCESSING → disabled Generate */
+  /* PROCESSING → disabled */
   if (isProcessing) {
     return (
-      <button
-        disabled
-        style={{
-          display: 'inline-flex', alignItems: 'center',
-          height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 4, border: 'none', cursor: 'not-allowed',
-          background: '#E2E8F0', color: '#94A3B8',
-          fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
-        }}
-      >
+      <button disabled style={{
+        display: 'inline-flex', alignItems: 'center',
+        height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+        borderRadius: 5, border: 'none', cursor: 'not-allowed',
+        background: '#E2E8F0', color: '#94A3B8',
+        fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+      }}>
         Generate
       </button>
     );
   }
 
-  /* PENDING / null → enabled Generate */
+  /* PENDING → Generate with Zap icon */
   return (
     <button
       onClick={(e) => { e.stopPropagation(); onSelect('epics'); }}
       style={{
-        display: 'inline-flex', alignItems: 'center',
-        height: 28, padding: '0 10px', fontSize: 13, fontWeight: 500,
-        borderRadius: 4, border: '0.75px solid #E2E8F0', cursor: 'pointer',
-        background: '#FFFFFF', color: '#253858',
+        display: 'inline-flex', alignItems: 'center', gap: 4,
+        height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+        borderRadius: 5, border: '0.75px solid rgba(15,23,42,0.15)',
+        background: '#FFFFFF', color: '#374151', cursor: 'pointer',
         fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
-        transition: 'background 120ms ease',
+        transition: 'all 80ms ease',
       }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
-      onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
+      onMouseEnter={e => {
+        e.currentTarget.style.background = 'rgba(124,58,237,0.04)';
+        e.currentTarget.style.borderColor = '#DDD6FE';
+        e.currentTarget.style.color = '#6D28D9';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.background = '#FFFFFF';
+        e.currentTarget.style.borderColor = 'rgba(15,23,42,0.15)';
+        e.currentTarget.style.color = '#374151';
+      }}
     >
-      Generate
+      <Zap size={12} /> Generate
     </button>
   );
 }

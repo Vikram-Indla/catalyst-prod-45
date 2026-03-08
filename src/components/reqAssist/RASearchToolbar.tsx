@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, Zap } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { Search, Sparkles } from 'lucide-react';
 import type { RAFilterTab } from '@/types/reqAssistV2';
 
 const TABS: { key: RAFilterTab; label: string }[] = [
@@ -24,92 +24,106 @@ interface Props {
 
 export default function RASearchToolbar({ tab, onTabChange, search, onSearchChange, resultCount, totalCount, isFiltering, onSyncAll, syncingAll }: Props) {
   const [local, setLocal] = useState(search);
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const [focused, setFocused] = useState(false);
 
   const handleChange = useCallback((val: string) => {
     setLocal(val);
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => onSearchChange(val), 200);
+    // Debounce
+    const t = setTimeout(() => onSearchChange(val), 200);
+    return () => clearTimeout(t);
   }, [onSearchChange]);
-
-  useEffect(() => () => clearTimeout(timer.current), []);
-
-  const countLabel = isFiltering
-    ? `${resultCount ?? 0} results`
-    : `${totalCount ?? 0} documents`;
 
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', gap: 8,
-      padding: '10px 28px 14px', background: '#FFFFFF',
+      display: 'flex', alignItems: 'center', gap: 12,
+      padding: '12px 28px',
+      background: '#FFFFFF',
+      borderBottom: '0.75px solid rgba(15,23,42,0.08)',
     }}>
-      {/* Search */}
+      {/* Search Input */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 8, maxWidth: 360, flex: 1,
-        height: 34, borderRadius: 4,
-        border: '0.75px solid #E2E8F0', padding: '0 10px', background: '#FFFFFF',
+        display: 'flex', alignItems: 'center', gap: 8,
+        width: 280, height: 36, borderRadius: 6,
+        border: `0.75px solid ${focused ? '#2563EB' : 'rgba(15,23,42,0.15)'}`,
+        boxShadow: focused ? '0 0 0 3px rgba(37,99,235,0.12)' : 'none',
+        padding: '0 12px', background: '#FFFFFF',
         transition: 'border-color 150ms, box-shadow 150ms',
       }}
-        onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(37,99,235,0.10)'; }}
-        onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
       >
-        <Search size={14} color="#94A3B8" strokeWidth={2} />
+        <Search size={14} color="#94A3B8" strokeWidth={2} style={{ flexShrink: 0 }} />
         <input
           type="text" value={local} onChange={e => handleChange(e.target.value)}
           placeholder="Search by title, Jira ticket, domain..."
-          style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 13, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}
+          style={{
+            flex: 1, border: 'none', outline: 'none', background: 'transparent',
+            fontSize: 13, color: '#0F172A', fontFamily: "'Inter', sans-serif",
+            appearance: 'none' as any,
+          }}
         />
-        <span style={{ fontSize: 12, color: '#94A3B8', whiteSpace: 'nowrap', fontFamily: "'JetBrains Mono', monospace" }}>{countLabel}</span>
       </div>
 
-      {/* Divider */}
-      <div style={{ width: 1, height: 22, background: '#E2E8F0', flexShrink: 0 }} />
-
-      {/* Filter chips — D09: V12 flat chip, no dots */}
-      <div style={{ display: 'flex', gap: 6 }}>
+      {/* Filter Tabs — Pill Group */}
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: 2,
+        background: '#F1F5F9', borderRadius: 8, padding: 3,
+      }}>
         {TABS.map(t => {
           const active = tab === t.key;
           return (
-             <button key={t.key} onClick={() => onTabChange(t.key)} style={{
-              display: 'inline-flex', alignItems: 'center',
-              padding: '4px 12px', height: 28, fontSize: 13, fontWeight: 500,
-              borderRadius: 999,
-              border: `1px solid ${active ? '#0747A6' : '#DFE1E6'}`,
-              background: active ? '#DEEBFF' : '#FFFFFF',
-              color: active ? '#0747A6' : '#253858',
-              cursor: 'pointer', transition: 'all 120ms ease',
-              fontFamily: "'Inter', sans-serif",
-            }}
-              onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
-              onMouseLeave={e => { if (!active) e.currentTarget.style.background = active ? '#DEEBFF' : '#FFFFFF'; }}
+            <button
+              key={t.key}
+              onClick={() => onTabChange(t.key)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                height: 28, padding: '0 12px', borderRadius: 6,
+                fontSize: 12, fontWeight: active ? 600 : 500,
+                border: 'none', cursor: 'pointer',
+                background: active ? '#FFFFFF' : 'transparent',
+                color: active ? '#0F172A' : '#64748B',
+                boxShadow: active ? '0 1px 3px rgba(15,23,42,0.10)' : 'none',
+                fontFamily: "'Inter', sans-serif",
+                transition: 'all 120ms ease',
+              }}
+              onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.6)'; e.currentTarget.style.color = active ? '#0F172A' : '#374151'; }}
+              onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = active ? '#0F172A' : '#64748B'; }}
             >
               {t.label}
+              {t.key === 'all' && totalCount != null && (
+                <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 400 }}>({totalCount})</span>
+              )}
             </button>
           );
         })}
       </div>
 
-      {/* D13: Sync All to KB — pushed right */}
+      {/* Spacer */}
+      <div style={{ flex: 1 }} />
+
+      {/* Sync All to AI — purple gradient */}
       {onSyncAll && (
-        <>
-          <div style={{ flex: 1 }} />
-          <button
-            onClick={onSyncAll}
-            disabled={syncingAll}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '0 12px', height: 32, fontSize: 13, fontWeight: 500,
-              border: 'none', borderRadius: 6,
-              background: '#2563EB', color: '#FFFFFF',
-              cursor: syncingAll ? 'not-allowed' : 'pointer',
-              opacity: syncingAll ? 0.7 : 1,
-              fontFamily: "'Inter', sans-serif",
-              whiteSpace: 'nowrap', flexShrink: 0,
-            }}
-          >
-            <Zap size={14} /> {syncingAll ? 'Syncing…' : '✦ Sync All to AI'}
-          </button>
-        </>
+        <button
+          onClick={onSyncAll}
+          disabled={syncingAll}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '0 14px', height: 36, fontSize: 13, fontWeight: 600,
+            border: 'none', borderRadius: 6,
+            background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+            boxShadow: '0 1px 3px rgba(124,58,237,0.35)',
+            color: '#FFFFFF',
+            cursor: syncingAll ? 'not-allowed' : 'pointer',
+            opacity: syncingAll ? 0.7 : 1,
+            fontFamily: "'Inter', sans-serif",
+            whiteSpace: 'nowrap', flexShrink: 0,
+            transition: 'box-shadow 150ms ease',
+          }}
+          onMouseEnter={e => { if (!syncingAll) e.currentTarget.style.boxShadow = '0 2px 6px rgba(124,58,237,0.45)'; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 3px rgba(124,58,237,0.35)'; }}
+        >
+          <Sparkles size={14} /> {syncingAll ? 'Syncing…' : 'Sync All to AI'}
+        </button>
       )}
     </div>
   );
