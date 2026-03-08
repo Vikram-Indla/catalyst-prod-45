@@ -970,3 +970,25 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
     </button>
   );
 }
+
+/* ── Ticket Type Badge ── */
+const TICKET_TYPE_STYLES: Record<string, { bg: string; color: string; label: string }> = {
+  subtask: { bg: '#FEF3C7', color: '#92400E', label: 'SUBTASK' },
+  story:   { bg: '#EFF6FF', color: '#1D4ED8', label: 'STORY' },
+  epic:    { bg: '#F3E8FF', color: '#6B21A8', label: 'EPIC' },
+  task:    { bg: '#F1F5F9', color: '#475569', label: 'TASK' },
+};
+
+function TicketTypeBadge({ type }: { type: string | null | undefined }) {
+  if (!type) return null;
+  const s = TICKET_TYPE_STYLES[type.toLowerCase()] || TICKET_TYPE_STYLES.task;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', marginLeft: 4,
+      padding: '0 5px', height: 18, borderRadius: 3,
+      fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+      background: s.bg, color: s.color,
+      fontFamily: "'Inter', sans-serif",
+    }}>{s.label}</span>
+  );
+}
