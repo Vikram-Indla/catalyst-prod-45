@@ -23,6 +23,9 @@ interface BrdData {
   wikiCount: number;
   publishedCount: number;
   uatCount: number;
+  parentJiraKey: string | null;
+  ticketType: string | null;
+  rawTextSource: string | null;
 }
 
 // D13: Pluralisation helper
