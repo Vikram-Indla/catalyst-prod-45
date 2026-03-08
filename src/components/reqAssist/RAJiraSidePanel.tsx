@@ -107,6 +107,9 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         wikiCount: finalWikiCount,
         publishedCount: pubRes.count ?? 0,
         uatCount: uatRes.count ?? 0,
+        parentJiraKey: brdRow.parent_jira_key ?? null,
+        ticketType: brdRow.ticket_type ?? null,
+        rawTextSource: brdRow.raw_text_source ?? null,
       });
 
       // Fetch UAT scenarios if they exist
