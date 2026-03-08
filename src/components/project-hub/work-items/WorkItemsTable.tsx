@@ -44,7 +44,7 @@ function buildTree(items: WorkItemRow[]) {
 export function WorkItemsTable({
   items, onRowClick, onCreateClick, sorts, onToggleSort, columns, grouped,
   onInlineUpdate, onBulkUpdate, onBulkDelete, onCloneItem,
-  statuses, profiles, hasSearchOrFilter, onClearFilters,
+  statuses, profiles, hasSearchOrFilter, onClearFilters, sourceFilter,
 }: WorkItemsTableProps) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
