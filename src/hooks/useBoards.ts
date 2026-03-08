@@ -24,8 +24,8 @@ export function useBoards(projectId: string | undefined) {
         .is('deleted_at', null)
         .order('sort_order', { ascending: true });
 
-      if (error) throw error;
-
+      if (error) { console.error('[useBoards] query error:', error); throw error; }
+      console.log('[useBoards] fetched', data?.length, 'boards');
       return (data ?? []).map((b: any) => ({
         id: b.id,
         name: b.name,
