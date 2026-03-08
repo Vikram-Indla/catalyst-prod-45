@@ -131,36 +131,23 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     setTimeout(() => toast.success(`Epics generated for ${doc.title}`), 600);
   };
 
-  // ── EFFECT 2: Edge Function call — runs once only
+  // ── EFFECT 2: Edge Function call — runs once only (ref guard)
   useEffect(() => {
     if (hasStarted.current) return;
     hasStarted.current = true;
 
-    let cancelled = false;
-
-    (async () => {
-      try {
-        const brdId = await resolveBrdId();
-
-        if (cancelled) return;
-
-        if (!brdId || !isValidUUID(brdId)) {
-          throw new Error('No brd_id');
-        }
-
-        setResolvedBrdId(brdId);
-        await invokeGeneration(brdId);
-      } catch (err) {
-        if (cancelled) return;
-        console.error('[RA] Resolution failed');
+    resolveBrdId().then(brdId => {
+      if (!brdId) {
         setHasFailed(true);
-        setErrorMsg(sanitiseError(err));
+        setErrorMsg('Could not find or create BRD document entry.');
+        return;
       }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
+      setResolvedBrdId(brdId);
+      return invokeGeneration(brdId);
+    }).catch(err => {
+      setHasFailed(true);
+      setErrorMsg(sanitiseError(err) || 'Generation failed. Please retry.');
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
