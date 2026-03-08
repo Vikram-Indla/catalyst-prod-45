@@ -1,15 +1,21 @@
 /**
  * WorkItemTable — Jira-parity flat/hierarchical table view
  * 44px rows, sortable columns, expandable hierarchy, load-more pagination
+ * F1: Inline status change  F2: Inline priority change
+ * F3: Inline assignee change  F4: Inline title editing
  */
 
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { ChevronRight, ChevronDown, MoreHorizontal, Plus, RefreshCw } from 'lucide-react';
 import type { WorkItem } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusBadge } from './StatusBadge';
 import { StatusDropdown } from './StatusDropdown';
-import { useUpdateIssueStatus } from '@/hooks/useUpdateIssueStatus';
+import { PriorityDropdown } from './PriorityDropdown';
+import { AssigneeDropdown, type AssigneeOption } from './AssigneeDropdown';
+import { InlineEditTitle } from './InlineEditTitle';
+import { useUpdateIssueField } from '@/hooks/useUpdateIssueField';
+import { toast } from 'sonner';
 
 interface WorkItemTableProps {
   items: WorkItem[];
@@ -25,7 +31,6 @@ interface WorkItemTableProps {
 type SortKey = 'key' | 'title' | 'status' | 'parent' | 'assignee' | 'created';
 type SortDir = 'asc' | 'desc';
 
-/* ── Flatten tree for table display ── */
 interface FlatRow {
   item: WorkItem;
   depth: number;
@@ -43,19 +48,26 @@ function flattenTree(items: WorkItem[], expandedIds: Set<string>, depth = 0): Fl
   return result;
 }
 
-function collectAllIds(items: WorkItem[]): string[] {
-  const ids: string[] = [];
-  for (const item of items) {
-    if (item.children.length > 0) { ids.push(item.id); ids.push(...collectAllIds(item.children)); }
+/* ── Collect unique assignees from tree ── */
+function collectAssignees(items: WorkItem[]): AssigneeOption[] {
+  const map = new Map<string, AssigneeOption>();
+  function walk(nodes: WorkItem[]) {
+    for (const n of nodes) {
+      if (n.assignee && !map.has(n.assignee.displayName)) {
+        map.set(n.assignee.displayName, { displayName: n.assignee.displayName, email: n.assignee.email, accountId: n.assignee.id });
+      }
+      walk(n.children);
+    }
   }
-  return ids;
+  walk(items);
+  return Array.from(map.values()).sort((a, b) => a.displayName.localeCompare(b.displayName));
 }
 
 /* ── Assignee avatar ── */
-function AssigneeCell({ assignee }: { assignee?: WorkItem['assignee'] }) {
+function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; onClick?: (e: React.MouseEvent) => void }) {
   if (!assignee) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
         <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed #CBD5E1', flexShrink: 0 }} />
         <span style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>Unassigned</span>
       </div>
@@ -63,13 +75,34 @@ function AssigneeCell({ assignee }: { assignee?: WorkItem['assignee'] }) {
   }
   const initials = assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
       <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>
       </div>
       <span style={{ fontSize: 12, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{assignee.displayName}</span>
     </div>
   );
+}
+
+/* ── Priority bars (clickable) ── */
+function PriorityBarsCell({ level, onClick }: { level: number; onClick?: (e: React.MouseEvent) => void }) {
+  return (
+    <div style={{ display: 'flex', gap: 2, alignItems: 'center', cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} style={{ width: 12, height: 4, borderRadius: 1, background: i <= level ? '#64748B' : '#E2E8F0' }} />
+      ))}
+    </div>
+  );
+}
+
+function priorityToLevel(name?: string): number {
+  if (!name) return 0;
+  const n = name.toLowerCase();
+  if (n === 'critical') return 4;
+  if (n === 'high') return 3;
+  if (n === 'medium') return 2;
+  if (n === 'low') return 1;
+  return 0;
 }
 
 /* ── Column header ── */
@@ -93,14 +126,17 @@ function ColHeader({ label, sortKey, currentSort, currentDir, onSort, width, fle
   );
 }
 
+type ActiveDropdown = { type: 'status' | 'priority' | 'assignee'; itemId: string } | null;
+
 export function WorkItemTable({ items, search, onSelect, selectedId, projectKey, allStatuses, onCreateClick, onRefresh }: WorkItemTableProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey] = useState<SortKey>('key');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [perPage, setPerPage] = useState(50);
-  const [statusDropdown, setStatusDropdown] = useState<{ itemId: string } | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<ActiveDropdown>(null);
 
-  const updateStatus = useUpdateIssueStatus(projectKey);
+  const updateField = useUpdateIssueField(projectKey);
+  const allAssignees = useMemo(() => collectAssignees(items), [items]);
 
   const toggle = useCallback((id: string) => {
     setExpandedIds(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
@@ -112,23 +148,48 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
   }, [sortKey]);
 
   const flatRows = useMemo(() => flattenTree(items, expandedIds), [items, expandedIds]);
-
-  // Sort top-level only (hierarchy stays intact)
   const visibleRows = flatRows.slice(0, perPage);
   const totalFlat = flatRows.length;
 
+  const openDropdown = useCallback((type: 'status' | 'priority' | 'assignee', itemId: string) => {
+    setActiveDropdown(prev => prev?.type === type && prev.itemId === itemId ? null : { type, itemId });
+  }, []);
+
   const handleStatusChange = useCallback((issueKey: string, newStatus: string) => {
-    updateStatus.mutate({ issueKey, newStatus });
-    setStatusDropdown(null);
-  }, [updateStatus]);
+    updateField.mutate({ issueKey, fields: { status: newStatus } });
+    setActiveDropdown(null);
+    toast.success(`Status updated to ${newStatus}`);
+  }, [updateField]);
+
+  const handlePriorityChange = useCallback((issueKey: string, newPriority: string) => {
+    updateField.mutate({ issueKey, fields: { priority: newPriority === 'None' ? null : newPriority } });
+    setActiveDropdown(null);
+    toast.success(`Priority updated to ${newPriority}`);
+  }, [updateField]);
+
+  const handleAssigneeChange = useCallback((issueKey: string, assignee: AssigneeOption | null) => {
+    updateField.mutate({
+      issueKey,
+      fields: {
+        assignee_display_name: assignee?.displayName || null,
+        assignee_email: assignee?.email || null,
+        assignee_account_id: assignee?.accountId || null,
+      },
+    });
+    setActiveDropdown(null);
+    toast.success(assignee ? `Assigned to ${assignee.displayName}` : 'Unassigned');
+  }, [updateField]);
+
+  const handleTitleSave = useCallback((issueKey: string, newTitle: string) => {
+    updateField.mutate({ issueKey, fields: { summary: newTitle } });
+    toast.success('Title updated');
+  }, [updateField]);
 
   return (
     <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', height: 36, background: '#FAFAFA', borderBottom: '1px solid #E2E8F0' }}>
-        <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {/* checkbox placeholder */}
-        </div>
+        <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
         <ColHeader label="Work" sortKey="key" currentSort={sortKey} currentDir={sortDir} onSort={handleSort} flex={1} />
         <ColHeader label="Status" sortKey="status" currentSort={sortKey} currentDir={sortDir} onSort={handleSort} width={150} />
         <ColHeader label="Parent" sortKey="parent" currentSort={sortKey} currentDir={sortDir} onSort={handleSort} width={120} />
@@ -173,23 +234,24 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
               <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
                 {item.key}
               </span>
-              <span style={{ fontSize: 13, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.title}>
-                {item.title}
-              </span>
+              <InlineEditTitle
+                value={item.title}
+                onSave={(newTitle) => handleTitleSave(item.key, newTitle)}
+              />
             </div>
 
             {/* Status */}
             <div style={{ width: 150, padding: '0 8px', position: 'relative' }}>
               <StatusBadge
                 status={item.status.name}
-                onClick={(e) => { e.stopPropagation(); setStatusDropdown(statusDropdown?.itemId === item.id ? null : { itemId: item.id }); }}
+                onClick={(e) => { e.stopPropagation(); openDropdown('status', item.id); }}
               />
-              {statusDropdown?.itemId === item.id && (
+              {activeDropdown?.type === 'status' && activeDropdown.itemId === item.id && (
                 <StatusDropdown
                   currentStatus={item.status.name}
                   availableStatuses={allStatuses}
                   onSelect={(s) => handleStatusChange(item.key, s)}
-                  onClose={() => setStatusDropdown(null)}
+                  onClose={() => setActiveDropdown(null)}
                 />
               )}
             </div>
@@ -202,8 +264,19 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
             </div>
 
             {/* Assignee */}
-            <div style={{ width: 160, padding: '0 8px', overflow: 'hidden' }}>
-              <AssigneeCell assignee={item.assignee} />
+            <div style={{ width: 160, padding: '0 8px', overflow: 'hidden', position: 'relative' }}>
+              <AssigneeCell
+                assignee={item.assignee}
+                onClick={(e) => { e.stopPropagation(); openDropdown('assignee', item.id); }}
+              />
+              {activeDropdown?.type === 'assignee' && activeDropdown.itemId === item.id && (
+                <AssigneeDropdown
+                  currentAssignee={item.assignee?.displayName}
+                  availableAssignees={allAssignees}
+                  onSelect={(a) => handleAssigneeChange(item.key, a)}
+                  onClose={() => setActiveDropdown(null)}
+                />
+              )}
             </div>
 
             {/* Created */}

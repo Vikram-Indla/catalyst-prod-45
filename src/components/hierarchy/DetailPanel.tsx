@@ -1,9 +1,9 @@
 /**
  * DetailPanel — Enriched right-side detail view for selected work item
- * Breadcrumbs, collapsible sections, subtasks, activity placeholder
+ * F1: Status dropdown  F2: Priority dropdown  F3: Assignee dropdown  F4: Title editing
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import type { WorkItem } from '@/types/hierarchy';
@@ -11,7 +11,11 @@ import { HIERARCHY_LEVELS, canBeParentOf } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusBadge } from './StatusBadge';
 import { StatusDropdown } from './StatusDropdown';
-import { useUpdateIssueStatus } from '@/hooks/useUpdateIssueStatus';
+import { PriorityDropdown } from './PriorityDropdown';
+import { AssigneeDropdown, type AssigneeOption } from './AssigneeDropdown';
+import { InlineEditTitle } from './InlineEditTitle';
+import { useUpdateIssueField } from '@/hooks/useUpdateIssueField';
+import { toast } from 'sonner';
 
 interface DetailPanelProps {
   item: WorkItem | null;
@@ -78,7 +82,6 @@ function EmptyValue() {
   return <span style={{ color: '#94A3B8', fontWeight: 400 }}>—</span>;
 }
 
-/* ── Collapsible section ── */
 function Section({ title, count, defaultOpen = true, children }: { title: string; count?: number; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -101,7 +104,6 @@ function Section({ title, count, defaultOpen = true, children }: { title: string
   );
 }
 
-/** Find parent item in tree */
 function findParentItem(items: WorkItem[], targetId: string): WorkItem | null {
   for (const item of items) {
     for (const child of item.children) {
@@ -113,9 +115,26 @@ function findParentItem(items: WorkItem[], targetId: string): WorkItem | null {
   return null;
 }
 
+function collectAssignees(items: WorkItem[]): AssigneeOption[] {
+  const map = new Map<string, AssigneeOption>();
+  function walk(nodes: WorkItem[]) {
+    for (const n of nodes) {
+      if (n.assignee && !map.has(n.assignee.displayName)) {
+        map.set(n.assignee.displayName, { displayName: n.assignee.displayName, email: n.assignee.email, accountId: n.assignee.id });
+      }
+      walk(n.children);
+    }
+  }
+  walk(items);
+  return Array.from(map.values()).sort((a, b) => a.displayName.localeCompare(b.displayName));
+}
+
+type ActiveDropdown = 'status' | 'priority' | 'assignee' | null;
+
 export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddChild, projectKey, allStatuses = [] }: DetailPanelProps) {
-  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
-  const updateStatus = useUpdateIssueStatus(projectKey);
+  const [activeDropdown, setActiveDropdown] = useState<ActiveDropdown>(null);
+  const updateField = useUpdateIssueField(projectKey);
+  const allAssignees = useMemo(() => collectAssignees(allItems), [allItems]);
 
   if (!item) {
     return (
@@ -136,8 +155,33 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
     : 0;
 
   const handleStatusChange = (newStatus: string) => {
-    updateStatus.mutate({ issueKey: item.key, newStatus });
-    setStatusDropdownOpen(false);
+    updateField.mutate({ issueKey: item.key, fields: { status: newStatus } });
+    setActiveDropdown(null);
+    toast.success(`Status updated to ${newStatus}`);
+  };
+
+  const handlePriorityChange = (newPriority: string) => {
+    updateField.mutate({ issueKey: item.key, fields: { priority: newPriority === 'None' ? null : newPriority } });
+    setActiveDropdown(null);
+    toast.success(`Priority updated to ${newPriority}`);
+  };
+
+  const handleAssigneeChange = (assignee: AssigneeOption | null) => {
+    updateField.mutate({
+      issueKey: item.key,
+      fields: {
+        assignee_display_name: assignee?.displayName || null,
+        assignee_email: assignee?.email || null,
+        assignee_account_id: assignee?.accountId || null,
+      },
+    });
+    setActiveDropdown(null);
+    toast.success(assignee ? `Assigned to ${assignee.displayName}` : 'Unassigned');
+  };
+
+  const handleTitleSave = (newTitle: string) => {
+    updateField.mutate({ issueKey: item.key, fields: { summary: newTitle } });
+    toast.success('Title updated');
   };
 
   return (
@@ -183,14 +227,14 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
         <div style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
           <StatusBadge
             status={item.status.name}
-            onClick={(e) => { e.stopPropagation(); setStatusDropdownOpen(o => !o); }}
+            onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === 'status' ? null : 'status'); }}
           />
-          {statusDropdownOpen && (
+          {activeDropdown === 'status' && (
             <StatusDropdown
               currentStatus={item.status.name}
               availableStatuses={allStatuses}
               onSelect={handleStatusChange}
-              onClose={() => setStatusDropdownOpen(false)}
+              onClose={() => setActiveDropdown(null)}
             />
           )}
           <span style={{ color: '#CBD5E1' }}>·</span>
@@ -199,9 +243,13 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
 
         {/* C. Title + Description */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', lineHeight: 1.35, wordBreak: 'break-word' }}>
-            {item.title}
-          </div>
+          <InlineEditTitle
+            value={item.title}
+            onSave={handleTitleSave}
+            fontSize={18}
+            fontWeight={700}
+            style={{ display: 'block', whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: '1.35' }}
+          />
           <p style={{ fontSize: 13, color: '#94A3B8', margin: '8px 0 0', fontStyle: 'italic' }}>
             No description
           </p>
@@ -211,34 +259,64 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
         <Section title="Key Details" defaultOpen={true}>
           <FieldRow label="Status">
             <div style={{ position: 'relative', display: 'inline-block' }}>
-              <StatusBadge status={item.status.name} />
+              <StatusBadge
+                status={item.status.name}
+                onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === 'status' ? null : 'status'); }}
+              />
             </div>
           </FieldRow>
 
-          {item.priority && (
-            <FieldRow label="Priority">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <PriorityBars level={priorityToLevel(item.priority.name)} />
-                <span style={{ fontSize: 12, color: '#64748B' }}>{item.priority.name}</span>
+          <FieldRow label="Priority">
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+                onClick={() => setActiveDropdown(activeDropdown === 'priority' ? null : 'priority')}
+              >
+                <PriorityBars level={priorityToLevel(item.priority?.name)} />
+                <span style={{ fontSize: 12, color: '#64748B' }}>{item.priority?.name || 'None'}</span>
+                <span style={{ fontSize: 8, color: '#94A3B8' }}>▾</span>
               </div>
-            </FieldRow>
-          )}
+              {activeDropdown === 'priority' && (
+                <PriorityDropdown
+                  currentPriority={item.priority?.name}
+                  onSelect={handlePriorityChange}
+                  onClose={() => setActiveDropdown(null)}
+                />
+              )}
+            </div>
+          </FieldRow>
 
           <FieldRow label="Assignee">
-            {item.assignee ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF' }}>
-                    {item.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
-                  </span>
-                </div>
-                <span>{item.assignee.displayName}</span>
+            <div style={{ position: 'relative' }}>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+                onClick={() => setActiveDropdown(activeDropdown === 'assignee' ? null : 'assignee')}
+              >
+                {item.assignee ? (
+                  <>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF' }}>
+                        {item.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                    <span>{item.assignee.displayName}</span>
+                  </>
+                ) : <EmptyValue />}
+                <span style={{ fontSize: 8, color: '#94A3B8' }}>▾</span>
               </div>
-            ) : <EmptyValue />}
+              {activeDropdown === 'assignee' && (
+                <AssigneeDropdown
+                  currentAssignee={item.assignee?.displayName}
+                  availableAssignees={allAssignees}
+                  onSelect={handleAssigneeChange}
+                  onClose={() => setActiveDropdown(null)}
+                />
+              )}
+            </div>
           </FieldRow>
 
           <FieldRow label="Reporter">
-            <EmptyValue />
+            <span style={{ color: '#94A3B8', fontStyle: 'italic' }}>—</span>
           </FieldRow>
 
           {item.fixVersion && (
