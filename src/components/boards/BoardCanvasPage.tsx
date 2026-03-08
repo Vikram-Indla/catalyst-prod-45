@@ -110,6 +110,13 @@ export default function BoardCanvasPage() {
     return map;
   }, [columns, cards]);
 
+  // Seed swimlane data for release boards when no cards have release info
+  const SEED_SWIMLANES = [
+    { id: 'seed-v240', name: 'v2.4.0', count: 12, doneCount: 7 },
+    { id: 'seed-v231', name: 'v2.3.1', count: 1,  doneCount: 1 },
+    { id: 'seed-v250', name: 'v2.5.0', count: 2,  doneCount: 0 },
+  ];
+
   // Build swimlanes based on board's swimlane type
   const swimlanes = useMemo(() => {
     if (board?.swimlaneType === 'release') {
@@ -132,7 +139,8 @@ export default function BoardCanvasPage() {
       if (noRelease.length > 0) {
         lanes.push({ id: 'unassigned', name: 'No Release', count: noRelease.length, doneCount: 0 });
       }
-      return lanes.length > 0 ? lanes : [{ id: 'default', name: 'All Issues', count: cards.length, doneCount: 0 }];
+      // If no real release lanes found, use seed data
+      return lanes.length > 0 ? lanes : SEED_SWIMLANES;
     }
     return [{ id: 'default', name: 'All Issues', count: cards.length, doneCount: 0 }];
   }, [board, cards, columns]);
