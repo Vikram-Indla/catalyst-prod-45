@@ -62,6 +62,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
   // D08: PDF upload
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [reimporting, setReimporting] = useState(false);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
