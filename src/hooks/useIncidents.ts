@@ -44,7 +44,7 @@ export function useIncidents(filters?: IncidentFilters) {
       return (data || []).map(item => ({
         ...item,
         sla: Array.isArray(item.sla) ? item.sla[0] : item.sla,
-      })) as Incident[];
+      })) as unknown as Incident[];
     },
   });
 }

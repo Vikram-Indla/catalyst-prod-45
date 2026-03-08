@@ -164,6 +164,15 @@ export interface Incident {
   committee_set_at: string | null;
   committee_set_by: string | null;
 
+  // JIRA Sync (authoritative source for production incidents)
+  jira_key: string | null;            // Preserved exactly: "SENAEI-445", "MDT-223"
+  jira_id: string | null;             // JIRA internal issue ID
+  jira_project_key: string | null;    // "SENAEI", "MDT", "TOHAMMENA"
+  jira_project_name: string | null;   // "Senaei Platform", "MDT Workflow"
+  jira_project_id: string | null;     // JIRA internal project ID
+  last_synced_at: string | null;      // ISO timestamp of last JIRA pull
+  sync_source: 'jira' | 'manual' | 'converted';
+
   created_at: string;
   updated_at: string;
   created_by: string | null;
@@ -216,6 +225,7 @@ export interface IncidentWithJoins extends Incident {
   history: IncidentHistoryEntry[];
   work_items: IncidentWorkItem[];
   watchers: IncidentWatcher[];
+  field_values: IncidentFieldValue[];   // Dynamic JIRA custom fields
 }
 
 // ─────────────────────────────────────────────
@@ -399,6 +409,23 @@ export interface IncidentLabelWithDef {
   incident_id: string;
   label_id: string;
   label: IncidentLabelDef;
+}
+
+// ─────────────────────────────────────────────
+// JIRA CUSTOM FIELD VALUES (dynamic columns)
+// ─────────────────────────────────────────────
+
+export type IncidentFieldType = 'text' | 'number' | 'date' | 'user' | 'option' | 'url';
+
+export interface IncidentFieldValue {
+  id: string;
+  incident_id: string;
+  field_key: string;      // JIRA key: "customfield_10001"
+  field_label: string;    // Human label: "Affected Region"
+  field_value: string | null;
+  field_type: IncidentFieldType;
+  created_at: string;
+  updated_at: string;
 }
 
 // ─────────────────────────────────────────────
