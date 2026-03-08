@@ -57,10 +57,22 @@ export default function BoardCanvasPage() {
   const qc = useQueryClient();
   const { data: boardData, isLoading } = useBoard(boardId);
   const { data: cards = [] } = useBoardCards(boardId);
+  const { data: siblingBoards = [] } = useBoards(projectId);
   const { collapsedSwimlanes, toggleSwimlane, draggingCardId, setDraggingCardId } = useBoardStore();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const updateCardRank = useUpdateCardRank();
   const updateLastViewed = useUpdateBoardLastViewed();
+
+  // Canonical board order for tab bar
+  const CANONICAL_ORDER = ['Delivery Board', 'QA Board', 'Design Board', 'My Planning Board'];
+  const boardTabs = useMemo(() => {
+    const ordered: typeof siblingBoards = [];
+    for (const name of CANONICAL_ORDER) {
+      const found = siblingBoards.find(b => b.name === name);
+      if (found) ordered.push(found);
+    }
+    return ordered;
+  }, [siblingBoards]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
   const dragCard = cards.find(c => c.id === draggingCardId) ?? null;
