@@ -6,6 +6,7 @@ import type { BoardVisibility, SwimlaneType } from '@/types/board';
 
 interface Props {
   projectId: string;
+  basePath?: string;
   onClose: () => void;
 }
 
