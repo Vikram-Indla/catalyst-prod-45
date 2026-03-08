@@ -61,7 +61,7 @@ function getStatusCategory(status: string): StatusCategory {
  * DO NOT MODIFY THESE VALUES.
  */
 const LOZENGE_COLORS: Record<StatusCategory, { bg: string; text: string }> = {
-  todo:       { bg: "#DFE1E6", text: "#44546F" },
+  todo:       { bg: "#DFE1E6", text: "#253858" },
   inprogress: { bg: "#DEEBFF", text: "#0747A6" },
   done:       { bg: "#E3FCEF", text: "#006644" },
 };
