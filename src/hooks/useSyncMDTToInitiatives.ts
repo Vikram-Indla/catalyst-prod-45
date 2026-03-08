@@ -34,15 +34,21 @@ export function useSyncMDTToInitiatives() {
 
     (async () => {
       try {
-        // 1. Get all non-Done MDT issues from Jira
+        // 1. Get all MDT issues from Jira (exclude Done Business Requests only)
         const { data: mdtIssues, error: issErr } = await supabase
           .from('ph_issues')
-          .select('issue_key, summary, status, status_category, priority, assignee_display_name')
+          .select('issue_key, summary, status, status_category, priority, assignee_display_name, issue_type')
           .eq('project_key', 'MDT')
-          .neq('status_category', 'Done')
           .limit(2000);
 
         if (issErr || !mdtIssues?.length) return;
+
+        // Filter out Done Business Requests only
+        const filteredIssues = mdtIssues.filter((i: any) => {
+          const isDoneBusinessRequest = i.status_category === 'Done' && 
+            (i.issue_type || '').toLowerCase().includes('business request');
+          return !isDoneBusinessRequest;
+        });
 
         // 2. Get existing initiatives with jira_issue_key set
         const { data: existing } = await (supabase as any)
