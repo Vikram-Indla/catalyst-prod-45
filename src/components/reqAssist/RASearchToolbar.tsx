@@ -119,8 +119,8 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
             whiteSpace: 'nowrap', flexShrink: 0,
             transition: 'box-shadow 150ms ease',
           }}
-          onMouseEnter={e => { if (!syncingAll) e.currentTarget.style.boxShadow = '0 2px 6px rgba(124,58,237,0.45)'; }}
-          onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 3px rgba(124,58,237,0.35)'; }}
+          onMouseEnter={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px rgba(37,99,235,0.45)'; } }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(37,99,235,0.35)'; }}
         >
           <Sparkles size={14} /> {syncingAll ? 'Syncing…' : 'Sync All to AI'}
         </button>

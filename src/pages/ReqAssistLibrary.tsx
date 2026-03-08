@@ -696,7 +696,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           width: 18, height: 18, borderRadius: 9,
-          background: '#7C3AED', color: '#FFFFFF',
+          background: '#2563EB', color: '#FFFFFF',
           fontSize: 11, fontWeight: 700,
           fontFamily: "'Inter', sans-serif",
         }}>{epicCount}</span>
