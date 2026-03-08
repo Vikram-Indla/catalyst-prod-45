@@ -97,7 +97,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
       display: 'flex', justifyContent: 'flex-end',
     }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{
-        width: 232, height: '100%', background: '#FFFFFF',
+        width: 420, height: '100%', background: '#FFFFFF',
         borderLeft: '0.75px solid rgba(15,23,42,0.08)',
         boxShadow: '-8px 0 32px rgba(15,23,42,0.12)',
         display: 'flex', flexDirection: 'column',

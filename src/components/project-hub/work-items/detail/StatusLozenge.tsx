@@ -6,22 +6,40 @@ interface StatusLozengeProps {
   size?: 'sm' | 'md';
 }
 
+/**
+ * V12 StatusLozenge — IMMUTABLE 3-COLOR GUARDRAIL
+ * Grey:  bg:#DFE1E6  text:#253858  → Backlog, To Do, On Hold, New, Waiting, Blocked
+ * Blue:  bg:#DEEBFF  text:#0747A6  → In Progress, In Dev, In Review, In QA, Active, In Beta
+ * Green: bg:#E3FCEF  text:#006644  → Done, Completed, Production, Prod Ready, Approved, Resolved
+ */
 function getStatusStyle(category: string): { bg: string; color: string } {
   switch (category) {
-    case 'in_progress': return { bg: '#DBEAFE', color: '#2563EB' };
-    case 'done': return { bg: '#F0FDF4', color: '#16A34A' };
-    case 'terminal': return { bg: '#FEF2F2', color: '#DC2626' };
-    default: return { bg: '#F1F5F9', color: '#64748B' };
+    case 'in_progress': return { bg: '#DEEBFF', color: '#0747A6' };
+    case 'done': return { bg: '#E3FCEF', color: '#006644' };
+    // terminal, todo, backlog, blocked, on_hold — ALL grey
+    default: return { bg: '#DFE1E6', color: '#253858' };
   }
 }
 
 export function StatusLozenge({ name, category, size = 'sm' }: StatusLozengeProps) {
   const s = getStatusStyle(category);
-  const fontSize = size === 'sm' ? 10 : 11;
   return (
     <span
-      className="inline-block px-1.5 py-0.5 rounded font-bold uppercase whitespace-nowrap"
-      style={{ background: s.bg, color: s.color, fontSize, letterSpacing: '0.02em' }}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        padding: '0 6px',
+        height: 20,
+        borderRadius: 3,
+        fontSize: size === 'sm' ? 11 : 11,
+        fontWeight: 700,
+        textTransform: 'uppercase' as const,
+        letterSpacing: '0.03em',
+        whiteSpace: 'nowrap' as const,
+        background: s.bg,
+        color: s.color,
+        fontFamily: "'Inter', sans-serif",
+      }}
     >
       {name}
     </span>

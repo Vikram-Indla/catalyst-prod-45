@@ -233,7 +233,7 @@ export default function BoardCanvasPage() {
         </div>
       </div>
 
-      {/* Column headers */}
+      {/* Column headers with WIP capacity */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
         padding: '8px 24px',
@@ -242,10 +242,19 @@ export default function BoardCanvasPage() {
       }}>
         {columns.map(col => {
           const count = cardsByColumn[col.id]?.length ?? 0;
+          const maxWip = (col as any).maxWip as number | undefined;
+          const atLimit = maxWip != null && count >= maxWip;
           return (
             <div key={col.id} style={{
               width: 272, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6,
             }}>
+              {/* WIP status dot — only when maxWip is set */}
+              {maxWip != null && (
+                <span style={{
+                  width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
+                  background: atLimit ? '#DC2626' : '#94A3B8',
+                }} />
+              )}
               <span style={{
                 fontSize: 12, fontWeight: 650, textTransform: 'uppercase' as const,
                 color: col.isDone ? '#16A34A' : '#334155',
@@ -257,6 +266,15 @@ export default function BoardCanvasPage() {
                 color: col.isDone ? '#16A34A' : '#94A3B8',
                 fontFamily: "'JetBrains Mono', monospace",
               }}>{count}</span>
+              {/* WIP limit badge */}
+              {maxWip != null && (
+                <span style={{
+                  fontSize: 10.5, padding: '1px 5px', borderRadius: 3,
+                  background: atLimit ? '#FEF2F2' : '#F8FAFC',
+                  color: atLimit ? '#DC2626' : '#64748B',
+                  fontFamily: "'Inter', sans-serif",
+                }}>max {maxWip}</span>
+              )}
             </div>
           );
         })}
