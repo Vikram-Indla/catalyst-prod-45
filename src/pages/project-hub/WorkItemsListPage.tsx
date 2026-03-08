@@ -177,10 +177,10 @@ export default function WorkItemsListPage() {
 
   // Sync Now handler
   const handleSyncNow = useCallback(() => {
-    if (!projectId) return;
+    if (!projectId || triggerSync.isPending) return;
     triggerSync.mutate(projectId, {
       onSuccess: () => toast.success('Sync triggered successfully'),
-      onError: (e: any) => toast.error(`Sync failed: ${e.message}`),
+      onError: () => toast.error('Sync failed. Please try again.'),
     });
   }, [projectId, triggerSync]);
 
