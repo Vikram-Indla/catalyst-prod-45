@@ -1,6 +1,7 @@
 /**
  * HierarchyPage — All Work Items with Tree/Table views, search, filter
  * Route: /project-hub/:key/hierarchy
+ * F27: Type filter chips
  */
 
 import { useState, useMemo, useCallback, useRef } from 'react';
@@ -14,6 +15,7 @@ import { useJiraHierarchyTree } from '@/hooks/useJiraHierarchy';
 import { WorkItemTree, TreeSkeleton } from '@/components/hierarchy/WorkItemTree';
 import { WorkItemTable } from '@/components/hierarchy/WorkItemTable';
 import { DetailPanel } from '@/components/hierarchy/DetailPanel';
+import { TypeFilterChips } from '@/components/hierarchy/TypeFilterChips';
 import { toast } from 'sonner';
 
 /* ── helpers ── */
@@ -159,6 +161,7 @@ export default function HierarchyPage() {
   const [filterOpen, setFilterOpen] = useState(false);
   const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
   const [searchInput, setSearchInput] = useState('');
+  const [typeChipFilter, setTypeChipFilter] = useState<string | null>(null);
 
   const totalItems = useMemo(() => countAll(treeItems), [treeItems]);
   const completedItems = useMemo(() => countCompleted(treeItems), [treeItems]);
@@ -167,7 +170,15 @@ export default function HierarchyPage() {
   const allAssignees = useMemo(() => Array.from(collectAssignees(treeItems)), [treeItems]);
   const allTypes = useMemo(() => Array.from(collectTypes(treeItems)), [treeItems]);
 
-  const filteredItems = useMemo(() => filterTree(treeItems, search, filters), [treeItems, search, filters]);
+  // Combine type chip filter with advanced filters
+  const effectiveFilters = useMemo<Filters>(() => {
+    if (typeChipFilter) {
+      return { ...filters, types: [typeChipFilter] };
+    }
+    return filters;
+  }, [filters, typeChipFilter]);
+
+  const filteredItems = useMemo(() => filterTree(treeItems, search, effectiveFilters), [treeItems, search, effectiveFilters]);
 
   const activeFilterCount = filters.types.length + filters.statuses.length + filters.assignees.length;
 
@@ -179,6 +190,14 @@ export default function HierarchyPage() {
 
   const handleSelect = useCallback((item: WorkItem) => setSelectedItem(item), []);
   const handleDeselect = useCallback(() => setSelectedItem(null), []);
+
+  const handleTypeChipChange = useCallback((type: string | null) => {
+    setTypeChipFilter(type);
+    // Clear any advanced type filter when using chips
+    if (type !== null) {
+      setFilters(f => ({ ...f, types: [] }));
+    }
+  }, []);
 
   const gridCols = selectedItem ? '2fr 1fr' : '1fr';
 
@@ -264,6 +283,17 @@ export default function HierarchyPage() {
         </ToolbarBtn>
       </div>
 
+      {/* TYPE FILTER CHIPS (F27) */}
+      {!isLoading && !isError && treeItems.length > 0 && (
+        <div style={{ padding: '8px 24px', background: '#FFFFFF', borderBottom: '1px solid #F1F5F9' }}>
+          <TypeFilterChips
+            items={treeItems}
+            activeType={typeChipFilter}
+            onTypeChange={handleTypeChipChange}
+          />
+        </div>
+      )}
+
       {/* CONTENT GRID */}
       <div style={{ flex: 1, display: 'grid', gridTemplateColumns: gridCols, gap: 16, overflow: 'hidden', minHeight: 0, padding: 24 }}>
         <div style={{ overflowY: 'auto', minHeight: 0 }}>
@@ -280,10 +310,10 @@ export default function HierarchyPage() {
           ) : filteredItems.length === 0 ? (
             <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, background: '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 16, textAlign: 'center', padding: 24 }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>
-                {search || activeFilterCount > 0 ? 'No matching items' : 'No work items found'}
+                {search || activeFilterCount > 0 || typeChipFilter ? 'No matching items' : 'No work items found'}
               </p>
               <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>
-                {search || activeFilterCount > 0 ? 'Try adjusting your search or filters.' : `No Jira issues found for ${projectKey?.toUpperCase()}.`}
+                {search || activeFilterCount > 0 || typeChipFilter ? 'Try adjusting your search or filters.' : `No Jira issues found for ${projectKey?.toUpperCase()}.`}
               </p>
             </div>
           ) : viewMode === 'tree' ? (
