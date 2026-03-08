@@ -25,6 +25,10 @@ interface BrdData {
   uatCount: number;
 }
 
+// D13: Pluralisation helper
+const pluralise = (n: number, singular: string, plural: string) =>
+  `${n} ${n === 1 ? singular : plural}`;
+
 // D07: Domain derivation from jira_ticket_key prefix
 function deriveDomain(jiraKey: string | null | undefined, docDomain: string | null | undefined): string | null {
   if (docDomain) return docDomain;
