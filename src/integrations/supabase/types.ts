@@ -11567,6 +11567,61 @@ export type Database = {
         }
         Relationships: []
       }
+      incident_field_values: {
+        Row: {
+          created_at: string
+          field_key: string
+          field_label: string
+          field_type: string
+          field_value: string | null
+          id: string
+          incident_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          field_key: string
+          field_label: string
+          field_type?: string
+          field_value?: string | null
+          id?: string
+          incident_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          field_key?: string
+          field_label?: string
+          field_type?: string
+          field_value?: string | null
+          id?: string
+          incident_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_field_values_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_field_values_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incident_field_values_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       incident_history: {
         Row: {
           changed_at: string
@@ -11914,6 +11969,12 @@ export type Database = {
           incident_key: string | null
           incident_type: string | null
           is_major_incident: boolean | null
+          jira_id: string | null
+          jira_key: string | null
+          jira_project_id: string | null
+          jira_project_key: string | null
+          jira_project_name: string | null
+          last_synced_at: string | null
           owning_team_id: string | null
           priority: Database["public"]["Enums"]["priority_level"] | null
           project_id: string | null
@@ -11929,6 +11990,7 @@ export type Database = {
           severity: Database["public"]["Enums"]["severity_level"]
           status: Database["public"]["Enums"]["incident_status"]
           support_level: Database["public"]["Enums"]["support_level"] | null
+          sync_source: string | null
           target_date: string | null
           team_id: string | null
           title: string
@@ -11963,6 +12025,12 @@ export type Database = {
           incident_key?: string | null
           incident_type?: string | null
           is_major_incident?: boolean | null
+          jira_id?: string | null
+          jira_key?: string | null
+          jira_project_id?: string | null
+          jira_project_key?: string | null
+          jira_project_name?: string | null
+          last_synced_at?: string | null
           owning_team_id?: string | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           project_id?: string | null
@@ -11978,6 +12046,7 @@ export type Database = {
           severity: Database["public"]["Enums"]["severity_level"]
           status?: Database["public"]["Enums"]["incident_status"]
           support_level?: Database["public"]["Enums"]["support_level"] | null
+          sync_source?: string | null
           target_date?: string | null
           team_id?: string | null
           title: string
@@ -12012,6 +12081,12 @@ export type Database = {
           incident_key?: string | null
           incident_type?: string | null
           is_major_incident?: boolean | null
+          jira_id?: string | null
+          jira_key?: string | null
+          jira_project_id?: string | null
+          jira_project_key?: string | null
+          jira_project_name?: string | null
+          last_synced_at?: string | null
           owning_team_id?: string | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           project_id?: string | null
@@ -12027,6 +12102,7 @@ export type Database = {
           severity?: Database["public"]["Enums"]["severity_level"]
           status?: Database["public"]["Enums"]["incident_status"]
           support_level?: Database["public"]["Enums"]["support_level"] | null
+          sync_source?: string | null
           target_date?: string | null
           team_id?: string | null
           title?: string
