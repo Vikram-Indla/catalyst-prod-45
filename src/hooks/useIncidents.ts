@@ -143,8 +143,8 @@ export function useCreateIncident() {
       const { data: incident, error } = await supabase
         .from('incidents')
         .insert({
-          ...data,
-          reporter_id: user?.id, // Default reporter to current user
+          ...data as any,
+          reporter_id: user?.id,
           created_by: user?.id,
           updated_by: user?.id,
         })
@@ -171,7 +171,7 @@ export function useUpdateIncident() {
       const { data: incident, error } = await supabase
         .from('incidents')
         .update({
-          ...data,
+          ...data as any,
           updated_by: user?.id,
         })
         .eq('id', id)
@@ -211,7 +211,7 @@ export function useAddComment() {
           content,
           comment_type,
           author_id: user?.id,
-        })
+        } as any)
         .select('*, author:incident_user_profiles(*)')
         .single();
 

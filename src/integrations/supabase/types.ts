@@ -916,6 +916,73 @@ export type Database = {
         }
         Relationships: []
       }
+      business_processes: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          owner_id: string | null
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          owner_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          owner_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_processes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "business_processes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["reporter_id"]
+          },
+          {
+            foreignKeyName: "business_processes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "incident_user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       business_request_audit_logs: {
         Row: {
           action: string
@@ -2254,6 +2321,122 @@ export type Database = {
           },
         ]
       }
+      change_requests: {
+        Row: {
+          actual_end: string | null
+          actual_start: string | null
+          change_key: string
+          change_type: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          description: string | null
+          id: string
+          owner_id: string | null
+          planned_end: string | null
+          planned_start: string | null
+          project_id: string | null
+          release_id: string | null
+          risk_level: string
+          status: string
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          actual_end?: string | null
+          actual_start?: string | null
+          change_key: string
+          change_type?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          owner_id?: string | null
+          planned_end?: string | null
+          planned_start?: string | null
+          project_id?: string | null
+          release_id?: string | null
+          risk_level?: string
+          status?: string
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          actual_end?: string | null
+          actual_start?: string | null
+          change_key?: string
+          change_type?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          owner_id?: string | null
+          planned_end?: string | null
+          planned_start?: string | null
+          project_id?: string | null
+          release_id?: string | null
+          risk_level?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_requests_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "change_requests_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["reporter_id"]
+          },
+          {
+            foreignKeyName: "change_requests_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "incident_user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_requests_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_requests_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           content: string
@@ -2314,8 +2497,29 @@ export type Database = {
             foreignKeyName: "committee_members_committee_id_fkey"
             columns: ["committee_id"]
             isOneToOne: false
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["committee_id"]
+          },
+          {
+            foreignKeyName: "committee_members_committee_id_fkey"
+            columns: ["committee_id"]
+            isOneToOne: false
             referencedRelation: "incident_committees"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "committee_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["reporter_id"]
           },
           {
             foreignKeyName: "committee_members_user_id_fkey"
@@ -2358,6 +2562,13 @@ export type Database = {
           voted_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "committee_votes_committee_id_fkey"
+            columns: ["committee_id"]
+            isOneToOne: false
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["committee_id"]
+          },
           {
             foreignKeyName: "committee_votes_committee_id_fkey"
             columns: ["committee_id"]
@@ -11071,8 +11282,36 @@ export type Database = {
             foreignKeyName: "incident_attachments_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_attachments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incident_attachments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incident_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "incident_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["reporter_id"]
           },
           {
             foreignKeyName: "incident_attachments_uploaded_by_fkey"
@@ -11128,7 +11367,35 @@ export type Database = {
             foreignKeyName: "incident_comments_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "incident_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["reporter_id"]
+          },
+          {
+            foreignKeyName: "incident_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
             referencedRelation: "incident_user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incident_comments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_comments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
             referencedColumns: ["id"]
           },
           {
@@ -11182,6 +11449,20 @@ export type Database = {
             foreignKeyName: "incident_committees_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_committees_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incident_committees_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -11214,6 +11495,39 @@ export type Database = {
           id?: string
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      incident_environments: {
+        Row: {
+          code: string
+          color: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          color?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          color?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -11286,7 +11600,35 @@ export type Database = {
             foreignKeyName: "incident_history_changed_by_fkey"
             columns: ["changed_by"]
             isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "incident_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["reporter_id"]
+          },
+          {
+            foreignKeyName: "incident_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
             referencedRelation: "incident_user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incident_history_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_history_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
             referencedColumns: ["id"]
           },
           {
@@ -11336,6 +11678,20 @@ export type Database = {
           label_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "incident_labels_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_labels_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "incident_labels_incident_id_fkey"
             columns: ["incident_id"]
@@ -11456,6 +11812,20 @@ export type Database = {
             foreignKeyName: "incident_watchers_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_watchers_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incident_watchers_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -11497,6 +11867,20 @@ export type Database = {
             foreignKeyName: "incident_work_items_incident_id_fkey"
             columns: ["incident_id"]
             isOneToOne: false
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "incident_work_items_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incident_work_items_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -11504,9 +11888,11 @@ export type Database = {
       }
       incidents: {
         Row: {
+          affected_system: string | null
           assignee_id: string | null
           assignee_workgroup_id: string | null
           business_process_id: string | null
+          change_request_id: string | null
           closed_at: string | null
           committee_id: string | null
           committee_set_at: string | null
@@ -11522,6 +11908,7 @@ export type Database = {
           deleted_at: string | null
           delivery_stage: Database["public"]["Enums"]["delivery_stage"] | null
           description: string | null
+          environment_id: string | null
           id: string
           impact: Database["public"]["Enums"]["impact_level"] | null
           incident_key: string | null
@@ -11550,9 +11937,11 @@ export type Database = {
           urgency: Database["public"]["Enums"]["urgency_level"] | null
         }
         Insert: {
+          affected_system?: string | null
           assignee_id?: string | null
           assignee_workgroup_id?: string | null
           business_process_id?: string | null
+          change_request_id?: string | null
           closed_at?: string | null
           committee_id?: string | null
           committee_set_at?: string | null
@@ -11568,6 +11957,7 @@ export type Database = {
           deleted_at?: string | null
           delivery_stage?: Database["public"]["Enums"]["delivery_stage"] | null
           description?: string | null
+          environment_id?: string | null
           id?: string
           impact?: Database["public"]["Enums"]["impact_level"] | null
           incident_key?: string | null
@@ -11596,9 +11986,11 @@ export type Database = {
           urgency?: Database["public"]["Enums"]["urgency_level"] | null
         }
         Update: {
+          affected_system?: string | null
           assignee_id?: string | null
           assignee_workgroup_id?: string | null
           business_process_id?: string | null
+          change_request_id?: string | null
           closed_at?: string | null
           committee_id?: string | null
           committee_set_at?: string | null
@@ -11614,6 +12006,7 @@ export type Database = {
           deleted_at?: string | null
           delivery_stage?: Database["public"]["Enums"]["delivery_stage"] | null
           description?: string | null
+          environment_id?: string | null
           id?: string
           impact?: Database["public"]["Enums"]["impact_level"] | null
           incident_key?: string | null
@@ -11646,6 +12039,20 @@ export type Database = {
             foreignKeyName: "incidents_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "incidents_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["reporter_id"]
+          },
+          {
+            foreignKeyName: "incidents_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
             referencedRelation: "incident_user_profiles"
             referencedColumns: ["id"]
           },
@@ -11655,6 +12062,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "workgroups"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_change_request_id_fkey"
+            columns: ["change_request_id"]
+            isOneToOne: false
+            referencedRelation: "change_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_committee_id_fkey"
+            columns: ["committee_id"]
+            isOneToOne: false
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["committee_id"]
           },
           {
             foreignKeyName: "incidents_committee_id_fkey"
@@ -11667,7 +12088,28 @@ export type Database = {
             foreignKeyName: "incidents_committee_set_by_fkey"
             columns: ["committee_set_by"]
             isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "incidents_committee_set_by_fkey"
+            columns: ["committee_set_by"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["reporter_id"]
+          },
+          {
+            foreignKeyName: "incidents_committee_set_by_fkey"
+            columns: ["committee_set_by"]
+            isOneToOne: false
             referencedRelation: "incident_user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_environment_id_fkey"
+            columns: ["environment_id"]
+            isOneToOne: false
+            referencedRelation: "incident_environments"
             referencedColumns: ["id"]
           },
           {
@@ -11697,6 +12139,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "release_versions"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "incidents_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["reporter_id"]
           },
           {
             foreignKeyName: "incidents_reporter_id_fkey"
@@ -36287,7 +36743,21 @@ export type Database = {
           {
             foreignKeyName: "sla_records_incident_id_fkey"
             columns: ["incident_id"]
-            isOneToOne: false
+            isOneToOne: true
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "sla_records_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: true
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sla_records_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: true
             referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
@@ -41675,6 +42145,20 @@ export type Database = {
           test_case_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "test_incident_links_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "committee_queue_view"
+            referencedColumns: ["incident_id"]
+          },
+          {
+            foreignKeyName: "test_incident_links_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incident_list_view"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "test_incident_links_incident_id_fkey"
             columns: ["incident_id"]
@@ -61278,6 +61762,27 @@ export type Database = {
       }
     }
     Views: {
+      committee_queue_view: {
+        Row: {
+          age_hours: number | null
+          approved_count: number | null
+          committee_created_at: string | null
+          committee_id: string | null
+          committee_status:
+            | Database["public"]["Enums"]["committee_status"]
+            | null
+          due_date: string | null
+          incident_id: string | null
+          incident_key: string | null
+          is_major_incident: boolean | null
+          rejected_count: number | null
+          required_approvals: number | null
+          severity: Database["public"]["Enums"]["severity_level"] | null
+          title: string | null
+          total_members: number | null
+        }
+        Relationships: []
+      }
       es_dashboard_execution_dials: {
         Row: {
           completed_items: number | null
@@ -61651,6 +62156,40 @@ export type Database = {
           status: string | null
           target_completion: string | null
           title: string | null
+        }
+        Relationships: []
+      }
+      incident_list_view: {
+        Row: {
+          age_days: number | null
+          assignee_id: string | null
+          assignee_name: string | null
+          closed_at: string | null
+          comment_count: number | null
+          committee_status:
+            | Database["public"]["Enums"]["committee_status"]
+            | null
+          created_at: string | null
+          deleted_at: string | null
+          id: string | null
+          impact: Database["public"]["Enums"]["impact_level"] | null
+          incident_key: string | null
+          is_major_incident: boolean | null
+          priority: Database["public"]["Enums"]["priority_level"] | null
+          reporter_id: string | null
+          reporter_name: string | null
+          resolution_breached: boolean | null
+          resolution_due_at: string | null
+          resolved_at: string | null
+          response_breached: boolean | null
+          response_due_at: string | null
+          severity: Database["public"]["Enums"]["severity_level"] | null
+          status: Database["public"]["Enums"]["incident_status"] | null
+          support_level: Database["public"]["Enums"]["support_level"] | null
+          title: string | null
+          updated_at: string | null
+          urgency: Database["public"]["Enums"]["urgency_level"] | null
+          watcher_count: number | null
         }
         Relationships: []
       }
@@ -64490,6 +65029,17 @@ export type Database = {
         }
         Relationships: []
       }
+      sla_dashboard_view: {
+        Row: {
+          at_risk_count: number | null
+          avg_resolution_days: number | null
+          breached_count: number | null
+          sev1_count: number | null
+          sev2_count: number | null
+          total_incidents: number | null
+        }
+        Relationships: []
+      }
       slack_connected_users: {
         Row: {
           avatar_url: string | null
@@ -67209,6 +67759,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_sla_breaches: { Args: never; Returns: undefined }
       check_theme_is_active: { Args: { p_theme_id: string }; Returns: boolean }
       claim_next_test: {
         Args: { p_run_id: string; p_worker_id: string }

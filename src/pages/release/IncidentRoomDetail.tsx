@@ -514,10 +514,10 @@ export default function IncidentRoomDetail() {
           assigneeWorkgroup={incident.assignee_workgroup}
           reporter={incident.reporter}
           reporterName={incident.reporter_name}
-          deliveryStage={incident.delivery_stage}
+          deliveryStage={incident.delivery_stage as any}
           releaseVersion={incident.release_version}
           releaseVersionId={incident.release_version_id || null}
-          businessProcess={incident.business_process}
+          businessProcess={incident.business_process as any}
           serviceComponent={incident.service_component}
           projectId={incident.project_id}
           teamId={(incident as any).team_id || null}
