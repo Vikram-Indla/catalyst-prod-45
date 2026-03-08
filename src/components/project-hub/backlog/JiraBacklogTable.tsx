@@ -152,9 +152,6 @@ export function JiraBacklogTable({ issues, title, showParent = false }: Props) {
                       {issue.assignee_display_name || <span className="text-muted-foreground/50">Unassigned</span>}
                     </span>
                   </td>
-                  <td className="px-3 py-1.5 text-center">
-                    <span className="text-xs text-muted-foreground">{issue.story_points ?? '—'}</span>
-                  </td>
                   <td className="px-3 py-1.5">
                     <span className="text-xs text-muted-foreground">{issue.issue_type}</span>
                   </td>
