@@ -160,7 +160,7 @@ export default function KanbanCardComponent({ card }: Props) {
             <span style={{
               display: 'inline-flex', alignItems: 'center', height: 18,
               padding: '0 6px', borderRadius: 3, maxWidth: 88,
-              background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.12)',
+              background: '#F1F5F9', border: '0.75px solid #E2E8F0',
               fontSize: 10.5, fontFamily: "'JetBrains Mono', monospace", color: '#64748B',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>{card.release.name}</span>
