@@ -57,8 +57,15 @@ function StatusLozenge({ status }: { status: string }) {
   );
 }
 
-export default function BoardCanvasPage() {
-  const { projectId, boardId } = useParams<{ projectId: string; boardId: string }>();
+interface BoardCanvasPageProps {
+  projectIdOverride?: string;
+  basePath?: string;
+}
+
+export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCanvasPageProps = {}) {
+  const { projectId: paramProjectId, boardId } = useParams<{ projectId: string; boardId: string }>();
+  const projectId = projectIdOverride || paramProjectId;
+  const boardBasePath = basePath || `/projects/${projectId}/boards`;
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: boardData, isLoading } = useBoard(boardId);
@@ -223,7 +230,7 @@ export default function BoardCanvasPage() {
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0, padding: '12px 24px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontFamily: "'Inter', sans-serif", color: '#64748B', marginBottom: 6 }}>
-          <button onClick={() => navigate(`/projects/${projectId}/boards`)} style={{
+          <button onClick={() => navigate(boardBasePath)} style={{
             border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
             color: '#2563EB', fontSize: 12, fontFamily: "'Inter', sans-serif", padding: 0,
           }}>
@@ -242,7 +249,7 @@ export default function BoardCanvasPage() {
             return (
               <button
                 key={tab.id}
-                onClick={() => navigate(`/projects/${projectId}/boards/${tab.id}`)}
+                onClick={() => navigate(`${boardBasePath}/${tab.id}`)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 5,
                   height: 30, padding: '0 12px', borderRadius: 4,

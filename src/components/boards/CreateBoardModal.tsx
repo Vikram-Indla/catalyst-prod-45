@@ -6,6 +6,7 @@ import type { BoardVisibility, SwimlaneType } from '@/types/board';
 
 interface Props {
   projectId: string;
+  basePath?: string;
   onClose: () => void;
 }
 
@@ -33,7 +34,7 @@ const VISIBILITY_OPTIONS: { value: BoardVisibility; label: string; desc: string;
   { value: 'global', label: 'Organisation-wide', desc: 'Visible to all users in the organisation. Use with caution.', warning: true },
 ];
 
-export default function CreateBoardModal({ projectId, onClose }: Props) {
+export default function CreateBoardModal({ projectId, basePath, onClose }: Props) {
   const [name, setName] = useState('');
   const [template, setTemplate] = useState('standard');
   const [swimlane, setSwimlane] = useState<SwimlaneType>('none');
@@ -57,7 +58,8 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
     });
     onClose();
     if (result.boardId) {
-      navigate(`/projects/${projectId}/boards/${result.boardId}`);
+      const base = basePath || `/projects/${projectId}/boards`;
+      navigate(`${base}/${result.boardId}`);
     }
   };
 
