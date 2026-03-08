@@ -661,12 +661,18 @@ function formatImported(iso: string): string {
 }
 
 /* B2: PDF Upload Cell for rows without a PDF */
-function PdfUploadCell({ brdId, jiraKey }: { brdId: string | null; jiraKey: string }) {
+function PdfUploadCell({ brdId: initialBrdId, jiraKey }: { brdId: string | null; jiraKey: string }) {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const qc = useQueryClient();
 
   const handleUpload = async (file: File) => {
+    // Resolve brd_id from jira_key if not provided
+    let brdId = initialBrdId;
+    if (!brdId && jiraKey) {
+      const { data } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+      brdId = data?.id ?? null;
+    }
     if (!brdId) {
       toast.error('BRD document not found — cannot attach PDF');
       return;
