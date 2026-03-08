@@ -28,6 +28,7 @@ const BOARD_ACCENT: Record<string, string> = {
 function StatusLozenge({ status }: { status: string }) {
   const s = status.toLowerCase().replace(/[\s_-]+/g, '');
   let bg = '#DFE1E6', color = '#253858', label = status.toUpperCase();
+  let leftBorder: string | undefined;
 
   // Blue: in-progress family
   if (['inprogress','indev','inreview','inqa','active','inbeta','processing','testing','review'].includes(s)) {
@@ -38,6 +39,10 @@ function StatusLozenge({ status }: { status: string }) {
     bg = '#E3FCEF'; color = '#006644';
   }
   // Grey: everything else (backlog, todo, onhold, new, waiting, blocked)
+  // Blocked gets a red left border accent on grey lozenge
+  if (s === 'blocked') {
+    leftBorder = '3px solid #DC2626';
+  }
 
   return (
     <span style={{
@@ -47,6 +52,7 @@ function StatusLozenge({ status }: { status: string }) {
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
       background: bg, color,
       fontFamily: "'Inter', sans-serif",
+      borderLeft: leftBorder,
     }}>{label}</span>
   );
 }
