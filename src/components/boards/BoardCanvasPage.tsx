@@ -76,6 +76,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
   const { data: siblingBoards = [] } = useBoards(projectId);
   const { collapsedSwimlanes, toggleSwimlane, draggingCardId, setDraggingCardId } = useBoardStore();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [detailItemId, setDetailItemId] = useState<string | null>(null);
   const updateCardRank = useUpdateCardRank();
   const updateLastViewed = useUpdateBoardLastViewed();
 
