@@ -171,7 +171,7 @@ export function useUpdateIncident() {
       const { data: incident, error } = await supabase
         .from('incidents')
         .update({
-          ...data,
+          ...data as any,
           updated_by: user?.id,
         })
         .eq('id', id)
