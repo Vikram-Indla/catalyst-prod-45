@@ -53,7 +53,7 @@ export function useProjectWorkItems(projectId: string | undefined, sourceFilter?
     queryFn: async (): Promise<WorkItemRow[]> => {
       if (!projectId) return [];
 
-      let query = (supabase
+      let query = supabase
         .from('ph_work_items')
         .select(`
           id, item_key, title, summary, item_type, priority, parent_id,
@@ -64,9 +64,9 @@ export function useProjectWorkItems(projectId: string | undefined, sourceFilter?
           ph_work_types!ph_work_items_type_id_fkey (name, color, icon, level),
           ph_workflow_statuses!ph_work_items_status_id_fkey (name, category, color),
           ph_releases!ph_work_items_release_id_fkey (name)
-        `) as any)
-        .eq('project_id', projectId)
-        .order('sort_order', { ascending: true });
+        `)
+        .eq('project_id', projectId as string)
+        .order('sort_order', { ascending: true }) as any;
 
       // Apply source filter at DB level
       if (sourceFilter && sourceFilter !== 'all') {
