@@ -887,6 +887,10 @@ const App = () => (
                 <Route path="feature-map" element={<div className="h-full flex items-center justify-center text-muted-foreground">Feature Map View - Coming Soon</div>} />
               </Route>
               
+              {/* Board Manager routes */}
+              <Route path="/projects/:projectId/boards" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BoardManagerPage /></Suspense>} />
+              <Route path="/projects/:projectId/boards/:boardId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BoardCanvasPage /></Suspense>} />
+
               <Route path="/projects/:projectId/work" element={<ProjectWorkHubPage />} />
               <Route path="/projects/:projectId/backlog" element={<ProjectBacklogPage />} />
               <Route path="/projects/:projectId/roadmap" element={<ProjectComingSoonPage pageTitle="Roadmap" />} />
