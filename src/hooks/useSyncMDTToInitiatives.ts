@@ -69,7 +69,7 @@ export function useSyncMDTToInitiatives() {
           status: mapJiraStatus(issue.status, issue.status_category),
           source: 'jira',
           jira_issue_key: issue.issue_key,
-          initiative_type_id: ENHANCEMENT_TYPE_ID,
+          initiative_type_id: BUSINESS_REQUEST_TYPE_ID,
           priority: issue.priority?.toLowerCase() || null,
         }));
 
