@@ -469,9 +469,9 @@ export default function ReqAssistLibrary() {
                             <span style={{ color: '#CBD5E1', fontSize: 13 }}>—</span>
                           )}
                         </td>
-                        {/* Status */}
+                        {/* Status — computed from epicCount + pipeline_stage */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
-                          <StatusBadge status={doc.status} />
+                          <StatusBadge status={doc.status} epicCount={epicCounts[doc.id] || 0} pipelineStage={pipelineStages[doc.id] ?? null} />
                         </td>
                         {/* Generation */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden', maxWidth: 160 }}>
