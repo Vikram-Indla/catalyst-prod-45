@@ -56,8 +56,8 @@ export function useMDTBacklog() {
       const { data: { user } } = await supabase.auth.getUser();
       const currentUserId = user?.id;
 
-      // Fetch initiatives, profiles, departments, scores, favorites in parallel
-      const [initResult, profilesResult, deptsResult, scoresResult, favsResult] = await Promise.all([
+      // Fetch initiatives, profiles, departments, scores, favorites, BRD tasks in parallel
+      const [initResult, profilesResult, deptsResult, scoresResult, favsResult, brdTasksResult] = await Promise.all([
         (supabase as any).from('ph_backlog_initiatives_view').select('*').limit(5000),
         supabase.from('profiles').select('id, full_name, avatar_url'),
         (supabase as any).from('ph_departments').select('id, name'),
@@ -65,6 +65,13 @@ export function useMDTBacklog() {
         currentUserId
           ? (supabase as any).from('ph_user_favorites').select('initiative_id').eq('user_id', currentUserId)
           : Promise.resolve({ data: [] }),
+        // Fetch BRD Tasks (sub-tasks of Business Requests) from ph_issues
+        (supabase as any).from('ph_issues')
+          .select('issue_key, summary, status, assignee_display_name, priority, jira_created_at, jira_updated_at, parent_key')
+          .eq('project_key', 'MDT')
+          .in('issue_type', ['BRD Task', 'Sub-task'])
+          .not('parent_key', 'is', null)
+          .limit(5000),
       ]);
 
       if (initResult.error) throw initResult.error;
@@ -88,6 +95,23 @@ export function useMDTBacklog() {
       const favSet = new Set<string>();
       (favsResult.data || []).forEach((f: any) => {
         favSet.add(f.initiative_id);
+      });
+
+      // Build BRD tasks map: parent Jira key → BRDTask[]
+      const brdTasksByParent = new Map<string, BRDTask[]>();
+      (brdTasksResult.data || []).forEach((t: any) => {
+        if (!t.parent_key) return;
+        const key = t.parent_key;
+        if (!brdTasksByParent.has(key)) brdTasksByParent.set(key, []);
+        brdTasksByParent.get(key)!.push({
+          issue_key: t.issue_key,
+          summary: t.summary,
+          status: t.status,
+          assignee_display_name: t.assignee_display_name,
+          priority: t.priority,
+          jira_created_at: t.jira_created_at,
+          jira_updated_at: t.jira_updated_at,
+        });
       });
 
       const initiatives: MDTInitiative[] = (initResult.data || []).map((row: any, idx: number) => {
@@ -138,7 +162,7 @@ export function useMDTBacklog() {
           jira_issue_key: row.jira_issue_key ?? null,
           created_at: row.created_at,
           updated_at: row.updated_at,
-          brd_tasks: [],
+          brd_tasks: brdTasksByParent.get(row.jira_issue_key || row.initiative_key) || [],
         };
       });
 
