@@ -557,6 +557,8 @@ export type Database = {
           language: string
           methodology: string | null
           original_url: string | null
+          pdf_attached_at: string | null
+          pdf_filename: string | null
           pdf_url: string | null
           pipeline_stage: Database["public"]["Enums"]["pipeline_stage_enum"]
           processed_at: string | null
@@ -577,6 +579,8 @@ export type Database = {
           language?: string
           methodology?: string | null
           original_url?: string | null
+          pdf_attached_at?: string | null
+          pdf_filename?: string | null
           pdf_url?: string | null
           pipeline_stage?: Database["public"]["Enums"]["pipeline_stage_enum"]
           processed_at?: string | null
@@ -597,6 +601,8 @@ export type Database = {
           language?: string
           methodology?: string | null
           original_url?: string | null
+          pdf_attached_at?: string | null
+          pdf_filename?: string | null
           pdf_url?: string | null
           pipeline_stage?: Database["public"]["Enums"]["pipeline_stage_enum"]
           processed_at?: string | null
