@@ -1,11 +1,10 @@
 /**
- * StatusDropdown — Custom status change dropdown
- * Opens below the StatusBadge trigger
+ * StatusDropdown — 3-color status change dropdown
  */
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect } from 'react';
 import { Check } from 'lucide-react';
-import { getStatusColor, STATUS_COLORS } from './StatusBadge';
+import { getStatusStyle } from './StatusBadge';
 
 interface StatusDropdownProps {
   currentStatus: string;
@@ -25,9 +24,6 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
     return () => document.removeEventListener('mousedown', handler);
   }, [onClose]);
 
-  // Merge available statuses with STATUS_COLORS keys for a comprehensive list
-  const allStatuses = Array.from(new Set([...availableStatuses]));
-
   return (
     <div
       ref={ref}
@@ -46,8 +42,8 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
         zIndex: 9999,
       }}
     >
-      {allStatuses.map((status) => {
-        const color = getStatusColor(status);
+      {availableStatuses.map((status) => {
+        const style = getStatusStyle(status);
         const isCurrent = status === currentStatus;
         return (
           <div
@@ -66,7 +62,7 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
             onMouseEnter={(e) => (e.currentTarget.style.background = '#F8FAFC')}
             onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? '#F8FAFC' : '')}
           >
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: style.color, flexShrink: 0 }} />
             <span style={{ fontSize: 12, color: '#0F172A', flex: 1 }}>{status}</span>
             {isCurrent && <Check size={14} color="#2563EB" />}
           </div>
