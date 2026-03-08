@@ -51,64 +51,43 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     return () => clearInterval(id);
   }, []);
 
-  const getDocBrdIdCandidate = (): string | null => {
-    const candidate = (doc as any).id
-      ?? (doc as any).brd_document_id
-      ?? (doc as any).brd_id
-      ?? (doc as any).brdDocumentId
-      ?? null;
-
-    if (typeof candidate !== 'string' || !isValidUUID(candidate)) return null;
-    return candidate;
-  };
-
-  // ── Resolve brd_documents.id from available document shape (or jira_key fallback) ──
+  // ── Resolve brd_documents.id: jira_key lookup FIRST, then seed ──
   const resolveBrdId = async (): Promise<string | null> => {
-    // PATH 1: direct id fields on doc object
-    const directId = getDocBrdIdCandidate();
-    if (directId) {
-      const { data: directCheck } = await (supabase as any)
-        .from('brd_documents')
-        .select('id')
-        .eq('id', directId)
-        .maybeSingle();
-      if (directCheck?.id) return directCheck.id;
-    }
+    // STEP 1: lookup via jira_key (most reliable path)
+    const jiraKey = (doc as any).jira_ticket_key
+      || (doc as any).jira_key
+      || (doc as any).jiraKey;
 
-    // PATH 2: resolve via jira_ticket_key → brd_documents.jira_key
-    const jiraKey = (doc as any).jira_ticket_key;
     if (jiraKey) {
-      const { data: existing } = await (supabase as any)
+      const { data } = await (supabase as any)
         .from('brd_documents')
         .select('id')
         .eq('jira_key', jiraKey)
         .maybeSingle();
-      if (existing?.id) return existing.id;
+      if (data?.id) return data.id;
     }
 
-    // PATH 3: no brd_documents entry exists — seed one from ra_documents data
-    console.log('[EpicModal] No brd_documents entry found — seeding from document payload:', doc);
-
-    const rawText = (doc as any).content_raw
+    // STEP 2: seed a new brd_documents row
+    const rawText = (doc as any).description
       || (doc as any).content_processed
-      || (doc as any).description
-      || doc.title;
+      || (doc as any).content_raw
+      || doc.title + ' — placeholder content for epic generation';
 
-    const { data: inserted, error: insertError } = await (supabase as any)
+    const { data: inserted, error } = await (supabase as any)
       .from('brd_documents')
       .insert({
+        jira_key: jiraKey || null,
         title: doc.title,
         raw_text: rawText,
-        jira_key: jiraKey || null,
         pipeline_stage: 'intake',
         source_type: 'jira_bulk',
-        language: (doc as any).language || 'en',
+        language: (doc as any).language || 'ar',
       })
       .select('id')
       .single();
 
-    if (insertError) {
-      console.error('[EpicModal] Failed to seed brd_documents:', insertError.message);
+    if (error || !inserted?.id) {
+      console.error('[EpicModal] Failed to seed brd_documents:', error?.message);
       return null;
     }
 
