@@ -171,6 +171,26 @@ export interface Incident {
   resolved_at: string | null;
   closed_at: string | null;
   deleted_at: string | null;
+
+  // ── Backward-compat joined fields (optional, populated when fetched with joins) ──
+  assignee?: IncidentUserProfile | null;
+  reporter?: IncidentUserProfile | null;
+  reporter_name?: string | null;
+  assignee_workgroup?: Workgroup | null;
+  project?: { id: string; name: string; key: string } | null;
+  release_version?: { id: string; name: string; version: string } | null;
+  change_request?: ChangeRequest | null;
+  environment?: IncidentEnvironment | null;
+  business_process?: BusinessProcess | null;
+  committee?: IncidentCommitteeWithMembers | null;
+  sla?: SlaRecord | null;
+  labels?: IncidentLabelWithDef[];
+  comments?: IncidentComment[];
+  attachments?: IncidentAttachment[];
+  history?: IncidentHistoryEntry[];
+  work_items?: IncidentWorkItem[];
+  watchers?: IncidentWatcher[];
+  target_date?: string | null;
 }
 
 // ─────────────────────────────────────────────
