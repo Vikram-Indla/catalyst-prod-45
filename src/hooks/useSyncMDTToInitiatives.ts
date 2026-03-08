@@ -63,7 +63,7 @@ export function useSyncMDTToInitiatives() {
         if (!newIssues.length) return;
 
         // 4. Insert as ph_initiatives
-        const rows = newIssues.map(issue => ({
+        const rows = newIssues.map((issue: any) => ({
           initiative_key: issue.issue_key,
           title: issue.summary,
           status: mapJiraStatus(issue.status, issue.status_category),
