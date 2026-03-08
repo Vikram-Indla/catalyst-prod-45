@@ -9,18 +9,18 @@ import { useQueryClient } from '@tanstack/react-query';
 
 const ENHANCEMENT_TYPE_ID = '00242328-979a-4ecb-8f02-5d3b982966d1';
 
-/** Map Jira status to initiative_status enum */
+/** Map Jira status to initiative_status enum (valid: new_demand, under_review, approved, in_progress, on_hold, delivered, closed, cancelled) */
 function mapJiraStatus(status: string, statusCategory: string): string {
   const s = status.toLowerCase();
-  if (statusCategory === 'Done') return 'done';
+  if (statusCategory === 'Done') return 'closed';
   if (s.includes('backlog') || s.includes('open') || s.includes('to do') || s.includes('new')) return 'new_demand';
-  if (s.includes('brd preparation') || s.includes('brd sign off')) return 'analysis';
+  if (s.includes('brd preparation') || s.includes('brd sign off') || s.includes('brd under review')) return 'under_review';
   if (s.includes('brd backlog')) return 'new_demand';
-  if (s.includes('implementation review')) return 'implementation_review';
-  if (s.includes('in progress') || s.includes('development')) return 'under_implementation';
-  if (s.includes('in support')) return 'in_support';
+  if (s.includes('implementation review') || s.includes('review')) return 'in_progress';
+  if (s.includes('under implementation') || s.includes('in progress') || s.includes('development') || s.includes('ready for implementation') || s.includes('figma') || s.includes('technical validation')) return 'in_progress';
+  if (s.includes('in support')) return 'delivered';
   if (s.includes('cancel')) return 'cancelled';
-  if (s.includes('hold')) return 'on_hold';
+  if (s.includes('hold') || s.includes('blocked')) return 'on_hold';
   return 'new_demand';
 }
 
@@ -34,15 +34,21 @@ export function useSyncMDTToInitiatives() {
 
     (async () => {
       try {
-        // 1. Get all non-Done MDT issues from Jira
+        // 1. Get all MDT issues from Jira (exclude Done Business Requests only)
         const { data: mdtIssues, error: issErr } = await supabase
           .from('ph_issues')
-          .select('issue_key, summary, status, status_category, priority, assignee_display_name')
+          .select('issue_key, summary, status, status_category, priority, assignee_display_name, issue_type')
           .eq('project_key', 'MDT')
-          .neq('status_category', 'Done')
           .limit(2000);
 
         if (issErr || !mdtIssues?.length) return;
+
+        // Filter out Done Business Requests only
+        const filteredIssues = mdtIssues.filter((i: any) => {
+          const isDoneBusinessRequest = i.status_category === 'Done' && 
+            (i.issue_type || '').toLowerCase().includes('business request');
+          return !isDoneBusinessRequest;
+        });
 
         // 2. Get existing initiatives with jira_issue_key set
         const { data: existing } = await (supabase as any)
@@ -53,11 +59,11 @@ export function useSyncMDTToInitiatives() {
         const existingKeys = new Set((existing || []).map((r: any) => r.jira_issue_key));
 
         // 3. Filter to only new issues
-        const newIssues = mdtIssues.filter(i => !existingKeys.has(i.issue_key));
+        const newIssues = filteredIssues.filter((i: any) => !existingKeys.has(i.issue_key));
         if (!newIssues.length) return;
 
         // 4. Insert as ph_initiatives
-        const rows = newIssues.map(issue => ({
+        const rows = newIssues.map((issue: any) => ({
           initiative_key: issue.issue_key,
           title: issue.summary,
           status: mapJiraStatus(issue.status, issue.status_category),
