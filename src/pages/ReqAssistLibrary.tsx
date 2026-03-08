@@ -430,22 +430,26 @@ export default function ReqAssistLibrary() {
                             {doc.title}
                           </span>
                         </td>
-                        {/* Domain */}
+                        {/* D07: Domain — derived from prefix if null */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
-                          {doc.domain ? (
-                            <span style={{
-                              display: 'inline-flex', alignItems: 'center',
-                              padding: '2px 8px', borderRadius: 3,
-                              fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                              letterSpacing: '0.04em', whiteSpace: 'nowrap',
-                              background: '#F3F4F6', color: '#374151',
-                              fontFamily: "'Inter', sans-serif",
-                            }}>
-                              {doc.domain}
-                            </span>
-                          ) : (
-                            <span style={{ color: '#CBD5E1', fontSize: 13 }}>—</span>
-                          )}
+                          {(() => {
+                            const domain = doc.domain || deriveDomainFromKey(doc.jira_ticket_key);
+                            return domain ? (
+                              <span style={{
+                                fontSize: 12, color: '#475569', fontFamily: "'Inter', sans-serif",
+                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                                display: 'block', maxWidth: 110,
+                              }} title={domain}>
+                                {domain}
+                              </span>
+                            ) : (
+                              <span style={{
+                                display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
+                                background: '#F1F5F9', borderRadius: 3,
+                                fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif",
+                              }}>Uncategorised</span>
+                            );
+                          })()}
                         </td>
                         {/* PDF */}
                         <td data-col="pdf" style={{ padding: '8px 12px', overflow: 'hidden' }}>
