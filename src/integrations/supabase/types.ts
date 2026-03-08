@@ -23130,6 +23130,7 @@ export type Database = {
           last_synced_at: string | null
           parent_key: string | null
           parent_summary: string | null
+          pending_write_back_at: string | null
           priority: string | null
           project_key: string
           project_name: string | null
@@ -23137,12 +23138,14 @@ export type Database = {
           reporter_account_id: string | null
           reporter_display_name: string | null
           resolution: string | null
+          source: string
           sprint_name: string | null
           status: string
           status_category: string | null
           story_points: number | null
           summary: string
           sync_hash: string | null
+          sync_status: string | null
           synced_at: string | null
           theme_id: string | null
           type_icon_url: string | null
@@ -23172,6 +23175,7 @@ export type Database = {
           last_synced_at?: string | null
           parent_key?: string | null
           parent_summary?: string | null
+          pending_write_back_at?: string | null
           priority?: string | null
           project_key: string
           project_name?: string | null
@@ -23179,12 +23183,14 @@ export type Database = {
           reporter_account_id?: string | null
           reporter_display_name?: string | null
           resolution?: string | null
+          source?: string
           sprint_name?: string | null
           status?: string
           status_category?: string | null
           story_points?: number | null
           summary?: string
           sync_hash?: string | null
+          sync_status?: string | null
           synced_at?: string | null
           theme_id?: string | null
           type_icon_url?: string | null
@@ -23214,6 +23220,7 @@ export type Database = {
           last_synced_at?: string | null
           parent_key?: string | null
           parent_summary?: string | null
+          pending_write_back_at?: string | null
           priority?: string | null
           project_key?: string
           project_name?: string | null
@@ -23221,12 +23228,14 @@ export type Database = {
           reporter_account_id?: string | null
           reporter_display_name?: string | null
           resolution?: string | null
+          source?: string
           sprint_name?: string | null
           status?: string
           status_category?: string | null
           story_points?: number | null
           summary?: string
           sync_hash?: string | null
+          sync_status?: string | null
           synced_at?: string | null
           theme_id?: string | null
           type_icon_url?: string | null
