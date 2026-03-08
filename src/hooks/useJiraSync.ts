@@ -1,6 +1,6 @@
 /**
  * useJiraSync — TanStack Query hooks for Jira sync operations
- * Stage B: Full query/mutation hooks, no UI
+ * Stage D: All data from real DB, stale-while-revalidate
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { jiraSyncService } from '@/services/jira-sync.service';
@@ -18,6 +18,7 @@ export function useConflicts(projectId: string) {
     queryFn: () => jiraSyncService.getConflicts(projectId),
     refetchInterval: 30_000,
     enabled: !!projectId,
+    staleTime: 10_000,
   });
 }
 
@@ -26,6 +27,7 @@ export function useSyncSummary(projectId: string) {
     queryKey: jiraSyncKeys.syncSummary(projectId),
     queryFn: () => jiraSyncService.getSyncSummary(projectId),
     enabled: !!projectId,
+    staleTime: 15_000,
   });
 }
 
@@ -34,6 +36,7 @@ export function useSyncLogs(projectId: string) {
     queryKey: jiraSyncKeys.syncLog(projectId),
     queryFn: () => jiraSyncService.getSyncLogs(projectId),
     enabled: !!projectId,
+    staleTime: 10_000,
   });
 }
 
@@ -42,6 +45,7 @@ export function useWriteBackQueue(projectId: string) {
     queryKey: jiraSyncKeys.writeBackQueue(projectId),
     queryFn: () => jiraSyncService.getWriteBackQueue(projectId),
     enabled: !!projectId,
+    staleTime: 10_000,
   });
 }
 
@@ -52,6 +56,7 @@ export function useTriggerSync() {
     onSuccess: (_, projectId) => {
       qc.invalidateQueries({ queryKey: jiraSyncKeys.syncLog(projectId) });
       qc.invalidateQueries({ queryKey: jiraSyncKeys.syncSummary(projectId) });
+      qc.invalidateQueries({ queryKey: ['ph-work-items', projectId] });
     },
   });
 }
@@ -65,6 +70,8 @@ export function useResolveConflict() {
     }) => jiraSyncService.resolveConflict(conflictId, resolution),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['jira-conflicts'] });
+      qc.invalidateQueries({ queryKey: ['ph-work-items'] });
+      qc.invalidateQueries({ queryKey: ['jira-sync-summary'] });
     },
   });
 }
