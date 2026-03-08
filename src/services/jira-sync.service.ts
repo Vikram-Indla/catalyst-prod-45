@@ -32,7 +32,7 @@ export const jiraSyncService = {
   /** Trigger a sync run for a project */
   async triggerSync(projectId: string): Promise<JiraSyncLog> {
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('jira_sync_logs')
       .insert({
         project_id: projectId,
@@ -41,9 +41,14 @@ export const jiraSyncService = {
         items_synced: 0,
         conflicts_found: 0,
         created_by: user?.id,
+        // Required by existing schema
+        connection_id: projectId,
+        sync_type: 'manual',
+        entity_type: 'issue',
       })
       .select()
       .single();
+
     if (error) throw error;
     return {
       id: data.id,
