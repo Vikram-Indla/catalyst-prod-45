@@ -53,20 +53,14 @@ export function useProjectWorkItems(projectId: string | undefined, sourceFilter?
     queryFn: async (): Promise<WorkItemRow[]> => {
       if (!projectId) return [];
 
+      // @ts-ignore - deep type instantiation with complex select
       let query = supabase
         .from('ph_work_items')
-        .select(`
-          id, item_key, title, summary, item_type, priority, parent_id,
-          assignee_id, due_date, start_date, is_flagged, flag_reason, sort_order,
-          status_id, type_id, release_id, department, team, environment,
-          security_level, cycle_time_days, status_changed_at, resolution,
-          sync_source, last_synced_at, jira_issue_id,
-          ph_work_types!ph_work_items_type_id_fkey (name, color, icon, level),
-          ph_workflow_statuses!ph_work_items_status_id_fkey (name, category, color),
-          ph_releases!ph_work_items_release_id_fkey (name)
-        `)
-        .eq('project_id', projectId as string)
-        .order('sort_order', { ascending: true }) as any;
+        .select(
+          'id, item_key, title, summary, item_type, priority, parent_id, assignee_id, due_date, start_date, is_flagged, flag_reason, sort_order, status_id, type_id, release_id, department, team, environment, security_level, cycle_time_days, status_changed_at, resolution, sync_source, last_synced_at, jira_issue_id, ph_work_types!ph_work_items_type_id_fkey (name, color, icon, level), ph_workflow_statuses!ph_work_items_status_id_fkey (name, category, color), ph_releases!ph_work_items_release_id_fkey (name)'
+        )
+        .eq('project_id', projectId)
+        .order('sort_order', { ascending: true });
 
       // Apply source filter at DB level
       if (sourceFilter && sourceFilter !== 'all') {
