@@ -24,7 +24,7 @@ function getOverdueDays(dueDate: string | null): number | null {
   return days > 0 ? days : null;
 }
 
-export default function KanbanCardComponent({ card }: Props) {
+export default function KanbanCardComponent({ card, onCardClick }: Props) {
   const [hover, setHover] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id });
 
