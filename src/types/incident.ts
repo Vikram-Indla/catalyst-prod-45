@@ -408,6 +408,8 @@ export interface IncidentLabelWithDef {
 export interface BusinessProcess {
   id: string;
   name: string;
+  name_en?: string;
+  name_ar?: string;
   code: string;
   description: string | null;
   owner_id: string | null;
