@@ -265,7 +265,7 @@ function TreeRow({
         </span>
       )}
 
-      <StatusPill status={item.status} />
+      <StatusBadge status={item.status.name} />
       <AssigneeAvatar assignee={item.assignee} />
       <ActionsMenu item={item} onDelete={onDelete} />
     </div>
