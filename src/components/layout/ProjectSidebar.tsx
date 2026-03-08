@@ -43,6 +43,7 @@ export function ProjectSidebar({
     items: [
       { id: 'project-room', title: 'Project Room', path: `/projects/${projectId}/work`, icon: Home, exact: true },
       { id: 'backlog', title: 'Backlog', path: `/projects/${projectId}/backlog`, icon: Square, exact: false },
+      { id: 'board', title: 'Board', path: `/projects/${projectId}/boards`, icon: Columns3, exact: false },
       { id: 'roadmap', title: 'Roadmap', path: `/projects/${projectId}/roadmap`, icon: Map, exact: false },
       { id: 'dependencies', title: 'Dependencies', path: `/projects/${projectId}/dependencies`, icon: GitBranch, exact: false },
       { id: 'tests', title: 'Tests', path: `/projects/${projectId}/tests`, icon: FlaskConical, exact: false },

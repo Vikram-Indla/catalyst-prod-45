@@ -63,7 +63,7 @@ export default function BoardManagerPage() {
             <div>
               <h1 style={{ fontSize: 17, fontFamily: "'Sora', sans-serif", fontWeight: 700, color: '#0F172A', letterSpacing: '-0.4px', margin: 0 }}>Boards</h1>
               <p style={{ fontSize: 12.5, color: '#64748B', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
-                Manage and configure all boards for this project
+                {boards.length} board{boards.length !== 1 ? 's' : ''} in this project
               </p>
             </div>
           </div>

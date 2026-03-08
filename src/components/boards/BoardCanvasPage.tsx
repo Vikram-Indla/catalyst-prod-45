@@ -227,7 +227,7 @@ export default function BoardCanvasPage() {
             border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
             color: '#2563EB', fontSize: 12, fontFamily: "'Inter', sans-serif", padding: 0,
           }}>
-            <ArrowLeft size={13} /> Boards
+            <ArrowLeft size={13} /> All Boards
           </button>
           <span style={{ color: '#CBD5E1' }}>›</span>
           <span>{board.name}</span>
