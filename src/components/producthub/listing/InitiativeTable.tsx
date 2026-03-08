@@ -16,7 +16,7 @@ import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
 import {
   StatusCell, PriorityCell, ScoreCell, AssigneeCell,
-  DateCell, ProgressCell, EACell, QuarterCell, IDCell,
+  DateCell, ProgressCell, EACell, QuarterCell, IDCell, TypeIconCell,
 } from './CellRenderers';
 import { InlineCellEditor, EDITABLE_COLUMNS, COLUMN_TO_FIELD } from './InlineCellEditor';
 import type { ColumnConfig } from './ColumnManager';
