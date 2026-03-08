@@ -59,6 +59,13 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
 
   // ── Resolve brd_documents.id: jira_key lookup FIRST, then seed ──
   const resolveBrdId = async (): Promise<string | null> => {
+    console.log('[EpicModal] resolveBrdId — doc fields:', {
+      jira_ticket_key: (doc as any).jira_ticket_key,
+      jira_key: (doc as any).jira_key,
+      jiraKey: (doc as any).jiraKey,
+      id: doc.id,
+      title: doc.title,
+    });
     console.log('[EpicModal] resolveBrdId called — jiraKey:',
       (doc as any).jira_ticket_key || (doc as any).jira_key || 'NONE');
     // STEP 1: lookup via jira_key (most reliable path)
