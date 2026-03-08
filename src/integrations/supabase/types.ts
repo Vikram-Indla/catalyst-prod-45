@@ -275,6 +275,261 @@ export type Database = {
           },
         ]
       }
+      board_columns: {
+        Row: {
+          board_id: string
+          color: string | null
+          created_at: string
+          id: string
+          is_backlog: boolean
+          is_done: boolean
+          name: string
+          position: number
+          status_ids: string[]
+          updated_at: string
+        }
+        Insert: {
+          board_id: string
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_backlog?: boolean
+          is_done?: boolean
+          name: string
+          position: number
+          status_ids?: string[]
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_backlog?: boolean
+          is_done?: boolean
+          name?: string
+          position?: number
+          status_ids?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_columns_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_issue_rank: {
+        Row: {
+          board_id: string
+          column_id: string | null
+          id: string
+          rank_value: string
+          updated_at: string
+          work_item_id: string
+        }
+        Insert: {
+          board_id: string
+          column_id?: string | null
+          id?: string
+          rank_value: string
+          updated_at?: string
+          work_item_id: string
+        }
+        Update: {
+          board_id?: string
+          column_id?: string | null
+          id?: string
+          rank_value?: string
+          updated_at?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_issue_rank_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "board_issue_rank_column_id_fkey"
+            columns: ["column_id"]
+            isOneToOne: false
+            referencedRelation: "board_columns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_members: {
+        Row: {
+          board_id: string
+          created_at: string
+          id: string
+          is_starred: boolean
+          last_viewed_at: string | null
+          role: string
+          user_id: string
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          id?: string
+          is_starred?: boolean
+          last_viewed_at?: string | null
+          role?: string
+          user_id: string
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          id?: string
+          is_starred?: boolean
+          last_viewed_at?: string | null
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_members_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_quick_filters: {
+        Row: {
+          board_id: string
+          created_at: string
+          filter_type: string
+          filter_value: Json
+          id: string
+          is_system: boolean
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          filter_type: string
+          filter_value?: Json
+          id?: string
+          is_system?: boolean
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          filter_type?: string
+          filter_value?: Json
+          id?: string
+          is_system?: boolean
+          name?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_quick_filters_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      boards: {
+        Row: {
+          board_type: string
+          color: string | null
+          created_at: string
+          created_by: string
+          deleted_at: string | null
+          description: string | null
+          filter_config: Json
+          filter_project_ids: string[]
+          icon: string | null
+          id: string
+          is_personal: boolean
+          is_starred: boolean
+          last_viewed_at: string | null
+          name: string
+          project_id: string | null
+          show_swimlanes: boolean
+          sort_order: number
+          swimlane_type: string
+          updated_at: string
+          updated_by: string | null
+          visibility: string
+        }
+        Insert: {
+          board_type?: string
+          color?: string | null
+          created_at?: string
+          created_by: string
+          deleted_at?: string | null
+          description?: string | null
+          filter_config?: Json
+          filter_project_ids?: string[]
+          icon?: string | null
+          id?: string
+          is_personal?: boolean
+          is_starred?: boolean
+          last_viewed_at?: string | null
+          name: string
+          project_id?: string | null
+          show_swimlanes?: boolean
+          sort_order?: number
+          swimlane_type?: string
+          updated_at?: string
+          updated_by?: string | null
+          visibility?: string
+        }
+        Update: {
+          board_type?: string
+          color?: string | null
+          created_at?: string
+          created_by?: string
+          deleted_at?: string | null
+          description?: string | null
+          filter_config?: Json
+          filter_project_ids?: string[]
+          icon?: string | null
+          id?: string
+          is_personal?: boolean
+          is_starred?: boolean
+          last_viewed_at?: string | null
+          name?: string
+          project_id?: string | null
+          show_swimlanes?: boolean
+          sort_order?: number
+          swimlane_type?: string
+          updated_at?: string
+          updated_by?: string | null
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "boards_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "boards_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brd_documents: {
         Row: {
           content_hash: string | null
@@ -66649,6 +66904,19 @@ export type Database = {
           p_test_case_ids: Json
         }
         Returns: Json
+      }
+      create_board: {
+        Args: {
+          p_color?: string
+          p_columns?: Json
+          p_is_personal?: boolean
+          p_name: string
+          p_project_id?: string
+          p_swimlane_type?: string
+          p_user_id?: string
+          p_visibility?: string
+        }
+        Returns: string
       }
       create_default_project_roles: {
         Args: { p_project_id: string }
