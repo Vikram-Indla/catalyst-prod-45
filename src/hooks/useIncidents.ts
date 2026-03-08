@@ -211,7 +211,7 @@ export function useAddComment() {
           content,
           comment_type,
           author_id: user?.id,
-        })
+        } as any)
         .select('*, author:incident_user_profiles(*)')
         .single();
 
