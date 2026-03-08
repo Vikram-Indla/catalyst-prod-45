@@ -219,7 +219,7 @@ export function HierarchyContextMenu({
 }
 
 function MenuItem({ icon: Icon, label, onClick }: {
-  icon: React.ComponentType<{ size?: number; color?: string }>;
+  icon: React.ComponentType<any>;
   label: string; onClick: () => void;
 }) {
   return (

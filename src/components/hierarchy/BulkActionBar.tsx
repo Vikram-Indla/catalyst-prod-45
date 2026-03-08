@@ -116,7 +116,7 @@ export function BulkActionBar({
 }
 
 function BulkBtn({ icon: Icon, label, onClick, danger }: {
-  icon: React.ComponentType<{ size?: number; color?: string }>;
+  icon: React.ComponentType<any>;
   label: string; onClick: () => void; danger?: boolean;
 }) {
   return (
