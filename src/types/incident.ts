@@ -539,3 +539,69 @@ export interface CommitteeQueueItem {
   total_members: number;
   age_hours: number;
 }
+
+// ─────────────────────────────────────────────
+// BACKWARD COMPAT ALIASES & MISSING EXPORTS
+// ─────────────────────────────────────────────
+
+/** @deprecated Use IncidentHistoryEntry */
+export type IncidentHistory = IncidentHistoryEntry;
+
+export interface ReleaseVersion {
+  id: string;
+  version: string;
+  name?: string;
+  release_date?: string | null;
+  status?: string;
+}
+
+export interface IncidentFilters {
+  status?: IncidentStatus[];
+  severity?: IncidentSeverity[];
+  support_level?: SupportLevel[];
+  priority?: IncidentPriority[];
+  assignee_workgroup_id?: string[];
+  source_department_id?: string[];
+  business_process_id?: string[];
+  delivery_stage?: DeliveryStage[];
+  release_version_id?: string;
+  is_major_incident?: boolean;
+  search?: string;
+  assignee_id?: string;
+  created_after?: string;
+  created_before?: string;
+}
+
+export interface IncidentFormData {
+  title: string;
+  description: string;
+  severity: IncidentSeverity;
+  impact: IncidentImpact;
+  urgency: IncidentUrgency;
+  support_level?: SupportLevel;
+  reporter_id?: string;
+  assignee_id?: string;
+  assignee_workgroup_id?: string;
+  project_id?: string;
+  team_id?: string;
+  owning_team_id?: string;
+  release_version_id?: string;
+  change_request_id?: string;
+  environment_id?: string;
+  business_process_id?: string;
+  affected_system?: string;
+  service_component?: string;
+  incident_type?: string;
+  delivery_stage?: string;
+}
+
+export interface IncidentTeam {
+  id: string;
+  name: string;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  key?: string;
+}
