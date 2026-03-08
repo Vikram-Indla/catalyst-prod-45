@@ -162,7 +162,7 @@ export function useMDTBacklog() {
           jira_issue_key: row.jira_issue_key ?? null,
           created_at: row.created_at,
           updated_at: row.updated_at,
-          brd_tasks: [],
+          brd_tasks: brdTasksByParent.get(row.jira_issue_key || row.initiative_key) || [],
         };
       });
 
