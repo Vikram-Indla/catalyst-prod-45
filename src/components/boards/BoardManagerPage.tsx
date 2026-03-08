@@ -77,6 +77,9 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
               <p style={{ fontSize: 12.5, color: '#64748B', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
                 {boards.length} board{boards.length !== 1 ? 's' : ''} in this project
               </p>
+              <p style={{ fontSize: 11, color: '#94A3B8', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
+                Debug: projectId = {projectId}
+              </p>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '12px 0 12px' }}>
