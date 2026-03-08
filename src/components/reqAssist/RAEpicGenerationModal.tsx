@@ -34,19 +34,22 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
   const [epicCount, setEpicCount] = useState(0);
   const [resolvedBrdId, setResolvedBrdId] = useState<string | null>(null);
   const hasStarted = useRef(false);
+  const doneRef = useRef(false);
+  const failedRef = useRef(false);
 
-  // ── EFFECT 1: Visual ticker — runs independently, always
+  // Keep refs in sync
+  useEffect(() => { doneRef.current = done; }, [done]);
+  useEffect(() => { failedRef.current = hasFailed; }, [hasFailed]);
+
+  // ── EFFECT 1: Visual ticker — runs unconditionally on mount, NO dependencies
   useEffect(() => {
-    if (done || hasFailed) return;
     const id = setInterval(() => {
-      setStep(prev => {
-        if (prev >= 3) { clearInterval(id); return 3; }
-        return prev + 1;
-      });
-      setProgress(prev => Math.min(prev + 20, 80));
-    }, 1400);
+      if (doneRef.current || failedRef.current) { clearInterval(id); return; }
+      setStep(prev => Math.min(prev + 1, 4));
+      setProgress(prev => Math.min(prev + 18, 90));
+    }, 1500);
     return () => clearInterval(id);
-  }, [done, hasFailed]);
+  }, []);
 
   const getDocBrdIdCandidate = (): string | null => {
     const candidate = (doc as any).id
