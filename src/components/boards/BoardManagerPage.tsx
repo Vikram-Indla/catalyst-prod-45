@@ -9,8 +9,15 @@ import type { BoardListItem } from '@/types/board';
 
 type TabFilter = 'all' | 'project' | 'personal' | 'starred';
 
-export default function BoardManagerPage() {
-  const { projectId } = useParams<{ projectId: string }>();
+interface BoardManagerPageProps {
+  projectIdOverride?: string;
+  basePath?: string;
+}
+
+export default function BoardManagerPage({ projectIdOverride, basePath }: BoardManagerPageProps = {}) {
+  const { projectId: paramProjectId } = useParams<{ projectId: string }>();
+  const projectId = projectIdOverride || paramProjectId;
+  const boardBasePath = basePath || `/projects/${projectId}/boards`;
   const navigate = useNavigate();
   const { data: boards = [], isLoading } = useBoards(projectId);
   const [search, setSearch] = useState('');
