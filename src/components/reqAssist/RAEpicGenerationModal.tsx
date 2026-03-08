@@ -37,13 +37,19 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
   const doneRef = useRef(false);
   const failedRef = useRef(false);
 
+  useEffect(() => {
+    console.log('[EpicModal] MOUNTED — doc:', JSON.stringify(doc, null, 2));
+  }, []);
+
   // Keep refs in sync
   useEffect(() => { doneRef.current = done; }, [done]);
   useEffect(() => { failedRef.current = hasFailed; }, [hasFailed]);
 
   // ── EFFECT 1: Visual ticker — runs unconditionally on mount, NO dependencies
   useEffect(() => {
+    console.log('[EpicModal] TICKER EFFECT FIRED');
     const id = setInterval(() => {
+      console.log('[EpicModal] TICK — done:', doneRef.current, 'failed:', failedRef.current);
       if (doneRef.current || failedRef.current) { clearInterval(id); return; }
       setStep(prev => Math.min(prev + 1, 4));
       setProgress(prev => Math.min(prev + 18, 90));
@@ -53,6 +59,8 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
 
   // ── Resolve brd_documents.id: jira_key lookup FIRST, then seed ──
   const resolveBrdId = async (): Promise<string | null> => {
+    console.log('[EpicModal] resolveBrdId called — jiraKey:',
+      (doc as any).jira_ticket_key || (doc as any).jira_key || 'NONE');
     // STEP 1: lookup via jira_key (most reliable path)
     const jiraKey = (doc as any).jira_ticket_key
       || (doc as any).jira_key
