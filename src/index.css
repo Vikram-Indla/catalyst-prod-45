@@ -101,6 +101,16 @@
   --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.04);
   --cp-shadow-overlay: 0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31);
 
+  /* ═══ Board Manager Tokens ═══ */
+  --cp-primary-10: #DBEAFE;
+  --cp-success-5: #F0FDF4;
+  --cp-success-10: #DCFCE7;
+  --cp-danger-5: #FEF2F2;
+  --cp-warning-5: #FFFBEB;
+  --cp-purple-10: #EDE9FE;
+  --cp-info-60: #0284C7;
+  --cp-neutral-60: #525252;
+
   /* ═══ CATALYST10 Typography Tokens ═══ */
   /* UI Scale */
   --c10-text-ui-2xs: 10px;
