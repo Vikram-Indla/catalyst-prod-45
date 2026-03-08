@@ -3,7 +3,30 @@
  * Stage B: Supabase client queries, no Edge Functions yet
  */
 import { supabase } from '@/integrations/supabase/client';
-import type { SyncStatus, SyncConflict, JiraSyncLog, JiraSyncFilter } from '@/types/jira-sync';
+
+// Types inlined to avoid module resolution issues before types regenerate
+type SyncStatus = 'synced' | 'stale' | 'conflict' | 'syncing' | 'pending';
+
+interface SyncConflict {
+  field: string;
+  catalystValue: string;
+  jiraValue: string;
+  detectedAt: string;
+  resolvedAt?: string;
+  resolvedBy?: string;
+}
+
+interface JiraSyncLog {
+  id: string;
+  projectId: string;
+  triggeredBy: string;
+  startedAt: string;
+  completedAt?: string;
+  status: 'running' | 'completed' | 'failed';
+  itemsSynced: number;
+  conflictsFound: number;
+  errorMessage?: string;
+}
 
 export const jiraSyncService = {
   /** Trigger a sync run for a project */
