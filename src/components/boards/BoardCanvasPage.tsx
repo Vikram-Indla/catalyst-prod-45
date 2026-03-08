@@ -79,14 +79,9 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
   const updateLastViewed = useUpdateBoardLastViewed();
 
   // Canonical board order for tab bar
-  const CANONICAL_ORDER = ['Delivery Board', 'QA Board', 'Design Board', 'My Planning Board'];
+  // Dynamic board tabs — sorted by sort_order from DB
   const boardTabs = useMemo(() => {
-    const ordered: typeof siblingBoards = [];
-    for (const name of CANONICAL_ORDER) {
-      const found = siblingBoards.find(b => b.name === name);
-      if (found) ordered.push(found);
-    }
-    return ordered;
+    return [...siblingBoards].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   }, [siblingBoards]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
