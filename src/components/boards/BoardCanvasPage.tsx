@@ -28,6 +28,7 @@ const BOARD_ACCENT: Record<string, string> = {
 function StatusLozenge({ status }: { status: string }) {
   const s = status.toLowerCase().replace(/[\s_-]+/g, '');
   let bg = '#DFE1E6', color = '#253858', label = status.toUpperCase();
+  let leftBorder: string | undefined;
 
   // Blue: in-progress family
   if (['inprogress','indev','inreview','inqa','active','inbeta','processing','testing','review'].includes(s)) {
@@ -38,6 +39,10 @@ function StatusLozenge({ status }: { status: string }) {
     bg = '#E3FCEF'; color = '#006644';
   }
   // Grey: everything else (backlog, todo, onhold, new, waiting, blocked)
+  // Blocked gets a red left border accent on grey lozenge
+  if (s === 'blocked') {
+    leftBorder = '3px solid #DC2626';
+  }
 
   return (
     <span style={{
@@ -47,6 +52,7 @@ function StatusLozenge({ status }: { status: string }) {
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
       background: bg, color,
       fontFamily: "'Inter', sans-serif",
+      borderLeft: leftBorder,
     }}>{label}</span>
   );
 }
@@ -269,14 +275,16 @@ export default function BoardCanvasPage() {
             }}>Kanban</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{
+            <button style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               height: 28, padding: '0 10px', borderRadius: 4,
-              background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.06)',
+              background: '#F1F5F9', border: '0.75px solid rgba(15,23,42,0.06)',
               fontSize: 12, color: '#334155', fontFamily: "'Inter', sans-serif",
+              cursor: 'pointer',
             }}>
               Group by: <strong style={{ fontWeight: 600 }}>{board.swimlaneType === 'none' ? 'None' : board.swimlaneType.charAt(0).toUpperCase() + board.swimlaneType.slice(1)}</strong>
-            </div>
+              <ChevronDown size={12} color="#64748B" />
+            </button>
             <button onClick={() => setSettingsOpen(true)} style={{
               display: 'flex', alignItems: 'center', gap: 5, height: 32, padding: '0 12px',
               background: 'transparent', border: '0.75px solid rgba(15,23,42,0.12)',
