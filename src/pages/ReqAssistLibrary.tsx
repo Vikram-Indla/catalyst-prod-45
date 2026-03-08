@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { FileText, FileSearch, Download, Loader2, Zap, RotateCcw, Eye, ArrowRight, Sparkles } from 'lucide-react';
+import { FileText, FileSearch, Download, Loader2, Zap, RotateCcw, Eye, ArrowRight, Sparkles, FileUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useRADocuments, useRAStats, RA_KEYS } from '@/hooks/useReqAssist';
@@ -451,26 +451,33 @@ export default function ReqAssistLibrary() {
                             );
                           })()}
                         </td>
-                        {/* PDF */}
-                        <td data-col="pdf" style={{ padding: '8px 12px', overflow: 'hidden' }}>
+                        {/* B2: SOURCE PDF — upload or signed-URL view */}
+                        <td data-col="pdf" style={{ padding: '8px 12px', overflow: 'hidden', textAlign: 'center', width: 80 }}>
                           {doc.pdf_url ? (
                             <button
-                              onClick={(e) => { e.stopPropagation(); setPdfDoc(doc); }}
+                              title={(doc as any).pdf_filename || 'source.pdf'}
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                // Generate signed URL and open in new tab
+                                const path = doc.pdf_url!;
+                                const { data } = await supabase.storage.from('brd-attachments').createSignedUrl(path, 3600);
+                                if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+                              }}
                               style={{
                                 display: 'inline-flex', alignItems: 'center', gap: 4,
                                 padding: '3px 6px', borderRadius: 4,
-                                background: '#FEF2F2', border: 'none', cursor: 'pointer',
-                                fontSize: 11, color: '#DC2626', fontWeight: 500,
-                                fontFamily: "'JetBrains Mono', monospace",
+                                background: 'transparent', border: 'none', cursor: 'pointer',
+                                fontSize: 12, color: '#2563EB', fontWeight: 500,
+                                fontFamily: "'Inter', sans-serif",
                               }}
-                              onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
-                              onMouseLeave={e => (e.currentTarget.style.background = '#FEF2F2')}
+                              onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                              onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                             >
-                              <FileText size={13} strokeWidth={1.5} />
-                              {doc.page_count ? `${doc.page_count}pp` : '—pp'}
+                              <FileText size={14} color="#2563EB" />
+                              PDF
                             </button>
                           ) : (
-                            <span style={{ color: '#CBD5E1', fontSize: 13 }}>—</span>
+                            <PdfUploadCell brdId={brdData_forRow_id(doc)} jiraKey={doc.jira_ticket_key} />
                           )}
                         </td>
                         {/* Status — computed from epicCount + pipeline_stage */}
@@ -651,6 +658,88 @@ function formatImported(iso: string): string {
   if (diffDays === 1) return 'Yesterday';
   if (diffDays < 7) return `${diffDays}d ago`;
   return format(d, 'd MMM');
+}
+
+/* B2: PDF Upload Cell for rows without a PDF */
+function PdfUploadCell({ brdId: initialBrdId, jiraKey }: { brdId: string | null; jiraKey: string }) {
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const qc = useQueryClient();
+
+  const handleUpload = async (file: File) => {
+    // Resolve brd_id from jira_key if not provided
+    let brdId = initialBrdId;
+    if (!brdId && jiraKey) {
+      const { data } = await (supabase as any).from('brd_documents').select('id').eq('jira_key', jiraKey).maybeSingle();
+      brdId = data?.id ?? null;
+    }
+    if (!brdId) {
+      toast.error('BRD document not found — cannot attach PDF');
+      return;
+    }
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error('File too large — max 50MB');
+      return;
+    }
+    setUploading(true);
+    try {
+      const path = `${brdId}/source.pdf`;
+      const { error: uploadErr } = await supabase.storage
+        .from('brd-attachments')
+        .upload(path, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+
+      await (supabase as any).from('brd_documents').update({
+        pdf_url: path,
+        pdf_filename: file.name,
+        pdf_attached_at: new Date().toISOString(),
+      }).eq('id', brdId);
+
+      toast.success('PDF attached — click to open');
+      qc.invalidateQueries({ queryKey: RA_KEYS.all });
+    } catch (err: any) {
+      toast.error('Upload failed: ' + (err.message || 'Unknown error'));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <>
+      <button
+        title="Attach source PDF"
+        onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}
+        disabled={uploading}
+        style={{
+          border: 'none', background: 'transparent', cursor: uploading ? 'default' : 'pointer',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          padding: 4,
+        }}
+      >
+        {uploading ? (
+          <Loader2 size={14} color="#94A3B8" style={{ animation: 'ra-pulse 1s linear infinite' }} />
+        ) : (
+          <FileUp size={14} color="#94A3B8" />
+        )}
+      </button>
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".pdf"
+        style={{ display: 'none' }}
+        onChange={e => { if (e.target.files?.[0]) handleUpload(e.target.files[0]); }}
+      />
+    </>
+  );
+}
+
+/* Helper: resolve brd_documents.id for a given ra_documents row */
+function brdData_forRow_id(doc: RADocumentWithArtifacts): string | null {
+  // pdf_url is on brd_documents, not ra_documents.
+  // For the upload cell we need the brd_documents id.
+  // This is loaded async in the side panel but here we attempt a simpler approach:
+  // We store no local cache, so we pass null and let the upload cell resolve it.
+  return null;
 }
 
 /* V12 StatusLozenge — IMMUTABLE GUARDRAIL — computed from epicCount + pipeline_stage */
