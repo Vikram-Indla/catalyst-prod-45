@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 
-const ENHANCEMENT_TYPE_ID = '00242328-979a-4ecb-8f02-5d3b982966d1';
+const BUSINESS_REQUEST_TYPE_ID = '0bd8d5df-70e1-4f1c-8db1-f9b217fac1de';
 
 /** Map Jira status to initiative_status enum (valid: new_demand, under_review, approved, in_progress, on_hold, delivered, closed, cancelled) */
 function mapJiraStatus(status: string, statusCategory: string): string {
@@ -69,7 +69,7 @@ export function useSyncMDTToInitiatives() {
           status: mapJiraStatus(issue.status, issue.status_category),
           source: 'jira',
           jira_issue_key: issue.issue_key,
-          initiative_type_id: ENHANCEMENT_TYPE_ID,
+          initiative_type_id: BUSINESS_REQUEST_TYPE_ID,
           priority: issue.priority?.toLowerCase() || null,
         }));
 

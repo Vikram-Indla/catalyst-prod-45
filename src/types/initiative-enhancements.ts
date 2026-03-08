@@ -1,4 +1,4 @@
-export type InitiativeTypeKey = 'project' | 'enhancement' | 'improvement' | 'entity_integration';
+export type InitiativeTypeKey = 'project' | 'enhancement' | 'improvement' | 'entity_integration' | 'business_request';
 export type HealthStatus = 'on_track' | 'at_risk' | 'off_track';
 export type BusinessValue = 'high' | 'medium' | 'low';
 
@@ -40,6 +40,13 @@ export const INITIATIVE_TYPE_COLORS: Record<InitiativeTypeKey, {
     bg: '#FFFBEB',
     text: '#B45309',
     border: '#B45309',
+    gradient: 'linear-gradient(90deg, #D97706, #F59E0B)',
+  },
+  business_request: {
+    hex: '#B45309',
+    bg: '#FEF3C7',
+    text: '#92400E',
+    border: '#D97706',
     gradient: 'linear-gradient(90deg, #D97706, #F59E0B)',
   },
   entity_integration: {
