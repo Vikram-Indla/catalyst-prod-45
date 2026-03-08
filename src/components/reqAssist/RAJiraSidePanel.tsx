@@ -589,7 +589,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     background: '#EFF6FF', border: '0.75px solid #BFDBFE',
                     fontSize: 11, fontWeight: 700, color: '#1D4ED8',
                     fontFamily: "'Inter', sans-serif",
-                  }}>{epicCount} generated</span>
+                  }}>{pluralise(epicCount, 'epic', 'epics')} generated</span>
                 ) : (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 10,
