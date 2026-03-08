@@ -173,9 +173,28 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
     if (!over || !boardId) return;
 
     const cardId = String(active.id);
-    const targetColumnId = String(over.id);
+    const overId = String(over.id);
     const card = cards.find(c => c.id === cardId);
     if (!card) return;
+
+    // Resolve target column: over.id may be a column ID or a card ID
+    const columnIds = new Set(columns.map(c => c.id));
+    let targetColumnId: string;
+    if (columnIds.has(overId)) {
+      targetColumnId = overId;
+    } else {
+      // over.id is a card — find which column it belongs to
+      const overCard = cards.find(c => c.id === overId);
+      const overColId = (overCard as any)?.columnId;
+      if (overColId && columnIds.has(overColId)) {
+        targetColumnId = overColId;
+      } else {
+        // Fallback: search cardsByColumn
+        const found = Object.entries(cardsByColumn).find(([, colCards]) => colCards.some(c => c.id === overId));
+        targetColumnId = found?.[0] ?? columns[0]?.id;
+      }
+    }
+    if (!targetColumnId) return;
 
     const currentColumnId = (card as any).columnId || columns[0]?.id;
     if (currentColumnId === targetColumnId) return;
