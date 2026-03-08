@@ -438,24 +438,42 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   )}
                 </span>
               </MetaRow>
-              {/* D08: Source PDF in metadata */}
+              {/* D08/B2: Source PDF in metadata — signed URL */}
               <MetaRow label="Source PDF">
                 {doc.pdf_url ? (
-                  <a href={doc.pdf_url} target="_blank" rel="noopener noreferrer" style={{
-                    fontSize: 12, fontWeight: 500, color: '#2563EB', textDecoration: 'none',
-                    fontFamily: "'Inter', sans-serif",
-                  }}
-                    onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-                    onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
-                  >Open PDF ↗</a>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <button
+                      onClick={async () => {
+                        const path = doc.pdf_url!;
+                        const { data } = await supabase.storage.from('brd-attachments').createSignedUrl(path, 3600);
+                        if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+                      }}
+                      style={{
+                        fontSize: 12, fontWeight: 500, color: '#2563EB', background: 'transparent',
+                        border: 'none', cursor: 'pointer', padding: 0, fontFamily: "'Inter', sans-serif",
+                        display: 'inline-flex', alignItems: 'center', gap: 4, textDecoration: 'none',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                      onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                    >
+                      <FileText size={12} color="#2563EB" />
+                      {(doc as any).pdf_filename || 'source.pdf'}
+                    </button>
+                    {(doc as any).pdf_attached_at && (
+                      <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
+                        Attached {formatTimestamp((doc as any).pdf_attached_at)}
+                      </span>
+                    )}
+                  </div>
                 ) : (
                   <>
                     <button onClick={() => fileInputRef.current?.click()} disabled={uploadingPdf} style={{
-                      fontSize: 12, fontWeight: 500, color: '#2563EB', background: 'transparent',
-                      border: 'none', cursor: 'pointer', padding: 0, fontFamily: "'Inter', sans-serif",
+                      fontSize: 12, fontWeight: 500, color: '#475569', background: 'transparent',
+                      border: '0.75px solid #CBD5E1', borderRadius: 5, cursor: 'pointer', padding: '4px 10px',
+                      fontFamily: "'Inter', sans-serif",
                       display: 'inline-flex', alignItems: 'center', gap: 4,
                     }}>
-                      {uploadingPdf ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <FileUp size={12} />}
+                      {uploadingPdf ? <Loader2 size={14} color="#94A3B8" style={{ animation: 'spin 1s linear infinite' }} /> : <FileUp size={14} color="#94A3B8" />}
                       {uploadingPdf ? 'Uploading...' : 'Attach PDF'}
                     </button>
                     <input
