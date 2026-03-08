@@ -88,7 +88,7 @@ serve(async (req) => {
     let allIssues: any[] = []
     let hadSearchErrors = false
     const maxResults = 100
-    const fields = ['summary','status','assignee','reporter','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016','description','comment','attachment']
+    const fields = ['summary','status','assignee','reporter','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016','description','comment','attachment','issuelinks']
     const searchUrl = `${base}/rest/api/3/search/jql`
     const postHeaders = { ...headers, 'Content-Type': 'application/json' }
 
