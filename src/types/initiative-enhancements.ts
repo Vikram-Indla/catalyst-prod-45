@@ -42,6 +42,13 @@ export const INITIATIVE_TYPE_COLORS: Record<InitiativeTypeKey, {
     border: '#B45309',
     gradient: 'linear-gradient(90deg, #D97706, #F59E0B)',
   },
+  business_request: {
+    hex: '#B45309',
+    bg: '#FEF3C7',
+    text: '#92400E',
+    border: '#D97706',
+    gradient: 'linear-gradient(90deg, #D97706, #F59E0B)',
+  },
   entity_integration: {
     hex: '#8B5CF6',
     bg: '#F5F3FF',

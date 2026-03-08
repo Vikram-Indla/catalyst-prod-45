@@ -1,14 +1,14 @@
 /**
  * InitiativeTypeBadge — Colored badge showing initiative type with Lucide icons
  */
-import { FolderKanban, Zap, Wrench, Link, CircleDashed, type LucideIcon } from 'lucide-react';
+import { FolderKanban, Zap, Wrench, Link, CircleDashed, Lightbulb, type LucideIcon } from 'lucide-react';
 import { getTypeColor, getTypeLabel } from '@/utils/initiative-type-utils';
 
 const TYPE_ICONS: Record<string, LucideIcon> = {
   project: FolderKanban,
   enhancement: Zap,
   improvement: Wrench,
-  
+  business_request: Lightbulb,
   entity_integration: Link,
 };
 

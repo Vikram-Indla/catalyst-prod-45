@@ -21,7 +21,7 @@ export function getTypeLabel(key: string | null | undefined): string {
     case 'project': return 'Project';
     case 'enhancement': return 'Enhancement';
     case 'improvement': return 'Improvement';
-    
+    case 'business_request': return 'Business Request';
     case 'entity_integration': return 'Entity Integration';
     default: return 'Untyped';
   }
