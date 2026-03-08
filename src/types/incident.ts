@@ -593,6 +593,7 @@ export interface IncidentFormData {
   service_component?: string;
   incident_type?: string;
   delivery_stage?: string;
+  is_major_incident?: boolean;
 }
 
 export interface IncidentTeam {
