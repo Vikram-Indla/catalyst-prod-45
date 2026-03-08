@@ -275,14 +275,16 @@ export default function BoardCanvasPage() {
             }}>Kanban</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{
+            <button style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               height: 28, padding: '0 10px', borderRadius: 4,
-              background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.06)',
+              background: '#F1F5F9', border: '0.75px solid rgba(15,23,42,0.06)',
               fontSize: 12, color: '#334155', fontFamily: "'Inter', sans-serif",
+              cursor: 'pointer',
             }}>
               Group by: <strong style={{ fontWeight: 600 }}>{board.swimlaneType === 'none' ? 'None' : board.swimlaneType.charAt(0).toUpperCase() + board.swimlaneType.slice(1)}</strong>
-            </div>
+              <ChevronDown size={12} color="#64748B" />
+            </button>
             <button onClick={() => setSettingsOpen(true)} style={{
               display: 'flex', alignItems: 'center', gap: 5, height: 32, padding: '0 12px',
               background: 'transparent', border: '0.75px solid rgba(15,23,42,0.12)',

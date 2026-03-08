@@ -40,7 +40,7 @@ export default function BoardQuickFilters() {
       <button style={{
         display: 'inline-flex', alignItems: 'center', gap: 4,
         height: 26, padding: '0 10px', borderRadius: 13,
-        border: 'none', background: '#F8FAFC',
+        border: 'none', background: '#F1F5F9',
         color: '#334155', fontSize: 12, fontWeight: 500,
         fontFamily: "'Inter', sans-serif", cursor: 'pointer',
       }}>
