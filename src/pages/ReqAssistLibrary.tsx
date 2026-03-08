@@ -130,7 +130,7 @@ export default function ReqAssistLibrary() {
       await (supabase as any).from('ra_documents').update({ kb_synced: true, kb_synced_at: new Date().toISOString() }).eq('id', docId);
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
       qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
-      toast.success('Document indexed for AI search');
+      toast.success('Document indexed for Knowledge Assistant');
     } catch (err: any) {
       toast.error(sanitiseError(err));
     } finally {
