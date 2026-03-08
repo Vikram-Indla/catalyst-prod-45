@@ -557,6 +557,7 @@ export type Database = {
           language: string
           methodology: string | null
           original_url: string | null
+          pdf_url: string | null
           pipeline_stage: Database["public"]["Enums"]["pipeline_stage_enum"]
           processed_at: string | null
           quality_score: number | null
@@ -576,6 +577,7 @@ export type Database = {
           language?: string
           methodology?: string | null
           original_url?: string | null
+          pdf_url?: string | null
           pipeline_stage?: Database["public"]["Enums"]["pipeline_stage_enum"]
           processed_at?: string | null
           quality_score?: number | null
@@ -595,6 +597,7 @@ export type Database = {
           language?: string
           methodology?: string | null
           original_url?: string | null
+          pdf_url?: string | null
           pipeline_stage?: Database["public"]["Enums"]["pipeline_stage_enum"]
           processed_at?: string | null
           quality_score?: number | null
@@ -718,6 +721,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "brd_processing_queue_brd_id_fkey"
+            columns: ["brd_id"]
+            isOneToOne: false
+            referencedRelation: "brd_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brd_uat_scenarios: {
+        Row: {
+          brd_id: string
+          created_at: string | null
+          expected_result: string | null
+          id: string
+          scenario_key: string
+          status: string | null
+          steps: string | null
+          title: string
+        }
+        Insert: {
+          brd_id: string
+          created_at?: string | null
+          expected_result?: string | null
+          id?: string
+          scenario_key: string
+          status?: string | null
+          steps?: string | null
+          title: string
+        }
+        Update: {
+          brd_id?: string
+          created_at?: string | null
+          expected_result?: string | null
+          id?: string
+          scenario_key?: string
+          status?: string | null
+          steps?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brd_uat_scenarios_brd_id_fkey"
             columns: ["brd_id"]
             isOneToOne: false
             referencedRelation: "brd_documents"
@@ -32729,6 +32773,38 @@ export type Database = {
             columns: ["status_id"]
             isOneToOne: false
             referencedRelation: "r360md_status_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ra_activity_log: {
+        Row: {
+          brd_id: string | null
+          created_at: string | null
+          event_type: string
+          id: string
+          message: string
+        }
+        Insert: {
+          brd_id?: string | null
+          created_at?: string | null
+          event_type: string
+          id?: string
+          message: string
+        }
+        Update: {
+          brd_id?: string | null
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          message?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ra_activity_log_brd_id_fkey"
+            columns: ["brd_id"]
+            isOneToOne: false
+            referencedRelation: "brd_documents"
             referencedColumns: ["id"]
           },
         ]
