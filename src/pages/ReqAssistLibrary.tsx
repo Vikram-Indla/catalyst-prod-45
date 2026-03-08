@@ -631,6 +631,17 @@ export default function ReqAssistLibrary() {
 
 /* ── Helpers ── */
 
+function deriveDomainFromKey(jiraKey: string | null | undefined): string | null {
+  if (!jiraKey) return null;
+  const prefix = jiraKey.split('-')[0]?.toUpperCase();
+  const map: Record<string, string> = {
+    'MDT': 'Ministry Digital Transformation',
+    'SEN': 'Senaei Platform',
+    'SIMP': 'Industrial Monitoring',
+  };
+  return map[prefix] || null;
+}
+
 function formatImported(iso: string): string {
   const d = new Date(iso);
   const now = new Date();
