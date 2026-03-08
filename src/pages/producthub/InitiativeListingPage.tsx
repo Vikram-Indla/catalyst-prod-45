@@ -138,6 +138,7 @@ function getGroupSortKey(item: Initiative, groupBy: GroupByField): string {
 }
 
 export default function InitiativeListingPage() {
+  useSyncMDTToInitiatives();
   const { data: mdtData, isLoading } = useMDTBacklog();
   const { data: profiles } = useProfileOptions();
   const { data: departments } = useDepartmentOptions();
