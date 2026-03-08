@@ -10,6 +10,8 @@ export function useBoards(projectId: string | undefined) {
       const { data: { user } } = await supabase.auth.getUser();
       const uid = user?.id;
 
+      console.log('[useBoards] projectId:', projectId, 'userId:', uid);
+
       const { data, error } = await (supabase as any)
         .from('boards')
         .select(`
@@ -18,7 +20,7 @@ export function useBoards(projectId: string | undefined) {
           board_issue_rank(id),
           board_members(is_starred, last_viewed_at, user_id)
         `)
-        .eq('project_id', projectId)
+        .or(`project_id.eq.${projectId},and(is_personal.eq.true,created_by.eq.${uid})`)
         .is('deleted_at', null)
         .order('sort_order', { ascending: true });
 
