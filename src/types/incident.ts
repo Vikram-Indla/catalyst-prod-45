@@ -1,6 +1,7 @@
 // ============================================================
 // INCIDENTHUB — G3 TYPESCRIPT INTERFACES
 // Catalyst Enterprise Platform | Saudi Ministry of Industry
+// NOTE: Incident base type includes optional joined fields for backward compat
 // Generated: 2026-03-09 | FORGE SDLC Pipeline G3
 // ============================================================
 
