@@ -60,8 +60,9 @@ interface SlaRecord {
 
 interface BusinessProcess {
   id: string;
-  name_en: string;
+  name_en?: string;
   name_ar?: string;
+  name?: string;
 }
 
 interface IncidentContextRailProps {
