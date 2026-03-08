@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, ExternalLink, FileText, Layers, BookOpen, TestTube, Copy, Check } from 'lucide-react';
+import { X, FileText, Zap, BookOpen, TestTube, Copy, Check, Paperclip, ArrowDownToLine, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
-import { format } from 'date-fns';
+import { formatTimestamp } from '@/lib/formatTimestamp';
 
 interface Props {
   doc: RADocumentWithArtifacts;
@@ -14,27 +14,23 @@ interface Props {
   onSyncKb?: (docId: string) => void;
 }
 
-interface PipelineState {
-  imported: boolean;
-  processed: boolean;
-  indexed: boolean;
-  epicsGenerated: boolean;
-  published: boolean;
-  brdId: string | null;
-  rawText: string | null;
+interface BrdData {
+  id: string | null;
+  pipeline_stage: string | null;
+  raw_text: string | null;
   epicCount: number;
-  chunkCount: number;
+  wikiCount: number;
   publishedCount: number;
 }
 
 export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, onViewDrafts, onSyncKb }: Props) {
   const navigate = useNavigate();
-  const [pipeline, setPipeline] = useState<PipelineState>({
-    imported: true, processed: false, indexed: false,
-    epicsGenerated: false, published: false, brdId: null,
-    rawText: null, epicCount: 0, chunkCount: 0, publishedCount: 0,
+  const [brdData, setBrdData] = useState<BrdData>({
+    id: null, pipeline_stage: null, raw_text: null,
+    epicCount: 0, wikiCount: 0, publishedCount: 0,
   });
-  const [expanded, setExpanded] = useState(false);
+  const [contentExpanded, setContentExpanded] = useState(false);
+  const [descExpanded, setDescExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -43,347 +39,479 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
     return () => document.removeEventListener('keydown', handler);
   }, [onClose]);
 
-  // Load pipeline state from DB
+  // Load BRD data chain: ra_documents.jira_ticket_key → brd_documents.jira_key → brd_epics
   useEffect(() => {
     const load = async () => {
-      const jiraKey = (doc as any).jira_ticket_key;
-      let brdId: string | null = null;
-      let rawText: string | null = null;
-      let pipelineStage: string | null = null;
-      let kbSynced = false;
+      const jiraKey = doc.jira_ticket_key;
+      if (!jiraKey) return;
 
-      // Resolve brd_documents entry
-      const { data: direct } = await (supabase as any).from('brd_documents').select('id, raw_text, pipeline_stage, kb_synced').eq('id', doc.id).maybeSingle();
-      if (direct?.id) {
-        brdId = direct.id;
-        rawText = direct.raw_text;
-        pipelineStage = direct.pipeline_stage;
-        kbSynced = direct.kb_synced === true;
-      }
-      if (!brdId && jiraKey) {
-        const { data: jiraMatch } = await (supabase as any).from('brd_documents').select('id, raw_text, pipeline_stage, kb_synced').eq('jira_key', jiraKey).maybeSingle();
-        if (jiraMatch?.id) {
-          brdId = jiraMatch.id;
-          rawText = jiraMatch.raw_text;
-          pipelineStage = jiraMatch.pipeline_stage;
-          kbSynced = jiraMatch.kb_synced === true;
-        }
+      // Step 1 — resolve brd_id via jira_key
+      const { data: brdRow } = await (supabase as any)
+        .from('brd_documents')
+        .select('id, pipeline_stage, raw_text')
+        .eq('jira_key', jiraKey)
+        .maybeSingle();
+
+      if (!brdRow?.id) {
+        setBrdData({ id: null, pipeline_stage: null, raw_text: null, epicCount: 0, wikiCount: 0, publishedCount: 0 });
+        return;
       }
 
-      let epicCount = 0;
-      let publishedCount = 0;
-      let chunkCount = 0;
+      // Step 2 — count epics
+      const { count: epicCount } = await (supabase as any)
+        .from('brd_epics')
+        .select('id', { count: 'exact', head: true })
+        .eq('brd_id', brdRow.id);
 
-      if (brdId) {
-        const { count: ec } = await (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdId);
-        epicCount = ec ?? 0;
+      // Step 2b — count published epics (ra_tag IS NOT NULL)
+      const { count: publishedCount } = await (supabase as any)
+        .from('brd_epics')
+        .select('id', { count: 'exact', head: true })
+        .eq('brd_id', brdRow.id)
+        .not('ra_tag', 'is', null);
 
-        const { count: pc } = await (supabase as any).from('brd_epics').select('id', { count: 'exact', head: true }).eq('brd_id', brdId).eq('publish_status', 'published');
-        publishedCount = pc ?? 0;
+      // Step 3 — count wiki chunks
+      const { count: wikiCount } = await (supabase as any)
+        .from('kb_embeddings')
+        .select('id', { count: 'exact', head: true })
+        .eq('source_id', brdRow.id);
 
-        // FIX 3: Chunk count from kb_embeddings via JSONB metadata
-        const { count: cc } = await (supabase as any)
-          .from('kb_embeddings')
-          .select('*', { count: 'exact', head: true })
-          .contains('metadata', { source_id: brdId });
-        chunkCount = cc ?? 0;
-
-        // Fallback: try jira_key match
-        if (chunkCount === 0 && jiraKey) {
-          const { count: fallbackCc } = await (supabase as any)
-            .from('kb_embeddings')
-            .select('*', { count: 'exact', head: true })
-            .contains('metadata', { jira_key: jiraKey });
-          chunkCount = fallbackCc ?? 0;
-        }
+      // Fallback wiki count
+      let finalWikiCount = wikiCount ?? 0;
+      if (finalWikiCount === 0 && doc.wikihub_chunk_count) {
+        finalWikiCount = doc.wikihub_chunk_count;
       }
 
-      // Fallback chunk count from doc
-      if (chunkCount === 0 && doc.wikihub_chunk_count) {
-        chunkCount = doc.wikihub_chunk_count;
-      }
-
-      setPipeline({
-        imported: true,
-        processed: pipelineStage === 'ready' || pipelineStage === 'complete',
-        indexed: kbSynced || doc.kb_synced === true,
-        epicsGenerated: epicCount > 0,
-        published: publishedCount > 0,
-        brdId,
-        rawText,
-        epicCount,
-        chunkCount,
-        publishedCount,
+      setBrdData({
+        id: brdRow.id,
+        pipeline_stage: brdRow.pipeline_stage,
+        raw_text: brdRow.raw_text,
+        epicCount: epicCount ?? 0,
+        wikiCount: finalWikiCount,
+        publishedCount: publishedCount ?? 0,
       });
     };
     load();
   }, [doc]);
 
   const handleCopy = () => {
-    if (pipeline.rawText) {
-      navigator.clipboard.writeText(pipeline.rawText);
+    if (brdData.raw_text) {
+      navigator.clipboard.writeText(brdData.raw_text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
   };
 
-  // Determine smart CTA
-  const getSmartCTA = () => {
-    if (!pipeline.epicsGenerated) return { label: '✦ Generate Epics for this BRD', primary: true, action: () => onGenerate('epics') };
-    if (pipeline.epicsGenerated && !pipeline.published) return { label: 'Publish Epics to Project →', primary: true, action: () => { if (pipeline.brdId && onViewDrafts) onViewDrafts(pipeline.brdId); } };
-    if (pipeline.published && !pipeline.indexed) return { label: 'Sync to Knowledge Base →', primary: true, action: () => { if (onSyncKb) onSyncKb(doc.id); } };
-    return { label: '✦ Regenerate Artifacts', primary: false, action: () => onGenerate('epics') };
-  };
-
-  const cta = getSmartCTA();
-
-  const STEPS = [
-    { label: 'Imported', done: pipeline.imported },
-    { label: 'Processed', done: pipeline.processed },
-    { label: 'Indexed', done: pipeline.indexed },
-    { label: 'Epics Generated', done: pipeline.epicsGenerated },
-    { label: 'Published', done: pipeline.published },
+  // Pipeline stepper logic
+  const stage = brdData.pipeline_stage;
+  const steps = [
+    {
+      label: 'Imported',
+      state: 'complete' as const, // always complete if ra_documents row exists
+    },
+    {
+      label: 'Processed',
+      state: (stage && ['extract', 'process', 'validate', 'distribute', 'complete'].includes(stage))
+        ? 'complete' as const : (stage === 'intake' ? 'active' as const : 'pending' as const),
+    },
+    {
+      label: 'Indexed',
+      state: (stage && ['validate', 'distribute', 'complete'].includes(stage)) || brdData.wikiCount > 0
+        ? 'complete' as const : 'pending' as const,
+    },
+    {
+      label: 'Epics',
+      state: brdData.epicCount > 0 ? 'complete' as const : 'pending' as const,
+    },
+    {
+      label: 'Published',
+      state: brdData.epicCount > 0 && brdData.publishedCount > 0 ? 'complete' as const : 'pending' as const,
+    },
   ];
 
-  // Determine active step (first not-done)
-  const activeIdx = STEPS.findIndex(s => !s.done);
+  // Determine active step (first pending becomes active)
+  const activeIdx = steps.findIndex(s => s.state === 'pending');
+  const computedSteps = steps.map((s, i) => ({
+    ...s,
+    state: s.state === 'pending' && i === activeIdx ? 'active' as const : s.state,
+  }));
+
+  // Status lozenge from pipeline_stage
+  const getStageLozenge = () => {
+    if (!stage) return { bg: '#DFE1E6', color: '#253858', label: 'PENDING' };
+    if (stage === 'complete') return { bg: '#E3FCEF', color: '#006644', label: 'COMPLETE' };
+    if (stage === 'failed') return { bg: '#DFE1E6', color: '#253858', label: 'FAILED' };
+    // intake, extract, process, validate, distribute → BLUE
+    return { bg: '#DEEBFF', color: '#0747A6', label: stage.toUpperCase() };
+  };
+  const lozenge = getStageLozenge();
+
+  const description = (doc as any).description || doc.content_raw || null;
+  const descTruncated = description && description.length > 300;
 
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 40 }} />
       <div style={{
-        position: 'fixed', top: 48, right: 0, bottom: 0, width: 480,
+        position: 'fixed', top: 0, right: 0, bottom: 0, width: 420,
         background: '#FFFFFF', zIndex: 50, display: 'flex', flexDirection: 'column',
-        borderLeft: '0.75px solid #E2E8F0', animation: 'ra-slide-left 200ms ease-out',
+        borderLeft: '0.75px solid rgba(15,23,42,0.12)',
+        boxShadow: '-4px 0 24px rgba(15,23,42,0.08)',
+        animation: 'ra-slide-left 200ms ease-out',
       }}>
-        {/* HEADER */}
-        <div style={{ padding: '16px 20px', borderBottom: '0.75px solid #E2E8F0', flexShrink: 0 }}>
+        {/* ── HEADER ── */}
+        <div style={{ padding: '16px 20px 14px', borderBottom: '0.75px solid rgba(15,23,42,0.10)', flexShrink: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <FileText size={14} color="#2563EB" />
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{doc.jira_ticket_key}</span>
-                {doc.jira_ticket_url && (
-                  <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer"
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#2563EB', textDecoration: 'none', fontFamily: "'Inter', sans-serif" }}>
-                    Open in Jira <ExternalLink size={11} />
-                  </a>
-                )}
-              </div>
-              <h3 style={{ fontSize: 15, fontWeight: 650, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>{doc.title}</h3>
-            </div>
+            <a
+              href={doc.jira_ticket_url || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                background: '#EFF6FF', border: '0.75px solid #BFDBFE', borderRadius: 4,
+                padding: '2px 8px', textDecoration: 'none', cursor: doc.jira_ticket_url ? 'pointer' : 'default',
+              }}
+            >
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB' }}>
+                {doc.jira_ticket_key}
+              </span>
+              {doc.jira_ticket_url && <ExternalLink size={11} color="#2563EB" />}
+            </a>
             <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 4 }}>
-              <X size={20} color="#64748B" />
+              <X size={18} color="#64748B" />
             </button>
           </div>
-        </div>
-
-        {/* SECTION 1 — Pipeline Status Banner */}
-        <div style={{ padding: '16px 20px', background: '#FFFFFF', borderBottom: '0.75px solid #E2E8F0', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
-            {STEPS.map((step, i) => {
-              const isDone = step.done;
-              const isActive = i === activeIdx;
-              return (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
-                    <div style={{
-                      width: 12, height: 12, borderRadius: '50%',
-                      background: isDone ? '#16A34A' : isActive ? '#2563EB' : '#E2E8F0',
-                      border: isDone || isActive ? 'none' : '1.5px solid #CBD5E1',
-                      animation: isActive ? 'ra-pulse 1.5s ease-in-out infinite' : undefined,
-                    }} />
-                    <span style={{
-                      fontSize: 11,
-                      fontWeight: isActive ? 650 : 500,
-                      color: isDone ? '#16A34A' : isActive ? '#2563EB' : '#94A3B8',
-                      fontFamily: "'Inter', sans-serif",
-                      textAlign: 'center',
-                      whiteSpace: 'nowrap',
-                    }}>{step.label}</span>
-                  </div>
-                  {i < STEPS.length - 1 && (
-                    <div style={{
-                      width: 20, height: 1.5,
-                      background: STEPS[i + 1].done || (i + 1 === activeIdx) ? '#16A34A' : '#E2E8F0',
-                      flexShrink: 0, marginTop: -14,
-                    }} />
-                  )}
-                </div>
-              );
-            })}
+          <h3 style={{
+            fontSize: 17, fontWeight: 700, color: '#0F172A', margin: '6px 0 0', fontFamily: "'Sora', sans-serif",
+            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden',
+          }}>{doc.title}</h3>
+          <div style={{ marginTop: 8 }}>
+            <span style={{
+              display: 'inline-block', padding: '0 6px', borderRadius: 3, height: 20,
+              lineHeight: '20px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+              background: lozenge.bg, color: lozenge.color, fontFamily: "'Inter', sans-serif",
+            }}>{lozenge.label}</span>
           </div>
         </div>
 
-        {/* BODY — scrollable */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px' }}>
+        {/* ── BODY (scrollable) ── */}
+        <div style={{ flex: 1, overflowY: 'auto' }}>
 
-          {/* SECTION 2 — Document Content */}
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+          {/* ── PIPELINE STEPPER ── */}
+          <div style={{ padding: '16px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+            <div style={{
+              background: '#FAFAFA', border: '0.75px solid rgba(15,23,42,0.08)', borderRadius: 8,
+              padding: '14px 20px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                {computedSteps.map((step, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                      <div style={{
+                        width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: step.state === 'complete' ? '#16A34A' : step.state === 'active' ? '#2563EB' : 'transparent',
+                        border: step.state === 'pending' ? '1.5px solid #CBD5E1' : 'none',
+                      }}>
+                        {step.state === 'complete' && (
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        )}
+                        {step.state === 'active' && (
+                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'white' }} />
+                        )}
+                      </div>
+                      <span style={{
+                        fontSize: 11, textAlign: 'center', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif",
+                        fontWeight: step.state === 'active' ? 600 : 500,
+                        color: step.state === 'complete' ? '#16A34A' : step.state === 'active' ? '#2563EB' : '#94A3B8',
+                      }}>{step.label}</span>
+                    </div>
+                    {i < computedSteps.length - 1 && (
+                      <div style={{
+                        flex: 1, height: 0, marginTop: -16,
+                        borderTop: step.state === 'complete' && computedSteps[i + 1].state !== 'pending'
+                          ? '1.5px solid #16A34A'
+                          : '1.5px dashed #E5E7EB',
+                        marginInline: 4,
+                      }} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── JIRA METADATA ── */}
+          <div style={{ padding: '16px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+            <SectionHeader>Jira Metadata</SectionHeader>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
+              <MetaRow label="Ticket">
+                <a
+                  href={doc.jira_ticket_url || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    background: '#EFF6FF', border: '0.75px solid #BFDBFE', borderRadius: 4,
+                    padding: '1px 8px', textDecoration: 'none',
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB',
+                    cursor: doc.jira_ticket_url ? 'pointer' : 'default',
+                  }}
+                >
+                  {doc.jira_ticket_key}
+                </a>
+              </MetaRow>
+              <MetaRow label="Title">
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>{doc.title}</span>
+              </MetaRow>
+              <MetaRow label="Description">
+                {description ? (
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.08)', borderRadius: 6,
+                      padding: '10px 12px', fontSize: 13, color: '#374151', lineHeight: 1.6,
+                      fontFamily: "'Inter', sans-serif",
+                      display: '-webkit-box', WebkitLineClamp: descExpanded ? 999 : 4,
+                      WebkitBoxOrient: 'vertical' as any, overflow: 'hidden',
+                    }}>
+                      {description}
+                    </div>
+                    {descTruncated && (
+                      <button onClick={() => setDescExpanded(!descExpanded)} style={{
+                        border: 'none', background: 'transparent', cursor: 'pointer', padding: '4px 0',
+                        fontSize: 12, fontWeight: 500, color: '#2563EB', fontFamily: "'Inter', sans-serif",
+                        display: 'flex', alignItems: 'center', gap: 4,
+                      }}>
+                        {descExpanded ? 'Show less' : 'Show more'}
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <span style={{ fontSize: 13, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>No description available</span>
+                )}
+              </MetaRow>
+              <MetaRow label="Imported">
+                <span style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
+                  {formatTimestamp(doc.created_at)}
+                </span>
+              </MetaRow>
+              <MetaRow label="Domain">
+                <span style={{ fontSize: 13, color: doc.domain ? '#475569' : '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
+                  {doc.domain || '—'}
+                </span>
+              </MetaRow>
+            </div>
+          </div>
+
+          {/* ── SOURCE ATTACHMENTS ── */}
+          <div style={{ padding: '16px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+            <SectionHeader>Source Attachments</SectionHeader>
+            <div style={{ marginTop: 10 }}>
+              {doc.pdf_url ? (
+                <div style={{
+                  height: 48, display: 'flex', alignItems: 'center', gap: 12,
+                  background: '#FFFFFF', border: '0.75px solid rgba(15,23,42,0.10)',
+                  borderRadius: 6, padding: '0 14px',
+                }}>
+                  <FileText size={18} color="#DC2626" />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
+                      {doc.jira_ticket_key}.pdf
+                    </div>
+                    <div style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
+                      {doc.page_count ? `${doc.page_count} pages` : 'PDF'} · {doc.language === 'ar' ? 'AR' : 'EN'}
+                    </div>
+                  </div>
+                  <button onClick={onOpenPdf} style={{
+                    height: 26, padding: '0 10px', borderRadius: 5,
+                    border: '0.75px solid rgba(15,23,42,0.15)', background: '#FFFFFF',
+                    fontSize: 12, fontWeight: 500, color: '#374151', cursor: 'pointer',
+                    fontFamily: "'Inter', sans-serif",
+                  }}>View</button>
+                  <a href={doc.pdf_url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', color: '#64748B' }}>
+                    <ArrowDownToLine size={14} />
+                  </a>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0', gap: 4 }}>
+                  <Paperclip size={18} color="#CBD5E1" />
+                  <span style={{ fontSize: 13, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>No attachments found</span>
+                  <span style={{ fontSize: 11, color: '#CBD5E1', fontFamily: "'Inter', sans-serif" }}>Attachments are imported automatically from Jira</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── DOCUMENT CONTENT ── */}
+          <div style={{ padding: '16px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <SectionHeader>Document Content</SectionHeader>
-              {pipeline.rawText && (
+              {brdData.raw_text && (
                 <button onClick={handleCopy} style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center' }}>
                   {copied ? <Check size={14} color="#16A34A" /> : <Copy size={14} color="#94A3B8" />}
                 </button>
               )}
             </div>
-            {pipeline.rawText ? (
-              <>
-                <div style={{
-                  padding: 12, background: '#FFFFFF', border: '0.75px solid #E2E8F0', borderRadius: 4,
-                  maxHeight: expanded ? 'none' : 120, overflowY: expanded ? 'auto' : 'hidden',
-                  fontSize: 13, color: '#475569', lineHeight: 1.6, fontFamily: "'Inter', sans-serif",
-                }}>
-                  {expanded ? pipeline.rawText : pipeline.rawText.slice(0, 400) + (pipeline.rawText.length > 400 ? '...' : '')}
-                </div>
-                {pipeline.rawText.length > 400 && (
-                  <button onClick={() => setExpanded(!expanded)} style={{
-                    border: 'none', background: 'transparent', cursor: 'pointer',
-                    fontSize: 12, color: '#2563EB', fontWeight: 500, padding: '4px 0', fontFamily: "'Inter', sans-serif",
+            <div style={{ marginTop: 10 }}>
+              {brdData.raw_text ? (
+                <>
+                  <div style={{
+                    background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.08)', borderRadius: 6,
+                    padding: '12px 14px', fontSize: 13, color: '#374151', lineHeight: 1.6,
+                    fontFamily: "'Inter', sans-serif",
+                    maxHeight: contentExpanded ? 'none' : 120, overflow: 'hidden',
                   }}>
-                    {expanded ? 'Show less' : 'Show full document →'}
-                  </button>
+                    {contentExpanded ? brdData.raw_text : brdData.raw_text.slice(0, 400) + (brdData.raw_text.length > 400 ? '…' : '')}
+                  </div>
+                  {brdData.raw_text.length > 400 && (
+                    <button onClick={() => setContentExpanded(!contentExpanded)} style={{
+                      border: 'none', background: 'transparent', cursor: 'pointer',
+                      fontSize: 12, color: '#2563EB', fontWeight: 500, padding: '4px 0', fontFamily: "'Inter', sans-serif",
+                    }}>
+                      {contentExpanded ? 'Show less' : 'Show full content'}
+                    </button>
+                  )}
+                </>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0', gap: 6 }}>
+                  <FileText size={20} color="#CBD5E1" />
+                  <span style={{ fontSize: 13, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>Content not yet extracted</span>
+                  <span style={{ fontSize: 12, color: '#CBD5E1', fontFamily: "'Inter', sans-serif" }}>Upload a PDF or extract from Jira attachments</span>
+                  {doc.pdf_url && (
+                    <button onClick={() => onGenerate('extract')} style={{
+                      marginTop: 6, height: 28, padding: '0 12px', borderRadius: 5,
+                      border: '0.75px solid rgba(15,23,42,0.15)', background: '#FFFFFF',
+                      fontSize: 12, fontWeight: 500, color: '#374151', cursor: 'pointer',
+                      fontFamily: "'Inter', sans-serif",
+                    }}>Extract from PDF</button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── GENERATED ARTIFACTS ── */}
+          <div style={{ padding: '16px 20px' }}>
+            <SectionHeader>Generated Artifacts</SectionHeader>
+            <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column' }}>
+
+              {/* Epics Row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+                <div style={{ width: 28, height: 28, borderRadius: 6, background: '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Zap size={16} color="#7C3AED" />
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>Epics</span>
+                {brdData.epicCount > 0 ? (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', padding: '1px 8px', borderRadius: 10,
+                    background: '#7C3AED', color: 'white', fontSize: 11, fontWeight: 700,
+                    fontFamily: "'Inter', sans-serif",
+                  }}>{brdData.epicCount} generated</span>
+                ) : (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', padding: '1px 8px', borderRadius: 10,
+                    background: '#F1F5F9', color: '#64748B', border: '0.75px solid rgba(15,23,42,0.12)',
+                    fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                  }}>None yet</span>
                 )}
-              </>
-            ) : (
-              <div>
-                <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
-                  Content not yet extracted.
-                </p>
-                <button onClick={() => onGenerate('extract')} style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 4,
-                  padding: '6px 12px', fontSize: 13, fontWeight: 500, borderRadius: 4,
-                  border: '0.75px solid #E2E8F0', background: '#FFFFFF', color: '#475569',
-                  cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-                }}>
-                  Extract from PDF
+                <button
+                  onClick={() => {
+                    if (brdData.epicCount > 0 && brdData.id && onViewDrafts) {
+                      onClose();
+                      onViewDrafts(brdData.id);
+                    } else {
+                      onGenerate('epics');
+                    }
+                  }}
+                  style={{
+                    marginLeft: 'auto', border: 'none', background: 'transparent', cursor: 'pointer', padding: 0,
+                    fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                    color: brdData.epicCount > 0 ? '#7C3AED' : '#2563EB',
+                  }}
+                >
+                  {brdData.epicCount > 0 ? 'View Drafts →' : 'Generate Epics →'}
                 </button>
               </div>
-            )}
-          </div>
 
-          {/* SECTION 3 — Generated Artifacts */}
-          <div style={{ marginBottom: 20 }}>
-            <SectionHeader style={{ marginBottom: 8 }}>Generated Artifacts</SectionHeader>
-
-            {/* Epics */}
-            <ArtifactRow
-              icon={<Layers size={16} color="#7C3AED" />}
-              label="Epics"
-              count={pipeline.epicCount}
-              badge={pipeline.epicCount > 0
-                ? { bg: '#EDE9FE', color: '#5B21B6', text: `${pipeline.epicCount} generated` }
-                : { bg: '#DFE1E6', color: '#253858', text: 'None yet' }
-              }
-              action={pipeline.epicCount > 0
-                ? { label: 'View Drafts →', onClick: () => { if (pipeline.brdId && onViewDrafts) { onClose(); onViewDrafts(pipeline.brdId); } } }
-                : { label: 'Generate Epics →', onClick: () => onGenerate('epics') }
-              }
-              borderBottom
-            />
-
-            {/* Wiki Chunks */}
-            <ArtifactRow
-              icon={<BookOpen size={16} color="#0D9488" />}
-              label="Wiki Chunks"
-              count={pipeline.chunkCount}
-              badge={pipeline.chunkCount > 0
-                ? { bg: '#CCFBF1', color: '#0F766E', text: `${pipeline.chunkCount} indexed` }
-                : { bg: '#DFE1E6', color: '#253858', text: 'Not indexed' }
-              }
-              action={pipeline.chunkCount > 0
-                ? { label: 'View in WikiHub →', onClick: () => { navigate(`/wiki?filter=source:${doc.jira_ticket_key}`); } }
-                : { label: 'Sync to KB →', onClick: () => { if (onSyncKb) onSyncKb(doc.id); } }
-              }
-              borderBottom
-            />
-
-            {/* UAT Cases */}
-            <ArtifactRow
-              icon={<TestTube size={16} color="#64748B" />}
-              label="UAT Cases"
-              count={0}
-              badge={{ bg: '#DFE1E6', color: '#253858', text: 'Not generated' }}
-              action={{ label: 'Coming soon', onClick: () => {}, disabled: true }}
-              borderBottom={false}
-            />
-          </div>
-
-          {/* SECTION 4 — PDF Attachment (conditional) */}
-          {doc.pdf_url && (
-            <div style={{ marginBottom: 20 }}>
-              <SectionHeader style={{ marginBottom: 8 }}>PDF Attachment</SectionHeader>
-              <button onClick={onOpenPdf} style={{
-                display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px',
-                borderRadius: 6, border: '0.75px solid #E2E8F0', background: '#FFFFFF', cursor: 'pointer', textAlign: 'left' as const,
-              }}>
-                <div style={{ width: 32, height: 32, borderRadius: 6, background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <FileText size={16} color="#DC2626" />
+              {/* Wiki Chunks Row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+                <div style={{ width: 28, height: 28, borderRadius: 6, background: '#F0FDFA', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <BookOpen size={16} color="#0D9488" />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>{doc.jira_ticket_key}.pdf</div>
-                  <div style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
-                    {doc.page_count ? `${doc.page_count} pages` : 'PDF'} · {doc.language === 'ar' ? 'AR' : 'EN'}
-                  </div>
-                </div>
-                <ExternalLink size={14} color="#2563EB" />
-              </button>
-            </div>
-          )}
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>Wiki Chunks</span>
+                {brdData.wikiCount > 0 ? (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', padding: '1px 8px', borderRadius: 10,
+                    background: '#CCFBF1', color: '#0F766E', border: '0.75px solid #99F6E4',
+                    fontSize: 11, fontWeight: 600, fontFamily: "'Inter', sans-serif",
+                  }}>{brdData.wikiCount} indexed</span>
+                ) : (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', padding: '1px 8px', borderRadius: 10,
+                    background: '#F1F5F9', color: '#64748B', border: '0.75px solid rgba(15,23,42,0.12)',
+                    fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                  }}>Not indexed</span>
+                )}
+                <button
+                  onClick={() => {
+                    if (brdData.wikiCount > 0) {
+                      navigate(`/wiki?source=${doc.jira_ticket_key}`);
+                    } else if (onSyncKb) {
+                      onSyncKb(doc.id);
+                    }
+                  }}
+                  style={{
+                    marginLeft: 'auto', border: 'none', background: 'transparent', cursor: 'pointer', padding: 0,
+                    fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                    color: brdData.wikiCount > 0 ? '#0D9488' : '#2563EB',
+                  }}
+                >
+                  {brdData.wikiCount > 0 ? 'View in WikiHub →' : 'Sync to KB →'}
+                </button>
+              </div>
 
-          {/* SECTION 5 — Jira Metadata (only show fields with real data) */}
-          <div style={{ marginBottom: 20 }}>
-            <SectionHeader style={{ marginBottom: 10 }}>Jira Metadata</SectionHeader>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {doc.jira_ticket_key && (
-                <MetaRow label="Jira Ticket">
-                  {doc.jira_ticket_url ? (
-                    <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer"
-                      style={{ fontSize: 13, fontWeight: 500, color: '#2563EB', textDecoration: 'none', fontFamily: "'Inter', sans-serif" }}>
-                      {doc.jira_ticket_key} <ExternalLink size={11} style={{ verticalAlign: 'middle' }} />
-                    </a>
-                  ) : (
-                    <span style={{ fontSize: 13, fontWeight: 500, color: '#475569', fontFamily: "'Inter', sans-serif" }}>{doc.jira_ticket_key}</span>
-                  )}
-                </MetaRow>
-              )}
-              {(doc as any).priority && (
-                <MetaRow label="Priority">
-                  <span style={{ fontSize: 13, color: '#475569', fontFamily: "'Inter', sans-serif" }}>{(doc as any).priority}</span>
-                </MetaRow>
-              )}
-              {(doc as any).reporter && (
-                <MetaRow label="Reporter">
-                  <span style={{ fontSize: 13, color: '#475569', fontFamily: "'Inter', sans-serif" }}>{(doc as any).reporter}</span>
-                </MetaRow>
-              )}
-              {doc.jira_created_at && (
-                <MetaRow label="Created">
-                  <span style={{ fontSize: 13, color: '#475569', fontFamily: "'Inter', sans-serif" }}>{format(new Date(doc.jira_created_at), 'd MMM yyyy')}</span>
-                </MetaRow>
-              )}
+              {/* UAT Cases Row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0' }}>
+                <div style={{ width: 28, height: 28, borderRadius: 6, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <TestTube size={16} color="#64748B" />
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>UAT Cases</span>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', padding: '1px 8px', borderRadius: 10,
+                  background: '#F1F5F9', color: '#94A3B8',
+                  fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                }}>Not generated</span>
+                <span style={{ marginLeft: 'auto', fontSize: 11, color: '#CBD5E1', fontFamily: "'Inter', sans-serif" }}>
+                  UAT generation coming in a future release
+                </span>
+              </div>
+
             </div>
           </div>
         </div>
 
-        {/* SECTION 6 — Footer CTA */}
-        <div style={{ padding: '12px 20px', borderTop: '0.75px solid #E2E8F0', flexShrink: 0 }}>
-          <button onClick={cta.action} style={{
-            width: '100%', height: 44, fontSize: 13, fontWeight: 600, borderRadius: 4,
-            border: cta.primary ? 'none' : '0.75px solid #E2E8F0',
-            background: cta.primary ? '#2563EB' : '#FFFFFF',
-            color: cta.primary ? '#FFFFFF' : '#475569',
-            cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-          }}>
-            {cta.label}
-          </button>
+        {/* ── FOOTER CTA ── */}
+        <div style={{ padding: '14px 20px', borderTop: '0.75px solid rgba(15,23,42,0.10)', flexShrink: 0, background: '#FFFFFF' }}>
+          {brdData.epicCount === 0 ? (
+            <button onClick={() => onGenerate('epics')} style={{
+              width: '100%', height: 40, fontSize: 14, fontWeight: 600, borderRadius: 6,
+              border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
+              fontFamily: "'Inter', sans-serif", boxShadow: '0 1px 3px rgba(37,99,235,0.35)',
+            }}>
+              Generate Epics for this BRD
+            </button>
+          ) : (
+            <button onClick={() => { if (brdData.id && onViewDrafts) { onClose(); onViewDrafts(brdData.id); } }} style={{
+              width: '100%', height: 40, fontSize: 14, fontWeight: 600, borderRadius: 6,
+              border: '0.75px solid rgba(15,23,42,0.15)', background: '#FFFFFF', color: '#374151',
+              cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+            }}>
+              View All Epics →
+            </button>
+          )}
         </div>
       </div>
       <style>{`
         @keyframes ra-slide-left { from { transform: translateX(100%); } to { transform: translateX(0); } }
-        @keyframes ra-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
       `}</style>
     </>
   );
@@ -391,57 +519,21 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
 
 /* ── Helpers ── */
 
-function SectionHeader({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
     <span style={{
-      fontSize: 11, fontWeight: 650, color: '#94A3B8',
-      textTransform: 'uppercase', letterSpacing: '0.08em',
+      fontSize: 11, fontWeight: 600, color: '#64748B',
+      textTransform: 'uppercase', letterSpacing: '0.06em',
       display: 'block', fontFamily: "'Inter', sans-serif",
-      ...style,
     }}>{children}</span>
   );
 }
 
 function MetaRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <span style={{ width: 100, fontSize: 12, color: '#94A3B8', flexShrink: 0, fontFamily: "'Inter', sans-serif" }}>{label}</span>
-      {children}
-    </div>
-  );
-}
-
-function ArtifactRow({ icon, label, badge, action, borderBottom }: {
-  icon: React.ReactNode;
-  label: string;
-  count: number;
-  badge: { bg: string; color: string; text: string };
-  action: { label: string; onClick: () => void; disabled?: boolean };
-  borderBottom: boolean;
-}) {
-  return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 12, height: 40,
-      borderBottom: borderBottom ? '0.75px solid #F1F5F9' : 'none',
-    }}>
-      {icon}
-      <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif", minWidth: 80 }}>{label}</span>
-      <span style={{
-        display: 'inline-flex', alignItems: 'center', padding: '1px 6px', borderRadius: 3,
-        fontSize: 11, fontWeight: 700, background: badge.bg, color: badge.color,
-        fontFamily: "'Inter', sans-serif",
-      }}>{badge.text}</span>
-      <button
-        onClick={action.onClick}
-        disabled={action.disabled}
-        style={{
-          marginLeft: 'auto', border: 'none', background: 'transparent', cursor: action.disabled ? 'default' : 'pointer',
-          fontSize: 13, fontWeight: 500, color: action.disabled ? '#94A3B8' : '#2563EB',
-          fontFamily: "'Inter', sans-serif", padding: 0,
-        }}
-      >
-        {action.label}
-      </button>
+    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+      <span style={{ width: 100, fontSize: 12, color: '#94A3B8', flexShrink: 0, fontFamily: "'Inter', sans-serif", paddingTop: 2 }}>{label}</span>
+      <div style={{ flex: 1 }}>{children}</div>
     </div>
   );
 }
