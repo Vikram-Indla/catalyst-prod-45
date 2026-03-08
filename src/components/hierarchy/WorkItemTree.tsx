@@ -8,6 +8,7 @@ import { ChevronRight, ChevronDown, GripVertical, MoreHorizontal, Trash2 } from 
 import type { WorkItem } from '@/types/hierarchy';
 import { canBeParentOf, HIERARCHY_LEVELS } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { StatusBadge } from './StatusBadge';
 
 interface WorkItemTreeProps {
   items: WorkItem[];
@@ -66,20 +67,7 @@ function priorityToLevel(name?: string): number {
   return 0;
 }
 
-/* ── Status pill ── */
-function StatusPill({ status }: { status: WorkItem['status'] }) {
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', gap: 5, height: 22, padding: '0 8px',
-      borderRadius: 9999, background: `${status.color}14`, border: `1px solid ${status.color}33`, whiteSpace: 'nowrap',
-    }}>
-      <span style={{ width: 6, height: 6, borderRadius: '50%', background: status.color, flexShrink: 0 }} />
-      <span style={{ fontSize: 11, fontWeight: 600, color: status.colorText, fontFamily: "'Inter', sans-serif", lineHeight: 1 }}>
-        {status.name}
-      </span>
-    </span>
-  );
-}
+/* StatusPill is now StatusBadge (filled Jira-style) */
 
 /* ── Assignee avatar ── */
 function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
@@ -277,7 +265,7 @@ function TreeRow({
         </span>
       )}
 
-      <StatusPill status={item.status} />
+      <StatusBadge status={item.status.name} />
       <AssigneeAvatar assignee={item.assignee} />
       <ActionsMenu item={item} onDelete={onDelete} />
     </div>

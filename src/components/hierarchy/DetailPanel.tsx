@@ -1,29 +1,32 @@
 /**
- * DetailPanel — Right-side detail view for selected work item
- * Stage E: Skeleton, null handling, transitions, design compliance
+ * DetailPanel — Enriched right-side detail view for selected work item
+ * Breadcrumbs, collapsible sections, subtasks, activity placeholder
  */
 
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { X, ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import type { WorkItem } from '@/types/hierarchy';
 import { HIERARCHY_LEVELS, canBeParentOf } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { StatusBadge } from './StatusBadge';
+import { StatusDropdown } from './StatusDropdown';
+import { useUpdateIssueStatus } from '@/hooks/useUpdateIssueStatus';
 
 interface DetailPanelProps {
   item: WorkItem | null;
+  allItems?: WorkItem[];
+  onClose?: () => void;
+  onSelectItem?: (item: WorkItem) => void;
   onAddChild?: (parentItem: WorkItem) => void;
+  projectKey?: string;
+  allStatuses?: string[];
 }
 
-/* ── Skeleton for detail panel ── */
+/* ── Skeleton ── */
 export function DetailPanelSkeleton() {
   return (
     <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, position: 'sticky', top: 24 }}>
-      <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#E2E8F0' }} className="hi-shimmer" />
-        <div style={{ width: 56, height: 12, borderRadius: 4, background: '#E2E8F0' }} className="hi-shimmer" />
-      </div>
-      <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
-        <div style={{ width: '80%', height: 16, borderRadius: 4, background: '#F1F5F9' }} className="hi-shimmer" />
-      </div>
       {[1, 2, 3, 4, 5].map((i) => (
         <div key={i} style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0' }}>
           <div style={{ width: 60, height: 10, borderRadius: 4, background: '#F1F5F9', marginBottom: 6 }} className="hi-shimmer" />
@@ -60,7 +63,7 @@ function priorityToLevel(name?: string): number {
 
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0' }}>
+    <div style={{ padding: '8px 20px', borderBottom: '1px solid #F1F5F9' }}>
       <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.06em', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
         {label}
       </div>
@@ -72,10 +75,48 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
 }
 
 function EmptyValue() {
-  return <span style={{ color: '#64748B', fontWeight: 400 }}>—</span>;
+  return <span style={{ color: '#94A3B8', fontWeight: 400 }}>—</span>;
 }
 
-export function DetailPanel({ item, onAddChild }: DetailPanelProps) {
+/* ── Collapsible section ── */
+function Section({ title, count, defaultOpen = true, children }: { title: string; count?: number; defaultOpen?: boolean; children: React.ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', gap: 6, padding: '10px 20px',
+          background: 'none', border: 'none', borderBottom: '1px solid #E2E8F0', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+        }}
+      >
+        {open ? <ChevronDown size={14} color="#64748B" /> : <ChevronRight size={14} color="#64748B" />}
+        <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.06em' }}>{title}</span>
+        {count !== undefined && (
+          <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B', background: '#F1F5F9', borderRadius: 9999, padding: '1px 6px' }}>{count}</span>
+        )}
+      </button>
+      {open && children}
+    </div>
+  );
+}
+
+/** Find parent item in tree */
+function findParentItem(items: WorkItem[], targetId: string): WorkItem | null {
+  for (const item of items) {
+    for (const child of item.children) {
+      if (child.id === targetId) return item;
+    }
+    const found = findParentItem(item.children, targetId);
+    if (found) return found;
+  }
+  return null;
+}
+
+export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddChild, projectKey, allStatuses = [] }: DetailPanelProps) {
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const updateStatus = useUpdateIssueStatus(projectKey);
+
   if (!item) {
     return (
       <div style={{
@@ -88,12 +129,16 @@ export function DetailPanel({ item, onAddChild }: DetailPanelProps) {
     );
   }
 
+  const parentItem = findParentItem(allItems, item.id);
+  const childLevel = HIERARCHY_LEVELS.find((l) => canBeParentOf(item.hierarchyLevel, l.id));
   const pct = item.stats.totalDescendants > 0
     ? Math.round((item.stats.completedCount / item.stats.totalDescendants) * 100)
     : 0;
-  const isComplete = pct === 100;
-  const fillColor = isComplete ? '#16A34A' : '#2563EB';
-  const childLevel = HIERARCHY_LEVELS.find((l) => canBeParentOf(item.hierarchyLevel, l.id));
+
+  const handleStatusChange = (newStatus: string) => {
+    updateStatus.mutate({ issueKey: item.key, newStatus });
+    setStatusDropdownOpen(false);
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -105,109 +150,229 @@ export function DetailPanel({ item, onAddChild }: DetailPanelProps) {
         transition={{ duration: 0.15 }}
         style={{
           background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
-          position: 'sticky', top: 24, fontFamily: "'Inter', sans-serif",
+          position: 'sticky', top: 16, fontFamily: "'Inter', sans-serif",
+          maxHeight: 'calc(100vh - 200px)', overflowY: 'auto',
         }}
       >
-        {/* Header */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 8 }}>
-          {item.issueType ? (
-            <JiraIssueTypeIcon type={item.issueType} size={16} />
-          ) : (
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.hierarchyColor, flexShrink: 0 }} />
+        {/* A. Header with breadcrumb */}
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 6, position: 'sticky', top: 0, background: '#FFFFFF', zIndex: 10 }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4, overflow: 'hidden' }}>
+            {parentItem && (
+              <>
+                {parentItem.issueType && <JiraIssueTypeIcon type={parentItem.issueType} size={14} />}
+                <span
+                  onClick={() => onSelectItem?.(parentItem)}
+                  style={{ fontSize: 12, fontWeight: 500, color: '#2563EB', cursor: 'pointer', flexShrink: 0 }}
+                >
+                  {parentItem.key}
+                </span>
+                <span style={{ color: '#94A3B8', fontSize: 12 }}>/</span>
+              </>
+            )}
+            {item.issueType && <JiraIssueTypeIcon type={item.issueType} size={14} />}
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+          </div>
+          {onClose && (
+            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}>
+              <X size={16} color="#64748B" />
+            </button>
           )}
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+        </div>
+
+        {/* B. Status + Type bar */}
+        <div style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
+          <StatusBadge
+            status={item.status.name}
+            onClick={(e) => { e.stopPropagation(); setStatusDropdownOpen(o => !o); }}
+          />
+          {statusDropdownOpen && (
+            <StatusDropdown
+              currentStatus={item.status.name}
+              availableStatuses={allStatuses}
+              onSelect={handleStatusChange}
+              onClose={() => setStatusDropdownOpen(false)}
+            />
+          )}
+          <span style={{ color: '#CBD5E1' }}>·</span>
           <span style={{ fontSize: 12, fontWeight: 600, color: item.hierarchyColorText }}>{item.hierarchyName}</span>
         </div>
 
-        {/* Title — full text, wraps */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', fontSize: 16, fontWeight: 700, color: '#0F172A', lineHeight: 1.35, wordBreak: 'break-word' }}>
-          {item.title}
+        {/* C. Title + Description */}
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', lineHeight: 1.35, wordBreak: 'break-word' }}>
+            {item.title}
+          </div>
+          <p style={{ fontSize: 13, color: '#94A3B8', margin: '8px 0 0', fontStyle: 'italic' }}>
+            No description
+          </p>
         </div>
 
-        {/* Fields */}
-        <FieldRow label="Status">
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: 5, height: 22, padding: '0 8px',
-            borderRadius: 9999, background: `${item.status.color}14`, border: `1px solid ${item.status.color}33`,
-          }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: item.status.color }} />
-            <span style={{ fontSize: 11, fontWeight: 600, color: item.status.colorText }}>{item.status.name}</span>
-          </span>
-        </FieldRow>
-
-        {item.priority ? (
-          <FieldRow label="Priority">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <PriorityBars level={priorityToLevel(item.priority.name)} />
-              <span style={{ fontSize: 12, color: '#64748B' }}>{item.priority.name}</span>
+        {/* D. Key Details */}
+        <Section title="Key Details" defaultOpen={true}>
+          <FieldRow label="Status">
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              <StatusBadge status={item.status.name} />
             </div>
           </FieldRow>
-        ) : null}
 
-        <FieldRow label="Assignee">
-          {item.assignee ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontSize: 8, fontWeight: 700, color: '#FFFFFF' }}>
-                  {item.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
-                </span>
+          {item.priority && (
+            <FieldRow label="Priority">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <PriorityBars level={priorityToLevel(item.priority.name)} />
+                <span style={{ fontSize: 12, color: '#64748B' }}>{item.priority.name}</span>
               </div>
-              <span>{item.assignee.displayName}</span>
-            </div>
-          ) : (
-            <EmptyValue />
+            </FieldRow>
           )}
-        </FieldRow>
 
-        {item.fixVersion ? (
-          <FieldRow label="Release">
-            <span style={{
-              height: 20, padding: '0 8px', fontSize: 10, fontWeight: 600, color: '#7C3AED',
-              background: '#F5F3FF', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 9999,
-              display: 'inline-flex', alignItems: 'center',
-            }}>
-              {item.fixVersion.name}
+          <FieldRow label="Assignee">
+            {item.assignee ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF' }}>
+                    {item.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                  </span>
+                </div>
+                <span>{item.assignee.displayName}</span>
+              </div>
+            ) : <EmptyValue />}
+          </FieldRow>
+
+          <FieldRow label="Reporter">
+            <EmptyValue />
+          </FieldRow>
+
+          {item.fixVersion && (
+            <FieldRow label="Fix Versions">
+              <span style={{
+                height: 20, padding: '0 8px', fontSize: 10, fontWeight: 600, color: '#7C3AED',
+                background: '#F5F3FF', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 9999,
+                display: 'inline-flex', alignItems: 'center',
+              }}>
+                {item.fixVersion.name}
+              </span>
+            </FieldRow>
+          )}
+
+          <FieldRow label="Due Date">
+            {item.dueDate ? <span>{new Date(item.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span> : <EmptyValue />}
+          </FieldRow>
+
+          <FieldRow label="Created">
+            <span style={{ fontSize: 12, color: '#94A3B8' }}>
+              {item.createdAt ? new Date(item.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
             </span>
           </FieldRow>
-        ) : null}
 
-        {item.stats.totalDescendants > 0 ? (
-          <FieldRow label="Progress">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ flex: 1, height: 6, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${pct}%`, background: fillColor, borderRadius: 3, transition: 'width 300ms ease' }} />
-              </div>
-              <span style={{ fontSize: 12, color: '#64748B', fontVariantNumeric: 'tabular-nums' }}>
-                {item.stats.completedCount}/{item.stats.totalDescendants}
-              </span>
-            </div>
+          <FieldRow label="Updated">
+            <span style={{ fontSize: 12, color: '#94A3B8' }}>
+              {item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
+            </span>
           </FieldRow>
-        ) : null}
 
-        <FieldRow label="Due Date">
-          {item.dueDate ? <span>{new Date(item.dueDate).toLocaleDateString()}</span> : <EmptyValue />}
-        </FieldRow>
+          {item.stats.totalDescendants > 0 && (
+            <FieldRow label="Progress">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ flex: 1, height: 6, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? '#16A34A' : '#2563EB', borderRadius: 3, transition: 'width 300ms ease' }} />
+                </div>
+                <span style={{ fontSize: 12, color: '#64748B', fontVariantNumeric: 'tabular-nums' }}>
+                  {item.stats.completedCount}/{item.stats.totalDescendants}
+                </span>
+              </div>
+            </FieldRow>
+          )}
+        </Section>
 
-        {/* Add child button */}
-        {childLevel && (
-          <div style={{ padding: '12px 20px' }}>
-            <button
-              onClick={() => onAddChild?.(item)}
-              className="hi-add-child-btn"
-              style={{
-                width: '100%', height: 32, border: '2px dashed #E2E8F0', borderRadius: 6,
-                background: 'transparent', fontSize: 13, fontWeight: 600, color: '#64748B',
-                cursor: 'pointer', fontFamily: "'Inter', sans-serif", transition: 'all 150ms ease',
-              }}
-            >
-              + Add {childLevel.name}
-            </button>
+        {/* E. Subtasks/Children */}
+        <Section title="Subtasks" count={item.children.length} defaultOpen={item.children.length > 0}>
+          {item.children.length > 0 ? (
+            <div>
+              {item.children.map(child => (
+                <div
+                  key={child.id}
+                  onClick={() => onSelectItem?.(child)}
+                  style={{
+                    height: 36, display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '0 20px', borderBottom: '1px solid #F1F5F9', cursor: 'pointer',
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                  onMouseLeave={e => (e.currentTarget.style.background = '')}
+                >
+                  {child.issueType && <JiraIssueTypeIcon type={child.issueType} size={12} />}
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', flexShrink: 0 }}>{child.key}</span>
+                  <span style={{ fontSize: 12, color: '#0F172A', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.title}</span>
+                  <StatusBadge status={child.status.name} mini />
+                  {child.assignee && (
+                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: 8, fontWeight: 700, color: '#FFFFFF' }}>
+                        {child.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ padding: '12px 20px', fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
+              No subtasks
+            </div>
+          )}
+          {childLevel && (
+            <div style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0' }}>
+              <button
+                onClick={() => onAddChild?.(item)}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                  fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif",
+                  display: 'flex', alignItems: 'center', gap: 4, borderBottom: '1px dashed #E2E8F0',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#2563EB')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
+              >
+                <Plus size={12} /> Add subtask
+              </button>
+            </div>
+          )}
+        </Section>
+
+        {/* F. Linked Work Items placeholder */}
+        <Section title="Linked Work Items" defaultOpen={false}>
+          <div style={{ padding: '12px 20px', fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
+            No linked work items
           </div>
-        )}
+        </Section>
 
-        <style>{`
-          .hi-add-child-btn:hover { border-color: #2563EB !important; color: #2563EB !important; background: #EFF6FF !important; }
-        `}</style>
+        {/* G. Activity placeholder */}
+        <Section title="Activity" defaultOpen={false}>
+          <div style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0' }}>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+              {['All', 'Comments', 'History'].map((tab, i) => (
+                <button key={tab} style={{
+                  background: 'none', border: 'none', borderBottom: i === 0 ? '2px solid #2563EB' : '2px solid transparent',
+                  padding: '4px 0', fontSize: 12, fontWeight: i === 0 ? 600 : 400,
+                  color: i === 0 ? '#2563EB' : '#64748B', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                }}>
+                  {tab}
+                </button>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+              <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#F1F5F9', flexShrink: 0 }} />
+              <textarea
+                placeholder="Add a comment..."
+                rows={2}
+                style={{
+                  flex: 1, padding: 8, fontSize: 13, fontFamily: "'Inter', sans-serif",
+                  border: '1px solid #E2E8F0', borderRadius: 6, outline: 'none', resize: 'none',
+                }}
+              />
+            </div>
+            <p style={{ fontSize: 12, color: '#94A3B8', margin: '8px 0 0', textAlign: 'center' }}>
+              Comments and activity will appear here.
+            </p>
+          </div>
+        </Section>
       </motion.div>
     </AnimatePresence>
   );
