@@ -268,6 +268,8 @@ export interface IncidentCommittee {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  // Backward compat — some code accesses members directly on IncidentCommittee
+  members?: CommitteeMember[];
 }
 
 export interface CommitteeMember {
