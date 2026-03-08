@@ -9,9 +9,10 @@ interface Props {
   column: ColumnType;
   cards: KanbanCard[];
   maxWip?: number;
+  onCardClick?: (cardId: string) => void;
 }
 
-export default function KanbanColumn({ column, cards, maxWip }: Props) {
+export default function KanbanColumn({ column, cards, maxWip, onCardClick }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   const cardIds = cards.map(c => c.id);
   const count = cards.length;
