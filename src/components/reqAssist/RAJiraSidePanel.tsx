@@ -675,7 +675,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     background: '#F0FDF4', border: '0.75px solid #BBF7D0',
                     fontSize: 11, fontWeight: 700, color: '#16A34A',
                     fontFamily: "'Inter', sans-serif",
-                  }}>{uatCount} scenarios</span>
+                  }}>{pluralise(uatCount, 'scenario', 'scenarios')}</span>
                 ) : (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 10,
@@ -714,30 +714,51 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 </button>
               </div>
 
-              {/* D06: UAT Scenarios inline panel */}
-              {showUatPanel && uatScenarios.length > 0 && (
+              {/* D12: UAT Scenarios inline panel */}
+              {showUatPanel && (
                 <div style={{ padding: '8px 0 0 40px' }}>
-                  {uatScenarios.map((s, i) => (
-                    <div key={s.id || i} style={{
-                      padding: '8px 12px', marginBottom: 6,
-                      background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.08)', borderRadius: 6,
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{
-                          fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 600, color: '#475569',
-                          background: '#F1F5F9', border: '0.75px solid #CBD5E1', borderRadius: 3, padding: '1px 6px',
-                        }}>{s.scenario_key}</span>
-                      </div>
-                      <p style={{ fontSize: 12, fontWeight: 500, color: '#0F172A', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>
-                        {s.title}
-                      </p>
-                      {s.expected_result && (
-                        <p style={{ fontSize: 11, color: '#64748B', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
-                          Expected: {s.expected_result}
-                        </p>
-                      )}
+                  {uatScenarios.length === 0 ? (
+                    <div style={{ padding: '12px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontSize: 13, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>No UAT scenarios generated yet</span>
+                      <button onClick={handleGenerateUAT} disabled={generatingUat} style={{
+                        border: '0.75px solid #2563EB', background: 'transparent', borderRadius: 5,
+                        padding: '4px 12px', fontSize: 12, fontWeight: 500, color: '#2563EB',
+                        cursor: generatingUat ? 'default' : 'pointer', fontFamily: "'Inter', sans-serif",
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                      }}>
+                        {generatingUat ? <><Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Generating...</> : 'Generate UAT →'}
+                      </button>
                     </div>
-                  ))}
+                  ) : (
+                    uatScenarios.map((s, i) => {
+                      const uatStatusStyle = s.status === 'pass'
+                        ? { bg: '#E3FCEF', color: '#006644' }
+                        : s.status === 'fail'
+                          ? { bg: '#FFEBE6', color: '#BF2600' }
+                          : { bg: '#DFE1E6', color: '#253858' };
+                      return (
+                        <div key={s.id || i} style={{
+                          display: 'flex', alignItems: 'center', gap: 8, height: 36,
+                          borderBottom: i < uatScenarios.length - 1 ? '0.75px solid rgba(15,23,42,0.06)' : 'none',
+                          padding: '0 12px',
+                        }}>
+                          <span style={{
+                            fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#94A3B8', flexShrink: 0,
+                          }}>{s.scenario_key}</span>
+                          <span style={{
+                            fontSize: 13, color: '#1E293B', fontFamily: "'Inter', sans-serif",
+                            flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          }}>{s.title}</span>
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', padding: '0 6px', borderRadius: 3, height: 20,
+                            fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
+                            background: uatStatusStyle.bg, color: uatStatusStyle.color,
+                            fontFamily: "'Inter', sans-serif", flexShrink: 0,
+                          }}>{(s.status || 'pending').toUpperCase()}</span>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               )}
 
