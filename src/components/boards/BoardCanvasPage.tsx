@@ -1,10 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Settings, ChevronDown, ChevronRight, ArrowLeft } from 'lucide-react';
+import { Settings, ChevronDown, ArrowLeft } from 'lucide-react';
 import { DndContext, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
+import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { useBoard } from '@/hooks/useBoard';
 import { useBoardCards } from '@/hooks/useBoardCards';
+import { useUpdateCardRank, useUpdateBoardLastViewed } from '@/hooks/useBoardMutations';
 import { useBoardStore } from '@/stores/boardStore';
 import KanbanColumn from './KanbanColumn';
 import KanbanCardComponent from './KanbanCard';
@@ -15,10 +18,13 @@ import type { KanbanCard, BoardColumn } from '@/types/board';
 export default function BoardCanvasPage() {
   const { projectId, boardId } = useParams<{ projectId: string; boardId: string }>();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { data: boardData, isLoading } = useBoard(boardId);
   const { data: cards = [] } = useBoardCards(boardId);
-  const { collapsedSwimlanes, toggleSwimlane, draggingCardId, setDraggingCardId, activeQuickFilter } = useBoardStore();
+  const { collapsedSwimlanes, toggleSwimlane, draggingCardId, setDraggingCardId } = useBoardStore();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const updateCardRank = useUpdateCardRank();
+  const updateLastViewed = useUpdateBoardLastViewed();
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
   const dragCard = cards.find(c => c.id === draggingCardId) ?? null;
@@ -26,18 +32,40 @@ export default function BoardCanvasPage() {
   const board = boardData?.board;
   const columns = boardData?.columns ?? [];
 
-  // Group cards by column
+  // Update last viewed on mount
+  useEffect(() => {
+    if (boardId) updateLastViewed.mutate(boardId);
+  }, [boardId]);
+
+  // Realtime subscriptions
+  useEffect(() => {
+    if (!boardId) return;
+    const channel = supabase
+      .channel(`board:${boardId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'board_issue_rank', filter: `board_id=eq.${boardId}` },
+        () => { setTimeout(() => qc.invalidateQueries({ queryKey: ['board-cards', boardId] }), 300); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'board_columns', filter: `board_id=eq.${boardId}` },
+        () => { setTimeout(() => qc.invalidateQueries({ queryKey: ['board', boardId] }), 300); })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [boardId, qc]);
+
+  // Group cards by column_id
   const cardsByColumn = useMemo(() => {
     const map: Record<string, KanbanCard[]> = {};
     columns.forEach(c => { map[c.id] = []; });
-    // For now cards have no column mapping yet — place all in first column
-    if (columns.length > 0) {
-      map[columns[0].id] = cards;
+    for (const card of cards) {
+      const colId = (card as any).columnId;
+      if (colId && map[colId]) {
+        map[colId].push(card);
+      } else if (columns.length > 0) {
+        // Cards without a column_id go to the first column
+        map[columns[0].id]?.push(card);
+      }
     }
     return map;
   }, [columns, cards]);
 
-  // Swimlane grouping (stub — single "All" lane for now)
   const swimlanes = [{ id: 'default', name: 'All Issues', count: cards.length }];
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -46,7 +74,47 @@ export default function BoardCanvasPage() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     setDraggingCardId(null);
-    // TODO: Implement column move + rank update in Stage D
+    const { active, over } = event;
+    if (!over || !boardId) return;
+
+    const cardId = String(active.id);
+    const targetColumnId = String(over.id);
+
+    // Find the card
+    const card = cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    const currentColumnId = (card as any).columnId || columns[0]?.id;
+    if (currentColumnId === targetColumnId) return; // Same column, no move needed
+
+    // Generate new rank value (midpoint between existing items)
+    const targetCards = cardsByColumn[targetColumnId] ?? [];
+    let newRank: string;
+    if (targetCards.length === 0) {
+      newRank = 'a';
+    } else {
+      const lastRank = targetCards[targetCards.length - 1].rankValue;
+      newRank = lastRank + 'a';
+    }
+
+    // Optimistic update
+    qc.setQueryData(['board-cards', boardId], (old: KanbanCard[] | undefined) => {
+      if (!old) return old;
+      return old.map(c => c.id === cardId ? { ...c, columnId: targetColumnId, statusId: targetColumnId, rankValue: newRank } : c);
+    });
+
+    // Fire mutation
+    updateCardRank.mutate({
+      boardId,
+      workItemId: cardId,
+      columnId: targetColumnId,
+      rankValue: newRank,
+    }, {
+      onError: () => {
+        // Rollback
+        qc.invalidateQueries({ queryKey: ['board-cards', boardId] });
+      },
+    });
   };
 
   if (isLoading) {
@@ -69,7 +137,6 @@ export default function BoardCanvasPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--cp-bg-page)' }}>
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '0.75px solid var(--cp-border-subtle)', flexShrink: 0, padding: '12px 24px' }}>
-        {/* Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-tertiary)', marginBottom: 6 }}>
           <button onClick={() => navigate(`/projects/${projectId}/boards`)} style={{
             border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
@@ -80,7 +147,6 @@ export default function BoardCanvasPage() {
           <span style={{ color: 'var(--cp-text-muted)' }}>›</span>
           <span>{board.name}</span>
         </div>
-        {/* Title row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <h1 style={{ fontSize: 15, fontFamily: 'var(--cp-font-heading)', fontWeight: 700, color: 'var(--cp-text-primary)', margin: 0 }}>
@@ -101,13 +167,12 @@ export default function BoardCanvasPage() {
             <Settings size={13} /> Board Settings
           </button>
         </div>
-        {/* Quick filters */}
         <div style={{ marginTop: 10 }}>
           <BoardQuickFilters />
         </div>
       </div>
 
-      {/* Column headers (sticky) */}
+      {/* Column headers */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
         padding: '8px 24px 8px 248px',
@@ -143,7 +208,6 @@ export default function BoardCanvasPage() {
                 background: '#FFFFFF', border: '0.75px solid var(--cp-border-subtle)',
                 borderRadius: 8, marginBottom: 10,
               }}>
-                {/* Swimlane header */}
                 <button onClick={() => toggleSwimlane(lane.id)} style={{
                   display: 'flex', alignItems: 'center', gap: 8, width: '100%',
                   padding: '10px 14px', border: 'none', background: 'transparent',
@@ -163,7 +227,6 @@ export default function BoardCanvasPage() {
                   }}>{lane.count}</span>
                 </button>
 
-                {/* Swimlane body */}
                 {!collapsed && (
                   <div style={{
                     display: 'flex', gap: 12, padding: '0 12px 12px',
@@ -188,7 +251,6 @@ export default function BoardCanvasPage() {
         </DndContext>
       </div>
 
-      {/* Settings drawer */}
       {settingsOpen && board && (
         <BoardSettingsDrawer
           board={{ ...board, columnCount: columns.length, issueCount: cards.length, createdByName: null } as any}
