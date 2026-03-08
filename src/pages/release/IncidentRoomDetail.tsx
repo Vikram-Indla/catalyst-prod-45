@@ -517,7 +517,7 @@ export default function IncidentRoomDetail() {
           deliveryStage={incident.delivery_stage as any}
           releaseVersion={incident.release_version}
           releaseVersionId={incident.release_version_id || null}
-          businessProcess={incident.business_process}
+          businessProcess={incident.business_process as any}
           serviceComponent={incident.service_component}
           projectId={incident.project_id}
           teamId={(incident as any).team_id || null}
