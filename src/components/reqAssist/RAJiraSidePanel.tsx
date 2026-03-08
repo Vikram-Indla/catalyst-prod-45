@@ -296,21 +296,24 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         {/* ── HEADER ── */}
         <div style={{ padding: '16px 20px 14px', borderBottom: '0.75px solid rgba(15,23,42,0.10)', flexShrink: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <a
-              href={doc.jira_ticket_url || '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 4,
-                background: '#EFF6FF', border: '0.75px solid #BFDBFE', borderRadius: 4,
-                padding: '2px 8px', textDecoration: 'none', cursor: doc.jira_ticket_url ? 'pointer' : 'default',
-              }}
-            >
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB' }}>
-                {doc.jira_ticket_key}
-              </span>
-              {doc.jira_ticket_url && <ExternalLink size={11} color="#2563EB" />}
-            </a>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <a
+                href={doc.jira_ticket_url || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                  background: '#EFF6FF', border: '0.75px solid #BFDBFE', borderRadius: 4,
+                  padding: '2px 8px', textDecoration: 'none', cursor: doc.jira_ticket_url ? 'pointer' : 'default',
+                }}
+              >
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB' }}>
+                  {doc.jira_ticket_key}
+                </span>
+                {doc.jira_ticket_url && <ExternalLink size={11} color="#2563EB" />}
+              </a>
+              <TicketTypeBadgeDrawer type={brdData.ticketType} />
+            </div>
             <button onClick={onClose} style={{
               width: 28, height: 28, border: 'none', borderRadius: 6,
               background: 'transparent', cursor: 'pointer', display: 'flex',
@@ -324,6 +327,21 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
             lineHeight: 1.3,
             display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden',
           }}>{doc.title}</h3>
+          {/* HL-01: Parent hierarchy breadcrumb */}
+          {brdData.parentJiraKey && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#94A3B8', marginTop: 2, fontFamily: "'Inter', sans-serif" }}>
+              <span
+                style={{ color: '#2563EB', cursor: 'pointer' }}
+                onClick={() => {
+                  // Try to open parent drawer or Jira URL
+                  const prefix = brdData.parentJiraKey!.split('-')[0];
+                  window.open(`https://jira.example.com/browse/${brdData.parentJiraKey}`, '_blank');
+                }}
+              >{brdData.parentJiraKey}</span>
+              <ChevronRight size={10} color="#CBD5E1" />
+              <span style={{ color: '#475569', fontWeight: 600 }}>{doc.jira_ticket_key}</span>
+            </div>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
             <span style={{
               display: 'inline-flex', alignItems: 'center', padding: '0 6px', borderRadius: 3, height: 20,
@@ -336,6 +354,68 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
             </span>
           </div>
         </div>
+
+        {/* ── Warning: title_only content ── */}
+        {brdData.rawTextSource === 'title_only' && (
+          <div style={{
+            margin: '0 20px', marginTop: 12, padding: '8px 12px', borderRadius: 6,
+            background: '#FFFBEB', border: '0.75px solid #FDE68A',
+            fontSize: 12, color: '#92400E', fontFamily: "'Inter', sans-serif",
+            display: 'flex', alignItems: 'center', gap: 6,
+          }}>
+            ⚠ No BRD content found — attach PDF for accurate epic generation
+          </div>
+        )}
+
+        {/* ── Re-import from Jira button ── */}
+        {brdData.id && (
+          <div style={{ padding: '8px 20px 0' }}>
+            <button
+              onClick={async () => {
+                if (reimporting) return;
+                setReimporting(true);
+                try {
+                  const { data, error } = await supabase.functions.invoke('ra-jira-proxy', {
+                    body: { action: 'import_single', payload: { issueKey: doc.jira_ticket_key, brdId: brdData.id } },
+                  });
+                  if (error) throw error;
+                  if (data?.error) throw new Error(data.message || data.error);
+                  toast.success(`Re-imported ${doc.jira_ticket_key} (source: ${data.raw_text_source}${data.pdf_attached ? ', PDF attached' : ''})`);
+                  // Reload brd data
+                  const { data: brdRow } = await (supabase as any)
+                    .from('brd_documents')
+                    .select('id, pipeline_stage, raw_text, parent_jira_key, ticket_type, raw_text_source')
+                    .eq('jira_key', doc.jira_ticket_key)
+                    .maybeSingle();
+                  if (brdRow) {
+                    setBrdData(prev => ({
+                      ...prev,
+                      raw_text: brdRow.raw_text,
+                      parentJiraKey: brdRow.parent_jira_key ?? null,
+                      ticketType: brdRow.ticket_type ?? null,
+                      rawTextSource: brdRow.raw_text_source ?? null,
+                    }));
+                  }
+                } catch (err: any) {
+                  toast.error('Re-import failed: ' + (err.message || 'Unknown error'));
+                } finally {
+                  setReimporting(false);
+                }
+              }}
+              disabled={reimporting}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                padding: '5px 12px', height: 28, borderRadius: 5,
+                border: '0.75px solid rgba(15,23,42,0.15)', background: '#FFFFFF',
+                fontSize: 12, fontWeight: 500, color: '#475569', cursor: reimporting ? 'not-allowed' : 'pointer',
+                fontFamily: "'Inter', sans-serif", opacity: reimporting ? 0.6 : 1,
+              }}
+            >
+              {reimporting ? <Loader2 size={13} color="#94A3B8" style={{ animation: 'spin 1s linear infinite' }} /> : <RefreshCw size={13} color="#94A3B8" />}
+              {reimporting ? 'Re-importing…' : 'Re-import from Jira'}
+            </button>
+          </div>
+        )}
 
         {/* ── BODY (scrollable) ── */}
         <div style={{ flex: 1, overflowY: 'auto' }}>
