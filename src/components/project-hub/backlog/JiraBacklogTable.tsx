@@ -113,7 +113,7 @@ export function JiraBacklogTable({ issues, title, showParent = false }: Props) {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={showParent ? 9 : 8} className="text-center py-12 text-muted-foreground text-sm">
+                <td colSpan={showParent ? 8 : 7} className="text-center py-12 text-muted-foreground text-sm">
                   No issues found
                 </td>
               </tr>
