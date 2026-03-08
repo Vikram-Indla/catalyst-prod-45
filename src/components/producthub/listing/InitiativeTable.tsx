@@ -21,7 +21,7 @@ import {
 import { InlineCellEditor, EDITABLE_COLUMNS, COLUMN_TO_FIELD } from './InlineCellEditor';
 import type { ColumnConfig } from './ColumnManager';
 import { RoadmapBadge } from '@/components/producthub/shared/RoadmapBadge';
-import { InitiativeTypeBadge } from '@/components/producthub/shared/InitiativeTypeBadge';
+
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 interface Props {
