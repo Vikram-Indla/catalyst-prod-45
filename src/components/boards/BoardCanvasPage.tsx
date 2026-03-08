@@ -249,7 +249,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
             return (
               <button
                 key={tab.id}
-                onClick={() => navigate(`/projects/${projectId}/boards/${tab.id}`)}
+                onClick={() => navigate(`${boardBasePath}/${tab.id}`)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 5,
                   height: 30, padding: '0 12px', borderRadius: 4,
