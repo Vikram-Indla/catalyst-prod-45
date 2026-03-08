@@ -23,6 +23,9 @@ interface BrdData {
   wikiCount: number;
   publishedCount: number;
   uatCount: number;
+  parentJiraKey: string | null;
+  ticketType: string | null;
+  rawTextSource: string | null;
 }
 
 // D13: Pluralisation helper
@@ -47,6 +50,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
   const [brdData, setBrdData] = useState<BrdData>({
     id: null, pipeline_stage: null, raw_text: null,
     epicCount: 0, wikiCount: 0, publishedCount: 0, uatCount: 0,
+    parentJiraKey: null, ticketType: null, rawTextSource: null,
   });
   const [contentExpanded, setContentExpanded] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
@@ -58,6 +62,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
   // D08: PDF upload
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [reimporting, setReimporting] = useState(false);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -73,12 +78,12 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
 
       const { data: brdRow } = await (supabase as any)
         .from('brd_documents')
-        .select('id, pipeline_stage, raw_text')
+        .select('id, pipeline_stage, raw_text, parent_jira_key, ticket_type, raw_text_source')
         .eq('jira_key', jiraKey)
         .maybeSingle();
 
       if (!brdRow?.id) {
-        setBrdData({ id: null, pipeline_stage: null, raw_text: null, epicCount: 0, wikiCount: 0, publishedCount: 0, uatCount: 0 });
+        setBrdData({ id: null, pipeline_stage: null, raw_text: null, epicCount: 0, wikiCount: 0, publishedCount: 0, uatCount: 0, parentJiraKey: null, ticketType: null, rawTextSource: null });
         return;
       }
 
@@ -102,6 +107,9 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         wikiCount: finalWikiCount,
         publishedCount: pubRes.count ?? 0,
         uatCount: uatRes.count ?? 0,
+        parentJiraKey: brdRow.parent_jira_key ?? null,
+        ticketType: brdRow.ticket_type ?? null,
+        rawTextSource: brdRow.raw_text_source ?? null,
       });
 
       // Fetch UAT scenarios if they exist

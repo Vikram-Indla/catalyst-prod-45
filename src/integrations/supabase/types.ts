@@ -557,6 +557,7 @@ export type Database = {
           language: string
           methodology: string | null
           original_url: string | null
+          parent_jira_key: string | null
           pdf_attached_at: string | null
           pdf_filename: string | null
           pdf_url: string | null
@@ -564,7 +565,9 @@ export type Database = {
           processed_at: string | null
           quality_score: number | null
           raw_text: string | null
+          raw_text_source: string | null
           source_type: Database["public"]["Enums"]["source_type_enum"]
+          ticket_type: string | null
           title: string
           updated_at: string
         }
@@ -579,6 +582,7 @@ export type Database = {
           language?: string
           methodology?: string | null
           original_url?: string | null
+          parent_jira_key?: string | null
           pdf_attached_at?: string | null
           pdf_filename?: string | null
           pdf_url?: string | null
@@ -586,7 +590,9 @@ export type Database = {
           processed_at?: string | null
           quality_score?: number | null
           raw_text?: string | null
+          raw_text_source?: string | null
           source_type?: Database["public"]["Enums"]["source_type_enum"]
+          ticket_type?: string | null
           title: string
           updated_at?: string
         }
@@ -601,6 +607,7 @@ export type Database = {
           language?: string
           methodology?: string | null
           original_url?: string | null
+          parent_jira_key?: string | null
           pdf_attached_at?: string | null
           pdf_filename?: string | null
           pdf_url?: string | null
@@ -608,7 +615,9 @@ export type Database = {
           processed_at?: string | null
           quality_score?: number | null
           raw_text?: string | null
+          raw_text_source?: string | null
           source_type?: Database["public"]["Enums"]["source_type_enum"]
+          ticket_type?: string | null
           title?: string
           updated_at?: string
         }

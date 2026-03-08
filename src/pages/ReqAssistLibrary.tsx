@@ -38,6 +38,9 @@ export default function ReqAssistLibrary() {
   const [draftDrawer, setDraftDrawer] = useState<{ brdId: string; docTitle: string; jiraKey: string | null } | null>(null);
   const [epicCounts, setEpicCounts] = useState<Record<string, number>>({});
   const [pipelineStages, setPipelineStages] = useState<Record<string, string | null>>({});
+  const [parentKeys, setParentKeys] = useState<Record<string, string | null>>({});
+  const [ticketTypes, setTicketTypes] = useState<Record<string, string | null>>({});
+  const [rawTextSources, setRawTextSources] = useState<Record<string, string | null>>({});
 
   const handleGenerateClick = useCallback(async (doc: RADocumentWithArtifacts) => {
     let brdId: string | null = null;
@@ -101,15 +104,24 @@ export default function ReqAssistLibrary() {
     fetchDocumentEpicCounts(jiraKeys).then(countsMap => {
       const counts: Record<string, number> = {};
       const stages: Record<string, string | null> = {};
+      const parents: Record<string, string | null> = {};
+      const types: Record<string, string | null> = {};
+      const sources: Record<string, string | null> = {};
       for (const doc of documents) {
         const jk = (doc as any).jira_ticket_key;
         if (jk && countsMap[jk]) {
           counts[doc.id] = countsMap[jk].epicCount;
           stages[doc.id] = countsMap[jk].pipelineStage;
+          parents[doc.id] = countsMap[jk].parentJiraKey;
+          types[doc.id] = countsMap[jk].ticketType;
+          sources[doc.id] = countsMap[jk].rawTextSource;
         }
       }
       setEpicCounts(counts);
       setPipelineStages(stages);
+      setParentKeys(parents);
+      setTicketTypes(types);
+      setRawTextSources(sources);
     });
   }, [documents]);
 
@@ -395,7 +407,7 @@ export default function ReqAssistLibrary() {
                         key={doc.id}
                         onClick={(e) => handleRowClick(doc, e)}
                         style={{
-                          height: 36, cursor: 'pointer',
+                          height: parentKeys[doc.id] ? 48 : 36, cursor: 'pointer',
                           borderBottom: isLast ? 'none' : '0.75px solid rgba(15,23,42,0.06)',
                           background: isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent',
                           transition: 'background 120ms ease',
@@ -403,20 +415,52 @@ export default function ReqAssistLibrary() {
                         onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = 'rgba(15,23,42,0.02)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
                       >
-                        {/* Jira Ticket */}
+                        {/* Jira Ticket — with parent hierarchy */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
-                          {doc.jira_ticket_url ? (
-                            <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-                              style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB', textDecoration: 'none' }}
-                              onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-                              onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
-                            >
-                              {doc.jira_ticket_key}
-                            </a>
+                          {parentKeys[doc.id] ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                              {/* Parent line */}
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2L6.5 5L3.5 8" stroke="#CBD5E1" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, color: '#94A3B8' }}>
+                                  {parentKeys[doc.id]}
+                                </span>
+                              </div>
+                              {/* This ticket — indented */}
+                              <div style={{ paddingLeft: 8 }}>
+                                {doc.jira_ticket_url ? (
+                                  <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
+                                    style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB', textDecoration: 'none' }}
+                                    onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                                    onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                                  >
+                                    {doc.jira_ticket_key}
+                                  </a>
+                                ) : (
+                                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                                    {doc.jira_ticket_key}
+                                  </span>
+                                )}
+                                <TicketTypeBadge type={ticketTypes[doc.id]} />
+                              </div>
+                            </div>
                           ) : (
-                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB' }}>
-                              {doc.jira_ticket_key}
-                            </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              {doc.jira_ticket_url ? (
+                                <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
+                                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB', textDecoration: 'none' }}
+                                  onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                                  onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                                >
+                                  {doc.jira_ticket_key}
+                                </a>
+                              ) : (
+                                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB' }}>
+                                  {doc.jira_ticket_key}
+                                </span>
+                              )}
+                              <TicketTypeBadge type={ticketTypes[doc.id]} />
+                            </div>
                           )}
                         </td>
                         {/* Title */}
@@ -924,5 +968,27 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
     >
       <Zap size={12} /> Generate
     </button>
+  );
+}
+
+/* ── Ticket Type Badge ── */
+const TICKET_TYPE_STYLES: Record<string, { bg: string; color: string; label: string }> = {
+  subtask: { bg: '#FEF3C7', color: '#92400E', label: 'SUBTASK' },
+  story:   { bg: '#EFF6FF', color: '#1D4ED8', label: 'STORY' },
+  epic:    { bg: '#F3E8FF', color: '#6B21A8', label: 'EPIC' },
+  task:    { bg: '#F1F5F9', color: '#475569', label: 'TASK' },
+};
+
+function TicketTypeBadge({ type }: { type: string | null | undefined }) {
+  if (!type) return null;
+  const s = TICKET_TYPE_STYLES[type.toLowerCase()] || TICKET_TYPE_STYLES.task;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', marginLeft: 4,
+      padding: '0 5px', height: 18, borderRadius: 3,
+      fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+      background: s.bg, color: s.color,
+      fontFamily: "'Inter', sans-serif",
+    }}>{s.label}</span>
   );
 }
