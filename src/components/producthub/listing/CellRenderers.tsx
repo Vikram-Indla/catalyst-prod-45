@@ -3,9 +3,17 @@
  */
 
 import { format, differenceInDays } from 'date-fns';
+import { Lightbulb, FolderKanban, Zap, Wrench, Link, CircleDashed, type LucideIcon } from 'lucide-react';
 import type { InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@/types/initiative';
 
+const TYPE_ICON_MAP: Record<string, { Icon: LucideIcon; color: string }> = {
+  business_request: { Icon: Lightbulb, color: '#B45309' },
+  project: { Icon: FolderKanban, color: '#2563EB' },
+  enhancement: { Icon: Zap, color: '#0D9488' },
+  improvement: { Icon: Wrench, color: '#D97706' },
+  entity_integration: { Icon: Link, color: '#8B5CF6' },
+};
 /* ── Status Cell ── */
 export function StatusCell({ status }: { status: InitiativeStatus }) {
   const s = STATUS_DISPLAY[status];
@@ -125,7 +133,14 @@ export function QuarterCell({ value }: { value: string | null }) {
   return <span className="pb-quarter">{value}</span>;
 }
 
-/* ── ID Cell ── */
-export function IDCell({ value }: { value: string }) {
-  return <span className="pb-id">{value}</span>;
+/* ── ID Cell with type icon ── */
+export function IDCell({ value, typeKey }: { value: string; typeKey?: string | null }) {
+  const iconConfig = TYPE_ICON_MAP[typeKey || ''] || { Icon: CircleDashed, color: '#94A3B8' };
+  const { Icon, color } = iconConfig;
+  return (
+    <span className="pb-id" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+      <Icon size={16} style={{ color, flexShrink: 0 }} />
+      {value}
+    </span>
+  );
 }
