@@ -466,7 +466,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                             fontFamily: "'JetBrains Mono', monospace",
                           }}>{laneCards.length}</span>
                         </div>
-                        <KanbanColumn column={col} cards={laneCards} />
+                        <KanbanColumn column={col} cards={laneCards} onCardClick={setDetailItemId} />
                       </div>
                     );
                   })}
