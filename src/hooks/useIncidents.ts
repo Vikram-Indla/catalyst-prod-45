@@ -143,8 +143,8 @@ export function useCreateIncident() {
       const { data: incident, error } = await supabase
         .from('incidents')
         .insert({
-          ...data,
-          reporter_id: user?.id, // Default reporter to current user
+          ...data as any,
+          reporter_id: user?.id,
           created_by: user?.id,
           updated_by: user?.id,
         })
