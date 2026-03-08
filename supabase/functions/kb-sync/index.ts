@@ -506,110 +506,183 @@ serve(async (req) => {
       }
 
       const fieldName = content_field || "raw_text";
-      const srcType = source_type || "brd";
+      const srcType = source_type || "brd_document";
+      let queueUpdated = false;
 
-      // Fetch the single record
-      const { data: row, error: fetchErr } = await sb
-        .from(table)
-        .select("*")
-        .eq("id", record_id)
-        .single();
+      try {
+        // Mark queue as processing
+        await sb.from("brd_processing_queue")
+          .update({ status: "processing", started_at: new Date().toISOString() })
+          .eq("brd_id", record_id);
 
-      if (fetchErr || !row) {
-        return new Response(JSON.stringify({ error: fetchErr?.message || "Record not found" }),
-          { status: 404, headers: { ...cors, "Content-Type": "application/json" } });
-      }
+        // Fetch the single record
+        const { data: row, error: fetchErr } = await sb
+          .from(table)
+          .select("*")
+          .eq("id", record_id)
+          .single();
 
-      const text = row[fieldName];
-      if (!text || String(text).trim().length < 20) {
-        return new Response(JSON.stringify({ error: `Field "${fieldName}" is empty or too short` }),
-          { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
-      }
-
-      // Chunk the content
-      const title = row.title || row.jira_key || record_id;
-      const paragraphs = splitParagraphs(String(text), CHUNK_MAX_TOKENS, CHUNK_OVERLAP_TOKENS);
-      const chunks: Chunk[] = [];
-
-      for (let i = 0; i < paragraphs.length; i++) {
-        const content = `[${table}:${record_id}] ${fieldName}:\n${paragraphs[i]}`;
-        const hash = await sha256(content);
-        chunks.push({
-          content,
-          content_hash: hash,
-          source_type: srcType,
-          source_url: record_id,
-          metadata: { ...(reqMetadata || {}), table, id: record_id, field: fieldName, title },
-          chunk_type: "paragraph",
-          section_title: `${String(title).substring(0, 100)} — chunk ${i + 1}`,
-          token_count: estimateTokens(content),
-          tags: [table.toLowerCase(), srcType, fieldName],
-          chunk_index: i,
-          language: reqMetadata?.language || "en",
-        });
-      }
-
-      if (chunks.length === 0) {
-        return new Response(JSON.stringify({ synced: 0, message: "No chunks generated" }),
-          { headers: { ...cors, "Content-Type": "application/json" } });
-      }
-
-      // Deduplicate against existing
-      const hashes = chunks.map(c => c.content_hash);
-      const { data: existing } = await sb
-        .from("kb_embeddings")
-        .select("content_hash")
-        .in("content_hash", hashes);
-      const existingSet = new Set((existing || []).map((r: any) => r.content_hash));
-      const newChunks = chunks.filter(c => !existingSet.has(c.content_hash));
-
-      if (newChunks.length === 0) {
-        return new Response(JSON.stringify({ synced: 0, total_chunks: chunks.length, message: "All chunks already indexed" }),
-          { headers: { ...cors, "Content-Type": "application/json" } });
-      }
-
-      // Embed and insert in batches
-      let synced = 0;
-      for (let i = 0; i < newChunks.length; i += BATCH_SIZE) {
-        const batch = newChunks.slice(i, i + BATCH_SIZE);
-        const texts = batch.map(c => c.content);
-        const embeddings = await batchEmbed(texts);
-
-        const insertRows = batch.map((c, j) => ({
-          content: c.content,
-          content_hash: c.content_hash,
-          source_type: c.source_type,
-          source_url: c.source_url,
-          metadata: c.metadata,
-          embedding: JSON.stringify(embeddings[j]),
-          chunk_type: c.chunk_type,
-          section_title: c.section_title,
-          token_count: c.token_count,
-          tags: c.tags,
-          chunk_index: c.chunk_index,
-          language: c.language,
-        }));
-
-        const { error: insertErr } = await sb
-          .from("kb_embeddings")
-          .upsert(insertRows, { onConflict: "content_hash", ignoreDuplicates: true });
-
-        if (insertErr) {
-          console.error(`sync_single insert error batch ${i}:`, insertErr.message);
-        } else {
-          synced += batch.length;
+        if (fetchErr || !row) {
+          throw new Error(fetchErr?.message || "Record not found");
         }
 
-        if (i + BATCH_SIZE < newChunks.length) await new Promise(r => setTimeout(r, 200));
-      }
+        const text = row[fieldName];
+        if (!text || String(text).trim().length < 20) {
+          throw new Error(`Field "${fieldName}" is empty or too short (${String(text || "").length} chars)`);
+        }
 
-      return new Response(JSON.stringify({
-        synced,
-        total_chunks: chunks.length,
-        new_chunks: synced,
-        record_id,
-        table,
-      }), { headers: { ...cors, "Content-Type": "application/json" } });
+        // Chunk the content
+        const title = row.title || row.jira_key || record_id;
+        const paragraphs = splitParagraphs(String(text), CHUNK_MAX_TOKENS, CHUNK_OVERLAP_TOKENS);
+        const chunks: Chunk[] = [];
+
+        for (let i = 0; i < paragraphs.length; i++) {
+          const content = `[${table}:${record_id}] ${fieldName}:\n${paragraphs[i]}`;
+          const hash = await sha256(content);
+          chunks.push({
+            content,
+            content_hash: hash,
+            source_type: srcType,
+            source_url: record_id,
+            metadata: {
+              ...(reqMetadata || {}),
+              table,
+              id: record_id,
+              field: fieldName,
+              title,
+              brd_id: record_id,
+              source_id: record_id,
+              ingest_type: "brd_sync",
+              chunk_index: i,
+              total_chunks: paragraphs.length,
+            },
+            chunk_type: "paragraph",
+            section_title: `${String(title).substring(0, 100)} — chunk ${i + 1}`,
+            token_count: estimateTokens(content),
+            tags: [table.toLowerCase(), srcType, fieldName],
+            chunk_index: i,
+            language: reqMetadata?.language || "en",
+          });
+        }
+
+        if (chunks.length === 0) {
+          // Still mark queue as completed (no content to sync is not a failure)
+          await sb.from("brd_processing_queue")
+            .update({ status: "completed", completed_at: new Date().toISOString() })
+            .eq("brd_id", record_id);
+          queueUpdated = true;
+          return new Response(JSON.stringify({ synced: 0, message: "No chunks generated" }),
+            { headers: { ...cors, "Content-Type": "application/json" } });
+        }
+
+        // Deduplicate against existing
+        const hashes = chunks.map(c => c.content_hash);
+        const { data: existing } = await sb
+          .from("kb_embeddings")
+          .select("content_hash")
+          .in("content_hash", hashes);
+        const existingSet = new Set((existing || []).map((r: any) => r.content_hash));
+        const newChunks = chunks.filter(c => !existingSet.has(c.content_hash));
+
+        if (newChunks.length === 0) {
+          await sb.from("brd_processing_queue")
+            .update({ status: "completed", completed_at: new Date().toISOString() })
+            .eq("brd_id", record_id);
+          queueUpdated = true;
+          return new Response(JSON.stringify({ synced: 0, total_chunks: chunks.length, message: "All chunks already indexed" }),
+            { headers: { ...cors, "Content-Type": "application/json" } });
+        }
+
+        // Embed and insert in batches
+        let synced = 0;
+        const errors: string[] = [];
+        for (let i = 0; i < newChunks.length; i += BATCH_SIZE) {
+          const batch = newChunks.slice(i, i + BATCH_SIZE);
+          const texts = batch.map(c => c.content);
+
+          try {
+            const embeddings = await batchEmbed(texts);
+
+            const insertRows = batch.map((c, j) => ({
+              content: c.content,
+              content_hash: c.content_hash,
+              source_type: c.source_type,
+              source_url: c.source_url,
+              metadata: c.metadata,
+              embedding: JSON.stringify(embeddings[j]),
+              chunk_type: c.chunk_type,
+              section_title: c.section_title,
+              token_count: c.token_count,
+              tags: c.tags,
+              chunk_index: c.chunk_index,
+              language: c.language,
+            }));
+
+            const { error: insertErr } = await sb
+              .from("kb_embeddings")
+              .upsert(insertRows, { onConflict: "content_hash", ignoreDuplicates: true });
+
+            if (insertErr) {
+              console.error(`sync_single insert error batch ${i}:`, insertErr.message);
+              errors.push(`Batch ${i}: ${insertErr.message}`);
+            } else {
+              synced += batch.length;
+            }
+          } catch (embedErr: any) {
+            console.error(`sync_single embed error batch ${i}:`, embedErr.message);
+            errors.push(`Embed batch ${i}: ${embedErr.message}`);
+          }
+
+          if (i + BATCH_SIZE < newChunks.length) await new Promise(r => setTimeout(r, 200));
+        }
+
+        if (synced === 0 && errors.length > 0) {
+          throw new Error(`All batches failed: ${errors[0]}`);
+        }
+
+        // Update pipeline_stage to 'complete' on success
+        await sb.from("brd_documents")
+          .update({ pipeline_stage: "complete" })
+          .eq("id", record_id);
+
+        // Mark queue as completed
+        await sb.from("brd_processing_queue")
+          .update({ status: "completed", completed_at: new Date().toISOString() })
+          .eq("brd_id", record_id);
+        queueUpdated = true;
+
+        console.log(`sync_single success: ${synced}/${chunks.length} chunks for ${record_id}`);
+
+        return new Response(JSON.stringify({
+          synced,
+          total_chunks: chunks.length,
+          new_chunks: synced,
+          record_id,
+          table,
+          errors: errors.length > 0 ? errors : undefined,
+        }), { headers: { ...cors, "Content-Type": "application/json" } });
+
+      } catch (err: any) {
+        console.error(`sync_single fatal error for ${record_id}:`, err.message);
+        // Always update queue on failure
+        if (!queueUpdated) {
+          try {
+            await sb.from("brd_processing_queue")
+              .update({
+                status: "failed",
+                error_message: (err as Error).message?.substring(0, 500),
+                completed_at: new Date().toISOString(),
+              })
+              .eq("brd_id", record_id);
+          } catch (qErr) {
+            console.error("Failed to update queue on error:", qErr);
+          }
+        }
+        return new Response(
+          JSON.stringify({ error: err.message }),
+          { status: 500, headers: { ...cors, "Content-Type": "application/json" } }
+        );
+      }
     }
 
     return new Response(JSON.stringify({ error: "Invalid action. Use: discover, status, sync_table, sync_all, sync_single, add_config" }),

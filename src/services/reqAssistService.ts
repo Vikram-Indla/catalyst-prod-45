@@ -190,25 +190,31 @@ export async function syncSingleBrdToKb(brdDocumentId: string): Promise<void> {
   if (fetchErr || !doc) throw new Error(fetchErr?.message || 'BRD document not found');
   if (!doc.raw_text || doc.raw_text.trim() === '') throw new Error('Document has no content to index');
 
-  // 2. Insert processing queue job
-  await (supabase as any).from('brd_processing_queue').insert({
+  // 2. Upsert processing queue job (upsert to handle zombie re-runs)
+  await (supabase as any).from('brd_processing_queue').upsert({
     brd_id: brdDocumentId,
     status: 'processing',
-    attempts: 0,
-  });
+    started_at: new Date().toISOString(),
+    attempts: 1,
+    error_message: null,
+    completed_at: null,
+  }, { onConflict: 'brd_id' });
 
   // 3. Invoke kb-sync Edge Function
-  const { error: invokeErr } = await supabase.functions.invoke('kb-sync', {
+  const { data: responseData, error: invokeErr } = await supabase.functions.invoke('kb-sync', {
     body: {
       action: 'sync_single',
       table: 'brd_documents',
       record_id: brdDocumentId,
       content_field: 'raw_text',
-      source_type: 'brd',
+      source_type: 'brd_document',
       metadata: {
         source_id: brdDocumentId,
+        brd_id: brdDocumentId,
         jira_key: doc.jira_key,
         language: doc.language || 'ar',
+        title: doc.title,
+        ingest_type: 'brd_sync',
       },
     },
   });
@@ -217,23 +223,30 @@ export async function syncSingleBrdToKb(brdDocumentId: string): Promise<void> {
     // Mark queue as failed
     await (supabase as any)
       .from('brd_processing_queue')
-      .update({ status: 'failed', error_message: invokeErr.message })
-      .eq('brd_id', brdDocumentId)
-      .eq('status', 'processing');
+      .update({ status: 'failed', error_message: invokeErr.message?.substring(0, 500) })
+      .eq('brd_id', brdDocumentId);
     throw invokeErr;
   }
 
-  // 4. On success: update brd_documents and queue
+  // Check if EF returned an error in the body
+  if (responseData?.error) {
+    await (supabase as any)
+      .from('brd_processing_queue')
+      .update({ status: 'failed', error_message: String(responseData.error).substring(0, 500) })
+      .eq('brd_id', brdDocumentId);
+    throw new Error(responseData.error);
+  }
+
+  // 4. On success: update pipeline_stage and queue
   await (supabase as any)
     .from('brd_documents')
-    .update({ kb_synced: true, kb_synced_at: new Date().toISOString() })
+    .update({ pipeline_stage: 'complete' })
     .eq('id', brdDocumentId);
 
   await (supabase as any)
     .from('brd_processing_queue')
     .update({ status: 'completed', completed_at: new Date().toISOString() })
-    .eq('brd_id', brdDocumentId)
-    .eq('status', 'processing');
+    .eq('brd_id', brdDocumentId);
 }
 
 // ── BATCH EPIC COUNTS (FIX 2: replaces N+1 loop) ──
