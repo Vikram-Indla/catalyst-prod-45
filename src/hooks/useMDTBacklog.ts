@@ -97,6 +97,23 @@ export function useMDTBacklog() {
         favSet.add(f.initiative_id);
       });
 
+      // Build BRD tasks map: parent Jira key → BRDTask[]
+      const brdTasksByParent = new Map<string, BRDTask[]>();
+      (brdTasksResult.data || []).forEach((t: any) => {
+        if (!t.parent_key) return;
+        const key = t.parent_key;
+        if (!brdTasksByParent.has(key)) brdTasksByParent.set(key, []);
+        brdTasksByParent.get(key)!.push({
+          issue_key: t.issue_key,
+          summary: t.summary,
+          status: t.status,
+          assignee_display_name: t.assignee_display_name,
+          priority: t.priority,
+          jira_created_at: t.jira_created_at,
+          jira_updated_at: t.jira_updated_at,
+        });
+      });
+
       const initiatives: MDTInitiative[] = (initResult.data || []).map((row: any, idx: number) => {
         const assigneeProfile = row.assignee_id ? profileMap.get(row.assignee_id) : null;
         const businessOwnerProfile = row.business_owner_id ? profileMap.get(row.business_owner_id) : null;
