@@ -55,6 +55,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
   const [editDesc, setEditDesc] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
   const [archiveConfirmId, setArchiveConfirmId] = useState<string | null>(null);
+  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
 
   useEffect(() => { fetchEpics(); }, [brdId]);
 
@@ -74,9 +75,6 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
   const daysAgo = generatedAt ? Math.floor((Date.now() - new Date(generatedAt).getTime()) / 86400000) : 0;
   const isStale = daysAgo > 3;
   const hasDrafts = epics.some(e => (e.publish_status || 'draft') === 'draft');
-  const overallStatus = epics.every(e => e.publish_status === 'published') ? 'published'
-    : epics.every(e => e.publish_status === 'reviewed' || e.publish_status === 'published') ? 'reviewed'
-    : 'draft';
 
   const handleMarkReviewed = async () => {
     setMarkingReviewed(true);
@@ -131,63 +129,80 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
   };
 
-  const btnBase: React.CSSProperties = {
-    display: 'inline-flex', alignItems: 'center', gap: 4,
-    fontSize: 13, color: '#64748B', background: 'transparent',
-    border: 'none', cursor: 'pointer', padding: '3px 6px', borderRadius: 3,
-    fontFamily: "'Inter', sans-serif", transition: 'color 80ms ease',
-  };
-
   return (
     <>
-      <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.3)', zIndex: 60 }} onClick={onClose} />
+      {/* Backdrop */}
+      <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.30)', zIndex: 60 }} onClick={onClose} />
 
+      {/* Panel */}
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: 480,
         background: '#FFFFFF', zIndex: 70, display: 'flex', flexDirection: 'column',
-        borderLeft: '0.75px solid #E2E8F0', fontFamily: "'Inter', sans-serif",
+        borderLeft: '0.75px solid rgba(15,23,42,0.10)', fontFamily: "'Inter', sans-serif",
       }}>
-        {/* Header — 56px */}
-        <div style={{ height: 56, minHeight: 56, padding: '0 20px', borderBottom: '0.75px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FFFFFF' }}>
-          <div style={{ overflow: 'hidden' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 650, color: '#1E293B', margin: 0, fontFamily: "'Inter', sans-serif" }}>Epic Drafts</h2>
-              <StatusLozenge status={overallStatus} />
-            </div>
-            <p style={{ fontSize: 12, fontWeight: 400, color: '#64748B', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+
+        {/* ── Panel Header (sticky) ── */}
+        <div style={{
+          padding: '16px 20px',
+          borderBottom: '0.75px solid rgba(15,23,42,0.08)',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+          background: '#FFFFFF', flexShrink: 0,
+        }}>
+          <div style={{ overflow: 'hidden', flex: 1 }}>
+            <h2 style={{
+              fontSize: 16, fontWeight: 650, color: '#0F172A', margin: 0,
+              fontFamily: "'Sora', sans-serif",
+            }}>
+              Epic Drafts
+            </h2>
+            <p style={{
+              fontSize: 12, fontWeight: 400, color: '#64748B', margin: '2px 0 0',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              fontFamily: "'Inter', sans-serif",
+            }}>
               {jiraKey ? `${jiraKey} · ` : ''}{docTitle}
             </p>
           </div>
-          <button onClick={onClose} style={{
-            width: 28, height: 28, borderRadius: 4, border: 'none', flexShrink: 0,
-            background: 'transparent', cursor: 'pointer', display: 'flex',
-            alignItems: 'center', justifyContent: 'center', color: '#64748B',
-          }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#1E293B')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        {/* Meta line */}
-        <div style={{ padding: '8px 20px 0', fontSize: 12, color: '#64748B' }}>
-          {epics.length} epics{generatedAt ? ` · Generated ${daysAgo === 0 ? 'today' : daysAgo === 1 ? 'yesterday' : `${daysAgo}d ago`}` : ''}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+            {/* Count pill */}
+            <span style={{
+              display: 'inline-flex', alignItems: 'center',
+              padding: '1px 8px', borderRadius: 10,
+              border: '1px solid rgba(15,23,42,0.15)', background: '#FFFFFF',
+              fontSize: 12, fontWeight: 600, color: '#374151',
+              fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+            }}>
+              {epics.length} draft{epics.length !== 1 ? 's' : ''}
+            </span>
+            {/* Close */}
+            <button onClick={onClose} style={{
+              width: 28, height: 28, borderRadius: 4, border: 'none', flexShrink: 0,
+              background: 'transparent', cursor: 'pointer', display: 'flex',
+              alignItems: 'center', justifyContent: 'center', color: '#64748B',
+              transition: 'color 80ms ease',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#0F172A')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Staleness banner */}
         {isStale && (
           <div style={{
-            margin: '8px 20px 0', background: '#DEEBFF', border: '1px solid #B3D4FF',
+            margin: '12px 20px 0', background: '#DEEBFF', border: '1px solid #B3D4FF',
             color: '#0747A6', borderRadius: 6, padding: '8px 12px',
             display: 'flex', alignItems: 'center', gap: 8, fontSize: 12,
+            fontFamily: "'Inter', sans-serif",
           }}>
             <Clock size={14} style={{ flexShrink: 0 }} />
             Generated {daysAgo} days ago · Review before publishing
           </div>
         )}
 
-        {/* Epic list */}
+        {/* ── Epic list ── */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px 20px' }}>
           {loading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
@@ -199,18 +214,36 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
             epics.map((epic, epicIdx) => {
               const isEditing = editingId === epic.id;
               const isArchiveConfirm = archiveConfirmId === epic.id;
+              const isHovered = hoveredCardId === epic.id;
 
               return (
-                <div key={epic.id} style={{
-                  background: '#FFFFFF', border: '0.75px solid #E2E8F0', borderRadius: 6,
-                  padding: 12, marginBottom: 8,
-                }}>
-                  {/* ra_tag + status */}
-                  <div style={{ marginBottom: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                  key={epic.id}
+                  onMouseEnter={() => setHoveredCardId(epic.id)}
+                  onMouseLeave={() => setHoveredCardId(null)}
+                  style={{
+                    background: isHovered ? 'rgba(37,99,235,0.02)' : '#FFFFFF',
+                    border: `0.75px solid ${isHovered ? 'rgba(15,23,42,0.16)' : 'rgba(15,23,42,0.10)'}`,
+                    borderRadius: 6,
+                    borderLeft: '3px solid #7C3AED',
+                    padding: '14px 16px',
+                    marginBottom: 8,
+                    boxShadow: isHovered
+                      ? '0 2px 8px rgba(15,23,42,0.10)'
+                      : '0 1px 3px rgba(15,23,42,0.06)',
+                    transition: 'box-shadow 150ms ease, background 150ms ease, border-color 150ms ease',
+                  }}
+                >
+                  {/* Top row: ra_tag chip + status lozenge */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{
-                      display: 'inline-block', background: '#F1F5F9', color: '#475569',
-                      fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
-                      padding: '2px 6px', borderRadius: 4,
+                      display: 'inline-flex', alignItems: 'center',
+                      background: '#F5F3FF',
+                      border: '0.75px solid #DDD6FE',
+                      borderRadius: 4,
+                      padding: '2px 8px',
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: 11, fontWeight: 500, color: '#6D28D9',
                     }}>
                       {epic.ra_tag || `DFT-${String(epicIdx + 1).padStart(3, '0')}`}
                     </span>
@@ -219,14 +252,15 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
 
                   {isEditing ? (
                     /* ── Inline edit mode ── */
-                    <div style={{ marginTop: 6 }}>
+                    <div style={{ marginTop: 8 }}>
                       <input
                         value={editTitle}
                         onChange={e => setEditTitle(e.target.value)}
                         style={{
-                          width: '100%', fontSize: 13, fontWeight: 600, color: '#0F172A',
-                          border: '1px solid #CBD5E1', borderRadius: 4, padding: '4px 8px',
+                          width: '100%', fontSize: 14, fontWeight: 650, color: '#0F172A',
+                          border: '1px solid #CBD5E1', borderRadius: 4, padding: '6px 8px',
                           fontFamily: "'Inter', sans-serif", outline: 'none',
+                          transition: 'border-color 80ms ease',
                         }}
                         onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
                         onBlur={e => (e.currentTarget.style.borderColor = '#CBD5E1')}
@@ -237,57 +271,115 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                         rows={3}
                         style={{
                           width: '100%', fontSize: 13, color: '#475569', marginTop: 6,
-                          border: '1px solid #CBD5E1', borderRadius: 4, padding: '4px 8px',
+                          border: '1px solid #CBD5E1', borderRadius: 4, padding: '6px 8px',
                           fontFamily: "'Inter', sans-serif", resize: 'vertical', outline: 'none',
+                          lineHeight: 1.5, transition: 'border-color 80ms ease',
                         }}
                         onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
                         onBlur={e => (e.currentTarget.style.borderColor = '#CBD5E1')}
                       />
                       <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'flex-end' }}>
                         <button onClick={cancelEdit} style={{
-                          padding: '4px 12px', fontSize: 12, fontWeight: 500, borderRadius: 4,
-                          border: 'none', background: 'transparent', color: '#64748B', cursor: 'pointer',
+                          padding: '4px 12px', fontSize: 12, fontWeight: 500, borderRadius: 5,
+                          border: '0.75px solid rgba(15,23,42,0.15)', background: '#FFFFFF',
+                          color: '#64748B', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
                         }}>Cancel</button>
                         <button onClick={saveEdit} disabled={savingEdit} style={{
-                          padding: '4px 12px', fontSize: 12, fontWeight: 600, borderRadius: 4,
-                          border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
+                          padding: '4px 12px', fontSize: 12, fontWeight: 600, borderRadius: 5,
+                          border: 'none', background: '#2563EB', color: '#FFFFFF',
+                          cursor: 'pointer', fontFamily: "'Inter', sans-serif",
                         }}>{savingEdit ? 'Saving…' : 'Save'}</button>
                       </div>
                     </div>
                   ) : (
                     /* ── Display mode ── */
                     <>
-                      <p style={{ fontSize: 13, fontWeight: 650, color: '#0F172A', margin: '4px 0 0' }}>{epic.title}</p>
+                      <p style={{
+                        fontSize: 14, fontWeight: 650, color: '#0F172A',
+                        margin: '8px 0 0', fontFamily: "'Inter', sans-serif",
+                      }}>
+                        {epic.title}
+                      </p>
                       {epic.description && (
                         <p style={{
-                          fontSize: 13, color: '#475569', margin: '4px 0 0',
+                          fontSize: 13, fontWeight: 400, color: '#475569',
+                          margin: '4px 0 0', lineHeight: 1.5,
                           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                        }}>{epic.description}</p>
+                          overflow: 'hidden', fontFamily: "'Inter', sans-serif",
+                        }}>
+                          {epic.description}
+                        </p>
                       )}
 
-                      {/* Always-visible actions */}
+                      {/* Action row */}
                       {isArchiveConfirm ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, fontSize: 12 }}>
-                          <span style={{ color: '#475569' }}>Archive this epic?</span>
-                          <button onClick={() => setArchiveConfirmId(null)} style={{ ...btnBase, fontSize: 12 }}>Cancel</button>
-                          <button onClick={() => handleArchiveEpic(epic.id)} style={{
-                            ...btnBase, fontSize: 12, color: '#DC2626', fontWeight: 600,
-                          }}>Confirm</button>
+                        <div style={{
+                          display: 'flex', alignItems: 'center', gap: 8,
+                          marginTop: 10, fontSize: 12,
+                        }}>
+                          <span style={{ color: '#475569', fontFamily: "'Inter', sans-serif" }}>Archive this epic?</span>
+                          <button
+                            onClick={() => setArchiveConfirmId(null)}
+                            style={{
+                              height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
+                              borderRadius: 5, border: '0.75px solid rgba(15,23,42,0.15)',
+                              background: '#FFFFFF', color: '#374151', cursor: 'pointer',
+                              fontFamily: "'Inter', sans-serif",
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => handleArchiveEpic(epic.id)}
+                            style={{
+                              height: 28, padding: '0 10px', fontSize: 12, fontWeight: 600,
+                              borderRadius: 5, border: '0.75px solid rgba(220,38,38,0.3)',
+                              background: 'rgba(220,38,38,0.04)', color: '#DC2626',
+                              cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                            }}
+                          >
+                            Confirm
+                          </button>
                         </div>
                       ) : (
-                        <div style={{ display: 'flex', gap: 4, marginTop: 8 }}>
-                          <button onClick={() => startEdit(epic)} style={btnBase}
-                            onMouseEnter={e => (e.currentTarget.style.color = '#1E293B')}
-                            onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
+                        <div style={{ display: 'flex', gap: 4, marginTop: 10 }}>
+                          <button
+                            onClick={() => startEdit(epic)}
+                            style={{
+                              height: 28, padding: '0 10px',
+                              display: 'inline-flex', alignItems: 'center', gap: 4,
+                              fontSize: 12, fontWeight: 500, color: '#374151',
+                              border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 5,
+                              background: '#FFFFFF', cursor: 'pointer',
+                              fontFamily: "'Inter', sans-serif",
+                              transition: 'background 80ms ease',
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(37,99,235,0.04)')}
+                            onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
                           >
-                            <Pencil size={14} /> Edit
+                            <Pencil size={13} /> Edit
                           </button>
-                          <button onClick={() => setArchiveConfirmId(epic.id)} style={btnBase}
-                            onMouseEnter={e => (e.currentTarget.style.color = '#DC2626')}
-                            onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
+                          <button
+                            onClick={() => setArchiveConfirmId(epic.id)}
+                            style={{
+                              height: 28, padding: '0 10px',
+                              display: 'inline-flex', alignItems: 'center', gap: 4,
+                              fontSize: 12, fontWeight: 500, color: '#6B7280',
+                              border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 5,
+                              background: '#FFFFFF', cursor: 'pointer',
+                              fontFamily: "'Inter', sans-serif",
+                              transition: 'background 80ms ease, color 80ms ease',
+                            }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = 'rgba(220,38,38,0.04)';
+                              e.currentTarget.style.color = '#DC2626';
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = '#FFFFFF';
+                              e.currentTarget.style.color = '#6B7280';
+                            }}
                           >
-                            <Archive size={14} /> Archive
+                            <Archive size={13} /> Archive
                           </button>
                         </div>
                       )}
@@ -299,29 +391,48 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
           )}
         </div>
 
-        {/* Footer */}
+        {/* ── Panel Footer ── */}
         <div style={{
-          padding: '12px 20px', borderTop: '0.75px solid #E2E8F0',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '12px 20px',
+          borderTop: '0.75px solid rgba(15,23,42,0.08)',
+          background: '#FFFFFF', flexShrink: 0,
         }}>
-          <span style={{ fontSize: 13, color: '#475569' }}>
+          <div style={{
+            fontSize: 12, color: '#64748B', marginBottom: 10,
+            fontFamily: "'Inter', sans-serif",
+          }}>
             {epics.length} draft{epics.length !== 1 ? 's' : ''}{jiraKey ? ` · ${jiraKey}` : ''}
-          </span>
+          </div>
           <div style={{ display: 'flex', gap: 8 }}>
             {hasDrafts && (
-              <button onClick={handleMarkReviewed} disabled={markingReviewed} style={{
-                padding: '6px 14px', fontSize: 12, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155',
-                cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-              }}>
+              <button
+                onClick={handleMarkReviewed}
+                disabled={markingReviewed}
+                style={{
+                  flex: 1, height: 36, fontSize: 13, fontWeight: 600,
+                  borderRadius: 6, border: '0.75px solid rgba(15,23,42,0.15)',
+                  background: '#FFFFFF', color: '#334155',
+                  cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                  transition: 'background 80ms ease',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
+                onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
+              >
                 {markingReviewed ? 'Marking…' : 'Mark Reviewed'}
               </button>
             )}
-            <button onClick={() => setShowPublish(true)} style={{
-              padding: '6px 14px', fontSize: 12, fontWeight: 600, borderRadius: 6,
-              border: 'none', background: '#2563EB', color: '#FFFFFF',
-              cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-            }}>
+            <button
+              onClick={() => setShowPublish(true)}
+              style={{
+                flex: 1, height: 36, fontSize: 13, fontWeight: 600,
+                borderRadius: 6, border: 'none',
+                background: '#2563EB', color: '#FFFFFF',
+                cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                transition: 'background 80ms ease',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#1D4ED8')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#2563EB')}
+            >
               Publish to Project →
             </button>
           </div>
