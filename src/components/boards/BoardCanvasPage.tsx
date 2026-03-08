@@ -16,8 +16,10 @@ import BoardQuickFilters from './BoardQuickFilters';
 import BoardSettingsDrawer from './BoardSettingsDrawer';
 import type { KanbanCard, BoardColumn } from '@/types/board';
 
-/* Board accent colors — canonical order */
+/* Board accent colors — use board.color from DB, fallback map */
 const BOARD_ACCENT: Record<string, string> = {
+  'Demand Analysis Kanban': '#2563EB',
+  'Business Request Kanban': '#D97706',
   'Delivery Board': '#2563EB',
   'QA Board': '#16A34A',
   'Design Board': '#7C3AED',
@@ -77,14 +79,9 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
   const updateLastViewed = useUpdateBoardLastViewed();
 
   // Canonical board order for tab bar
-  const CANONICAL_ORDER = ['Delivery Board', 'QA Board', 'Design Board', 'My Planning Board'];
+  // Dynamic board tabs — sorted by sort_order from DB
   const boardTabs = useMemo(() => {
-    const ordered: typeof siblingBoards = [];
-    for (const name of CANONICAL_ORDER) {
-      const found = siblingBoards.find(b => b.name === name);
-      if (found) ordered.push(found);
-    }
-    return ordered;
+    return [...siblingBoards].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   }, [siblingBoards]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));

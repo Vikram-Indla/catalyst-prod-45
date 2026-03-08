@@ -23114,6 +23114,7 @@ export type Database = {
           first_synced_at: string | null
           fix_versions: Json | null
           hierarchy_level: number | null
+          id: string
           issue_key: string
           issue_type: string
           jira_created_at: string | null
@@ -23155,6 +23156,7 @@ export type Database = {
           first_synced_at?: string | null
           fix_versions?: Json | null
           hierarchy_level?: number | null
+          id?: string
           issue_key: string
           issue_type?: string
           jira_created_at?: string | null
@@ -23196,6 +23198,7 @@ export type Database = {
           first_synced_at?: string | null
           fix_versions?: Json | null
           hierarchy_level?: number | null
+          id?: string
           issue_key?: string
           issue_type?: string
           jira_created_at?: string | null
