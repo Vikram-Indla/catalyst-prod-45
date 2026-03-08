@@ -34,7 +34,6 @@ export default function KanbanCardComponent({ card }: Props) {
       ? '0 8px 24px rgba(15,23,42,0.18)'
       : hover ? '0 2px 8px rgba(15,23,42,0.10)' : 'none',
     position: 'relative' as const,
-    position: 'relative',
   };
 
   // Merge transforms
