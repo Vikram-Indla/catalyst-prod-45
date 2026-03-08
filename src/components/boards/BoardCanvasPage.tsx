@@ -14,7 +14,7 @@ import KanbanColumn from './KanbanColumn';
 import KanbanCardComponent from './KanbanCard';
 import BoardQuickFilters from './BoardQuickFilters';
 import BoardSettingsDrawer from './BoardSettingsDrawer';
-import { WorkItemDetailModal } from '@/components/project-hub/work-items/WorkItemDetailModal';
+import { BoardIssueDetailDrawer } from './BoardIssueDetailDrawer';
 import type { KanbanCard, BoardColumn } from '@/types/board';
 
 /* Board accent colors — use board.color from DB, fallback map */
@@ -493,14 +493,10 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
         />
       )}
 
-      {/* Work Item Detail Modal */}
-      <WorkItemDetailModal
-        open={!!detailItemId}
-        itemId={detailItemId}
-        projectId={projectId || ''}
-        projectKey={board?.name || ''}
+      {/* Issue Detail Drawer */}
+      <BoardIssueDetailDrawer
+        issueId={detailItemId}
         onClose={() => setDetailItemId(null)}
-        onNavigate={(id) => setDetailItemId(id)}
       />
     </div>
   );
