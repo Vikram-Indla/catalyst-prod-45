@@ -230,7 +230,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0, padding: '12px 24px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontFamily: "'Inter', sans-serif", color: '#64748B', marginBottom: 6 }}>
-          <button onClick={() => navigate(`/projects/${projectId}/boards`)} style={{
+          <button onClick={() => navigate(boardBasePath)} style={{
             border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
             color: '#2563EB', fontSize: 12, fontFamily: "'Inter', sans-serif", padding: 0,
           }}>
