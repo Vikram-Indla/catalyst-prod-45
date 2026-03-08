@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { MoreHorizontal } from 'lucide-react';
-import { WorkItemTypeIcon } from './WorkItemTypeIcons';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { KanbanCard } from '@/types/board';
 
 interface Props {
   card: KanbanCard;
+  onCardClick?: (cardId: string) => void;
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -23,7 +24,7 @@ function getOverdueDays(dueDate: string | null): number | null {
   return days > 0 ? days : null;
 }
 
-export default function KanbanCardComponent({ card }: Props) {
+export default function KanbanCardComponent({ card, onCardClick }: Props) {
   const [hover, setHover] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id });
 
@@ -59,6 +60,12 @@ export default function KanbanCardComponent({ card }: Props) {
       {...listeners}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      onClick={(e) => {
+        if (!isDragging && onCardClick) {
+          e.stopPropagation();
+          onCardClick(card.id);
+        }
+      }}
       style={{
         ...style,
         transform: finalTransform,
@@ -67,7 +74,7 @@ export default function KanbanCardComponent({ card }: Props) {
     >
       {/* Header row: TypeIcon | Key | SourceBadge | ⋯ */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-        <WorkItemTypeIcon type={card.type} size={16} />
+        <JiraIssueTypeIcon type={card.type} size={16} />
         <span style={{
           fontSize: 11, fontWeight: 500,
           fontFamily: "'JetBrains Mono', monospace", color: '#64748B',
