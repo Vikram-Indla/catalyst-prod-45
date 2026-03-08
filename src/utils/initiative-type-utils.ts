@@ -10,7 +10,7 @@ export function getTypeIconName(typeKey: string | null | undefined): string {
     case 'project': return 'folder-kanban';
     case 'enhancement': return 'zap';
     case 'improvement': return 'wrench';
-    
+    case 'business_request': return 'lightbulb';
     case 'entity_integration': return 'link';
     default: return 'circle-dashed';
   }
