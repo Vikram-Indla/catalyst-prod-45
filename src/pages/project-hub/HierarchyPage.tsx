@@ -187,7 +187,7 @@ export default function HierarchyPage() {
       {/* PAGE HEADER */}
       <div style={{ padding: '20px 24px 16px', borderBottom: '1px solid #E2E8F0', background: '#FFFFFF' }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.025em', lineHeight: 1.2 }}>
-         Work Item Hierarchy
+         All Work Items
         </h1>
         <p style={{ fontSize: 13, color: '#64748B', margin: '4px 0 0' }}>
           {projectKey?.toUpperCase() || 'Project'} · {totalItems} items · {completedItems} completed
@@ -271,7 +271,7 @@ export default function HierarchyPage() {
             <TreeSkeleton rows={5} />
           ) : isError ? (
             <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, background: '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: '#DC2626', margin: 0 }}>Failed to load hierarchy</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: '#DC2626', margin: 0 }}>Failed to load work items</p>
               <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>There was an error fetching the work items.</p>
               <button onClick={() => refetch()} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, fontFamily: "'Inter', sans-serif", color: '#FFFFFF', background: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <RefreshCw size={14} /> Retry

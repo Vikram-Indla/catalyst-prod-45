@@ -70,7 +70,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             { id: 'epic-backlog',    title: 'Epic Backlog',    path: `${base}/epic-backlog`,    icon: Layers,     exact: false },
             { id: 'feature-backlog', title: 'Feature Backlog', path: `${base}/feature-backlog`, icon: LayoutList, exact: false },
             { id: 'story-backlog',   title: 'Story Backlog',   path: `${base}/story-backlog`,   icon: BookOpen,   exact: false },
-            { id: 'hierarchy',       title: 'Hierarchy',       path: `${base}/hierarchy`,       icon: GitBranch,  exact: false },
+            { id: 'hierarchy',       title: 'All Work Items', path: `${base}/hierarchy`,       icon: GitBranch,  exact: false },
           ],
         },
       ],
