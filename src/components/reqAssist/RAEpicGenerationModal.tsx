@@ -34,78 +34,60 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
   const [epicCount, setEpicCount] = useState(0);
   const [resolvedBrdId, setResolvedBrdId] = useState<string | null>(null);
   const hasStarted = useRef(false);
+  const doneRef = useRef(false);
+  const failedRef = useRef(false);
 
-  // ── EFFECT 1: Visual ticker — runs independently, always
+  // Keep refs in sync
+  useEffect(() => { doneRef.current = done; }, [done]);
+  useEffect(() => { failedRef.current = hasFailed; }, [hasFailed]);
+
+  // ── EFFECT 1: Visual ticker — runs unconditionally on mount, NO dependencies
   useEffect(() => {
-    if (done || hasFailed) return;
     const id = setInterval(() => {
-      setStep(prev => {
-        if (prev >= 3) { clearInterval(id); return 3; }
-        return prev + 1;
-      });
-      setProgress(prev => Math.min(prev + 20, 80));
-    }, 1400);
+      if (doneRef.current || failedRef.current) { clearInterval(id); return; }
+      setStep(prev => Math.min(prev + 1, 4));
+      setProgress(prev => Math.min(prev + 18, 90));
+    }, 1500);
     return () => clearInterval(id);
-  }, [done, hasFailed]);
+  }, []);
 
-  const getDocBrdIdCandidate = (): string | null => {
-    const candidate = (doc as any).id
-      ?? (doc as any).brd_document_id
-      ?? (doc as any).brd_id
-      ?? (doc as any).brdDocumentId
-      ?? null;
-
-    if (typeof candidate !== 'string' || !isValidUUID(candidate)) return null;
-    return candidate;
-  };
-
-  // ── Resolve brd_documents.id from available document shape (or jira_key fallback) ──
+  // ── Resolve brd_documents.id: jira_key lookup FIRST, then seed ──
   const resolveBrdId = async (): Promise<string | null> => {
-    // PATH 1: direct id fields on doc object
-    const directId = getDocBrdIdCandidate();
-    if (directId) {
-      const { data: directCheck } = await (supabase as any)
-        .from('brd_documents')
-        .select('id')
-        .eq('id', directId)
-        .maybeSingle();
-      if (directCheck?.id) return directCheck.id;
-    }
+    // STEP 1: lookup via jira_key (most reliable path)
+    const jiraKey = (doc as any).jira_ticket_key
+      || (doc as any).jira_key
+      || (doc as any).jiraKey;
 
-    // PATH 2: resolve via jira_ticket_key → brd_documents.jira_key
-    const jiraKey = (doc as any).jira_ticket_key;
     if (jiraKey) {
-      const { data: existing } = await (supabase as any)
+      const { data } = await (supabase as any)
         .from('brd_documents')
         .select('id')
         .eq('jira_key', jiraKey)
         .maybeSingle();
-      if (existing?.id) return existing.id;
+      if (data?.id) return data.id;
     }
 
-    // PATH 3: no brd_documents entry exists — seed one from ra_documents data
-    console.log('[EpicModal] No brd_documents entry found — seeding from document payload:', doc);
-
-    const rawText = (doc as any).content_raw
+    // STEP 2: seed a new brd_documents row
+    const rawText = (doc as any).description
       || (doc as any).content_processed
-      || (doc as any).description
-      || doc.title;
+      || (doc as any).content_raw
+      || doc.title + ' — placeholder content for epic generation';
 
-    const { data: inserted, error: insertError } = await (supabase as any)
+    const { data: inserted, error } = await (supabase as any)
       .from('brd_documents')
       .insert({
+        jira_key: jiraKey || null,
         title: doc.title,
         raw_text: rawText,
-        jira_key: jiraKey || null,
         pipeline_stage: 'intake',
         source_type: 'jira_bulk',
-        language: (doc as any).language || 'en',
+        language: (doc as any).language || 'ar',
       })
       .select('id')
       .single();
 
-    if (insertError) {
-      console.error('[EpicModal] Failed to seed brd_documents:', insertError.message);
+    if (error || !inserted?.id) {
+      console.error('[EpicModal] Failed to seed brd_documents:', error?.message);
       return null;
     }
 
@@ -149,36 +131,23 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     setTimeout(() => toast.success(`Epics generated for ${doc.title}`), 600);
   };
 
-  // ── EFFECT 2: Edge Function call — runs once only
+  // ── EFFECT 2: Edge Function call — runs once only (ref guard)
   useEffect(() => {
     if (hasStarted.current) return;
     hasStarted.current = true;
 
-    let cancelled = false;
-
-    (async () => {
-      try {
-        const brdId = await resolveBrdId();
-
-        if (cancelled) return;
-
-        if (!brdId || !isValidUUID(brdId)) {
-          throw new Error('No brd_id');
-        }
-
-        setResolvedBrdId(brdId);
-        await invokeGeneration(brdId);
-      } catch (err) {
-        if (cancelled) return;
-        console.error('[RA] Resolution failed');
+    resolveBrdId().then(brdId => {
+      if (!brdId) {
         setHasFailed(true);
-        setErrorMsg(sanitiseError(err));
+        setErrorMsg('Could not find or create BRD document entry.');
+        return;
       }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
+      setResolvedBrdId(brdId);
+      return invokeGeneration(brdId);
+    }).catch(err => {
+      setHasFailed(true);
+      setErrorMsg(sanitiseError(err) || 'Generation failed. Please retry.');
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
