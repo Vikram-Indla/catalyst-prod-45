@@ -253,12 +253,12 @@ export async function syncSingleBrdToKb(brdDocumentId: string): Promise<void> {
 
 export async function fetchDocumentEpicCounts(
   jiraKeys: string[]
-): Promise<Record<string, { epicCount: number; published: number; reviewed: number; draft: number; pipelineStage: string | null }>> {
+): Promise<Record<string, { epicCount: number; published: number; reviewed: number; draft: number; pipelineStage: string | null; parentJiraKey: string | null; ticketType: string | null; rawTextSource: string | null }>> {
   if (!jiraKeys.length) return {};
 
   const { data: brdDocs } = await (supabase as any)
     .from('brd_documents')
-    .select('id, jira_key, pipeline_stage')
+    .select('id, jira_key, pipeline_stage, parent_jira_key, ticket_type, raw_text_source')
     .in('jira_key', jiraKeys);
 
   if (!brdDocs?.length) return {};
@@ -266,9 +266,15 @@ export async function fetchDocumentEpicCounts(
   const brdIds = brdDocs.map((d: any) => d.id);
   const keyById: Record<string, string> = {};
   const stageByKey: Record<string, string | null> = {};
+  const parentByKey: Record<string, string | null> = {};
+  const typeByKey: Record<string, string | null> = {};
+  const sourceByKey: Record<string, string | null> = {};
   brdDocs.forEach((d: any) => {
     keyById[d.id] = d.jira_key;
     stageByKey[d.jira_key] = d.pipeline_stage;
+    parentByKey[d.jira_key] = d.parent_jira_key;
+    typeByKey[d.jira_key] = d.ticket_type;
+    sourceByKey[d.jira_key] = d.raw_text_source;
   });
 
   const { data: epics } = await (supabase as any)
@@ -277,15 +283,15 @@ export async function fetchDocumentEpicCounts(
     .in('brd_id', brdIds);
 
   // Initialize result with pipeline_stage for ALL resolved docs (even those with 0 epics)
-  const result: Record<string, { epicCount: number; published: number; reviewed: number; draft: number; pipelineStage: string | null }> = {};
+  const result: Record<string, { epicCount: number; published: number; reviewed: number; draft: number; pipelineStage: string | null; parentJiraKey: string | null; ticketType: string | null; rawTextSource: string | null }> = {};
   for (const key of Object.keys(stageByKey)) {
-    result[key] = { epicCount: 0, published: 0, reviewed: 0, draft: 0, pipelineStage: stageByKey[key] };
+    result[key] = { epicCount: 0, published: 0, reviewed: 0, draft: 0, pipelineStage: stageByKey[key], parentJiraKey: parentByKey[key] ?? null, ticketType: typeByKey[key] ?? null, rawTextSource: sourceByKey[key] ?? null };
   }
 
   (epics || []).forEach((e: any) => {
     const key = keyById[e.brd_id];
     if (!key) return;
-    if (!result[key]) result[key] = { epicCount: 0, published: 0, reviewed: 0, draft: 0, pipelineStage: stageByKey[key] ?? null };
+    if (!result[key]) result[key] = { epicCount: 0, published: 0, reviewed: 0, draft: 0, pipelineStage: stageByKey[key] ?? null, parentJiraKey: parentByKey[key] ?? null, ticketType: typeByKey[key] ?? null, rawTextSource: sourceByKey[key] ?? null };
     result[key].epicCount++;
     if (e.publish_status === 'published') result[key].published++;
     else if (e.publish_status === 'reviewed') result[key].reviewed++;
