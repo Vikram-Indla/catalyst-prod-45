@@ -14,13 +14,18 @@ export default function ProjectBoardCanvasPage() {
     queryKey: ['ph-project-for-boards', key],
     queryFn: async () => {
       if (!key) return null;
-      const { data, error } = await supabase
+      const { data: phProject, error: phErr } = await supabase
         .from('ph_projects')
         .select('id, key, name')
         .eq('key', key.toUpperCase())
         .maybeSingle();
-      if (error) { console.warn(error.message); return null; }
-      return data;
+      if (phErr || !phProject) { console.warn(phErr?.message ?? 'ph_project not found'); return null; }
+      const { data: project } = await (supabase as any)
+        .from('projects')
+        .select('id, name')
+        .ilike('name', phProject.name)
+        .maybeSingle();
+      return project ? { id: project.id, key: phProject.key, name: phProject.name } : { id: phProject.id, key: phProject.key, name: phProject.name };
     },
     enabled: !!key,
   });

@@ -66865,6 +66865,7 @@ export type Database = {
             Args: { p_item_id: string; p_new_rank: number; p_week_id: string }
             Returns: undefined
           }
+      board_not_deleted: { Args: { _board_id: string }; Returns: boolean }
       bulk_assign_roles: {
         Args: {
           _notes?: string
@@ -66925,6 +66926,10 @@ export type Database = {
           total_count: number
           veto_approved: boolean
         }[]
+      }
+      can_view_board: {
+        Args: { _board_id: string; _user_id: string }
+        Returns: boolean
       }
       check_circular_dependency: {
         Args: {
