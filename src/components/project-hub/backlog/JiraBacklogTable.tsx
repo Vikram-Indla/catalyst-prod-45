@@ -104,7 +104,6 @@ export function JiraBacklogTable({ issues, title, showParent = false }: Props) {
               <th className={`${thClass} w-[150px]`} onClick={() => toggleSort('assignee_display_name')}>
                 <span className="flex items-center gap-1">Assignee <SortIcon col="assignee_display_name" /></span>
               </th>
-              <th className={`${thClass} w-[50px]`}>SP</th>
               <th className={`${thClass} w-[100px]`}>Type</th>
               <th className={`${thClass} w-[110px]`} onClick={() => toggleSort('jira_updated_at')}>
                 <span className="flex items-center gap-1">Updated <SortIcon col="jira_updated_at" /></span>
@@ -114,7 +113,7 @@ export function JiraBacklogTable({ issues, title, showParent = false }: Props) {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={showParent ? 9 : 8} className="text-center py-12 text-muted-foreground text-sm">
+                <td colSpan={showParent ? 8 : 7} className="text-center py-12 text-muted-foreground text-sm">
                   No issues found
                 </td>
               </tr>
@@ -152,9 +151,6 @@ export function JiraBacklogTable({ issues, title, showParent = false }: Props) {
                     <span className="text-xs text-foreground/80 truncate block max-w-[140px]">
                       {issue.assignee_display_name || <span className="text-muted-foreground/50">Unassigned</span>}
                     </span>
-                  </td>
-                  <td className="px-3 py-1.5 text-center">
-                    <span className="text-xs text-muted-foreground">{issue.story_points ?? '—'}</span>
                   </td>
                   <td className="px-3 py-1.5">
                     <span className="text-xs text-muted-foreground">{issue.issue_type}</span>
