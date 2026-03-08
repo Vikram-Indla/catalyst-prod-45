@@ -100,13 +100,16 @@ export default function ReqAssistLibrary() {
     if (!jiraKeys.length) return;
     fetchDocumentEpicCounts(jiraKeys).then(countsMap => {
       const counts: Record<string, number> = {};
+      const stages: Record<string, string | null> = {};
       for (const doc of documents) {
         const jk = (doc as any).jira_ticket_key;
-        if (jk && countsMap[jk]?.epicCount > 0) {
+        if (jk && countsMap[jk]) {
           counts[doc.id] = countsMap[jk].epicCount;
+          stages[doc.id] = countsMap[jk].pipelineStage;
         }
       }
       setEpicCounts(counts);
+      setPipelineStages(stages);
     });
   }, [documents]);
 
