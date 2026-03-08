@@ -22640,6 +22640,7 @@ export type Database = {
           initiative_type_id: string | null
           is_archived: boolean | null
           is_deleted: boolean | null
+          jira_issue_key: string | null
           kickoff_date: string | null
           on_roadmap: boolean
           priority: string | null
@@ -22653,6 +22654,7 @@ export type Database = {
           roadmap_sort_order: number | null
           roadmap_start_date: string | null
           sort_order: number | null
+          source: string
           status: Database["public"]["Enums"]["initiative_status"]
           tags: string[] | null
           target_complete: string | null
@@ -22677,6 +22679,7 @@ export type Database = {
           initiative_type_id?: string | null
           is_archived?: boolean | null
           is_deleted?: boolean | null
+          jira_issue_key?: string | null
           kickoff_date?: string | null
           on_roadmap?: boolean
           priority?: string | null
@@ -22690,6 +22693,7 @@ export type Database = {
           roadmap_sort_order?: number | null
           roadmap_start_date?: string | null
           sort_order?: number | null
+          source?: string
           status?: Database["public"]["Enums"]["initiative_status"]
           tags?: string[] | null
           target_complete?: string | null
@@ -22714,6 +22718,7 @@ export type Database = {
           initiative_type_id?: string | null
           is_archived?: boolean | null
           is_deleted?: boolean | null
+          jira_issue_key?: string | null
           kickoff_date?: string | null
           on_roadmap?: boolean
           priority?: string | null
@@ -22727,6 +22732,7 @@ export type Database = {
           roadmap_sort_order?: number | null
           roadmap_start_date?: string | null
           sort_order?: number | null
+          source?: string
           status?: Database["public"]["Enums"]["initiative_status"]
           tags?: string[] | null
           target_complete?: string | null
@@ -61622,6 +61628,7 @@ export type Database = {
           initiative_type_label: string | null
           is_archived: boolean | null
           is_deleted: boolean | null
+          jira_issue_key: string | null
           kickoff_date: string | null
           on_roadmap: boolean | null
           priority: string | null
@@ -61632,6 +61639,7 @@ export type Database = {
           roadmap_added_by: string | null
           roadmap_priority: number | null
           sort_order: number | null
+          source: string | null
           status: Database["public"]["Enums"]["initiative_status"] | null
           tags: string[] | null
           target_complete: string | null

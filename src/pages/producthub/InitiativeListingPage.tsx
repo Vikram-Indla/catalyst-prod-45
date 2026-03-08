@@ -6,6 +6,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import type { BRDTask } from '@/hooks/useMDTBacklog';
+import { useSyncMDTToInitiatives } from '@/hooks/useSyncMDTToInitiatives';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -43,6 +44,7 @@ function toTimelineInitiative(i: Initiative): TimelineInitiative {
     initiative_type_color_hex: i.initiative_type_color_hex ?? null, health_status: i.health_status ?? null,
     business_value: i.business_value ?? null, ea_review: (i as any).ea_review ?? null,
     priority: (i as any).priority ?? null, on_roadmap: i.on_roadmap ?? false,
+    source: (i as any).source ?? 'catalyst', jira_issue_key: (i as any).jira_issue_key ?? null,
   };
 }
 
@@ -137,6 +139,7 @@ function getGroupSortKey(item: Initiative, groupBy: GroupByField): string {
 }
 
 export default function InitiativeListingPage() {
+  useSyncMDTToInitiatives();
   const { data: mdtData, isLoading } = useMDTBacklog();
   const { data: profiles } = useProfileOptions();
   const { data: departments } = useDepartmentOptions();

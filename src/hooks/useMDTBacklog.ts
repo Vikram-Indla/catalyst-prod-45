@@ -134,6 +134,8 @@ export function useMDTBacklog() {
           business_value: row.business_value ?? null,
           ea_review: row.ea_review ?? null,
           priority: row.priority ?? null,
+          source: row.source ?? 'catalyst',
+          jira_issue_key: row.jira_issue_key ?? null,
           created_at: row.created_at,
           updated_at: row.updated_at,
           brd_tasks: [],

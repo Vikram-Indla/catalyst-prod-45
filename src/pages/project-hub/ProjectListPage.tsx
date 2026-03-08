@@ -58,6 +58,7 @@ export default function ProjectListPage() {
         .from('ph_projects')
         .select('id, key, name, description, department, status, health, color, icon, updated_at, is_archived')
         .eq('is_archived', false)
+        .neq('key', 'MDT')
         .order('updated_at', { ascending: false });
       if (error) {
         console.warn('ph_projects query error:', error.message);

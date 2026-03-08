@@ -307,6 +307,25 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
               ))}
               <span className="idp-priority-label" style={{ textTransform: 'capitalize' }}>{priority}</span>
             </div>
+            {/* Subtle origin tag */}
+            {(initiative as any).source === 'catalyst' && (
+              <span style={{
+                fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
+                color: '#64748B', background: '#F1F5F9', border: '1px solid #E2E8F0',
+                borderRadius: 4, padding: '2px 6px', marginLeft: 8, userSelect: 'none',
+              }}>
+                ✦ Catalyst
+              </span>
+            )}
+            {(initiative as any).source === 'jira' && (
+              <span style={{
+                fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
+                color: '#2563EB', background: '#EFF6FF', border: '1px solid #DBEAFE',
+                borderRadius: 4, padding: '2px 6px', marginLeft: 8, userSelect: 'none',
+              }}>
+                ⚡ Jira
+              </span>
+            )}
           </div>
         </div>
 

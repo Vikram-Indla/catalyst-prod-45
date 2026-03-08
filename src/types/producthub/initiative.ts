@@ -52,6 +52,8 @@ export interface TimelineInitiative {
   ea_review?: string | null;
   priority?: string | null;
   on_roadmap?: boolean;
+  source?: string | null;
+  jira_issue_key?: string | null;
 }
 
 export interface TimelineState {
