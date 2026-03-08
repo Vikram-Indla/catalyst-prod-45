@@ -14921,6 +14921,62 @@ export type Database = {
         }
         Relationships: []
       }
+      jira_sync_conflicts: {
+        Row: {
+          catalyst_value: string | null
+          created_at: string
+          created_by: string | null
+          detected_at: string
+          field_name: string
+          id: string
+          jira_value: string | null
+          ph_issue_id: string
+          resolution: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          catalyst_value?: string | null
+          created_at?: string
+          created_by?: string | null
+          detected_at?: string
+          field_name: string
+          id?: string
+          jira_value?: string | null
+          ph_issue_id: string
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          catalyst_value?: string | null
+          created_at?: string
+          created_by?: string | null
+          detected_at?: string
+          field_name?: string
+          id?: string
+          jira_value?: string | null
+          ph_issue_id?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_sync_conflicts_ph_issue_id_fkey"
+            columns: ["ph_issue_id"]
+            isOneToOne: false
+            referencedRelation: "ph_issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jira_sync_history: {
         Row: {
           completed_at: string | null
@@ -15099,48 +15155,72 @@ export type Database = {
       jira_sync_logs: {
         Row: {
           completed_at: string | null
+          conflicts_found: number
           connection_id: string
           created_at: string | null
+          created_by: string | null
           entity_type: string | null
           error_details: Json | null
+          error_message: string | null
           id: string
           items_created: number | null
           items_failed: number | null
           items_processed: number | null
+          items_synced: number
           items_updated: number | null
+          project_id: string | null
           started_at: string | null
           status: string
           sync_type: string
+          triggered_by: string | null
+          updated_at: string
+          updated_by: string | null
         }
         Insert: {
           completed_at?: string | null
+          conflicts_found?: number
           connection_id: string
           created_at?: string | null
+          created_by?: string | null
           entity_type?: string | null
           error_details?: Json | null
+          error_message?: string | null
           id?: string
           items_created?: number | null
           items_failed?: number | null
           items_processed?: number | null
+          items_synced?: number
           items_updated?: number | null
+          project_id?: string | null
           started_at?: string | null
           status: string
           sync_type: string
+          triggered_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           completed_at?: string | null
+          conflicts_found?: number
           connection_id?: string
           created_at?: string | null
+          created_by?: string | null
           entity_type?: string | null
           error_details?: Json | null
+          error_message?: string | null
           id?: string
           items_created?: number | null
           items_failed?: number | null
           items_processed?: number | null
+          items_synced?: number
           items_updated?: number | null
+          project_id?: string | null
           started_at?: string | null
           status?: string
           sync_type?: string
+          triggered_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -15149,6 +15229,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "jira_connections"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_sync_logs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_sync_logs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -15322,6 +15416,62 @@ export type Database = {
             columns: ["connection_id"]
             isOneToOne: false
             referencedRelation: "jira_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jira_write_back_queue: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          created_by: string | null
+          field_name: string
+          id: string
+          new_value: string
+          ph_issue_id: string
+          push_status: string | null
+          pushed_at: string | null
+          queued_at: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          field_name: string
+          id?: string
+          new_value: string
+          ph_issue_id: string
+          push_status?: string | null
+          pushed_at?: string | null
+          queued_at?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          field_name?: string
+          id?: string
+          new_value?: string
+          ph_issue_id?: string
+          push_status?: string | null
+          pushed_at?: string | null
+          queued_at?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_write_back_queue_ph_issue_id_fkey"
+            columns: ["ph_issue_id"]
+            isOneToOne: false
+            referencedRelation: "ph_issues"
             referencedColumns: ["id"]
           },
         ]
@@ -19993,6 +20143,13 @@ export type Database = {
             referencedRelation: "ph_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ph_components_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       ph_config: {
@@ -23472,6 +23629,13 @@ export type Database = {
             referencedRelation: "ph_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ph_labels_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       ph_list_config: {
@@ -23655,6 +23819,13 @@ export type Database = {
             referencedRelation: "ph_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ph_list_view_configs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       ph_milestone_config: {
@@ -23781,6 +23952,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_project_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -23909,6 +24087,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_releases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -24763,6 +24948,13 @@ export type Database = {
             referencedRelation: "ph_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ph_user_preferences_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       ph_versions: {
@@ -25203,6 +25395,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ph_work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
             foreignKeyName: "ph_work_items_status_id_fkey"
             columns: ["status_id"]
             isOneToOne: false
@@ -25337,6 +25536,13 @@ export type Database = {
             referencedRelation: "ph_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ph_work_types_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       ph_workflow_statuses: {
@@ -25377,6 +25583,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_workflow_statuses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -62425,6 +62638,13 @@ export type Database = {
             referencedRelation: "ph_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ph_work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       ph_work_items_full_view: {
@@ -62478,6 +62698,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
           },
           {
             foreignKeyName: "wh_work_items_parent_id_fkey"
@@ -63900,6 +64127,18 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      project_sync_summary: {
+        Row: {
+          catalyst_count: number | null
+          conflict_count: number | null
+          jira_count: number | null
+          last_synced_at: string | null
+          project_id: string | null
+          project_key: string | null
+          stale_count: number | null
+        }
+        Relationships: []
       }
       r360_chronology_events_view: {
         Row: {
@@ -68098,6 +68337,10 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_ai_brief_admin: { Args: { _user_id: string }; Returns: boolean }
       is_ph_project_admin: {
+        Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_ph_project_editor: {
         Args: { _project_id: string; _user_id: string }
         Returns: boolean
       }
