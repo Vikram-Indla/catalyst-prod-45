@@ -81,13 +81,13 @@ export function useProjectWorkItems(projectId: string | undefined, sourceFilter?
       }
 
       // Batch-fetch assignee profiles
-      const assigneeIds = [...new Set((data || []).map((r: any) => r.assignee_id).filter(Boolean))];
+      const assigneeIds = [...new Set((data || []).map((r: any) => r.assignee_id).filter(Boolean))] as string[];
       let profileMap = new Map<string, { full_name: string; avatar_url: string | null }>();
       if (assigneeIds.length > 0) {
         const { data: profiles } = await supabase
           .from('profiles')
           .select('id, full_name, avatar_url')
-          .in('id', assigneeIds);
+          .in('id', assigneeIds as string[]);
         for (const p of profiles || []) {
           profileMap.set(p.id, { full_name: p.full_name || '', avatar_url: p.avatar_url });
         }
