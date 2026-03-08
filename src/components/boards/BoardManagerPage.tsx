@@ -153,7 +153,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
                 <BoardGrid>
                   {starred.map(b => (
                     <BoardCard key={b.id} board={b} projectId={projectId!}
-                      onOpen={() => navigate(`/projects/${projectId}/boards/${b.id}`)}
+                      onOpen={() => navigate(`${boardBasePath}/${b.id}`)}
                       onSettings={() => setSettingsBoard(b)} />
                   ))}
                 </BoardGrid>
