@@ -7,6 +7,7 @@ import { CheckCircle2, XCircle, Sparkles, Check, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { sanitiseError } from '@/lib/errorUtils';
+import { isValidUUID } from '@/lib/utils/assertUuid';
 
 interface Props {
   doc: RADocumentWithArtifacts;
@@ -47,15 +48,29 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     return () => clearInterval(id);
   }, [done, hasFailed]);
 
-  // ── Resolve brd_documents.id from ra_documents (linked via jira_key) ──
+  const getDocBrdIdCandidate = (): string | null => {
+    const candidate = (doc as any).id
+      ?? (doc as any).brd_document_id
+      ?? (doc as any).brd_id
+      ?? (doc as any).brdDocumentId
+      ?? null;
+
+    if (typeof candidate !== 'string' || !isValidUUID(candidate)) return null;
+    return candidate;
+  };
+
+  // ── Resolve brd_documents.id from available document shape (or jira_key fallback) ──
   const resolveBrdId = async (): Promise<string | null> => {
-    // PATH 1: doc.id already exists in brd_documents (Generate page flow)
-    const { data: directCheck } = await (supabase as any)
-      .from('brd_documents')
-      .select('id')
-      .eq('id', doc.id)
-      .maybeSingle();
-    if (directCheck?.id) return directCheck.id;
+    // PATH 1: direct id fields on doc object
+    const directId = getDocBrdIdCandidate();
+    if (directId) {
+      const { data: directCheck } = await (supabase as any)
+        .from('brd_documents')
+        .select('id')
+        .eq('id', directId)
+        .maybeSingle();
+      if (directCheck?.id) return directCheck.id;
+    }
 
     // PATH 2: resolve via jira_ticket_key → brd_documents.jira_key
     const jiraKey = (doc as any).jira_ticket_key;
@@ -69,7 +84,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     }
 
     // PATH 3: no brd_documents entry exists — seed one from ra_documents data
-    console.log('[EpicModal] No brd_documents entry found — seeding from ra_document:', doc.id);
+    console.log('[EpicModal] No brd_documents entry found — seeding from document payload:', doc);
 
     const rawText = (doc as any).content_raw
       || (doc as any).content_processed
@@ -99,14 +114,11 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
   };
 
   const invokeGeneration = async (brdId: string) => {
-    if (!brdId || brdId.trim() === '') {
-      console.error('[EpicModal] Empty brdId passed to invokeGeneration — aborting');
-      setHasFailed(true);
-      setErrorMsg('Could not resolve BRD document ID.');
-      return;
+    if (!brdId || !isValidUUID(brdId)) {
+      throw new Error('No brd_id');
     }
 
-    console.log('[EpicModal] Invoking generate_epics_for_brd with brd_id:', brdId);
+    console.log('generate_epics_for_brd invoke payload:', { brd_id: brdId, doc });
     const { data, error } = await supabase.functions.invoke('generate_epics_for_brd', { body: { brd_id: brdId } });
     if (error) {
       console.error('[RA] Generation failed');
@@ -139,27 +151,34 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
 
   // ── EFFECT 2: Edge Function call — runs once only
   useEffect(() => {
-    console.log('[EpicModal] brdId at mount:', doc.id);
-    console.log('[EpicModal] hasStarted:', hasStarted.current);
     if (hasStarted.current) return;
+    hasStarted.current = true;
 
-    resolveBrdId().then(brdId => {
-      if (!brdId || brdId.trim() === '') {
-        console.error('[EpicModal] Could not resolve brd_documents.id for doc.id:', doc.id);
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const brdId = await resolveBrdId();
+
+        if (cancelled) return;
+
+        if (!brdId || !isValidUUID(brdId)) {
+          throw new Error('No brd_id');
+        }
+
+        setResolvedBrdId(brdId);
+        await invokeGeneration(brdId);
+      } catch (err) {
+        if (cancelled) return;
+        console.error('[RA] Resolution failed');
         setHasFailed(true);
-        setErrorMsg('Could not resolve BRD document ID. Document may not have a BRD entry.');
-        return;
+        setErrorMsg(sanitiseError(err));
       }
+    })();
 
-      if (hasStarted.current) return;
-      hasStarted.current = true;
-      setResolvedBrdId(brdId);
-      invokeGeneration(brdId);
-    }).catch(err => {
-      console.error('[RA] Resolution failed');
-      setHasFailed(true);
-      setErrorMsg(sanitiseError(err));
-    });
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -169,16 +188,14 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
     setStep(0);
     setProgress(0);
     setDone(false);
-    hasStarted.current = false;
-    resolveBrdId().then(brdId => {
-      if (!brdId || brdId.trim() === '') {
-        console.error('[EpicModal] Retry failed — could not resolve brd_documents.id for doc.id:', doc.id);
-        setHasFailed(true);
-        setErrorMsg('Could not resolve BRD document ID.');
-        return;
+    hasStarted.current = true;
+
+    resolveBrdId().then(async (brdId) => {
+      if (!brdId || !isValidUUID(brdId)) {
+        throw new Error('No brd_id');
       }
-      hasStarted.current = true;
-      invokeGeneration(brdId);
+      setResolvedBrdId(brdId);
+      await invokeGeneration(brdId);
     }).catch(err => {
       console.error('[RA] Retry failed');
       setHasFailed(true);
