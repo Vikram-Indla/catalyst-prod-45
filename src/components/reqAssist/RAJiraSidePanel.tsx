@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, FileText, Zap, BookOpen, FlaskConical, Copy, Check, Paperclip, ArrowDownToLine, ExternalLink } from 'lucide-react';
+import { X, FileText, Zap, BookOpen, FlaskConical, Copy, Check, Paperclip, ArrowDownToLine, ExternalLink, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { formatTimestamp } from '@/lib/formatTimestamp';
+import toast from 'react-hot-toast';
 
 interface Props {
   doc: RADocumentWithArtifacts;
@@ -32,6 +33,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
   const [contentExpanded, setContentExpanded] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -87,7 +89,48 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
     }
   };
 
-  // ── FIX 2: Pipeline stepper logic ──
+  // ── FIX 2: Sync to KB handler with brd_id resolution ──
+  const handleSyncToKB = async () => {
+    if (syncing) return;
+    setSyncing(true);
+    try {
+      // Step 1: resolve brd_id from jira_ticket_key
+      const { data: brdRow, error: brdError } = await (supabase as any)
+        .from('brd_documents')
+        .select('id')
+        .eq('jira_key', doc.jira_ticket_key)
+        .maybeSingle();
+
+      if (brdError || !brdRow?.id) {
+        toast.error('Could not find BRD document to sync');
+        setSyncing(false);
+        return;
+      }
+
+      // Step 2: invoke kb-sync
+      const { error } = await supabase.functions.invoke('kb-sync', {
+        body: {
+          brd_id: brdRow.id,
+          source_type: 'jira_bulk',
+        },
+      });
+
+      if (error) {
+        toast.error('KB sync failed: ' + error.message);
+        setSyncing(false);
+        return;
+      }
+
+      toast.success('Sync started — KB will update shortly');
+    } catch (err) {
+      toast.error('Sync failed. Please try again.');
+      console.error('[SyncToKB]', err);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  // ── Pipeline stepper logic ──
   const stage = brdData.pipeline_stage;
   const { epicCount, wikiCount, publishedCount } = brdData;
 
@@ -96,7 +139,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
     {
       label: 'Processed',
       state: (stage && ['extract', 'process', 'validate', 'distribute', 'complete'].includes(stage))
-        ? 'complete' : 'active', // intake = active, no pending possible
+        ? 'complete' : 'active',
     },
     {
       label: 'Indexed',
@@ -113,17 +156,16 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
     },
   ];
 
-  // ── FIX 1: Status lozenge from pipeline_stage — V12 3-color guardrail ONLY ──
+  // ── Status lozenge — V12 3-color guardrail ──
   const getStageLozenge = () => {
     if (!stage) return { bg: '#DFE1E6', color: '#253858', label: 'PENDING' };
     if (stage === 'complete') return { bg: '#E3FCEF', color: '#006644', label: 'COMPLETE' };
     if (stage === 'failed') return { bg: '#DFE1E6', color: '#253858', label: 'FAILED' };
-    // intake, extract, process, validate, distribute → BLUE
     return { bg: '#DEEBFF', color: '#0747A6', label: stage.toUpperCase() };
   };
   const lozenge = getStageLozenge();
 
-  // ── FIX 3: Description fallback chain ──
+  // ── Description fallback chain ──
   const description =
     (doc as any).description
     || (doc as any).summary
@@ -143,7 +185,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         boxShadow: '-4px 0 24px rgba(15,23,42,0.08)',
         animation: 'ra-slide-left 200ms ease-out',
       }}>
-        {/* ── FIX 6: HEADER ── */}
+        {/* ── HEADER ── */}
         <div style={{ padding: '16px 20px 14px', borderBottom: '0.75px solid rgba(15,23,42,0.10)', flexShrink: 0 }}>
           {/* Row 1: Jira chip + close */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -193,7 +235,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         {/* ── BODY (scrollable) ── */}
         <div style={{ flex: 1, overflowY: 'auto' }}>
 
-          {/* ── FIX 2: PIPELINE STEPPER ── */}
+          {/* ── PIPELINE STEPPER ── */}
           <div style={{ padding: '16px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
             <div style={{
               background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.08)', borderRadius: 8,
@@ -261,7 +303,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               <MetaRow label="Title">
                 <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>{doc.title}</span>
               </MetaRow>
-              {/* FIX 3: Description with fallback chain */}
+              {/* Description with fallback chain */}
               <MetaRow label="Description">
                 {description ? (
                   <div style={{ flex: 1 }}>
@@ -389,22 +431,22 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
             </div>
           </div>
 
-          {/* ── FIX 4 & 5: GENERATED ARTIFACTS ── */}
+          {/* ── GENERATED ARTIFACTS ── */}
           <div style={{ padding: '16px 20px' }}>
             <SectionHeader>Generated Artifacts</SectionHeader>
             <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column' }}>
 
-              {/* Epics Row */}
+              {/* Epics Row — ALL BLUE, zero purple */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
-                <div style={{ width: 28, height: 28, borderRadius: 6, background: '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Zap size={16} color="#7C3AED" />
+                <div style={{ width: 28, height: 28, borderRadius: 6, background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Zap size={15} color="#2563EB" />
                 </div>
                 <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif", flexShrink: 0, minWidth: 40 }}>Epics</span>
                 {epicCount > 0 ? (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 10,
-                    background: '#F5F3FF', border: '0.75px solid #DDD6FE',
-                    fontSize: 11, fontWeight: 700, color: '#6D28D9',
+                    background: '#EFF6FF', border: '0.75px solid #BFDBFE',
+                    fontSize: 11, fontWeight: 700, color: '#1D4ED8',
                     fontFamily: "'Inter', sans-serif",
                   }}>{epicCount} generated</span>
                 ) : (
@@ -426,7 +468,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   style={{
                     marginLeft: 'auto', border: 'none', background: 'transparent', cursor: 'pointer', padding: 0,
                     fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
-                    color: epicCount > 0 ? '#7C3AED' : '#2563EB', whiteSpace: 'nowrap',
+                    color: '#2563EB', whiteSpace: 'nowrap',
                   }}
                 >
                   {epicCount > 0 ? 'View Drafts →' : 'Generate Epics →'}
@@ -454,24 +496,34 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   }}>Not indexed</span>
                 )}
                 <button
+                  disabled={syncing}
                   onClick={() => {
                     if (wikiCount > 0) {
                       navigate(`/wiki?source=${doc.jira_ticket_key}`);
-                    } else if (onSyncKb) {
-                      onSyncKb(doc.id);
+                    } else {
+                      handleSyncToKB();
                     }
                   }}
                   style={{
-                    marginLeft: 'auto', border: 'none', background: 'transparent', cursor: 'pointer', padding: 0,
+                    marginLeft: 'auto', border: 'none', background: 'transparent', cursor: syncing ? 'default' : 'pointer', padding: 0,
                     fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
-                    color: wikiCount > 0 ? '#0D9488' : '#2563EB', whiteSpace: 'nowrap',
+                    color: '#2563EB', whiteSpace: 'nowrap',
+                    opacity: syncing ? 0.6 : 1,
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
                   }}
                 >
-                  {wikiCount > 0 ? 'View in WikiHub →' : 'Sync to KB →'}
+                  {syncing ? (
+                    <>
+                      <Loader2 size={12} color="#2563EB" style={{ animation: 'spin 1s linear infinite' }} />
+                      Syncing...
+                    </>
+                  ) : (
+                    wikiCount > 0 ? 'View in WikiHub →' : 'Sync to KB →'
+                  )}
                 </button>
               </div>
 
-              {/* FIX 5: UAT Cases Row — single line, no wrap */}
+              {/* UAT Cases Row — single line, no wrap */}
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0',
                 minHeight: 40, flexWrap: 'nowrap',
@@ -520,12 +572,11 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
       </div>
       <style>{`
         @keyframes ra-slide-left { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </>
   );
 }
-
-/* ── FIX 7: Section header — lighter color #94A3B8 ── */
 
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
