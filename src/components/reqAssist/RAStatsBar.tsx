@@ -74,7 +74,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
         runningRes,
         qRowsRes,
       ] = await Promise.all([
-        (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }).eq('pipeline_stage', 'ready'),
+        (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }).eq('pipeline_stage', 'complete'),
         (supabase as any).from('brd_epics').select('publish_status').limit(1000),
         (supabase as any).from('brd_processing_queue').select('id', { count: 'exact', head: true }).eq('status', 'processing'),
         (supabase as any).from('brd_processing_queue').select('id, brd_id, status, updated_at, started_at, completed_at, created_at').order('created_at', { ascending: false }).limit(10),
@@ -143,7 +143,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
           icon={<FileCheck size={16} />}
           label="BRDs Processed"
           value={`${brdStats.ready} / ${brdStats.total}`}
-          subLabel="Pipeline stage: Ready"
+          subLabel="Pipeline stage: Complete"
           extra={
             <div style={{ width: '100%', height: 4, background: '#E2E8F0', borderRadius: 2, marginTop: 4 }}>
               <div style={{ width: `${brdPct}%`, height: 4, background: '#16A34A', borderRadius: 2, transition: 'width 400ms ease-in-out' }} />
