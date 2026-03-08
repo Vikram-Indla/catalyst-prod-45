@@ -24,6 +24,7 @@ interface WorkItemsTableProps {
   profiles: { id: string; name: string }[];
   hasSearchOrFilter: boolean;
   onClearFilters: () => void;
+  sourceFilter?: 'all' | 'catalyst' | 'jira';
 }
 
 function buildTree(items: WorkItemRow[]) {
