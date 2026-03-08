@@ -133,14 +133,18 @@ export function QuarterCell({ value }: { value: string | null }) {
   return <span className="pb-quarter">{value}</span>;
 }
 
-/* ── ID Cell with type icon ── */
-export function IDCell({ value, typeKey }: { value: string; typeKey?: string | null }) {
+/* ── ID Cell ── */
+export function IDCell({ value }: { value: string }) {
+  return <span className="pb-id">{value}</span>;
+}
+
+/* ── Type Icon Cell — icon only, no text, transparent bg ── */
+export function TypeIconCell({ typeKey }: { typeKey?: string | null }) {
   const iconConfig = TYPE_ICON_MAP[typeKey || ''] || { Icon: CircleDashed, color: '#94A3B8' };
   const { Icon, color } = iconConfig;
   return (
-    <span className="pb-id" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-      <Icon size={16} style={{ color, flexShrink: 0 }} />
-      {value}
+    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title={typeKey?.replace(/_/g, ' ') || 'Unknown'}>
+      <Icon size={16} style={{ color }} />
     </span>
   );
 }
