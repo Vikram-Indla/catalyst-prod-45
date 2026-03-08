@@ -638,31 +638,33 @@ function formatImported(iso: string): string {
   return format(d, 'd MMM');
 }
 
-/* V12 StatusLozenge — IMMUTABLE GUARDRAIL */
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { bg: string; color: string; label: string }> = {
-    ready:      { bg: '#E3FCEF', color: '#006644', label: 'READY' },
-    complete:   { bg: '#E3FCEF', color: '#006644', label: 'READY' },
-    processing: { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
-    pending:    { bg: '#DEEBFF', color: '#0747A6', label: 'PENDING' },
-    failed:     { bg: '#DFE1E6', color: '#253858', label: 'FAILED' },
-    intake:     { bg: '#DEEBFF', color: '#0747A6', label: 'INTAKE' },
-    extract:    { bg: '#DEEBFF', color: '#0747A6', label: 'EXTRACTING' },
-    process:    { bg: '#DEEBFF', color: '#0747A6', label: 'PROCESSING' },
-    validate:   { bg: '#DEEBFF', color: '#0747A6', label: 'VALIDATING' },
-    distribute: { bg: '#DEEBFF', color: '#0747A6', label: 'DISTRIBUTING' },
-  };
-  const s = map[status] ?? map.pending;
+/* V12 StatusLozenge — IMMUTABLE GUARDRAIL — computed from epicCount + pipeline_stage */
+function StatusBadge({ status, epicCount, pipelineStage }: { status: string; epicCount: number; pipelineStage: string | null }) {
+  let bg: string, color: string, label: string;
+
+  const ps = pipelineStage ?? status;
+
+  if (ps === 'failed') {
+    bg = '#DFE1E6'; color = '#253858'; label = 'FAILED';
+  } else if (epicCount > 0) {
+    bg = '#E3FCEF'; color = '#006644'; label = 'READY';
+  } else if (['extract', 'process', 'validate', 'distribute', 'complete', 'processing'].includes(ps)) {
+    bg = '#DEEBFF'; color = '#0747A6'; label = 'PROCESSING';
+  } else {
+    // intake, pending, or unknown
+    bg = '#DFE1E6'; color = '#253858'; label = 'PENDING';
+  }
+
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center',
       padding: '0 6px', height: 20, borderRadius: 3,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
-      background: s.bg, color: s.color,
+      background: bg, color: color,
       fontFamily: "'Inter', sans-serif",
     }}>
-      {s.label}
+      {label}
     </span>
   );
 }
