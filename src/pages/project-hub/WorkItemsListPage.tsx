@@ -354,6 +354,7 @@ export default function WorkItemsListPage() {
             profiles={profiles}
             hasSearchOrFilter={listState.hasActiveFilters || !!listState.search}
             onClearFilters={() => { listState.clearAllFilters(); listState.setSearch(''); }}
+            sourceFilter={sourceFilter}
           />
         )}
       </div>
