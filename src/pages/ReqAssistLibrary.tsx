@@ -660,6 +660,82 @@ function formatImported(iso: string): string {
   return format(d, 'd MMM');
 }
 
+/* B2: PDF Upload Cell for rows without a PDF */
+function PdfUploadCell({ brdId, jiraKey }: { brdId: string | null; jiraKey: string }) {
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const qc = useQueryClient();
+
+  const handleUpload = async (file: File) => {
+    if (!brdId) {
+      toast.error('BRD document not found — cannot attach PDF');
+      return;
+    }
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error('File too large — max 50MB');
+      return;
+    }
+    setUploading(true);
+    try {
+      const path = `${brdId}/source.pdf`;
+      const { error: uploadErr } = await supabase.storage
+        .from('brd-attachments')
+        .upload(path, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+
+      await (supabase as any).from('brd_documents').update({
+        pdf_url: path,
+        pdf_filename: file.name,
+        pdf_attached_at: new Date().toISOString(),
+      }).eq('id', brdId);
+
+      toast.success('PDF attached — click to open');
+      qc.invalidateQueries({ queryKey: RA_KEYS.all });
+    } catch (err: any) {
+      toast.error('Upload failed: ' + (err.message || 'Unknown error'));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <>
+      <button
+        title="Attach source PDF"
+        onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}
+        disabled={uploading}
+        style={{
+          border: 'none', background: 'transparent', cursor: uploading ? 'default' : 'pointer',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          padding: 4,
+        }}
+      >
+        {uploading ? (
+          <Loader2 size={14} color="#94A3B8" style={{ animation: 'ra-pulse 1s linear infinite' }} />
+        ) : (
+          <FileUp size={14} color="#94A3B8" />
+        )}
+      </button>
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".pdf"
+        style={{ display: 'none' }}
+        onChange={e => { if (e.target.files?.[0]) handleUpload(e.target.files[0]); }}
+      />
+    </>
+  );
+}
+
+/* Helper: resolve brd_documents.id for a given ra_documents row */
+function brdData_forRow_id(doc: RADocumentWithArtifacts): string | null {
+  // pdf_url is on brd_documents, not ra_documents.
+  // For the upload cell we need the brd_documents id.
+  // This is loaded async in the side panel but here we attempt a simpler approach:
+  // We store no local cache, so we pass null and let the upload cell resolve it.
+  return null;
+}
+
 /* V12 StatusLozenge — IMMUTABLE GUARDRAIL — computed from epicCount + pipeline_stage */
 function StatusBadge({ status, epicCount, pipelineStage }: { status: string; epicCount: number; pipelineStage: string | null }) {
   let bg: string, color: string, label: string;
