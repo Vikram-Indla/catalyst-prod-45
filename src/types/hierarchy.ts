@@ -58,6 +58,12 @@ export interface WorkItem {
   updatedAt: string;
   /** Raw Jira issue_type for icon resolution */
   issueType?: string;
+  /** Data source: 'jira' | 'catalyst' */
+  source?: 'jira' | 'catalyst';
+  /** Story points / estimate */
+  storyPoints?: number;
+  /** Reporter name */
+  reporter?: string;
 }
 
 // Hierarchy Configuration (single source of truth)
