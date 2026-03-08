@@ -168,9 +168,9 @@ export default function ReqAssistLibrary() {
     }
     toast.dismiss('sync-all-progress');
     if (failed > 0) {
-      toast.warning(`Synced ${success} of ${unsyncedReady.length}. ${failed} failed.`);
+      toast.warning(`Indexed ${success} of ${unsyncedReady.length}. ${failed} failed.`);
     } else {
-      toast.success(`Synced ${success} documents for AI search`);
+      toast.success(`Indexed ${success} documents for Knowledge Assistant`);
     }
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
     qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
