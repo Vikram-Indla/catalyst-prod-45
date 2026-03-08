@@ -133,6 +133,8 @@ const FeatureBacklogPage = lazy(() => import("./modules/feature-backlog/pages/Fe
 const ProjectWorkspace = lazy(() => import("./pages/project/ProjectWorkspace"));
 const BoardView = lazy(() => import("./pages/project/BoardView"));
 const TimelineView = lazy(() => import("./pages/project/TimelineView"));
+const BoardManagerPage = lazy(() => import("./components/boards/BoardManagerPage"));
+const BoardCanvasPage = lazy(() => import("./components/boards/BoardCanvasPage"));
 
 import { EpicBalancingPage } from "./modules/epic-balancing";
 const UserNotificationSettingsPage = lazy(() => import("./pages/UserNotificationSettingsPage"));
