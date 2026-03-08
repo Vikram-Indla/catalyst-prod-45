@@ -3,7 +3,15 @@
  * Stage B: Full implementation with callback filter
  */
 import { useState, useCallback } from 'react';
-import type { WorkItemSource, SyncStatus, JiraSyncFilter } from '@/types/jira-sync';
+
+type WorkItemSource = 'catalyst' | 'jira';
+type SyncStatus = 'synced' | 'stale' | 'conflict' | 'syncing' | 'pending';
+
+interface JiraSyncFilter {
+  source?: WorkItemSource | 'all';
+  syncStatus?: SyncStatus[];
+  releaseId?: string;
+}
 
 type SourceFilterValue = WorkItemSource | 'all';
 
