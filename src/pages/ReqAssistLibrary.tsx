@@ -804,9 +804,9 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         transition: 'all 80ms ease',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.background = 'rgba(124,58,237,0.04)';
-        e.currentTarget.style.borderColor = '#DDD6FE';
-        e.currentTarget.style.color = '#6D28D9';
+        e.currentTarget.style.background = 'rgba(37,99,235,0.04)';
+        e.currentTarget.style.borderColor = '#BFDBFE';
+        e.currentTarget.style.color = '#1D4ED8';
       }}
       onMouseLeave={e => {
         e.currentTarget.style.background = '#FFFFFF';
