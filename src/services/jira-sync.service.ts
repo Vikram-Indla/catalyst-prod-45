@@ -1,90 +1,72 @@
 /**
- * jira-sync.service — API calls to Supabase for Jira sync operations
- * Stage B: Supabase client queries, no Edge Functions yet
+ * jira-sync.service — All Supabase calls for Jira sync operations
+ * Stage D: Real database wiring, zero mocks
  */
 import { supabase } from '@/integrations/supabase/client';
 
-// Types inlined to avoid module resolution issues before types regenerate
-type SyncStatus = 'synced' | 'stale' | 'conflict' | 'syncing' | 'pending';
-
-interface SyncConflict {
-  field: string;
-  catalystValue: string;
-  jiraValue: string;
-  detectedAt: string;
-  resolvedAt?: string;
-  resolvedBy?: string;
+export interface SyncConflictRow {
+  id: string;
+  ph_issue_id: string;
+  field_name: string;
+  catalyst_value: string | null;
+  jira_value: string | null;
+  detected_at: string;
+  resolved_at: string | null;
+  resolved_by: string | null;
+  resolution: string | null;
 }
 
-interface JiraSyncLog {
+export interface SyncLogRow {
   id: string;
-  projectId: string;
-  triggeredBy: string;
-  startedAt: string;
-  completedAt?: string;
+  project_id: string;
+  triggered_by: string | null;
+  started_at: string;
+  completed_at: string | null;
   status: 'running' | 'completed' | 'failed';
-  itemsSynced: number;
-  conflictsFound: number;
-  errorMessage?: string;
+  items_synced: number;
+  conflicts_found: number;
+  error_message: string | null;
+}
+
+export interface WriteBackRow {
+  id: string;
+  ph_issue_id: string;
+  field_name: string;
+  new_value: string;
+  queued_at: string;
+  push_status: string | null;
+}
+
+export interface SyncSummaryRow {
+  project_id: string | null;
+  project_key: string | null;
+  catalyst_count: number | null;
+  jira_count: number | null;
+  conflict_count: number | null;
+  stale_count: number | null;
+  last_synced_at: string | null;
+}
+
+async function getUserId(): Promise<string | undefined> {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.id;
 }
 
 export const jiraSyncService = {
-  /** Trigger a sync run for a project */
-  async triggerSync(projectId: string): Promise<JiraSyncLog> {
-    const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await (supabase as any)
-      .from('jira_sync_logs')
-      .insert({
-        project_id: projectId,
-        triggered_by: user?.id,
-        status: 'running',
-        items_synced: 0,
-        conflicts_found: 0,
-        created_by: user?.id,
-        // Required by existing schema
-        connection_id: projectId,
-        sync_type: 'manual',
-        entity_type: 'issue',
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return {
-      id: data.id,
-      projectId: data.project_id,
-      triggeredBy: data.triggered_by ?? '',
-      startedAt: data.started_at,
-      completedAt: data.completed_at ?? undefined,
-      status: data.status as JiraSyncLog['status'],
-      itemsSynced: data.items_synced ?? 0,
-      conflictsFound: data.conflicts_found ?? 0,
-      errorMessage: data.error_message ?? undefined,
-    };
-  },
-
-  /** Get current sync status for a project via the aggregation view */
-  async getSyncSummary(projectId: string) {
-    const { data, error } = await (supabase as any)
+  /** Get project-level sync summary from the aggregation view */
+  async getSyncSummary(projectId: string): Promise<SyncSummaryRow | null> {
+    const { data, error } = await supabase
       .from('project_sync_summary')
       .select('*')
       .eq('project_id', projectId)
       .maybeSingle();
     if (error) throw error;
-    return data as unknown as {
-      project_id: string;
-      project_key: string;
-      catalyst_count: number;
-      jira_count: number;
-      conflict_count: number;
-      stale_count: number;
-      last_synced_at: string | null;
-    } | null;
+    return data as SyncSummaryRow | null;
   },
 
   /** Get unresolved conflicts for a project */
-  async getConflicts(projectId: string): Promise<SyncConflict[]> {
-    // Get project key first
+  async getConflicts(projectId: string): Promise<SyncConflictRow[]> {
+    // Get all ph_issue ids belonging to this project via ph_issues.project_key
     const { data: project } = await supabase
       .from('ph_projects')
       .select('key')
@@ -93,56 +75,159 @@ export const jiraSyncService = {
     if (!project) return [];
 
     const { data, error } = await supabase
-      .from('jira_sync_conflicts' as any)
+      .from('jira_sync_conflicts')
       .select(`
-        id,
-        ph_issue_id,
-        field_name,
-        catalyst_value,
-        jira_value,
-        detected_at,
-        resolved_at,
-        resolved_by,
-        resolution
+        id, ph_issue_id, field_name, catalyst_value, jira_value,
+        detected_at, resolved_at, resolved_by, resolution
       `)
-      .is('resolved_at', null);
+      .is('resolved_at', null)
+      .order('detected_at', { ascending: false });
     if (error) throw error;
-    return (data || []).map((c: any) => ({
-      field: c.field_name,
-      catalystValue: c.catalyst_value ?? '',
-      jiraValue: c.jira_value ?? '',
-      detectedAt: c.detected_at,
-      resolvedAt: c.resolved_at ?? undefined,
-      resolvedBy: c.resolved_by ?? undefined,
-    }));
+
+    // Filter to only conflicts whose ph_issue belongs to this project
+    if (!data || data.length === 0) return [];
+
+    const issueIds = data.map(c => c.ph_issue_id);
+    const { data: issues } = await supabase
+      .from('ph_issues')
+      .select('id')
+      .eq('project_key', project.key)
+      .in('id', issueIds);
+    const validIds = new Set((issues || []).map(i => i.id));
+
+    return data.filter(c => validIds.has(c.ph_issue_id));
   },
 
-  /** Resolve a single conflict */
+  /** Resolve a conflict — updates DB and clears sync_status on the work item */
   async resolveConflict(conflictId: string, resolution: 'keep_catalyst' | 'keep_jira'): Promise<void> {
-    const { data: { user } } = await supabase.auth.getUser();
-    const { error } = await supabase
-      .from('jira_sync_conflicts' as any)
+    const userId = await getUserId();
+    const { data, error } = await supabase
+      .from('jira_sync_conflicts')
       .update({
         resolution,
         resolved_at: new Date().toISOString(),
-        resolved_by: user?.id,
-        updated_by: user?.id,
+        resolved_by: userId,
+        updated_by: userId,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', conflictId);
+      .eq('id', conflictId)
+      .select('ph_issue_id')
+      .single();
     if (error) throw error;
+
+    // Update the ph_issues sync_status back to synced
+    if (data?.ph_issue_id) {
+      await supabase
+        .from('ph_issues')
+        .update({ sync_status: 'synced' } as any)
+        .eq('id', data.ph_issue_id);
+    }
   },
 
-  /** Queue a write-back edit */
+  /** Trigger a sync run — inserts a log entry */
+  async triggerSync(projectId: string): Promise<SyncLogRow> {
+    const userId = await getUserId();
+
+    // Try invoking the edge function if available
+    try {
+      const { data: fnData, error: fnError } = await supabase.functions.invoke('wh-jira-sync', {
+        body: { projectId },
+      });
+      if (!fnError && fnData) {
+        return fnData as SyncLogRow;
+      }
+    } catch {
+      // Fall through to manual log insert
+    }
+
+    // Fallback: insert a sync log entry directly
+    const { data, error } = await supabase
+      .from('jira_sync_logs')
+      .insert({
+        project_id: projectId,
+        triggered_by: userId,
+        status: 'running',
+        items_synced: 0,
+        conflicts_found: 0,
+        created_by: userId,
+      } as any)
+      .select()
+      .single();
+    if (error) throw error;
+    return {
+      id: data.id,
+      project_id: data.project_id,
+      triggered_by: data.triggered_by,
+      started_at: data.started_at,
+      completed_at: data.completed_at,
+      status: data.status as SyncLogRow['status'],
+      items_synced: data.items_synced ?? 0,
+      conflicts_found: data.conflicts_found ?? 0,
+      error_message: data.error_message,
+    };
+  },
+
+  /** Get sync logs for a project */
+  async getSyncLogs(projectId: string): Promise<SyncLogRow[]> {
+    const { data, error } = await supabase
+      .from('jira_sync_logs')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('started_at', { ascending: false })
+      .limit(10);
+    if (error) throw error;
+    return (data || []).map((l: any) => ({
+      id: l.id,
+      project_id: l.project_id,
+      triggered_by: l.triggered_by,
+      started_at: l.started_at,
+      completed_at: l.completed_at,
+      status: l.status as SyncLogRow['status'],
+      items_synced: l.items_synced ?? 0,
+      conflicts_found: l.conflicts_found ?? 0,
+      error_message: l.error_message,
+    }));
+  },
+
+  /** Get write-back queue items for a project */
+  async getWriteBackQueue(projectId: string): Promise<WriteBackRow[]> {
+    const { data: project } = await supabase
+      .from('ph_projects')
+      .select('key')
+      .eq('id', projectId)
+      .single();
+    if (!project) return [];
+
+    const { data, error } = await supabase
+      .from('jira_write_back_queue')
+      .select('id, ph_issue_id, field_name, new_value, queued_at, push_status')
+      .eq('push_status', 'queued')
+      .order('queued_at', { ascending: false });
+    if (error) throw error;
+    if (!data || data.length === 0) return [];
+
+    // Filter to project's issues
+    const issueIds = data.map(q => q.ph_issue_id);
+    const { data: issues } = await supabase
+      .from('ph_issues')
+      .select('id')
+      .eq('project_key', project.key)
+      .in('id', issueIds);
+    const validIds = new Set((issues || []).map(i => i.id));
+
+    return data.filter(q => validIds.has(q.ph_issue_id));
+  },
+
+  /** Queue a write-back edit for a Jira-sourced item */
   async queueWriteBack(phIssueId: string, fieldName: string, newValue: string): Promise<void> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const userId = await getUserId();
     const { error } = await supabase
-      .from('jira_write_back_queue' as any)
+      .from('jira_write_back_queue')
       .insert({
         ph_issue_id: phIssueId,
         field_name: fieldName,
         new_value: newValue,
-        created_by: user?.id,
+        created_by: userId,
       });
     if (error) throw error;
 
@@ -155,56 +240,17 @@ export const jiraSyncService = {
 
   /** Approve a queued write-back */
   async approveWriteBack(queueId: string): Promise<void> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const userId = await getUserId();
     const { error } = await supabase
-      .from('jira_write_back_queue' as any)
+      .from('jira_write_back_queue')
       .update({
         push_status: 'approved',
         approved_at: new Date().toISOString(),
-        approved_by: user?.id,
-        updated_by: user?.id,
+        approved_by: userId,
+        updated_by: userId,
         updated_at: new Date().toISOString(),
       })
       .eq('id', queueId);
     if (error) throw error;
-  },
-
-  /** Get sync logs for a project */
-  async getSyncLogs(projectId: string): Promise<JiraSyncLog[]> {
-    const { data, error } = await supabase
-      .from('jira_sync_logs')
-      .select('*')
-      .eq('project_id', projectId)
-      .order('started_at', { ascending: false })
-      .limit(20);
-    if (error) throw error;
-    return (data || []).map((l: any) => ({
-      id: l.id,
-      projectId: l.project_id,
-      triggeredBy: l.triggered_by ?? '',
-      startedAt: l.started_at,
-      completedAt: l.completed_at ?? undefined,
-      status: l.status as JiraSyncLog['status'],
-      itemsSynced: l.items_synced ?? 0,
-      conflictsFound: l.conflicts_found ?? 0,
-      errorMessage: l.error_message ?? undefined,
-    }));
-  },
-
-  /** Get write-back queue for a project */
-  async getWriteBackQueue(projectId: string) {
-    const { data: project } = await supabase
-      .from('ph_projects')
-      .select('key')
-      .eq('id', projectId)
-      .single();
-    if (!project) return [];
-
-    const { data, error } = await supabase
-      .from('jira_write_back_queue' as any)
-      .select('*')
-      .eq('push_status', 'queued');
-    if (error) throw error;
-    return data || [];
   },
 };
