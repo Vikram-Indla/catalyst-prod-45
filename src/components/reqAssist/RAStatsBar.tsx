@@ -70,11 +70,13 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
     queryFn: async () => {
       const [
         brdReadyRes,
+        brdTotalRes,
         epicRowsRes,
         runningRes,
         qRowsRes,
       ] = await Promise.all([
         (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }).eq('pipeline_stage', 'complete'),
+        (supabase as any).from('brd_documents').select('id', { count: 'exact', head: true }),
         (supabase as any).from('brd_epics').select('publish_status').limit(1000),
         (supabase as any).from('brd_processing_queue').select('id', { count: 'exact', head: true }).eq('status', 'processing'),
         (supabase as any).from('brd_processing_queue').select('id, brd_id, status, updated_at, started_at, completed_at, created_at').order('created_at', { ascending: false }).limit(10),
