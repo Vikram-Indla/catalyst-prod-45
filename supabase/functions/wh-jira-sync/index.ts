@@ -231,8 +231,8 @@ serve(async (req) => {
         assignee_display_name: issue.fields.assignee?.displayName || null,
         reporter_account_id: issue.fields.reporter?.accountId || null,
         reporter_display_name: issue.fields.reporter?.displayName || null,
-        parent_key: issue.fields.parent?.key || null,
-        parent_summary: issue.fields.parent?.fields?.summary || null,
+        parent_key: issue.fields.parent?.key || resolveParentFromLinks(issue) || null,
+        parent_summary: issue.fields.parent?.fields?.summary || resolveParentSummaryFromLinks(issue) || null,
         hierarchy_level: getHierarchyLevel(issue.fields.issuetype?.name || 'Task'),
         fix_versions: (issue.fields.fixVersions || []).map((v: any) => ({
           id: v.id, name: v.name, releaseDate: v.releaseDate
