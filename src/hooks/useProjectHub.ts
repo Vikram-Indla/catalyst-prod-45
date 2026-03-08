@@ -25,6 +25,11 @@ const QUERY_KEYS = {
 // ─────────────────────────────────────────────
 // 1. Fetch all projects from v_project_list view
 // ─────────────────────────────────────────────
+const EXCLUDED_PROJECT_KEYS = new Set(['MDT']);
+
+const isExcludedProject = (project: Pick<ProjectListItem, 'project_key'>) =>
+  EXCLUDED_PROJECT_KEYS.has((project.project_key ?? '').trim().toUpperCase());
+
 export function useProjects() {
   return useQuery({
     queryKey: QUERY_KEYS.projects,
@@ -35,7 +40,7 @@ export function useProjects() {
         .order('total_issues', { ascending: false });
 
       if (error) throw new Error(`Failed to fetch projects: ${error.message}`);
-      return (data ?? []) as ProjectListItem[];
+      return ((data ?? []) as ProjectListItem[]).filter((project) => !isExcludedProject(project));
     },
     staleTime: 30_000,
     refetchOnWindowFocus: true,
