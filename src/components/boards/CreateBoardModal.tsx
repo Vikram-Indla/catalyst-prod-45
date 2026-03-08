@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useCreateBoard } from '@/hooks/useBoardMutations';
 import type { BoardVisibility, SwimlaneType } from '@/types/board';
 
@@ -39,11 +40,12 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
   const [color, setColor] = useState('#2563EB');
   const [visibility, setVisibility] = useState<BoardVisibility>('project');
   const createBoard = useCreateBoard();
+  const navigate = useNavigate();
 
   const handleCreate = async () => {
     if (!name.trim()) return;
     const tmpl = TEMPLATES.find(t => t.id === template);
-    await createBoard.mutateAsync({
+    const result = await createBoard.mutateAsync({
       name: name.trim(),
       projectId,
       visibility,
@@ -54,6 +56,10 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
       })) : undefined,
     });
     onClose();
+    // Navigate to the newly created board
+    if (result.boardId) {
+      navigate(`/projects/${projectId}/boards/${result.boardId}`);
+    }
   };
 
   return (
@@ -88,7 +94,6 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
 
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
-          {/* 1. Board Name */}
           <FieldLabel required>Board Name</FieldLabel>
           <input value={name} onChange={e => setName(e.target.value)}
             placeholder="e.g. Design Board, QA Workflow…"
@@ -100,7 +105,6 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
             }}
           />
 
-          {/* 2. Column Template */}
           <FieldLabel>Column Template</FieldLabel>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 20 }}>
             {TEMPLATES.map(t => (
@@ -130,7 +134,6 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
             ))}
           </div>
 
-          {/* 3. Swimlane Grouping */}
           <FieldLabel>Swimlane Grouping</FieldLabel>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 20 }}>
             {SWIMLANE_OPTIONS.map(opt => (
@@ -154,7 +157,6 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
             ))}
           </div>
 
-          {/* 4. Board Color */}
           <FieldLabel>Board Color</FieldLabel>
           <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
             {COLOR_SWATCHES.map(c => (
@@ -168,7 +170,6 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
             ))}
           </div>
 
-          {/* 5. Visibility */}
           <FieldLabel>Visibility</FieldLabel>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {VISIBILITY_OPTIONS.map(opt => (

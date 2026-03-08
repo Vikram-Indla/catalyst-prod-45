@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Search, SlidersHorizontal, Plus, Star } from 'lucide-react';
+import { Search, SlidersHorizontal, Plus } from 'lucide-react';
 import { useBoards } from '@/hooks/useBoards';
 import BoardCard from './BoardCard';
 import CreateBoardModal from './CreateBoardModal';
@@ -55,22 +55,17 @@ export default function BoardManagerPage() {
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '0.75px solid var(--cp-border-subtle)', flexShrink: 0 }}>
         <div style={{ padding: '16px 24px 0' }}>
-          {/* Breadcrumb */}
           <div style={{ fontSize: 12, fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-tertiary)', marginBottom: 6 }}>
             ProjectHub › Boards
           </div>
-          {/* Title row */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
             <div>
-              <h1 style={{ fontSize: 17, fontFamily: 'var(--cp-font-heading)', fontWeight: 700, color: 'var(--cp-text-primary)', letterSpacing: '-0.4px', margin: 0 }}>
-                Boards
-              </h1>
+              <h1 style={{ fontSize: 17, fontFamily: 'var(--cp-font-heading)', fontWeight: 700, color: 'var(--cp-text-primary)', letterSpacing: '-0.4px', margin: 0 }}>Boards</h1>
               <p style={{ fontSize: 12.5, color: 'var(--cp-text-tertiary)', margin: '2px 0 0', fontFamily: 'var(--cp-font-body)' }}>
                 Manage and configure all boards for this project
               </p>
             </div>
           </div>
-          {/* Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '12px 0 12px' }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6, height: 34, padding: '0 10px',
@@ -105,7 +100,6 @@ export default function BoardManagerPage() {
               <Plus size={14} strokeWidth={2.5} /> Create Board
             </button>
           </div>
-          {/* Tabs */}
           <div style={{ display: 'flex', gap: 0, borderTop: '0.75px solid var(--cp-border-subtle)' }}>
             {tabs.map(tab => {
               const active = activeTab === tab.key;
@@ -140,13 +134,12 @@ export default function BoardManagerPage() {
           </div>
         ) : (
           <>
-            {/* Starred section */}
             {starred.length > 0 && (
               <>
                 <SectionLabel label="⭐ Starred" />
                 <BoardGrid>
                   {starred.map(b => (
-                    <BoardCard key={b.id} board={b}
+                    <BoardCard key={b.id} board={b} projectId={projectId!}
                       onOpen={() => navigate(`/projects/${projectId}/boards/${b.id}`)}
                       onSettings={() => setSettingsBoard(b)} />
                   ))}
@@ -154,13 +147,12 @@ export default function BoardManagerPage() {
               </>
             )}
 
-            {/* Project Boards */}
             {projectBoards.length > 0 && (
               <>
                 <SectionLabel label="Project Boards" />
                 <BoardGrid>
                   {projectBoards.map(b => (
-                    <BoardCard key={b.id} board={b}
+                    <BoardCard key={b.id} board={b} projectId={projectId!}
                       onOpen={() => navigate(`/projects/${projectId}/boards/${b.id}`)}
                       onSettings={() => setSettingsBoard(b)} />
                   ))}
@@ -168,13 +160,12 @@ export default function BoardManagerPage() {
               </>
             )}
 
-            {/* Personal Boards */}
             {personalBoards.length > 0 && (
               <>
                 <SectionLabel label="Personal Boards" />
                 <BoardGrid>
                   {personalBoards.map(b => (
-                    <BoardCard key={b.id} board={b}
+                    <BoardCard key={b.id} board={b} projectId={projectId!}
                       onOpen={() => navigate(`/projects/${projectId}/boards/${b.id}`)}
                       onSettings={() => setSettingsBoard(b)} />
                   ))}
@@ -182,7 +173,6 @@ export default function BoardManagerPage() {
               </>
             )}
 
-            {/* Always show create card */}
             {filtered.length === 0 && (
               <BoardGrid>
                 <NewBoardCard onClick={() => setCreateOpen(true)} />
@@ -199,7 +189,6 @@ export default function BoardManagerPage() {
         )}
       </div>
 
-      {/* Modals */}
       {createOpen && (
         <CreateBoardModal projectId={projectId!} onClose={() => setCreateOpen(false)} />
       )}

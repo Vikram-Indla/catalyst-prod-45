@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, GripVertical, Trash2, Plus } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 import type { BoardListItem, BoardVisibility, SwimlaneType } from '@/types/board';
 import { useBoard } from '@/hooks/useBoard';
+import { useUpdateBoard, useDeleteBoard, useAddColumn, useDeleteColumn } from '@/hooks/useBoardMutations';
 
 interface Props {
   board: BoardListItem;
@@ -35,6 +37,8 @@ const SWIMLANE_OPTIONS: { value: SwimlaneType; label: string; desc: string }[] =
 ];
 
 export default function BoardSettingsDrawer({ board, onClose }: Props) {
+  const { projectId } = useParams<{ projectId: string }>();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<SettingsTab>('general');
   const [name, setName] = useState(board.name);
   const [description, setDescription] = useState(board.description ?? '');
@@ -43,12 +47,48 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
   const [swimlane, setSwimlane] = useState<SwimlaneType>(board.swimlaneType);
   const [deleteConfirm, setDeleteConfirm] = useState('');
   const [showDelete, setShowDelete] = useState(false);
+  const [newColName, setNewColName] = useState('');
   const { data: boardData } = useBoard(board.id);
+  const updateBoard = useUpdateBoard();
+  const deleteBoard = useDeleteBoard();
+  const addColumn = useAddColumn();
+  const deleteCol = useDeleteColumn();
 
   const isDirty = name !== board.name || description !== (board.description ?? '') ||
     color !== board.color || visibility !== board.visibility || swimlane !== board.swimlaneType;
 
   const columns = boardData?.columns ?? [];
+
+  const handleSave = async () => {
+    if (!isDirty) return;
+    await updateBoard.mutateAsync({
+      boardId: board.id,
+      projectId: projectId ?? board.projectId ?? undefined,
+      name: name !== board.name ? name : undefined,
+      description: description !== (board.description ?? '') ? description : undefined,
+      color: color !== board.color ? color : undefined,
+      visibility: visibility !== board.visibility ? visibility : undefined,
+      swimlane_type: swimlane !== board.swimlaneType ? swimlane : undefined,
+    });
+    onClose();
+  };
+
+  const handleDelete = async () => {
+    if (deleteConfirm !== board.name) return;
+    await deleteBoard.mutateAsync({ boardId: board.id, projectId: projectId ?? board.projectId ?? '' });
+    onClose();
+    navigate(`/projects/${projectId}/boards`);
+  };
+
+  const handleAddColumn = async () => {
+    if (!newColName.trim()) return;
+    await addColumn.mutateAsync({
+      boardId: board.id,
+      name: newColName.trim(),
+      position: columns.length,
+    });
+    setNewColName('');
+  };
 
   return (
     <div style={{
@@ -165,13 +205,14 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                     </p>
                     <input value={deleteConfirm} onChange={e => setDeleteConfirm(e.target.value)}
                       placeholder={board.name} style={{ ...inputStyle, marginBottom: 8 }} />
-                    <button disabled={deleteConfirm !== board.name} style={{
+                    <button onClick={handleDelete}
+                      disabled={deleteConfirm !== board.name || deleteBoard.isPending} style={{
                       height: 30, padding: '0 14px', borderRadius: 5, border: 'none',
                       background: deleteConfirm === board.name ? 'var(--cp-danger-60)' : 'var(--cp-bg-sunken)',
                       color: deleteConfirm === board.name ? '#FFFFFF' : 'var(--cp-text-muted)',
                       fontSize: 12, fontWeight: 600, cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
                       fontFamily: 'var(--cp-font-body)',
-                    }}>Permanently Delete</button>
+                    }}>{deleteBoard.isPending ? 'Deleting…' : 'Permanently Delete'}</button>
                   </div>
                 )}
               </Section>
@@ -181,7 +222,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
           {tab === 'columns' && (
             <>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {columns.map((col, i) => (
+                {columns.map((col) => (
                   <div key={col.id} style={{
                     display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px',
                     border: `0.75px solid ${col.statusIds.length === 0 ? 'var(--cp-warning-60)' : 'var(--cp-border-default)'}`,
@@ -198,17 +239,31 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                     {col.statusIds.length === 0 && (
                       <span style={{ fontSize: 10, color: 'var(--cp-warning-60)', fontFamily: 'var(--cp-font-body)' }}>No statuses mapped</span>
                     )}
+                    <button onClick={() => deleteCol.mutate({ columnId: col.id, boardId: board.id })} style={{
+                      width: 24, height: 24, borderRadius: 4, border: 'none',
+                      background: 'transparent', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <Trash2 size={12} color="var(--cp-text-muted)" />
+                    </button>
                   </div>
                 ))}
               </div>
-              <button style={{
-                display: 'flex', alignItems: 'center', gap: 5, width: '100%', marginTop: 8,
-                padding: '10px 12px', border: '1.5px dashed var(--cp-border-default)',
-                borderRadius: 6, background: 'transparent', cursor: 'pointer',
-                fontSize: 12, color: 'var(--cp-text-muted)', fontFamily: 'var(--cp-font-body)',
-              }}>
-                <Plus size={14} /> Add Column
-              </button>
+              {/* Add column inline */}
+              <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+                <input value={newColName} onChange={e => setNewColName(e.target.value)}
+                  placeholder="New column name…"
+                  onKeyDown={e => e.key === 'Enter' && handleAddColumn()}
+                  style={{ ...inputStyle, flex: 1 }} />
+                <button onClick={handleAddColumn} disabled={!newColName.trim()} style={{
+                  display: 'flex', alignItems: 'center', gap: 4, height: 36, padding: '0 12px',
+                  border: '1.5px dashed var(--cp-border-default)',
+                  borderRadius: 6, background: 'transparent', cursor: newColName.trim() ? 'pointer' : 'not-allowed',
+                  fontSize: 12, color: 'var(--cp-text-muted)', fontFamily: 'var(--cp-font-body)',
+                }}>
+                  <Plus size={14} /> Add
+                </button>
+              </div>
             </>
           )}
 
@@ -262,14 +317,14 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
             fontSize: 12.5, fontWeight: 500, color: 'var(--cp-text-secondary)',
             fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
           }}>Cancel</button>
-          <button disabled={!isDirty} style={{
+          <button onClick={handleSave} disabled={!isDirty || updateBoard.isPending} style={{
             height: 34, padding: '0 18px', borderRadius: 6, border: 'none',
             background: isDirty ? 'linear-gradient(135deg, var(--cp-primary-60), var(--cp-primary-70))' : 'var(--cp-bg-sunken)',
             fontSize: 12.5, fontWeight: 600,
             color: isDirty ? '#FFFFFF' : 'var(--cp-text-muted)',
             fontFamily: 'var(--cp-font-body)',
             cursor: isDirty ? 'pointer' : 'not-allowed',
-          }}>Save Changes</button>
+          }}>{updateBoard.isPending ? 'Saving…' : 'Save Changes'}</button>
         </div>
       </div>
     </div>

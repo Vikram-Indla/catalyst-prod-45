@@ -1,15 +1,29 @@
 import React, { useState } from 'react';
-import { Star, Settings, ArrowRight, LayoutGrid, Users, Lock, Globe } from 'lucide-react';
+import { Star, Settings, ArrowRight, LayoutGrid, Users } from 'lucide-react';
+import { useToggleBoardStar, useUpdateBoardLastViewed } from '@/hooks/useBoardMutations';
 import type { BoardListItem } from '@/types/board';
 
 interface BoardCardProps {
   board: BoardListItem;
+  projectId: string;
   onOpen: () => void;
   onSettings: () => void;
 }
 
-export default function BoardCard({ board, onOpen, onSettings }: BoardCardProps) {
+export default function BoardCard({ board, projectId, onOpen, onSettings }: BoardCardProps) {
   const [hover, setHover] = useState(false);
+  const toggleStar = useToggleBoardStar();
+  const updateLastViewed = useUpdateBoardLastViewed();
+
+  const handleOpen = () => {
+    updateLastViewed.mutate(board.id);
+    onOpen();
+  };
+
+  const handleStar = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleStar.mutate({ boardId: board.id, projectId, isStarred: !board.isStarred });
+  };
 
   const visibilityChip = () => {
     if (board.visibility === 'private') return { label: '🔒 Private', bg: 'var(--cp-warning-5)', color: 'var(--cp-warning-60)' };
@@ -27,74 +41,54 @@ export default function BoardCard({ board, onOpen, onSettings }: BoardCardProps)
       style={{
         background: '#FFFFFF',
         border: `0.75px solid ${hover ? 'rgba(15,23,42,0.18)' : 'var(--cp-border-subtle)'}`,
-        borderRadius: 8,
-        cursor: 'pointer',
-        position: 'relative',
+        borderRadius: 8, cursor: 'pointer', position: 'relative',
         transition: 'box-shadow 150ms, border-color 150ms',
         boxShadow: hover ? '0 4px 16px rgba(15,23,42,0.10)' : 'none',
-        overflow: 'hidden',
-        display: 'flex', flexDirection: 'column',
+        overflow: 'hidden', display: 'flex', flexDirection: 'column',
       }}
     >
-      {/* Accent strip */}
       <div style={{ height: 4, background: board.color, flexShrink: 0 }} />
 
-      {/* Body */}
       <div style={{ padding: '14px 14px 12px', flex: 1 }}>
-        {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
           <div style={{
             width: 34, height: 34, borderRadius: 7,
             background: board.color + '18',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 16, flexShrink: 0,
-          }}>
-            {board.icon}
-          </div>
+          }}>{board.icon}</div>
           <div style={{ minWidth: 0, flex: 1 }}>
             <div style={{
               fontSize: 13.5, fontWeight: 650, color: 'var(--cp-text-primary)',
               fontFamily: 'var(--cp-font-body)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>{board.name}</div>
-            <div style={{ fontSize: 11, color: 'var(--cp-text-muted)', fontFamily: 'var(--cp-font-body)' }}>
-              Kanban Board
-            </div>
+            <div style={{ fontSize: 11, color: 'var(--cp-text-muted)', fontFamily: 'var(--cp-font-body)' }}>Kanban Board</div>
           </div>
         </div>
 
-        {/* Star button */}
-        <button
-          onClick={e => { e.stopPropagation(); }}
-          style={{
-            position: 'absolute', top: 52, right: 12,
-            width: 28, height: 28, borderRadius: 4,
-            border: 'none', background: 'transparent', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            opacity: board.isStarred ? 1 : (hover ? 1 : 0),
-            transition: 'opacity 150ms',
-          }}
-        >
+        <button onClick={handleStar} style={{
+          position: 'absolute', top: 52, right: 12,
+          width: 28, height: 28, borderRadius: 4,
+          border: 'none', background: 'transparent', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          opacity: board.isStarred ? 1 : (hover ? 1 : 0),
+          transition: 'opacity 150ms',
+        }}>
           <Star size={15}
             fill={board.isStarred ? 'var(--cp-warning-60)' : 'none'}
             color={board.isStarred ? 'var(--cp-warning-60)' : 'var(--cp-text-muted)'}
           />
         </button>
 
-        {/* Meta chips */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
-          {board.isPersonal && (
-            <Chip bg="var(--cp-purple-5)" color="var(--cp-purple-60)">Personal</Chip>
-          )}
+          {board.isPersonal && <Chip bg="var(--cp-purple-5)" color="var(--cp-purple-60)">Personal</Chip>}
           <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
           {board.swimlaneType !== 'none' && (
-            <Chip bg="var(--cp-bg-sunken)" color="var(--cp-text-tertiary)">
-              By {board.swimlaneType}
-            </Chip>
+            <Chip bg="var(--cp-bg-sunken)" color="var(--cp-text-tertiary)">By {board.swimlaneType}</Chip>
           )}
         </div>
 
-        {/* Stats */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 12,
           borderTop: '0.75px solid var(--cp-border-subtle)', paddingTop: 10,
@@ -110,7 +104,6 @@ export default function BoardCard({ board, onOpen, onSettings }: BoardCardProps)
         </div>
       </div>
 
-      {/* Footer */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
         padding: '8px 12px',
@@ -124,12 +117,11 @@ export default function BoardCard({ board, onOpen, onSettings }: BoardCardProps)
         }}>
           <Settings size={13} /> Settings
         </button>
-        <button onClick={e => { e.stopPropagation(); onOpen(); }} style={{
+        <button onClick={e => { e.stopPropagation(); handleOpen(); }} style={{
           display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 12px',
           background: 'linear-gradient(135deg, var(--cp-primary-60), var(--cp-primary-70))',
           border: 'none', borderRadius: 5, cursor: 'pointer',
-          fontSize: 11.5, fontWeight: 600, color: '#FFFFFF',
-          fontFamily: 'var(--cp-font-body)',
+          fontSize: 11.5, fontWeight: 600, color: '#FFFFFF', fontFamily: 'var(--cp-font-body)',
         }}>
           Open Board <ArrowRight size={12} />
         </button>
