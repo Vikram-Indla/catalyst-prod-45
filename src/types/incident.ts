@@ -412,6 +412,23 @@ export interface IncidentLabelWithDef {
 }
 
 // ─────────────────────────────────────────────
+// JIRA CUSTOM FIELD VALUES (dynamic columns)
+// ─────────────────────────────────────────────
+
+export type IncidentFieldType = 'text' | 'number' | 'date' | 'user' | 'option' | 'url';
+
+export interface IncidentFieldValue {
+  id: string;
+  incident_id: string;
+  field_key: string;      // JIRA key: "customfield_10001"
+  field_label: string;    // Human label: "Affected Region"
+  field_value: string | null;
+  field_type: IncidentFieldType;
+  created_at: string;
+  updated_at: string;
+}
+
+// ─────────────────────────────────────────────
 // NEW ENTITY TYPES
 // ─────────────────────────────────────────────
 
