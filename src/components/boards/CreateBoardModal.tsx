@@ -58,7 +58,8 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
     });
     onClose();
     if (result.boardId) {
-      navigate(`/projects/${projectId}/boards/${result.boardId}`);
+      const base = basePath || `/projects/${projectId}/boards`;
+      navigate(`${base}/${result.boardId}`);
     }
   };
 

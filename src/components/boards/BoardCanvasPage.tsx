@@ -57,8 +57,15 @@ function StatusLozenge({ status }: { status: string }) {
   );
 }
 
-export default function BoardCanvasPage() {
-  const { projectId, boardId } = useParams<{ projectId: string; boardId: string }>();
+interface BoardCanvasPageProps {
+  projectIdOverride?: string;
+  basePath?: string;
+}
+
+export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCanvasPageProps = {}) {
+  const { projectId: paramProjectId, boardId } = useParams<{ projectId: string; boardId: string }>();
+  const projectId = projectIdOverride || paramProjectId;
+  const boardBasePath = basePath || `/projects/${projectId}/boards`;
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: boardData, isLoading } = useBoard(boardId);
