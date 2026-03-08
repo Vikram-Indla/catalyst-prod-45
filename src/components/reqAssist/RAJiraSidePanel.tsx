@@ -78,7 +78,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
 
       const { data: brdRow } = await (supabase as any)
         .from('brd_documents')
-        .select('id, pipeline_stage, raw_text')
+        .select('id, pipeline_stage, raw_text, parent_jira_key, ticket_type, raw_text_source')
         .eq('jira_key', jiraKey)
         .maybeSingle();
 
