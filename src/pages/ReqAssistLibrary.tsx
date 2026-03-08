@@ -647,8 +647,12 @@ function StatusBadge({ status, epicCount, pipelineStage }: { status: string; epi
   if (ps === 'failed') {
     bg = '#DFE1E6'; color = '#253858'; label = 'FAILED';
   } else if (epicCount > 0) {
+    // Having epics = document is usable regardless of pipeline_stage
     bg = '#E3FCEF'; color = '#006644'; label = 'READY';
-  } else if (['extract', 'process', 'validate', 'distribute', 'complete', 'processing'].includes(ps)) {
+  } else if (ps === 'complete') {
+    // pipeline complete but no epics yet → still READY
+    bg = '#E3FCEF'; color = '#006644'; label = 'READY';
+  } else if (['extract', 'process', 'validate', 'distribute', 'processing'].includes(ps)) {
     bg = '#DEEBFF'; color = '#0747A6'; label = 'PROCESSING';
   } else {
     // intake, pending, or unknown
