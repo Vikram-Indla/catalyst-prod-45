@@ -13,6 +13,7 @@ import {
   FlaskConical,
   FileText,
   Settings,
+  Columns3,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
