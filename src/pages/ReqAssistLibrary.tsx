@@ -683,13 +683,13 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-            borderRadius: 5, border: '0.75px solid #DDD6FE',
-            background: '#F5F3FF', color: '#6D28D9', cursor: 'pointer',
+            borderRadius: 5, border: '0.75px solid #BFDBFE',
+            background: '#EFF6FF', color: '#1D4ED8', cursor: 'pointer',
             fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
             transition: 'background 80ms ease',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = '#EDE9FE')}
-          onMouseLeave={e => (e.currentTarget.style.background = '#F5F3FF')}
+          onMouseEnter={e => { e.currentTarget.style.background = '#DBEAFE'; e.currentTarget.style.borderColor = '#93C5FD'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
         >
           View Drafts
         </button>
