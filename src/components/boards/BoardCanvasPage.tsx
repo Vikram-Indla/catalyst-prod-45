@@ -16,8 +16,10 @@ import BoardQuickFilters from './BoardQuickFilters';
 import BoardSettingsDrawer from './BoardSettingsDrawer';
 import type { KanbanCard, BoardColumn } from '@/types/board';
 
-/* Board accent colors — canonical order */
+/* Board accent colors — use board.color from DB, fallback map */
 const BOARD_ACCENT: Record<string, string> = {
+  'Demand Analysis Kanban': '#2563EB',
+  'Business Request Kanban': '#D97706',
   'Delivery Board': '#2563EB',
   'QA Board': '#16A34A',
   'Design Board': '#7C3AED',
