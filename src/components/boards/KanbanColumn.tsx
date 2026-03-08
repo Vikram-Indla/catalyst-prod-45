@@ -1,18 +1,21 @@
 import React from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Plus, ArrowDown } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import KanbanCardComponent from './KanbanCard';
 import type { BoardColumn as ColumnType, KanbanCard } from '@/types/board';
 
 interface Props {
   column: ColumnType;
   cards: KanbanCard[];
+  maxWip?: number;
 }
 
-export default function KanbanColumn({ column, cards }: Props) {
+export default function KanbanColumn({ column, cards, maxWip }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   const cardIds = cards.map(c => c.id);
+  const count = cards.length;
+  const atLimit = maxWip != null && count >= maxWip;
 
   return (
     <div ref={setNodeRef} style={{
@@ -27,20 +30,19 @@ export default function KanbanColumn({ column, cards }: Props) {
         </div>
       </SortableContext>
 
-      {/* Empty drop zone */}
+      {/* Empty drop zone — dashed border */}
       {cards.length === 0 && (
         <div style={{
           minHeight: 60, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center', gap: 4,
-          border: `1.5px dashed ${isOver ? 'var(--cp-primary-60)' : 'var(--cp-border-subtle)'}`,
+          border: `0.75px dashed ${isOver ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
           borderRadius: 6,
-          background: isOver ? 'var(--cp-primary-5)' : 'transparent',
+          background: isOver ? '#EFF6FF' : 'transparent',
           transition: 'all 150ms',
         }}>
-          <ArrowDown size={14} color={isOver ? 'var(--cp-primary-60)' : 'var(--cp-text-muted)'} />
           <span style={{
-            fontSize: 11, color: isOver ? 'var(--cp-primary-60)' : 'var(--cp-text-muted)',
-            fontFamily: 'var(--cp-font-body)',
+            fontSize: 11, color: isOver ? '#2563EB' : '#94A3B8',
+            fontFamily: "'Inter', sans-serif",
           }}>Drop issues here</span>
         </div>
       )}
@@ -48,7 +50,7 @@ export default function KanbanColumn({ column, cards }: Props) {
       {/* Active drop indicator when cards exist */}
       {cards.length > 0 && isOver && (
         <div style={{
-          height: 2, background: 'var(--cp-primary-60)',
+          height: 2, background: '#2563EB',
           borderRadius: 1, margin: '4px 0',
           boxShadow: '0 0 4px rgba(37,99,235,0.5)',
         }} />
@@ -59,11 +61,10 @@ export default function KanbanColumn({ column, cards }: Props) {
         display: 'flex', alignItems: 'center', gap: 4,
         padding: '6px 8px', marginTop: 6,
         border: 'none', background: 'transparent', cursor: 'pointer',
-        fontSize: 12, color: 'var(--cp-text-muted)', fontFamily: 'var(--cp-font-body)',
-        borderRadius: 4,
-        transition: 'background 80ms',
+        fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif",
+        borderRadius: 4, transition: 'background 80ms',
       }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-interact-hover)'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         <Plus size={13} /> Create issue

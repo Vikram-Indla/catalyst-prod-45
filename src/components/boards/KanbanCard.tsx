@@ -16,17 +16,28 @@ const PRIORITY_COLORS: Record<string, string> = {
   low: '#94A3B8',
 };
 
+function getOverdueDays(dueDate: string | null): number | null {
+  if (!dueDate) return null;
+  const diff = Date.now() - new Date(dueDate).getTime();
+  const days = Math.floor(diff / 86400000);
+  return days > 0 ? days : null;
+}
+
 export default function KanbanCardComponent({ card }: Props) {
   const [hover, setHover] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id });
+
+  const overdueDays = getOverdueDays(card.dueDate);
+  const source = card.key?.startsWith('CAT-') ? 'CAT' : 'JIRA';
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition: transition ?? undefined,
     opacity: isDragging ? 0.6 : (card.statusId === 'done' ? 0.85 : 1),
     background: '#FFFFFF',
-    border: `0.75px solid ${card.isBlocked ? 'var(--cp-danger-60)' : 'var(--cp-border-subtle)'}`,
+    border: '0.75px solid rgba(15,23,42,0.12)',
     borderLeftWidth: card.isBlocked ? 3 : 0.75,
+    borderLeftColor: card.isBlocked ? '#DC2626' : 'rgba(15,23,42,0.12)',
     borderRadius: 6,
     padding: '10px 11px 9px',
     cursor: isDragging ? 'grabbing' : 'grab',
@@ -36,7 +47,6 @@ export default function KanbanCardComponent({ card }: Props) {
     position: 'relative' as const,
   };
 
-  // Merge transforms
   const finalTransform = [
     CSS.Transform.toString(transform),
     isDragging ? 'rotate(1.5deg)' : (hover ? 'translateY(-1px)' : ''),
@@ -55,48 +65,64 @@ export default function KanbanCardComponent({ card }: Props) {
         transition: `box-shadow 150ms, transform 150ms${transition ? `, ${transition}` : ''}`,
       }}
     >
-      {/* Header row */}
+      {/* Header row: TypeIcon | Key | SourceBadge | ⋯ */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
         <WorkItemTypeIcon type={card.type} size={16} />
         <span style={{
           fontSize: 11, fontWeight: 500,
-          fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-text-tertiary)',
+          fontFamily: "'JetBrains Mono', monospace", color: '#64748B',
         }}>{card.key || '—'}</span>
+        {/* Source badge */}
+        <span style={{
+          fontSize: 11, fontWeight: 600, padding: '1px 5px', borderRadius: 3,
+          background: source === 'JIRA' ? '#E3F0FF' : '#F1F5F9',
+          color: source === 'JIRA' ? '#0052CC' : '#525252',
+          fontFamily: "'Inter', sans-serif",
+          lineHeight: 1.4,
+        }}>{source}</span>
         <div style={{ flex: 1 }} />
+        {/* Overdue inline text */}
+        {overdueDays && (
+          <span style={{
+            fontSize: 10.5, fontWeight: 600, color: '#DC2626',
+            fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+          }}>{overdueDays}d overdue</span>
+        )}
         <button style={{
           width: 22, height: 22, borderRadius: 3, border: 'none',
           background: 'transparent', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           opacity: hover ? 1 : 0, transition: 'opacity 100ms',
         }} onClick={e => e.stopPropagation()}>
-          <MoreHorizontal size={14} color="var(--cp-text-muted)" />
+          <MoreHorizontal size={14} color="#94A3B8" />
         </button>
       </div>
 
       {/* Title */}
       <div style={{
         fontSize: 12.5, fontWeight: 500, lineHeight: 1.45,
-        color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-body)',
+        color: '#0F172A', fontFamily: "'Inter', sans-serif",
         display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
         overflow: 'hidden', marginBottom: card.epic ? 6 : 0,
       }}>
         {card.title || 'Untitled issue'}
       </div>
 
-      {/* Epic label */}
+      {/* Epic badge (purple, only if epic assigned) */}
       {card.epic && (
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
-          height: 18, padding: '0 7px', borderRadius: 9,
-          background: 'var(--cp-purple-5)', border: '0.75px solid var(--cp-purple-10)',
+          height: 18, padding: '0 7px', borderRadius: 3,
+          background: '#F5F3FF', border: '0.75px solid #EDE9FE',
           maxWidth: '100%', overflow: 'hidden',
         }}>
           <span style={{
             width: 5, height: 5, borderRadius: '50%',
-            background: card.epic.color || 'var(--cp-purple-60)', flexShrink: 0,
+            background: '#7C3AED', flexShrink: 0,
           }} />
           <span style={{
-            fontSize: 10.5, color: 'var(--cp-purple-60)', fontFamily: 'var(--cp-font-body)',
+            fontSize: 10.5, fontWeight: 500, color: '#7C3AED',
+            fontFamily: "'Inter', sans-serif",
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>{card.epic.title}</span>
         </div>
@@ -108,7 +134,7 @@ export default function KanbanCardComponent({ card }: Props) {
         marginTop: 8,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          {/* Priority dot */}
+          {/* Priority dot (8px) */}
           {card.priority && (
             <span style={{
               width: 8, height: 8, borderRadius: '50%',
@@ -116,14 +142,14 @@ export default function KanbanCardComponent({ card }: Props) {
               flexShrink: 0,
             }} title={card.priority.name} />
           )}
-          {/* Story points */}
+          {/* Story points chip */}
           {card.storyPoints !== null && card.storyPoints !== undefined && (
             <span style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              height: 18, minWidth: 22, padding: '0 5px', borderRadius: 4,
-              background: 'var(--cp-success-5)', border: '0.75px solid var(--cp-success-10)',
-              fontSize: 10.5, fontWeight: 650, color: 'var(--cp-success-60)',
-              fontFamily: 'var(--cp-font-mono)',
+              height: 18, minWidth: 22, padding: '0 5px', borderRadius: 3,
+              background: '#F0FDF4', border: '0.75px solid #DCFCE7',
+              fontSize: 10.5, fontWeight: 650, color: '#16A34A',
+              fontFamily: "'JetBrains Mono', monospace",
             }}>{card.storyPoints}</span>
           )}
         </div>
@@ -133,9 +159,9 @@ export default function KanbanCardComponent({ card }: Props) {
           {card.release && (
             <span style={{
               display: 'inline-flex', alignItems: 'center', height: 18,
-              padding: '0 6px', borderRadius: 4, maxWidth: 88,
-              background: 'var(--cp-bg-sunken)', border: '0.75px solid var(--cp-border-subtle)',
-              fontSize: 10.5, fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-text-tertiary)',
+              padding: '0 6px', borderRadius: 3, maxWidth: 88,
+              background: '#F8FAFC', border: '0.75px solid rgba(15,23,42,0.12)',
+              fontSize: 10.5, fontFamily: "'JetBrains Mono', monospace", color: '#64748B',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>{card.release.name}</span>
           )}
@@ -146,7 +172,7 @@ export default function KanbanCardComponent({ card }: Props) {
               background: hashColor(card.assignee.id),
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 9, fontWeight: 700, color: '#FFFFFF',
-              fontFamily: 'var(--cp-font-body)',
+              fontFamily: "'Sora', sans-serif",
             }} title={card.assignee.displayName}>
               {card.assignee.initials}
             </div>
