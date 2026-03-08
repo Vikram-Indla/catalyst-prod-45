@@ -203,7 +203,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
       </div>
 
       {createOpen && (
-        <CreateBoardModal projectId={projectId!} onClose={() => setCreateOpen(false)} />
+        <CreateBoardModal projectId={projectId!} basePath={boardBasePath} onClose={() => setCreateOpen(false)} />
       )}
       {settingsBoard && (
         <BoardSettingsDrawer board={settingsBoard} onClose={() => setSettingsBoard(null)} />
