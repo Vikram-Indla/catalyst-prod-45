@@ -101,7 +101,7 @@ export function useIncidentCommandCenter() {
       const allIncidents = (incidents || []).map(i => ({
         ...i,
         sla: Array.isArray(i.sla) ? i.sla[0] : i.sla,
-      })) as Incident[];
+      })) as unknown as Incident[];
 
       // Current week incidents
       const currentWeekIncidents = allIncidents.filter(i => 
