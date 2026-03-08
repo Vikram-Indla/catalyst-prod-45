@@ -130,7 +130,7 @@ export default function WorkItemsListPage() {
         for (const [field, value] of Object.entries(changes)) {
           await jiraSyncService.queueWriteBack(id, field, String(value));
         }
-        toast.success('Edit queued for Jira write-back');
+        toast.info('Change queued for Jira sync approval');
       }
       // Always update locally
       await updateWorkItem(id, changes);
@@ -177,10 +177,10 @@ export default function WorkItemsListPage() {
 
   // Sync Now handler
   const handleSyncNow = useCallback(() => {
-    if (!projectId) return;
+    if (!projectId || triggerSync.isPending) return;
     triggerSync.mutate(projectId, {
       onSuccess: () => toast.success('Sync triggered successfully'),
-      onError: (e: any) => toast.error(`Sync failed: ${e.message}`),
+      onError: () => toast.error('Sync failed. Please try again.'),
     });
   }, [projectId, triggerSync]);
 
@@ -354,6 +354,7 @@ export default function WorkItemsListPage() {
             profiles={profiles}
             hasSearchOrFilter={listState.hasActiveFilters || !!listState.search}
             onClearFilters={() => { listState.clearAllFilters(); listState.setSearch(''); }}
+            sourceFilter={sourceFilter}
           />
         )}
       </div>

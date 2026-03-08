@@ -1,8 +1,9 @@
 /**
  * SyncStatusDot — Coloured dot + label for sync health
- * C2: Only on Jira-sourced items
+ * C2: Only on Jira-sourced items. Radix tooltip on hover.
  */
 import React from 'react';
+import * as Tooltip from '@radix-ui/react-tooltip';
 
 type SyncStatus = 'synced' | 'stale' | 'conflict' | 'syncing' | 'pending';
 
@@ -20,6 +21,12 @@ function relativeTime(iso?: string | null): string {
   if (hrs < 24) return `${hrs}h ago`;
   const days = Math.floor(hrs / 24);
   return `${days}d ago`;
+}
+
+function exactDateTime(iso?: string | null): string {
+  if (!iso) return 'Never synced';
+  const d = new Date(iso);
+  return `Last synced: ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} ${d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
 }
 
 const DOT_COLORS: Record<SyncStatus, string> = {
@@ -61,29 +68,54 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
   }
 
   return (
-    <span className="inline-flex items-center gap-[5px] shrink-0">
-      <span
-        className={status === 'syncing' ? 'sync-pulse-dot' : ''}
-        style={{
-          width: 6,
-          height: 6,
-          borderRadius: '50%',
-          background: dotColor,
-          display: 'inline-block',
-          flexShrink: 0,
-        }}
-      />
-      <span
-        style={{
-          fontSize: 11,
-          fontFamily: 'Inter, sans-serif',
-          color: labelColor,
-          fontWeight,
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {label}
-      </span>
+    <Tooltip.Provider delayDuration={200}>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>
+          <span className="inline-flex items-center gap-[5px] shrink-0 cursor-default">
+            <span
+              className={status === 'syncing' ? 'sync-pulse-dot' : ''}
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: dotColor,
+                display: 'inline-block',
+                flexShrink: 0,
+              }}
+            />
+            <span
+              style={{
+                fontSize: 11,
+                fontFamily: 'Inter, sans-serif',
+                color: labelColor,
+                fontWeight,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {label}
+            </span>
+          </span>
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content
+            side="top"
+            sideOffset={4}
+            style={{
+              background: '#0F172A',
+              color: '#FFFFFF',
+              padding: '4px 8px',
+              borderRadius: 4,
+              fontSize: 11,
+              fontFamily: 'Inter, sans-serif',
+              zIndex: 100,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            }}
+          >
+            {exactDateTime(lastSyncedAt)}
+            <Tooltip.Arrow style={{ fill: '#0F172A' }} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
       <style>{`
         @keyframes syncPulse {
           0%, 100% { opacity: 1; }
@@ -93,6 +125,6 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
           animation: syncPulse 1s ease-in-out infinite;
         }
       `}</style>
-    </span>
+    </Tooltip.Provider>
   );
 }
