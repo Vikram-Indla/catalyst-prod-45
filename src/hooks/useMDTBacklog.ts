@@ -56,8 +56,8 @@ export function useMDTBacklog() {
       const { data: { user } } = await supabase.auth.getUser();
       const currentUserId = user?.id;
 
-      // Fetch initiatives, profiles, departments, scores, favorites in parallel
-      const [initResult, profilesResult, deptsResult, scoresResult, favsResult] = await Promise.all([
+      // Fetch initiatives, profiles, departments, scores, favorites, BRD tasks in parallel
+      const [initResult, profilesResult, deptsResult, scoresResult, favsResult, brdTasksResult] = await Promise.all([
         (supabase as any).from('ph_backlog_initiatives_view').select('*').limit(5000),
         supabase.from('profiles').select('id, full_name, avatar_url'),
         (supabase as any).from('ph_departments').select('id, name'),
@@ -65,6 +65,13 @@ export function useMDTBacklog() {
         currentUserId
           ? (supabase as any).from('ph_user_favorites').select('initiative_id').eq('user_id', currentUserId)
           : Promise.resolve({ data: [] }),
+        // Fetch BRD Tasks (sub-tasks of Business Requests) from ph_issues
+        (supabase as any).from('ph_issues')
+          .select('issue_key, summary, status, assignee_display_name, priority, jira_created_at, jira_updated_at, parent_key')
+          .eq('project_key', 'MDT')
+          .in('issue_type', ['BRD Task', 'Sub-task'])
+          .not('parent_key', 'is', null)
+          .limit(5000),
       ]);
 
       if (initResult.error) throw initResult.error;
