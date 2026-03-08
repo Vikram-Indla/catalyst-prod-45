@@ -182,6 +182,18 @@ export function SidebarProjectNav({
 
       {/* Project nav */}
       <div className="flex-1 py-1 px-1.5 space-y-0.5 overflow-y-auto">
+        {/* Dashboard */}
+        {TOP_NAV.map(item => (
+          <NavItem
+            key={item.path}
+            icon={item.icon}
+            label={item.label}
+            active={isPathActive(item.path)}
+            collapsed={collapsed}
+            onClick={() => navigate(`${basePath}/${item.path}`)}
+          />
+        ))}
+
         {/* PLANNING section */}
         {!collapsed && (
           <div
