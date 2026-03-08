@@ -143,7 +143,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
           icon={<FileCheck size={16} />}
           label="BRDs Processed"
           value={`${brdStats.ready} / ${brdStats.total}`}
-          subLabel="Pipeline stage: Ready"
+          subLabel="Pipeline stage: Complete"
           extra={
             <div style={{ width: '100%', height: 4, background: '#E2E8F0', borderRadius: 2, marginTop: 4 }}>
               <div style={{ width: `${brdPct}%`, height: 4, background: '#16A34A', borderRadius: 2, transition: 'width 400ms ease-in-out' }} />
