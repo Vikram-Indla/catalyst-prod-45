@@ -21,13 +21,17 @@ export default function ProjectBoardManagerPage() {
         .eq('key', key.toUpperCase())
         .maybeSingle();
       if (phErr || !phProject) { console.warn(phErr?.message ?? 'ph_project not found'); return null; }
-      // Then resolve to projects table ID (boards FK references projects, not ph_projects)
+      // Try to resolve to projects table ID (boards FK references projects)
       const { data: project } = await (supabase as any)
         .from('projects')
         .select('id, name')
         .ilike('name', phProject.name)
         .maybeSingle();
-      return project ? { id: project.id, key: phProject.key, name: phProject.name } : { id: phProject.id, key: phProject.key, name: phProject.name };
+      
+      // Also check if boards exist directly under ph_projects.id
+      const resolvedId = project?.id || phProject.id;
+      console.log('[ProjectBoardManagerPage] phProject.id:', phProject.id, 'projects.id:', project?.id, 'using:', resolvedId);
+      return { id: resolvedId, key: phProject.key, name: phProject.name };
     },
     enabled: !!key,
   });

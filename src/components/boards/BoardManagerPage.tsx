@@ -19,7 +19,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
   const projectId = projectIdOverride || paramProjectId;
   const boardBasePath = basePath || `/projects/${projectId}/boards`;
   const navigate = useNavigate();
-  const { data: boards = [], isLoading } = useBoards(projectId);
+  const { data: boards = [], isLoading, error } = useBoards(projectId);
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
   const [createOpen, setCreateOpen] = useState(false);
@@ -60,6 +60,11 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#F8FAFC' }}>
+      {error && (
+        <div style={{ background: '#FEF2F2', color: '#DC2626', padding: '8px 24px', fontSize: 12, fontFamily: "'Inter', sans-serif", borderBottom: '1px solid #FECACA' }}>
+          ⚠ Board query error: {(error as Error).message} | projectId: {projectId}
+        </div>
+      )}
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0 }}>
         <div style={{ padding: '16px 24px 0' }}>
