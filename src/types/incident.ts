@@ -594,6 +594,8 @@ export interface IncidentFormData {
   incident_type?: string;
   delivery_stage?: string;
   is_major_incident?: boolean;
+  target_date?: string;
+  reporter_name?: string;
 }
 
 export interface IncidentTeam {
