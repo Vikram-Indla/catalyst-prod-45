@@ -130,7 +130,7 @@ export default function ReqAssistLibrary() {
       await (supabase as any).from('ra_documents').update({ kb_synced: true, kb_synced_at: new Date().toISOString() }).eq('id', docId);
       qc.invalidateQueries({ queryKey: RA_KEYS.all });
       qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
-      toast.success('Document indexed for AI search');
+      toast.success('Document indexed for Knowledge Assistant');
     } catch (err: any) {
       toast.error(sanitiseError(err));
     } finally {
@@ -141,13 +141,13 @@ export default function ReqAssistLibrary() {
   const handleSyncAll = useCallback(async () => {
     if (!documents) return;
     const unsyncedReady = documents.filter(d => (d.status === 'ready' || d.status === 'complete') && !(d as any).kb_synced);
-    if (!unsyncedReady.length) { toast.info('All documents already synced'); return; }
+    if (!unsyncedReady.length) { toast.info('All documents already indexed'); return; }
     setSyncingAll(true);
     let success = 0;
     let failed = 0;
     for (let i = 0; i < unsyncedReady.length; i++) {
       const doc = unsyncedReady[i];
-      toast.loading(`Syncing ${i + 1} of ${unsyncedReady.length}...`, { id: 'sync-all-progress' });
+      toast.loading(`Indexing ${i + 1} of ${unsyncedReady.length}...`, { id: 'sync-all-progress' });
       try {
         const jiraKey = (doc as any)?.jira_ticket_key;
         let brdId: string | null = null;
@@ -168,9 +168,9 @@ export default function ReqAssistLibrary() {
     }
     toast.dismiss('sync-all-progress');
     if (failed > 0) {
-      toast.warning(`Synced ${success} of ${unsyncedReady.length}. ${failed} failed.`);
+      toast.warning(`Indexed ${success} of ${unsyncedReady.length}. ${failed} failed.`);
     } else {
-      toast.success(`Synced ${success} documents for AI search`);
+      toast.success(`Indexed ${success} documents for Knowledge Assistant`);
     }
     qc.invalidateQueries({ queryKey: RA_KEYS.all });
     qc.invalidateQueries({ queryKey: ['req-assist-stats-bar'] });
@@ -430,22 +430,26 @@ export default function ReqAssistLibrary() {
                             {doc.title}
                           </span>
                         </td>
-                        {/* Domain */}
+                        {/* D07: Domain — derived from prefix if null */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
-                          {doc.domain ? (
-                            <span style={{
-                              display: 'inline-flex', alignItems: 'center',
-                              padding: '2px 8px', borderRadius: 3,
-                              fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                              letterSpacing: '0.04em', whiteSpace: 'nowrap',
-                              background: '#F3F4F6', color: '#374151',
-                              fontFamily: "'Inter', sans-serif",
-                            }}>
-                              {doc.domain}
-                            </span>
-                          ) : (
-                            <span style={{ color: '#CBD5E1', fontSize: 13 }}>—</span>
-                          )}
+                          {(() => {
+                            const domain = doc.domain || deriveDomainFromKey(doc.jira_ticket_key);
+                            return domain ? (
+                              <span style={{
+                                fontSize: 12, color: '#475569', fontFamily: "'Inter', sans-serif",
+                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                                display: 'block', maxWidth: 110,
+                              }} title={domain}>
+                                {domain}
+                              </span>
+                            ) : (
+                              <span style={{
+                                display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
+                                background: '#F1F5F9', borderRadius: 3,
+                                fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif",
+                              }}>Uncategorised</span>
+                            );
+                          })()}
                         </td>
                         {/* PDF */}
                         <td data-col="pdf" style={{ padding: '8px 12px', overflow: 'hidden' }}>
@@ -627,6 +631,17 @@ export default function ReqAssistLibrary() {
 
 /* ── Helpers ── */
 
+function deriveDomainFromKey(jiraKey: string | null | undefined): string | null {
+  if (!jiraKey) return null;
+  const prefix = jiraKey.split('-')[0]?.toUpperCase();
+  const map: Record<string, string> = {
+    'MDT': 'Ministry Digital Transformation',
+    'SEN': 'Senaei Platform',
+    'SIMP': 'Industrial Monitoring',
+  };
+  return map[prefix] || null;
+}
+
 function formatImported(iso: string): string {
   const d = new Date(iso);
   const now = new Date();
@@ -757,7 +772,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
         }}
       >
-        <Zap size={12} /> Sync to AI
+        <Zap size={12} /> Index to KA
       </button>
     );
   }

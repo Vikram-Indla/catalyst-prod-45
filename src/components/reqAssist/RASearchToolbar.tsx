@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Search, Sparkles } from 'lucide-react';
+import { Search, Sparkles, Loader2 } from 'lucide-react';
 import type { RAFilterTab } from '@/types/reqAssistV2';
 
 const TABS: { key: RAFilterTab; label: string }[] = [
@@ -28,7 +28,6 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
 
   const handleChange = useCallback((val: string) => {
     setLocal(val);
-    // Debounce
     const t = setTimeout(() => onSearchChange(val), 200);
     return () => clearTimeout(t);
   }, [onSearchChange]);
@@ -64,7 +63,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
         />
       </div>
 
-      {/* Filter Tabs — Pill Group */}
+      {/* Filter Tabs */}
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: 2,
         background: '#F1F5F9', borderRadius: 8, padding: 3,
@@ -101,7 +100,8 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
       {/* Spacer */}
       <div style={{ flex: 1 }} />
 
-      {/* Sync All to AI — purple gradient */}
+      {/* D04: Renamed from "Sync All to AI" → "Index to Knowledge Assistant" */}
+      {/* D05: Disabled state while syncing */}
       {onSyncAll && (
         <button
           onClick={onSyncAll}
@@ -110,21 +110,32 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
             display: 'inline-flex', alignItems: 'center', gap: 6,
             padding: '0 14px', height: 36, fontSize: 13, fontWeight: 600,
             border: 'none', borderRadius: 6,
-            background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-            boxShadow: '0 1px 3px rgba(37,99,235,0.35)',
+            background: syncingAll
+              ? '#94A3B8'
+              : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+            boxShadow: syncingAll ? 'none' : '0 1px 3px rgba(37,99,235,0.35)',
             color: '#FFFFFF',
             cursor: syncingAll ? 'not-allowed' : 'pointer',
-            opacity: syncingAll ? 0.7 : 1,
             fontFamily: "'Inter', sans-serif",
             whiteSpace: 'nowrap', flexShrink: 0,
             transition: 'box-shadow 150ms ease',
           }}
           onMouseEnter={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px rgba(37,99,235,0.45)'; } }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(37,99,235,0.35)'; }}
+          onMouseLeave={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(37,99,235,0.35)'; } }}
         >
-          <Sparkles size={14} /> {syncingAll ? 'Syncing…' : 'Sync All to AI'}
+          {syncingAll ? (
+            <>
+              <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+              Indexing...
+            </>
+          ) : (
+            <>
+              <Sparkles size={14} /> Index to Knowledge Assistant
+            </>
+          )}
         </button>
       )}
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
