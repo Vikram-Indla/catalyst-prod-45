@@ -628,7 +628,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     background: '#F0FDFA', border: '0.75px solid #99F6E4',
                     fontSize: 11, fontWeight: 700, color: '#0F766E',
                     fontFamily: "'Inter', sans-serif",
-                  }}>{wikiCount} indexed</span>
+                  }}>{pluralise(wikiCount, 'chunk', 'chunks')} indexed</span>
                 ) : (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 10,
