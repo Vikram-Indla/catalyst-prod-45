@@ -916,3 +916,21 @@ function MetaRow({ label, children }: { label: string; children: React.ReactNode
     </div>
   );
 }
+
+function TicketTypeBadgeDrawer({ type }: { type: string | null }) {
+  if (!type) return null;
+  const map: Record<string, { bg: string; color: string; label: string }> = {
+    subtask: { bg: '#FEF3C7', color: '#92400E', label: 'SUBTASK' },
+    story: { bg: '#EFF6FF', color: '#1D4ED8', label: 'STORY' },
+    epic: { bg: '#F3E8FF', color: '#6B21A8', label: 'EPIC' },
+    task: { bg: '#F1F5F9', color: '#475569', label: 'TASK' },
+  };
+  const s = map[type] || map['task']!;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', padding: '0 5px', borderRadius: 3, height: 18,
+      fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+      background: s.bg, color: s.color, fontFamily: "'Inter', sans-serif",
+    }}>{s.label}</span>
+  );
+}
