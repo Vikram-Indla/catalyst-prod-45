@@ -45,8 +45,8 @@ export default function BoardManagerPage() {
   }), [boards]);
 
   const tabs: { key: TabFilter; label: string }[] = [
-    { key: 'all', label: 'All' },
-    { key: 'project', label: 'Project' },
+    { key: 'all', label: 'All Boards' },
+    { key: 'project', label: 'Project Boards' },
     { key: 'personal', label: 'Personal' },
     { key: 'starred', label: 'Starred' },
   ];
