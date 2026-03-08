@@ -6,6 +6,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import type { BRDTask } from '@/hooks/useMDTBacklog';
+import { useSyncMDTToInitiatives } from '@/hooks/useSyncMDTToInitiatives';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
