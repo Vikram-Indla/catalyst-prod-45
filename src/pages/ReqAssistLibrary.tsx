@@ -481,6 +481,8 @@ export default function ReqAssistLibrary() {
                             isProcessing={isProcessingRow}
                             etaMinutes={processingJob ? Math.ceil((processingJob.eta_seconds ?? 240) / 60) : undefined}
                             docStatus={doc.status}
+                            epicCount={epicCounts[doc.id] || 0}
+                            pipelineStage={pipelineStages[doc.id] ?? null}
                           />
                         </td>
                         {/* Imported */}
