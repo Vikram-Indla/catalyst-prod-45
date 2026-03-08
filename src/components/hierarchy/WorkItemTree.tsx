@@ -8,6 +8,7 @@ import { ChevronRight, ChevronDown, GripVertical, MoreHorizontal, Trash2 } from 
 import type { WorkItem } from '@/types/hierarchy';
 import { canBeParentOf, HIERARCHY_LEVELS } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { StatusBadge } from './StatusBadge';
 
 interface WorkItemTreeProps {
   items: WorkItem[];
