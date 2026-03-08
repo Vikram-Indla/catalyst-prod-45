@@ -83,7 +83,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         .maybeSingle();
 
       if (!brdRow?.id) {
-        setBrdData({ id: null, pipeline_stage: null, raw_text: null, epicCount: 0, wikiCount: 0, publishedCount: 0, uatCount: 0 });
+        setBrdData({ id: null, pipeline_stage: null, raw_text: null, epicCount: 0, wikiCount: 0, publishedCount: 0, uatCount: 0, parentJiraKey: null, ticketType: null, rawTextSource: null });
         return;
       }
 
