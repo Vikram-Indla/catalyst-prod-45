@@ -17,6 +17,7 @@ export default function BoardManagerPage() {
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
   const [createOpen, setCreateOpen] = useState(false);
   const [settingsBoard, setSettingsBoard] = useState<BoardListItem | null>(null);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const filtered = useMemo(() => {
     let list = boards;
@@ -51,56 +52,61 @@ export default function BoardManagerPage() {
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--cp-bg-page)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#F8FAFC' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '0.75px solid var(--cp-border-subtle)', flexShrink: 0 }}>
+      <div style={{ background: '#FFFFFF', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0 }}>
         <div style={{ padding: '16px 24px 0' }}>
-          <div style={{ fontSize: 12, fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-tertiary)', marginBottom: 6 }}>
+          <div style={{ fontSize: 12, fontFamily: "'Inter', sans-serif", color: '#64748B', marginBottom: 6 }}>
             ProjectHub › Boards
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
             <div>
-              <h1 style={{ fontSize: 17, fontFamily: 'var(--cp-font-heading)', fontWeight: 700, color: 'var(--cp-text-primary)', letterSpacing: '-0.4px', margin: 0 }}>Boards</h1>
-              <p style={{ fontSize: 12.5, color: 'var(--cp-text-tertiary)', margin: '2px 0 0', fontFamily: 'var(--cp-font-body)' }}>
+              <h1 style={{ fontSize: 17, fontFamily: "'Sora', sans-serif", fontWeight: 700, color: '#0F172A', letterSpacing: '-0.4px', margin: 0 }}>Boards</h1>
+              <p style={{ fontSize: 12.5, color: '#64748B', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
                 Manage and configure all boards for this project
               </p>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '12px 0 12px' }}>
+            {/* Search input */}
             <div style={{
-              display: 'flex', alignItems: 'center', gap: 6, height: 34, padding: '0 10px',
-              background: 'var(--cp-bg-sunken)', border: '0.75px solid var(--cp-border-subtle)',
-              borderRadius: 6, width: 200,
+              display: 'flex', alignItems: 'center', gap: 6, height: 30, padding: '0 10px',
+              background: '#F8FAFC', border: `0.75px solid ${searchFocused ? '#2563EB' : 'rgba(15,23,42,0.06)'}`,
+              borderRadius: 4, width: 200,
+              boxShadow: searchFocused ? '0 0 0 2px rgba(37,99,235,0.10)' : 'none',
+              transition: 'border-color 150ms, box-shadow 150ms',
             }}>
-              <Search size={14} color="var(--cp-text-muted)" />
+              <Search size={13} color="#94A3B8" />
               <input
                 value={search} onChange={e => setSearch(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
                 placeholder="Search boards…"
                 style={{
                   border: 'none', outline: 'none', background: 'transparent', flex: 1,
-                  fontSize: 12.5, fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)',
+                  fontSize: 12.5, fontFamily: "'Inter', sans-serif", color: '#0F172A',
                   appearance: 'none' as any,
                 }}
               />
             </div>
             <button style={{
-              display: 'flex', alignItems: 'center', gap: 5, height: 34, padding: '0 12px',
-              background: 'transparent', border: '0.75px solid var(--cp-border-default)',
+              display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 12px',
+              background: 'transparent', border: '0.75px solid rgba(15,23,42,0.12)',
               borderRadius: 6, cursor: 'pointer', fontSize: 12.5, fontWeight: 500,
-              color: 'var(--cp-text-secondary)', fontFamily: 'var(--cp-font-body)',
+              color: '#334155', fontFamily: "'Inter', sans-serif",
             }}>
               <SlidersHorizontal size={14} /> Filter
             </button>
             <button onClick={() => setCreateOpen(true)} style={{
-              display: 'flex', alignItems: 'center', gap: 5, height: 34, padding: '0 14px',
-              background: 'var(--cp-primary-60)', border: 'none', borderRadius: 6,
+              display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 14px',
+              background: '#2563EB', border: 'none', borderRadius: 6,
               cursor: 'pointer', fontSize: 12.5, fontWeight: 600, color: '#FFFFFF',
-              fontFamily: 'var(--cp-font-body)',
+              fontFamily: "'Inter', sans-serif",
             }}>
               <Plus size={14} strokeWidth={2.5} /> Create Board
             </button>
           </div>
-          <div style={{ display: 'flex', gap: 0, borderTop: '0.75px solid var(--cp-border-subtle)' }}>
+          <div style={{ display: 'flex', gap: 0, borderTop: '0.75px solid rgba(15,23,42,0.08)' }}>
             {tabs.map(tab => {
               const active = activeTab === tab.key;
               return (
@@ -108,16 +114,16 @@ export default function BoardManagerPage() {
                   display: 'flex', alignItems: 'center', gap: 6, padding: '10px 16px',
                   border: 'none', background: 'transparent', cursor: 'pointer',
                   fontSize: 12.5, fontWeight: active ? 600 : 500,
-                  color: active ? 'var(--cp-primary-60)' : 'var(--cp-text-tertiary)',
-                  fontFamily: 'var(--cp-font-body)',
-                  borderBottom: active ? '2px solid var(--cp-primary-60)' : '2px solid transparent',
+                  color: active ? '#2563EB' : '#64748B',
+                  fontFamily: "'Inter', sans-serif",
+                  borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
                   marginBottom: -1,
                 }}>
                   {tab.label}
                   <span style={{
                     fontSize: 11, fontWeight: 600, padding: '1px 7px', borderRadius: 10,
-                    background: active ? 'var(--cp-primary-10)' : 'var(--cp-bg-sunken)',
-                    color: active ? 'var(--cp-primary-60)' : 'var(--cp-text-muted)',
+                    background: active ? 'rgba(37,99,235,0.08)' : '#F8FAFC',
+                    color: active ? '#2563EB' : '#94A3B8',
                   }}>{tabCounts[tab.key]}</span>
                 </button>
               );
@@ -130,7 +136,7 @@ export default function BoardManagerPage() {
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
         {isLoading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--cp-primary-60)' }} />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#2563EB' }} />
           </div>
         ) : (
           <>
@@ -204,10 +210,10 @@ function SectionLabel({ label }: { label: string }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '16px 0 10px' }}>
       <span style={{
         fontSize: 11.5, fontWeight: 650, textTransform: 'uppercase' as const,
-        letterSpacing: '0.05em', color: 'var(--cp-text-muted)',
-        fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
+        letterSpacing: '0.05em', color: '#94A3B8',
+        fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
       }}>{label}</span>
-      <span style={{ flex: 1, height: 0.75, background: 'var(--cp-border-subtle)' }} />
+      <span style={{ flex: 1, height: 0.75, background: 'rgba(15,23,42,0.08)' }} />
     </div>
   );
 }
@@ -234,21 +240,21 @@ function NewBoardCard({ onClick }: { onClick: () => void }) {
       style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         minHeight: 160, padding: 20,
-        border: `1.5px dashed ${hover ? 'var(--cp-primary-60)' : 'var(--cp-border-default)'}`,
+        border: `0.75px dashed ${hover ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
         borderRadius: 8, cursor: 'pointer',
-        background: hover ? 'var(--cp-primary-5)' : 'transparent',
+        background: hover ? '#EFF6FF' : 'transparent',
         transition: 'all 150ms',
       }}
     >
-      <Plus size={28} color={hover ? 'var(--cp-primary-60)' : 'var(--cp-text-muted)'} strokeWidth={1.5} />
+      <Plus size={28} color={hover ? '#2563EB' : '#94A3B8'} strokeWidth={1.5} />
       <span style={{
         fontSize: 12.5, fontWeight: 500, marginTop: 8,
-        color: hover ? 'var(--cp-primary-60)' : 'var(--cp-text-muted)',
-        fontFamily: 'var(--cp-font-body)',
+        color: hover ? '#2563EB' : '#94A3B8',
+        fontFamily: "'Inter', sans-serif",
       }}>Create New Board</span>
       <span style={{
-        fontSize: 11.5, color: 'var(--cp-text-muted)', marginTop: 4,
-        maxWidth: 220, textAlign: 'center', fontFamily: 'var(--cp-font-body)',
+        fontSize: 11.5, color: '#94A3B8', marginTop: 4,
+        maxWidth: 220, textAlign: 'center', fontFamily: "'Inter', sans-serif",
       }}>Add a kanban board to organize and track work items</span>
     </button>
   );

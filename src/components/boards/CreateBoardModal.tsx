@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCreateBoard } from '@/hooks/useBoardMutations';
 import type { BoardVisibility, SwimlaneType } from '@/types/board';
@@ -27,10 +27,10 @@ const COLOR_SWATCHES = [
   '#2563EB', '#16A34A', '#7C3AED', '#DC2626', '#D97706', '#0D9488', '#525252', '#0284C7',
 ];
 
-const VISIBILITY_OPTIONS: { value: BoardVisibility; label: string; desc: string }[] = [
+const VISIBILITY_OPTIONS: { value: BoardVisibility; label: string; desc: string; warning?: boolean }[] = [
   { value: 'project', label: 'Project Board', desc: 'Visible to all project members' },
   { value: 'private', label: '🔒 Private', desc: 'Only you can see this board' },
-  { value: 'global', label: 'Organisation-wide', desc: 'Visible to all organisation members' },
+  { value: 'global', label: 'Organisation-wide', desc: 'Visible to all users in the organisation. Use with caution.', warning: true },
 ];
 
 export default function CreateBoardModal({ projectId, onClose }: Props) {
@@ -56,7 +56,6 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
       })) : undefined,
     });
     onClose();
-    // Navigate to the newly created board
     if (result.boardId) {
       navigate(`/projects/${projectId}/boards/${result.boardId}`);
     }
@@ -73,22 +72,23 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
         background: '#FFFFFF', borderRadius: 10,
         boxShadow: '0 20px 60px rgba(15,23,42,0.25)',
         display: 'flex', flexDirection: 'column',
+        border: '0.75px solid rgba(15,23,42,0.12)',
       }}>
         {/* Header */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '16px 20px', borderBottom: '0.75px solid var(--cp-border-subtle)',
+          padding: '16px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.08)',
         }}>
           <h2 style={{
-            fontSize: 15, fontFamily: 'var(--cp-font-heading)', fontWeight: 700,
-            color: 'var(--cp-text-primary)', margin: 0,
+            fontSize: 15, fontFamily: "'Sora', sans-serif", fontWeight: 700,
+            color: '#0F172A', margin: 0,
           }}>Create Board</h2>
           <button onClick={onClose} style={{
             width: 28, height: 28, borderRadius: 4, border: 'none',
             background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={16} color="var(--cp-text-muted)" />
+            <X size={16} color="#94A3B8" />
           </button>
         </div>
 
@@ -99,8 +99,8 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
             placeholder="e.g. Design Board, QA Workflow…"
             style={{
               width: '100%', height: 36, padding: '0 12px',
-              border: '0.75px solid var(--cp-border-default)', borderRadius: 6,
-              fontSize: 13, fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)',
+              border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
+              fontSize: 13, fontFamily: "'Inter', sans-serif", color: '#0F172A',
               outline: 'none', background: '#FFFFFF', marginBottom: 20, boxSizing: 'border-box',
             }}
           />
@@ -110,22 +110,22 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
             {TEMPLATES.map(t => (
               <button key={t.id} onClick={() => setTemplate(t.id)} style={{
                 padding: '10px 12px', borderRadius: 6, cursor: 'pointer', textAlign: 'left',
-                border: `0.75px solid ${template === t.id ? 'var(--cp-primary-60)' : 'var(--cp-border-default)'}`,
-                background: template === t.id ? 'var(--cp-primary-5)' : '#FFFFFF',
+                border: `0.75px solid ${template === t.id ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
+                background: template === t.id ? 'rgba(37,99,235,0.04)' : '#FFFFFF',
                 transition: 'all 100ms',
               }}>
-                <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-body)', marginBottom: 6 }}>
+                <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0F172A', fontFamily: "'Inter', sans-serif", marginBottom: 6 }}>
                   {t.name}
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {t.cols.length > 0 ? t.cols.map(c => (
                     <span key={c.name} style={{
                       fontSize: 10, padding: '2px 6px', borderRadius: 4,
-                      background: 'var(--cp-bg-sunken)', color: 'var(--cp-text-tertiary)',
-                      fontFamily: 'var(--cp-font-body)',
+                      background: '#F8FAFC', color: '#64748B',
+                      fontFamily: "'Inter', sans-serif",
                     }}>{c.name}</span>
                   )) : (
-                    <span style={{ fontSize: 10.5, color: 'var(--cp-text-muted)', fontFamily: 'var(--cp-font-body)' }}>
+                    <span style={{ fontSize: 10.5, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
                       Start from scratch
                     </span>
                   )}
@@ -140,16 +140,16 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
               <button key={opt.value} onClick={() => setSwimlane(opt.value)} style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
                 borderRadius: 6, cursor: 'pointer', textAlign: 'left',
-                border: `0.75px solid ${swimlane === opt.value ? 'var(--cp-primary-60)' : 'var(--cp-border-default)'}`,
-                background: swimlane === opt.value ? 'var(--cp-primary-5)' : '#FFFFFF',
+                border: `0.75px solid ${swimlane === opt.value ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
+                background: swimlane === opt.value ? 'rgba(37,99,235,0.04)' : '#FFFFFF',
                 transition: 'all 100ms',
               }}>
                 <RadioCircle selected={swimlane === opt.value} />
                 <div>
-                  <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-body)' }}>
+                  <div style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
                     {opt.label}
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--cp-text-tertiary)', fontFamily: 'var(--cp-font-body)', marginTop: 1 }}>
+                  <div style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>
                     {opt.desc}
                   </div>
                 </div>
@@ -163,7 +163,7 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
               <button key={c} onClick={() => setColor(c)} style={{
                 width: 28, height: 28, borderRadius: 6, border: 'none',
                 background: c, cursor: 'pointer',
-                outline: color === c ? '2px solid var(--cp-primary-60)' : 'none',
+                outline: color === c ? '2px solid #2563EB' : 'none',
                 outlineOffset: color === c ? 2 : 0,
                 transition: 'outline 100ms',
               }} />
@@ -176,16 +176,23 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
               <button key={opt.value} onClick={() => setVisibility(opt.value)} style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
                 borderRadius: 6, cursor: 'pointer', textAlign: 'left',
-                border: `0.75px solid ${visibility === opt.value ? 'var(--cp-primary-60)' : 'var(--cp-border-default)'}`,
-                background: visibility === opt.value ? 'var(--cp-primary-5)' : '#FFFFFF',
+                border: `0.75px solid ${visibility === opt.value ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
+                background: visibility === opt.value ? 'rgba(37,99,235,0.04)' : '#FFFFFF',
                 transition: 'all 100ms',
               }}>
                 <RadioCircle selected={visibility === opt.value} />
-                <div>
-                  <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-body)' }}>
-                    {opt.label}
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
+                      {opt.label}
+                    </span>
+                    {opt.warning && (
+                      <span title="Visible to all users in the organisation. Use with caution.">
+                        <AlertTriangle size={13} color="#D97706" />
+                      </span>
+                    )}
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--cp-text-tertiary)', fontFamily: 'var(--cp-font-body)', marginTop: 1 }}>
+                  <div style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>
                     {opt.desc}
                   </div>
                 </div>
@@ -197,21 +204,21 @@ export default function CreateBoardModal({ projectId, onClose }: Props) {
         {/* Footer */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
-          padding: '14px 20px', borderTop: '0.75px solid var(--cp-border-subtle)',
+          padding: '14px 20px', borderTop: '0.75px solid rgba(15,23,42,0.08)',
         }}>
           <button onClick={onClose} style={{
             height: 34, padding: '0 16px', borderRadius: 6,
-            border: '0.75px solid var(--cp-border-default)', background: '#FFFFFF',
-            fontSize: 12.5, fontWeight: 500, color: 'var(--cp-text-secondary)',
-            fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
+            border: '0.75px solid rgba(15,23,42,0.12)', background: '#FFFFFF',
+            fontSize: 12.5, fontWeight: 500, color: '#334155',
+            fontFamily: "'Inter', sans-serif", cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={handleCreate} disabled={!name.trim() || createBoard.isPending}
             style={{
               height: 34, padding: '0 18px', borderRadius: 6, border: 'none',
-              background: name.trim() ? 'linear-gradient(135deg, var(--cp-primary-60), var(--cp-primary-70))' : 'var(--cp-bg-sunken)',
+              background: name.trim() ? '#2563EB' : '#E2E8F0',
               fontSize: 12.5, fontWeight: 600,
-              color: name.trim() ? '#FFFFFF' : 'var(--cp-text-muted)',
-              fontFamily: 'var(--cp-font-body)',
+              color: name.trim() ? '#FFFFFF' : '#94A3B8',
+              fontFamily: "'Inter', sans-serif",
               cursor: name.trim() ? 'pointer' : 'not-allowed',
             }}>
             {createBoard.isPending ? 'Creating…' : 'Create Board'}
@@ -226,10 +233,10 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
   return (
     <label style={{
       display: 'block', fontSize: 12, fontWeight: 600,
-      color: 'var(--cp-text-secondary)', fontFamily: 'var(--cp-font-body)',
+      color: '#334155', fontFamily: "'Inter', sans-serif",
       marginBottom: 6,
     }}>
-      {children}{required && <span style={{ color: 'var(--cp-danger-60)' }}> *</span>}
+      {children}{required && <span style={{ color: '#DC2626' }}> *</span>}
     </label>
   );
 }
@@ -238,9 +245,9 @@ function RadioCircle({ selected }: { selected: boolean }) {
   return (
     <div style={{
       width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
-      border: `1.5px solid ${selected ? 'var(--cp-primary-60)' : 'var(--cp-border-default)'}`,
+      border: `1.5px solid ${selected ? '#2563EB' : 'rgba(15,23,42,0.15)'}`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: selected ? 'var(--cp-primary-60)' : '#FFFFFF',
+      background: selected ? '#2563EB' : '#FFFFFF',
       transition: 'all 100ms',
     }}>
       {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFFFFF' }} />}
