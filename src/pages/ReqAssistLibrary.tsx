@@ -141,13 +141,13 @@ export default function ReqAssistLibrary() {
   const handleSyncAll = useCallback(async () => {
     if (!documents) return;
     const unsyncedReady = documents.filter(d => (d.status === 'ready' || d.status === 'complete') && !(d as any).kb_synced);
-    if (!unsyncedReady.length) { toast.info('All documents already synced'); return; }
+    if (!unsyncedReady.length) { toast.info('All documents already indexed'); return; }
     setSyncingAll(true);
     let success = 0;
     let failed = 0;
     for (let i = 0; i < unsyncedReady.length; i++) {
       const doc = unsyncedReady[i];
-      toast.loading(`Syncing ${i + 1} of ${unsyncedReady.length}...`, { id: 'sync-all-progress' });
+      toast.loading(`Indexing ${i + 1} of ${unsyncedReady.length}...`, { id: 'sync-all-progress' });
       try {
         const jiraKey = (doc as any)?.jira_ticket_key;
         let brdId: string | null = null;
