@@ -428,7 +428,58 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               </div>
             </div>
 
-            {/* Row 6: Tags */}
+            {/* Row 6: Theme + Assigned Team */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={labelBase}>Theme</label>
+                <input
+                  value={theme}
+                  onChange={e => setTheme(e.target.value)}
+                  placeholder="e.g., Digital Maturity 2026..."
+                  style={inputBase}
+                  {...focusHandlers}
+                />
+              </div>
+              <div>
+                <label style={labelBase}>Assigned Team</label>
+                <Select value={assignedTeam} onValueChange={setAssignedTeam}>
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
+                    <SelectValue placeholder="Select team..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {['Senaie BAU', 'Integration Team', 'Mobile App Team'].map(t => (
+                      <SelectItem key={t} value={t}>{t}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Row 7: Target Release Date */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={labelBase}>Target Release Date</label>
+                <input
+                  type="date"
+                  value={targetReleaseDate}
+                  onChange={e => setTargetReleaseDate(e.target.value)}
+                  style={inputBase}
+                  {...focusHandlers}
+                />
+              </div>
+              <div>
+                <label style={labelBase}>Category</label>
+                <input
+                  value={category}
+                  onChange={e => setCategory(e.target.value)}
+                  placeholder="e.g., Process Improvement..."
+                  style={inputBase}
+                  {...focusHandlers}
+                />
+              </div>
+            </div>
+
+            {/* Row 8: Tags */}
             <div>
               <label style={labelBase}>Tags</label>
               <div style={{
