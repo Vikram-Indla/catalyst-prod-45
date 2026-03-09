@@ -563,7 +563,7 @@ export function IncidentListTable({
                               className="text-xs cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/release/incidents/${incident.id}`);
+                                navigate(`/incident-hub/view/${incident.id}`);
                               }}
                             >
                               <Eye className="h-3.5 w-3.5 mr-2" />
