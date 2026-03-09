@@ -507,14 +507,6 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
 
   return (
     <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
-      <div style={{ height: 32, background: '#FAFAFA', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px' }}>
-        <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif" }}>
-          Hierarchy Tree
-        </span>
-        <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif", fontVariantNumeric: 'tabular-nums' }}>
-          {total} items
-        </span>
-      </div>
       <div ref={treeRef} role="tree" aria-label="Work Item Hierarchy" tabIndex={0} onKeyDown={handleTreeKeyDown}
         style={{ outline: 'none' }}>
         <TreeBranch items={items} depth={0} expandedIds={expandedIds} onToggle={toggle}
