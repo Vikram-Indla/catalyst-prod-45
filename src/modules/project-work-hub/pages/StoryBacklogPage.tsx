@@ -126,7 +126,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                         </button>
                       </div>
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <WorkItemIcon type="story" />
+                        <JiraIssueTypeIcon type="story" />
                       </div>
                       <div style={{ width: 110, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: story.story_key ? '#2563EB' : '#9CA3AF' }}>
                         {story.story_key || '—'}
