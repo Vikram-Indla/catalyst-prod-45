@@ -136,7 +136,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                         <input type="checkbox" onClick={(e) => e.stopPropagation()} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ width: 14, height: 14 }} />
                       </div>
                       <div style={{ width: 26, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <button onClick={() => setDrawerStoryId(story.id)} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                        <button onClick={(e) => { e.stopPropagation(); setDrawerStoryId(story.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                           <ChevronRight className="h-3.5 w-3.5" style={{ color: '#94A3B8' }} />
                         </button>
                       </div>
