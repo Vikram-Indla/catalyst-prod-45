@@ -95,12 +95,3 @@ export function getImpactColor(score: number) {
 
 // AI insight text for board cards (deprecated — use DB ai_summary)
 export const AI_INSIGHTS: Record<string, string> = {};
-  'IDH-006': '✦ 3 legacy systems at EOL in Q3 2026',
-  'IDH-007': '✦ Mobile adoption: 78% field inspector preference',
-  'IDH-009': '✦ Blockchain ROI below threshold — defer',
-  'IDH-010': '✦ 87% overlap with IDH-001 — merge candidate',
-  'IDH-011': '✦ V2030 Pillar 1 alignment: 5/5',
-  'IDH-013': '✦ 14 ministry fee types — single gateway',
-  'IDH-014': '✦ ESG reporting mandate effective Q2 2026',
-  'IDH-015': '✦ Cross-ministry data sharing: 5 ministries ready',
-};
