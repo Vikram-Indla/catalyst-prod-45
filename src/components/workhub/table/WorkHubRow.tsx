@@ -182,11 +182,11 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
         );
 
       case 'created':
-        return <span style={{ fontSize: 13, color: '#0F172A', fontFamily: "'JetBrains Mono', monospace" }}>{formatDate(item.jira_created_at)}</span>;
+        return <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDate(item.jira_created_at)}</span>;
       case 'updated':
-        return <span style={{ fontSize: 13, color: '#0F172A', fontFamily: "'JetBrains Mono', monospace" }}>{formatDate(item.jira_updated_at)}</span>;
+        return <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDate(item.jira_updated_at)}</span>;
       case 'due_date':
-        return <span style={{ fontSize: 13, color: item.due_date ? '#0F172A' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer' }}>{formatDate(item.due_date)}</span>;
+        return <span style={{ fontSize: 12, color: item.due_date ? '#334155' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums', cursor: 'pointer' }}>{formatDate(item.due_date)}</span>;
 
       case 'points':
         if (editField === 'points') {
