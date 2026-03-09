@@ -13,14 +13,13 @@ export function CreateReleaseModal({ onClose }: Props) {
   const [name, setName] = useState('');
   const [targetDate, setTargetDate] = useState<Date | undefined>();
   const [version, setVersion] = useState('');
-  const [source, setSource] = useState('catalyst');
   const [error, setError] = useState('');
   const createRelease = useCreateRelease();
 
   const handleSubmit = () => {
     if (!name || !targetDate) return;
     setError('');
-    createRelease.mutate({ name, target_date: format(targetDate, 'yyyy-MM-dd'), version: version || undefined, source, status: 'todo' }, {
+    createRelease.mutate({ name, target_date: format(targetDate, 'yyyy-MM-dd'), version: version || undefined, source: 'catalyst', status: 'todo' }, {
       onSuccess: () => { toast.success('Release created'); onClose(); },
       onError: (err: any) => { setError(err.message || 'Failed to create release'); toast.error('Failed to create release'); },
     });
