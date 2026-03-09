@@ -7,7 +7,9 @@
 
 import { 
   Home,
-  Square,
+  Box,
+  Layers,
+  BookOpen,
   Map,
   GitBranch,
   FlaskConical,
