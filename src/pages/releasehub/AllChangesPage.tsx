@@ -276,7 +276,7 @@ function ChangeRow({ change: c, section, onClick }: { change: any; section: Chan
       <div className="w-[200px] shrink-0 border-l p-3 flex flex-col justify-center gap-1.5" style={{ borderColor: 'var(--cp-border-default)' }}>
         {c.work_item_count > 0 && <span className="text-[11px]" style={{ color: 'var(--cp-text-tertiary)' }}>{c.work_item_count} work items</span>}
         {c.pending_signoffs > 0 && (
-          <span className="text-[11px] font-bold" style={{ color: waitHours > 48 ? 'var(--cp-danger-60)' : waitHours > 24 ? 'var(--cp-warning-60)' : 'var(--cp-text-muted)', fontWeight: waitHours > 24 ? 'var(--cp-weight-bold)' : undefined }}>
+          <span className="text-[11px] font-bold" style={{ color: waitHours > 48 ? 'var(--cp-danger-60)' : waitHours > 24 ? 'var(--cp-warning-60)' : 'var(--cp-text-muted)', fontWeight: waitHours > 24 ? 700 : undefined }}>
             Sign-off: {c.oldest_pending_signoff_at ? `${Math.round(waitHours)}h wait` : 'pending'}
           </span>
         )}
