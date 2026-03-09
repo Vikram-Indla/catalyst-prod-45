@@ -1,12 +1,12 @@
 /**
- * IdeationDetailPanel — Slide-over panel with 5 tabs
- * Wired to Supabase for real data (descriptions, tags, comments, etc.)
+ * IdeationDetailPanel — Single-page slide-over panel
+ * Sections: Details → IMPACT → Comments (no tabs)
  */
 import React, { useState, useEffect } from 'react';
-import { X, Edit2 } from 'lucide-react';
+import { X, Edit2, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { Idea, STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, IDEA_IMPACT_FACTORS, getImpactColor } from './ideation-data';
-import { useIdeaRaw, useImpactFactors, useIdeaComments, useComplianceTags, useV2030Mappings, useEvidence, useAddIdeaComment } from '@/hooks/useIdeation';
+import { useIdeaRaw, useImpactFactors, useIdeaComments, useAddIdeaComment } from '@/hooks/useIdeation';
 import { useAuth } from '@/hooks/useAuth';
 
 interface Props {
@@ -14,16 +14,6 @@ interface Props {
   onClose: () => void;
   onConvert?: (key: string) => void;
 }
-
-type Tab = 'details' | 'impact' | 'ai' | 'evidence' | 'comments';
-
-const TABS: { key: Tab; label: string; purple?: boolean }[] = [
-  { key: 'details', label: 'Details' },
-  { key: 'impact', label: 'IMPACT' },
-  { key: 'ai', label: '✦ AI Analysis', purple: true },
-  { key: 'evidence', label: 'Evidence' },
-  { key: 'comments', label: 'Comments' },
-];
 
 // Source enum formatter
 const formatSource = (source: string): string => {
@@ -43,7 +33,7 @@ const formatSource = (source: string): string => {
   return map[source] || source;
 };
 
-// Parse tags from DB (handles both array and postgres string format)
+// Parse tags from DB
 const parseTags = (tags: string | string[] | null | undefined): string[] => {
   if (!tags) return [];
   if (Array.isArray(tags)) return tags;
@@ -54,12 +44,8 @@ const parseTags = (tags: string | string[] | null | undefined): string[] => {
 };
 
 export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Props) {
-  const [tab, setTab] = useState<Tab>('details');
-  
-  // Fetch raw data from Supabase
   const { data: rawIdea, isLoading } = useIdeaRaw(ideaKey);
 
-  // Build Idea object from raw DB data
   const localIdea: Idea | null = rawIdea ? {
     key: rawIdea.idea_key,
     title: rawIdea.title,
@@ -77,10 +63,6 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
     assigned_team: rawIdea.assigned_team || null,
     target_release_date: rawIdea.target_release_date || null,
   } : null;
-
-  useEffect(() => {
-    if (ideaKey) setTab('details');
-  }, [ideaKey]);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -104,9 +86,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
   return (
     <>
       {/* Overlay */}
-      <div onClick={onClose} style={{
-        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200,
-      }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
       {/* Panel */}
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '680px',
@@ -134,30 +114,24 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           </button>
         </div>
 
-        {/* Tabs */}
-        <div style={{ padding: '0 24px', borderBottom: '1px solid #E2E8F0', background: '#FAFAFA', display: 'flex' }}>
-          {TABS.map(t => {
-            const active = tab === t.key;
-            return (
-              <button key={t.key} onClick={() => setTab(t.key)} style={{
-                background: active ? '#FFFFFF' : 'transparent',
-                border: 'none', borderBottom: active ? `2px solid ${t.purple ? '#7C3AED' : '#2563EB'}` : '2px solid transparent',
-                padding: '10px 14px', fontSize: '13px', fontWeight: active ? 600 : 500, cursor: 'pointer',
-                color: active ? (t.purple ? '#7C3AED' : '#2563EB') : '#64748B',
-              }}>
-                {t.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Content */}
+        {/* Single scrollable content */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
-          {tab === 'details' && <DetailsTab idea={localIdea} rawIdea={rawIdea} onConvert={onConvert} />}
-          {tab === 'impact' && <ImpactTab idea={localIdea} ideaKey={ideaKey} rawIdea={rawIdea} />}
-          {tab === 'ai' && <AiTab idea={localIdea} rawIdea={rawIdea} ideaId={rawIdea?.id} />}
-          {tab === 'evidence' && <EvidenceTab ideaId={rawIdea?.id} />}
-          {tab === 'comments' && <CommentsTab ideaId={rawIdea?.id} />}
+          {/* ─── DETAILS SECTION ─── */}
+          <DetailsSection idea={localIdea} rawIdea={rawIdea} onConvert={onConvert} />
+
+          {/* ─── Divider ─── */}
+          <div style={{ height: '1px', background: '#E2E8F0', margin: '24px 0' }} />
+
+          {/* ─── IMPACT SECTION ─── */}
+          <SectionHeader label="IMPACT Score" />
+          <ImpactSection idea={localIdea} ideaKey={ideaKey} rawIdea={rawIdea} />
+
+          {/* ─── Divider ─── */}
+          <div style={{ height: '1px', background: '#E2E8F0', margin: '24px 0' }} />
+
+          {/* ─── COMMENTS SECTION ─── */}
+          <SectionHeader label="Comments" />
+          <CommentsSection ideaId={rawIdea?.id} />
         </div>
       </div>
 
@@ -171,13 +145,21 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
   );
 }
 
-// ─── Details Tab ─────────────────────────────────────────────────
-function DetailsTab({ idea, rawIdea, onConvert }: { idea: Idea; rawIdea: any; onConvert?: (key: string) => void }) {
+// ─── Section Header ──────────────────────────────────────────────
+function SectionHeader({ label }: { label: string }) {
+  return (
+    <div style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '16px' }}>
+      {label}
+    </div>
+  );
+}
+
+// ─── Details Section ─────────────────────────────────────────────
+function DetailsSection({ idea, rawIdea, onConvert }: { idea: Idea; rawIdea: any; onConvert?: (key: string) => void }) {
   const sc = STATUS_CONFIG[idea.status];
   const tc = TYPE_CONFIG[idea.type];
   const pc = PRIORITY_CONFIG[idea.priority] || PRIORITY_CONFIG.P4;
 
-  // Use DB description, fallback to empty
   const description = rawIdea?.description || null;
   const source = rawIdea?.source ? formatSource(rawIdea.source) : idea.subtitle.split(' · ')[0];
   const tags = parseTags(rawIdea?.tags);
@@ -258,7 +240,7 @@ function DetailsTab({ idea, rawIdea, onConvert }: { idea: Idea; rawIdea: any; on
         </FieldRow>
       </div>
 
-      {/* Description — from database */}
+      {/* Description */}
       <div style={{ background: '#F8FAFC', padding: '12px', borderRadius: '8px', border: '1px solid #F4F4F5', marginBottom: '16px' }}>
         <div style={{ fontSize: '11px', fontWeight: 600, color: '#94A3B8', marginBottom: '6px', textTransform: 'uppercase' }}>Description</div>
         <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.6 }}>
@@ -266,7 +248,7 @@ function DetailsTab({ idea, rawIdea, onConvert }: { idea: Idea; rawIdea: any; on
         </div>
       </div>
 
-      {/* Tags — from database array */}
+      {/* Tags */}
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
         {tags.length > 0 ? (
           [...new Set(tags)].map(tag => (
@@ -293,11 +275,11 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
   );
 }
 
-// ─── IMPACT Tab ──────────────────────────────────────────────────
-function ImpactTab({ idea, ideaKey, rawIdea }: { idea: Idea; ideaKey: string | null; rawIdea: any }) {
+// ─── IMPACT Section ──────────────────────────────────────────────
+function ImpactSection({ idea, ideaKey, rawIdea }: { idea: Idea; ideaKey: string | null; rawIdea: any }) {
   const { data: dbFactors } = useImpactFactors(ideaKey);
   const factors = dbFactors || IDEA_IMPACT_FACTORS[idea.key] || { I: 3, M: 3, P: 3, A: 3, C: 3, T: 3 };
-  
+
   const impactScore = rawIdea?.impact_total ? parseFloat(rawIdea.impact_total) : idea.impact;
   const ic = getImpactColor(impactScore);
   const ratingLabel = impactScore >= 4.0 ? 'Excellent' : impactScore >= 3.0 ? 'Good' : impactScore >= 2.0 ? 'Fair' : 'Low';
@@ -316,7 +298,7 @@ function ImpactTab({ idea, ideaKey, rawIdea }: { idea: Idea; ideaKey: string | n
   return (
     <div>
       {/* Score header */}
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px' }}>
         <span style={{ fontSize: '36px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '-1px', color: ic.text }}>
           {impactScore.toFixed(2)}
         </span>
@@ -351,227 +333,114 @@ function ImpactTab({ idea, ideaKey, rawIdea }: { idea: Idea; ideaKey: string | n
   );
 }
 
-// ─── AI Analysis Tab ─────────────────────────────────────────────
-function AiTab({ idea, rawIdea, ideaId }: { idea: Idea; rawIdea: any; ideaId: string | null }) {
-  const { data: compliance = [] } = useComplianceTags(ideaId);
-  const { data: v2030 = [] } = useV2030Mappings(ideaId);
+// ─── Comments Section ────────────────────────────────────────────
+function CommentsSection({ ideaId }: { ideaId: string | null }) {
+  const { data: comments = [], isLoading } = useIdeaComments(ideaId);
+  const addComment = useAddIdeaComment(ideaId || '');
+  const { user } = useAuth();
+  const [newComment, setNewComment] = useState('');
 
-  const isAiEnriched = rawIdea?.ai_enrichment_status === 'completed' || rawIdea?.ai_enrichment_status === 'complete' || rawIdea?.ai_summary;
-  const aiSummary = rawIdea?.ai_summary;
-  const aiTriageAction = rawIdea?.ai_triage_action;
-  const aiTriageReason = rawIdea?.ai_triage_reason;
-  const aiConfidence = rawIdea?.ai_confidence;
+  const handleSubmit = async () => {
+    if (!newComment.trim() || !ideaId) return;
+    try {
+      await addComment.mutateAsync({ body: newComment.trim(), userId: user?.id });
+      setNewComment('');
+      toast.success('Comment added');
+    } catch {
+      toast.error('Failed to add comment');
+    }
+  };
 
-  if (!isAiEnriched) {
-    return (
-      <div style={{ textAlign: 'center', padding: '48px 24px' }}>
-        <div style={{ fontSize: '40px', marginBottom: '12px' }}>✦</div>
-        <div style={{ fontSize: '15px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>This idea has not been AI-enriched yet</div>
-        <div style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '20px' }}>Run AI analysis to get automated classification, compliance mapping, and V2030 alignment.</div>
-        <button style={{
-          background: '#7C3AED', color: '#FFFFFF', border: 'none', borderRadius: '8px',
-          padding: '10px 20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-        }}>
-          ✦ Run AI Analysis
-        </button>
-      </div>
-    );
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  if (isLoading) {
+    return <div style={{ fontSize: '13px', color: '#94A3B8' }}>Loading comments...</div>;
   }
 
   return (
     <div>
-      {/* AI Summary */}
-      {aiSummary && (
-        <div style={{ background: 'linear-gradient(135deg, #F5F3FF, #EFF6FF)', borderRadius: '12px', padding: '16px', marginBottom: '20px', border: '1px solid #EDE9FE' }}>
-          <div style={{ fontSize: '13px', fontWeight: 700, color: '#7C3AED', marginBottom: '6px' }}>✦ AI Summary</div>
-          <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.6 }}>{aiSummary}</div>
+      {comments.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '24px', color: '#94A3B8', fontSize: '13px', fontStyle: 'italic' }}>
+          No comments yet. Be the first to add one.
         </div>
-      )}
-
-      {/* AI Confidence */}
-      {aiConfidence != null && (
-        <div style={{ marginBottom: '20px' }}>
-          <div style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8', marginBottom: '8px', textTransform: 'uppercase' }}>AI Confidence</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ flex: 1, height: '8px', background: '#E4E4E7', borderRadius: '4px', overflow: 'hidden' }}>
-              <div style={{ width: `${Math.round(aiConfidence * 100)}%`, height: '100%', background: '#7C3AED', borderRadius: '4px' }} />
-            </div>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: '#7C3AED' }}>{Math.round(aiConfidence * 100)}%</span>
-          </div>
-        </div>
-      )}
-
-      {/* AI Triage Recommendation */}
-      {aiTriageAction && (
-        <div style={{ marginBottom: '20px', background: '#FFF7ED', border: '1px solid #FED7AA', borderRadius: '8px', padding: '12px' }}>
-          <div style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase' }}>Triage Recommendation</div>
-          <div style={{ fontSize: '13px', fontWeight: 700, color: '#C2410C', marginBottom: '4px' }}>{aiTriageAction.replace('_', ' ').toUpperCase()}</div>
-          {aiTriageReason && <div style={{ fontSize: '12px', color: '#92400E', lineHeight: 1.5 }}>{aiTriageReason}</div>}
-        </div>
-      )}
-
-      {/* Compliance Tags from DB */}
-      <div style={{ marginBottom: '20px' }}>
-        <div style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8', marginBottom: '8px', textTransform: 'uppercase' }}>Compliance Auto-Tags</div>
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-          {compliance.length > 0 ? compliance.map((c: any) => (
-            <span key={c.id || c.tag_code} style={{ background: '#F1F5F9', color: '#334155', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>
-              ✓ {c.tag_code || c.tag_name}
-            </span>
-          )) : (
-            <span style={{ fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>No compliance tags</span>
-          )}
-        </div>
-      </div>
-
-      {/* V2030 Mappings from DB */}
-      <div>
-        <div style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8', marginBottom: '8px', textTransform: 'uppercase' }}>V2030 Mapping</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-          {v2030.length > 0 ? v2030.map((p: any) => {
-            const bgMap: Record<string, string> = { 'vibrant_society': '#DBEAFE', 'thriving_economy': '#DCFCE7', 'ambitious_nation': '#FEF3C7' };
-            const nameMap: Record<string, string> = { 'vibrant_society': 'Vibrant Society', 'thriving_economy': 'Thriving Economy', 'ambitious_nation': 'Ambitious Nation' };
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
+          {comments.map((c: any) => {
+            const name = c.author_name || c.commenter_name || 'Unknown';
+            const initials = name.split(' ').map((p: string) => p[0]).join('').toUpperCase().slice(0, 2);
+            const timeAgo = c.created_at ? getRelativeTime(c.created_at) : '';
             return (
-              <div key={p.id || p.pillar_key} style={{ background: bgMap[p.pillar_key] || '#F4F4F5', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-                <div style={{ fontSize: '18px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", color: '#0F172A' }}>{parseFloat(p.alignment_score || 0).toFixed(1)}</div>
-                <div style={{ fontSize: '10px', fontWeight: 600, color: '#64748B', marginTop: '2px' }}>{nameMap[p.pillar_key] || p.pillar_key}</div>
+              <div key={c.id} style={{
+                background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.06)',
+                borderRadius: '6px', padding: '12px 16px',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{
+                      width: '28px', height: '28px', borderRadius: '50%', background: '#2563EB',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#FFF', fontSize: '10px', fontWeight: 700,
+                    }}>{initials}</div>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>{name}</span>
+                  </div>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: '#94A3B8' }}>{timeAgo}</span>
+                </div>
+                <div style={{ fontSize: '14px', color: '#334155', lineHeight: 1.5 }}>
+                  {c.body || c.comment_text || ''}
+                </div>
               </div>
             );
-          }) : (
-            <div style={{ gridColumn: '1 / -1', fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>No V2030 mappings</div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Evidence Tab ────────────────────────────────────────────────
-function EvidenceTab({ ideaId }: { ideaId: string | null }) {
-  const { data: evidence = [], isLoading } = useEvidence(ideaId);
-
-  if (isLoading) {
-    return <div style={{ padding: '24px', textAlign: 'center', color: '#94A3B8', fontSize: '13px' }}>Loading evidence...</div>;
-  }
-
-  if (evidence.length === 0) {
-    return (
-      <div style={{ textAlign: 'center', padding: '48px 24px' }}>
-        <div style={{ fontSize: '40px', marginBottom: '12px' }}>📎</div>
-        <div style={{ fontSize: '15px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>No evidence attached yet</div>
-        <div style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '20px' }}>Attach documents, data, or benchmarks to strengthen this idea.</div>
-        <button style={{
-          background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '8px',
-          padding: '10px 20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-        }}>
-          + Add Evidence
-        </button>
-      </div>
-    );
-  }
-
-  const typeColors: Record<string, { color: string; bg: string }> = {
-    document: { color: '#2563EB', bg: '#EFF6FF' },
-    data: { color: '#16A34A', bg: '#F0FDF4' },
-    benchmark: { color: '#D97706', bg: '#FFFBEB' },
-  };
-
-  return (
-    <div>
-      {evidence.map((ev: any, i: number) => {
-        const tc = typeColors[ev.evidence_type] || { color: '#64748B', bg: '#F8FAFC' };
-        return (
-          <div key={ev.id || i} style={{ border: '1px solid #E2E8F0', borderRadius: '8px', padding: '14px', marginBottom: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <span style={{ background: tc.bg, color: tc.color, padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 700 }}>{ev.evidence_type}</span>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>{ev.title}</span>
-            </div>
-            {ev.description && <div style={{ fontSize: '12px', color: '#64748B', lineHeight: 1.5, marginBottom: '8px' }}>{ev.description}</div>}
-            <div style={{ fontSize: '11px', color: '#94A3B8' }}>
-              {ev.created_at ? new Date(ev.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ─── Comments Tab ────────────────────────────────────────────────
-function CommentsTab({ ideaId }: { ideaId: string | null }) {
-  const [comment, setComment] = useState('');
-  const { data: dbComments = [], isLoading, error } = useIdeaComments(ideaId);
-  const addComment = useAddIdeaComment();
-  const { user } = useAuth();
-
-  const handlePost = () => {
-    if (!comment.trim() || !ideaId || !user?.id) return;
-    addComment.mutate(
-      { ideaId, userId: user.id, content: comment.trim() },
-      { onSuccess: () => setComment('') }
-    );
-  };
-
-  if (isLoading) {
-    return <div style={{ fontSize: '13px', color: '#94A3B8', padding: '12px 0' }}>Loading comments...</div>;
-  }
-
-  if (error) {
-    return <div style={{ fontSize: '13px', color: '#EF4444', padding: '12px 0' }}>Failed to load comments</div>;
-  }
-
-  return (
-    <div>
-      {dbComments.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '24px', color: '#94A3B8', fontSize: '13px' }}>
-          <p>No comments yet</p>
-          <p style={{ fontSize: '11px', marginTop: '4px' }}>Be the first to add a comment</p>
+          })}
         </div>
       )}
 
-      {dbComments.map((c: any, i: number) => {
-        const authorName = c.profiles?.full_name || 'Unknown';
-        const initials = authorName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
-        const timeAgo = c.created_at ? new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-        const isAi = c.is_ai_generated;
-
-        return (
-          <div key={c.id || i} style={{
-            marginBottom: '16px', padding: isAi ? '10px' : undefined,
-            background: isAi ? '#F5F3FF' : undefined, borderRadius: isAi ? '8px' : undefined,
-            border: isAi ? '1px solid #EDE9FE' : undefined,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: isAi ? '#7C3AED' : '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '10px', fontWeight: 700 }}>
-                {isAi ? '✦' : initials}
-              </div>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>{isAi ? 'AI Assistant' : authorName}</span>
-              <span style={{ fontSize: '11px', color: '#94A3B8' }}>{timeAgo}</span>
-            </div>
-            <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.6, marginLeft: '36px' }}>{c.content}</div>
-          </div>
-        );
-      })}
-
       {/* Comment input */}
-      <div style={{ marginTop: '20px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
         <textarea
-          value={comment}
-          onChange={e => setComment(e.target.value)}
-          placeholder="Add a comment..."
-          style={{ width: '100%', minHeight: '80px', padding: '10px', border: '1px solid #E2E8F0', borderRadius: '8px', fontSize: '13px', resize: 'vertical', outline: 'none' }}
+          value={newComment}
+          onChange={e => setNewComment(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Add a comment... (Ctrl+Enter to send)"
+          style={{
+            flex: 1, minHeight: '36px', maxHeight: '120px', resize: 'vertical',
+            border: '1px solid #E2E8F0', borderRadius: '6px', padding: '8px 12px',
+            fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none',
+          }}
         />
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '8px' }}>
-          <button style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', cursor: 'pointer', color: '#334155' }}>Attach</button>
+        {newComment.trim() && (
           <button
-            onClick={handlePost}
-            disabled={!comment.trim() || addComment.isPending}
-            className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors cursor-pointer"
+            onClick={handleSubmit}
+            disabled={addComment.isPending}
+            style={{
+              background: '#2563EB', color: '#FFF', border: 'none', borderRadius: '6px',
+              width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', flexShrink: 0,
+            }}
           >
-            {addComment.isPending ? 'Posting...' : 'Post Comment'}
+            <Send size={16} />
           </button>
-        </div>
+        )}
       </div>
     </div>
   );
+}
+
+// ─── Relative time helper ────────────────────────────────────────
+function getRelativeTime(dateStr: string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return 'just now';
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay < 7) return `${diffDay}d ago`;
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
