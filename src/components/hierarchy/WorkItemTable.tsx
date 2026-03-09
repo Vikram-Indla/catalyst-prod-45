@@ -75,7 +75,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
       <span style={{
         fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
         padding: '1px 4px', borderRadius: 2,
-        background: '#F3E8FF', color: '#7C3AED',
+        background: '#CCFBF1', color: '#0F766E',
         textTransform: 'uppercase', marginLeft: 4, flexShrink: 0,
       }}>CATALYST</span>
     );
