@@ -544,6 +544,7 @@ export function IncidentListTable({
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                             <button 
+                              aria-label="Row actions"
                               className={cn(
                                 "w-6 h-6 rounded flex items-center justify-center transition-opacity",
                                 "hover:bg-surface-hover text-text-muted",
