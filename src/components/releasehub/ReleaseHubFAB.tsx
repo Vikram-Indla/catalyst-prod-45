@@ -22,9 +22,9 @@ export function ReleaseHubFAB({ onNewRelease, onNewChange, onImportSN }: Props) 
   }, [open, handleEsc]);
 
   const items = [
-    { icon: <Package size={14} className="text-[#2563EB]" />, label: 'New Release', action: onNewRelease, shortcut: 'R' },
-    { icon: <RefreshCw size={14} className="text-[#2563EB]" />, label: 'New Change', action: onNewChange, shortcut: 'C' },
-    { icon: <Upload size={14} className="text-[#2563EB]" />, label: 'Import SN CHG', action: onImportSN || (() => {}), shortcut: null as string | null },
+    { icon: <Package size={14} style={{ color: 'var(--cp-primary-60)' }} />, label: 'New Release', action: onNewRelease, shortcut: 'R' },
+    { icon: <RefreshCw size={14} style={{ color: 'var(--cp-primary-60)' }} />, label: 'New Change', action: onNewChange, shortcut: 'C' },
+    { icon: <Upload size={14} style={{ color: 'var(--cp-primary-60)' }} />, label: 'Import SN CHG', action: onImportSN || (() => {}), shortcut: null as string | null },
   ];
 
   return (
@@ -36,26 +36,35 @@ export function ReleaseHubFAB({ onNewRelease, onNewChange, onImportSN }: Props) 
               key={opt.label}
               onClick={() => { opt.action(); setOpen(false); }}
               style={{
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
-                background: 'white',
-                border: '1px solid #E2E8F0',
-                borderRadius: 8,
-                padding: '8px 16px',
+                height: 36,
+                padding: '0 16px',
+                backgroundColor: 'var(--cp-bg-elevated)',
+                border: '1px solid var(--cp-border-default)',
+                borderRadius: 'var(--cp-radius-default)',
+                boxShadow: 'var(--cp-shadow-overlay)',
                 fontSize: 13,
+                fontFamily: 'var(--cp-font-body)',
                 fontWeight: 600,
-                color: '#1E293B',
+                color: 'var(--cp-text-primary)',
                 cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
                 whiteSpace: 'nowrap',
-                animation: `fadeSlideIn 0.15s ease ${i * 50}ms both`,
+                animation: `rh-fab-in 0.15s ease ${i * 50}ms both`,
               }}
             >
               {opt.icon}
               {opt.label}
               {opt.shortcut && (
-                <kbd style={{ fontSize: 9, fontFamily: 'monospace', color: '#94A3B8', background: '#F1F5F9', padding: '1px 5px', borderRadius: 3 }}>
+                <kbd style={{
+                  fontSize: 9,
+                  fontFamily: 'var(--cp-font-mono)',
+                  color: 'var(--cp-text-muted)',
+                  background: 'var(--cp-bg-sunken)',
+                  padding: '1px 5px',
+                  borderRadius: 'var(--cp-radius-sm)',
+                }}>
                   {opt.shortcut}
                 </kbd>
               )}
@@ -65,13 +74,13 @@ export function ReleaseHubFAB({ onNewRelease, onNewChange, onImportSN }: Props) 
       )}
 
       <button
-        onClick={() => setOpen(!open)}
-        aria-label={open ? 'Close menu' : 'Open menu'}
+        onClick={() => setOpen(f => !f)}
+        aria-label={open ? 'Close actions' : 'Open actions'}
         style={{
           width: 52,
           height: 52,
-          borderRadius: '50%',
-          background: '#2563EB',
+          borderRadius: 'var(--cp-radius-full, 50%)',
+          backgroundColor: 'var(--cp-primary-60)',
           border: 'none',
           cursor: 'pointer',
           display: 'flex',
@@ -82,6 +91,8 @@ export function ReleaseHubFAB({ onNewRelease, onNewChange, onImportSN }: Props) 
           transform: open ? 'rotate(45deg)' : 'rotate(0deg)',
           color: 'white',
         }}
+        onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--cp-primary-70)')}
+        onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--cp-primary-60)')}
       >
         <Plus size={24} />
       </button>

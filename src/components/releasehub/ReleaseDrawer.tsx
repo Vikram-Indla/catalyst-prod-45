@@ -249,7 +249,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
               {stageSignoffs.filter((so: any) => so.status === 'pending').map((so: any) => {
                 const waitHours = so.wait_started_at ? differenceInHours(new Date(), new Date(so.wait_started_at)) : 0;
                 return (
-                  <span key={so.id} className={`ml-2 text-[11px] font-bold ${waitHours > 48 ? 'text-[#DC2626]' : waitHours > 24 ? 'text-[#C2840A]' : 'text-[#64748B]'}`}>
+                  <span key={so.id} className="ml-2 text-[11px] font-bold" style={{ color: waitHours > 48 ? 'var(--cp-danger-60)' : waitHours > 24 ? 'var(--cp-warning-60)' : 'var(--cp-text-muted)' }}>
                     {getSignoffWaitTime(so.wait_started_at)}
                   </span>
                 );

@@ -106,7 +106,12 @@
   --cp-radius-md: 4px;
   --cp-radius-default: 6px;
   --cp-radius-lg: 8px;
+  --cp-radius-full: 9999px;
   --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.04);
+  --cp-shadow-sm: 0 1px 3px 0 rgba(0,0,0,0.06);
+  --cp-shadow-md: 0 4px 8px rgba(0,0,0,0.08);
+  --cp-shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --cp-shadow-xl: 0 4px 16px rgba(37,99,235,0.40);
   --cp-shadow-overlay: 0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31);
 
   /* ═══ Board Manager Tokens ═══ */
@@ -5431,10 +5436,22 @@ input[type="range"]::-moz-range-thumb {
   padding: 24px;
   max-width: 100%;
   min-height: calc(100vh - 48px);
-  background-color: #F1F5F9;
+  background-color: var(--cp-bg-sunken);
+}
+
+.rh-section-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--cp-bg-sunken);
 }
 
 @keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rh-fab-in {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
