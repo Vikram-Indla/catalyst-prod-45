@@ -102,7 +102,7 @@ export async function fetchWorkItems(
 
   const { data, error } = await query;
   if (error) throw error;
-  return (data ?? []) as WorkHubItem[];
+  return (data ?? []) as unknown as WorkHubItem[];
 }
 
 export async function fetchWorkItem(itemId: string): Promise<WorkHubItem> {
