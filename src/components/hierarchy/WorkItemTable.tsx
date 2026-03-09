@@ -578,7 +578,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
   }
 
   return (
-    <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
+    <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF', width: '100%' }}>
       {/* Bulk action bar */}
       <BulkActionBar
         selectedCount={selectedKeys.size}
@@ -592,107 +592,111 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         onBulkMove={() => setShowMoveModal(true)}
       />
 
-      {/* Header row */}
-      <div style={{ display: 'flex', alignItems: 'center', height: 36, background: '#FAFAFA', borderBottom: '1px solid #E2E8F0' }}>
-        <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <input
-            type="checkbox"
-            checked={allVisibleSelected}
-            ref={el => { if (el) el.indeterminate = someSelected && !allVisibleSelected; }}
-            onChange={() => allVisibleSelected ? clearSelection() : selectAll()}
-            style={{ width: 16, height: 16, cursor: 'pointer' }}
-          />
+      <div style={{ width: '100%', overflowX: 'auto' }}>
+        {/* Header row */}
+        <div
+          className="hi-column-header-row"
+          style={{
+            display: 'grid',
+            gridTemplateColumns,
+            alignItems: 'center',
+            height: 36,
+            minWidth: 1100,
+            background: '#F1F5F9',
+            borderBottom: '2px solid #E2E8F0',
+          }}
+        >
+          <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <input
+              type="checkbox"
+              checked={allVisibleSelected}
+              ref={el => { if (el) el.indeterminate = someSelected && !allVisibleSelected; }}
+              onChange={() => allVisibleSelected ? clearSelection() : selectAll()}
+              style={{ width: 16, height: 16, cursor: 'pointer' }}
+            />
+          </div>
+          {columns.map(col => (
+            <ColHeader
+              key={col.id}
+              label={col.label}
+              sortKey={col.id}
+              currentSort={sortKey}
+              currentDir={sortDir}
+              onSort={handleSort}
+            />
+          ))}
+          <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ColumnManagerDropdown visibleColumns={visibleColumns} onChange={setVisibleColumns} />
+          </div>
         </div>
-        {columns.map(col => (
-          <ColHeader
-            key={col.id}
-            label={col.label}
-            sortKey={col.id}
-            currentSort={sortKey}
-            currentDir={sortDir}
-            onSort={handleSort}
-            width={col.id === 'work' ? undefined : col.width}
-            flex={col.id === 'work' ? 1 : undefined}
-          />
-        ))}
-        {/* Column manager gear */}
-        <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <ColumnManagerDropdown visibleColumns={visibleColumns} onChange={setVisibleColumns} />
-        </div>
+
+        {/* Body rows */}
+        {visibleRows.map(({ item, depth, hasChildren }, index) => {
+          const isExpanded = expandedIds.has(item.id);
+          const isSelected = selectedId === item.id;
+          const isChecked = selectedKeys.has(item.key);
+
+          return (
+            <div
+              key={item.id}
+              className={`hi-table-row ${isChecked ? 'checked' : ''} ${hasChildren ? 'has-children' : ''}`}
+              onClick={() => onSelect(item)}
+              onContextMenu={(e) => handleContextMenu(e, item)}
+              style={{
+                height: 44,
+                maxHeight: 44,
+                minWidth: 1100,
+                display: 'grid',
+                gridTemplateColumns,
+                alignItems: 'center',
+                borderBottom: '1px solid #F1F5F9',
+                cursor: 'pointer',
+                background: isChecked ? '#EFF6FF' : isSelected ? 'rgba(37, 99, 235, 0.08)' : index % 2 === 1 ? '#FAFAFA' : '#FFFFFF',
+              }}
+            >
+              <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={() => toggleSelect(item.key)}
+                  onClick={e => e.stopPropagation()}
+                  style={{ width: 16, height: 16, cursor: 'pointer' }}
+                />
+              </div>
+
+              {columns.map(col => (
+                <React.Fragment key={col.id}>
+                  {renderCell(col.id, item, depth, hasChildren, isExpanded)}
+                </React.Fragment>
+              ))}
+
+              <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <button
+                  className="hi-row-action drag-handle"
+                  onClick={(e) => openContextMenuFor3Dot(e, item)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}
+                >
+                  <MoreHorizontal size={16} color="#64748B" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Body rows */}
-      {visibleRows.map(({ item, depth, hasChildren }) => {
-        const isExpanded = expandedIds.has(item.id);
-        const isSelected = selectedId === item.id;
-        const isChecked = selectedKeys.has(item.key);
-
-        return (
-          <div
-            key={item.id}
-            className="hi-table-row"
-            onClick={() => onSelect(item)}
-            onContextMenu={(e) => handleContextMenu(e, item)}
-            style={{
-              height: 44, maxHeight: 44, display: 'flex', alignItems: 'center',
-              borderBottom: '1px solid #F1F5F9', cursor: 'pointer',
-              background: isChecked ? '#F0F9FF' : isSelected ? '#EFF6FF' : undefined,
-              fontFamily: "'Inter', sans-serif",
-            }}
+      {/* Footer */}
+      <div style={{ height: 40, background: '#F8FAFC', borderTop: '1px solid #E2E8F0', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: 12, color: '#64748B' }}>
+          Showing {Math.min(perPage, totalFlat)} of {totalFlat} items
+        </span>
+        {perPage < totalFlat && (
+          <button
+            onClick={() => setPerPage(p => p + 50)}
+            style={{ marginLeft: 8, background: 'none', border: 'none', padding: 0, fontSize: 12, fontWeight: 600, color: '#2563EB', cursor: 'pointer' }}
           >
-            {/* Checkbox */}
-            <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <input
-                type="checkbox"
-                checked={isChecked}
-                onChange={() => toggleSelect(item.key)}
-                onClick={e => e.stopPropagation()}
-                style={{ width: 16, height: 16, cursor: 'pointer' }}
-              />
-            </div>
-
-            {/* Dynamic columns */}
-            {columns.map(col => (
-              <React.Fragment key={col.id}>
-                {renderCell(col.id, item, depth, hasChildren, isExpanded)}
-              </React.Fragment>
-            ))}
-
-            {/* 3-dot actions (F16) */}
-            <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <button className="hi-row-action"
-                onClick={(e) => openContextMenuFor3Dot(e, item)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
-                <MoreHorizontal size={16} color="#64748B" />
-              </button>
-            </div>
-          </div>
-        );
-      })}
-
-      {/* Footer — no refresh button */}
-      <div style={{ height: 40, background: '#FAFAFA', borderTop: '1px solid #E2E8F0', padding: '0 16px', display: 'flex', alignItems: 'center' }}>
-        <button
-          onClick={onCreateClick}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 500, color: '#64748B', padding: 0 }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#2563EB')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
-        >
-          <Plus size={14} /> Create
-        </button>
-        <div style={{ flex: 1, textAlign: 'center' }}>
-          <span style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
-            {Math.min(perPage, totalFlat)} of {totalFlat}
-          </span>
-          {perPage < totalFlat && (
-            <button
-              onClick={() => setPerPage(p => p + 50)}
-              style={{ marginLeft: 8, background: 'none', border: '1px solid #E2E8F0', borderRadius: 4, padding: '2px 8px', fontSize: 11, fontWeight: 500, color: '#2563EB', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}
-            >
-              Load more
-            </button>
-          )}
-        </div>
+            Show more
+          </button>
+        )}
       </div>
 
       {/* Context menu (F15 + F16) */}
