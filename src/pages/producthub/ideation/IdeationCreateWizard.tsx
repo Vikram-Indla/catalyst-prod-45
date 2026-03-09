@@ -154,6 +154,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
       setTitle(''); setDesc(''); setIdeaType(''); setPriority('');
       setDepartment(''); setSource(''); setAssignee(''); setCategory('');
       setTags([]); setTagInput(''); setTitleError(false); setDescError(false);
+      setTheme(''); setAssignedTeam(''); setTargetReleaseDate('');
     }
   }, [open]);
 
