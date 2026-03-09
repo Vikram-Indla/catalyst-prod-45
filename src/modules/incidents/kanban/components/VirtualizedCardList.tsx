@@ -48,8 +48,8 @@ export const VirtualizedCardList = memo(function VirtualizedCardList({
 
   if (incidents.length === 0) {
     return (
-      <div className="py-6 text-center text-[10px] text-muted-foreground/40">
-        {emptyMessage}
+      <div className="m-3 py-8 text-center border-2 border-dashed border-border rounded-lg">
+        <span className="text-xs text-muted-foreground">{emptyMessage}</span>
       </div>
     );
   }
