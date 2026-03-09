@@ -183,7 +183,7 @@ function DueDateCell({ date }: { date?: string }) {
 
 /* ── Type colors ── */
 const TYPE_COLORS: Record<string, string> = {
-  'Epic': '#2563EB', 'Feature': '#7C3AED', 'Story': '#16A34A', 'Sub-task': '#64748B',
+  'Epic': '#2563EB', 'Feature': '#0D9488', 'Story': '#16A34A', 'Sub-task': '#64748B',
   'Task': '#64748B', 'Bug': '#DC2626',
 };
 
