@@ -1,9 +1,9 @@
 /**
- * WorkHubInlineCreate — Inline row creation at bottom of each group
+ * WorkHubInlineCreate — Inline row creation (Stage D: wired to real mutation)
  * 36px, shows "+ Add [type]" placeholder, expands to input on click
  */
 import { useState, useRef, useEffect } from 'react';
-import { Plus, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 interface WorkHubInlineCreateProps {
   defaultType: string;
@@ -24,7 +24,8 @@ export default function WorkHubInlineCreate({ defaultType, groupCategory, onSubm
     if (!summary.trim()) return;
     onSubmit(summary.trim(), defaultType);
     setSummary('');
-    // Stay in create mode for rapid entry
+    // Stay in create mode for rapid entry — input stays focused
+    setTimeout(() => inputRef.current?.focus(), 50);
   };
 
   const handleCancel = () => {
@@ -65,7 +66,7 @@ export default function WorkHubInlineCreate({ defaultType, groupCategory, onSubm
         value={summary}
         onChange={e => setSummary(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder={`What needs to be done?`}
+        placeholder="What needs to be done?"
         style={{
           flex: 1, border: 'none', background: 'transparent', outline: 'none',
           fontSize: 13, color: '#0F172A', fontFamily: 'Inter, sans-serif',
