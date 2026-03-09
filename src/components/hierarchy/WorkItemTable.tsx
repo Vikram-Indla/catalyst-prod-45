@@ -173,7 +173,7 @@ function DueDateCell({ date }: { date?: string }) {
   const dDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   let color = '#334155';
   if (dDate < today) color = '#DC2626';
-  else if (dDate.getTime() === today.getTime()) color = '#D97706';
+  else if (dDate.getTime() === today.getTime()) color = '#0284C7';
   return (
     <span style={{ fontSize: 12, color }}>
       {d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
