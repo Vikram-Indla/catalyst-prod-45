@@ -37,11 +37,6 @@ import { RoadmapDatesTable } from '@/components/ideas-roadmap/RoadmapDatesTable'
 import { RoadmapSidePanel } from '@/components/ideas-roadmap/RoadmapSidePanel';
 import { PresentationModal } from '@/components/ideas-roadmap/PresentationModal';
 import { exportRoadmapPptx } from '@/services/ideasRoadmapPptx';
-import { RoadmapToolbar } from '@/components/ideas-roadmap/RoadmapToolbar';
-import { RoadmapFilters } from '@/components/ideas-roadmap/RoadmapFilters';
-import { RoadmapKanban } from '@/components/ideas-roadmap/RoadmapKanban';
-import { RoadmapDatesTable } from '@/components/ideas-roadmap/RoadmapDatesTable';
-import { RoadmapSidePanel } from '@/components/ideas-roadmap/RoadmapSidePanel';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
   AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
