@@ -22,7 +22,7 @@ export interface BacklogEpic {
   assignee_id: string | null;
   assignee?: BacklogUser | null;
   end_date: string | null;
-  priority: string | null;
+  health: string | null;
   deleted_at: string | null;
   primary_program_id: string | null;
 }
