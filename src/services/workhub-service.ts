@@ -1,6 +1,7 @@
 /**
- * WorkHub Service Layer — DYNAMITE V2 Stage B
+ * WorkHub Service Layer — DYNAMITE V2 Stage D (Sacred Gate)
  * CRUD operations against ph_issues via workhub_items_view
+ * ZERO mock data. All real Supabase queries.
  */
 import { supabase } from '@/integrations/supabase/client';
 import type { FilterConfig, SortConfig, BulkOperation } from '@/types/workhub';
@@ -55,6 +56,18 @@ export interface WorkHubActivityEntry {
   created_at: string;
 }
 
+// ═══ STATUS → STATUS_CATEGORY MAP ═══
+const STATUS_TO_CATEGORY: Record<string, string> = {
+  'Backlog': 'To Do', 'In Requirements': 'To Do', 'To Do': 'To Do', 'Open': 'To Do',
+  'In Progress': 'In Progress', 'In Review': 'In Progress', 'In Development': 'In Progress',
+  'In Beta': 'In Progress', 'In UAT': 'In Progress', 'In QA': 'In Progress', 'Ready for QA': 'In Progress',
+  'Done': 'Done', 'Closed': 'Done', 'In Production': 'Done', 'Released': 'Done',
+};
+
+export function deriveStatusCategory(status: string): string {
+  return STATUS_TO_CATEGORY[status] || 'To Do';
+}
+
 // ═══ READ ═══
 export async function fetchWorkItems(
   projectKey: string,
@@ -91,6 +104,9 @@ export async function fetchWorkItems(
       assignee_id: 'assignee_account_id',
       created_at: 'jira_created_at',
       updated_at: 'jira_updated_at',
+      created: 'jira_created_at',
+      updated: 'jira_updated_at',
+      points: 'story_points',
     };
     const col = colMap[sort.column] || sort.column;
     query = query.order(col, { ascending: sort.direction === 'asc' });
@@ -115,6 +131,85 @@ export async function fetchWorkItem(itemId: string): Promise<WorkHubItem> {
   return data as unknown as WorkHubItem;
 }
 
+// ═══ CREATE ═══
+export async function createWorkItem(payload: {
+  summary: string;
+  issue_type: string;
+  status: string;
+  status_category: string;
+  priority: string;
+  project_key: string;
+  project_id: string;
+  assignee_display_name?: string | null;
+  assignee_account_id?: string | null;
+  description_text?: string | null;
+  due_date?: string | null;
+  story_points?: number | null;
+  parent_id?: string | null;
+}): Promise<WorkHubItem> {
+  // Generate next issue_key
+  const { data: maxKeyRow } = await supabase
+    .from('ph_issues')
+    .select('issue_key')
+    .eq('project_key', payload.project_key)
+    .order('issue_key', { ascending: false })
+    .limit(1)
+    .single();
+
+  let nextNum = 1;
+  if (maxKeyRow?.issue_key) {
+    const match = maxKeyRow.issue_key.match(/-(\d+)$/);
+    if (match) nextNum = parseInt(match[1], 10) + 1;
+  }
+  const issue_key = `${payload.project_key}-${nextNum}`;
+
+  // Get max sort_order
+  const { data: maxSortRow } = await supabase
+    .from('ph_issues')
+    .select('sort_order')
+    .eq('project_key', payload.project_key)
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .single();
+  const sort_order = ((maxSortRow as any)?.sort_order ?? 0) + 1;
+
+  const insertPayload = {
+    issue_key,
+    summary: payload.summary,
+    issue_type: payload.issue_type,
+    status: payload.status,
+    status_category: payload.status_category,
+    priority: payload.priority,
+    project_key: payload.project_key,
+    project_id: payload.project_id,
+    assignee_display_name: payload.assignee_display_name || null,
+    assignee_account_id: payload.assignee_account_id || null,
+    description_text: payload.description_text || null,
+    due_date: payload.due_date || null,
+    story_points: payload.story_points ?? null,
+    sort_order,
+    source: 'manual',
+    jira_created_at: new Date().toISOString(),
+    jira_updated_at: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase
+    .from('ph_issues')
+    .insert(insertPayload as any)
+    .select()
+    .single();
+  if (error) throw error;
+
+  // Log activity
+  await supabase.from('workhub_activity').insert({
+    issue_key,
+    actor_name: 'Current User',
+    action: 'created',
+  });
+
+  return data as unknown as WorkHubItem;
+}
+
 // ═══ UPDATE ═══
 export async function updateWorkItem(
   itemId: string,
@@ -123,9 +218,14 @@ export async function updateWorkItem(
   // Fetch old values for activity logging
   const { data: oldItem } = await supabase
     .from('ph_issues')
-    .select('status, priority, assignee_account_id, assignee_display_name, story_points, summary, issue_key')
+    .select('status, priority, assignee_account_id, assignee_display_name, story_points, summary, issue_key, status_category')
     .eq('id', itemId)
     .single();
+
+  // Auto-calculate status_category when status changes
+  if (updates.status && !updates.status_category) {
+    updates.status_category = deriveStatusCategory(updates.status);
+  }
 
   const { error } = await supabase
     .from('ph_issues')
@@ -174,6 +274,15 @@ export async function deleteWorkItem(itemId: string): Promise<void> {
   }
 }
 
+// ═══ UNDO DELETE ═══
+export async function undoDeleteWorkItem(itemId: string): Promise<void> {
+  const { error } = await supabase
+    .from('ph_issues')
+    .update({ deleted_at: null })
+    .eq('id', itemId);
+  if (error) throw error;
+}
+
 // ═══ BULK OPERATIONS ═══
 export async function bulkUpdateWorkItems(operation: BulkOperation): Promise<void> {
   if (operation.type === 'delete') {
@@ -193,9 +302,16 @@ export async function bulkUpdateWorkItems(operation: BulkOperation): Promise<voi
   const field = fieldMap[operation.type];
   if (!field || !operation.value) return;
 
+  const updatePayload: Record<string, any> = { [field]: operation.value };
+
+  // Auto-calc status_category on bulk status change
+  if (operation.type === 'status_change') {
+    updatePayload.status_category = deriveStatusCategory(operation.value);
+  }
+
   const { error } = await supabase
     .from('ph_issues')
-    .update({ [field]: operation.value })
+    .update(updatePayload)
     .in('id', operation.item_ids);
   if (error) throw error;
 }
