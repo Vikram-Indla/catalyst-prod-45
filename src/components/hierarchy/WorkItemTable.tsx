@@ -580,7 +580,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       })}
 
-      {/* Footer */}
+      {/* Footer — no refresh button */}
       <div style={{ height: 40, background: '#FAFAFA', borderTop: '1px solid #E2E8F0', padding: '0 16px', display: 'flex', alignItems: 'center' }}>
         <button
           onClick={onCreateClick}
@@ -603,11 +603,6 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
             </button>
           )}
         </div>
-        {onRefresh && (
-          <button onClick={onRefresh} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
-            <RefreshCw size={14} color="#64748B" />
-          </button>
-        )}
       </div>
 
       {/* Context menu (F15 + F16) */}
