@@ -100,8 +100,6 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
   const [theme, setTheme] = useState('');
   const [assignedTeam, setAssignedTeam] = useState('');
   const [targetReleaseDate, setTargetReleaseDate] = useState('');
-  const [titleError, setTitleError] = useState(false);
-  const [descError, setDescError] = useState(false);
 
   // Fetch profiles for assignee
   const { data: profiles = [] } = useQuery({
