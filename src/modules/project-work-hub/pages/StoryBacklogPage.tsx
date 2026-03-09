@@ -4,7 +4,8 @@ import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useStoryBacklog } from '../hooks/useBacklogData';
 import { groupByStatus, STORY_GROUP_ORDER, STORY_STATUS_LOZENGE, getLozengeStyle, formatDueDate, getPriorityLabel, getPriorityColor, getInitials } from '../utils/backlog.utils';
-import { WorkItemIcon } from '../components/shared/WorkItemIcon';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { ParentEpicChip } from '../components/shared/ParentEpicChip';
 import { StoryDetailDrawer } from '../components/drawers/StoryDetailDrawer';
 import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
@@ -20,6 +21,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
   const projectId = propProjectId || params.projectId;
   const queryClient = useQueryClient();
   const { data: stories, isLoading, error } = useStoryBacklog(projectId || '');
+  const avatarsByName = useProfileAvatarsByName();
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [showCreate, setShowCreate] = useState(false);
@@ -65,7 +67,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
     <div className="h-full flex flex-col" style={{ background: '#FFFFFF' }}>
       <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: '#E2E8F0' }}>
         <div className="flex items-center gap-3">
-          <WorkItemIcon type="story" size={20} />
+          <JiraIssueTypeIcon type="story" size={20} />
           <h1 className="text-base font-semibold" style={{ color: '#0F172A', fontWeight: 650 }}>Story Backlog</h1>
           <span className="text-xs" style={{ color: '#64748B' }}>{total} stories across {groups.length} groups</span>
         </div>
@@ -124,7 +126,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                         </button>
                       </div>
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <WorkItemIcon type="story" />
+                        <JiraIssueTypeIcon type="story" />
                       </div>
                       <div style={{ width: 110, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: story.story_key ? '#2563EB' : '#9CA3AF' }}>
                         {story.story_key || '—'}
@@ -141,10 +143,19 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                           <span style={{ color: '#9CA3AF', fontSize: 12 }}>—</span>
                         )}
                       </div>
-                      <div style={{ width: 158, flexShrink: 0, fontSize: 12, color: story.assignee_name ? '#334155' : '#9CA3AF', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>{getInitials(story.assignee_name || null)}</div>
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.assignee_name || 'Unassigned'}</span>
-                      </div>
+                      {(() => {
+                        const avatarUrl = story.assignee_name ? avatarsByName.get(story.assignee_name.toLowerCase()) : null;
+                        return (
+                          <div style={{ width: 158, flexShrink: 0, fontSize: 12, color: story.assignee_name ? '#334155' : '#9CA3AF', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            {avatarUrl ? (
+                              <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
+                            ) : (
+                              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>{getInitials(story.assignee_name || null)}</div>
+                            )}
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.assignee_name || 'Unassigned'}</span>
+                          </div>
+                        );
+                      })()}
                       <div style={{ width: 96, flexShrink: 0, fontSize: 12, color: '#6B7280' }}>{formatDueDate(story.start_date)}</div>
                       <div style={{ width: 88, flexShrink: 0, fontSize: 12, position: 'relative' }}>
                         <span style={{ color: getPriorityColor(story.priority) }}>{getPriorityLabel(story.priority)}</span>

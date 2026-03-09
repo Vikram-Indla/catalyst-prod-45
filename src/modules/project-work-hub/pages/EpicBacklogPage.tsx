@@ -5,7 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useEpicBacklog } from '../hooks/useBacklogData';
 import { useProject } from '@/hooks/useProjects';
 import { groupByStatus, EPIC_GROUP_ORDER, EPIC_STATUS_LOZENGE, getLozengeStyle, formatDueDate, isDueDateOverdue, getInitials } from '../utils/backlog.utils';
-import { WorkItemIcon } from '../components/shared/WorkItemIcon';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { EpicDetailDrawer } from '../components/drawers/EpicDetailDrawer';
 import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
 import { CreateEpicDialog } from '@/modules/program-epics';
@@ -21,6 +22,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
   const queryClient = useQueryClient();
   const { data: project } = useProject(projectId || '');
   const { data: epics, isLoading, error } = useEpicBacklog(projectId || '');
+  const avatarsByName = useProfileAvatarsByName();
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [showCreate, setShowCreate] = useState(false);
@@ -79,7 +81,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: '#E2E8F0' }}>
         <div className="flex items-center gap-3">
-          <WorkItemIcon type="epic" size={20} />
+          <JiraIssueTypeIcon type="epic" size={20} />
           <h1 className="text-base font-semibold" style={{ color: '#0F172A', fontWeight: 650 }}>Epic Backlog</h1>
           <span className="text-xs" style={{ color: '#64748B' }}>{totalEpics} epics across {groups.length} groups</span>
         </div>
@@ -152,7 +154,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                       </div>
                       {/* Type icon */}
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <WorkItemIcon type="epic" />
+                        <JiraIssueTypeIcon type="epic" />
                       </div>
                       {/* Key */}
                       <div style={{ width: 110, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: epic.epic_key ? '#2563EB' : '#9CA3AF' }}>
@@ -171,12 +173,21 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                         )}
                       </div>
                       {/* Assignee */}
-                      <div style={{ width: 158, flexShrink: 0, fontSize: 12, color: epic.assignee_name ? '#334155' : '#9CA3AF', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
-                          {getInitials(epic.assignee_name || null)}
-                        </div>
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{epic.assignee_name || 'Unassigned'}</span>
-                      </div>
+                      {(() => {
+                        const avatarUrl = epic.assignee_name ? avatarsByName.get(epic.assignee_name.toLowerCase()) : null;
+                        return (
+                          <div style={{ width: 158, flexShrink: 0, fontSize: 12, color: epic.assignee_name ? '#334155' : '#9CA3AF', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            {avatarUrl ? (
+                              <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
+                            ) : (
+                              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
+                                {getInitials(epic.assignee_name || null)}
+                              </div>
+                            )}
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{epic.assignee_name || 'Unassigned'}</span>
+                          </div>
+                        );
+                      })()}
                       {/* Due date */}
                       <div style={{ width: 96, flexShrink: 0, fontSize: 12, color: overdue ? '#DC2626' : '#6B7280' }}>
                         {formatDueDate(epic.end_date)}
