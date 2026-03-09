@@ -423,7 +423,24 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
   const allVisibleSelected = visibleRows.length > 0 && visibleRows.every(r => selectedKeys.has(r.item.key));
   const someSelected = visibleRows.some(r => selectedKeys.has(r.item.key));
 
-  /* ── Cell renderer ── */
+  const gridTemplateColumns = useMemo(() => {
+    const map: Record<string, string> = {
+      work: 'minmax(300px, 1fr)',
+      status: '150px',
+      parent: '220px',
+      assignee: '160px',
+      created: '120px',
+      fixVersion: '160px',
+      labels: '160px',
+      storyPoints: '90px',
+      dueDate: '120px',
+      reporter: '140px',
+      updated: '140px',
+      priority: '120px',
+      type: '120px',
+    };
+    return ['44px', ...columns.map((col) => map[col.id] || `${col.width}px`), '40px'].join(' ');
+  }, [columns]);
   function renderCell(colId: string, item: WorkItem, depth: number, hasChildren: boolean, isExpanded: boolean) {
     switch (colId) {
       case 'work':
