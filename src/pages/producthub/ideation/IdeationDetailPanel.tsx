@@ -230,10 +230,30 @@ function DetailsTab({ idea, rawIdea, onConvert }: { idea: Idea; rawIdea: any; on
             </div>
           ) : <span style={{ fontSize: '13px', color: '#94A3B8' }}>Unassigned</span>}
         </FieldRow>
-        <FieldRow label="Created"><span style={{ fontSize: '13px', color: '#334155' }}>{idea.subtitle.split(' · ')[1]}, 2026</span></FieldRow>
+        <FieldRow label="Created"><span style={{ fontSize: '13px', color: '#334155' }}>{idea.subtitle.split(' · ')[1]}</span></FieldRow>
         <FieldRow label="Votes">
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: idea.votes > 0 ? '#16A34A' : idea.votes < 0 ? '#EF4444' : '#94A3B8' }}>
             ▲ {idea.votes}
+          </span>
+        </FieldRow>
+        <FieldRow label="Theme">
+          <span style={{ fontSize: '13px', color: idea.theme ? '#334155' : '#94A3B8', fontStyle: idea.theme ? 'normal' : 'italic' }}>
+            {idea.theme || 'No theme'}
+          </span>
+        </FieldRow>
+        <FieldRow label="Assigned Team">
+          <span style={{ fontSize: '13px', color: idea.assigned_team ? '#334155' : '#94A3B8', fontStyle: idea.assigned_team ? 'normal' : 'italic' }}>
+            {idea.assigned_team || 'Unassigned'}
+          </span>
+        </FieldRow>
+        <FieldRow label="Target Release">
+          <span style={{ fontSize: '13px', color: idea.target_release_date ? '#334155' : '#94A3B8', fontStyle: idea.target_release_date ? 'normal' : 'italic' }}>
+            {idea.target_release_date ? new Date(idea.target_release_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Not set'}
+          </span>
+        </FieldRow>
+        <FieldRow label="Release Quarter">
+          <span style={{ fontSize: '13px', color: idea.target_release_date ? '#334155' : '#94A3B8' }}>
+            {idea.target_release_date ? `Q${Math.ceil((new Date(idea.target_release_date).getMonth() + 1) / 3)} ${new Date(idea.target_release_date).getFullYear()}` : '—'}
           </span>
         </FieldRow>
       </div>
