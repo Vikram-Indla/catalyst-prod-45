@@ -154,7 +154,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                       </div>
                       {/* Type icon */}
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <WorkItemIcon type="epic" />
+                        <JiraIssueTypeIcon type="epic" />
                       </div>
                       {/* Key */}
                       <div style={{ width: 110, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: epic.epic_key ? '#2563EB' : '#9CA3AF' }}>
