@@ -6,6 +6,7 @@ interface RoadmapDatesTableProps {
   ideas: RoadmapIdea[];
   onSelectIdea: (idea: RoadmapIdea) => void;
   onToggleCommitted: (idea: RoadmapIdea) => void;
+  mutatingIds: Set<string>;
 }
 
 const headerStyle: React.CSSProperties = {
@@ -27,7 +28,7 @@ function formatDate(d: string | null): string {
   return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
 }
 
-export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted }: RoadmapDatesTableProps) {
+export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, mutatingIds }: RoadmapDatesTableProps) {
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: '0 16px 16px' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
@@ -45,96 +46,103 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted }: Ro
           </tr>
         </thead>
         <tbody>
-          {ideas.map(idea => (
-            <tr
-              key={idea.id}
-              onClick={() => onSelectIdea(idea)}
-              style={{ cursor: 'pointer', transition: 'background 100ms' }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              <td style={cellStyle}>
-                <span style={{
-                  fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
-                  color: '#94A3B8', textTransform: 'uppercase',
-                }}>
-                  {idea.ideaKey}
-                </span>
-              </td>
-              <td style={{ ...cellStyle, fontSize: 13, fontWeight: 650, color: '#0F172A' }}>
-                <div style={{
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 300,
-                }}>
-                  {idea.title}
-                </div>
-              </td>
-              <td style={cellStyle}>
-                {idea.team ? (
+          {ideas.map(idea => {
+            const isMutating = mutatingIds.has(idea.id);
+            return (
+              <tr
+                key={idea.id}
+                onClick={() => onSelectIdea(idea)}
+                style={{
+                  cursor: 'pointer', transition: 'background 100ms, opacity 150ms',
+                  opacity: isMutating ? 0.6 : 1,
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <td style={cellStyle}>
                   <span style={{
-                    fontSize: 10, fontWeight: 600, background: '#F1F5F9',
-                    color: '#475569', padding: '2px 6px', borderRadius: 4,
+                    fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
+                    color: '#94A3B8', textTransform: 'uppercase',
                   }}>
-                    {idea.team}
-                  </span>
-                ) : (
-                  <span style={{ color: '#CBD5E1' }}>—</span>
-                )}
-              </td>
-              <td style={cellStyle}>
-                {idea.quarter ? (
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, background: '#F0FDFA',
-                    color: '#0D9488', padding: '2px 8px', borderRadius: 100,
-                  }}>
-                    {idea.quarter}
-                  </span>
-                ) : (
-                  <span style={{ color: '#CBD5E1' }}>—</span>
-                )}
-              </td>
-              {MILESTONE_CONFIGS.map(m => (
-                <td key={m.key} style={cellStyle}>
-                  <span style={{
-                    fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
-                    color: idea.milestones[m.key] ? '#334155' : '#CBD5E1',
-                    fontVariantNumeric: 'tabular-nums',
-                  }}>
-                    {formatDate(idea.milestones[m.key])}
+                    {idea.ideaKey}
                   </span>
                 </td>
-              ))}
-              <td style={cellStyle}>
-                <button
-                  onClick={e => { e.stopPropagation(); onToggleCommitted(idea); }}
-                  style={{
-                    width: 32, height: 18, borderRadius: 9, border: 'none', cursor: 'pointer',
-                    background: idea.isCommitted ? '#0D9488' : '#CBD5E1',
-                    position: 'relative',
-                  }}
-                >
-                  <span style={{
-                    position: 'absolute', top: 3, width: 12, height: 12, borderRadius: 6,
-                    background: '#FFFFFF',
-                    left: idea.isCommitted ? 17 : 3,
-                  }} />
-                </button>
-              </td>
-              <td style={cellStyle}>
-                {idea.isCommitted && (
+                <td style={{ ...cellStyle, fontSize: 13, fontWeight: 650, color: '#0F172A' }}>
+                  <div style={{
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 300,
+                  }}>
+                    {idea.title}
+                  </div>
+                </td>
+                <td style={cellStyle}>
+                  {idea.team ? (
+                    <span style={{
+                      fontSize: 10, fontWeight: 600, background: '#F1F5F9',
+                      color: '#475569', padding: '2px 6px', borderRadius: 4,
+                    }}>
+                      {idea.team}
+                    </span>
+                  ) : (
+                    <span style={{ color: '#CBD5E1' }}>—</span>
+                  )}
+                </td>
+                <td style={cellStyle}>
+                  {idea.quarter ? (
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, background: '#F0FDFA',
+                      color: '#0D9488', padding: '2px 8px', borderRadius: 100,
+                    }}>
+                      {idea.quarter}
+                    </span>
+                  ) : (
+                    <span style={{ color: '#CBD5E1' }}>—</span>
+                  )}
+                </td>
+                {MILESTONE_CONFIGS.map(m => (
+                  <td key={m.key} style={cellStyle}>
+                    <span style={{
+                      fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
+                      color: idea.milestones[m.key] ? '#334155' : '#CBD5E1',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}>
+                      {formatDate(idea.milestones[m.key])}
+                    </span>
+                  </td>
+                ))}
+                <td style={cellStyle}>
                   <button
-                    onClick={e => { e.stopPropagation(); onSelectIdea(idea); }}
+                    onClick={e => { e.stopPropagation(); onToggleCommitted(idea); }}
+                    disabled={isMutating}
                     style={{
-                      height: 22, padding: '0 6px', borderRadius: 4,
-                      border: '1px solid #E2E8F0', background: '#FFFFFF',
-                      color: '#64748B', fontSize: 10, fontWeight: 600, cursor: 'pointer',
+                      width: 32, height: 18, borderRadius: 9, border: 'none', cursor: 'pointer',
+                      background: idea.isCommitted ? '#0D9488' : '#CBD5E1',
+                      position: 'relative',
                     }}
                   >
-                    → Init
+                    <span style={{
+                      position: 'absolute', top: 3, width: 12, height: 12, borderRadius: 6,
+                      background: '#FFFFFF',
+                      left: idea.isCommitted ? 17 : 3,
+                    }} />
                   </button>
-                )}
-              </td>
-            </tr>
-          ))}
+                </td>
+                <td style={cellStyle}>
+                  {idea.isCommitted && (
+                    <button
+                      onClick={e => { e.stopPropagation(); onSelectIdea(idea); }}
+                      style={{
+                        height: 22, padding: '0 6px', borderRadius: 4,
+                        border: '1px solid #E2E8F0', background: '#FFFFFF',
+                        color: '#64748B', fontSize: 10, fontWeight: 600, cursor: 'pointer',
+                      }}
+                    >
+                      → Init
+                    </button>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

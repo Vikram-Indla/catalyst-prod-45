@@ -8,20 +8,20 @@ interface RoadmapSidePanelProps {
   onClose: () => void;
   onSaveMilestones: (ideaId: string, milestones: Partial<RoadmapMilestones>) => void;
   onToggleCommitted: (idea: RoadmapIdea) => void;
-  onConvertToInitiative: (ideaId: string) => void;
+  onConvertToInitiative: (idea: RoadmapIdea) => void;
+  onQuarterChange: (idea: RoadmapIdea, quarter: RoadmapQuarter) => void;
+  isSaving: boolean;
 }
 
 const QUARTERS: RoadmapQuarter[] = ['Q1', 'Q2', 'Q3', 'Q4'];
 
 export function RoadmapSidePanel({
-  idea, onClose, onSaveMilestones, onToggleCommitted, onConvertToInitiative,
+  idea, onClose, onSaveMilestones, onToggleCommitted, onConvertToInitiative, onQuarterChange, isSaving,
 }: RoadmapSidePanelProps) {
   const [milestones, setMilestones] = useState<RoadmapMilestones>({ ...idea.milestones });
   const [visible, setVisible] = useState(false);
 
-  useEffect(() => {
-    requestAnimationFrame(() => setVisible(true));
-  }, []);
+  useEffect(() => { requestAnimationFrame(() => setVisible(true)); }, []);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose(); };
@@ -29,9 +29,7 @@ export function RoadmapSidePanel({
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  useEffect(() => {
-    setMilestones({ ...idea.milestones });
-  }, [idea.id]);
+  useEffect(() => { setMilestones({ ...idea.milestones }); }, [idea.id]);
 
   function handleClose() {
     setVisible(false);
@@ -86,20 +84,15 @@ export function RoadmapSidePanel({
           height: 56, display: 'flex', alignItems: 'center', gap: 12,
           padding: '0 20px', borderBottom: '1px solid #E2E8F0', flexShrink: 0,
         }}>
-          <button
-            onClick={handleClose}
-            style={{
-              width: 32, height: 32, borderRadius: 6, border: '1px solid #E2E8F0',
-              background: '#FFFFFF', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
-          >
+          <button onClick={handleClose} style={{
+            width: 32, height: 32, borderRadius: 6, border: '1px solid #E2E8F0',
+            background: '#FFFFFF', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
             <X size={14} color="#64748B" />
           </button>
           <div style={{ flex: 1 }}>
-            <span style={{
-              fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: '#94A3B8',
-            }}>
+            <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: '#94A3B8' }}>
               {idea.ideaKey}
             </span>
             <div style={{
@@ -111,25 +104,18 @@ export function RoadmapSidePanel({
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {idea.isCommitted && (
-              <span style={{
-                fontSize: 10, fontWeight: 700, color: '#0D9488',
-                fontFamily: "'Inter', sans-serif",
-              }}>
-                Committed
-              </span>
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#0D9488' }}>Committed</span>
             )}
             <button
               onClick={() => onToggleCommitted(idea)}
               style={{
                 width: 32, height: 18, borderRadius: 9, border: 'none', cursor: 'pointer',
-                background: idea.isCommitted ? '#0D9488' : '#CBD5E1',
-                position: 'relative',
+                background: idea.isCommitted ? '#0D9488' : '#CBD5E1', position: 'relative',
               }}
             >
               <span style={{
                 position: 'absolute', top: 3, width: 12, height: 12, borderRadius: 6,
-                background: '#FFFFFF',
-                left: idea.isCommitted ? 17 : 3, transition: 'left 150ms',
+                background: '#FFFFFF', left: idea.isCommitted ? 17 : 3, transition: 'left 150ms',
               }} />
             </button>
           </div>
@@ -137,7 +123,7 @@ export function RoadmapSidePanel({
 
         {/* Content */}
         <div style={{ flex: 1, overflow: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 20 }}>
-          {/* Quarter selector (if committed) */}
+          {/* Quarter selector */}
           {idea.isCommitted && (
             <div>
               <div style={{ ...labelStyle, marginBottom: 8 }}>TARGET QUARTER</div>
@@ -145,9 +131,7 @@ export function RoadmapSidePanel({
                 {QUARTERS.map(q => (
                   <button
                     key={q}
-                    onClick={() => {
-                      // Note: quarter change is handled via onToggleCommitted flow
-                    }}
+                    onClick={() => onQuarterChange(idea, q)}
                     style={{
                       flex: 1, height: 32, borderRadius: 6, border: '1px solid #E2E8F0',
                       cursor: 'pointer', fontSize: 12, fontWeight: 700,
@@ -166,7 +150,7 @@ export function RoadmapSidePanel({
           {/* Convert CTA */}
           {idea.isCommitted && (
             <button
-              onClick={() => onConvertToInitiative(idea.id)}
+              onClick={() => onConvertToInitiative(idea)}
               style={{
                 width: '100%', height: 36, borderRadius: 6, border: 'none',
                 background: '#0D9488', color: '#FFFFFF', cursor: 'pointer',
@@ -184,15 +168,9 @@ export function RoadmapSidePanel({
             <div style={{ ...labelStyle, marginBottom: 10 }}>DELIVERY MILESTONES</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {MILESTONE_CONFIGS.map(m => (
-                <div key={m.key} style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                }}>
-                  <div style={{
-                    width: 8, height: 8, borderRadius: 4, background: m.color, flexShrink: 0,
-                  }} />
-                  <span style={{
-                    width: 100, fontSize: 12, fontWeight: 600, color: '#334155',
-                  }}>
+                <div key={m.key} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: 4, background: m.color, flexShrink: 0 }} />
+                  <span style={{ width: 100, fontSize: 12, fontWeight: 600, color: '#334155' }}>
                     {m.fullLabel}
                   </span>
                   <input
@@ -242,7 +220,6 @@ export function RoadmapSidePanel({
             </div>
           </div>
 
-          {/* Description */}
           {idea.description && (
             <div>
               <div style={{ ...labelStyle, marginBottom: 6 }}>DESCRIPTION</div>
@@ -263,13 +240,14 @@ export function RoadmapSidePanel({
         }}>
           <button
             onClick={handleSave}
+            disabled={isSaving}
             style={{
               flex: 1, height: 36, borderRadius: 6, border: 'none',
-              background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
+              background: isSaving ? '#94A3B8' : '#2563EB', color: '#FFFFFF', cursor: isSaving ? 'default' : 'pointer',
               fontSize: 13, fontWeight: 650, fontFamily: "'Inter', sans-serif",
             }}
           >
-            Save Changes
+            {isSaving ? 'Saving…' : 'Save Changes'}
           </button>
           <span style={{ fontSize: 10, color: '#94A3B8' }}>⌘S to save</span>
         </div>
