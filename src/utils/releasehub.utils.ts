@@ -37,7 +37,7 @@ export const groupChangesBySection = (changes: ChangeSummary[]) => {
     past: [], today: [], this_week: [], upcoming: [], future: []
   };
   changes.forEach(c => {
-    const section = classifyChangeDate(c.deployment_date);
+    const section = classifyChangeDate(c.deployment_date, (c as any).status);
     sections[section].push(c);
   });
   Object.values(sections).forEach(arr =>

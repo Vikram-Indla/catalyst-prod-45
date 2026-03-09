@@ -5431,5 +5431,5 @@ input[type="range"]::-moz-range-thumb {
   padding: 24px;
   max-width: 100%;
   min-height: calc(100vh - 48px);
-  background: hsl(var(--muted) / 0.4);
+  background-color: #EEF2F7;
 }
