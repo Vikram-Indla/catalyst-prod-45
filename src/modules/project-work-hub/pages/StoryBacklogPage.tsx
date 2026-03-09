@@ -143,10 +143,19 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                           <span style={{ color: '#9CA3AF', fontSize: 12 }}>—</span>
                         )}
                       </div>
-                      <div style={{ width: 158, flexShrink: 0, fontSize: 12, color: story.assignee_name ? '#334155' : '#9CA3AF', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>{getInitials(story.assignee_name || null)}</div>
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.assignee_name || 'Unassigned'}</span>
-                      </div>
+                      {(() => {
+                        const avatarUrl = story.assignee_name ? avatarsByName.get(story.assignee_name.toLowerCase()) : null;
+                        return (
+                          <div style={{ width: 158, flexShrink: 0, fontSize: 12, color: story.assignee_name ? '#334155' : '#9CA3AF', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            {avatarUrl ? (
+                              <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
+                            ) : (
+                              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>{getInitials(story.assignee_name || null)}</div>
+                            )}
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.assignee_name || 'Unassigned'}</span>
+                          </div>
+                        );
+                      })()}
                       <div style={{ width: 96, flexShrink: 0, fontSize: 12, color: '#6B7280' }}>{formatDueDate(story.start_date)}</div>
                       <div style={{ width: 88, flexShrink: 0, fontSize: 12, position: 'relative' }}>
                         <span style={{ color: getPriorityColor(story.priority) }}>{getPriorityLabel(story.priority)}</span>
