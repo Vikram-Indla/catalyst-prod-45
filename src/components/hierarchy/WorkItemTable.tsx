@@ -312,7 +312,11 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
     };
     walk(items);
     return sources.size > 1;
-  }, [items]);
+
+  // Visible column defs (ordered)
+  const columns = useMemo(() =>
+    ALL_COLUMNS.filter(c => visibleColumns.includes(c.id)),
+  [visibleColumns]);
 
   const openDropdown = useCallback((type: 'status' | 'priority' | 'assignee', itemId: string) => {
     setActiveDropdown(prev => prev?.type === type && prev.itemId === itemId ? null : { type, itemId });
