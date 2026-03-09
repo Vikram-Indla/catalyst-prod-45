@@ -26,6 +26,9 @@ export interface BacklogEpic {
   health: string | null;
   deleted_at: string | null;
   primary_program_id: string | null;
+  jira_created_at?: string | null;
+  jira_updated_at?: string | null;
+  source?: 'jira' | 'catalyst';
 }
 
 export interface BacklogFeature {
@@ -57,6 +60,9 @@ export interface BacklogStory {
   start_date: string | null;
   priority: string | null;
   deleted_at: string | null;
+  jira_created_at?: string | null;
+  jira_updated_at?: string | null;
+  source?: 'jira' | 'catalyst';
   feature?: {
     id: string;
     display_id: string | null;

@@ -39,6 +39,9 @@ export function useEpicBacklog(projectId: string) {
         health: null,
         deleted_at: null,
         primary_program_id: null,
+        jira_created_at: row.jira_created_at,
+        jira_updated_at: row.jira_updated_at,
+        source: 'jira' as const,
       })) as BacklogEpic[];
     },
     enabled: !!projectId && !!projectKey,
@@ -110,6 +113,9 @@ export function useStoryBacklog(projectId: string) {
         start_date: row.due_date,
         priority: row.priority?.toLowerCase() ?? null,
         deleted_at: null,
+        jira_created_at: row.jira_created_at,
+        jira_updated_at: row.jira_updated_at,
+        source: 'jira' as const,
         feature: row.parent_key && epicMap[row.parent_key] ? {
           id: epicMap[row.parent_key].id,
           display_id: null,

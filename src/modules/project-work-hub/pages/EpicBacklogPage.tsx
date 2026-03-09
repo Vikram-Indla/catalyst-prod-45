@@ -16,6 +16,16 @@ import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Box } from 'lucide-rea
 import { toast } from 'sonner';
 import type { BacklogEpic } from '../types/backlog.types';
 
+const COL_HEADER = { fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.05em', color: '#64748B' };
+
+function JiraBadge() {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', height: 16, padding: '0 5px', borderRadius: 3, fontSize: 9, fontWeight: 700, letterSpacing: '0.04em', background: '#DEEBFF', color: '#0747A6', whiteSpace: 'nowrap' }}>
+      JIRA
+    </span>
+  );
+}
+
 export default function EpicBacklogPage({ projectId: propProjectId }: { projectId?: string }) {
   const params = useParams<{ projectId: string }>();
   const projectId = propProjectId || params.projectId;
@@ -102,18 +112,20 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
             </Button>
           </div>
         ) : (
-          <div style={{ minWidth: 1320 }}>
+          <div style={{ minWidth: 1440 }}>
             {/* Column header */}
             <div className="flex items-center h-[32px] px-2 border-b" style={{ borderColor: '#E2E8F0', background: '#FAFBFC' }}>
               <div style={{ width: 38, flexShrink: 0 }} />
               <div style={{ width: 26, flexShrink: 0 }} />
               <div style={{ width: 38, flexShrink: 0 }} />
-              <div style={{ width: 110, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>KEY</div>
-              <div style={{ flex: 1, minWidth: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>SUMMARY</div>
-              <div style={{ width: 138, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>STATUS</div>
-              <div style={{ width: 158, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>ASSIGNEE</div>
-              <div style={{ width: 96, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>DUE DATE</div>
-              <div style={{ width: 88, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>HEALTH</div>
+              <div style={{ width: 110, flexShrink: 0, ...COL_HEADER }}>KEY</div>
+              <div style={{ width: 44, flexShrink: 0, ...COL_HEADER }}>SRC</div>
+              <div style={{ flex: 1, minWidth: 0, ...COL_HEADER }}>SUMMARY</div>
+              <div style={{ width: 138, flexShrink: 0, ...COL_HEADER }}>STATUS</div>
+              <div style={{ width: 158, flexShrink: 0, ...COL_HEADER }}>ASSIGNEE</div>
+              <div style={{ width: 88, flexShrink: 0, ...COL_HEADER }}>CREATED</div>
+              <div style={{ width: 88, flexShrink: 0, ...COL_HEADER }}>UPDATED</div>
+              <div style={{ width: 88, flexShrink: 0, ...COL_HEADER }}>DUE DATE</div>
             </div>
 
             {groups.map(group => (
@@ -134,6 +146,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                   const sc = epic.status ? EPIC_STATUS_LOZENGE[epic.status] : null;
                   const ls = sc ? getLozengeStyle(sc.color) : null;
                   const overdue = isDueDateOverdue(epic.end_date, epic.status);
+                  const avatarUrl = epic.assignee_name ? avatarsByName.get(epic.assignee_name.toLowerCase()) : null;
                   return (
                     <div
                       key={epic.id}
@@ -160,6 +173,10 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                       <div style={{ width: 110, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: epic.epic_key ? '#2563EB' : '#9CA3AF' }}>
                         {epic.epic_key || '—'}
                       </div>
+                      {/* Source badge */}
+                      <div style={{ width: 44, flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+                        {epic.source === 'jira' && <JiraBadge />}
+                      </div>
                       {/* Summary */}
                       <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {epic.name}
@@ -173,28 +190,27 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                         )}
                       </div>
                       {/* Assignee */}
-                      {(() => {
-                        const avatarUrl = epic.assignee_name ? avatarsByName.get(epic.assignee_name.toLowerCase()) : null;
-                        return (
-                          <div style={{ width: 158, flexShrink: 0, fontSize: 12, color: epic.assignee_name ? '#334155' : '#9CA3AF', display: 'flex', alignItems: 'center', gap: 6 }}>
-                            {avatarUrl ? (
-                              <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
-                            ) : (
-                              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
-                                {getInitials(epic.assignee_name || null)}
-                              </div>
-                            )}
-                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{epic.assignee_name || 'Unassigned'}</span>
+                      <div style={{ width: 158, flexShrink: 0, fontSize: 12, color: epic.assignee_name ? '#334155' : '#9CA3AF', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        {avatarUrl ? (
+                          <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
+                        ) : (
+                          <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
+                            {getInitials(epic.assignee_name || null)}
                           </div>
-                        );
-                      })()}
-                      {/* Due date */}
-                      <div style={{ width: 96, flexShrink: 0, fontSize: 12, color: overdue ? '#DC2626' : '#6B7280' }}>
-                        {formatDueDate(epic.end_date)}
+                        )}
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{epic.assignee_name || 'Unassigned'}</span>
                       </div>
-                      {/* Health (replacing priority for epics) */}
-                      <div style={{ width: 88, flexShrink: 0, fontSize: 12, color: '#6B7280', position: 'relative' }}>
-                        <span>{epic.health ? epic.health.charAt(0).toUpperCase() + epic.health.slice(1) : '—'}</span>
+                      {/* Created */}
+                      <div style={{ width: 88, flexShrink: 0, fontSize: 11, color: '#6B7280' }}>
+                        {formatDueDate(epic.jira_created_at ?? null)}
+                      </div>
+                      {/* Updated */}
+                      <div style={{ width: 88, flexShrink: 0, fontSize: 11, color: '#6B7280' }}>
+                        {formatDueDate(epic.jira_updated_at ?? null)}
+                      </div>
+                      {/* Due date */}
+                      <div style={{ width: 88, flexShrink: 0, fontSize: 11, color: overdue ? '#DC2626' : '#6B7280', position: 'relative' }}>
+                        <span>{formatDueDate(epic.end_date)}</span>
                         {/* Row actions */}
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: 'rgba(255,255,255,0.95)' }}>
                           <button onClick={() => setEditEpicId(epic.id)} className="p-1 rounded hover:bg-gray-100" title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: '#64748B' }} /></button>

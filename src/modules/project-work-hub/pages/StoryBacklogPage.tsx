@@ -16,6 +16,16 @@ import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, BookOpen } from 'lucid
 import { toast } from 'sonner';
 import type { BacklogStory } from '../types/backlog.types';
 
+const COL_HEADER = { fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.05em', color: '#64748B' };
+
+function JiraBadge() {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', height: 16, padding: '0 5px', borderRadius: 3, fontSize: 9, fontWeight: 700, letterSpacing: '0.04em', background: '#DEEBFF', color: '#0747A6', whiteSpace: 'nowrap' }}>
+      JIRA
+    </span>
+  );
+}
+
 export default function StoryBacklogPage({ projectId: propProjectId }: { projectId?: string }) {
   const params = useParams<{ projectId: string }>();
   const projectId = propProjectId || params.projectId;
@@ -87,19 +97,22 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
             </Button>
           </div>
         ) : (
-          <div style={{ minWidth: 1320 }}>
-            {/* Column headers — includes Parent column for stories */}
+          <div style={{ minWidth: 1520 }}>
+            {/* Column headers */}
             <div className="flex items-center h-[32px] px-2 border-b" style={{ borderColor: '#E2E8F0', background: '#FAFBFC' }}>
               <div style={{ width: 38, flexShrink: 0 }} />
               <div style={{ width: 26, flexShrink: 0 }} />
               <div style={{ width: 38, flexShrink: 0 }} />
-              <div style={{ width: 110, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>KEY</div>
-              <div style={{ flex: 1, minWidth: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>SUMMARY</div>
-              <div style={{ width: 138, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>STATUS</div>
-              <div style={{ width: 230, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>PARENT</div>
-              <div style={{ width: 158, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>ASSIGNEE</div>
-              <div style={{ width: 96, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>DATE</div>
-              <div style={{ width: 88, flexShrink: 0, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>PRIORITY</div>
+              <div style={{ width: 110, flexShrink: 0, ...COL_HEADER }}>KEY</div>
+              <div style={{ width: 44, flexShrink: 0, ...COL_HEADER }}>SRC</div>
+              <div style={{ flex: 1, minWidth: 0, ...COL_HEADER }}>SUMMARY</div>
+              <div style={{ width: 138, flexShrink: 0, ...COL_HEADER }}>STATUS</div>
+              <div style={{ width: 210, flexShrink: 0, ...COL_HEADER }}>PARENT</div>
+              <div style={{ width: 148, flexShrink: 0, ...COL_HEADER }}>ASSIGNEE</div>
+              <div style={{ width: 82, flexShrink: 0, ...COL_HEADER }}>CREATED</div>
+              <div style={{ width: 82, flexShrink: 0, ...COL_HEADER }}>UPDATED</div>
+              <div style={{ width: 82, flexShrink: 0, ...COL_HEADER }}>DUE DATE</div>
+              <div style={{ width: 78, flexShrink: 0, ...COL_HEADER }}>PRIORITY</div>
             </div>
 
             {groups.map(group => (
@@ -113,6 +126,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                 {!collapsed[group.status] && group.items.map((story) => {
                   const sc = story.status ? STORY_STATUS_LOZENGE[story.status] : null;
                   const ls = sc ? getLozengeStyle(sc.color) : null;
+                  const avatarUrl = story.assignee_name ? avatarsByName.get(story.assignee_name.toLowerCase()) : null;
                   return (
                     <div key={story.id} className="group flex items-center h-[36px] px-2 border-b" style={{ borderColor: '#F1F5F9', maxHeight: 36, transition: 'background 120ms' }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
@@ -131,33 +145,39 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                       <div style={{ width: 110, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: story.story_key ? '#2563EB' : '#9CA3AF' }}>
                         {story.story_key || '—'}
                       </div>
+                      {/* Source badge */}
+                      <div style={{ width: 44, flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+                        {story.source === 'jira' && <JiraBadge />}
+                      </div>
                       <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.title}</div>
                       <div style={{ width: 138, flexShrink: 0 }}>
                         {sc && ls && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>{sc.label}</span>}
                       </div>
                       {/* Parent column */}
-                      <div style={{ width: 230, flexShrink: 0 }}>
+                      <div style={{ width: 210, flexShrink: 0 }}>
                         {story.feature?.epic ? (
                           <ParentEpicChip epicId={story.feature.epic.id} epicKey={story.feature.epic.epic_key} epicName={story.feature.epic.name} />
                         ) : (
                           <span style={{ color: '#9CA3AF', fontSize: 12 }}>—</span>
                         )}
                       </div>
-                      {(() => {
-                        const avatarUrl = story.assignee_name ? avatarsByName.get(story.assignee_name.toLowerCase()) : null;
-                        return (
-                          <div style={{ width: 158, flexShrink: 0, fontSize: 12, color: story.assignee_name ? '#334155' : '#9CA3AF', display: 'flex', alignItems: 'center', gap: 6 }}>
-                            {avatarUrl ? (
-                              <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
-                            ) : (
-                              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>{getInitials(story.assignee_name || null)}</div>
-                            )}
-                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.assignee_name || 'Unassigned'}</span>
-                          </div>
-                        );
-                      })()}
-                      <div style={{ width: 96, flexShrink: 0, fontSize: 12, color: '#6B7280' }}>{formatDueDate(story.start_date)}</div>
-                      <div style={{ width: 88, flexShrink: 0, fontSize: 12, position: 'relative' }}>
+                      {/* Assignee */}
+                      <div style={{ width: 148, flexShrink: 0, fontSize: 12, color: story.assignee_name ? '#334155' : '#9CA3AF', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        {avatarUrl ? (
+                          <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
+                        ) : (
+                          <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>{getInitials(story.assignee_name || null)}</div>
+                        )}
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{story.assignee_name || 'Unassigned'}</span>
+                      </div>
+                      {/* Created */}
+                      <div style={{ width: 82, flexShrink: 0, fontSize: 11, color: '#6B7280' }}>{formatDueDate(story.jira_created_at ?? null)}</div>
+                      {/* Updated */}
+                      <div style={{ width: 82, flexShrink: 0, fontSize: 11, color: '#6B7280' }}>{formatDueDate(story.jira_updated_at ?? null)}</div>
+                      {/* Due date */}
+                      <div style={{ width: 82, flexShrink: 0, fontSize: 11, color: '#6B7280' }}>{formatDueDate(story.start_date)}</div>
+                      {/* Priority */}
+                      <div style={{ width: 78, flexShrink: 0, fontSize: 12, position: 'relative' }}>
                         <span style={{ color: getPriorityColor(story.priority) }}>{getPriorityLabel(story.priority)}</span>
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: 'rgba(255,255,255,0.95)' }}>
                           <button onClick={() => setEditStoryId(story.id)} className="p-1 rounded hover:bg-gray-100" title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: '#64748B' }} /></button>
