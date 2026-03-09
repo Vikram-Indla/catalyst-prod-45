@@ -1,21 +1,18 @@
 /**
  * StoryDetailDrawer — 560px right slide-in detail panel
- * All fields inline-editable. No separate "Edit" button.
- * Pure white bg, proper data hydration from ph_issues.
+ * Tabs: Details, Comments, History
+ * No Points/Sprint. Includes Release (fix_versions), Comments, Changelog.
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { X, Plus } from 'lucide-react';
+import { X, MessageSquare, History, FileText } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { ParentEpicChip } from '../shared/ParentEpicChip';
-import { getLozengeStyle, STORY_STATUS_LOZENGE, formatDueDate, getPriorityLabel, getPriorityColor, getInitials } from '../../utils/backlog.utils';
-import type { LozengeColor } from '../../utils/backlog.utils';
+import { getLozengeStyle, STORY_STATUS_LOZENGE, getPriorityLabel, getPriorityColor, getInitials } from '../../utils/backlog.utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { format } from 'date-fns';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
+import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
 interface StoryDetailDrawerProps {
@@ -43,8 +40,25 @@ function getStatusLozengeColors(status: string): { bg: string; text: string; lab
     const style = getLozengeStyle(cfg.color);
     return { ...style, label: cfg.label };
   }
-  // Fallback: grey
   return { bg: '#DFE1E6', text: '#253858', label: status.replace(/_/g, ' ').toUpperCase() };
+}
+
+type TabId = 'details' | 'comments' | 'history';
+
+const TAB_STYLE: React.CSSProperties = {
+  fontSize: 12, fontWeight: 600, padding: '8px 12px', border: 'none', cursor: 'pointer',
+  background: 'none', color: '#64748B', borderBottom: '2px solid transparent',
+  display: 'inline-flex', alignItems: 'center', gap: 5,
+};
+const TAB_ACTIVE: React.CSSProperties = { ...TAB_STYLE, color: '#0F172A', borderBottomColor: '#2563EB' };
+
+function formatFixVersions(fv: any): string {
+  if (!fv) return '—';
+  try {
+    const arr = Array.isArray(fv) ? fv : JSON.parse(fv);
+    if (!arr.length) return '—';
+    return arr.map((v: any) => (typeof v === 'string' ? v : v?.name || v?.id || '')).filter(Boolean).join(', ');
+  } catch { return '—'; }
 }
 
 export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, onClose, storyId, projectId }) => {
@@ -53,20 +67,20 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
   const [titleValue, setTitleValue] = useState('');
   const [editingDesc, setEditingDesc] = useState(false);
   const [descValue, setDescValue] = useState('');
+  const [activeTab, setActiveTab] = useState<TabId>('details');
 
+  // Main query
   const { data: story, isLoading, error } = useQuery({
     queryKey: ['story-drawer-detail', storyId],
     queryFn: async () => {
       if (!storyId) return null;
-      // Fetch from ph_issues (the single source of truth for Jira-synced items)
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, description_text, status, status_category, priority, assignee_display_name, reporter_display_name, due_date, story_points, sprint_name, labels, parent_key, parent_summary, jira_created_at, jira_updated_at, issue_type')
+        .select('id, issue_key, summary, description_text, status, status_category, priority, assignee_display_name, reporter_display_name, due_date, labels, parent_key, parent_summary, fix_versions, jira_created_at, jira_updated_at, issue_type')
         .eq('id', storyId)
         .single();
       if (error) throw error;
 
-      // Resolve parent epic
       let parentEpic: { id: string; epic_key: string | null; name: string } | null = null;
       if (data.parent_key) {
         const { data: epic } = await supabase
@@ -76,10 +90,39 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
           .single();
         if (epic) parentEpic = { id: epic.id, epic_key: epic.issue_key, name: epic.summary };
       }
-
       return { ...data, parentEpic };
     },
     enabled: !!storyId && isOpen,
+  });
+
+  // Comments query
+  const { data: comments = [], isLoading: commentsLoading } = useQuery({
+    queryKey: ['story-drawer-comments', story?.issue_key],
+    queryFn: async () => {
+      if (!story?.issue_key) return [];
+      const { data } = await supabase
+        .from('jira_sync_comments')
+        .select('id, author_display_name, body, jira_created_at')
+        .eq('issue_key', story.issue_key)
+        .order('jira_created_at', { ascending: false });
+      return data || [];
+    },
+    enabled: !!story?.issue_key && activeTab === 'comments',
+  });
+
+  // Changelog (history) query
+  const { data: changelog = [], isLoading: changelogLoading } = useQuery({
+    queryKey: ['story-drawer-changelog', story?.issue_key],
+    queryFn: async () => {
+      if (!story?.issue_key) return [];
+      const { data } = await supabase
+        .from('jira_sync_changelog')
+        .select('id, author_display_name, field_name, from_string, to_string, jira_created_at')
+        .eq('issue_key', story.issue_key)
+        .order('jira_created_at', { ascending: false });
+      return data || [];
+    },
+    enabled: !!story?.issue_key && activeTab === 'history',
   });
 
   useEffect(() => {
@@ -89,12 +132,16 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
     }
   }, [story]);
 
+  // Reset tab when drawer closes
+  useEffect(() => {
+    if (!isOpen) setActiveTab('details');
+  }, [isOpen]);
+
   const updateMutation = useMutation({
     mutationFn: async ({ field, value }: { field: string; value: any }) => {
       if (!storyId) return;
       const updates: Record<string, any> = { [field]: value };
       if (field === 'status') {
-        // Derive category
         const done = ['Done', 'In Production', 'Closed', 'Released'];
         const inProgress = ['In Progress', 'In Development', 'In QA', 'In UAT', 'In BETA', 'BETA READY', 'In Review', 'Ready for QA'];
         if (done.includes(value)) updates.status_category = 'Done';
@@ -147,9 +194,6 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
 
         {isLoading ? (
           <div style={{ padding: '24px 20px' }}>
-            <div style={{ height: 20, width: 100, borderRadius: 3, background: '#E2E8F0', marginBottom: 16 }} />
-            <div style={{ height: 24, width: '80%', borderRadius: 3, background: '#E2E8F0', marginBottom: 8 }} />
-            <div style={{ height: 14, width: '60%', borderRadius: 3, background: '#E2E8F0', marginBottom: 24 }} />
             {[1,2,3,4,5,6].map(i => (
               <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
                 <div style={{ width: 100, height: 14, borderRadius: 3, background: '#E2E8F0' }} />
@@ -163,183 +207,183 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
             <button onClick={onClose} style={{ marginTop: 12, fontSize: 13, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}>Close</button>
           </div>
         ) : story ? (
-          <div style={{ padding: '16px 20px', flex: 1 }}>
-            {/* Status lozenge (clickable) */}
-            <div style={{ marginBottom: 12 }}>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                    {statusColors && (
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
-                        borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-                        letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text,
-                      }}>
-                        {statusColors.label}
-                      </span>
-                    )}
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
-                  {STATUS_GROUPS.map(group => (
-                    <div key={group.label}>
-                      <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '6px 12px 2px' }}>{group.label}</div>
-                      {group.statuses.map(s => {
-                        const sc = getStatusLozengeColors(s);
-                        return (
-                          <button key={s} onClick={() => handleUpdate('status', s)} style={{
-                            width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
-                            background: story.status === s ? 'rgba(37,99,235,0.08)' : 'transparent',
-                            color: '#0F172A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                          }}>
-                            <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ))}
-                </PopoverContent>
-              </Popover>
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+            {/* Title + Status + Description (always visible) */}
+            <div style={{ padding: '16px 20px 0' }}>
+              {/* Status lozenge (clickable) */}
+              <div style={{ marginBottom: 12 }}>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                      {statusColors && (
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
+                          borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                          letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text,
+                        }}>
+                          {statusColors.label}
+                        </span>
+                      )}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
+                    {STATUS_GROUPS.map(group => (
+                      <div key={group.label}>
+                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '6px 12px 2px' }}>{group.label}</div>
+                        {group.statuses.map(s => {
+                          const sc = getStatusLozengeColors(s);
+                          return (
+                            <button key={s} onClick={() => handleUpdate('status', s)} style={{
+                              width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
+                              background: story.status === s ? 'rgba(37,99,235,0.08)' : 'transparent',
+                              color: '#0F172A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                            }}>
+                              <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Title */}
+              {editingTitle ? (
+                <input value={titleValue} onChange={e => setTitleValue(e.target.value)}
+                  onBlur={() => { handleUpdate('summary', titleValue); setEditingTitle(false); }}
+                  onKeyDown={e => { if (e.key === 'Enter') { handleUpdate('summary', titleValue); setEditingTitle(false); } if (e.key === 'Escape') setEditingTitle(false); }}
+                  autoFocus
+                  style={{ width: '100%', fontSize: 20, fontWeight: 650, color: '#0F172A', border: '1.5px solid #2563EB', borderRadius: 4, padding: '4px 8px', outline: 'none', fontFamily: "'Sora', sans-serif", marginBottom: 8 }}
+                />
+              ) : (
+                <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: '#0F172A', margin: '0 0 8px', cursor: 'text', fontFamily: "'Sora', sans-serif", lineHeight: 1.3 }}>
+                  {story.summary || <span style={{ fontStyle: 'italic', color: '#94A3B8' }}>Click to add a title...</span>}
+                </h2>
+              )}
+
+              {/* Parent Epic Chip */}
+              {story.parentEpic && (
+                <div style={{ marginBottom: 12 }}>
+                  <ParentEpicChip epicId={story.parentEpic.id} epicKey={story.parentEpic.epic_key} epicName={story.parentEpic.name} />
+                </div>
+              )}
             </div>
 
-            {/* Title (click-to-edit) */}
-            {editingTitle ? (
-              <input value={titleValue} onChange={e => setTitleValue(e.target.value)}
-                onBlur={() => { handleUpdate('summary', titleValue); setEditingTitle(false); }}
-                onKeyDown={e => { if (e.key === 'Enter') { handleUpdate('summary', titleValue); setEditingTitle(false); } if (e.key === 'Escape') setEditingTitle(false); }}
-                autoFocus
-                style={{ width: '100%', fontSize: 20, fontWeight: 650, color: '#0F172A', border: '1.5px solid #2563EB', borderRadius: 4, padding: '4px 8px', outline: 'none', fontFamily: "'Sora', sans-serif", marginBottom: 8 }}
-              />
-            ) : (
-              <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: '#0F172A', margin: '0 0 8px', cursor: 'text', fontFamily: "'Sora', sans-serif", lineHeight: 1.3 }}>
-                {story.summary || <span style={{ fontStyle: 'italic', color: '#94A3B8' }}>Click to add a title...</span>}
-              </h2>
-            )}
+            {/* Tabs */}
+            <div style={{ borderBottom: '1px solid rgba(15,23,42,0.08)', padding: '0 20px', display: 'flex', gap: 0 }}>
+              <button onClick={() => setActiveTab('details')} style={activeTab === 'details' ? TAB_ACTIVE : TAB_STYLE}>
+                <FileText size={14} /> Details
+              </button>
+              <button onClick={() => setActiveTab('comments')} style={activeTab === 'comments' ? TAB_ACTIVE : TAB_STYLE}>
+                <MessageSquare size={14} /> Comments {comments.length > 0 && `(${comments.length})`}
+              </button>
+              <button onClick={() => setActiveTab('history')} style={activeTab === 'history' ? TAB_ACTIVE : TAB_STYLE}>
+                <History size={14} /> History {changelog.length > 0 && `(${changelog.length})`}
+              </button>
+            </div>
 
-            {/* Description (click-to-edit) */}
-            {editingDesc ? (
-              <textarea value={descValue} onChange={e => setDescValue(e.target.value)}
-                onBlur={() => { handleUpdate('description_text', descValue); setEditingDesc(false); }}
-                autoFocus rows={4}
-                style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: '#0F172A', fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80, marginBottom: 16 }}
-              />
-            ) : (
-              <div onClick={() => setEditingDesc(true)} style={{
-                fontSize: 14, color: story.description_text ? '#334155' : '#94A3B8',
-                fontStyle: story.description_text ? 'normal' : 'italic',
-                cursor: 'text', marginBottom: 16, minHeight: 20, lineHeight: 1.6,
-              }}>
-                {story.description_text || 'Click to add description...'}
-              </div>
-            )}
-
-            {/* Parent Epic Chip */}
-            {story.parentEpic && (
-              <div style={{ marginBottom: 16 }}>
-                <ParentEpicChip epicId={story.parentEpic.id} epicKey={story.parentEpic.epic_key} epicName={story.parentEpic.name} />
-              </div>
-            )}
-
-            {/* Key Details */}
-            <div style={{ border: '0.75px solid rgba(15,23,42,0.06)', borderRadius: 6, padding: '8px 16px', marginBottom: 20 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 4 }}>Key Details</div>
-
-              {/* Status */}
-              <div style={{ display: 'flex', alignItems: 'center', height: 36, gap: 12 }}>
-                <span style={DETAIL_LABEL}>Status</span>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', height: 36 }}>
-                  {statusColors && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text }}>{statusColors.label}</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Priority */}
-              <div style={{ display: 'flex', alignItems: 'center', height: 36, gap: 12 }}>
-                <span style={DETAIL_LABEL}>Priority</span>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', height: 36 }}>
-                  <span style={{ ...DETAIL_VALUE, color: getPriorityColor(story.priority) }}>{getPriorityLabel(story.priority)}</span>
-                </div>
-              </div>
-
-              {/* Assignee */}
-              <div style={{ display: 'flex', alignItems: 'center', height: 36, gap: 12 }}>
-                <span style={DETAIL_LABEL}>Assignee</span>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', height: 36, gap: 6 }}>
-                  {story.assignee_display_name ? (
-                    <>
-                      <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
-                        {getInitials(story.assignee_display_name)}
+            {/* Tab Content */}
+            <div style={{ padding: '16px 20px', flex: 1, overflowY: 'auto' }}>
+              {activeTab === 'details' && (
+                <>
+                  {/* Description */}
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 6 }}>Description</div>
+                    {editingDesc ? (
+                      <textarea value={descValue} onChange={e => setDescValue(e.target.value)}
+                        onBlur={() => { handleUpdate('description_text', descValue); setEditingDesc(false); }}
+                        autoFocus rows={4}
+                        style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: '#0F172A', fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80 }}
+                      />
+                    ) : (
+                      <div onClick={() => setEditingDesc(true)} style={{
+                        fontSize: 14, color: story.description_text ? '#334155' : '#94A3B8',
+                        fontStyle: story.description_text ? 'normal' : 'italic',
+                        cursor: 'text', minHeight: 20, lineHeight: 1.6, whiteSpace: 'pre-wrap',
+                      }}>
+                        {story.description_text || 'Click to add description...'}
                       </div>
-                      <span style={DETAIL_VALUE}>{story.assignee_display_name}</span>
-                    </>
-                  ) : (
-                    <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set assignee</span>
-                  )}
-                </div>
-              </div>
+                    )}
+                  </div>
 
-              {/* Reporter */}
-              <div style={{ display: 'flex', alignItems: 'center', height: 36, gap: 12 }}>
-                <span style={DETAIL_LABEL}>Reporter</span>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', height: 36 }}>
-                  {story.reporter_display_name ? (
-                    <span style={DETAIL_VALUE}>{story.reporter_display_name}</span>
-                  ) : (
-                    <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set reporter</span>
-                  )}
-                </div>
-              </div>
+                  {/* Key Details */}
+                  <div style={{ border: '0.75px solid rgba(15,23,42,0.06)', borderRadius: 6, padding: '8px 16px' }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 4 }}>Key Details</div>
 
-              {/* Due Date */}
-              <div style={{ display: 'flex', alignItems: 'center', height: 36, gap: 12 }}>
-                <span style={DETAIL_LABEL}>Due Date</span>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', height: 36 }}>
-                  <span style={{ ...DETAIL_VALUE, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: story.due_date ? '#0F172A' : '#94A3B8' }}>
-                    {story.due_date ? format(new Date(story.due_date), 'MMM d, yyyy') : '— Set date'}
-                  </span>
-                </div>
-              </div>
+                    {/* Status */}
+                    <DetailRow label="Status">
+                      {statusColors && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text }}>{statusColors.label}</span>
+                      )}
+                    </DetailRow>
 
-              {/* Points */}
-              <div style={{ display: 'flex', alignItems: 'center', height: 36, gap: 12 }}>
-                <span style={DETAIL_LABEL}>Points</span>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', height: 36 }}>
-                  <span style={{ ...DETAIL_VALUE, fontFamily: "'JetBrains Mono', monospace", color: story.story_points != null ? '#0F172A' : '#94A3B8' }}>
-                    {story.story_points != null ? story.story_points : '—'}
-                  </span>
-                </div>
-              </div>
+                    {/* Priority */}
+                    <DetailRow label="Priority">
+                      <span style={{ ...DETAIL_VALUE, color: getPriorityColor(story.priority) }}>{getPriorityLabel(story.priority)}</span>
+                    </DetailRow>
 
-              {/* Sprint */}
-              <div style={{ display: 'flex', alignItems: 'center', height: 36, gap: 12 }}>
-                <span style={DETAIL_LABEL}>Sprint</span>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', height: 36 }}>
-                  <span style={{ ...DETAIL_VALUE, color: story.sprint_name ? '#0F172A' : '#94A3B8' }}>
-                    {story.sprint_name || '—'}
-                  </span>
-                </div>
-              </div>
+                    {/* Assignee */}
+                    <DetailRow label="Assignee">
+                      {story.assignee_display_name ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
+                            {getInitials(story.assignee_display_name)}
+                          </div>
+                          <span style={DETAIL_VALUE}>{story.assignee_display_name}</span>
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set assignee</span>
+                      )}
+                    </DetailRow>
 
-              {/* Created */}
-              <div style={{ display: 'flex', alignItems: 'center', height: 36, gap: 12 }}>
-                <span style={DETAIL_LABEL}>Created</span>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', height: 36 }}>
-                  <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
-                    {story.jira_created_at ? format(new Date(story.jira_created_at), 'MMM d, yyyy, hh:mm a') : '—'}
-                  </span>
-                </div>
-              </div>
+                    {/* Reporter */}
+                    <DetailRow label="Reporter">
+                      {story.reporter_display_name ? (
+                        <span style={DETAIL_VALUE}>{story.reporter_display_name}</span>
+                      ) : (
+                        <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set reporter</span>
+                      )}
+                    </DetailRow>
 
-              {/* Updated */}
-              <div style={{ display: 'flex', alignItems: 'center', height: 36, gap: 12 }}>
-                <span style={DETAIL_LABEL}>Updated</span>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', height: 36 }}>
-                  <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
-                    {story.jira_updated_at ? format(new Date(story.jira_updated_at), 'MMM d, yyyy, hh:mm a') : '—'}
-                  </span>
-                </div>
-              </div>
+                    {/* Due Date */}
+                    <DetailRow label="Due Date">
+                      <span style={{ ...DETAIL_VALUE, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: story.due_date ? '#0F172A' : '#94A3B8' }}>
+                        {story.due_date ? format(new Date(story.due_date), 'MMM d, yyyy') : '— Set date'}
+                      </span>
+                    </DetailRow>
+
+                    {/* Release (fix_versions) */}
+                    <DetailRow label="Release">
+                      <span style={{ ...DETAIL_VALUE, color: formatFixVersions(story.fix_versions) !== '—' ? '#0F172A' : '#94A3B8' }}>
+                        {formatFixVersions(story.fix_versions)}
+                      </span>
+                    </DetailRow>
+
+                    {/* Created */}
+                    <DetailRow label="Created">
+                      <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
+                        {story.jira_created_at ? format(new Date(story.jira_created_at), 'MMM d, yyyy, hh:mm a') : '—'}
+                      </span>
+                    </DetailRow>
+
+                    {/* Updated */}
+                    <DetailRow label="Updated">
+                      <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
+                        {story.jira_updated_at ? format(new Date(story.jira_updated_at), 'MMM d, yyyy, hh:mm a') : '—'}
+                      </span>
+                    </DetailRow>
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'comments' && (
+                <CommentsPane comments={comments} isLoading={commentsLoading} />
+              )}
+
+              {activeTab === 'history' && (
+                <HistoryPane changelog={changelog} isLoading={changelogLoading} />
+              )}
             </div>
           </div>
         ) : null}
@@ -347,3 +391,144 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
     </Sheet>
   );
 };
+
+/* Reusable detail row */
+function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', height: 36, gap: 12 }}>
+      <span style={DETAIL_LABEL}>{label}</span>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', height: 36 }}>{children}</div>
+    </div>
+  );
+}
+
+/* Comments pane */
+function CommentsPane({ comments, isLoading }: { comments: any[]; isLoading: boolean }) {
+  if (isLoading) return <SkeletonList count={3} />;
+  if (!comments.length) return <EmptyState text="No comments from Jira" />;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {comments.map((c: any) => (
+        <div key={c.id} style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)', paddingBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
+              {getInitials(c.author_display_name || 'U')}
+            </div>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{c.author_display_name || 'Unknown'}</span>
+            <span style={{ fontSize: 11, color: '#94A3B8', marginLeft: 'auto' }}>
+              {c.jira_created_at ? formatDistanceToNow(new Date(c.jira_created_at), { addSuffix: true }) : ''}
+            </span>
+          </div>
+          <div style={{ fontSize: 13, color: '#334155', lineHeight: 1.6, whiteSpace: 'pre-wrap', paddingLeft: 32 }}>
+            {c.body || ''}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* History/Changelog pane — shows status transitions with who + when */
+function HistoryPane({ changelog, isLoading }: { changelog: any[]; isLoading: boolean }) {
+  if (isLoading) return <SkeletonList count={4} />;
+  if (!changelog.length) return <EmptyState text="No history from Jira" />;
+
+  // Group by status transitions specifically
+  const statusChanges = changelog.filter((c: any) => c.field_name === 'status');
+  const otherChanges = changelog.filter((c: any) => c.field_name !== 'status');
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      {/* Status Transitions Section */}
+      {statusChanges.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>
+            Status Transitions ({statusChanges.length})
+          </div>
+          {statusChanges.map((entry: any) => {
+            const fromColors = getStatusLozengeColors(entry.from_string || '');
+            const toColors = getStatusLozengeColors(entry.to_string || '');
+            return (
+              <div key={entry.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '0.75px solid rgba(15,23,42,0.04)' }}>
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0, marginTop: 2 }}>
+                  {getInitials(entry.author_display_name || 'S')}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{entry.author_display_name || 'System'}</span>
+                    <span style={{ fontSize: 11, color: '#94A3B8' }}>
+                      {entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: fromColors.bg, color: fromColors.text }}>
+                      {fromColors.label}
+                    </span>
+                    <span style={{ fontSize: 12, color: '#94A3B8' }}>→</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: toColors.bg, color: toColors.text }}>
+                      {toColors.label}
+                    </span>
+                  </div>
+                  {entry.jira_created_at && (
+                    <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2, fontFamily: "'JetBrains Mono', monospace" }}>
+                      {format(new Date(entry.jira_created_at), 'MMM d, yyyy, hh:mm a')}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Other field changes */}
+      {otherChanges.length > 0 && (
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>
+            Other Changes ({otherChanges.length})
+          </div>
+          {otherChanges.map((entry: any) => (
+            <div key={entry.id} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: '0.75px solid rgba(15,23,42,0.04)' }}>
+              <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
+                {getInitials(entry.author_display_name || 'S')}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{entry.author_display_name || 'System'}</span>
+                  <span style={{ fontSize: 11, color: '#94A3B8' }}>
+                    {entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}
+                  </span>
+                </div>
+                <div style={{ fontSize: 13, color: '#64748B' }}>
+                  Changed <strong style={{ color: '#0F172A', fontWeight: 600 }}>{entry.field_name}</strong>
+                  {entry.from_string && <> from <span style={{ color: '#94A3B8' }}>{entry.from_string}</span></>}
+                  {entry.to_string && <> to <span style={{ color: '#0F172A' }}>{entry.to_string}</span></>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SkeletonList({ count }: { count: number }) {
+  return (
+    <div>
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 0' }}>
+          <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', flexShrink: 0 }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ height: 12, width: '60%', borderRadius: 3, background: '#E2E8F0', marginBottom: 6 }} />
+            <div style={{ height: 10, width: '40%', borderRadius: 3, background: '#E2E8F0' }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function EmptyState({ text }: { text: string }) {
+  return <div style={{ padding: 24, textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>{text}</div>;
+}
