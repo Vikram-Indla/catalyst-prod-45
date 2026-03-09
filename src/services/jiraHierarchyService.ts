@@ -68,6 +68,7 @@ function transformJiraIssue(row: any): WorkItem {
     hierarchyColorText: typeInfo.colorText,
     parentId: row.parent_key || null,
     parentKey: row.parent_key || null,
+    parentSummary: row.parent_summary || null,
     status: {
       id: row.status,
       name: row.status,
@@ -148,7 +149,7 @@ export async function fetchJiraHierarchyTree(projectKey: string): Promise<WorkIt
   const [issuesResult, overrides] = await Promise.all([
     supabase
       .from('ph_issues')
-      .select('issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, fix_versions, due_date, labels, jira_created_at, jira_updated_at')
+      .select('issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, due_date, labels, jira_created_at, jira_updated_at')
       .eq('project_key', projectKey.toUpperCase())
       .is('jira_removed_at', null)
       .order('jira_created_at', { ascending: true })
@@ -160,20 +161,21 @@ export async function fetchJiraHierarchyTree(projectKey: string): Promise<WorkIt
 
   const items = (issuesResult.data || []).map(transformJiraIssue);
 
-  // Build a key→summary lookup so every item can resolve its parent's title
+  // Build a key→summary lookup to enrich parentSummary for overrides
   const summaryByKey = new Map<string, string>();
   for (const item of items) {
     summaryByKey.set(item.id, item.title);
   }
 
-  // Apply overrides and enrich parentSummary
+  // Apply overrides and update parentSummary if needed
   for (const item of items) {
     if (overrides.has(item.id)) {
       item.parentId = overrides.get(item.id) ?? null;
       item.parentKey = item.parentId;
-    }
-    if (item.parentKey) {
-      item.parentSummary = summaryByKey.get(item.parentKey) || null;
+      // Re-resolve parentSummary for overridden parents
+      if (item.parentKey) {
+        item.parentSummary = summaryByKey.get(item.parentKey) || item.parentSummary;
+      }
     }
   }
 
