@@ -1,8 +1,8 @@
 /**
- * WorkHubGroupHeader — Collapsible group header
- * 32px height, chevron + label + count badge + "+ Add item" on hover
+ * WorkHubGroupHeader — Collapsible group (Stage E: polished)
+ * 32px height, chevron rotation, aria-expanded
  */
-import { ChevronRight, ChevronDown, Plus } from 'lucide-react';
+import { ChevronRight, Plus } from 'lucide-react';
 
 interface WorkHubGroupHeaderProps {
   label: string;
@@ -15,39 +15,41 @@ interface WorkHubGroupHeaderProps {
 export default function WorkHubGroupHeader({ label, count, collapsed, onToggle, onAddItem }: WorkHubGroupHeaderProps) {
   return (
     <div
-      className="group"
+      role="button"
+      aria-expanded={!collapsed}
+      tabIndex={0}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}
       style={{
         display: 'flex', alignItems: 'center', height: 32, padding: '0 12px', gap: 8,
         borderBottom: '0.75px solid rgba(15,23,42,0.06)', cursor: 'pointer',
-        background: 'transparent', userSelect: 'none',
+        background: 'transparent', userSelect: 'none', outline: 'none',
       }}
       onClick={onToggle}
+      onFocus={e => (e.currentTarget.style.boxShadow = 'inset 0 0 0 2px #2563EB')}
+      onBlur={e => (e.currentTarget.style.boxShadow = 'none')}
     >
-      {collapsed
-        ? <ChevronRight size={16} color="#334155" />
-        : <ChevronDown size={16} color="#334155" />
-      }
-      <span style={{ fontSize: 12, fontWeight: 650, textTransform: 'uppercase', color: '#334155', letterSpacing: '0.03em' }}>
-        {label}
-      </span>
+      <ChevronRight size={16} color="#334155" style={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)', transition: 'transform 200ms ease' }} />
+      <span style={{ fontSize: 12, fontWeight: 650, textTransform: 'uppercase', color: '#334155', letterSpacing: '0.03em' }}>{label}</span>
       <span style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         height: 16, minWidth: 16, padding: '0 8px', borderRadius: 10,
         background: '#F1F5F9', fontSize: 11, fontWeight: 600, color: '#64748B',
-      }}>
-        {count}
-      </span>
+      }}>{count}</span>
       <button
         onClick={e => { e.stopPropagation(); onAddItem(); }}
-        className="opacity-0 group-hover:opacity-100"
         style={{
           marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4,
           background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: '#64748B',
-          transition: 'opacity 120ms',
+          opacity: 0, transition: 'opacity 120ms',
         }}
+        onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
       >
         <Plus size={12} /> Add item
       </button>
+
+      <style>{`
+        div:hover > button:last-child { opacity: 1 !important; }
+      `}</style>
     </div>
   );
 }
