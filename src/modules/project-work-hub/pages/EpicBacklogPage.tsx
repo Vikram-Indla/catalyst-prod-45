@@ -162,7 +162,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                       </div>
                       {/* Expand */}
                       <div style={{ width: 26, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <button onClick={() => setDrawerEpicId(epic.id)} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                        <button onClick={(e) => { e.stopPropagation(); setDrawerEpicId(epic.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                           <ChevronRight className="h-3.5 w-3.5" style={{ color: '#94A3B8' }} />
                         </button>
                       </div>
