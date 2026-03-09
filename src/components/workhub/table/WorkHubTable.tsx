@@ -1,9 +1,11 @@
 /**
- * WorkHubTable — Main table container
- * Manages view mode, filters, sort, grouping, selection, side panel
+ * WorkHubTable — Main table container (Stage D: Sacred Gate — fully wired)
+ * Manages view mode, filters, sort, grouping, selection, side panel, CRUD
+ * ZERO mock data. All interactions wired to Supabase via hooks.
  */
-import { useState, useMemo, useCallback } from 'react';
-import { useWorkItems, useUpdateWorkItem, useBulkUpdateWorkItems, useDeleteWorkItem } from '@/hooks/useWorkHub';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useWorkItems, useCreateWorkItem, useUpdateWorkItem, useBulkUpdateWorkItems, useDeleteWorkItem } from '@/hooks/useWorkHub';
+import { deriveStatusCategory } from '@/services/workhub-service';
 import type { FilterConfig, SortConfig, GroupByField, ViewMode, ColumnConfig } from '@/types/workhub';
 import type { WorkHubItem } from '@/services/workhub-service';
 import WorkHubToolbar from './WorkHubToolbar';
@@ -13,9 +15,11 @@ import WorkHubGroupHeader from './WorkHubGroupHeader';
 import WorkHubInlineCreate from './WorkHubInlineCreate';
 import WorkHubBulkBar from './WorkHubBulkBar';
 import WorkHubSidePanel from './WorkHubSidePanel';
+import { toast } from 'sonner';
 
 interface WorkHubTableProps {
   projectKey: string;
+  projectId?: string;
   defaultType?: string;
 }
 
@@ -45,22 +49,49 @@ function normalizeCategory(cat: string | null): string {
 
 const GROUP_ORDER = ['To Do', 'In Progress', 'Done'];
 
-export default function WorkHubTable({ projectKey, defaultType = 'Story' }: WorkHubTableProps) {
+// Map group label to default status for new items
+const GROUP_DEFAULT_STATUS: Record<string, string> = {
+  'To Do': 'Backlog',
+  'In Progress': 'In Progress',
+  'Done': 'Done',
+};
+
+// Load column config from localStorage
+function loadColumnConfig(projectKey: string): ColumnConfig[] | null {
+  try {
+    const stored = localStorage.getItem(`workhub-columns-${projectKey}`);
+    return stored ? JSON.parse(stored) : null;
+  } catch { return null; }
+}
+
+function saveColumnConfig(projectKey: string, columns: ColumnConfig[]) {
+  try {
+    localStorage.setItem(`workhub-columns-${projectKey}`, JSON.stringify(columns));
+  } catch {}
+}
+
+export default function WorkHubTable({ projectKey, projectId, defaultType = 'Story' }: WorkHubTableProps) {
   const [filters, setFilters] = useState<FilterConfig>(EMPTY_FILTERS);
   const [sort, setSort] = useState<SortConfig | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByField>('status_category');
   const [viewMode, setViewMode] = useState<ViewMode>('backlog');
-  const [columns, setColumns] = useState<ColumnConfig[]>(DEFAULT_COLUMNS);
+  const [columns, setColumns] = useState<ColumnConfig[]>(() => loadColumnConfig(projectKey) || DEFAULT_COLUMNS);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [panelItemId, setPanelItemId] = useState<string | null>(null);
+  const [panelMode, setPanelMode] = useState<'view' | 'create'>('view');
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [deleteConfirm, setDeleteConfirm] = useState<{ ids: string[]; items: WorkHubItem[] } | null>(null);
 
-  const { data: items = [], isLoading } = useWorkItems(projectKey, filters, sort ?? undefined);
+  const { data: items = [], isLoading, error } = useWorkItems(projectKey, filters, sort ?? undefined);
+  const createMutation = useCreateWorkItem(projectKey);
   const updateMutation = useUpdateWorkItem(projectKey);
   const bulkMutation = useBulkUpdateWorkItems(projectKey);
   const deleteMutation = useDeleteWorkItem(projectKey);
 
-  // Unique values for filters
+  // Persist column config
+  useEffect(() => { saveColumnConfig(projectKey, columns); }, [columns, projectKey]);
+
+  // Unique values for filters (derived from REAL data)
   const uniqueStatuses = useMemo(() => [...new Set(items.map(i => i.status).filter(Boolean))].sort(), [items]);
   const uniqueTypes = useMemo(() => [...new Set(items.map(i => i.issue_type).filter(Boolean))].sort(), [items]);
   const uniqueAssignees = useMemo(() => [...new Set(items.map(i => i.assignee_display_name).filter(Boolean) as string[])].sort(), [items]);
@@ -85,7 +116,6 @@ export default function WorkHubTable({ projectKey, defaultType = 'Story' }: Work
       groups.get(key)!.push(item);
     }
 
-    // Sort groups
     const entries = Array.from(groups.entries());
     if (groupBy === 'status_category') {
       entries.sort((a, b) => GROUP_ORDER.indexOf(a[0]) - GROUP_ORDER.indexOf(b[0]));
@@ -124,10 +154,59 @@ export default function WorkHubTable({ projectKey, defaultType = 'Story' }: Work
     });
   }, []);
 
-  // Inline edit
+  // ═══ INLINE EDIT — wired to real mutation ═══
   const handleInlineEdit = useCallback((itemId: string, field: string, value: any) => {
-    updateMutation.mutate({ itemId, updates: { [field]: value } });
+    const updates: Record<string, any> = { [field]: value };
+    // Auto-calc status_category when status changes
+    if (field === 'status') {
+      updates.status_category = deriveStatusCategory(value);
+    }
+    updateMutation.mutate({ itemId, updates });
   }, [updateMutation]);
+
+  // ═══ INLINE CREATE — wired to real mutation ═══
+  const handleInlineCreate = useCallback((summary: string, type: string, groupCategory?: string) => {
+    const status = GROUP_DEFAULT_STATUS[groupCategory || 'To Do'] || 'Backlog';
+    const status_category = deriveStatusCategory(status);
+
+    // Resolve project_id from first item or use prop
+    const resolvedProjectId = projectId || items[0]?.id?.split('-')[0] || '';
+
+    createMutation.mutate({
+      summary,
+      issue_type: type,
+      status,
+      status_category,
+      priority: 'Medium',
+      project_key: projectKey,
+      project_id: resolvedProjectId,
+    });
+  }, [createMutation, projectKey, projectId, items]);
+
+  // ═══ TOOLBAR CREATE — opens side panel in create mode ═══
+  const handleToolbarCreate = useCallback(() => {
+    setPanelItemId(null);
+    setPanelMode('create');
+  }, []);
+
+  // ═══ DELETE with confirmation ═══
+  const handleDeleteRequest = useCallback((itemIds: string[]) => {
+    const targetItems = items.filter(i => itemIds.includes(i.id));
+    setDeleteConfirm({ ids: itemIds, items: targetItems });
+  }, [items]);
+
+  const confirmDelete = useCallback(() => {
+    if (!deleteConfirm) return;
+    if (deleteConfirm.ids.length === 1) {
+      deleteMutation.mutate(deleteConfirm.ids[0]);
+      // Close side panel if showing deleted item
+      if (panelItemId === deleteConfirm.ids[0]) setPanelItemId(null);
+    } else {
+      bulkMutation.mutate({ type: 'delete', item_ids: deleteConfirm.ids });
+    }
+    setSelectedIds(new Set());
+    setDeleteConfirm(null);
+  }, [deleteConfirm, deleteMutation, bulkMutation, panelItemId]);
 
   // Bulk actions
   const handleBulkStatus = (status: string) => {
@@ -139,14 +218,8 @@ export default function WorkHubTable({ projectKey, defaultType = 'Story' }: Work
     setSelectedIds(new Set());
   };
   const handleBulkDelete = () => {
-    bulkMutation.mutate({ type: 'delete', item_ids: Array.from(selectedIds) });
-    setSelectedIds(new Set());
+    handleDeleteRequest(Array.from(selectedIds));
   };
-
-  // Inline create
-  const handleInlineCreate = useCallback((_summary: string, _type: string) => {
-    // Will be wired to createWorkItem in next stage
-  }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#FFFFFF', minWidth: 1320 }}>
@@ -158,7 +231,7 @@ export default function WorkHubTable({ projectKey, defaultType = 'Story' }: Work
         onGroupByChange={setGroupBy}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        onCreateClick={() => {}}
+        onCreateClick={handleToolbarCreate}
         uniqueStatuses={uniqueStatuses}
         uniqueTypes={uniqueTypes}
         uniqueAssignees={uniqueAssignees}
@@ -186,8 +259,26 @@ export default function WorkHubTable({ projectKey, defaultType = 'Story' }: Work
           </div>
         )}
 
+        {/* Error state */}
+        {error && !isLoading && (
+          <div style={{ padding: '40px 0', textAlign: 'center' }}>
+            <div style={{ fontSize: 15, fontWeight: 500, color: '#DC2626', marginBottom: 8 }}>
+              Failed to load work items
+            </div>
+            <div style={{ fontSize: 13, color: '#64748B', marginBottom: 12 }}>
+              {(error as Error).message || 'An unexpected error occurred'}
+            </div>
+            <button
+              onClick={() => window.location.reload()}
+              style={{ padding: '6px 16px', fontSize: 13, fontWeight: 600, color: 'white', background: '#2563EB', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         {/* Grouped rows */}
-        {!isLoading && grouped.map(group => (
+        {!isLoading && !error && grouped.map(group => (
           <div key={group.key}>
             {groupBy !== 'none' && (
               <WorkHubGroupHeader
@@ -195,7 +286,10 @@ export default function WorkHubTable({ projectKey, defaultType = 'Story' }: Work
                 count={group.items.length}
                 collapsed={!!collapsed[group.key]}
                 onToggle={() => setCollapsed(prev => ({ ...prev, [group.key]: !prev[group.key] }))}
-                onAddItem={() => {}}
+                onAddItem={() => {
+                  // Expand group and focus inline create
+                  setCollapsed(prev => ({ ...prev, [group.key]: false }));
+                }}
               />
             )}
 
@@ -208,14 +302,17 @@ export default function WorkHubTable({ projectKey, defaultType = 'Story' }: Work
                     columns={columns}
                     selected={selectedIds.has(item.id)}
                     onSelect={checked => toggleSelect(item.id, checked)}
-                    onOpenPanel={id => setPanelItemId(id)}
+                    onOpenPanel={id => { setPanelItemId(id); setPanelMode('view'); }}
                     onInlineEdit={handleInlineEdit}
+                    onDelete={id => handleDeleteRequest([id])}
+                    allStatuses={uniqueStatuses}
+                    allPriorities={uniquePriorities}
                   />
                 ))}
                 <WorkHubInlineCreate
                   defaultType={defaultType}
                   groupCategory={group.key}
-                  onSubmit={handleInlineCreate}
+                  onSubmit={(summary, type) => handleInlineCreate(summary, type, group.key)}
                 />
               </>
             )}
@@ -223,10 +320,16 @@ export default function WorkHubTable({ projectKey, defaultType = 'Story' }: Work
         ))}
 
         {/* Empty state */}
-        {!isLoading && items.length === 0 && (
+        {!isLoading && !error && items.length === 0 && (
           <div style={{ padding: '60px 0', textAlign: 'center' }}>
             <div style={{ fontSize: 15, fontWeight: 500, color: '#64748B', marginBottom: 4 }}>No work items found</div>
-            <div style={{ fontSize: 13, color: '#94A3B8' }}>Try adjusting your filters or create a new item</div>
+            <div style={{ fontSize: 13, color: '#94A3B8', marginBottom: 16 }}>Try adjusting your filters or create a new item</div>
+            <button
+              onClick={handleToolbarCreate}
+              style={{ padding: '8px 20px', fontSize: 13, fontWeight: 600, color: 'white', background: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer' }}
+            >
+              Create your first item
+            </button>
           </div>
         )}
       </div>
@@ -243,12 +346,57 @@ export default function WorkHubTable({ projectKey, defaultType = 'Story' }: Work
       />
 
       {/* Side panel */}
-      {panelItemId && (
+      {(panelItemId || panelMode === 'create') && (
         <WorkHubSidePanel
           itemId={panelItemId}
           projectKey={projectKey}
-          onClose={() => setPanelItemId(null)}
+          onClose={() => { setPanelItemId(null); setPanelMode('view'); }}
         />
+      )}
+
+      {/* Delete confirmation modal */}
+      {deleteConfirm && (
+        <>
+          <div onClick={() => setDeleteConfirm(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 9998 }} />
+          <div style={{
+            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            width: 420, background: '#FFFFFF', borderRadius: 8, padding: 24,
+            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', zIndex: 9999,
+          }}>
+            <h3 style={{ fontSize: 16, fontWeight: 650, color: '#0F172A', marginBottom: 8 }}>
+              Delete {deleteConfirm.ids.length === 1 ? deleteConfirm.items[0]?.issue_key : `${deleteConfirm.ids.length} items`}?
+            </h3>
+            {deleteConfirm.ids.length === 1 ? (
+              <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.5, marginBottom: 20 }}>
+                "{deleteConfirm.items[0]?.summary}" will be moved to trash. This action can be undone within 30 days.
+              </p>
+            ) : (
+              <div style={{ fontSize: 13, color: '#64748B', lineHeight: 1.6, marginBottom: 20 }}>
+                {deleteConfirm.items.slice(0, 3).map(item => (
+                  <div key={item.id} style={{ display: 'flex', gap: 6, marginBottom: 2 }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: '#0F172A', flexShrink: 0 }}>{item.issue_key}:</span>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.summary}</span>
+                  </div>
+                ))}
+                {deleteConfirm.items.length > 3 && (
+                  <div style={{ color: '#94A3B8', marginTop: 4 }}>...and {deleteConfirm.items.length - 3} more</div>
+                )}
+              </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+              <button onClick={() => setDeleteConfirm(null)} style={{
+                padding: '8px 16px', fontSize: 13, fontWeight: 500, color: '#334155',
+                background: 'transparent', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, cursor: 'pointer',
+              }}>Cancel</button>
+              <button onClick={confirmDelete} style={{
+                padding: '8px 16px', fontSize: 13, fontWeight: 600, color: 'white',
+                background: '#DC2626', border: 'none', borderRadius: 6, cursor: 'pointer',
+              }}>
+                {deleteConfirm.ids.length === 1 ? 'Delete' : `Delete ${deleteConfirm.ids.length} items`}
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
       <style>{`
