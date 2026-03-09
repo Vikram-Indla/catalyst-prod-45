@@ -188,7 +188,9 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 /* ── Parent cell (enriched: icon + key + title) ── */
-function ParentCell({ parentId, allRows, onSelect }: { parentId: string | null; allRows: FlatRow[]; onSelect: (item: WorkItem) => void }) {
+function ParentCell({ item, allRows, onSelect }: { item: WorkItem; allRows: FlatRow[]; onSelect: (item: WorkItem) => void }) {
+  const parentId = item.parentId;
+  const parentKey = item.parentKey;
   if (!parentId) {
     return (
       <div style={{ width: 220, padding: '0 8px' }}>
@@ -196,23 +198,24 @@ function ParentCell({ parentId, allRows, onSelect }: { parentId: string | null; 
       </div>
     );
   }
-  const parent = allRows.find(r => r.item.key === parentId || r.item.id === parentId)?.item;
+  const parent = allRows.find(r => r.item.id === parentId)?.item;
+  const displayKey = parent?.key || parentKey || parentId.slice(0, 8);
   return (
     <div
       style={{ width: 220, padding: '0 8px', overflow: 'hidden' }}
-      title={parent ? `${parentId} — ${parent.title}` : parentId}
+      title={parent ? `${displayKey} — ${parent.title}` : displayKey}
     >
       <div
         className="hi-parent-cell"
         onClick={(e) => { e.stopPropagation(); if (parent) onSelect(parent); }}
         style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer', overflow: 'hidden' }}
       >
-        {parent?.issueType && <JiraIssueTypeIcon type={parent.issueType} size={14} />}
+        {parent && <JiraIssueTypeIcon type={parent.hierarchyName || 'Story'} size={14} />}
         <span className="hi-parent-key" style={{
           fontSize: 11, fontWeight: 600, color: '#2563EB', flexShrink: 0,
           fontVariantNumeric: 'tabular-nums', fontFamily: "'Inter', sans-serif",
         }}>
-          {parentId}
+          {displayKey}
         </span>
         {parent && (
           <span style={{

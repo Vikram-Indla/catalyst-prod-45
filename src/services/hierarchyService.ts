@@ -14,6 +14,7 @@ function transformWorkItem(row: any): WorkItem {
     hierarchyColor: row.hierarchy_color,
     hierarchyColorText: row.hierarchy_color_text,
     parentId: row.parent_id,
+    parentKey: row.parent_key || null,
     status: {
       id: row.status_id,
       name: row.status_name,
