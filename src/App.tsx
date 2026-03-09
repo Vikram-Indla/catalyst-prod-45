@@ -69,6 +69,13 @@ const IdeationPage = lazy(() => import("./pages/producthub/IdeationPage"));
 const ReqAssistLibrary = lazy(() => import("./pages/ReqAssistLibrary"));
 const ReqAssistGenerate = lazy(() => import("./pages/ReqAssistGenerate"));
 
+// IncidentHub lazy imports
+const IncidentHubPage = lazy(() => import("./pages/IncidentHub"));
+const IncidentHubKanbanPage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubKanbanPage })));
+const IncidentHubAnalyticsPage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubAnalyticsPage })));
+const IncidentHubInsightsPage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubInsightsPage })));
+const IncidentHubReportsPage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubReportsPage })));
+const IncidentHubCommitteeQueuePage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubCommitteeQueuePage })));
 
 
 // Wiki Module lazy imports
