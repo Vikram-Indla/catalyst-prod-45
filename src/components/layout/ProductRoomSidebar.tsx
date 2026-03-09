@@ -17,6 +17,7 @@ import {
   BarChart3,
   Rocket,
   FileText,
+  LayoutPanelLeft,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
