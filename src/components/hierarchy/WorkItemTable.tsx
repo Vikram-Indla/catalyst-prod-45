@@ -239,11 +239,15 @@ function ColHeader({ label, sortKey, currentSort, currentDir, onSort, width, fle
       style={{
         width, flex, height: 36, display: 'flex', alignItems: 'center', padding: '0 8px',
         fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#64748B',
-        letterSpacing: '0.06em', cursor: 'pointer', userSelect: 'none', fontFamily: "'Inter', sans-serif",
+        letterSpacing: '0.06em', cursor: 'pointer', userSelect: 'none', minWidth: 0,
       }}
     >
-      {label}
-      {isActive && <span style={{ marginLeft: 4, fontSize: 10 }}>{currentDir === 'asc' ? '↑' : '↓'}</span>}
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+      {isActive && (
+        <span style={{ marginLeft: 4, display: 'inline-flex', alignItems: 'center' }}>
+          {currentDir === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
+        </span>
+      )}
     </div>
   );
 }
