@@ -305,11 +305,11 @@ function ImpactTab({ idea, ideaKey, rawIdea }: { idea: Idea; ideaKey: string | n
   const ratingText = impactScore >= 4.0 ? '#15803D' : impactScore >= 3.0 ? '#1D4ED8' : impactScore >= 2.0 ? '#B45309' : '#B91C1C';
 
   const FACTOR_DEFS = [
-    { key: 'I', name: 'Investment Fit', weight: 25, color: '#2563EB' },
-    { key: 'M', name: 'Market Size', weight: 20, color: '#0D9488' },
+    { key: 'I', name: 'Investor Fit', weight: 25, color: '#2563EB' },
+    { key: 'M', name: 'Investor Size', weight: 20, color: '#0D9488' },
     { key: 'P', name: 'Problem Severity', weight: 20, color: '#D97706' },
-    { key: 'A', name: 'Advantage', weight: 15, color: '#7C3AED' },
-    { key: 'C', name: 'Complexity (inv.)', weight: 10, color: '#16A34A' },
+    { key: 'A', name: 'Investor Benefit', weight: 15, color: '#16A34A' },
+    { key: 'C', name: 'Complexity (inv.)', weight: 10, color: '#0D9488' },
     { key: 'T', name: 'Time to Value', weight: 10, color: '#EF4444' },
   ];
 
@@ -347,14 +347,6 @@ function ImpactTab({ idea, ideaKey, rawIdea }: { idea: Idea; ideaKey: string | n
           </div>
         );
       })}
-
-      {/* AI suggestion */}
-      <div style={{ marginTop: '20px', background: '#F5F3FF', border: '1px solid #EDE9FE', borderRadius: '8px', padding: '12px' }}>
-        <div style={{ fontSize: '12px', fontWeight: 700, color: '#7C3AED', marginBottom: '4px' }}>✦ AI Score Suggestion</div>
-        <div style={{ fontSize: '12px', color: '#6D28D9', lineHeight: 1.5 }}>
-          Based on similar initiatives and historical data, the AI model suggests the Investment Fit score could be adjusted to {(factors.I + 0.3).toFixed(1)} given recent ministry alignment signals.
-        </div>
-      </div>
     </div>
   );
 }
