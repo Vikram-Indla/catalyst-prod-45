@@ -47,6 +47,13 @@ function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
   return <PHPlaceholderBase title={title} phase={phase} icon={PH_ICONS[title] || List} description={PH_DESCRIPTIONS[title] || `Coming in ${phase}`} />;
 }
 const ProductionEventsPageLazy = lazy(() => import("@/pages/release-hub/production-events/ProductionEventsPage"));
+// ReleaseHub v2.1 page shells
+const RH21CommandCenterPage = lazy(() => import("./pages/releasehub/CommandCenterPage"));
+const RH21AllReleasesPage = lazy(() => import("./pages/releasehub/AllReleasesPage"));
+const RH21ReleaseComparePage = lazy(() => import("./pages/releasehub/ReleaseComparePage"));
+const RH21TriageQueuePage = lazy(() => import("./pages/releasehub/TriageQueuePage"));
+const RH21AllChangesPage = lazy(() => import("./pages/releasehub/AllChangesPage"));
+const RH21ProductionEventsPage = lazy(() => import("./pages/releasehub/ProductionEventsPage"));
 const StrategicThemesPage = lazy(() => import("./pages/strategyhub/StrategicThemesPage"));
 const GoalsKeyResultsPage = lazy(() => import("./pages/strategyhub/GoalsKeyResultsPage"));
 // ProdHubAppShell removed — /producthub/* now uses CatalystShell
