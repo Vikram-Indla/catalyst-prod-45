@@ -1,4 +1,31 @@
-/** WorkHubPriorityIcon — Priority icon with 5 levels */
-export default function WorkHubPriorityIcon() {
-  return <div data-component="WorkHubPriorityIcon" />;
+/**
+ * WorkHubPriorityIcon — 5-level priority icons using Lucide arrows
+ */
+import { ChevronUp, ChevronsUp, Minus, ChevronDown, ChevronsDown } from 'lucide-react';
+
+interface WorkHubPriorityIconProps {
+  priority: string;
+  size?: number;
+  showLabel?: boolean;
+}
+
+const PRIORITY_CONFIG: Record<string, { icon: typeof ChevronUp; color: string; label: string }> = {
+  highest: { icon: ChevronsUp, color: '#DC2626', label: 'Highest' },
+  high:    { icon: ChevronUp,  color: '#DC2626', label: 'High' },
+  medium:  { icon: Minus,      color: '#D97706', label: 'Medium' },
+  low:     { icon: ChevronDown, color: '#2563EB', label: 'Low' },
+  lowest:  { icon: ChevronsDown, color: '#2563EB', label: 'Lowest' },
+};
+
+export default function WorkHubPriorityIcon({ priority, size = 16, showLabel = false }: WorkHubPriorityIconProps) {
+  const key = priority?.toLowerCase().trim() || 'medium';
+  const config = PRIORITY_CONFIG[key] || PRIORITY_CONFIG.medium;
+  const Icon = config.icon;
+
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0 }} title={config.label}>
+      <Icon size={size} color={config.color} strokeWidth={2.5} />
+      {showLabel && <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{config.label}</span>}
+    </span>
+  );
 }
