@@ -15,8 +15,9 @@ import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, BookOpen } from 'lucid
 import { toast } from 'sonner';
 import type { BacklogStory } from '../types/backlog.types';
 
-export default function StoryBacklogPage() {
-  const { projectId } = useParams<{ projectId: string }>();
+export default function StoryBacklogPage({ projectId: propProjectId }: { projectId?: string }) {
+  const params = useParams<{ projectId: string }>();
+  const projectId = propProjectId || params.projectId;
   const queryClient = useQueryClient();
   const { data: stories, isLoading, error } = useStoryBacklog(projectId || '');
 
