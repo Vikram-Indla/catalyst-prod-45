@@ -63264,6 +63264,7 @@ export type Database = {
           ai_summary: string | null
           ai_tags: string[] | null
           alignment: number | null
+          assigned_team: string | null
           assigned_to: string | null
           assigned_to_name: string | null
           business_value: number | null
@@ -63304,6 +63305,8 @@ export type Database = {
           submitted_by: string | null
           submitted_by_name: string | null
           tags: string[] | null
+          target_release_date: string | null
+          theme: string | null
           time_criticality: number | null
           timeframe_score: number | null
           title: string | null
