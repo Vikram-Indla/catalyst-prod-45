@@ -13,8 +13,9 @@ import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Layers } from 'lucide-
 import { toast } from 'sonner';
 import type { BacklogFeature } from '../types/backlog.types';
 
-export default function FeatureBacklogPage() {
-  const { projectId } = useParams<{ projectId: string }>();
+export default function FeatureBacklogPage({ projectId: propProjectId }: { projectId?: string }) {
+  const params = useParams<{ projectId: string }>();
+  const projectId = propProjectId || params.projectId;
   const queryClient = useQueryClient();
   const { data: features, isLoading, error } = useFeatureBacklog(projectId || '');
 

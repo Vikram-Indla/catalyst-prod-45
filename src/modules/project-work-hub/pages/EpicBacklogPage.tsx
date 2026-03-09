@@ -15,8 +15,9 @@ import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Box } from 'lucide-rea
 import { toast } from 'sonner';
 import type { BacklogEpic } from '../types/backlog.types';
 
-export default function EpicBacklogPage() {
-  const { projectId } = useParams<{ projectId: string }>();
+export default function EpicBacklogPage({ projectId: propProjectId }: { projectId?: string }) {
+  const params = useParams<{ projectId: string }>();
+  const projectId = propProjectId || params.projectId;
   const queryClient = useQueryClient();
   const { data: project } = useProject(projectId || '');
   const { data: epics, isLoading, error } = useEpicBacklog(projectId || '');
