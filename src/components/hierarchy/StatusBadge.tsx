@@ -17,6 +17,7 @@ const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
   'Ready For QA': 'grey',
   'Awaiting Info': 'grey',
   'Awaiting Information': 'grey',
+  'AWAITING INFO': 'grey',
   'Blocked': 'grey',
   'Deferred': 'grey',
   'Deferred for INT': 'grey',
@@ -32,6 +33,7 @@ const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
   'In QA': 'blue',
   'In UAT': 'blue',
   'UAT Ready': 'blue',
+  'UAT READY': 'blue',
   'In BETA': 'blue',
   'Beta Ready': 'blue',
   'In Testing': 'blue',
@@ -43,6 +45,7 @@ const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
   'Done': 'green',
   'Closed': 'green',
   'Resolved': 'green',
+  'RESOLVED': 'green',
   'Ready for Production': 'green',
   'In Production': 'green',
   'Released': 'green',
@@ -57,12 +60,23 @@ const STATUS_STYLES: Record<StatusCategory, { background: string; color: string 
   green: { background: '#E3FCEF', color: '#006644' },
 };
 
+const STATUS_DISPLAY_NAMES: Record<string, string> = {
+  'Ready for Production': 'READY FOR PROD',
+  'Ready For Production': 'READY FOR PROD',
+  'Awaiting Information': 'AWAITING INFO',
+  'Ready for QA': 'READY FOR QA',
+};
+
 export function getStatusCategory(status: string): StatusCategory {
-  return STATUS_CATEGORY_MAP[status] || 'grey';
+  return STATUS_CATEGORY_MAP[status] || STATUS_CATEGORY_MAP[status.toUpperCase()] || 'grey';
 }
 
 export function getStatusStyle(status: string) {
   return STATUS_STYLES[getStatusCategory(status)];
+}
+
+export function getStatusDisplayName(status: string): string {
+  return STATUS_DISPLAY_NAMES[status] || status.toUpperCase();
 }
 
 /** @deprecated Use getStatusStyle instead */
@@ -81,10 +95,12 @@ interface StatusBadgeProps {
 export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps) {
   const style = getStatusStyle(status);
   const h = mini ? 20 : 24;
+  const displayName = getStatusDisplayName(status);
 
   return (
     <button
       onClick={onClick}
+      className="status-badge"
       style={{
         height: h,
         padding: mini ? '0 6px' : '0 8px',
@@ -104,9 +120,13 @@ export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps)
         whiteSpace: 'nowrap' as const,
         lineHeight: 1,
         flexShrink: 0,
+        maxWidth: mini ? 120 : 140,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
       }}
+      title={status}
     >
-      {status}
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</span>
       {onClick && !mini && <span style={{ opacity: 0.6, fontSize: 8, color: style.color }}>▾</span>}
     </button>
   );

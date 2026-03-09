@@ -67,6 +67,7 @@ function transformJiraIssue(row: any): WorkItem {
     hierarchyColor: typeInfo.color,
     hierarchyColorText: typeInfo.colorText,
     parentId: row.parent_key || null,
+    parentKey: row.parent_key || null,
     status: {
       id: row.status,
       name: row.status,
@@ -88,6 +89,7 @@ function transformJiraIssue(row: any): WorkItem {
     createdAt: row.jira_created_at,
     updatedAt: row.jira_updated_at,
     issueType: row.issue_type,
+    source: 'jira',
   };
 }
 

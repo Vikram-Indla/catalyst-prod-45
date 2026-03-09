@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { ChevronRight, ChevronDown, MoreHorizontal, Plus } from 'lucide-react';
+import { ChevronRight, ChevronDown, MoreHorizontal, ArrowUp, ArrowDown } from 'lucide-react';
 import type { WorkItem } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusBadge } from './StatusBadge';
@@ -76,7 +76,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
         fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
         padding: '1px 4px', borderRadius: 2,
         background: '#CCFBF1', color: '#0F766E',
-        textTransform: 'uppercase', marginLeft: 4, flexShrink: 0,
+        textTransform: 'uppercase', flexShrink: 0,
       }}>CATALYST</span>
     );
   }
@@ -85,7 +85,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
       fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
       padding: '1px 4px', borderRadius: 2,
       background: '#DEEBFF', color: '#0747A6',
-      textTransform: 'uppercase', marginLeft: 4, flexShrink: 0,
+      textTransform: 'uppercase', flexShrink: 0,
     }}>JIRA</span>
   );
 }
@@ -120,7 +120,7 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
           <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>
         </div>
       )}
-      <span style={{ fontSize: 12, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{assignee.displayName}</span>
+      <span className="hi-assignee-name" style={{ fontSize: 12, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{assignee.displayName}</span>
     </div>
   );
 }
@@ -188,44 +188,41 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 /* ── Parent cell (enriched: icon + key + title) ── */
-function ParentCell({ item, allRows, onSelect }: { item: WorkItem; allRows: FlatRow[]; onSelect: (item: WorkItem) => void }) {
+function ParentCell({ item, itemById, onSelect }: { item: WorkItem; itemById: Map<string, WorkItem>; onSelect: (item: WorkItem) => void }) {
   const parentId = item.parentId;
   const parentKey = item.parentKey;
+
   if (!parentId) {
-    return (
-      <div style={{ width: 220, padding: '0 8px' }}>
-        <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>—</span>
-      </div>
-    );
+    return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
   }
-  const parent = allRows.find(r => r.item.id === parentId)?.item;
-  const displayKey = parent?.key || parentKey || parentId.slice(0, 8);
+
+  const parent = itemById.get(parentId);
+  const displayKey = parent?.key || parentKey || parentId;
+  const iconType = parent?.issueType || parent?.hierarchyName || 'Task';
+
   return (
     <div
-      style={{ width: 220, padding: '0 8px', overflow: 'hidden' }}
+      className="hi-parent-cell"
       title={parent ? `${displayKey} — ${parent.title}` : displayKey}
+      style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, overflow: 'hidden', paddingLeft: 12 }}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (parent) onSelect(parent);
+      }}
     >
-      <div
-        className="hi-parent-cell"
-        onClick={(e) => { e.stopPropagation(); if (parent) onSelect(parent); }}
-        style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer', overflow: 'hidden' }}
-      >
-        {parent && <JiraIssueTypeIcon type={parent.hierarchyName || 'Story'} size={14} />}
-        <span className="hi-parent-key" style={{
-          fontSize: 11, fontWeight: 600, color: '#2563EB', flexShrink: 0,
-          fontVariantNumeric: 'tabular-nums', fontFamily: "'Inter', sans-serif",
-        }}>
-          {displayKey}
-        </span>
-        {parent && (
-          <span style={{
-            fontSize: 12, color: '#64748B', overflow: 'hidden',
-            textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif",
-          }}>
-            {parent.title}
-          </span>
-        )}
-      </div>
+      <span className="hi-type-icon-wrapper"><JiraIssueTypeIcon type={iconType} size={16} /></span>
+      <span className="hi-parent-key" style={{
+        fontSize: 12,
+        fontWeight: 600,
+        color: '#2563EB',
+        flexShrink: 0,
+        fontVariantNumeric: 'tabular-nums',
+      }}>
+        {displayKey}
+      </span>
+      <span style={{ fontSize: 12, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+        {parent?.title || '—'}
+      </span>
     </div>
   );
 }
@@ -242,11 +239,15 @@ function ColHeader({ label, sortKey, currentSort, currentDir, onSort, width, fle
       style={{
         width, flex, height: 36, display: 'flex', alignItems: 'center', padding: '0 8px',
         fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#64748B',
-        letterSpacing: '0.06em', cursor: 'pointer', userSelect: 'none', fontFamily: "'Inter', sans-serif",
+        letterSpacing: '0.06em', cursor: 'pointer', userSelect: 'none', minWidth: 0,
       }}
     >
-      {label}
-      {isActive && <span style={{ marginLeft: 4, fontSize: 10 }}>{currentDir === 'asc' ? '↑' : '↓'}</span>}
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+      {isActive && (
+        <span style={{ marginLeft: 4, display: 'inline-flex', alignItems: 'center' }}>
+          {currentDir === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
+        </span>
+      )}
     </div>
   );
 }
@@ -288,6 +289,30 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
   const flatRows = useMemo(() => flattenTree(items, expandedIds), [items, expandedIds]);
   const visibleRows = flatRows.slice(0, perPage);
   const totalFlat = flatRows.length;
+
+  const itemById = useMemo(() => {
+    const map = new Map<string, WorkItem>();
+    const walk = (nodes: WorkItem[]) => {
+      for (const node of nodes) {
+        map.set(node.id, node);
+        if (node.children.length > 0) walk(node.children);
+      }
+    };
+    walk(items);
+    return map;
+  }, [items]);
+
+  const hasMultipleSources = useMemo(() => {
+    const sources = new Set<string>();
+    const walk = (nodes: WorkItem[]) => {
+      for (const node of nodes) {
+        if (node.source) sources.add(node.source);
+        if (node.children.length > 0) walk(node.children);
+      }
+    };
+    walk(items);
+    return sources.size > 1;
+  }, [items]);
 
   // Visible column defs (ordered)
   const columns = useMemo(() =>
@@ -398,34 +423,60 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
   const allVisibleSelected = visibleRows.length > 0 && visibleRows.every(r => selectedKeys.has(r.item.key));
   const someSelected = visibleRows.some(r => selectedKeys.has(r.item.key));
 
-  /* ── Cell renderer ── */
+  const gridTemplateColumns = useMemo(() => {
+    const map: Record<string, string> = {
+      work: 'minmax(300px, 1fr)',
+      status: '150px',
+      parent: '220px',
+      assignee: '160px',
+      created: '120px',
+      fixVersion: '160px',
+      labels: '160px',
+      storyPoints: '90px',
+      dueDate: '120px',
+      reporter: '140px',
+      updated: '140px',
+      priority: '120px',
+      type: '120px',
+    };
+    return ['44px', ...columns.map((col) => map[col.id] || `${col.width}px`), '40px'].join(' ');
+  }, [columns]);
   function renderCell(colId: string, item: WorkItem, depth: number, hasChildren: boolean, isExpanded: boolean) {
     switch (colId) {
       case 'work':
         return (
-          <div style={{ flex: 1, minWidth: 280, display: 'flex', alignItems: 'center', gap: 6, paddingLeft: depth * 24 + 8, paddingRight: 8, overflow: 'hidden' }}>
+          <div className="hi-work-column" style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 8, paddingLeft: depth * 24 + 8, paddingRight: 8, overflow: 'hidden' }}>
             {hasChildren ? (
-              <button onClick={(e) => { e.stopPropagation(); toggle(item.id); }}
-                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', flexShrink: 0 }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); toggle(item.id); }}
+                className="hi-expand-chevron"
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', flexShrink: 0 }}
+              >
                 {isExpanded ? <ChevronDown size={16} color="#94A3B8" /> : <ChevronRight size={16} color="#94A3B8" />}
               </button>
-            ) : <div style={{ width: 16, flexShrink: 0 }} />}
-            {item.issueType && <JiraIssueTypeIcon type={item.issueType} size={16} />}
+            ) : <div className="hi-expand-chevron" style={{ flexShrink: 0 }} />}
+
+            <span className="hi-type-icon-wrapper">{item.issueType && <JiraIssueTypeIcon type={item.issueType} size={16} />}</span>
+
             <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
               {item.key}
             </span>
+
             <InlineEditTitle
               value={item.title}
               onSave={(newTitle) => handleTitleSave(item.key, newTitle)}
               forceEdit={editingTitleKey === item.key}
               onCancelForceEdit={() => setEditingTitleKey(null)}
+              fontWeight={hasChildren ? 500 : 400}
+              style={{ minWidth: 0 }}
             />
-            <SourceBadge source={item.source} />
+
+            {hasMultipleSources && <SourceBadge source={item.source} />}
           </div>
         );
       case 'status':
         return (
-          <div style={{ width: 150, padding: '0 8px', position: 'relative' }}>
+          <div style={{ padding: '0 8px', position: 'relative', minWidth: 0 }}>
             <StatusBadge status={item.status.name} onClick={(e) => { e.stopPropagation(); openDropdown('status', item.id); }} />
             {activeDropdown?.type === 'status' && activeDropdown.itemId === item.id && (
               <StatusDropdown currentStatus={item.status.name} availableStatuses={allStatuses}
@@ -434,10 +485,10 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
           </div>
         );
       case 'parent':
-        return <ParentCell item={item} allRows={flatRows} onSelect={onSelect} />;
+        return <ParentCell item={item} itemById={itemById} onSelect={onSelect} />;
       case 'assignee':
         return (
-          <div style={{ width: 160, padding: '0 8px', overflow: 'hidden', position: 'relative' }}>
+          <div style={{ padding: '0 8px', overflow: 'hidden', position: 'relative', minWidth: 0 }}>
             <AssigneeCell assignee={item.assignee} onClick={(e) => { e.stopPropagation(); openDropdown('assignee', item.id); }} />
             {activeDropdown?.type === 'assignee' && activeDropdown.itemId === item.id && (
               <AssigneeDropdown currentAssignee={item.assignee?.displayName} availableAssignees={allAssignees}
@@ -447,17 +498,17 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       case 'created':
         return (
-          <div style={{ width: 150, padding: '0 8px' }}>
-            <span style={{ fontSize: 12, color: '#64748B' }}>
+          <div style={{ padding: '0 16px 0 8px', textAlign: 'right' }}>
+            <span style={{ fontSize: 12, color: '#64748B', fontVariantNumeric: 'tabular-nums' }}>
               {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
             </span>
           </div>
         );
       case 'fixVersion':
         return (
-          <div style={{ width: 140, padding: '0 8px' }}>
+          <div style={{ padding: '0 8px', minWidth: 0 }}>
             {item.fixVersion ? (
-              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 3, background: '#F1F5F9', color: '#334155' }}>
+              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 3, background: '#F1F5F9', color: '#334155', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.fixVersion.name}
               </span>
             ) : <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>}
@@ -465,13 +516,13 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       case 'labels':
         return (
-          <div style={{ width: 160, padding: '0 8px', overflow: 'hidden' }}>
+          <div style={{ padding: '0 8px', overflow: 'hidden' }}>
             <LabelsPills labels={item.labels} />
           </div>
         );
       case 'storyPoints':
         return (
-          <div style={{ width: 80, padding: '0 8px', textAlign: 'right' }}>
+          <div style={{ padding: '0 8px', textAlign: 'right' }}>
             <span style={{ fontSize: 12, color: item.storyPoints != null ? '#334155' : '#94A3B8' }}>
               {item.storyPoints != null ? item.storyPoints : '—'}
             </span>
@@ -479,13 +530,13 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       case 'dueDate':
         return (
-          <div style={{ width: 120, padding: '0 8px' }}>
+          <div style={{ padding: '0 8px' }}>
             <DueDateCell date={item.dueDate} />
           </div>
         );
       case 'reporter':
         return (
-          <div style={{ width: 140, padding: '0 8px', overflow: 'hidden' }}>
+          <div style={{ padding: '0 8px', overflow: 'hidden' }}>
             <span style={{ fontSize: 12, color: item.reporter ? '#0F172A' : '#94A3B8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {item.reporter || '—'}
             </span>
@@ -493,7 +544,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       case 'updated':
         return (
-          <div style={{ width: 150, padding: '0 8px' }}>
+          <div style={{ padding: '0 8px' }}>
             <span style={{ fontSize: 12, color: '#64748B' }}>
               {item.updatedAt ? new Date(item.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
             </span>
@@ -501,7 +552,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       case 'priority':
         return (
-          <div style={{ width: 90, padding: '0 8px', position: 'relative' }}>
+          <div style={{ padding: '0 8px', position: 'relative' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
               onClick={(e) => { e.stopPropagation(); openDropdown('priority', item.id); }}>
               <PriorityBarsCell level={priorityToLevel(item.priority?.name)} />
@@ -515,7 +566,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       case 'type':
         return (
-          <div style={{ width: 100, padding: '0 8px' }}>
+          <div style={{ padding: '0 8px' }}>
             <span style={{ fontSize: 12, fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || '#64748B' }}>
               {item.issueType || '—'}
             </span>
@@ -527,7 +578,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
   }
 
   return (
-    <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
+    <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF', width: '100%' }}>
       {/* Bulk action bar */}
       <BulkActionBar
         selectedCount={selectedKeys.size}
@@ -541,107 +592,111 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         onBulkMove={() => setShowMoveModal(true)}
       />
 
-      {/* Header row */}
-      <div style={{ display: 'flex', alignItems: 'center', height: 36, background: '#FAFAFA', borderBottom: '1px solid #E2E8F0' }}>
-        <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <input
-            type="checkbox"
-            checked={allVisibleSelected}
-            ref={el => { if (el) el.indeterminate = someSelected && !allVisibleSelected; }}
-            onChange={() => allVisibleSelected ? clearSelection() : selectAll()}
-            style={{ width: 16, height: 16, cursor: 'pointer' }}
-          />
+      <div style={{ width: '100%', overflowX: 'auto' }}>
+        {/* Header row */}
+        <div
+          className="hi-column-header-row"
+          style={{
+            display: 'grid',
+            gridTemplateColumns,
+            alignItems: 'center',
+            height: 36,
+            minWidth: 1100,
+            background: '#F1F5F9',
+            borderBottom: '2px solid #E2E8F0',
+          }}
+        >
+          <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <input
+              type="checkbox"
+              checked={allVisibleSelected}
+              ref={el => { if (el) el.indeterminate = someSelected && !allVisibleSelected; }}
+              onChange={() => allVisibleSelected ? clearSelection() : selectAll()}
+              style={{ width: 16, height: 16, cursor: 'pointer' }}
+            />
+          </div>
+          {columns.map(col => (
+            <ColHeader
+              key={col.id}
+              label={col.label}
+              sortKey={col.id}
+              currentSort={sortKey}
+              currentDir={sortDir}
+              onSort={handleSort}
+            />
+          ))}
+          <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ColumnManagerDropdown visibleColumns={visibleColumns} onChange={setVisibleColumns} />
+          </div>
         </div>
-        {columns.map(col => (
-          <ColHeader
-            key={col.id}
-            label={col.label}
-            sortKey={col.id}
-            currentSort={sortKey}
-            currentDir={sortDir}
-            onSort={handleSort}
-            width={col.id === 'work' ? undefined : col.width}
-            flex={col.id === 'work' ? 1 : undefined}
-          />
-        ))}
-        {/* Column manager gear */}
-        <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <ColumnManagerDropdown visibleColumns={visibleColumns} onChange={setVisibleColumns} />
-        </div>
+
+        {/* Body rows */}
+        {visibleRows.map(({ item, depth, hasChildren }, index) => {
+          const isExpanded = expandedIds.has(item.id);
+          const isSelected = selectedId === item.id;
+          const isChecked = selectedKeys.has(item.key);
+
+          return (
+            <div
+              key={item.id}
+              className={`hi-table-row ${isChecked ? 'checked' : ''} ${hasChildren ? 'has-children' : ''}`}
+              onClick={() => onSelect(item)}
+              onContextMenu={(e) => handleContextMenu(e, item)}
+              style={{
+                height: 44,
+                maxHeight: 44,
+                minWidth: 1100,
+                display: 'grid',
+                gridTemplateColumns,
+                alignItems: 'center',
+                borderBottom: '1px solid #F1F5F9',
+                cursor: 'pointer',
+                background: isChecked ? '#EFF6FF' : isSelected ? 'rgba(37, 99, 235, 0.08)' : index % 2 === 1 ? '#FAFAFA' : '#FFFFFF',
+              }}
+            >
+              <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={() => toggleSelect(item.key)}
+                  onClick={e => e.stopPropagation()}
+                  style={{ width: 16, height: 16, cursor: 'pointer' }}
+                />
+              </div>
+
+              {columns.map(col => (
+                <React.Fragment key={col.id}>
+                  {renderCell(col.id, item, depth, hasChildren, isExpanded)}
+                </React.Fragment>
+              ))}
+
+              <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <button
+                  className="hi-row-action drag-handle"
+                  onClick={(e) => openContextMenuFor3Dot(e, item)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}
+                >
+                  <MoreHorizontal size={16} color="#64748B" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Body rows */}
-      {visibleRows.map(({ item, depth, hasChildren }) => {
-        const isExpanded = expandedIds.has(item.id);
-        const isSelected = selectedId === item.id;
-        const isChecked = selectedKeys.has(item.key);
-
-        return (
-          <div
-            key={item.id}
-            className="hi-table-row"
-            onClick={() => onSelect(item)}
-            onContextMenu={(e) => handleContextMenu(e, item)}
-            style={{
-              height: 44, maxHeight: 44, display: 'flex', alignItems: 'center',
-              borderBottom: '1px solid #F1F5F9', cursor: 'pointer',
-              background: isChecked ? '#F0F9FF' : isSelected ? '#EFF6FF' : undefined,
-              fontFamily: "'Inter', sans-serif",
-            }}
+      {/* Footer */}
+      <div style={{ height: 40, background: '#F8FAFC', borderTop: '1px solid #E2E8F0', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: 12, color: '#64748B' }}>
+          Showing {Math.min(perPage, totalFlat)} of {totalFlat} items
+        </span>
+        {perPage < totalFlat && (
+          <button
+            onClick={() => setPerPage(p => p + 50)}
+            style={{ marginLeft: 8, background: 'none', border: 'none', padding: 0, fontSize: 12, fontWeight: 600, color: '#2563EB', cursor: 'pointer' }}
           >
-            {/* Checkbox */}
-            <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <input
-                type="checkbox"
-                checked={isChecked}
-                onChange={() => toggleSelect(item.key)}
-                onClick={e => e.stopPropagation()}
-                style={{ width: 16, height: 16, cursor: 'pointer' }}
-              />
-            </div>
-
-            {/* Dynamic columns */}
-            {columns.map(col => (
-              <React.Fragment key={col.id}>
-                {renderCell(col.id, item, depth, hasChildren, isExpanded)}
-              </React.Fragment>
-            ))}
-
-            {/* 3-dot actions (F16) */}
-            <div style={{ width: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <button className="hi-row-action"
-                onClick={(e) => openContextMenuFor3Dot(e, item)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
-                <MoreHorizontal size={16} color="#64748B" />
-              </button>
-            </div>
-          </div>
-        );
-      })}
-
-      {/* Footer — no refresh button */}
-      <div style={{ height: 40, background: '#FAFAFA', borderTop: '1px solid #E2E8F0', padding: '0 16px', display: 'flex', alignItems: 'center' }}>
-        <button
-          onClick={onCreateClick}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 500, color: '#64748B', padding: 0 }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#2563EB')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
-        >
-          <Plus size={14} /> Create
-        </button>
-        <div style={{ flex: 1, textAlign: 'center' }}>
-          <span style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
-            {Math.min(perPage, totalFlat)} of {totalFlat}
-          </span>
-          {perPage < totalFlat && (
-            <button
-              onClick={() => setPerPage(p => p + 50)}
-              style={{ marginLeft: 8, background: 'none', border: '1px solid #E2E8F0', borderRadius: 4, padding: '2px 8px', fontSize: 11, fontWeight: 500, color: '#2563EB', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}
-            >
-              Load more
-            </button>
-          )}
-        </div>
+            Show more
+          </button>
+        )}
       </div>
 
       {/* Context menu (F15 + F16) */}
@@ -679,11 +734,16 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
       )}
 
       <style>{`
-        .hi-table-row { border-left: 3px solid transparent; transition: all 120ms ease; }
-        .hi-table-row:hover { background: #F8FAFC !important; border-left-color: #2563EB; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-        .hi-table-row .hi-row-action { opacity: 0; transition: opacity 150ms ease; }
+        .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
+        .hi-table-row:hover { background: #F8FAFC !important; border-left-color: #2563EB; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .hi-table-row.checked { background: #EFF6FF !important; }
+        .hi-table-row:nth-child(even):not(.checked):not(:hover) { background: #FAFAFA; }
+        .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
         .hi-parent-cell:hover .hi-parent-key { text-decoration: underline; text-underline-offset: 2px; }
+        .hi-type-icon-wrapper { width: 18px; height: 18px; min-width: 18px; min-height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .hi-expand-chevron { width: 20px; height: 20px; min-width: 20px; min-height: 20px; display: flex; align-items: center; justify-content: center; }
+        .hi-work-column { overflow: hidden; min-width: 0; }
       `}</style>
     </div>
   );
