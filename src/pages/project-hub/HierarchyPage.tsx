@@ -420,8 +420,8 @@ export default function HierarchyPage() {
       </AnimatePresence>
 
       {/* CONTENT GRID */}
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: gridCols, gap: 16, overflow: 'hidden', minHeight: 0, padding: 24 }}>
-        <div style={{ overflowY: 'auto', minHeight: 0 }}>
+      <div style={{ flex: 1, display: 'block', overflow: 'hidden', minHeight: 0, padding: 24 }}>
+        <div style={{ overflowY: 'auto', minHeight: 0, height: '100%' }}>
           {isLoading ? (
             <TableSkeleton rows={10} />
           ) : isError ? (
