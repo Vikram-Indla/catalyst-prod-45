@@ -150,18 +150,19 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                   return (
                     <div
                       key={epic.id}
-                      className="group flex items-center h-[36px] px-2 border-b"
+                      className="group flex items-center h-[36px] px-2 border-b cursor-pointer"
                       style={{ borderColor: '#F1F5F9', maxHeight: 36, transition: 'background 120ms' }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
                       onMouseLeave={(e) => (e.currentTarget.style.background = '')}
+                      onClick={() => setDrawerEpicId(epic.id)}
                     >
                       {/* Checkbox */}
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <input type="checkbox" className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ width: 14, height: 14, borderRadius: 2 }} />
+                        <input type="checkbox" onClick={(e) => e.stopPropagation()} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ width: 14, height: 14, borderRadius: 2 }} />
                       </div>
                       {/* Expand */}
                       <div style={{ width: 26, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <button onClick={() => setDrawerEpicId(epic.id)} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                        <button onClick={(e) => { e.stopPropagation(); setDrawerEpicId(epic.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                           <ChevronRight className="h-3.5 w-3.5" style={{ color: '#94A3B8' }} />
                         </button>
                       </div>
@@ -213,8 +214,8 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                         <span>{formatDueDate(epic.end_date)}</span>
                         {/* Row actions */}
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: 'rgba(255,255,255,0.95)' }}>
-                          <button onClick={() => setEditEpicId(epic.id)} className="p-1 rounded hover:bg-gray-100" title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: '#64748B' }} /></button>
-                          <button onClick={() => setDeleteTarget(epic)} className="p-1 rounded hover:bg-gray-100" title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
+                          <button onClick={(e) => { e.stopPropagation(); setEditEpicId(epic.id); }} className="p-1 rounded hover:bg-gray-100" title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: '#64748B' }} /></button>
+                          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(epic); }} className="p-1 rounded hover:bg-gray-100" title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
                         </div>
                       </div>
                     </div>
