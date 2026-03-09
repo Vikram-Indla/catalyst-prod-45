@@ -691,18 +691,17 @@ const App = () => (
                 <Route path="docs" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubDocsPage /></Suspense>} />
               </Route>
               
-              {/* ReleaseHub Module — Release Management (NEW) */}
-              <Route path="/releasehub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><Navigate to="/releasehub/command-center" replace /></Suspense>} />
-              <Route path="/releasehub/command-center" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleasesCommandCenter /></Suspense>} />
-              <Route path="/releasehub/dashboard" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleaseDashboardOverviewPage /></Suspense>} />
-              <Route path="/releasehub/all" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllReleasesPage /></Suspense>} />
-              <Route path="/releasehub/calendar" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CalendarPage /></Suspense>} />
-              <Route path="/releasehub/compare" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ComparePage /></Suspense>} />
-              <Route path="/releasehub/ask-ai" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AskAIPage /></Suspense>} />
-              <Route path="/releasehub/coverage" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CoverageReportsPage /></Suspense>} />
-              <Route path="/releasehub/quality-gates" element={<Suspense fallback={<div className="p-8">Loading...</div>}><QualityGatesPage /></Suspense>} />
-              <Route path="/releasehub/rtm" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RTMPage /></Suspense>} />
-              <Route path="/releasehub/production-events" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProductionEventsPageLazy /></Suspense>} />
+              {/* ReleaseHub v2.1 — Release & Change Management */}
+              <Route path="/releasehub" element={<Navigate to="/releasehub/command-center" replace />} />
+              <Route path="/releasehub/command-center" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RH21CommandCenterPage /></Suspense>} />
+              <Route path="/releasehub/all-releases" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RH21AllReleasesPage /></Suspense>} />
+              <Route path="/releasehub/compare" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RH21ReleaseComparePage /></Suspense>} />
+              <Route path="/releasehub/triage" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RH21TriageQueuePage /></Suspense>} />
+              <Route path="/releasehub/changes" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RH21AllChangesPage /></Suspense>} />
+              <Route path="/releasehub/production-events" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RH21ProductionEventsPage /></Suspense>} />
+              {/* Legacy releasehub routes — keep for backward compat */}
+              <Route path="/releasehub/dashboard" element={<Navigate to="/releasehub/command-center" replace />} />
+              <Route path="/releasehub/all" element={<Navigate to="/releasehub/all-releases" replace />} />
               <Route path="/releasehub/:releaseId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleaseDashboardV5Page /></Suspense>} />
               
                {/* Priorities Module */}
