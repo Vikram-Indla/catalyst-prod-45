@@ -24,6 +24,7 @@ export function useUpdateIdeaCommitted() {
       ideaId: string; isCommitted: boolean; quarter: RoadmapQuarter;
     }) => updateIdeaCommitted(ideaId, isCommitted, quarter),
     onSuccess: () => qc.invalidateQueries({ queryKey: QUERY_KEY }),
+    onError: (error) => console.error('Toggle committed failed:', error),
   });
 }
 
@@ -33,6 +34,7 @@ export function useUpdateMilestones() {
     mutationFn: ({ ideaId, milestones }: { ideaId: string; milestones: Partial<RoadmapMilestones> }) =>
       updateIdeaMilestones(ideaId, milestones),
     onSuccess: () => qc.invalidateQueries({ queryKey: QUERY_KEY }),
+    onError: (error) => console.error('Update milestones failed:', error),
   });
 }
 
@@ -40,6 +42,10 @@ export function useConvertToInitiative() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (ideaId: string) => convertIdeaToInitiative(ideaId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: QUERY_KEY }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: QUERY_KEY });
+      qc.invalidateQueries({ queryKey: ['initiatives'] });
+    },
+    onError: (error) => console.error('Convert to initiative failed:', error),
   });
 }

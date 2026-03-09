@@ -22,9 +22,10 @@ interface RoadmapKanbanProps {
   onDrop: (ideaId: string, quarter: RoadmapQuarter, isCommitted: boolean) => void;
   onSelectIdea: (idea: RoadmapIdea) => void;
   onToggleCommitted: (idea: RoadmapIdea) => void;
+  mutatingIds: Set<string>;
 }
 
-export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted }: RoadmapKanbanProps) {
+export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, mutatingIds }: RoadmapKanbanProps) {
   const [dragOverCol, setDragOverCol] = useState<string | null>(null);
 
   function getColumnIdeas(col: Column): RoadmapIdea[] {
@@ -52,6 +53,7 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted }
       {COLUMNS.map(col => {
         const colIdeas = getColumnIdeas(col);
         const isOver = dragOverCol === col.id;
+        const isUncommitted = col.id === 'uncommitted';
 
         return (
           <div
@@ -101,18 +103,27 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted }
               {colIdeas.length === 0 ? (
                 <div style={{
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  textAlign: 'center', padding: 16,
                   fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif",
+                  lineHeight: 1.4,
                 }}>
-                  No ideas
+                  {isUncommitted
+                    ? 'No ideas'
+                    : 'Drag ideas here to commit them to this quarter'}
                 </div>
               ) : (
                 colIdeas.map(idea => (
-                  <RoadmapCard
-                    key={idea.id}
-                    idea={idea}
-                    onSelectIdea={onSelectIdea}
-                    onToggleCommitted={onToggleCommitted}
-                  />
+                  <div key={idea.id} style={{
+                    opacity: mutatingIds.has(idea.id) ? 0.6 : 1,
+                    transition: 'opacity 150ms',
+                    pointerEvents: mutatingIds.has(idea.id) ? 'none' : 'auto',
+                  }}>
+                    <RoadmapCard
+                      idea={idea}
+                      onSelectIdea={onSelectIdea}
+                      onToggleCommitted={onToggleCommitted}
+                    />
+                  </div>
                 ))
               )}
             </div>
