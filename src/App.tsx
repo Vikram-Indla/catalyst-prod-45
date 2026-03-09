@@ -712,6 +712,7 @@ const App = () => (
               <Route path="/incident-hub/insights" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubInsightsPage /></Suspense>} />
               <Route path="/incident-hub/reports" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubReportsPage /></Suspense>} />
               <Route path="/incident-hub/committee-queue" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubCommitteeQueuePage /></Suspense>} />
+              <Route path="/incident-hub/view/:id" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentRoomDetail /></Suspense>} />
 
               {/* ReleaseHub v2.1 — Release & Change Management */}
               <Route path="/releasehub" element={<Navigate to="/releasehub/command-center" replace />} />
