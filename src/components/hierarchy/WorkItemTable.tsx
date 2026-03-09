@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { ChevronRight, ChevronDown, MoreHorizontal, Plus, RefreshCw } from 'lucide-react';
+import { ChevronRight, ChevronDown, MoreHorizontal, Plus } from 'lucide-react';
 import type { WorkItem } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusBadge } from './StatusBadge';
@@ -75,7 +75,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
       <span style={{
         fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
         padding: '1px 4px', borderRadius: 2,
-        background: '#F3E8FF', color: '#7C3AED',
+        background: '#CCFBF1', color: '#0F766E',
         textTransform: 'uppercase', marginLeft: 4, flexShrink: 0,
       }}>CATALYST</span>
     );
@@ -90,6 +90,14 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
   );
 }
 
+/* ── Avatar color palette (no purple/yellow) ── */
+const AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','#64748B','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
+function getAvatarColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
 /* ── Assignee avatar ── */
 function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; onClick?: (e: React.MouseEvent) => void }) {
   if (!assignee) {
@@ -100,12 +108,18 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
       </div>
     );
   }
+  const avatarUrl = (assignee as any).avatar;
   const initials = assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const bgColor = getAvatarColor(assignee.displayName);
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
-      <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>
-      </div>
+      {avatarUrl ? (
+        <img src={avatarUrl} alt={assignee.displayName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+      ) : (
+        <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>
+        </div>
+      )}
       <span style={{ fontSize: 12, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{assignee.displayName}</span>
     </div>
   );
@@ -159,7 +173,7 @@ function DueDateCell({ date }: { date?: string }) {
   const dDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   let color = '#334155';
   if (dDate < today) color = '#DC2626';
-  else if (dDate.getTime() === today.getTime()) color = '#D97706';
+  else if (dDate.getTime() === today.getTime()) color = '#0284C7';
   return (
     <span style={{ fontSize: 12, color }}>
       {d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -169,7 +183,7 @@ function DueDateCell({ date }: { date?: string }) {
 
 /* ── Type colors ── */
 const TYPE_COLORS: Record<string, string> = {
-  'Epic': '#2563EB', 'Feature': '#7C3AED', 'Story': '#16A34A', 'Sub-task': '#64748B',
+  'Epic': '#2563EB', 'Feature': '#0D9488', 'Story': '#16A34A', 'Sub-task': '#64748B',
   'Task': '#64748B', 'Bug': '#DC2626',
 };
 
@@ -566,7 +580,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       })}
 
-      {/* Footer */}
+      {/* Footer — no refresh button */}
       <div style={{ height: 40, background: '#FAFAFA', borderTop: '1px solid #E2E8F0', padding: '0 16px', display: 'flex', alignItems: 'center' }}>
         <button
           onClick={onCreateClick}
@@ -589,11 +603,6 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
             </button>
           )}
         </div>
-        {onRefresh && (
-          <button onClick={onRefresh} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
-            <RefreshCw size={14} color="#64748B" />
-          </button>
-        )}
       </div>
 
       {/* Context menu (F15 + F16) */}
@@ -631,7 +640,8 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
       )}
 
       <style>{`
-        .hi-table-row:hover { background: #F8FAFC !important; }
+        .hi-table-row { border-left: 3px solid transparent; transition: all 120ms ease; }
+        .hi-table-row:hover { background: #F8FAFC !important; border-left-color: #2563EB; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 150ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
       `}</style>

@@ -70,13 +70,26 @@ function priorityToLevel(name?: string): number {
 /* StatusPill is now StatusBadge (filled Jira-style) */
 
 /* ── Assignee avatar ── */
+/* ── Avatar color palette (no purple/yellow) ── */
+const AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','#64748B','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
+function getAvatarColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
 function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
   if (!assignee) {
     return <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#F1F5F9', border: '1px solid #E2E8F0', flexShrink: 0 }} />;
   }
+  const avatarUrl = (assignee as any).avatar;
+  if (avatarUrl) {
+    return <img src={avatarUrl} alt={assignee.displayName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
+  }
   const initials = assignee.displayName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+  const bgColor = getAvatarColor(assignee.displayName);
   return (
-    <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+    <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
       <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>{initials}</span>
     </div>
   );
@@ -260,7 +273,7 @@ function TreeRow({
       <ProgressBar stats={item.stats} />
 
       {item.fixVersion && (
-        <span style={{ height: 20, padding: '0 8px', fontSize: 10, fontWeight: 600, color: '#7C3AED', background: '#F5F3FF', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 9999, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+        <span style={{ height: 20, padding: '0 8px', fontSize: 10, fontWeight: 600, color: '#0F766E', background: '#CCFBF1', border: '1px solid rgba(13,148,136,0.2)', borderRadius: 9999, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
           {item.fixVersion.name}
         </span>
       )}
@@ -494,14 +507,6 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
 
   return (
     <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
-      <div style={{ height: 32, background: '#FAFAFA', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px' }}>
-        <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif" }}>
-          Hierarchy Tree
-        </span>
-        <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif", fontVariantNumeric: 'tabular-nums' }}>
-          {total} items
-        </span>
-      </div>
       <div ref={treeRef} role="tree" aria-label="Work Item Hierarchy" tabIndex={0} onKeyDown={handleTreeKeyDown}
         style={{ outline: 'none' }}>
         <TreeBranch items={items} depth={0} expandedIds={expandedIds} onToggle={toggle}

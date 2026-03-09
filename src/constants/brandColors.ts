@@ -9,7 +9,7 @@ export const CATALYST_BRAND_COLORS = [
   { value: '#2563eb', label: 'Blue', token: 'brand-primary' },
   { value: '#0d9488', label: 'Teal', token: 'brand-teal' },
   { value: '#6b7280', label: 'Gray', token: 'secondary-grey' },
-  { value: '#f59e0b', label: 'Amber', token: 'secondary-amber' },
+  { value: '#64748b', label: 'Slate', token: 'secondary-slate' },
   { value: '#c8ccd0', label: 'Light Grey', token: 'secondary-light-grey' },
 ] as const;
 
