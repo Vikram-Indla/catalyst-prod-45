@@ -300,6 +300,10 @@ export default function IdeasRoadmapPage() {
         />
       )}
 
+      {showPresent && (
+        <PresentationModal ideas={ideas} onClose={() => setShowPresent(false)} />
+      )}
+
       <AlertDialog open={!!convertTarget} onOpenChange={open => { if (!open) setConvertTarget(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
