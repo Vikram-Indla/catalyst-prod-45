@@ -60,12 +60,23 @@ const STATUS_STYLES: Record<StatusCategory, { background: string; color: string 
   green: { background: '#E3FCEF', color: '#006644' },
 };
 
+const STATUS_DISPLAY_NAMES: Record<string, string> = {
+  'Ready for Production': 'READY FOR PROD',
+  'Ready For Production': 'READY FOR PROD',
+  'Awaiting Information': 'AWAITING INFO',
+  'Ready for QA': 'READY FOR QA',
+};
+
 export function getStatusCategory(status: string): StatusCategory {
-  return STATUS_CATEGORY_MAP[status] || 'grey';
+  return STATUS_CATEGORY_MAP[status] || STATUS_CATEGORY_MAP[status.toUpperCase()] || 'grey';
 }
 
 export function getStatusStyle(status: string) {
   return STATUS_STYLES[getStatusCategory(status)];
+}
+
+export function getStatusDisplayName(status: string): string {
+  return STATUS_DISPLAY_NAMES[status] || status.toUpperCase();
 }
 
 /** @deprecated Use getStatusStyle instead */
