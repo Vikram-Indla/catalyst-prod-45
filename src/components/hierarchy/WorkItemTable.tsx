@@ -428,29 +428,38 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
     switch (colId) {
       case 'work':
         return (
-          <div style={{ flex: 1, minWidth: 280, display: 'flex', alignItems: 'center', gap: 6, paddingLeft: depth * 24 + 8, paddingRight: 8, overflow: 'hidden' }}>
+          <div className="hi-work-column" style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 8, paddingLeft: depth * 24 + 8, paddingRight: 8, overflow: 'hidden' }}>
             {hasChildren ? (
-              <button onClick={(e) => { e.stopPropagation(); toggle(item.id); }}
-                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', flexShrink: 0 }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); toggle(item.id); }}
+                className="hi-expand-chevron"
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', flexShrink: 0 }}
+              >
                 {isExpanded ? <ChevronDown size={16} color="#94A3B8" /> : <ChevronRight size={16} color="#94A3B8" />}
               </button>
-            ) : <div style={{ width: 16, flexShrink: 0 }} />}
-            {item.issueType && <JiraIssueTypeIcon type={item.issueType} size={16} />}
+            ) : <div className="hi-expand-chevron" style={{ flexShrink: 0 }} />}
+
+            <span className="hi-type-icon-wrapper">{item.issueType && <JiraIssueTypeIcon type={item.issueType} size={16} />}</span>
+
             <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
               {item.key}
             </span>
+
             <InlineEditTitle
               value={item.title}
               onSave={(newTitle) => handleTitleSave(item.key, newTitle)}
               forceEdit={editingTitleKey === item.key}
               onCancelForceEdit={() => setEditingTitleKey(null)}
+              fontWeight={hasChildren ? 500 : 400}
+              style={{ minWidth: 0 }}
             />
-            <SourceBadge source={item.source} />
+
+            {hasMultipleSources && <SourceBadge source={item.source} />}
           </div>
         );
       case 'status':
         return (
-          <div style={{ width: 150, padding: '0 8px', position: 'relative' }}>
+          <div style={{ padding: '0 8px', position: 'relative', minWidth: 0 }}>
             <StatusBadge status={item.status.name} onClick={(e) => { e.stopPropagation(); openDropdown('status', item.id); }} />
             {activeDropdown?.type === 'status' && activeDropdown.itemId === item.id && (
               <StatusDropdown currentStatus={item.status.name} availableStatuses={allStatuses}
@@ -459,10 +468,10 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
           </div>
         );
       case 'parent':
-        return <ParentCell item={item} allRows={flatRows} onSelect={onSelect} />;
+        return <ParentCell item={item} itemById={itemById} onSelect={onSelect} />;
       case 'assignee':
         return (
-          <div style={{ width: 160, padding: '0 8px', overflow: 'hidden', position: 'relative' }}>
+          <div style={{ padding: '0 8px', overflow: 'hidden', position: 'relative', minWidth: 0 }}>
             <AssigneeCell assignee={item.assignee} onClick={(e) => { e.stopPropagation(); openDropdown('assignee', item.id); }} />
             {activeDropdown?.type === 'assignee' && activeDropdown.itemId === item.id && (
               <AssigneeDropdown currentAssignee={item.assignee?.displayName} availableAssignees={allAssignees}
@@ -472,17 +481,17 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       case 'created':
         return (
-          <div style={{ width: 150, padding: '0 8px' }}>
-            <span style={{ fontSize: 12, color: '#64748B' }}>
+          <div style={{ padding: '0 16px 0 8px', textAlign: 'right' }}>
+            <span style={{ fontSize: 12, color: '#64748B', fontVariantNumeric: 'tabular-nums' }}>
               {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
             </span>
           </div>
         );
       case 'fixVersion':
         return (
-          <div style={{ width: 140, padding: '0 8px' }}>
+          <div style={{ padding: '0 8px', minWidth: 0 }}>
             {item.fixVersion ? (
-              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 3, background: '#F1F5F9', color: '#334155' }}>
+              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 3, background: '#F1F5F9', color: '#334155', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.fixVersion.name}
               </span>
             ) : <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>}
@@ -490,13 +499,13 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       case 'labels':
         return (
-          <div style={{ width: 160, padding: '0 8px', overflow: 'hidden' }}>
+          <div style={{ padding: '0 8px', overflow: 'hidden' }}>
             <LabelsPills labels={item.labels} />
           </div>
         );
       case 'storyPoints':
         return (
-          <div style={{ width: 80, padding: '0 8px', textAlign: 'right' }}>
+          <div style={{ padding: '0 8px', textAlign: 'right' }}>
             <span style={{ fontSize: 12, color: item.storyPoints != null ? '#334155' : '#94A3B8' }}>
               {item.storyPoints != null ? item.storyPoints : '—'}
             </span>
@@ -504,13 +513,13 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       case 'dueDate':
         return (
-          <div style={{ width: 120, padding: '0 8px' }}>
+          <div style={{ padding: '0 8px' }}>
             <DueDateCell date={item.dueDate} />
           </div>
         );
       case 'reporter':
         return (
-          <div style={{ width: 140, padding: '0 8px', overflow: 'hidden' }}>
+          <div style={{ padding: '0 8px', overflow: 'hidden' }}>
             <span style={{ fontSize: 12, color: item.reporter ? '#0F172A' : '#94A3B8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {item.reporter || '—'}
             </span>
@@ -518,7 +527,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       case 'updated':
         return (
-          <div style={{ width: 150, padding: '0 8px' }}>
+          <div style={{ padding: '0 8px' }}>
             <span style={{ fontSize: 12, color: '#64748B' }}>
               {item.updatedAt ? new Date(item.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
             </span>
@@ -526,7 +535,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       case 'priority':
         return (
-          <div style={{ width: 90, padding: '0 8px', position: 'relative' }}>
+          <div style={{ padding: '0 8px', position: 'relative' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
               onClick={(e) => { e.stopPropagation(); openDropdown('priority', item.id); }}>
               <PriorityBarsCell level={priorityToLevel(item.priority?.name)} />
@@ -540,7 +549,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         );
       case 'type':
         return (
-          <div style={{ width: 100, padding: '0 8px' }}>
+          <div style={{ padding: '0 8px' }}>
             <span style={{ fontSize: 12, fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || '#64748B' }}>
               {item.issueType || '—'}
             </span>
