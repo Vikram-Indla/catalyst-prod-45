@@ -63,6 +63,9 @@ function toIdea(row: any): Idea {
       ? { name: assigneeName, initials: getInitials(assigneeName), color: pickColor(assigneeName) }
       : null,
     ai: (row.ai_enrichment_status === 'completed' || row.ai_enrichment_status === 'complete') ? 'ready' : row.ai_summary ? 'ready' : 'pending',
+    theme: row.theme || null,
+    assigned_team: row.assigned_team || null,
+    target_release_date: row.target_release_date || null,
   };
 }
 

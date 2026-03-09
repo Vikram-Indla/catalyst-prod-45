@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Idea, ideas as fallbackIdeas, STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, IDEA_IMPACT_FACTORS, getImpactColor } from './ideation-data';
+import { Idea, STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, IDEA_IMPACT_FACTORS, getImpactColor } from './ideation-data';
 import { useIdeaRaw, useImpactFactors, useIdeaComments, useComplianceTags, useV2030Mappings, useEvidence, useAddIdeaComment } from '@/hooks/useIdeation';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -56,11 +56,27 @@ const parseTags = (tags: string | string[] | null | undefined): string[] => {
 export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Props) {
   const [tab, setTab] = useState<Tab>('details');
   
-  // Fallback idea from hardcoded data for basic fields
-  const localIdea = fallbackIdeas.find(i => i.key === ideaKey);
-  
   // Fetch raw data from Supabase
-  const { data: rawIdea } = useIdeaRaw(ideaKey);
+  const { data: rawIdea, isLoading } = useIdeaRaw(ideaKey);
+
+  // Build Idea object from raw DB data
+  const localIdea: Idea | null = rawIdea ? {
+    key: rawIdea.idea_key,
+    title: rawIdea.title,
+    subtitle: `${rawIdea.source || 'Internal'} · ${rawIdea.created_at ? new Date(rawIdea.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}`,
+    status: ({'Draft': 'draft', 'Submitted': 'submitted', 'Under Review': 'under_review', 'Approved': 'approved', 'Rejected': 'rejected', 'Converted': 'converted'} as any)[rawIdea.status] || 'draft',
+    type: ({'Opportunity': 'opportunity', 'Solution': 'solution', 'Feature Request': 'feature', 'Improvement': 'improvement', 'Problem': 'problem'} as any)[rawIdea.idea_type] || 'feature',
+    priority: rawIdea.priority || 'P2',
+    impact: parseFloat(rawIdea.impact_total) || 0,
+    votes: rawIdea.vote_count || 0,
+    initiative: rawIdea.linked_initiative_key || null,
+    dept: rawIdea.department || '',
+    assignee: rawIdea.assigned_to_name ? { name: rawIdea.assigned_to_name, initials: rawIdea.assigned_to_name.split(' ').map((p: string) => p[0]).join('').toUpperCase().slice(0, 2), color: '#2563EB' } : null,
+    ai: rawIdea.ai_enrichment_status === 'completed' ? 'ready' : 'pending',
+    theme: rawIdea.theme || null,
+    assigned_team: rawIdea.assigned_team || null,
+    target_release_date: rawIdea.target_release_date || null,
+  } : null;
 
   useEffect(() => {
     if (ideaKey) setTab('details');
@@ -74,6 +90,15 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
     }
   }, [ideaKey, onClose]);
 
+  if (!ideaKey) return null;
+  if (isLoading) return (
+    <>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '680px', background: '#FFFFFF', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ color: '#94A3B8', fontSize: '14px' }}>Loading...</span>
+      </div>
+    </>
+  );
   if (!localIdea) return null;
 
   return (
@@ -205,10 +230,30 @@ function DetailsTab({ idea, rawIdea, onConvert }: { idea: Idea; rawIdea: any; on
             </div>
           ) : <span style={{ fontSize: '13px', color: '#94A3B8' }}>Unassigned</span>}
         </FieldRow>
-        <FieldRow label="Created"><span style={{ fontSize: '13px', color: '#334155' }}>{idea.subtitle.split(' · ')[1]}, 2026</span></FieldRow>
+        <FieldRow label="Created"><span style={{ fontSize: '13px', color: '#334155' }}>{idea.subtitle.split(' · ')[1]}</span></FieldRow>
         <FieldRow label="Votes">
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: idea.votes > 0 ? '#16A34A' : idea.votes < 0 ? '#EF4444' : '#94A3B8' }}>
             ▲ {idea.votes}
+          </span>
+        </FieldRow>
+        <FieldRow label="Theme">
+          <span style={{ fontSize: '13px', color: idea.theme ? '#334155' : '#94A3B8', fontStyle: idea.theme ? 'normal' : 'italic' }}>
+            {idea.theme || 'No theme'}
+          </span>
+        </FieldRow>
+        <FieldRow label="Assigned Team">
+          <span style={{ fontSize: '13px', color: idea.assigned_team ? '#334155' : '#94A3B8', fontStyle: idea.assigned_team ? 'normal' : 'italic' }}>
+            {idea.assigned_team || 'Unassigned'}
+          </span>
+        </FieldRow>
+        <FieldRow label="Target Release">
+          <span style={{ fontSize: '13px', color: idea.target_release_date ? '#334155' : '#94A3B8', fontStyle: idea.target_release_date ? 'normal' : 'italic' }}>
+            {idea.target_release_date ? new Date(idea.target_release_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Not set'}
+          </span>
+        </FieldRow>
+        <FieldRow label="Release Quarter">
+          <span style={{ fontSize: '13px', color: idea.target_release_date ? '#334155' : '#94A3B8' }}>
+            {idea.target_release_date ? `Q${Math.ceil((new Date(idea.target_release_date).getMonth() + 1) / 3)} ${new Date(idea.target_release_date).getFullYear()}` : '—'}
           </span>
         </FieldRow>
       </div>

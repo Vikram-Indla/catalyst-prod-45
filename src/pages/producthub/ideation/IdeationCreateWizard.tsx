@@ -97,6 +97,9 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
   const [tagInput, setTagInput] = useState('');
   const [titleError, setTitleError] = useState(false);
   const [descError, setDescError] = useState(false);
+  const [theme, setTheme] = useState('');
+  const [assignedTeam, setAssignedTeam] = useState('');
+  const [targetReleaseDate, setTargetReleaseDate] = useState('');
 
   // Fetch profiles for assignee
   const { data: profiles = [] } = useQuery({
@@ -149,6 +152,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
       setTitle(''); setDesc(''); setIdeaType(''); setPriority('');
       setDepartment(''); setSource(''); setAssignee(''); setCategory('');
       setTags([]); setTagInput(''); setTitleError(false); setDescError(false);
+      setTheme(''); setAssignedTeam(''); setTargetReleaseDate('');
     }
   }, [open]);
 
@@ -195,6 +199,9 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
       assigned_to: assignee || null,
       submitted_by: user?.id || null,
       status: 'Submitted',
+      theme: theme || null,
+      assigned_team: assignedTeam || null,
+      target_release_date: targetReleaseDate || null,
     });
   };
 
@@ -409,19 +416,60 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            {/* Row 6: Theme + Assigned Team */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={labelBase}>Theme</label>
+                <input
+                  value={theme}
+                  onChange={e => setTheme(e.target.value)}
+                  placeholder="e.g., Digital Maturity 2026..."
+                  style={inputBase}
+                  {...focusHandlers}
+                />
+              </div>
+              <div>
+                <label style={labelBase}>Assigned Team</label>
+                <Select value={assignedTeam} onValueChange={setAssignedTeam}>
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
+                    <SelectValue placeholder="Select team..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {['Senaie BAU', 'Integration Team', 'Mobile App Team'].map(t => (
+                      <SelectItem key={t} value={t}>{t}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Row 7: Target Release Date */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={labelBase}>Target Release Date</label>
+                <input
+                  type="date"
+                  value={targetReleaseDate}
+                  onChange={e => setTargetReleaseDate(e.target.value)}
+                  style={inputBase}
+                  {...focusHandlers}
+                />
+              </div>
               <div>
                 <label style={labelBase}>Category</label>
                 <input
                   value={category}
                   onChange={e => setCategory(e.target.value)}
-                  placeholder="e.g., Process Improvement, Digital Services..."
+                  placeholder="e.g., Process Improvement..."
                   style={inputBase}
                   {...focusHandlers}
                 />
               </div>
             </div>
 
-            {/* Row 6: Tags */}
+            {/* Row 8: Tags */}
             <div>
               <label style={labelBase}>Tags</label>
               <div style={{
