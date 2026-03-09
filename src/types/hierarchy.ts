@@ -47,6 +47,7 @@ export interface WorkItem {
   hierarchyColorText: string;
   parentId: string | null;
   parentKey?: string | null;
+  parentSummary?: string | null;
   status: WorkItemStatus;
   assignee?: WorkItemAssignee;
   priority?: WorkItemPriority;
