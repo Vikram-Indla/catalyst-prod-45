@@ -41,6 +41,11 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
     return 'home';
   }
   
+  // IncidentHub module - Incident Management
+  if (pathname.startsWith('/incident-hub')) {
+    return 'incidenthub';
+  }
+  
   // ReleaseHub module - Release Management
   if (pathname.startsWith('/releasehub')) {
     return 'releasehub';
