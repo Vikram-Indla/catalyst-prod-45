@@ -201,6 +201,9 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
       assigned_to: assignee || null,
       submitted_by: user?.id || null,
       status: 'Submitted',
+      theme: theme || null,
+      assigned_team: assignedTeam || null,
+      target_release_date: targetReleaseDate || null,
     });
   };
 
