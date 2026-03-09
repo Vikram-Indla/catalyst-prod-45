@@ -50,7 +50,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
         <div className="sticky top-0 bg-white z-10 border-b border-[#E2E8F0] px-6 py-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ background: release.source === 'jira' ? '#DBEAFE' : '#F0FDFA', color: release.source === 'jira' ? '#1E40AF' : '#0D9488' }}>{release.source}</span>
+              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ background: release.source === 'jira' ? '#FFF7ED' : '#F0FDFA', color: release.source === 'jira' ? '#9A3412' : '#0D9488', border: release.source === 'jira' ? '1px solid #FED7AA' : '1px solid #99F6E4' }}>{release.source}</span>
               {release.version && <span className="text-[10px] font-mono text-[#64748B] bg-[#F1F5F9] px-1.5 py-0.5 rounded">{release.version}</span>}
             </div>
             <div className="flex items-center gap-1.5">
