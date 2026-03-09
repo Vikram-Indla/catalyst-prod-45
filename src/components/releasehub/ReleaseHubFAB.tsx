@@ -86,7 +86,7 @@ export function ReleaseHubFAB({ onNewRelease, onNewChange, onImportSN }: Props) 
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 4px 16px rgba(37,99,235,0.40)',
+          boxShadow: 'var(--cp-shadow-xl)',
           transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           transform: open ? 'rotate(45deg)' : 'rotate(0deg)',
           color: 'white',
