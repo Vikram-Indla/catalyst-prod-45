@@ -66,6 +66,7 @@ const RequirementAssistCategories = lazy(() => import("./pages/producthub/requir
 const RequirementAssistOutput = lazy(() => import("./pages/producthub/requirement-assist/output"));
 const ProductCardsPage = lazy(() => import("./pages/producthub/CardsPage"));
 const IdeationPage = lazy(() => import("./pages/producthub/IdeationPage"));
+const IdeasRoadmapPage = lazy(() => import("./pages/product/ideas/IdeasRoadmapPage"));
 const ReqAssistLibrary = lazy(() => import("./pages/ReqAssistLibrary"));
 const ReqAssistGenerate = lazy(() => import("./pages/ReqAssistGenerate"));
 
