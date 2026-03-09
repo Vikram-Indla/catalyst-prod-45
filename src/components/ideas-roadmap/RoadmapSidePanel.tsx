@@ -246,7 +246,8 @@ export function RoadmapSidePanel({
                     >✕</button>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
