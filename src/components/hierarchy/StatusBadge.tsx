@@ -95,10 +95,12 @@ interface StatusBadgeProps {
 export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps) {
   const style = getStatusStyle(status);
   const h = mini ? 20 : 24;
+  const displayName = getStatusDisplayName(status);
 
   return (
     <button
       onClick={onClick}
+      className="status-badge"
       style={{
         height: h,
         padding: mini ? '0 6px' : '0 8px',
@@ -118,9 +120,13 @@ export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps)
         whiteSpace: 'nowrap' as const,
         lineHeight: 1,
         flexShrink: 0,
+        maxWidth: mini ? 120 : 140,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
       }}
+      title={status}
     >
-      {status}
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</span>
       {onClick && !mini && <span style={{ opacity: 0.6, fontSize: 8, color: style.color }}>▾</span>}
     </button>
   );
