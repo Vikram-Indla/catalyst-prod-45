@@ -340,6 +340,73 @@ export const WH_PRIORITY_CONFIG: Record<WhPriority, { bars: number; color: strin
   Lowest:  { bars: 0, color: '#8c8f96', label: 'Lowest' },
 };
 
+// ═══ STATUS TRANSITIONS (Jira changelog) ═══
+export interface StatusTransition {
+  id: string;
+  work_item_id: string;
+  from_status: string | null;
+  to_status: string;
+  from_status_category: string | null;
+  to_status_category: string;
+  transitioned_by: string;
+  transitioned_by_avatar: string | null;
+  transitioned_at: string;
+  time_in_from_status_ms: number | null;
+  jira_changelog_id: string | null;
+}
+
+// ═══ JIRA COMMENTS ═══
+export interface WorkItemComment {
+  id: string;
+  work_item_id: string;
+  jira_comment_id: string | null;
+  author_name: string;
+  author_avatar: string | null;
+  author_email: string | null;
+  body_text: string;
+  body_html: string | null;
+  comment_created_at: string;
+  comment_updated_at: string | null;
+  is_internal: boolean;
+}
+
+// ═══ FULL CHANGELOG ENTRY ═══
+export interface ChangelogEntry {
+  id: string;
+  work_item_id: string;
+  field_name: string;
+  field_type: string;
+  from_value: string | null;
+  from_display: string | null;
+  to_value: string | null;
+  to_display: string | null;
+  changed_by: string;
+  changed_by_avatar: string | null;
+  changed_at: string;
+}
+
+// ═══ CYCLE TIME ═══
+export interface CycleTimeEntry {
+  work_item_id: string;
+  status: string;
+  status_category: string;
+  entered_at: string;
+  exited_at: string;
+  seconds_in_status: number;
+  duration_formatted: string;
+  days_in_status: number;
+}
+
+export interface CycleSummary {
+  work_item_id: string;
+  status_category: string;
+  total_seconds: number;
+  times_entered: number;
+  first_entered: string;
+  last_exited: string;
+  total_days: number;
+}
+
 export const whQueryKeys = {
   all: ['workhub'] as const,
   lists: () => [...whQueryKeys.all, 'list'] as const,

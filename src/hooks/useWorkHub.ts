@@ -166,3 +166,61 @@ export function useSavedViews(projectKey: string) {
     enabled: !!projectKey,
   });
 }
+
+// ═══ TRANSITIONS ═══
+export function useTransitions(workItemId: string | null) {
+  return useQuery({
+    queryKey: ['work-item-transitions', workItemId],
+    queryFn: () => workHubService.fetchTransitions(workItemId!),
+    enabled: !!workItemId,
+  });
+}
+
+// ═══ COMMENTS (new table) ═══
+export function useWorkItemComments(workItemId: string | null) {
+  return useQuery({
+    queryKey: ['work-item-comments', workItemId],
+    queryFn: () => workHubService.fetchWorkItemComments(workItemId!),
+    enabled: !!workItemId,
+  });
+}
+
+export function useAddWorkItemComment(workItemId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (text: string) => workHubService.addWorkItemComment(workItemId, text),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['work-item-comments', workItemId] });
+      toast.success('Comment added');
+    },
+    onError: (err: Error) => {
+      toast.error(`Comment failed: ${err.message}`);
+    },
+  });
+}
+
+// ═══ CHANGELOGS ═══
+export function useChangelogs(workItemId: string | null) {
+  return useQuery({
+    queryKey: ['work-item-changelogs', workItemId],
+    queryFn: () => workHubService.fetchChangelogs(workItemId!),
+    enabled: !!workItemId,
+  });
+}
+
+// ═══ CYCLE TIME ═══
+export function useCycleTime(workItemId: string | null) {
+  return useQuery({
+    queryKey: ['work-item-cycle-time', workItemId],
+    queryFn: () => workHubService.fetchCycleTime(workItemId!),
+    enabled: !!workItemId,
+  });
+}
+
+export function useCycleSummary(workItemId: string | null) {
+  return useQuery({
+    queryKey: ['work-item-cycle-summary', workItemId],
+    queryFn: () => workHubService.fetchCycleSummary(workItemId!),
+    enabled: !!workItemId,
+  });
+}

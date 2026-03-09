@@ -372,3 +372,71 @@ export async function saveSavedView(view: Record<string, any>) {
   if (error) throw error;
   return data;
 }
+
+// ═══ STATUS TRANSITIONS ═══
+export async function fetchTransitions(workItemId: string) {
+  const { data, error } = await supabase
+    .from('work_item_transitions' as any)
+    .select('*')
+    .eq('work_item_id', workItemId)
+    .order('transitioned_at', { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as any[];
+}
+
+// ═══ COMMENTS (new table) ═══
+export async function fetchWorkItemComments(workItemId: string) {
+  const { data, error } = await supabase
+    .from('work_item_comments' as any)
+    .select('*')
+    .eq('work_item_id', workItemId)
+    .order('comment_created_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as any[];
+}
+
+export async function addWorkItemComment(workItemId: string, bodyText: string) {
+  const { data, error } = await supabase
+    .from('work_item_comments' as any)
+    .insert({
+      work_item_id: workItemId,
+      author_name: 'Current User',
+      body_text: bodyText,
+      comment_created_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as any;
+}
+
+// ═══ CHANGELOGS ═══
+export async function fetchChangelogs(workItemId: string) {
+  const { data, error } = await supabase
+    .from('work_item_changelogs' as any)
+    .select('*')
+    .eq('work_item_id', workItemId)
+    .order('changed_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as any[];
+}
+
+// ═══ CYCLE TIME ═══
+export async function fetchCycleTime(workItemId: string) {
+  const { data, error } = await supabase
+    .from('work_item_cycle_time_view' as any)
+    .select('*')
+    .eq('work_item_id', workItemId)
+    .order('entered_at', { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as any[];
+}
+
+export async function fetchCycleSummary(workItemId: string) {
+  const { data, error } = await supabase
+    .from('work_item_cycle_summary_view' as any)
+    .select('*')
+    .eq('work_item_id', workItemId);
+  if (error) throw error;
+  return (data ?? []) as any[];
+}
