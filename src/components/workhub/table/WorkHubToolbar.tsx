@@ -1,10 +1,11 @@
 /**
- * WorkHubToolbar — Filter bar, search, group-by, column toggle, view switcher, + Create
+ * WorkHubToolbar — Filter bar, search, group-by, columns, view switch, + Create
+ * Stage E: 48px height, Cmd+K search, column toggle popover
  */
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { Search, ChevronDown, Plus, Settings2, LayoutList, Columns3, Table2, X } from 'lucide-react';
+import { useState, useCallback, useRef, useEffect, RefObject } from 'react';
+import { Search, ChevronDown, Plus, Settings2, LayoutList, Table2, X, Eye, EyeOff } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import type { FilterConfig, GroupByField, ViewMode } from '@/types/workhub';
+import type { FilterConfig, GroupByField, ViewMode, ColumnConfig } from '@/types/workhub';
 import WorkHubColumnFilter from './WorkHubColumnFilter';
 
 interface WorkHubToolbarProps {
@@ -19,6 +20,9 @@ interface WorkHubToolbarProps {
   uniqueTypes: string[];
   uniqueAssignees: string[];
   uniquePriorities: string[];
+  columns?: ColumnConfig[];
+  onColumnToggle?: (columnId: string) => void;
+  searchRef?: RefObject<HTMLInputElement>;
 }
 
 const GROUP_OPTIONS: { value: GroupByField; label: string }[] = [
@@ -33,9 +37,12 @@ const GROUP_OPTIONS: { value: GroupByField; label: string }[] = [
 export default function WorkHubToolbar({
   filters, onFiltersChange, groupBy, onGroupByChange, viewMode, onViewModeChange,
   onCreateClick, uniqueStatuses, uniqueTypes, uniqueAssignees, uniquePriorities,
+  columns, onColumnToggle, searchRef: externalSearchRef,
 }: WorkHubToolbarProps) {
   const [searchValue, setSearchValue] = useState(filters.search_query || '');
   const debounceRef = useRef<NodeJS.Timeout>();
+  const internalSearchRef = useRef<HTMLInputElement>(null);
+  const sRef = externalSearchRef || internalSearchRef;
 
   const handleSearch = useCallback((val: string) => {
     setSearchValue(val);
@@ -50,48 +57,35 @@ export default function WorkHubToolbar({
   const activeFilterCount = (filters.statuses?.length || 0) + (filters.types?.length || 0)
     + (filters.assignee_ids?.length || 0) + (filters.priorities?.length || 0);
 
-  const filterBtn = (label: string, count: number, children: React.ReactNode) => (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px',
-          border: count > 0 ? '1px solid #2563EB' : '1px solid rgba(15,23,42,0.12)',
-          borderRadius: 4, background: count > 0 ? 'rgba(37,99,235,0.08)' : 'transparent',
-          fontSize: 12, fontWeight: 500, color: count > 0 ? '#2563EB' : '#334155', cursor: 'pointer',
-        }}>
-          {label} {count > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: '#2563EB', color: 'white', borderRadius: 10, padding: '0 5px', minWidth: 16, textAlign: 'center' }}>{count}</span>}
-          <ChevronDown size={12} />
-        </button>
-      </PopoverTrigger>
-      {children}
-    </Popover>
-  );
-
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
-      padding: '8px 16px', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+      padding: '0 16px', height: 48, minHeight: 48,
+      borderBottom: '0.75px solid rgba(15,23,42,0.06)',
       background: '#FFFFFF', flexShrink: 0,
-    }}>
+    }} role="toolbar" aria-label="Work items toolbar">
       {/* LEFT */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
         {/* Search */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6, width: 240, height: 32,
           padding: '0 8px', background: '#F1F5F9', borderRadius: 4,
-          border: '1px solid transparent',
         }}>
           <Search size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
           <input
+            ref={sRef as any}
             value={searchValue}
             onChange={e => handleSearch(e.target.value)}
             placeholder="Search work items..."
+            aria-label="Search work items"
             style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: '#0F172A', fontFamily: 'Inter, sans-serif' }}
           />
-          {searchValue && (
-            <button onClick={() => handleSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          {searchValue ? (
+            <button onClick={() => handleSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} aria-label="Clear search">
               <X size={12} color="#94A3B8" />
             </button>
+          ) : (
+            <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', fontFamily: "'JetBrains Mono', monospace", background: '#E2E8F0', borderRadius: 3, padding: '1px 4px' }}>⌘K</span>
           )}
         </div>
 
@@ -185,13 +179,36 @@ export default function WorkHubToolbar({
           </PopoverContent>
         </Popover>
 
+        {/* Column Toggle */}
+        {columns && onColumnToggle && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <button style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 4, background: 'transparent', cursor: 'pointer' }} aria-label="Toggle columns">
+                <Settings2 size={16} color="#64748B" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" style={{ width: 220, padding: '8px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '4px 12px 6px' }}>Columns</div>
+              {columns.map(col => (
+                <button key={col.id} onClick={() => onColumnToggle(col.id)} style={{
+                  width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '5px 12px',
+                  border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, color: '#0F172A', textAlign: 'left',
+                }}>
+                  {col.visible ? <Eye size={14} color="#2563EB" /> : <EyeOff size={14} color="#94A3B8" />}
+                  <span style={{ color: col.visible ? '#0F172A' : '#94A3B8' }}>{col.label}</span>
+                </button>
+              ))}
+            </PopoverContent>
+          </Popover>
+        )}
+
         {/* View Switcher */}
         <div style={{ display: 'flex', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 4, overflow: 'hidden' }}>
           {([
             { mode: 'list' as ViewMode, icon: LayoutList },
             { mode: 'backlog' as ViewMode, icon: Table2 },
           ]).map(({ mode, icon: Icon }) => (
-            <button key={mode} onClick={() => onViewModeChange(mode)}
+            <button key={mode} onClick={() => onViewModeChange(mode)} aria-label={`${mode} view`} aria-pressed={viewMode === mode}
               style={{
                 width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 border: 'none', cursor: 'pointer',
