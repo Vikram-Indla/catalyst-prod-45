@@ -312,6 +312,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
     };
     walk(items);
     return sources.size > 1;
+  }, [items]);
 
   // Visible column defs (ordered)
   const columns = useMemo(() =>
