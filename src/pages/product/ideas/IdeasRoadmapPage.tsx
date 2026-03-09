@@ -164,8 +164,17 @@ export default function IdeasRoadmapPage() {
   }
 
   // INT-05/06: Phase 2 stubs
-  function handlePresent() { showToast('Presentation mode — coming in Phase 2'); }
-  function handleExport() { showToast('PPTX export — coming in Phase 2'); }
+  function handlePresent() { setShowPresent(true); }
+  async function handleExport() {
+    try {
+      showToast('Generating PPTX…');
+      await exportRoadmapPptx(ideas);
+      showToast('PPTX downloaded ✓');
+    } catch (err) {
+      console.error('PPTX export failed:', err);
+      showToast('Export failed — check console');
+    }
+  }
   function handleGantt() { showToast('Gantt view — coming in Phase 2'); }
 
   // EC-06: Network error
