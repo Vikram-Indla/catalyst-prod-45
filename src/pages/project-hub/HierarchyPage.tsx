@@ -474,7 +474,7 @@ export default function HierarchyPage() {
               {openDropdown === 'type' && (
                 <FilterDropdown options={allTypes} selected={filters.types}
                   onChange={v => setFilters(f => ({ ...f, types: v }))}
-                  onClose={() => setOpenDropdown(null)} />
+                  onClose={() => setOpenDropdown(null)} variant="default" />
               )}
             </div>
 
@@ -488,7 +488,7 @@ export default function HierarchyPage() {
               {openDropdown === 'status' && (
                 <FilterDropdown options={allStatuses} selected={filters.statuses}
                   onChange={v => setFilters(f => ({ ...f, statuses: v }))}
-                  onClose={() => setOpenDropdown(null)} />
+                  onClose={() => setOpenDropdown(null)} variant="status" />
               )}
             </div>
 
@@ -502,7 +502,7 @@ export default function HierarchyPage() {
               {openDropdown === 'assignee' && (
                 <FilterDropdown options={allAssigneeNames} selected={filters.assignees}
                   onChange={v => setFilters(f => ({ ...f, assignees: v }))}
-                  onClose={() => setOpenDropdown(null)} searchable />
+                  onClose={() => setOpenDropdown(null)} searchable variant="assignee" assigneeMap={allAssigneeMap} />
               )}
             </div>
 
@@ -516,13 +516,13 @@ export default function HierarchyPage() {
               {openDropdown === 'priority' && (
                 <FilterDropdown options={allPriorities.length > 0 ? allPriorities : ['Critical', 'High', 'Medium', 'Low']} selected={filters.priorities}
                   onChange={v => setFilters(f => ({ ...f, priorities: v }))}
-                  onClose={() => setOpenDropdown(null)} />
+                  onClose={() => setOpenDropdown(null)} variant="priority" />
               )}
             </div>
 
-            {/* Sprint / Fix Version */}
+            {/* Release (Fix Version) */}
             <div style={{ position: 'relative' }}>
-              <FilterTrigger label="Sprint" values={filters.sprints}
+              <FilterTrigger label="Release" values={filters.sprints}
                 onClear={() => setFilters(f => ({ ...f, sprints: [] }))}
                 onClick={() => setOpenDropdown(openDropdown === 'sprint' ? null : 'sprint')}
                 isOpen={openDropdown === 'sprint'}
@@ -530,7 +530,7 @@ export default function HierarchyPage() {
               {openDropdown === 'sprint' && (
                 <FilterDropdown options={allSprints} selected={filters.sprints}
                   onChange={v => setFilters(f => ({ ...f, sprints: v }))}
-                  onClose={() => setOpenDropdown(null)} />
+                  onClose={() => setOpenDropdown(null)} variant="release" />
               )}
             </div>
 
