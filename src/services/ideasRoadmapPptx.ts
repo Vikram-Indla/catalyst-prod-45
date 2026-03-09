@@ -173,8 +173,8 @@ export async function exportRoadmapPptx(ideas: RoadmapIdea[]): Promise<void> {
         if (cs <= ce) {
           slide.addShape(pptx.ShapeType.rect, {
             x: xPos(cs), y: barY, w: Math.max(0.02, xPos(ce) - xPos(cs)), h: barH,
-            fill: { color: '94A3B8' }, transparency: 30,
-          });
+            fill: { color: '94A3B8' },
+          } as any);
         }
       }
 
