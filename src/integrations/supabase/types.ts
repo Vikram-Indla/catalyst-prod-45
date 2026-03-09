@@ -35905,6 +35905,386 @@ export type Database = {
         }
         Relationships: []
       }
+      rh_change_signoffs: {
+        Row: {
+          actioned_at: string | null
+          actioned_by: string | null
+          assigned_to: string | null
+          change_id: string
+          comment: string | null
+          id: string
+          signoff_role: string
+          stage: string
+          status: string
+          wait_started_at: string | null
+        }
+        Insert: {
+          actioned_at?: string | null
+          actioned_by?: string | null
+          assigned_to?: string | null
+          change_id: string
+          comment?: string | null
+          id?: string
+          signoff_role: string
+          stage: string
+          status?: string
+          wait_started_at?: string | null
+        }
+        Update: {
+          actioned_at?: string | null
+          actioned_by?: string | null
+          assigned_to?: string | null
+          change_id?: string
+          comment?: string | null
+          id?: string
+          signoff_role?: string
+          stage?: string
+          status?: string
+          wait_started_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_change_signoffs_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "rh_changes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rh_change_status_history: {
+        Row: {
+          change_id: string
+          changed_at: string | null
+          changed_by: string | null
+          comment: string | null
+          from_status: string | null
+          id: string
+          to_status: string
+        }
+        Insert: {
+          change_id: string
+          changed_at?: string | null
+          changed_by?: string | null
+          comment?: string | null
+          from_status?: string | null
+          id?: string
+          to_status: string
+        }
+        Update: {
+          change_id?: string
+          changed_at?: string | null
+          changed_by?: string | null
+          comment?: string | null
+          from_status?: string | null
+          id?: string
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_change_status_history_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "rh_changes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rh_change_work_items: {
+        Row: {
+          change_id: string
+          id: string
+          linked_at: string | null
+          work_item_id: string | null
+          work_item_key: string
+          work_item_status: string | null
+          work_item_title: string
+          work_item_type: string | null
+        }
+        Insert: {
+          change_id: string
+          id?: string
+          linked_at?: string | null
+          work_item_id?: string | null
+          work_item_key: string
+          work_item_status?: string | null
+          work_item_title: string
+          work_item_type?: string | null
+        }
+        Update: {
+          change_id?: string
+          id?: string
+          linked_at?: string | null
+          work_item_id?: string | null
+          work_item_key?: string
+          work_item_status?: string | null
+          work_item_title?: string
+          work_item_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_change_work_items_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "rh_changes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rh_changes: {
+        Row: {
+          additional_commands: string | null
+          additional_comments: string | null
+          backend_commit: string | null
+          backend_required: boolean | null
+          category: string | null
+          chg_number: string
+          created_at: string | null
+          created_by: string | null
+          dependency: string | null
+          deployment_date: string | null
+          deployment_process: string | null
+          frontend_commit: string | null
+          frontend_required: boolean | null
+          id: string
+          project_id: string | null
+          release_id: string | null
+          risk_level: string
+          risk_score: number | null
+          sn_imported: boolean | null
+          source: string
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          additional_commands?: string | null
+          additional_comments?: string | null
+          backend_commit?: string | null
+          backend_required?: boolean | null
+          category?: string | null
+          chg_number: string
+          created_at?: string | null
+          created_by?: string | null
+          dependency?: string | null
+          deployment_date?: string | null
+          deployment_process?: string | null
+          frontend_commit?: string | null
+          frontend_required?: boolean | null
+          id?: string
+          project_id?: string | null
+          release_id?: string | null
+          risk_level?: string
+          risk_score?: number | null
+          sn_imported?: boolean | null
+          source?: string
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          additional_commands?: string | null
+          additional_comments?: string | null
+          backend_commit?: string | null
+          backend_required?: boolean | null
+          category?: string | null
+          chg_number?: string
+          created_at?: string | null
+          created_by?: string | null
+          dependency?: string | null
+          deployment_date?: string | null
+          deployment_process?: string | null
+          frontend_commit?: string | null
+          frontend_required?: boolean | null
+          id?: string
+          project_id?: string | null
+          release_id?: string | null
+          risk_level?: string
+          risk_score?: number | null
+          sn_imported?: boolean | null
+          source?: string
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_changes_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "rh_releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rh_freeze_windows: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          end_date: string
+          id: string
+          name: string
+          reason: string | null
+          start_date: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          end_date: string
+          id?: string
+          name: string
+          reason?: string | null
+          start_date: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          end_date?: string
+          id?: string
+          name?: string
+          reason?: string | null
+          start_date?: string
+        }
+        Relationships: []
+      }
+      rh_release_test_cycle_links: {
+        Row: {
+          id: string
+          linked_at: string | null
+          release_id: string
+          test_cycle_id: string
+        }
+        Insert: {
+          id?: string
+          linked_at?: string | null
+          release_id: string
+          test_cycle_id: string
+        }
+        Update: {
+          id?: string
+          linked_at?: string | null
+          release_id?: string
+          test_cycle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_release_test_cycle_links_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "rh_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_release_test_cycle_links_test_cycle_id_fkey"
+            columns: ["test_cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_release_test_cycle_links_test_cycle_id_fkey"
+            columns: ["test_cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_release_test_cycle_links_test_cycle_id_fkey"
+            columns: ["test_cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "rh_release_test_cycle_links_test_cycle_id_fkey"
+            columns: ["test_cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "rh_release_test_cycle_links_test_cycle_id_fkey"
+            columns: ["test_cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rh_releases: {
+        Row: {
+          chg_count: number | null
+          created_at: string | null
+          id: string
+          jira_key: string | null
+          name: string
+          owner_id: string | null
+          project_id: string | null
+          source: string
+          status: string
+          target_date: string
+          updated_at: string | null
+          version: string | null
+        }
+        Insert: {
+          chg_count?: number | null
+          created_at?: string | null
+          id?: string
+          jira_key?: string | null
+          name: string
+          owner_id?: string | null
+          project_id?: string | null
+          source?: string
+          status?: string
+          target_date: string
+          updated_at?: string | null
+          version?: string | null
+        }
+        Update: {
+          chg_count?: number | null
+          created_at?: string | null
+          id?: string
+          jira_key?: string | null
+          name?: string
+          owner_id?: string | null
+          project_id?: string | null
+          source?: string
+          status?: string
+          target_date?: string
+          updated_at?: string | null
+          version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_releases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_releases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       risk_links: {
         Row: {
           added_by_name: string | null
