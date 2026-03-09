@@ -21,6 +21,7 @@ import { ColumnManagerDropdown, ALL_COLUMNS, getInitialVisibleColumns, saveVisib
 import { useUpdateIssueField } from '@/hooks/useUpdateIssueField';
 import { useBulkUpdateIssues, useBulkDeleteIssues } from '@/hooks/useBulkUpdateIssues';
 import { toast } from 'sonner';
+import { getEpicChipColor } from '@/modules/project-work-hub/utils/backlog.utils';
 
 interface WorkItemTableProps {
   items: WorkItem[];
@@ -187,7 +188,7 @@ const TYPE_COLORS: Record<string, string> = {
   'Task': '#64748B', 'Bug': '#DC2626',
 };
 
-/* ── Parent cell (enriched: icon + key + title) ── */
+/* ── Parent cell (chip style matching ParentEpicChip) ── */
 function ParentCell({ item, itemById, onSelect }: { item: WorkItem; itemById: Map<string, WorkItem>; onSelect: (item: WorkItem) => void }) {
   const parentKey = item.parentKey || item.parentId;
 
@@ -201,43 +202,40 @@ function ParentCell({ item, itemById, onSelect }: { item: WorkItem; itemById: Ma
   );
 
   const displayKey = parentKey;
-  const parentIssueType = parent?.issueType || parent?.hierarchyName;
-
-  if (!parent) {
-    // Parent exists but not in loaded data — show key only, no icon, no dash
-    return (
-      <div style={{ padding: '0 8px', minWidth: 0 }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', fontVariantNumeric: 'tabular-nums' }}>
-          {displayKey}
-        </span>
-      </div>
-    );
-  }
+  const chipColors = getEpicChipColor(parentKey);
+  const label = parent ? `${displayKey} · ${parent.title}` : displayKey;
 
   return (
-    <div
-      className="hi-parent-cell"
-      title={`${displayKey} — ${parent.title}`}
-      style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, overflow: 'hidden', padding: '0 8px', cursor: 'pointer' }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(parent);
-      }}
-    >
-      <span className="hi-type-icon-wrapper">
-        <JiraIssueTypeIcon type={parentIssueType || 'Task'} size={14} />
+    <div style={{ padding: '0 8px', minWidth: 0 }}>
+      <span
+        className="hi-parent-cell"
+        title={label}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          height: 20,
+          padding: '0 6px',
+          borderRadius: 3,
+          fontSize: 11,
+          fontWeight: 500,
+          maxWidth: 212,
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis',
+          border: `1px solid ${chipColors.border}`,
+          background: chipColors.bg,
+          color: chipColors.text,
+          cursor: parent ? 'pointer' : 'default',
+        }}
+        onClick={(e) => {
+          if (parent) {
+            e.stopPropagation();
+            onSelect(parent);
+          }
+        }}
+      >
+        {label}
       </span>
-      <span style={{
-        fontSize: 11, fontWeight: 600, color: '#2563EB', flexShrink: 0,
-        fontVariantNumeric: 'tabular-nums',
-      }}>
-        {displayKey}
-      </span>
-      {parent.title && (
-        <span style={{ fontSize: 12, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
-          {parent.title}
-        </span>
-      )}
     </div>
   );
 }
