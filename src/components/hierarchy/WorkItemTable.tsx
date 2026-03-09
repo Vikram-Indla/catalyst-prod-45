@@ -680,6 +680,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         .hi-table-row:hover { background: #F8FAFC !important; border-left-color: #2563EB; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 150ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
+        .hi-parent-cell:hover .hi-parent-key { text-decoration: underline; text-underline-offset: 2px; }
       `}</style>
     </div>
   );
