@@ -16,7 +16,7 @@ export const releaseService = {
     return data as any;
   },
 
-  create: async (payload: Record<string, any>) => {
+  create: async (payload: { name: string; target_date: string; version?: string; status?: string; source?: string; jira_key?: string; project_id?: string }) => {
     const { data, error } = await supabase.from('rh_releases').insert(payload).select().single();
     if (error) throw error;
     return data;
@@ -68,13 +68,14 @@ export const changeService = {
     return data || [];
   },
 
-  create: async (payload: Record<string, any>) => {
+  create: async (payload: { chg_number: string; title: string; status?: string; risk_level?: string; source?: string; category?: string; deployment_date?: string }) => {
     const userId = (await supabase.auth.getUser()).data.user?.id;
-    const { data, error } = await supabase.from('rh_changes').insert({ ...payload, created_by: userId }).select().single();
+    const insertPayload = { ...payload, created_by: userId ?? undefined };
+    const { data, error } = await supabase.from('rh_changes').insert(insertPayload).select().single();
     if (error) throw error;
     if (data) {
       await supabase.from('rh_change_status_history').insert({
-        change_id: (data as any).id, from_status: null, to_status: (data as any).status, changed_by: userId
+        change_id: data.id, to_status: data.status, changed_by: userId ?? undefined
       });
     }
     return data;
@@ -86,11 +87,11 @@ export const changeService = {
     if (error) throw error;
     const userId = (await supabase.auth.getUser()).data.user?.id;
     await supabase.from('rh_change_status_history').insert({
-      change_id: id, from_status: (current as any)?.status, to_status: status, changed_by: userId, comment
+      change_id: id, from_status: current?.status ?? undefined, to_status: status, changed_by: userId ?? undefined, comment: comment ?? undefined
     });
   },
 
-  linkWorkItem: async (changeId: string, workItem: Record<string, any>) => {
+  linkWorkItem: async (changeId: string, workItem: { work_item_key: string; work_item_title: string; work_item_type?: string; work_item_status?: string; work_item_id?: string }) => {
     const { error } = await supabase.from('rh_change_work_items').insert({ change_id: changeId, ...workItem });
     if (error) throw error;
   },
@@ -98,7 +99,7 @@ export const changeService = {
   approveSignoff: async (signoffId: string) => {
     const userId = (await supabase.auth.getUser()).data.user?.id;
     const { error } = await supabase.from('rh_change_signoffs').update({
-      status: 'approved', actioned_at: new Date().toISOString(), actioned_by: userId
+      status: 'approved', actioned_at: new Date().toISOString(), actioned_by: userId ?? undefined
     }).eq('id', signoffId);
     if (error) throw error;
   },
@@ -106,7 +107,7 @@ export const changeService = {
   rejectSignoff: async (signoffId: string, comment: string) => {
     const userId = (await supabase.auth.getUser()).data.user?.id;
     const { error } = await supabase.from('rh_change_signoffs').update({
-      status: 'rejected', actioned_at: new Date().toISOString(), actioned_by: userId, comment
+      status: 'rejected', actioned_at: new Date().toISOString(), actioned_by: userId ?? undefined, comment
     }).eq('id', signoffId);
     if (error) throw error;
   },
