@@ -391,11 +391,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
           </div>
         );
       case 'parent':
-        return (
-          <div style={{ width: 120, padding: '0 8px' }}>
-            <span style={{ fontSize: 12, color: item.parentId ? '#2563EB' : '#94A3B8' }}>{item.parentId || '—'}</span>
-          </div>
-        );
+        return <ParentCell parentId={item.parentId} allRows={flatRows} onSelect={onSelect} />;
       case 'assignee':
         return (
           <div style={{ width: 160, padding: '0 8px', overflow: 'hidden', position: 'relative' }}>
