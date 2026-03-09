@@ -12,6 +12,7 @@ import { ReleaseRoomSidebar } from './OperationsSidebar';
 import { TestManagementSidebar } from './TestManagementSidebar';
 import { ReleasesManagementSidebar } from './ReleasesManagementSidebar';
 import { ReleaseHubSidebar } from './ReleaseHubSidebar';
+import { IncidentHubSidebar } from './IncidentHubSidebar';
 import { PlanHubSidebar } from './PlanHubSidebar';
 import { TaskHubSidebar } from './TaskHubSidebar';
 import { TestHubSidebar } from './TestHubSidebar';
