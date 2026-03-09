@@ -187,6 +187,46 @@ const TYPE_COLORS: Record<string, string> = {
   'Task': '#64748B', 'Bug': '#DC2626',
 };
 
+/* ── Parent cell (enriched: icon + key + title) ── */
+function ParentCell({ parentId, allRows, onSelect }: { parentId: string | null; allRows: FlatRow[]; onSelect: (item: WorkItem) => void }) {
+  if (!parentId) {
+    return (
+      <div style={{ width: 220, padding: '0 8px' }}>
+        <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>—</span>
+      </div>
+    );
+  }
+  const parent = allRows.find(r => r.item.key === parentId || r.item.id === parentId)?.item;
+  return (
+    <div
+      style={{ width: 220, padding: '0 8px', overflow: 'hidden' }}
+      title={parent ? `${parentId} — ${parent.title}` : parentId}
+    >
+      <div
+        className="hi-parent-cell"
+        onClick={(e) => { e.stopPropagation(); if (parent) onSelect(parent); }}
+        style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer', overflow: 'hidden' }}
+      >
+        {parent?.issueType && <JiraIssueTypeIcon type={parent.issueType} size={14} />}
+        <span className="hi-parent-key" style={{
+          fontSize: 11, fontWeight: 600, color: '#2563EB', flexShrink: 0,
+          fontVariantNumeric: 'tabular-nums', fontFamily: "'Inter', sans-serif",
+        }}>
+          {parentId}
+        </span>
+        {parent && (
+          <span style={{
+            fontSize: 12, color: '#64748B', overflow: 'hidden',
+            textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif",
+          }}>
+            {parent.title}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ── Column header ── */
 function ColHeader({ label, sortKey, currentSort, currentDir, onSort, width, flex }: {
   label: string; sortKey: string; currentSort: string; currentDir: SortDir;
