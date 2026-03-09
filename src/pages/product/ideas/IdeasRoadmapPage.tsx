@@ -35,6 +35,8 @@ import { RoadmapFilters } from '@/components/ideas-roadmap/RoadmapFilters';
 import { RoadmapKanban } from '@/components/ideas-roadmap/RoadmapKanban';
 import { RoadmapDatesTable } from '@/components/ideas-roadmap/RoadmapDatesTable';
 import { RoadmapSidePanel } from '@/components/ideas-roadmap/RoadmapSidePanel';
+import { PresentationModal } from '@/components/ideas-roadmap/PresentationModal';
+import { exportRoadmapPptx } from '@/services/ideasRoadmapPptx';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
   AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
@@ -79,6 +81,7 @@ export default function IdeasRoadmapPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [convertTarget, setConvertTarget] = useState<RoadmapIdea | null>(null);
   const [mutatingIds, setMutatingIds] = useState<Set<string>>(new Set());
+  const [showPresent, setShowPresent] = useState(false);
 
   // INT-04: Close panel on route change
   useEffect(() => { setSelectedIdea(null); }, [location.pathname]);
@@ -156,8 +159,17 @@ export default function IdeasRoadmapPage() {
   }
 
   // INT-05/06: Phase 2 stubs
-  function handlePresent() { showToast('Presentation mode — coming in Phase 2'); }
-  function handleExport() { showToast('PPTX export — coming in Phase 2'); }
+  function handlePresent() { setShowPresent(true); }
+  async function handleExport() {
+    try {
+      showToast('Generating PPTX…');
+      await exportRoadmapPptx(ideas);
+      showToast('PPTX downloaded ✓');
+    } catch (err) {
+      console.error('PPTX export failed:', err);
+      showToast('Export failed — check console');
+    }
+  }
   function handleGantt() { showToast('Gantt view — coming in Phase 2'); }
 
   // EC-06: Network error
@@ -286,6 +298,10 @@ export default function IdeasRoadmapPage() {
           onQuarterChange={handleQuarterChange}
           isSaving={mutatingIds.has(selectedIdea.id)}
         />
+      )}
+
+      {showPresent && (
+        <PresentationModal ideas={ideas} onClose={() => setShowPresent(false)} />
       )}
 
       <AlertDialog open={!!convertTarget} onOpenChange={open => { if (!open) setConvertTarget(null); }}>

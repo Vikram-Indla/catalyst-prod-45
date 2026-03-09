@@ -150,17 +150,25 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
       </div>
 
       {/* Row 4: EC-03 — Always show all 6 milestone chips (greyed if unset) */}
-      <div style={{ display: 'flex', gap: 3, marginBottom: 6 }}>
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
         {MILESTONE_CONFIGS.map(m => {
           const isSet = !!idea.milestones[m.key];
+          const CHIP_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+            req:  { bg: '#DBEAFE', text: '#1D4ED8', border: '#93C5FD' },
+            des:  { bg: '#EDE9FE', text: '#5B21B6', border: '#C4B5FD' },
+            dev:  { bg: '#DCFCE7', text: '#15803D', border: '#86EFAC' },
+            uat:  { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' },
+            beta: { bg: '#CCFBF1', text: '#0F766E', border: '#5EEAD4' },
+            prod: { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7' },
+          };
+          const style = isSet ? CHIP_STYLES[m.key] : { bg: '#F1F5F9', text: '#CBD5E1', border: '#E2E8F0' };
           return (
             <span key={m.key} style={{
-              height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              padding: '0 5px', borderRadius: 3,
+              height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              padding: '0 6px', borderRadius: 3,
               fontSize: 9, fontWeight: 700, fontFamily: "'Inter', sans-serif",
-              textTransform: 'uppercase',
-              background: isSet ? `${m.color}18` : '#F1F5F9',
-              color: isSet ? m.color : '#CBD5E1',
+              textTransform: 'uppercase', letterSpacing: '0.06em',
+              background: style.bg, color: style.text, border: `1px solid ${style.border}`,
             }}>
               {m.label}
             </span>
