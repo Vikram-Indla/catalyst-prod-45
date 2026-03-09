@@ -61211,6 +61211,115 @@ export type Database = {
           },
         ]
       }
+      work_item_changelogs: {
+        Row: {
+          changed_at: string
+          changed_by: string
+          changed_by_avatar: string | null
+          created_at: string
+          field_name: string
+          field_type: string | null
+          from_display: string | null
+          from_value: string | null
+          id: string
+          jira_changelog_id: string | null
+          to_display: string | null
+          to_value: string | null
+          work_item_id: string
+        }
+        Insert: {
+          changed_at: string
+          changed_by?: string
+          changed_by_avatar?: string | null
+          created_at?: string
+          field_name: string
+          field_type?: string | null
+          from_display?: string | null
+          from_value?: string | null
+          id?: string
+          jira_changelog_id?: string | null
+          to_display?: string | null
+          to_value?: string | null
+          work_item_id: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string
+          changed_by_avatar?: string | null
+          created_at?: string
+          field_name?: string
+          field_type?: string | null
+          from_display?: string | null
+          from_value?: string | null
+          id?: string
+          jira_changelog_id?: string | null
+          to_display?: string | null
+          to_value?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_item_changelogs_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_item_comments: {
+        Row: {
+          author_avatar: string | null
+          author_email: string | null
+          author_name: string
+          body_html: string | null
+          body_text: string
+          comment_created_at: string
+          comment_updated_at: string | null
+          created_at: string
+          id: string
+          is_internal: boolean | null
+          jira_comment_id: string | null
+          work_item_id: string
+        }
+        Insert: {
+          author_avatar?: string | null
+          author_email?: string | null
+          author_name?: string
+          body_html?: string | null
+          body_text: string
+          comment_created_at: string
+          comment_updated_at?: string | null
+          created_at?: string
+          id?: string
+          is_internal?: boolean | null
+          jira_comment_id?: string | null
+          work_item_id: string
+        }
+        Update: {
+          author_avatar?: string | null
+          author_email?: string | null
+          author_name?: string
+          body_html?: string | null
+          body_text?: string
+          comment_created_at?: string
+          comment_updated_at?: string | null
+          created_at?: string
+          id?: string
+          is_internal?: boolean | null
+          jira_comment_id?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_item_comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_item_dependencies: {
         Row: {
           blocker_id: string
@@ -61587,6 +61696,59 @@ export type Database = {
           work_item_type?: string
         }
         Relationships: []
+      }
+      work_item_transitions: {
+        Row: {
+          created_at: string
+          from_status: string | null
+          from_status_category: string | null
+          id: string
+          jira_changelog_id: string | null
+          time_in_from_status_ms: number | null
+          to_status: string
+          to_status_category: string
+          transitioned_at: string
+          transitioned_by: string
+          transitioned_by_avatar: string | null
+          work_item_id: string
+        }
+        Insert: {
+          created_at?: string
+          from_status?: string | null
+          from_status_category?: string | null
+          id?: string
+          jira_changelog_id?: string | null
+          time_in_from_status_ms?: number | null
+          to_status: string
+          to_status_category: string
+          transitioned_at: string
+          transitioned_by?: string
+          transitioned_by_avatar?: string | null
+          work_item_id: string
+        }
+        Update: {
+          created_at?: string
+          from_status?: string | null
+          from_status_category?: string | null
+          id?: string
+          jira_changelog_id?: string | null
+          time_in_from_status_ms?: number | null
+          to_status?: string
+          to_status_category?: string
+          transitioned_at?: string
+          transitioned_by?: string
+          transitioned_by_avatar?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_item_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       work_item_versions: {
         Row: {
@@ -68333,6 +68495,47 @@ export type Database = {
           version: number | null
         }
         Relationships: []
+      }
+      work_item_cycle_summary_view: {
+        Row: {
+          first_entered: string | null
+          last_exited: string | null
+          status_category: string | null
+          times_entered: number | null
+          total_days: number | null
+          total_seconds: number | null
+          work_item_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_item_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_item_cycle_time_view: {
+        Row: {
+          days_in_status: number | null
+          duration_formatted: string | null
+          entered_at: string | null
+          exited_at: string | null
+          seconds_in_status: number | null
+          status: string | null
+          status_category: string | null
+          work_item_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_item_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workhub_items_view: {
         Row: {
