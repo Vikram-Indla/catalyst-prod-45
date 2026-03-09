@@ -133,7 +133,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                       onMouseLeave={(e) => (e.currentTarget.style.background = '')}
                       onClick={() => setDrawerStoryId(story.id)}>
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <input type="checkbox" className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ width: 14, height: 14 }} />
+                        <input type="checkbox" onClick={(e) => e.stopPropagation()} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ width: 14, height: 14 }} />
                       </div>
                       <div style={{ width: 26, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <button onClick={() => setDrawerStoryId(story.id)} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
