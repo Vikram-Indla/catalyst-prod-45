@@ -640,7 +640,8 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
       )}
 
       <style>{`
-        .hi-table-row:hover { background: #F8FAFC !important; }
+        .hi-table-row { border-left: 3px solid transparent; transition: all 120ms ease; }
+        .hi-table-row:hover { background: #F8FAFC !important; border-left-color: #2563EB; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 150ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
       `}</style>
