@@ -1,9 +1,128 @@
 /**
- * WorkHub "All Work" — TypeScript Type Definitions
- * MARAM V3.1.1 semantic palette & complete domain model
+ * WorkHub CRUD Types — DYNAMITE V2
+ * Core interfaces for Story Backlog, Epic Backlog, and All Work Items views
  */
 
-// ═══ UNION TYPES ═══
+// ═══ WORK ITEM TYPES ═══
+export type WorkItemType = 'epic' | 'story' | 'bug' | 'task' | 'subtask' | 'improvement' | 'new_feature' | 'incident' | 'changes' | 'question';
+
+export type WorkItemStatus =
+  | 'backlog' | 'in_requirements' | 'to_do' | 'open'
+  | 'in_progress' | 'in_review' | 'in_development' | 'in_beta' | 'in_uat' | 'in_qa' | 'ready_for_qa'
+  | 'done' | 'closed' | 'in_production' | 'released';
+
+export type StatusCategory = 'to_do' | 'in_progress' | 'done';
+
+export type Priority = 'highest' | 'high' | 'medium' | 'low' | 'lowest';
+
+export interface WorkItem {
+  id: string;
+  key: string;
+  summary: string;
+  description: string | null;
+  type: WorkItemType;
+  status: WorkItemStatus;
+  status_category: StatusCategory;
+  priority: Priority;
+  assignee_id: string | null;
+  reporter_id: string | null;
+  parent_id: string | null;
+  parent_key: string | null;
+  parent_summary: string | null;
+  project_id: string;
+  sprint_id: string | null;
+  labels: string[];
+  story_points: number | null;
+  due_date: string | null;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+  updated_by: string | null;
+  deleted_at: string | null;
+  source: 'jira' | 'manual';
+  sort_order: number;
+  subtask_count: number;
+  child_count: number;
+  completed_child_count: number;
+}
+
+// ═══ TABLE STATE ═══
+export type SortDirection = 'asc' | 'desc';
+
+export interface SortConfig {
+  column: string;
+  direction: SortDirection;
+}
+
+export interface FilterConfig {
+  statuses: WorkItemStatus[];
+  types: WorkItemType[];
+  priorities: Priority[];
+  assignee_ids: string[];
+  has_due_date: boolean | null;
+  search_query: string;
+}
+
+export interface ColumnConfig {
+  id: string;
+  label: string;
+  visible: boolean;
+  width: number;
+  minWidth: number;
+  sortable: boolean;
+  filterable: boolean;
+  resizable: boolean;
+}
+
+export type GroupByField = 'status_category' | 'assignee_id' | 'priority' | 'parent_key' | 'type' | 'none';
+
+export type ViewMode = 'backlog' | 'board' | 'list' | 'all_work';
+
+// ═══ BULK OPERATIONS ═══
+export interface BulkOperation {
+  type: 'status_change' | 'assignee_change' | 'priority_change' | 'delete';
+  item_ids: string[];
+  value?: string;
+}
+
+// ═══ SIDE PANEL ═══
+export interface SidePanelState {
+  isOpen: boolean;
+  itemId: string | null;
+  mode: 'view' | 'edit' | 'create';
+}
+
+// ═══ INLINE EDIT ═══
+export interface InlineEditState {
+  itemId: string | null;
+  field: string | null;
+  value: any;
+}
+
+// ═══ TEAM MEMBER (for assignee picker) ═══
+export interface TeamMember {
+  id: string;
+  name: string;
+  avatar_url: string | null;
+  initials: string;
+  role: string;
+}
+
+// ═══ ACTIVITY LOG ═══
+export interface ActivityEntry {
+  id: string;
+  work_item_id: string;
+  actor_id: string;
+  actor_name: string;
+  action: 'status_changed' | 'assigned' | 'commented' | 'created' | 'updated' | 'deleted';
+  field_changed: string | null;
+  old_value: string | null;
+  new_value: string | null;
+  comment_text: string | null;
+  created_at: string;
+}
+
+// ═══ LEGACY COMPAT — preserved for existing imports ═══
 
 export type WhPriority = 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
 export type WhSeverity = 'Critical' | 'Major' | 'Minor' | 'Trivial';
@@ -11,12 +130,10 @@ export type WhStatusCategory = 'todo' | 'in_progress' | 'done';
 export type WhViewType = 'list' | 'board' | 'timeline' | 'calendar';
 export type WhStatusColorKey = 'gray' | 'blue' | 'green' | 'red' | 'yellow' | 'teal' | 'purple';
 
-// ═══ LOOKUP / CONFIG TYPES ═══
-
 export interface WhWorkType {
   key: string;
   label: string;
-  icon: string; // lucide icon name
+  icon: string;
   color: string;
 }
 
@@ -53,8 +170,6 @@ export interface WhLinkType {
   outwardLabel: string;
 }
 
-// ═══ MAIN TABLE ROW ═══
-
 export interface WhWorkItemListRow {
   id: string;
   item_key: string;
@@ -85,8 +200,6 @@ export interface WhWorkItemListRow {
   sprint_name?: string;
 }
 
-// ═══ DETAIL / SPLIT VIEW ═══
-
 export interface WhWorkItemDetail extends WhWorkItemListRow {
   description?: string;
   assignee_avatar_url?: string;
@@ -101,8 +214,6 @@ export interface WhWorkItemDetail extends WhWorkItemListRow {
   attachment_count: number;
   worklog_count: number;
 }
-
-// ═══ RELATED ENTITIES ═══
 
 export interface WhComment {
   id: string;
@@ -158,8 +269,6 @@ export interface WhWorkItemLink {
   outward_status: string;
 }
 
-// ═══ DASHBOARD STATS ═══
-
 export interface WhDashboardStats {
   totalItems: number;
   todoCount: number;
@@ -169,8 +278,6 @@ export interface WhDashboardStats {
   createdThisWeek: number;
   updatedToday: number;
 }
-
-// ═══ PAYLOADS ═══
 
 export interface WhCreateWorkItemPayload {
   summary: string;
@@ -199,8 +306,6 @@ export interface WhUpdateWorkItemPayload {
   story_points?: number | null;
 }
 
-// ═══ FILTER CONFIG ═══
-
 export interface WhFilterConfig {
   search: string;
   statuses: string[];
@@ -217,8 +322,6 @@ export interface WhFilterConfig {
   pageSize: number;
 }
 
-// ═══ STATUS COLORS — MARAM V3.1.1 ═══
-
 export const WH_STATUS_COLORS: Record<WhStatusColorKey, { bg: string; text: string; dot: string }> = {
   gray:   { bg: '#dddee1', text: '#44546f', dot: '#8c8f96' },
   blue:   { bg: '#8fb8f6', text: '#0c3578', dot: '#1868db' },
@@ -229,8 +332,6 @@ export const WH_STATUS_COLORS: Record<WhStatusColorKey, { bg: string; text: stri
   purple: { bg: '#c597f4', text: '#3b1761', dot: '#7c3aed' },
 };
 
-// ═══ PRIORITY CONFIG ═══
-
 export const WH_PRIORITY_CONFIG: Record<WhPriority, { bars: number; color: string; label: string }> = {
   Highest: { bars: 4, color: '#ef4444', label: 'Highest' },
   High:    { bars: 3, color: '#f97316', label: 'High' },
@@ -238,8 +339,6 @@ export const WH_PRIORITY_CONFIG: Record<WhPriority, { bars: number; color: strin
   Low:     { bars: 1, color: '#22c55e', label: 'Low' },
   Lowest:  { bars: 0, color: '#8c8f96', label: 'Lowest' },
 };
-
-// ═══ QUERY KEY FACTORY ═══
 
 export const whQueryKeys = {
   all: ['workhub'] as const,
