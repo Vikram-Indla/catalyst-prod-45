@@ -84,9 +84,9 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
         return (
           <button
             onClick={e => { e.stopPropagation(); onOpenPanel(item.id); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: '#0F172A', textDecoration: 'none', outline: 'none' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#2563EB')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#0F172A')}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: '#2563EB', textDecoration: 'none', outline: 'none' }}
+            onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+            onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
             onFocus={e => (e.currentTarget.style.outline = '2px solid #2563EB')}
             onBlur={e => (e.currentTarget.style.outline = 'none')}
           >
@@ -182,11 +182,11 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
         );
 
       case 'created':
-        return <span style={{ fontSize: 13, color: '#0F172A', fontFamily: "'JetBrains Mono', monospace" }}>{formatDate(item.jira_created_at)}</span>;
+        return <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDate(item.jira_created_at)}</span>;
       case 'updated':
-        return <span style={{ fontSize: 13, color: '#0F172A', fontFamily: "'JetBrains Mono', monospace" }}>{formatDate(item.jira_updated_at)}</span>;
+        return <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDate(item.jira_updated_at)}</span>;
       case 'due_date':
-        return <span style={{ fontSize: 13, color: item.due_date ? '#0F172A' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace", cursor: 'pointer' }}>{formatDate(item.due_date)}</span>;
+        return <span style={{ fontSize: 12, color: item.due_date ? '#334155' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums', cursor: 'pointer' }}>{formatDate(item.due_date)}</span>;
 
       case 'points':
         if (editField === 'points') {
