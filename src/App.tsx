@@ -1269,9 +1269,9 @@ const App = () => (
               <Route path="/project-hub/:key/dashboard" element={<Suspense fallback={<div />}><ProjectDashboardPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/settings" element={<Suspense fallback={<div />}><PHProjectSettingsPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Backlog" phase="Phase 2" /></Suspense>} />
-              <Route path="/project-hub/:key/epic-backlog" element={<Suspense fallback={<div />}><ProjectEpicBacklogPageLazy /></Suspense>} />
-              <Route path="/project-hub/:key/feature-backlog" element={<Suspense fallback={<div />}><ProjectFeatureBacklogPageLazy /></Suspense>} />
-              <Route path="/project-hub/:key/story-backlog" element={<Suspense fallback={<div />}><ProjectStoryBacklogPageLazy /></Suspense>} />
+              <Route path="/project-hub/:key/epic-backlog" element={<Suspense fallback={<div />}><NativeEpicBacklogPageLazy /></Suspense>} />
+              <Route path="/project-hub/:key/feature-backlog" element={<Suspense fallback={<div />}><NativeFeatureBacklogPageLazy /></Suspense>} />
+              <Route path="/project-hub/:key/story-backlog" element={<Suspense fallback={<div />}><NativeStoryBacklogPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/board" element={<Suspense fallback={<div />}><ProjectBoardPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/boards" element={<Suspense fallback={<div />}><ProjectBoardManagerPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/boards/:boardId" element={<Suspense fallback={<div />}><ProjectBoardCanvasPageLazy /></Suspense>} />
