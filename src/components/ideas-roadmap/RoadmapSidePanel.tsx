@@ -210,9 +210,14 @@ export function RoadmapSidePanel({
           <div>
             <div style={{ ...labelStyle, marginBottom: 10 }}>DELIVERY MILESTONES</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {MILESTONE_CONFIGS.map(m => (
+              {MILESTONE_CONFIGS.map(m => {
+                const DOT_COLORS: Record<string, string> = {
+                  req: '#1D4ED8', des: '#5B21B6', dev: '#15803D',
+                  uat: '#92400E', beta: '#0F766E', prod: '#065F46',
+                };
+                return (
                 <div key={m.key} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: 4, background: m.color, flexShrink: 0 }} />
+                  <div style={{ width: 8, height: 8, borderRadius: 4, background: DOT_COLORS[m.key] || m.color, flexShrink: 0 }} />
                   <span style={{ width: 100, fontSize: 12, fontWeight: 600, color: '#334155' }}>
                     {m.fullLabel}
                   </span>
