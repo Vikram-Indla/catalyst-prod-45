@@ -149,7 +149,7 @@ export async function fetchJiraHierarchyTree(projectKey: string): Promise<WorkIt
   const [issuesResult, overrides] = await Promise.all([
     supabase
       .from('ph_issues')
-      .select('issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, fix_versions, due_date, labels, jira_created_at, jira_updated_at')
+      .select('issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, due_date, labels, jira_created_at, jira_updated_at')
       .eq('project_key', projectKey.toUpperCase())
       .is('jira_removed_at', null)
       .order('jira_created_at', { ascending: true })
