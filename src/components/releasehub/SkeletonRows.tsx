@@ -1,0 +1,64 @@
+import React from 'react';
+
+interface Props {
+  count?: number;
+  variant?: 'table' | 'card' | 'stat';
+}
+
+export function SkeletonRows({ count = 3, variant = 'table' }: Props) {
+  if (variant === 'stat') {
+    return (
+      <div className="grid grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="bg-white rounded-lg border border-[#E2E8F0] p-5 relative overflow-hidden">
+            <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg bg-[#E2E8F0] animate-pulse" />
+            <div className="h-3 w-20 bg-[#E2E8F0] rounded animate-pulse mb-3" />
+            <div className="h-8 w-12 bg-[#E2E8F0] rounded animate-pulse mb-2" />
+            <div className="h-2.5 w-16 bg-[#E2E8F0] rounded animate-pulse" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (variant === 'card') {
+    return (
+      <div className="grid grid-cols-3 gap-4">
+        {Array.from({ length: count }).map((_, i) => (
+          <div key={i} className="bg-white rounded-lg border border-[#E2E8F0] overflow-hidden">
+            <div className="p-4 pl-5 space-y-3">
+              <div className="flex gap-2">
+                <div className="h-4 w-14 bg-[#E2E8F0] rounded animate-pulse" />
+                <div className="h-4 w-10 bg-[#E2E8F0] rounded animate-pulse" />
+              </div>
+              <div className="h-5 w-3/4 bg-[#E2E8F0] rounded animate-pulse" />
+              <div className="flex gap-2">
+                <div className="h-5 w-20 bg-[#E2E8F0] rounded animate-pulse" />
+                <div className="h-5 w-16 bg-[#E2E8F0] rounded animate-pulse" />
+                <div className="h-5 w-16 bg-[#E2E8F0] rounded animate-pulse" />
+              </div>
+              <div className="flex gap-2">
+                <div className="h-5 w-14 bg-[#E2E8F0] rounded animate-pulse" />
+                <div className="h-5 w-14 bg-[#E2E8F0] rounded animate-pulse" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-lg border border-[#E2E8F0] overflow-hidden">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="flex items-center gap-4 px-4 h-9 border-b border-[#F1F5F9] last:border-0">
+          <div className="h-3 w-20 bg-[#E2E8F0] rounded animate-pulse" />
+          <div className="h-3 w-32 bg-[#E2E8F0] rounded animate-pulse flex-1" />
+          <div className="h-4 w-16 bg-[#E2E8F0] rounded animate-pulse" />
+          <div className="h-3 w-14 bg-[#E2E8F0] rounded animate-pulse" />
+          <div className="h-3 w-10 bg-[#E2E8F0] rounded animate-pulse" />
+        </div>
+      ))}
+    </div>
+  );
+}
