@@ -173,12 +173,21 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                         )}
                       </div>
                       {/* Assignee */}
-                      <div style={{ width: 158, flexShrink: 0, fontSize: 12, color: epic.assignee_name ? '#334155' : '#9CA3AF', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
-                          {getInitials(epic.assignee_name || null)}
-                        </div>
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{epic.assignee_name || 'Unassigned'}</span>
-                      </div>
+                      {(() => {
+                        const avatarUrl = epic.assignee_name ? avatarsByName.get(epic.assignee_name.toLowerCase()) : null;
+                        return (
+                          <div style={{ width: 158, flexShrink: 0, fontSize: 12, color: epic.assignee_name ? '#334155' : '#9CA3AF', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            {avatarUrl ? (
+                              <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
+                            ) : (
+                              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
+                                {getInitials(epic.assignee_name || null)}
+                              </div>
+                            )}
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{epic.assignee_name || 'Unassigned'}</span>
+                          </div>
+                        );
+                      })()}
                       {/* Due date */}
                       <div style={{ width: 96, flexShrink: 0, fontSize: 12, color: overdue ? '#DC2626' : '#6B7280' }}>
                         {formatDueDate(epic.end_date)}
