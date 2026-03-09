@@ -36,42 +36,10 @@ export interface ImpactFactors {
   I: number; M: number; P: number; A: number; C: number; T: number;
 }
 
-export const IDEA_IMPACT_FACTORS: Record<string, ImpactFactors> = {
-  'IDH-001': { I: 4.5, M: 4.7, P: 4.2, A: 4.8, C: 3.5, T: 4.0 },
-  'IDH-002': { I: 4.0, M: 3.8, P: 3.5, A: 4.2, C: 3.8, T: 4.0 },
-  'IDH-003': { I: 3.5, M: 3.2, P: 3.8, A: 3.0, C: 3.5, T: 4.0 },
-  'IDH-004': { I: 3.8, M: 3.5, P: 3.6, A: 3.8, C: 4.0, T: 3.5 },
-  'IDH-005': { I: 4.8, M: 4.5, P: 4.6, A: 4.5, C: 4.2, T: 5.0 },
-  'IDH-006': { I: 2.5, M: 2.8, P: 3.0, A: 2.5, C: 3.2, T: 3.0 },
-  'IDH-007': { I: 3.0, M: 3.2, P: 3.5, A: 3.0, C: 3.0, T: 3.2 },
-  'IDH-008': { I: 2.5, M: 2.5, P: 2.8, A: 2.5, C: 2.8, T: 2.8 },
-  'IDH-009': { I: 1.5, M: 1.2, P: 1.5, A: 1.8, C: 1.5, T: 1.5 },
-  'IDH-010': { I: 3.2, M: 3.0, P: 3.5, A: 3.2, C: 3.5, T: 3.5 },
-  'IDH-011': { I: 4.2, M: 4.0, P: 4.5, A: 4.0, C: 4.0, T: 4.2 },
-  'IDH-012': { I: 2.2, M: 2.5, P: 2.5, A: 2.2, C: 2.5, T: 2.8 },
-  'IDH-013': { I: 4.5, M: 4.2, P: 4.0, A: 4.5, C: 4.0, T: 4.5 },
-  'IDH-014': { I: 3.5, M: 3.2, P: 3.5, A: 3.2, C: 3.5, T: 3.5 },
-  'IDH-015': { I: 4.0, M: 4.2, P: 4.0, A: 4.0, C: 4.0, T: 4.2 },
-};
+export const IDEA_IMPACT_FACTORS: Record<string, ImpactFactors> = {};
 
-// ─── Data ────────────────────────────────────────────────────────
-export const ideas: Idea[] = [
-  { key: 'IDH-001', title: 'Unified Digital Services Portal', subtitle: 'Ministry Directive · Feb 5', status: 'converted', type: 'opportunity', priority: 'P1', impact: 4.40, votes: 12, initiative: 'INIT-001', dept: 'Digital Trans.', assignee: { name: 'Sarah K.', initials: 'SK', color: '#0D9488' }, ai: 'ready' },
-  { key: 'IDH-002', title: 'AI-Powered Permit Classification', subtitle: 'Research · Feb 6', status: 'under_review', type: 'solution', priority: 'P1', impact: 3.90, votes: 8, initiative: null, dept: 'IT Ops', assignee: { name: 'Ahmed M.', initials: 'AM', color: '#2563EB' }, ai: 'ready' },
-  { key: 'IDH-003', title: 'Real-Time Factory Compliance Dashboard', subtitle: 'Stakeholder · Feb 7', status: 'submitted', type: 'feature', priority: 'P2', impact: 3.50, votes: 5, initiative: null, dept: 'Data & Analytics', assignee: { name: 'Fatima R.', initials: 'FR', color: '#D97706' }, ai: 'pending' },
-  { key: 'IDH-004', title: 'Bilingual Document Generation Engine', subtitle: 'Internal · Feb 8', status: 'under_review', type: 'feature', priority: 'P2', impact: 3.70, votes: 9, initiative: null, dept: 'Digital Trans.', assignee: { name: 'Omar H.', initials: 'OH', color: '#6366F1' }, ai: 'ready' },
-  { key: 'IDH-005', title: 'Investor Onboarding Simplification', subtitle: 'Customer · Feb 9', status: 'approved', type: 'improvement', priority: 'P1', impact: 4.60, votes: 15, initiative: null, dept: 'Customer Exp.', assignee: { name: 'Sarah K.', initials: 'SK', color: '#0D9488' }, ai: 'ready' },
-  { key: 'IDH-006', title: 'Predictive Maintenance for Legacy Systems', subtitle: 'Internal · Feb 10', status: 'under_review', type: 'solution', priority: 'P2', impact: 2.80, votes: 6, initiative: 'INIT-002', dept: 'IT Ops', assignee: { name: 'Layla S.', initials: 'LS', color: '#E11D48' }, ai: 'ready' },
-  { key: 'IDH-007', title: 'Mobile-First Inspection App', subtitle: 'Stakeholder · Feb 10', status: 'submitted', type: 'feature', priority: 'P2', impact: 3.20, votes: 4, initiative: null, dept: 'Risk & Comp.', assignee: { name: 'Khalid B.', initials: 'KB', color: '#0D9488' }, ai: 'ready' },
-  { key: 'IDH-008', title: 'Open Data Portal for Industry Statistics', subtitle: 'Ministry · Feb 11', status: 'draft', type: 'opportunity', priority: 'P3', impact: 2.60, votes: 0, initiative: null, dept: 'Data & Anal.', assignee: null, ai: 'pending' },
-  { key: 'IDH-009', title: 'Blockchain-Based Certificate Verification', subtitle: 'Research · Feb 12', status: 'rejected', type: 'solution', priority: 'P3', impact: 1.50, votes: -2, initiative: null, dept: 'Cybersecurity', assignee: null, ai: 'ready' },
-  { key: 'IDH-010', title: 'Stakeholder Communication Hub', subtitle: 'Internal · Feb 13', status: 'submitted', type: 'feature', priority: 'P2', impact: 3.30, votes: 7, initiative: null, dept: 'Customer Exp.', assignee: { name: 'Nora A.', initials: 'NA', color: '#EA580C' }, ai: 'ready' },
-  { key: 'IDH-011', title: 'Automated Regulatory Impact Assessment', subtitle: 'Research · Feb 14', status: 'under_review', type: 'opportunity', priority: 'P1', impact: 4.20, votes: 11, initiative: null, dept: 'Digital Trans.', assignee: { name: 'Ahmed M.', initials: 'AM', color: '#2563EB' }, ai: 'ready' },
-  { key: 'IDH-012', title: 'Employee Skills Gap Analysis Tool', subtitle: 'Internal · Feb 14', status: 'draft', type: 'feature', priority: 'P3', impact: 2.40, votes: 0, initiative: null, dept: 'HR', assignee: null, ai: 'pending' },
-  { key: 'IDH-013', title: 'Integrated Payment Gateway for Ministry Fees', subtitle: 'Customer · Feb 15', status: 'converted', type: 'feature', priority: 'P1', impact: 4.30, votes: 14, initiative: 'INIT-002', dept: 'IT Ops', assignee: { name: 'Layla S.', initials: 'LS', color: '#E11D48' }, ai: 'ready' },
-  { key: 'IDH-014', title: 'Carbon Footprint Tracking Module', subtitle: 'Ministry · Feb 16', status: 'submitted', type: 'opportunity', priority: 'P2', impact: 3.40, votes: 6, initiative: null, dept: 'Data & Anal.', assignee: { name: 'Fatima R.', initials: 'FR', color: '#D97706' }, ai: 'ready' },
-  { key: 'IDH-015', title: 'Cross-Ministry Data Sharing Framework', subtitle: 'Internal · Feb 17', status: 'under_review', type: 'solution', priority: 'P1', impact: 4.10, votes: 10, initiative: null, dept: 'IT Ops', assignee: { name: 'Khalid B.', initials: 'KB', color: '#0D9488' }, ai: 'ready' },
-];
+// ─── Data (deprecated — use useIdeas() hook instead) ─────────────
+export const ideas: Idea[] = [];
 
 // ─── Config Maps ─────────────────────────────────────────────────
 export const STATUS_CONFIG: Record<IdeaStatus, { dot: string; bg: string; text: string; label: string }> = {
