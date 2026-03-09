@@ -45,7 +45,7 @@ export const releaseService = {
 // ── CHANGES ───────────────────────────────────────────────────────
 export const changeService = {
   getAll: async (projectId?: string) => {
-    let q = supabase.from('rh_change_summary').select('*').order('deployment_date', { ascending: true, nullsFirst: false });
+    let q = supabase.from('rh_change_summary').select('*, rh_change_work_items(*)').order('deployment_date', { ascending: true, nullsFirst: false });
     if (projectId) q = q.eq('project_id', projectId);
     const { data, error } = await q;
     if (error) throw error;

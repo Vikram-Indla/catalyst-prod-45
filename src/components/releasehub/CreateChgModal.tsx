@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { X, ChevronDown, ChevronRight } from 'lucide-react';
+import { X, ChevronDown, ChevronRight, CalendarIcon } from 'lucide-react';
 import { RH, CATEGORIES } from '@/constants/releasehub.design';
 import { useCreateChange, useReleases } from '@/hooks/useReleaseHub';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface Props { onClose: () => void }
 
@@ -11,7 +14,7 @@ export function CreateChgModal({ onClose }: Props) {
   const createChange = useCreateChange();
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
-  const [deployDate, setDeployDate] = useState('');
+  const [deployDate, setDeployDate] = useState<Date | undefined>();
   const [releaseId, setReleaseId] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [feRequired, setFeRequired] = useState(false);
@@ -31,7 +34,7 @@ export function CreateChgModal({ onClose }: Props) {
       chg_number: `CHG-${Date.now().toString().slice(-7)}`,
       title,
       category: category || undefined,
-      deployment_date: deployDate,
+      deployment_date: format(deployDate, 'yyyy-MM-dd'),
       status: 'new',
       risk_level: 'low',
       source: 'catalyst',
@@ -75,8 +78,17 @@ export function CreateChgModal({ onClose }: Props) {
           </div>
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Planned Date *</label>
-            <input type="date" value={deployDate} onChange={e => setDeployDate(e.target.value)}
-              className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className={`w-full h-9 px-3 rounded-md border border-[#E2E8F0] text-[13px] text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] ${deployDate ? 'text-[#1E293B]' : 'text-[#94A3B8]'}`}>
+                  {deployDate ? format(deployDate, 'MMM d, yyyy') : 'Select date...'}
+                  <CalendarIcon size={14} className="text-[#94A3B8]" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={deployDate} onSelect={setDeployDate} initialFocus className="p-3 pointer-events-auto" />
+              </PopoverContent>
+            </Popover>
           </div>
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Linked Release</label>

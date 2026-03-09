@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, CalendarIcon } from 'lucide-react';
 import { RH } from '@/constants/releasehub.design';
 import { useCreateRelease } from '@/hooks/useReleaseHub';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface Props { onClose: () => void }
 
 export function CreateReleaseModal({ onClose }: Props) {
   const [name, setName] = useState('');
-  const [targetDate, setTargetDate] = useState('');
+  const [targetDate, setTargetDate] = useState<Date | undefined>();
   const [version, setVersion] = useState('');
   const [source, setSource] = useState('catalyst');
   const [error, setError] = useState('');
@@ -17,7 +20,7 @@ export function CreateReleaseModal({ onClose }: Props) {
   const handleSubmit = () => {
     if (!name || !targetDate) return;
     setError('');
-    createRelease.mutate({ name, target_date: targetDate, version: version || undefined, source, status: 'todo' }, {
+    createRelease.mutate({ name, target_date: format(targetDate, 'yyyy-MM-dd'), version: version || undefined, source, status: 'todo' }, {
       onSuccess: () => { toast.success('Release created'); onClose(); },
       onError: (err: any) => { setError(err.message || 'Failed to create release'); toast.error('Failed to create release'); },
     });
@@ -40,8 +43,17 @@ export function CreateReleaseModal({ onClose }: Props) {
           </div>
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Target Date *</label>
-            <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)}
-              className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className={`w-full h-9 px-3 rounded-md border border-[#E2E8F0] text-[13px] text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] ${targetDate ? 'text-[#1E293B]' : 'text-[#94A3B8]'}`}>
+                  {targetDate ? format(targetDate, 'MMM d, yyyy') : 'Select date...'}
+                  <CalendarIcon size={14} className="text-[#94A3B8]" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={targetDate} onSelect={setTargetDate} initialFocus className="p-3 pointer-events-auto" />
+              </PopoverContent>
+            </Popover>
           </div>
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Version</label>
@@ -53,7 +65,7 @@ export function CreateReleaseModal({ onClose }: Props) {
             <div className="flex items-center gap-2">
               {['catalyst', 'jira'].map(s => (
                 <button key={s} onClick={() => setSource(s)}
-                  className={`h-9 px-4 rounded-md text-[13px] font-medium border ${source === s ? 'border-[#2563EB] bg-[#EFF6FF] text-[#2563EB]' : 'border-[#E2E8F0] bg-white text-[#475569] hover:bg-[#F8FAFC]'}`}>
+                  className={`h-9 px-4 rounded-md text-[13px] font-medium border ${source === s ? 'border-[#2563EB] bg-[#EFF6FF] text-[#2563EB]' : 'border-[#E2E8F0] bg-white text-[#475569] hover:bg-[#F4F7FA]'}`}>
                   {s.charAt(0).toUpperCase() + s.slice(1)}
                 </button>
               ))}
@@ -61,7 +73,7 @@ export function CreateReleaseModal({ onClose }: Props) {
           </div>
         </div>
         <div className="sticky bottom-0 bg-white border-t border-[#E2E8F0] px-6 py-3 flex justify-end gap-2">
-          <button onClick={onClose} className="h-9 px-4 rounded-md border border-[#E2E8F0] text-[13px] font-medium text-[#475569] hover:bg-[#F8FAFC]">Cancel</button>
+          <button onClick={onClose} className="h-9 px-4 rounded-md border border-[#E2E8F0] text-[13px] font-medium text-[#475569] hover:bg-[#F4F7FA]">Cancel</button>
           <button onClick={handleSubmit} disabled={!name || !targetDate || createRelease.isPending}
             className="h-9 px-4 rounded-md bg-[#2563EB] text-white text-[13px] font-semibold hover:bg-[#1D4ED8] disabled:opacity-50">
             {createRelease.isPending ? 'Creating...' : 'Create Release'}

@@ -4,7 +4,11 @@ import { RH } from '@/constants/releasehub.design';
 import { ReleaseStatusBadge } from '@/components/releasehub/ReleaseStatusBadge';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState } from '@/components/releasehub/EmptyState';
-import { ChevronDown, BarChart3 } from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from 'recharts';
+
+const RADAR_COLORS = ['#2563EB', '#0D9488', '#DC2626', '#7C3AED'];
+const statusScore: Record<string, number> = { todo: 20, in_progress: 55, done: 100, archived: 10 };
 
 export default function ReleaseComparePage() {
   const { data: releases = [], isLoading } = useReleases();
@@ -16,13 +20,37 @@ export default function ReleaseComparePage() {
     setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : prev.length < 4 ? [...prev, id] : prev);
   };
 
-  const comparisonRows = [
-    { label: 'Status', fn: (r: any) => <ReleaseStatusBadge status={r.status} /> },
-    { label: 'CHG Count', fn: (r: any) => <span className="font-bold" style={{ fontFamily: RH.fontMono, color: RH.ink1 }}>{r.change_count || r.chg_count || 0}</span> },
-    { label: 'Test Cycles', fn: (r: any) => <span style={{ color: RH.ink2 }}>{r.test_cycle_count || 0}</span> },
-    { label: 'Days Left', fn: (r: any) => <span className={r.is_overdue ? 'text-[#DC2626] font-bold' : 'text-[#475569]'}>{r.is_overdue ? `${Math.abs(r.days_remaining)}d overdue` : r.days_remaining != null ? `${r.days_remaining}d` : '—'}</span> },
-    { label: 'Source', fn: (r: any) => <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ background: r.source === 'jira' ? '#FFF7ED' : '#F0FDFA', color: r.source === 'jira' ? '#9A3412' : '#0D9488' }}>{r.source}</span> },
-  ];
+  const getBestIdx = (values: number[], higherIsBetter = true) => {
+    if (values.length === 0) return -1;
+    const best = higherIsBetter ? Math.max(...values) : Math.min(...values);
+    return values.indexOf(best);
+  };
+
+  const comparisonRows: { label: string; values: any[]; render: (v: any, r?: any) => React.ReactNode; bestIdx: number }[] = useMemo(() => {
+    if (selectedReleases.length < 2) return [];
+    return [
+      { label: 'Status', values: selectedReleases.map((r: any) => r.status), render: (v: any) => <ReleaseStatusBadge status={v} />, bestIdx: -1 },
+      { label: 'Target Date', values: selectedReleases.map((r: any) => r.target_date), render: (v: any) => v ? new Date(v).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—', bestIdx: -1 },
+      { label: 'Days Remaining', values: selectedReleases.map((r: any) => r.days_remaining ?? 0), render: (v: any, r: any) => r?.is_overdue ? <span className="text-[#DC2626] font-bold">{Math.abs(v)}d OVERDUE</span> : <span>{v}d</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.days_remaining ?? 0), true) },
+      { label: 'CHG Count', values: selectedReleases.map((r: any) => r.change_count || r.chg_count || 0), render: (v: any) => <span className="font-bold" style={{ fontFamily: RH.fontMono, color: v === 0 ? '#0D9488' : RH.ink1 }}>{v}</span>, bestIdx: -1 },
+      { label: 'Test Cycles', values: selectedReleases.map((r: any) => r.test_cycle_count || 0), render: (v: any) => <span>{v}</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.test_cycle_count || 0), true) },
+      { label: 'Sign-offs Pending', values: selectedReleases.map((r: any) => r.pending_signoffs || 0), render: (v: any) => <span className={v > 0 ? 'text-[#DC2626] font-bold' : ''}>{v}</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.pending_signoffs || 0), false) },
+    ];
+  }, [selectedReleases]);
+
+  const radarData = useMemo(() => {
+    if (selectedReleases.length < 2) return [];
+    const subjects = [
+      { subject: 'Status', fn: (r: any) => statusScore[r.status] || 0 },
+      { subject: 'Days Left', fn: (r: any) => Math.max(0, Math.min(100, r.days_remaining || 0)) },
+      { subject: 'CHG Safety', fn: (r: any) => { const c = r.change_count || r.chg_count || 0; return c === 0 ? 100 : Math.max(0, 100 - c * 20); } },
+    ];
+    return subjects.map(s => {
+      const entry: any = { subject: s.subject };
+      selectedReleases.forEach((r: any, i: number) => { entry[`r${i}`] = s.fn(r); });
+      return entry;
+    });
+  }, [selectedReleases]);
 
   return (
     <div className="rh-page">
@@ -37,13 +65,12 @@ export default function ReleaseComparePage() {
         <EmptyState icon={BarChart3} title="No releases to compare" subtitle="Create at least two releases to use the comparison view." />
       ) : (
         <>
-          {/* Selector */}
           <div className="grid grid-cols-4 gap-3 mb-6">
             {releases.slice(0, 8).map((r: any) => {
               const isSelected = selected.includes(r.id);
               return (
                 <button key={r.id} onClick={() => toggleSelect(r.id)}
-                  className={`bg-white rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[#0D9488] ring-2 ring-[#0D9488]/20' : 'border-[#E2E8F0] hover:border-[#C9D3E0]'}`}
+                  className={`bg-white rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[#0D9488] border-2 ring-2 ring-[#0D9488]/20' : 'border-[#E2E8F0] hover:border-[#C9D3E0]'}`}
                   style={{ transition: 'all 0.12s ease' }}>
                   <span className="text-[13px] font-semibold block truncate" style={{ color: RH.ink1 }}>{r.name}</span>
                   <div className="flex items-center gap-2 mt-1.5">
@@ -55,29 +82,52 @@ export default function ReleaseComparePage() {
             })}
           </div>
 
-          {/* Comparison Table */}
           {selectedReleases.length >= 2 ? (
-            <div className="bg-white rounded-lg border border-[#E2E8F0] overflow-hidden">
-              <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
-                <thead>
-                  <tr className="bg-[#F4F7FA] border-b border-[#E2E8F0]">
-                    <th scope="col" className="px-3 py-0 h-9 text-left text-[11px] font-extrabold uppercase tracking-[0.04em] text-[#475569] w-[140px]">METRIC</th>
-                    {selectedReleases.map((r: any) => (
-                      <th key={r.id} scope="col" className="px-3 py-0 h-9 text-left text-[11px] font-extrabold uppercase tracking-[0.04em] text-[#475569]">{r.name}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {comparisonRows.map(row => (
-                    <tr key={row.label} className="border-b border-[#F1F5F9] h-9">
-                      <td className="px-3 py-0 font-semibold text-[#64748B]">{row.label}</td>
+            <div className="space-y-4">
+              <div className="bg-white rounded-lg border border-[#E2E8F0] overflow-hidden">
+                <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
+                  <thead>
+                    <tr className="bg-[#F4F7FA] border-b border-[#E2E8F0]">
+                      <th scope="col" className="px-3 py-0 h-9 text-left text-[11px] font-extrabold uppercase tracking-[0.04em] text-[#475569] w-[160px]">METRIC</th>
                       {selectedReleases.map((r: any) => (
-                        <td key={r.id} className="px-3 py-0">{row.fn(r)}</td>
+                        <th key={r.id} scope="col" className="px-3 py-0 h-9 text-left text-[11px] font-extrabold uppercase tracking-[0.04em] text-[#475569]">{r.name}</th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {comparisonRows.map(row => (
+                      <tr key={row.label} className="border-b border-[#F1F5F9] h-9">
+                        <td className="px-3 py-0 font-semibold text-[#64748B]">{row.label}</td>
+                        {selectedReleases.map((r: any, i: number) => (
+                          <td key={r.id} className="px-3 py-0">
+                            <span className="inline-flex items-center gap-1">
+                              {row.render(row.values[i] as any, r)}
+                              {row.bestIdx === i && <span className="text-[#0D9488]">★</span>}
+                            </span>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {radarData.length > 0 && (
+                <div className="bg-white rounded-lg border border-[#E2E8F0] p-4">
+                  <h3 className="text-[14px] font-bold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Radar Comparison</h3>
+                  <ResponsiveContainer width="100%" height={320}>
+                    <RadarChart data={radarData}>
+                      <PolarGrid stroke="#E2E8F0" />
+                      <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11, fill: '#475569' }} />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10 }} />
+                      {selectedReleases.map((r: any, i: number) => (
+                        <Radar key={r.id} name={r.name} dataKey={`r${i}`} stroke={RADAR_COLORS[i]} fill={RADAR_COLORS[i]} fillOpacity={0.15} />
+                      ))}
+                      <Legend />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
             </div>
           ) : (
             <div className="bg-white rounded-lg border border-[#E2E8F0] p-8 text-center text-[#94A3B8] text-[13px]">

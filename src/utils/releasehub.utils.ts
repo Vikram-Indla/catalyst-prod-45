@@ -17,7 +17,9 @@ export const getSignoffWaitTime = (waitStartedAt: string): string => {
 
 export type ChangeSection = 'past' | 'today' | 'this_week' | 'upcoming' | 'future';
 
-export const classifyChangeDate = (deploymentDate: string | null | undefined): ChangeSection => {
+export const classifyChangeDate = (deploymentDate: string | null | undefined, status?: string): ChangeSection => {
+  // Override: deployed changes are always past
+  if (status === 'in_production') return 'past';
   if (!deploymentDate) return 'future';
   const d = new Date(deploymentDate);
   const today = new Date();
@@ -35,7 +37,7 @@ export const groupChangesBySection = (changes: ChangeSummary[]) => {
     past: [], today: [], this_week: [], upcoming: [], future: []
   };
   changes.forEach(c => {
-    const section = classifyChangeDate(c.deployment_date);
+    const section = classifyChangeDate(c.deployment_date, (c as any).status);
     sections[section].push(c);
   });
   Object.values(sections).forEach(arr =>
