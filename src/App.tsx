@@ -69,13 +69,13 @@ const IdeationPage = lazy(() => import("./pages/producthub/IdeationPage"));
 const ReqAssistLibrary = lazy(() => import("./pages/ReqAssistLibrary"));
 const ReqAssistGenerate = lazy(() => import("./pages/ReqAssistGenerate"));
 
-// IncidentHub lazy imports
-const IncidentHubPage = lazy(() => import("./pages/IncidentHub"));
-const IncidentHubKanbanPage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubKanbanPage })));
-const IncidentHubAnalyticsPage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubAnalyticsPage })));
-const IncidentHubInsightsPage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubInsightsPage })));
-const IncidentHubReportsPage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubReportsPage })));
-const IncidentHubCommitteeQueuePage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubCommitteeQueuePage })));
+// IncidentHub lazy imports — wired to real incident components
+const IncidentHubListPage = lazy(() => import("./pages/release/IncidentRoomList"));
+const IncidentHubKanbanPage = lazy(() => import("./modules/incidents/kanban/pages/IncidentKanbanPage"));
+const IncidentHubAnalyticsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentAnalyticsPage"));
+const IncidentHubInsightsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentInsightsPage"));
+const IncidentHubReportsPage = lazy(() => import("./pages/release/IncidentReportsPage"));
+const IncidentHubCommitteeQueuePage = lazy(() => import("./pages/release/CAPCommitteeQueuePage"));
 
 
 // Wiki Module lazy imports
@@ -706,12 +706,13 @@ const App = () => (
               </Route>
               
               {/* IncidentHub — Incident Management */}
-              <Route path="/incident-hub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubPage /></Suspense>} />
+              <Route path="/incident-hub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubListPage /></Suspense>} />
               <Route path="/incident-hub/kanban" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubKanbanPage /></Suspense>} />
               <Route path="/incident-hub/analytics" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubAnalyticsPage /></Suspense>} />
               <Route path="/incident-hub/insights" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubInsightsPage /></Suspense>} />
               <Route path="/incident-hub/reports" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubReportsPage /></Suspense>} />
               <Route path="/incident-hub/committee-queue" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubCommitteeQueuePage /></Suspense>} />
+              <Route path="/incident-hub/view/:id" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentRoomDetail /></Suspense>} />
 
               {/* ReleaseHub v2.1 — Release & Change Management */}
               <Route path="/releasehub" element={<Navigate to="/releasehub/command-center" replace />} />

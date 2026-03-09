@@ -290,11 +290,11 @@ export function IncidentListTable({
       toast.error('Cannot open incident: missing identifier');
       return;
     }
-    navigate(`/release/incidents/${incidentId}`);
+    navigate(`/incident-hub/view/${incidentId}`);
   };
 
   const handleCopyLink = (incidentId: string, incidentKey: string) => {
-    const url = `${window.location.origin}/release/incidents/${incidentId}`;
+    const url = `${window.location.origin}/incident-hub/view/${incidentId}`;
     navigator.clipboard.writeText(url);
     toast.success(`Link copied`, `${incidentKey} link copied to clipboard`);
   };
@@ -401,8 +401,10 @@ export function IncidentListTable({
 
               {/* Body */}
               {incidents.length === 0 ? (
-                <div className="py-10 text-center">
-                  <span className="text-sm text-muted-foreground">No incidents to display</span>
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <AlertTriangle className="h-8 w-8 text-muted-foreground/40 mb-3" />
+                  <p className="text-sm font-medium text-foreground mb-1">No incidents found</p>
+                  <p className="text-xs text-muted-foreground">Try adjusting your filters or search query</p>
                 </div>
               ) : (
                 incidents.map((incident) => {
@@ -435,13 +437,13 @@ export function IncidentListTable({
                       onMouseLeave={() => setHoveredId(null)}
                       tabIndex={0}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && incident.id) navigate(`/release/incidents/${incident.id}`);
+                        if (e.key === 'Enter' && incident.id) navigate(`/incident-hub/view/${incident.id}`);
                       }}
                     >
                       {/* Key - left aligned */}
                       <div className={cn(GRID_CELL_BASE, "pl-4 pr-2 flex items-center gap-2.5")}>
                         <Link 
-                          to={`/release/incidents/${incident.id}`} 
+                          to={`/incident-hub/view/${incident.id}`} 
                           className="font-mono text-[13px] font-medium text-brand-primary hover:underline truncate"
                           onClick={(e) => e.stopPropagation()}
                         >
@@ -542,6 +544,7 @@ export function IncidentListTable({
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                             <button 
+                              aria-label="Row actions"
                               className={cn(
                                 "w-6 h-6 rounded flex items-center justify-center transition-opacity",
                                 "hover:bg-surface-hover text-text-muted",
@@ -560,7 +563,7 @@ export function IncidentListTable({
                               className="text-xs cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/release/incidents/${incident.id}`);
+                                navigate(`/incident-hub/view/${incident.id}`);
                               }}
                             >
                               <Eye className="h-3.5 w-3.5 mr-2" />
@@ -570,7 +573,7 @@ export function IncidentListTable({
                               className="text-xs cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/release/incidents/${incident.id}?mode=edit`);
+                                navigate(`/incident-hub/view/${incident.id}?mode=edit`);
                               }}
                               disabled={isConverted}
                             >
@@ -684,15 +687,24 @@ export function IncidentListTable({
             {/* Right side: Page size selector */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-text-muted">Per page:</span>
-              <select
-                value={effectivePageSize}
-                onChange={(e) => handlePageSizeChange(e.target.value)}
-                className="px-2 py-1 text-sm border border-border rounded bg-surface-0 text-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary"
-              >
-                {PAGE_SIZE_OPTIONS.map(size => (
-                  <option key={size} value={size}>{size}</option>
-                ))}
-              </select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="px-2 py-1 text-sm border border-border rounded bg-surface-0 text-text-secondary hover:bg-surface-hover transition-colors min-w-[48px] text-center">
+                    {effectivePageSize}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-24 bg-popover border-border">
+                  {PAGE_SIZE_OPTIONS.map(size => (
+                    <DropdownMenuItem
+                      key={size}
+                      className="text-sm cursor-pointer justify-center"
+                      onClick={() => handlePageSizeChange(String(size))}
+                    >
+                      {size}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         )}

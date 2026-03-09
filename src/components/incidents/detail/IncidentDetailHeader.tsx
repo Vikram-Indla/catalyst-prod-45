@@ -59,10 +59,10 @@ export function IncidentDetailHeader({
   return (
     <header className="border-b border-border bg-background px-6 py-4">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
-        <Link to="/release/incidents" className="hover:text-foreground">RELEASE</Link>
+      <nav className="flex items-center gap-1 text-sm text-muted-foreground mb-2" aria-label="Breadcrumb">
+        <Link to="/incident-hub" className="hover:text-foreground">INCIDENTS</Link>
         <span>/</span>
-        <Link to="/release/incidents" className="hover:text-foreground">Incidents</Link>
+        <Link to="/incident-hub" className="hover:text-foreground">Incident List</Link>
         <span>/</span>
         <span className="text-foreground">{incidentKey}</span>
       </nav>

@@ -86,7 +86,7 @@ export default function IncidentRoomList() {
       
       // Navigate to detail page
       if (result?.id) {
-        navigate(`/release/incidents/${result.id}?created=true`);
+        navigate(`/incident-hub/view/${result.id}?created=true`);
       }
     } catch (error: any) {
       toast.error(error?.message || 'Failed to create incident');
@@ -177,7 +177,7 @@ export default function IncidentRoomList() {
   return (
     <div className="flex flex-col h-full bg-background">
       <GlobalPageHeader
-        sectionLabel="RELEASE"
+        sectionLabel="INCIDENTS"
         pageTitle="Incident List"
         showDivider={false}
       />
