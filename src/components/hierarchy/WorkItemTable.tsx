@@ -203,7 +203,8 @@ function ParentCell({ item, itemById, onSelect }: { item: WorkItem; itemById: Ma
 
   const displayKey = parentKey;
   const chipColors = getEpicChipColor(parentKey);
-  const label = parent ? `${displayKey} · ${parent.title}` : displayKey;
+  const parentTitle = parent?.title || item.parentSummary;
+  const label = parentTitle ? `${displayKey} · ${parentTitle}` : displayKey;
 
   return (
     <div style={{ padding: '0 8px', minWidth: 0 }}>

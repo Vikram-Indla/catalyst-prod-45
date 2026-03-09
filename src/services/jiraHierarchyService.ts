@@ -160,10 +160,20 @@ export async function fetchJiraHierarchyTree(projectKey: string): Promise<WorkIt
 
   const items = (issuesResult.data || []).map(transformJiraIssue);
 
-  // Apply overrides: replace parentId where a local override exists
+  // Build a key→summary lookup so every item can resolve its parent's title
+  const summaryByKey = new Map<string, string>();
+  for (const item of items) {
+    summaryByKey.set(item.id, item.title);
+  }
+
+  // Apply overrides and enrich parentSummary
   for (const item of items) {
     if (overrides.has(item.id)) {
       item.parentId = overrides.get(item.id) ?? null;
+      item.parentKey = item.parentId;
+    }
+    if (item.parentKey) {
+      item.parentSummary = summaryByKey.get(item.parentKey) || null;
     }
   }
 
