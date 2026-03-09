@@ -22,6 +22,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
   const queryClient = useQueryClient();
   const { data: project } = useProject(projectId || '');
   const { data: epics, isLoading, error } = useEpicBacklog(projectId || '');
+  const avatarsByName = useProfileAvatarsByName();
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [showCreate, setShowCreate] = useState(false);
