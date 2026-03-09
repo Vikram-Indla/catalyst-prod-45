@@ -120,7 +120,7 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
           <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>
         </div>
       )}
-      <span style={{ fontSize: 12, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{assignee.displayName}</span>
+      <span className="hi-assignee-name" style={{ fontSize: 12, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{assignee.displayName}</span>
     </div>
   );
 }
