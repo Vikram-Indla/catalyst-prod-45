@@ -14,11 +14,7 @@ export function useEpicBacklog(projectId: string) {
       if (!programId) return [];
       const { data, error } = await supabase
         .from('epics')
-        .select(`
-          id, epic_key, name, description, status, assignee_id,
-          due_date, priority, deleted_at, primary_program_id,
-          assignee:assignee_id ( id, full_name, email, avatar_url )
-        `)
+        .select('id, epic_key, name, description, status, assignee_id, due_date, priority, deleted_at, primary_program_id')
         .eq('primary_program_id', programId)
         .is('deleted_at', null)
         .order('global_rank', { ascending: true, nullsFirst: false });
