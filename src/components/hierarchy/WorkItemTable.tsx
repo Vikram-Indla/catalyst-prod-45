@@ -76,7 +76,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
         fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
         padding: '1px 4px', borderRadius: 2,
         background: '#CCFBF1', color: '#0F766E',
-        textTransform: 'uppercase', marginLeft: 4, flexShrink: 0,
+        textTransform: 'uppercase', flexShrink: 0,
       }}>CATALYST</span>
     );
   }
@@ -85,7 +85,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
       fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
       padding: '1px 4px', borderRadius: 2,
       background: '#DEEBFF', color: '#0747A6',
-      textTransform: 'uppercase', marginLeft: 4, flexShrink: 0,
+      textTransform: 'uppercase', flexShrink: 0,
     }}>JIRA</span>
   );
 }
