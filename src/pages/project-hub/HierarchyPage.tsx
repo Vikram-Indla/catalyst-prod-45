@@ -89,7 +89,15 @@ function filterTree(items: WorkItem[], search: string, filters: Filters): WorkIt
   }, []);
 }
 
-/* ── Jira-style inline filter trigger ── */
+/* ── Avatar color palette ── */
+const FILTER_AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','#64748B','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
+function getFilterAvatarColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return FILTER_AVATAR_COLORS[Math.abs(hash) % FILTER_AVATAR_COLORS.length];
+}
+
+/* ── Rich filter trigger ── */
 function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
   label: string; values: string[]; onClear: () => void; onClick: () => void; isOpen: boolean;
 }) {
@@ -98,13 +106,14 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
     <button
       onClick={onClick}
       style={{
-        height: 28, padding: '0 10px', display: 'inline-flex', alignItems: 'center', gap: 4,
+        height: 32, padding: '0 12px', display: 'inline-flex', alignItems: 'center', gap: 6,
         fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
         color: active ? '#2563EB' : '#334155',
-        background: active ? '#EFF6FF' : '#FFFFFF',
-        border: `1px solid ${active ? '#2563EB' : '#E2E8F0'}`,
-        borderRadius: 4, cursor: 'pointer', whiteSpace: 'nowrap',
+        background: active ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
+        border: `1px solid ${active ? 'rgba(37,99,235,0.3)' : '#E2E8F0'}`,
+        borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap',
         transition: 'all 80ms ease',
+        boxShadow: isOpen ? '0 0 0 3px rgba(37,99,235,0.08)' : 'none',
       }}
     >
       {label}
@@ -115,65 +124,189 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
           alignItems: 'center', justifyContent: 'center', padding: '0 4px',
         }}>{values.length}</span>
       )}
-      <ChevronDown size={10} color={active ? '#2563EB' : '#94A3B8'} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 100ms' }} />
+      {active && (
+        <span
+          onClick={e => { e.stopPropagation(); onClear(); }}
+          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: 9999, cursor: 'pointer', color: '#94A3B8' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#DC2626')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#94A3B8')}
+        >
+          <X size={10} />
+        </span>
+      )}
+      <ChevronDown size={11} color={active ? '#2563EB' : '#94A3B8'} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 100ms' }} />
     </button>
   );
 }
 
-/* ── Filter dropdown with checkboxes ── */
-function FilterDropdown({ options, selected, onChange, onClose, searchable = false }: {
-  options: string[]; selected: string[]; onChange: (v: string[]) => void; onClose: () => void; searchable?: boolean;
+/* ── Status color dot ── */
+const STATUS_DOT_COLORS: Record<string, string> = {
+  'Done': '#16A34A', 'Closed': '#16A34A', 'Resolved': '#16A34A', 'Released': '#16A34A', 'In Production': '#16A34A',
+  'In Development': '#2563EB', 'In Progress': '#2563EB', 'In Beta': '#2563EB', 'In QA': '#2563EB', 'UAT Ready': '#2563EB', 'In Review': '#2563EB',
+  'Ready for Production': '#0D9488', 'Ready for QA': '#0D9488',
+  'Backlog': '#94A3B8', 'To Do': '#94A3B8', 'Open': '#94A3B8',
+  'On Hold': '#D97706', 'Awaiting Info': '#D97706', 'Awaiting Information': '#D97706', 'Blocked': '#DC2626',
+};
+function getStatusDotColor(status: string): string {
+  return STATUS_DOT_COLORS[status] || '#94A3B8';
+}
+
+/* ── Priority icon (4 bars) ── */
+function PriorityIcon({ name }: { name: string }) {
+  const n = name.toLowerCase();
+  let level = 0;
+  if (n === 'critical') level = 4;
+  else if (n === 'high' || n === 'highest') level = 3;
+  else if (n === 'medium') level = 2;
+  else if (n === 'low' || n === 'lowest') level = 1;
+  const color = level >= 3 ? '#DC2626' : level === 2 ? '#D97706' : '#64748B';
+  return (
+    <div style={{ display: 'flex', gap: 1.5, alignItems: 'flex-end', height: 14, width: 14 }}>
+      {[1, 2, 3, 4].map(i => (
+        <div key={i} style={{ width: 2.5, height: 3 + i * 2.5, borderRadius: 1, background: i <= level ? color : '#E2E8F0' }} />
+      ))}
+    </div>
+  );
+}
+
+/* ── Rich filter dropdown with checkboxes ── */
+function FilterDropdown({ options, selected, onChange, onClose, searchable = false, variant = 'default', assigneeMap }: {
+  options: string[]; selected: string[]; onChange: (v: string[]) => void; onClose: () => void;
+  searchable?: boolean; variant?: 'default' | 'status' | 'priority' | 'assignee' | 'release';
+  assigneeMap?: Map<string, { name: string; avatar?: string }>;
 }) {
   const [q, setQ] = useState('');
   const ref = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(() => {
-    if (!q) return options.sort();
-    return options.filter(o => o.toLowerCase().includes(q.toLowerCase())).sort();
+    const sorted = [...options].sort((a, b) => a.localeCompare(b));
+    if (!q) return sorted;
+    return sorted.filter(o => o.toLowerCase().includes(q.toLowerCase()));
   }, [options, q]);
+
+  const selectAll = () => onChange([...options]);
+  const clearAll = () => onChange([]);
 
   return (
     <>
       <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={onClose} />
       <div ref={ref} style={{
-        position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 240,
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 100, maxHeight: 320,
-        display: 'flex', flexDirection: 'column',
+        position: 'absolute', top: 'calc(100% + 6px)', left: 0, width: variant === 'assignee' ? 280 : 260,
+        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 10,
+        boxShadow: '0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.04)', zIndex: 100, maxHeight: 360,
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
+        {/* Search */}
         {searchable && (
-          <div style={{ padding: '8px 10px', borderBottom: '1px solid #F1F5F9' }}>
-            <input
-              value={q} onChange={e => setQ(e.target.value)}
-              placeholder="Search..."
-              autoFocus
-              style={{
-                width: '100%', border: 'none', outline: 'none', background: 'transparent',
-                fontSize: 12, fontFamily: "'Inter', sans-serif", color: '#0F172A',
-              }}
-            />
+          <div style={{ padding: '10px 12px', borderBottom: '1px solid #F1F5F9' }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px',
+              height: 32, background: '#F8FAFC', borderRadius: 6, border: '1px solid transparent',
+              transition: 'border-color 80ms',
+            }}>
+              <Search size={13} color="#94A3B8" />
+              <input
+                value={q} onChange={e => setQ(e.target.value)}
+                placeholder="Search..."
+                autoFocus
+                style={{
+                  flex: 1, border: 'none', outline: 'none', background: 'transparent',
+                  fontSize: 12, fontFamily: "'Inter', sans-serif", color: '#0F172A',
+                }}
+              />
+            </div>
           </div>
         )}
+
+        {/* Select all / Clear */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 12px', borderBottom: '1px solid #F1F5F9' }}>
+          <button onClick={selectAll} style={{ fontSize: 11, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Select all</button>
+          <button onClick={clearAll} style={{ fontSize: 11, fontWeight: 500, color: '#94A3B8', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
+        </div>
+
+        {/* Options */}
         <div style={{ overflowY: 'auto', flex: 1, padding: '4px 0' }}>
-          {filtered.map(opt => (
-            <label key={opt} style={{
-              display: 'flex', alignItems: 'center', gap: 8, padding: '5px 12px',
-              cursor: 'pointer', fontSize: 12, color: '#0F172A', fontFamily: "'Inter', sans-serif",
-              transition: 'background 80ms',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
-              onMouseLeave={e => (e.currentTarget.style.background = '')}
-            >
-              <input type="checkbox" checked={selected.includes(opt)}
-                onChange={() => onChange(selected.includes(opt) ? selected.filter(s => s !== opt) : [...selected, opt])}
-                style={{ width: 14, height: 14, accentColor: '#2563EB' }}
-              />
-              {opt}
-            </label>
-          ))}
+          {filtered.map(opt => {
+            const isSelected = selected.includes(opt);
+            return (
+              <label
+                key={opt}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '6px 12px',
+                  cursor: 'pointer', fontSize: 13, color: '#0F172A', fontFamily: "'Inter', sans-serif",
+                  transition: 'background 80ms', borderRadius: 0,
+                  background: isSelected ? 'rgba(37,99,235,0.04)' : 'transparent',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.08)' : 'rgba(15,23,42,0.04)')}
+                onMouseLeave={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.04)' : 'transparent')}
+              >
+                <div style={{
+                  width: 16, height: 16, borderRadius: 3, border: `1.5px solid ${isSelected ? '#2563EB' : '#CBD5E1'}`,
+                  background: isSelected ? '#2563EB' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0, transition: 'all 80ms',
+                }}>
+                  {isSelected && (
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.2 7.5L8 3" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  )}
+                </div>
+                <input type="checkbox" checked={isSelected}
+                  onChange={() => onChange(isSelected ? selected.filter(s => s !== opt) : [...selected, opt])}
+                  style={{ display: 'none' }}
+                />
+
+                {/* Variant-specific rendering */}
+                {variant === 'assignee' && (() => {
+                  const info = assigneeMap?.get(opt);
+                  const avatarUrl = info?.avatar;
+                  const initials = opt.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                  const bgColor = getFilterAvatarColor(opt);
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt={opt} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                      ) : (
+                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>
+                        </div>
+                      )}
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt}</span>
+                    </div>
+                  );
+                })()}
+
+                {variant === 'status' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: 9999, background: getStatusDotColor(opt), flexShrink: 0 }} />
+                    <span>{opt}</span>
+                  </div>
+                )}
+
+                {variant === 'priority' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
+                    <PriorityIcon name={opt} />
+                    <span>{opt}</span>
+                  </div>
+                )}
+
+                {variant === 'release' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: 2, background: '#0D9488', flexShrink: 0 }} />
+                    <span style={{ fontSize: 12 }}>{opt}</span>
+                  </div>
+                )}
+
+                {variant === 'default' && <span>{opt}</span>}
+              </label>
+            );
+          })}
           {filtered.length === 0 && (
-            <div style={{ padding: '12px', fontSize: 12, color: '#94A3B8', textAlign: 'center' }}>No options</div>
+            <div style={{ padding: '16px 12px', fontSize: 12, color: '#94A3B8', textAlign: 'center' }}>No results found</div>
           )}
+        </div>
+
+        {/* Footer: count */}
+        <div style={{ padding: '6px 12px', borderTop: '1px solid #F1F5F9', fontSize: 11, color: '#94A3B8', textAlign: 'center' }}>
+          {selected.length} of {options.length} selected
         </div>
       </div>
     </>
@@ -341,7 +474,7 @@ export default function HierarchyPage() {
               {openDropdown === 'type' && (
                 <FilterDropdown options={allTypes} selected={filters.types}
                   onChange={v => setFilters(f => ({ ...f, types: v }))}
-                  onClose={() => setOpenDropdown(null)} />
+                  onClose={() => setOpenDropdown(null)} variant="default" />
               )}
             </div>
 
@@ -355,7 +488,7 @@ export default function HierarchyPage() {
               {openDropdown === 'status' && (
                 <FilterDropdown options={allStatuses} selected={filters.statuses}
                   onChange={v => setFilters(f => ({ ...f, statuses: v }))}
-                  onClose={() => setOpenDropdown(null)} />
+                  onClose={() => setOpenDropdown(null)} variant="status" />
               )}
             </div>
 
@@ -369,7 +502,7 @@ export default function HierarchyPage() {
               {openDropdown === 'assignee' && (
                 <FilterDropdown options={allAssigneeNames} selected={filters.assignees}
                   onChange={v => setFilters(f => ({ ...f, assignees: v }))}
-                  onClose={() => setOpenDropdown(null)} searchable />
+                  onClose={() => setOpenDropdown(null)} searchable variant="assignee" assigneeMap={allAssigneeMap} />
               )}
             </div>
 
@@ -383,13 +516,13 @@ export default function HierarchyPage() {
               {openDropdown === 'priority' && (
                 <FilterDropdown options={allPriorities.length > 0 ? allPriorities : ['Critical', 'High', 'Medium', 'Low']} selected={filters.priorities}
                   onChange={v => setFilters(f => ({ ...f, priorities: v }))}
-                  onClose={() => setOpenDropdown(null)} />
+                  onClose={() => setOpenDropdown(null)} variant="priority" />
               )}
             </div>
 
-            {/* Sprint / Fix Version */}
+            {/* Release (Fix Version) */}
             <div style={{ position: 'relative' }}>
-              <FilterTrigger label="Sprint" values={filters.sprints}
+              <FilterTrigger label="Release" values={filters.sprints}
                 onClear={() => setFilters(f => ({ ...f, sprints: [] }))}
                 onClick={() => setOpenDropdown(openDropdown === 'sprint' ? null : 'sprint')}
                 isOpen={openDropdown === 'sprint'}
@@ -397,7 +530,7 @@ export default function HierarchyPage() {
               {openDropdown === 'sprint' && (
                 <FilterDropdown options={allSprints} selected={filters.sprints}
                   onChange={v => setFilters(f => ({ ...f, sprints: v }))}
-                  onClose={() => setOpenDropdown(null)} />
+                  onClose={() => setOpenDropdown(null)} variant="release" />
               )}
             </div>
 
