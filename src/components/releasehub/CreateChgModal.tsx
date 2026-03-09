@@ -81,7 +81,7 @@ export function CreateChgModal({ onClose }: Props) {
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Linked Release</label>
             <div className="relative">
-              <button onClick={() => setRelOpen(!relOpen)} className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] bg-white text-[13px] text-left flex items-center justify-between hover:bg-[#F8FAFC]">
+              <button onClick={() => setRelOpen(!relOpen)} className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] bg-white text-[13px] text-left flex items-center justify-between hover:bg-[#F4F7FA]">
                 <span className={releaseId ? 'text-[#1E293B]' : 'text-[#94A3B8]'}>{releases.find((r: any) => r.id === releaseId)?.name || 'Select release...'}</span>
                 <ChevronDown size={12} className="text-[#94A3B8]" />
               </button>
