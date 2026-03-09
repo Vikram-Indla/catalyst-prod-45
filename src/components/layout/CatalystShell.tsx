@@ -192,6 +192,16 @@ function CatalystShellContent() {
       );
     }
 
+    // IncidentHub sidebar
+    if (isIncidentHubRoute) {
+      return (
+        <IncidentHubSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
+    }
+
     // Release & Test Management sidebar (legacy - being retired)
     if (isReleasesRoute) {
       return (
