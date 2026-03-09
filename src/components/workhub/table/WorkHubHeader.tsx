@@ -56,7 +56,7 @@ export default function WorkHubHeader({ columns, sort, onSort, allSelected, onSe
               style={{
                 display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none',
                 cursor: col.sortable ? 'pointer' : 'default', padding: 0,
-                fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+                fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.06em',
                 color: isActive ? '#2563EB' : '#64748B', fontFamily: 'Inter, sans-serif',
               }}>
               {col.label}

@@ -86,7 +86,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
             onClick={e => { e.stopPropagation(); onOpenPanel(item.id); }}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: '#2563EB', textDecoration: 'none', outline: 'none' }}
             onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#0F172A')}
+            onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
             onFocus={e => (e.currentTarget.style.outline = '2px solid #2563EB')}
             onBlur={e => (e.currentTarget.style.outline = 'none')}
           >
