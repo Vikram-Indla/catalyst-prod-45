@@ -3,85 +3,122 @@ import { supabase } from '@/integrations/supabase/client';
 import { useProject } from '@/hooks/useProjects';
 import type { BacklogEpic, BacklogFeature, BacklogStory } from '../types/backlog.types';
 
+const YEAR_2026_START = '2026-01-01T00:00:00Z';
+
+/**
+ * Epic Backlog — pulls from ph_issues where issue_type = 'Epic',
+ * project_key resolved from project UUID, filtered to 2026.
+ */
 export function useEpicBacklog(projectId: string) {
   const { data: project } = useProject(projectId);
-  const programId = project?.program_id ?? null;
+  const projectKey = project?.key ?? null;
 
   return useQuery({
-    queryKey: ['backlog-epics', projectId, programId],
+    queryKey: ['backlog-epics', projectId, projectKey],
     queryFn: async (): Promise<BacklogEpic[]> => {
-      if (!programId) return [];
+      if (!projectKey) return [];
       const { data, error } = await supabase
-        .from('epics')
-        .select('id, epic_key, name, description, status, assignee_id, end_date, health, deleted_at, primary_program_id')
-        .eq('primary_program_id', programId)
-        .is('deleted_at', null)
-        .order('global_rank', { ascending: true, nullsFirst: false });
+        .from('ph_issues')
+        .select('id, issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, jira_created_at, jira_updated_at')
+        .eq('project_key', projectKey)
+        .eq('issue_type', 'Epic')
+        .or(`jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
+        .is('jira_removed_at', null)
+        .order('jira_updated_at', { ascending: false });
       if (error) throw error;
-      return (data || []) as any as BacklogEpic[];
+
+      return (data || []).map((row: any) => ({
+        id: row.id,
+        epic_key: row.issue_key,
+        name: row.summary,
+        description: null,
+        status: row.status,
+        assignee_id: null,
+        assignee_name: row.assignee_display_name,
+        end_date: row.due_date,
+        health: null,
+        deleted_at: null,
+        primary_program_id: null,
+      })) as BacklogEpic[];
     },
-    enabled: !!projectId && !!programId,
+    enabled: !!projectId && !!projectKey,
   });
 }
 
+/**
+ * Feature Backlog — not available in Jira for BAU, kept as empty for now.
+ */
 export function useFeatureBacklog(projectId: string) {
   return useQuery({
     queryKey: ['backlog-features', projectId],
     queryFn: async (): Promise<BacklogFeature[]> => {
-      const { data, error } = await supabase
-        .from('features')
-        .select('id, display_id, name, description, status, epic_id, project_id, assignee_id, planned_end_date, priority, deleted_at')
-        .eq('project_id', projectId)
-        .is('deleted_at', null)
-        .order('global_rank', { ascending: true, nullsFirst: false });
-      if (error) throw error;
-      return (data || []) as any as BacklogFeature[];
+      return [];
     },
     enabled: !!projectId,
   });
 }
 
+/**
+ * Story Backlog — pulls from ph_issues where issue_type = 'Story',
+ * project_key resolved from project UUID, filtered to 2026.
+ * Parent epic resolved via parent_key lookup.
+ */
 export function useStoryBacklog(projectId: string) {
+  const { data: project } = useProject(projectId);
+  const projectKey = project?.key ?? null;
+
   return useQuery({
-    queryKey: ['backlog-stories', projectId],
+    queryKey: ['backlog-stories', projectId, projectKey],
     queryFn: async (): Promise<BacklogStory[]> => {
-      const { data: features, error: featError } = await supabase
-        .from('features')
-        .select('id, display_id, name, epic_id')
-        .eq('project_id', projectId)
-        .is('deleted_at', null);
-      if (featError) throw featError;
-      if (!features || features.length === 0) return [];
+      if (!projectKey) return [];
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at')
+        .eq('project_key', projectKey)
+        .eq('issue_type', 'Story')
+        .or(`jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
+        .is('jira_removed_at', null)
+        .order('jira_updated_at', { ascending: false });
+      if (error) throw error;
+      if (!data || data.length === 0) return [];
 
-      const featureIds = features.map(f => f.id);
-      const epicIds = [...new Set(features.map(f => f.epic_id).filter(Boolean))] as string[];
-      const epicsMap: Record<string, { id: string; epic_key: string | null; name: string }> = {};
-      if (epicIds.length > 0) {
-        const { data: epics } = await supabase.from('epics').select('id, epic_key, name').in('id', epicIds);
-        if (epics) for (const e of epics) epicsMap[e.id] = e;
+      // Resolve parent epic keys to get epic info for ParentEpicChip
+      const parentKeys = [...new Set(data.map((s: any) => s.parent_key).filter(Boolean))];
+      const epicMap: Record<string, { id: string; epic_key: string | null; name: string }> = {};
+      if (parentKeys.length > 0) {
+        const { data: epics } = await supabase
+          .from('ph_issues')
+          .select('id, issue_key, summary')
+          .in('issue_key', parentKeys);
+        if (epics) {
+          for (const e of epics) {
+            epicMap[e.issue_key] = { id: e.id, epic_key: e.issue_key, name: e.summary };
+          }
+        }
       }
 
-      const featureMap: Record<string, BacklogStory['feature']> = {};
-      for (const f of features) {
-        featureMap[f.id] = {
-          id: f.id, display_id: f.display_id, name: f.name, epic_id: f.epic_id,
-          epic: f.epic_id ? epicsMap[f.epic_id] ?? null : null,
-        };
-      }
-
-      const { data: stories, error: storyError } = await supabase
-        .from('stories')
-        .select('id, story_key, title, name, description, status, feature_id, assignee_id, start_date, priority, deleted_at, rank_order')
-        .in('feature_id', featureIds)
-        .is('deleted_at', null)
-        .order('rank_order', { ascending: true, nullsFirst: false });
-      if (storyError) throw storyError;
-
-      return (stories || []).map((s: any) => ({
-        ...s,
-        feature: s.feature_id ? featureMap[s.feature_id] ?? null : null,
+      return data.map((row: any) => ({
+        id: row.id,
+        story_key: row.issue_key,
+        title: row.summary,
+        name: row.summary,
+        description: null,
+        status: row.status,
+        feature_id: null,
+        assignee_id: null,
+        assignee_name: row.assignee_display_name,
+        start_date: row.due_date,
+        priority: row.priority?.toLowerCase() ?? null,
+        deleted_at: null,
+        feature: row.parent_key && epicMap[row.parent_key] ? {
+          id: epicMap[row.parent_key].id,
+          display_id: null,
+          name: row.parent_summary || epicMap[row.parent_key].name,
+          epic_id: epicMap[row.parent_key].id,
+          epic: epicMap[row.parent_key],
+        } : null,
       })) as BacklogStory[];
     },
-    enabled: !!projectId,
+    enabled: !!projectId && !!projectKey,
   });
 }

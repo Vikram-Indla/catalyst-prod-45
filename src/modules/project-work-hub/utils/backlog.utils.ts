@@ -18,33 +18,61 @@ export function getLozengeStyle(color: LozengeColor) {
   return LOZENGE_STYLES[color];
 }
 
+// ─── EPIC STATUS (Jira values) ───────────────────
 export const EPIC_STATUS_LOZENGE: Record<string, LozengeConfig> = {
-  proposed:    { color: 'grey',  label: 'PROPOSED' },
-  approved:    { color: 'blue',  label: 'APPROVED' },
-  in_progress: { color: 'blue',  label: 'IN PROGRESS' },
-  done:        { color: 'green', label: 'DONE' },
-  cancelled:   { color: 'grey',  label: 'CANCELLED' },
+  'Backlog':       { color: 'grey',  label: 'BACKLOG' },
+  'To Do':         { color: 'grey',  label: 'TO DO' },
+  'In Progress':   { color: 'blue',  label: 'IN PROGRESS' },
+  'Done':          { color: 'green', label: 'DONE' },
+  'Cancelled':     { color: 'grey',  label: 'CANCELLED' },
+  // Legacy native statuses (fallback)
+  'proposed':      { color: 'grey',  label: 'PROPOSED' },
+  'approved':      { color: 'blue',  label: 'APPROVED' },
+  'in_progress':   { color: 'blue',  label: 'IN PROGRESS' },
+  'done':          { color: 'green', label: 'DONE' },
+  'cancelled':     { color: 'grey',  label: 'CANCELLED' },
 };
 
+// ─── FEATURE STATUS ──────────────────────────────
 export const FEATURE_STATUS_LOZENGE: Record<string, LozengeConfig> = {
-  active:      { color: 'blue',  label: 'ACTIVE' },
-  in_progress: { color: 'blue',  label: 'IN PROGRESS' },
-  done:        { color: 'green', label: 'DONE' },
-  cancelled:   { color: 'grey',  label: 'CANCELLED' },
+  'active':        { color: 'blue',  label: 'ACTIVE' },
+  'in_progress':   { color: 'blue',  label: 'IN PROGRESS' },
+  'done':          { color: 'green', label: 'DONE' },
+  'cancelled':     { color: 'grey',  label: 'CANCELLED' },
 };
 
+// ─── STORY STATUS (Jira values) ──────────────────
 export const STORY_STATUS_LOZENGE: Record<string, LozengeConfig> = {
-  open:        { color: 'grey',  label: 'OPEN' },
-  in_progress: { color: 'blue',  label: 'IN PROGRESS' },
-  in_review:   { color: 'blue',  label: 'IN REVIEW' },
-  done:        { color: 'green', label: 'DONE' },
-  cancelled:   { color: 'grey',  label: 'CANCELLED' },
+  'In Requirements':        { color: 'grey',  label: 'IN REQUIREMENTS' },
+  'In Design':              { color: 'grey',  label: 'IN DESIGN' },
+  'Ready for Development':  { color: 'grey',  label: 'READY FOR DEV' },
+  'In Development':         { color: 'blue',  label: 'IN DEVELOPMENT' },
+  'In QA':                  { color: 'blue',  label: 'IN QA' },
+  'In UAT':                 { color: 'blue',  label: 'IN UAT' },
+  'BETA READY':             { color: 'blue',  label: 'BETA READY' },
+  'In BETA':                { color: 'blue',  label: 'IN BETA' },
+  'In Production':          { color: 'green', label: 'IN PRODUCTION' },
+  'Backlog':                { color: 'grey',  label: 'BACKLOG' },
+  'To Do':                  { color: 'grey',  label: 'TO DO' },
+  'In Progress':            { color: 'blue',  label: 'IN PROGRESS' },
+  'Done':                   { color: 'green', label: 'DONE' },
+  // Legacy native statuses (fallback)
+  'open':          { color: 'grey',  label: 'OPEN' },
+  'in_progress':   { color: 'blue',  label: 'IN PROGRESS' },
+  'in_review':     { color: 'blue',  label: 'IN REVIEW' },
+  'done':          { color: 'green', label: 'DONE' },
+  'cancelled':     { color: 'grey',  label: 'CANCELLED' },
 };
 
 // ─── GROUP ORDER ──────────────────────────────────
-export const EPIC_GROUP_ORDER = ['in_progress', 'approved', 'proposed', 'done', 'cancelled'];
+export const EPIC_GROUP_ORDER = ['In Progress', 'Backlog', 'To Do', 'Done', 'Cancelled', 'in_progress', 'approved', 'proposed', 'done', 'cancelled'];
 export const FEATURE_GROUP_ORDER = ['in_progress', 'active', 'done', 'cancelled'];
-export const STORY_GROUP_ORDER = ['in_progress', 'in_review', 'open', 'done', 'cancelled'];
+export const STORY_GROUP_ORDER = [
+  'In Requirements', 'In Design', 'Ready for Development', 'In Development',
+  'In QA', 'In UAT', 'BETA READY', 'In BETA', 'In Production',
+  'Backlog', 'To Do', 'In Progress', 'Done',
+  'in_progress', 'in_review', 'open', 'done', 'cancelled',
+];
 
 // ─── PRIORITY ────────────────────────────────────
 export function getPriorityLabel(priority: string | null): string {
@@ -53,19 +81,22 @@ export function getPriorityLabel(priority: string | null): string {
 }
 
 export function getPriorityColor(priority: string | null): string {
-  switch (priority) {
-    case 'critical': return '#DC2626';
-    case 'high':     return '#D97706';
-    case 'medium':   return '#2563EB';
-    case 'low':      return '#6B7280';
-    default:         return '#9CA3AF';
+  switch (priority?.toLowerCase()) {
+    case 'critical':
+    case 'highest': return '#DC2626';
+    case 'high':    return '#D97706';
+    case 'medium':  return '#2563EB';
+    case 'low':
+    case 'lowest':  return '#6B7280';
+    default:        return '#9CA3AF';
   }
 }
 
 // ─── DUE DATE ────────────────────────────────────
 export function isDueDateOverdue(dueDate: string | null, status?: string | null): boolean {
   if (!dueDate) return false;
-  if (status === 'done' || status === 'cancelled') return false;
+  const doneStatuses = ['done', 'cancelled', 'Done', 'Cancelled', 'In Production'];
+  if (status && doneStatuses.includes(status)) return false;
   return new Date(dueDate) < new Date(new Date().toDateString());
 }
 
