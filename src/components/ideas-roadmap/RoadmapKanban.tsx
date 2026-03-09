@@ -11,10 +11,10 @@ interface Column {
 
 const COLUMNS: Column[] = [
   { id: 'uncommitted', label: 'UNCOMMITTED', accent: '#CBD5E1', dashed: true },
-  { id: 'Q1', label: 'Q1 2026', accent: '#7C3AED', dashed: false },
+  { id: 'Q1', label: 'Q1 2026', accent: '#6D28D9', dashed: false },
   { id: 'Q2', label: 'Q2 2026', accent: '#2563EB', dashed: false },
   { id: 'Q3', label: 'Q3 2026', accent: '#0D9488', dashed: false },
-  { id: 'Q4', label: 'Q4 2026', accent: '#D97706', dashed: false },
+  { id: 'Q4', label: 'Q4 2026', accent: '#92400E', dashed: false },
 ];
 
 interface RoadmapKanbanProps {
@@ -45,6 +45,14 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
     }
   }
 
+  function handleMoveToQuarter(ideaId: string, quarter: RoadmapQuarter | null) {
+    if (quarter === null) {
+      onDrop(ideaId, null as any, false);
+    } else {
+      onDrop(ideaId, quarter, true);
+    }
+  }
+
   return (
     <div style={{
       display: 'flex', gap: 12, padding: 16, flex: 1,
@@ -63,8 +71,7 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
             onDrop={e => handleDrop(e, col)}
             style={{
               flex: 1, minWidth: 260, maxWidth: 320,
-              display: 'flex', flexDirection: 'column',
-              borderRadius: 8,
+              display: 'flex', flexDirection: 'column', borderRadius: 8,
               background: col.dashed ? '#F8FAFC' : '#FFFFFF',
               border: col.dashed
                 ? `1.5px dashed ${isOver ? '#2563EB' : '#CBD5E1'}`
@@ -74,7 +81,6 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
               ...(isOver && !col.dashed ? { background: 'rgba(37,99,235,0.04)' } : {}),
             }}
           >
-            {/* Header */}
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '10px 12px 6px',
@@ -95,7 +101,6 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
               </span>
             </div>
 
-            {/* Body */}
             <div style={{
               flex: 1, overflowY: 'auto', padding: '4px 12px 12px',
               display: 'flex', flexDirection: 'column', gap: 8,
@@ -122,6 +127,7 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
                       idea={idea}
                       onSelectIdea={onSelectIdea}
                       onToggleCommitted={onToggleCommitted}
+                      onMoveToQuarter={handleMoveToQuarter}
                     />
                   </div>
                 ))
