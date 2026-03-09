@@ -77,7 +77,7 @@ export const useApproveSignoff = () => {
 export const useLinkWorkItem = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ changeId, workItem }: { changeId: string; workItem: Record<string, any> }) =>
+    mutationFn: ({ changeId, workItem }: { changeId: string; workItem: { work_item_key: string; work_item_title: string; work_item_type?: string; work_item_status?: string; work_item_id?: string } }) =>
       changeService.linkWorkItem(changeId, workItem),
     onSuccess: (_, { changeId }) => qc.invalidateQueries({ queryKey: KEYS.change(changeId) }),
   });
