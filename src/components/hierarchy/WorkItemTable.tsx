@@ -734,11 +734,16 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
       )}
 
       <style>{`
-        .hi-table-row { border-left: 3px solid transparent; transition: all 120ms ease; }
-        .hi-table-row:hover { background: #F8FAFC !important; border-left-color: #2563EB; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-        .hi-table-row .hi-row-action { opacity: 0; transition: opacity 150ms ease; }
+        .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
+        .hi-table-row:hover { background: #F8FAFC !important; border-left-color: #2563EB; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .hi-table-row.checked { background: #EFF6FF !important; }
+        .hi-table-row:nth-child(even):not(.checked):not(:hover) { background: #FAFAFA; }
+        .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
         .hi-parent-cell:hover .hi-parent-key { text-decoration: underline; text-underline-offset: 2px; }
+        .hi-type-icon-wrapper { width: 18px; height: 18px; min-width: 18px; min-height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .hi-expand-chevron { width: 20px; height: 20px; min-width: 20px; min-height: 20px; display: flex; align-items: center; justify-content: center; }
+        .hi-work-column { overflow: hidden; min-width: 0; }
       `}</style>
     </div>
   );
