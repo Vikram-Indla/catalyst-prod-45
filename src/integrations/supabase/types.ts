@@ -35947,6 +35947,13 @@ export type Database = {
             foreignKeyName: "rh_change_signoffs_change_id_fkey"
             columns: ["change_id"]
             isOneToOne: false
+            referencedRelation: "rh_change_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_change_signoffs_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
             referencedRelation: "rh_changes"
             referencedColumns: ["id"]
           },
@@ -35981,6 +35988,13 @@ export type Database = {
           to_status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "rh_change_status_history_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "rh_change_summary"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "rh_change_status_history_change_id_fkey"
             columns: ["change_id"]
@@ -36022,6 +36036,13 @@ export type Database = {
           work_item_type?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "rh_change_work_items_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "rh_change_summary"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "rh_change_work_items_change_id_fkey"
             columns: ["change_id"]
@@ -36126,6 +36147,13 @@ export type Database = {
             foreignKeyName: "rh_changes_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
+            referencedRelation: "rh_release_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_changes_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
             referencedRelation: "rh_releases"
             referencedColumns: ["id"]
           },
@@ -36181,6 +36209,13 @@ export type Database = {
           test_cycle_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "rh_release_test_cycle_links_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "rh_release_summary"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "rh_release_test_cycle_links_release_id_fkey"
             columns: ["release_id"]
@@ -65484,6 +65519,105 @@ export type Database = {
           resource_type: string | null
         }
         Relationships: []
+      }
+      rh_change_summary: {
+        Row: {
+          additional_commands: string | null
+          additional_comments: string | null
+          backend_commit: string | null
+          backend_required: boolean | null
+          category: string | null
+          chg_number: string | null
+          created_at: string | null
+          created_by: string | null
+          dependency: string | null
+          deployment_date: string | null
+          deployment_process: string | null
+          frontend_commit: string | null
+          frontend_required: boolean | null
+          id: string | null
+          oldest_pending_signoff_at: string | null
+          pending_signoffs: number | null
+          project_id: string | null
+          release_id: string | null
+          release_name: string | null
+          release_status: string | null
+          release_version: string | null
+          risk_level: string | null
+          risk_score: number | null
+          sn_imported: boolean | null
+          source: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          work_item_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_changes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_changes_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "rh_release_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_changes_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "rh_releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rh_release_summary: {
+        Row: {
+          change_count: number | null
+          chg_count: number | null
+          created_at: string | null
+          days_remaining: number | null
+          id: string | null
+          is_overdue: boolean | null
+          jira_key: string | null
+          name: string | null
+          owner_id: string | null
+          project_id: string | null
+          source: string | null
+          status: string | null
+          target_date: string | null
+          test_cycle_count: number | null
+          updated_at: string | null
+          version: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_releases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_releases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sla_dashboard_view: {
         Row: {
