@@ -686,15 +686,24 @@ export function IncidentListTable({
             {/* Right side: Page size selector */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-text-muted">Per page:</span>
-              <select
-                value={effectivePageSize}
-                onChange={(e) => handlePageSizeChange(e.target.value)}
-                className="px-2 py-1 text-sm border border-border rounded bg-surface-0 text-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary"
-              >
-                {PAGE_SIZE_OPTIONS.map(size => (
-                  <option key={size} value={size}>{size}</option>
-                ))}
-              </select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="px-2 py-1 text-sm border border-border rounded bg-surface-0 text-text-secondary hover:bg-surface-hover transition-colors min-w-[48px] text-center">
+                    {effectivePageSize}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-24 bg-popover border-border">
+                  {PAGE_SIZE_OPTIONS.map(size => (
+                    <DropdownMenuItem
+                      key={size}
+                      className="text-sm cursor-pointer justify-center"
+                      onClick={() => handlePageSizeChange(String(size))}
+                    >
+                      {size}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         )}
