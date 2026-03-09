@@ -26,6 +26,9 @@ export interface Idea {
   dept: string;
   assignee: Assignee | null;
   ai: 'ready' | 'pending';
+  theme?: string | null;
+  assigned_team?: string | null;
+  target_release_date?: string | null;
 }
 
 // ─── IMPACT factor data per idea ──────────────────────────────────
