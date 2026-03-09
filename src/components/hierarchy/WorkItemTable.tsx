@@ -21,6 +21,7 @@ import { ColumnManagerDropdown, ALL_COLUMNS, getInitialVisibleColumns, saveVisib
 import { useUpdateIssueField } from '@/hooks/useUpdateIssueField';
 import { useBulkUpdateIssues, useBulkDeleteIssues } from '@/hooks/useBulkUpdateIssues';
 import { toast } from 'sonner';
+import { getEpicChipColor } from '@/modules/project-work-hub/utils/backlog.utils';
 
 interface WorkItemTableProps {
   items: WorkItem[];
