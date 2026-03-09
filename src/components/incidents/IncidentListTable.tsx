@@ -443,7 +443,7 @@ export function IncidentListTable({
                       {/* Key - left aligned */}
                       <div className={cn(GRID_CELL_BASE, "pl-4 pr-2 flex items-center gap-2.5")}>
                         <Link 
-                          to={`/release/incidents/${incident.id}`} 
+                          to={`/incident-hub/view/${incident.id}`} 
                           className="font-mono text-[13px] font-medium text-brand-primary hover:underline truncate"
                           onClick={(e) => e.stopPropagation()}
                         >
