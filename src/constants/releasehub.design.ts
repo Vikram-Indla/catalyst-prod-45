@@ -1,33 +1,33 @@
-// ReleaseHub v2.1 — Design System Constants
+// ReleaseHub v2.1 — Design System Constants (Token-correct)
 export const RH = {
-  pageBg: '#EEF2F7',
-  cardBg: '#FFFFFF',
-  surfaceBg: '#F4F7FA',
-  surface2Bg: '#EAEFF5',
-  borderOuter: '1px solid #C9D3E0',
-  borderInner: '1px solid #E2E8F0',
-  teal: '#0D9488',
-  tealDark: '#0B7C71',
-  tealLt: '#F0FDFA',
-  tealBorder: '#99F6E4',
-  primary: '#2563EB',
-  primaryDark: '#1D4ED8',
-  primaryLt: '#EFF6FF',
-  success: '#15803D',
-  successBg: '#F0FDF4',
-  warning: '#C2840A',
-  warningBg: '#FFFBEB',
-  danger: '#DC2626',
-  dangerBg: '#FEF2F2',
+  pageBg: 'var(--cp-bg-sunken)',
+  cardBg: 'var(--cp-bg-elevated)',
+  surfaceBg: 'var(--cp-bg-surface)',
+  surface2Bg: 'var(--cp-bg-sunken)',
+  borderOuter: '1px solid var(--cp-border-strong)',
+  borderInner: '1px solid var(--cp-border-default)',
+  teal: 'var(--cp-teal-60)',
+  tealDark: 'var(--cp-teal-70)',
+  tealLt: 'var(--cp-teal-10)',
+  tealBorder: 'var(--cp-teal-30)',
+  primary: 'var(--cp-primary-60)',
+  primaryDark: 'var(--cp-primary-70)',
+  primaryLt: 'var(--cp-primary-10)',
+  success: 'var(--cp-success-60)',
+  successBg: 'var(--cp-success-10)',
+  warning: 'var(--cp-warning-60)',
+  warningBg: 'var(--cp-warning-10)',
+  danger: 'var(--cp-danger-60)',
+  dangerBg: 'var(--cp-danger-10)',
   ai: '#7C3AED',
   aiLt: '#EDE9FE',
-  ink1: '#080E1D',
-  ink2: '#1E293B',
-  ink3: '#475569',
-  ink4: '#94A3B8',
-  fontDisplay: '"Sora", sans-serif',
-  fontBody: '"Inter", sans-serif',
-  fontMono: '"JetBrains Mono", monospace',
+  ink1: 'var(--cp-text-primary)',
+  ink2: 'var(--cp-text-secondary)',
+  ink3: 'var(--cp-text-tertiary)',
+  ink4: 'var(--cp-text-muted)',
+  fontDisplay: 'var(--cp-font-display)',
+  fontBody: 'var(--cp-font-body)',
+  fontMono: 'var(--cp-font-mono)',
   navH: 48,
   sbW: 232,
   rowH: 36,
@@ -38,10 +38,10 @@ export const RELEASE_STATUS_LABELS: Record<string, string> = {
   todo: 'Todo', in_progress: 'In Progress', done: 'Done', archived: 'Archive',
 };
 export const RELEASE_STATUS_STYLES: Record<string, string> = {
-  todo: 'bg-[#F1F5F9] text-[#475569] border border-[#CBD5E1]',
-  in_progress: 'bg-[#DBEAFE] text-[#1E40AF] border border-[#BFDBFE]',
-  done: 'bg-[#DCFCE7] text-[#15803D] border border-[#86EFAC]',
-  archived: 'bg-[#F3F4F6] text-[#6B7280] border border-[#D1D5DB]',
+  todo: 'bg-[var(--cp-lozenge-grey-bg)] text-[var(--cp-lozenge-grey-text)]',
+  in_progress: 'bg-[var(--cp-lozenge-blue-bg)] text-[var(--cp-lozenge-blue-text)]',
+  done: 'bg-[var(--cp-lozenge-green-bg)] text-[var(--cp-lozenge-green-text)]',
+  archived: 'bg-[var(--cp-lozenge-grey-bg)] text-[var(--cp-lozenge-grey-text)]',
 };
 
 export const CHG_STATUS_LABELS: Record<string, string> = {
@@ -58,18 +58,18 @@ export const CHG_STATUS_STYLES: Record<string, string> = {
 export const CHG_STATUS_ORDER: string[] = ['new', 'in_qa', 'in_uat', 'in_beta', 'in_production'];
 
 export const RISK_STYLES: Record<string, string> = {
-  low: 'bg-[#F0FDF4] text-[#15803D] border border-[#86EFAC]',
-  medium: 'bg-[#FFFBEB] text-[#C2840A] border border-[#FCD34D]',
-  high: 'bg-[#FEF2F2] text-[#DC2626] border border-[#FCA5A5]',
-  critical: 'bg-[#DC2626] text-white',
+  low: 'bg-[var(--cp-success-10)] text-[var(--cp-success-60)] border border-[var(--cp-success-30)]',
+  medium: 'bg-[var(--cp-warning-10)] text-[var(--cp-warning-60)] border border-[var(--cp-warning-30)]',
+  high: 'bg-[var(--cp-danger-10)] text-[var(--cp-danger-60)] border border-[var(--cp-danger-30)]',
+  critical: 'bg-[var(--cp-danger-60)] text-white',
 };
 
 export const SECTION_ACCENT: Record<string, string> = {
-  past: '#94A3B8',
-  today: '#DC2626',
-  this_week: '#2563EB',
-  upcoming: '#0D9488',
-  future: '#15803D',
+  past: 'var(--cp-text-muted)',
+  today: 'var(--cp-danger-60)',
+  this_week: 'var(--cp-primary-60)',
+  upcoming: 'var(--cp-teal-60)',
+  future: 'var(--cp-success-60)',
 };
 
 export const CATEGORIES = ['Landing Page', 'Senaei BAU', 'MIM Website', 'Mobile App', 'Tohammena', 'Data & AI'];

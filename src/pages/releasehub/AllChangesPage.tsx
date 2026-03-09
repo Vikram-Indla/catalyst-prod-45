@@ -273,15 +273,15 @@ function ChangeRow({ change: c, section, onClick }: { change: any; section: Chan
           </div>
         )}
       </div>
-      <div className="w-[200px] shrink-0 border-l border-[#E2E8F0] p-3 flex flex-col justify-center gap-1.5">
-        {c.work_item_count > 0 && <span className="text-[11px] text-[#64748B]">{c.work_item_count} work items</span>}
+      <div className="w-[200px] shrink-0 border-l p-3 flex flex-col justify-center gap-1.5" style={{ borderColor: 'var(--cp-border-default)' }}>
+        {c.work_item_count > 0 && <span className="text-[11px]" style={{ color: 'var(--cp-text-tertiary)' }}>{c.work_item_count} work items</span>}
         {c.pending_signoffs > 0 && (
-          <span className={`text-[11px] font-bold ${waitHours > 48 ? 'text-[#DC2626]' : 'text-[#64748B]'}`}>
+          <span className="text-[11px] font-bold" style={{ color: waitHours > 48 ? 'var(--cp-danger-60)' : waitHours > 24 ? 'var(--cp-warning-60)' : 'var(--cp-text-muted)', fontWeight: waitHours > 24 ? 'var(--cp-weight-bold)' : undefined }}>
             Sign-off: {c.oldest_pending_signoff_at ? `${Math.round(waitHours)}h wait` : 'pending'}
           </span>
         )}
         {waitHours > 48 && <CatalystAIChip label="escalate" />}
-        {c.category && <span className="text-[11px] text-[#94A3B8]">{c.category}</span>}
+        {c.category && <span className="text-[11px]" style={{ color: 'var(--cp-text-muted)' }}>{c.category}</span>}
       </div>
     </div>
   );
