@@ -95,7 +95,6 @@ export function getImpactColor(score: number) {
 
 // AI insight text for board cards (deprecated — use DB ai_summary)
 export const AI_INSIGHTS: Record<string, string> = {};
-  'IDH-005': '✦ 67% onboarding drop-off rate — critical fix',
   'IDH-006': '✦ 3 legacy systems at EOL in Q3 2026',
   'IDH-007': '✦ Mobile adoption: 78% field inspector preference',
   'IDH-009': '✦ Blockchain ROI below threshold — defer',
