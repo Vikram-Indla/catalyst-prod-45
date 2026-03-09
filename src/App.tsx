@@ -590,6 +590,7 @@ const App = () => (
               <Route path="/producthub/roadmap" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RoadmapPage /></Suspense>} />
               <Route path="/producthub/cards" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProductCardsPage /></Suspense>} />
               <Route path="/producthub/ideation" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeationPage /></Suspense>} />
+              <Route path="/product/ideas/roadmap" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeasRoadmapPage /></Suspense>} />
               {/* Requirement Assist routes */}
               <Route path="/producthub/requirement-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistWorkspace /></Suspense>} />
               <Route path="/producthub/requirement-assist/compose" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistCompose /></Suspense>} />
