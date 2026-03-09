@@ -290,10 +290,29 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
   const visibleRows = flatRows.slice(0, perPage);
   const totalFlat = flatRows.length;
 
-  // Visible column defs (ordered)
-  const columns = useMemo(() =>
-    ALL_COLUMNS.filter(c => visibleColumns.includes(c.id)),
-  [visibleColumns]);
+  const itemById = useMemo(() => {
+    const map = new Map<string, WorkItem>();
+    const walk = (nodes: WorkItem[]) => {
+      for (const node of nodes) {
+        map.set(node.id, node);
+        if (node.children.length > 0) walk(node.children);
+      }
+    };
+    walk(items);
+    return map;
+  }, [items]);
+
+  const hasMultipleSources = useMemo(() => {
+    const sources = new Set<string>();
+    const walk = (nodes: WorkItem[]) => {
+      for (const node of nodes) {
+        if (node.source) sources.add(node.source);
+        if (node.children.length > 0) walk(node.children);
+      }
+    };
+    walk(items);
+    return sources.size > 1;
+  }, [items]);
 
   const openDropdown = useCallback((type: 'status' | 'priority' | 'assignee', itemId: string) => {
     setActiveDropdown(prev => prev?.type === type && prev.itemId === itemId ? null : { type, itemId });
