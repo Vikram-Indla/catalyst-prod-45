@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Idea, ideas as fallbackIdeas, STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, IDEA_IMPACT_FACTORS, getImpactColor } from './ideation-data';
+import { Idea, STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, IDEA_IMPACT_FACTORS, getImpactColor } from './ideation-data';
 import { useIdeaRaw, useImpactFactors, useIdeaComments, useComplianceTags, useV2030Mappings, useEvidence, useAddIdeaComment } from '@/hooks/useIdeation';
 import { useAuth } from '@/hooks/useAuth';
 
