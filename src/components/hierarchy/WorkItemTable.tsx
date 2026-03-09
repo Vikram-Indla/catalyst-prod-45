@@ -187,6 +187,46 @@ const TYPE_COLORS: Record<string, string> = {
   'Task': '#64748B', 'Bug': '#DC2626',
 };
 
+/* ── Parent cell (enriched: icon + key + title) ── */
+function ParentCell({ parentId, allRows, onSelect }: { parentId: string | null; allRows: FlatRow[]; onSelect: (item: WorkItem) => void }) {
+  if (!parentId) {
+    return (
+      <div style={{ width: 220, padding: '0 8px' }}>
+        <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>—</span>
+      </div>
+    );
+  }
+  const parent = allRows.find(r => r.item.key === parentId || r.item.id === parentId)?.item;
+  return (
+    <div
+      style={{ width: 220, padding: '0 8px', overflow: 'hidden' }}
+      title={parent ? `${parentId} — ${parent.title}` : parentId}
+    >
+      <div
+        className="hi-parent-cell"
+        onClick={(e) => { e.stopPropagation(); if (parent) onSelect(parent); }}
+        style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer', overflow: 'hidden' }}
+      >
+        {parent?.issueType && <JiraIssueTypeIcon type={parent.issueType} size={14} />}
+        <span className="hi-parent-key" style={{
+          fontSize: 11, fontWeight: 600, color: '#2563EB', flexShrink: 0,
+          fontVariantNumeric: 'tabular-nums', fontFamily: "'Inter', sans-serif",
+        }}>
+          {parentId}
+        </span>
+        {parent && (
+          <span style={{
+            fontSize: 12, color: '#64748B', overflow: 'hidden',
+            textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif",
+          }}>
+            {parent.title}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ── Column header ── */
 function ColHeader({ label, sortKey, currentSort, currentDir, onSort, width, flex }: {
   label: string; sortKey: string; currentSort: string; currentDir: SortDir;
@@ -391,11 +431,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
           </div>
         );
       case 'parent':
-        return (
-          <div style={{ width: 120, padding: '0 8px' }}>
-            <span style={{ fontSize: 12, color: item.parentId ? '#2563EB' : '#94A3B8' }}>{item.parentId || '—'}</span>
-          </div>
-        );
+        return <ParentCell parentId={item.parentId} allRows={flatRows} onSelect={onSelect} />;
       case 'assignee':
         return (
           <div style={{ width: 160, padding: '0 8px', overflow: 'hidden', position: 'relative' }}>
@@ -644,6 +680,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
         .hi-table-row:hover { background: #F8FAFC !important; border-left-color: #2563EB; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 150ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
+        .hi-parent-cell:hover .hi-parent-key { text-decoration: underline; text-underline-offset: 2px; }
       `}</style>
     </div>
   );

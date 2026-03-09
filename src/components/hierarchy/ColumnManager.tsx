@@ -18,7 +18,7 @@ export interface ColumnDef {
 export const ALL_COLUMNS: ColumnDef[] = [
   { id: 'work',        label: 'Work',         width: 0,   defaultVisible: true,  alwaysVisible: true }, // flex
   { id: 'status',      label: 'Status',       width: 150, defaultVisible: true },
-  { id: 'parent',      label: 'Parent',       width: 120, defaultVisible: true },
+  { id: 'parent',      label: 'Parent',       width: 220, defaultVisible: true },
   { id: 'assignee',    label: 'Assignee',     width: 160, defaultVisible: true },
   { id: 'created',     label: 'Created',      width: 150, defaultVisible: true },
   { id: 'fixVersion',  label: 'Fix Versions', width: 140, defaultVisible: false },
