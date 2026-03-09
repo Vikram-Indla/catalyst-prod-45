@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, ChevronDown, ChevronRight } from 'lucide-react';
 import { RH, CATEGORIES } from '@/constants/releasehub.design';
 import { useCreateChange, useReleases } from '@/hooks/useReleaseHub';
+import { toast } from 'sonner';
 
 interface Props { onClose: () => void }
 
@@ -21,9 +22,11 @@ export function CreateChgModal({ onClose }: Props) {
   const [dependency, setDependency] = useState('');
   const [catOpen, setCatOpen] = useState(false);
   const [relOpen, setRelOpen] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = () => {
     if (!title || !deployDate) return;
+    setError('');
     createChange.mutate({
       chg_number: `CHG-${Date.now().toString().slice(-7)}`,
       title,
@@ -32,7 +35,10 @@ export function CreateChgModal({ onClose }: Props) {
       status: 'new',
       risk_level: 'low',
       source: 'catalyst',
-    }, { onSuccess: () => onClose() });
+    }, {
+      onSuccess: () => { toast.success('Change created'); onClose(); },
+      onError: (err: any) => { setError(err.message || 'Failed to create change'); toast.error('Failed to create change'); },
+    });
   };
 
   return (
@@ -44,7 +50,7 @@ export function CreateChgModal({ onClose }: Props) {
           <button onClick={onClose} className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
         </div>
         <div className="p-6 space-y-4">
-          {/* Category Dropdown */}
+          {error && <div className="px-3 py-2 rounded-md bg-[#FEF2F2] text-[#DC2626] text-[12px] font-medium">{error}</div>}
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Category</label>
             <div className="relative">
@@ -62,22 +68,16 @@ export function CreateChgModal({ onClose }: Props) {
               )}
             </div>
           </div>
-
-          {/* Title */}
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Title *</label>
             <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Describe the change..."
               className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] text-[13px] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
           </div>
-
-          {/* Planned Date */}
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Planned Date *</label>
             <input type="date" value={deployDate} onChange={e => setDeployDate(e.target.value)}
               className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
           </div>
-
-          {/* Release Dropdown */}
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Linked Release</label>
             <div className="relative">
@@ -96,8 +96,6 @@ export function CreateChgModal({ onClose }: Props) {
               )}
             </div>
           </div>
-
-          {/* Advanced */}
           <button onClick={() => setShowAdvanced(!showAdvanced)} className="flex items-center gap-1 text-[12px] font-semibold text-[#64748B] hover:text-[#475569]">
             {showAdvanced ? <ChevronDown size={12} /> : <ChevronRight size={12} />} Advanced Options
           </button>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { RH } from '@/constants/releasehub.design';
 import { useCreateRelease } from '@/hooks/useReleaseHub';
+import { toast } from 'sonner';
 
 interface Props { onClose: () => void }
 
@@ -10,12 +11,15 @@ export function CreateReleaseModal({ onClose }: Props) {
   const [targetDate, setTargetDate] = useState('');
   const [version, setVersion] = useState('');
   const [source, setSource] = useState('catalyst');
+  const [error, setError] = useState('');
   const createRelease = useCreateRelease();
 
   const handleSubmit = () => {
     if (!name || !targetDate) return;
+    setError('');
     createRelease.mutate({ name, target_date: targetDate, version: version || undefined, source, status: 'todo' }, {
-      onSuccess: () => onClose(),
+      onSuccess: () => { toast.success('Release created'); onClose(); },
+      onError: (err: any) => { setError(err.message || 'Failed to create release'); toast.error('Failed to create release'); },
     });
   };
 
@@ -28,6 +32,7 @@ export function CreateReleaseModal({ onClose }: Props) {
           <button onClick={onClose} className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
         </div>
         <div className="p-6 space-y-4">
+          {error && <div className="px-3 py-2 rounded-md bg-[#FEF2F2] text-[#DC2626] text-[12px] font-medium">{error}</div>}
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Name *</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Q2 2026 Release v2.0"
