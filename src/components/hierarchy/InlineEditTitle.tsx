@@ -81,14 +81,14 @@ export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500
         whiteSpace: 'nowrap', cursor: 'text', position: 'relative',
         ...style,
       }}
-      title={`${value}\n(Double-click to edit)`}
+      title={value}
     >
-      {value}
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{value}</span>
       <Pencil
-        size={11}
+        size={12}
         className="hi-edit-icon"
         style={{
-          marginLeft: 4, color: '#94A3B8', verticalAlign: 'middle',
+          marginLeft: 4, color: '#94A3B8', flexShrink: 0,
           opacity: 0, transition: 'opacity 150ms ease',
         }}
       />
