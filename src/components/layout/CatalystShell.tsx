@@ -12,6 +12,7 @@ import { ReleaseRoomSidebar } from './OperationsSidebar';
 import { TestManagementSidebar } from './TestManagementSidebar';
 import { ReleasesManagementSidebar } from './ReleasesManagementSidebar';
 import { ReleaseHubSidebar } from './ReleaseHubSidebar';
+import { IncidentHubSidebar } from './IncidentHubSidebar';
 import { PlanHubSidebar } from './PlanHubSidebar';
 import { TaskHubSidebar } from './TaskHubSidebar';
 import { TestHubSidebar } from './TestHubSidebar';
@@ -103,6 +104,9 @@ function CatalystShellContent() {
   // Check if on Wiki route
   const isWikiRoute = location.pathname.startsWith('/wiki');
 
+  // Check if on IncidentHub route
+  const isIncidentHubRoute = location.pathname.startsWith('/incident-hub');
+
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
   // If we drop them during navigation, the iframe may force a hard reload.
@@ -182,6 +186,16 @@ function CatalystShellContent() {
     if (isReleaseHubRoute) {
       return (
         <ReleaseHubSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
+    }
+
+    // IncidentHub sidebar
+    if (isIncidentHubRoute) {
+      return (
+        <IncidentHubSidebar
           expanded={sidebarExpanded}
           onToggle={() => setSidebarExpanded(!sidebarExpanded)}
         />

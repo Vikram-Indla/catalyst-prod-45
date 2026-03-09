@@ -3,7 +3,7 @@
  * Single source of truth for context-aware navigation
  */
 
-export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub' | 'testhub' | 'workhub' | 'releasehub' | 'planhub' | 'wiki';
+export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub' | 'testhub' | 'workhub' | 'releasehub' | 'planhub' | 'wiki' | 'incidenthub';
 
 export interface WorkspaceContext {
   type: WorkspaceType;
@@ -39,6 +39,11 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
   // Home - includes /for-you which is the main home route
   if (pathname === '/' || pathname === '/home' || pathname === '/for-you') {
     return 'home';
+  }
+  
+  // IncidentHub module - Incident Management
+  if (pathname.startsWith('/incident-hub')) {
+    return 'incidenthub';
   }
   
   // ReleaseHub module - Release Management
@@ -135,6 +140,8 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
       return 'ReleaseHub';
     case 'operations':
       return 'Operations';
+    case 'incidenthub':
+      return 'IncidentHub';
     case 'taskhub':
       return 'Taskhub';
     case 'testhub':

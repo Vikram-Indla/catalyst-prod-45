@@ -154,7 +154,7 @@ export function CatalystHeader() {
     { label: "ProjectHub", path: "/project-hub", moduleKey: "workhub", visibleToProductOwner: true },
     { label: "ReleaseHub", path: "/releasehub/command-center", moduleKey: "releases", visibleToProductOwner: false },
     { label: "TestHub", path: "/testhub/dashboard", moduleKey: "testhub", visibleToProductOwner: false },
-    { label: "IncidentHub", hasDropdown: true, path: "/release", moduleKey: "operations", visibleToProductOwner: false },
+    { label: "IncidentHub", path: "/incident-hub", moduleKey: "operations", visibleToProductOwner: false },
     { label: "TaskHub", path: "/taskhub/boards", moduleKey: "planner", visibleToProductOwner: true },
     { label: "PlanHub", path: "/planhub", moduleKey: "planhub", visibleToProductOwner: true },
     { label: "WikiHub", path: "/wiki", moduleKey: "wiki", visibleToProductOwner: true },
@@ -260,26 +260,30 @@ export function CatalystHeader() {
               const isActive = item.label === activeNavItem;
               
               // V10 TopNav item styles — Inter 500, 0.84rem
-              // Active state uses 2px blue bottom border (underline), no background fill
+              // Active state uses 2px bottom border (underline), no background fill
+              // IncidentHub uses red (#DC2626) active accent per spec
+              const isIncidentHub = item.label === 'IncidentHub';
+              const activeColor = isIncidentHub ? '#DC2626' : '#2563EB';
+              const activeBg = isIncidentHub ? '#FEF2F2' : 'transparent';
               const navButtonStyle: React.CSSProperties = {
                 height: '100%',
                 padding: '0 14px',
                 fontSize: '13px',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? '#2563EB' : 'var(--nav-text, #64748B)',
+                color: isActive ? activeColor : 'var(--nav-text, #64748B)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '1px',
                 cursor: 'pointer',
                 transition: 'color 0.15s ease',
                 border: 'none',
-                background: 'transparent',
+                background: isActive ? activeBg : 'transparent',
                 position: 'relative' as const,
                 fontFamily: "'Inter', sans-serif",
                 outline: 'none',
                 letterSpacing: '-0.1px',
                 borderRadius: '0',
-                borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
+                borderBottom: isActive ? `2px solid ${activeColor}` : '2px solid transparent',
               };
               
               // Hover handler - only change color, no backgrounds
