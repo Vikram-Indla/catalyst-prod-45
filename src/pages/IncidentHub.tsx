@@ -78,7 +78,7 @@ function ViewShell({ view }: { view: IncidentHubView }) {
   const { title, subtitle } = VIEW_TITLES[view];
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 48px)', backgroundColor: '#EEF2F7', padding: 24 }}>
+    <div style={{ minHeight: 'calc(100vh - 48px)', backgroundColor: '#F1F5F9', padding: 24 }}>
       <div className="mb-6">
         <h1 className="text-[22px] font-extrabold" style={{ fontFamily: '"Sora", sans-serif', color: '#080E1D' }}>{title}</h1>
         <p className="text-[13px] text-[#64748B]" style={{ fontFamily: '"Inter", sans-serif' }}>{subtitle}</p>

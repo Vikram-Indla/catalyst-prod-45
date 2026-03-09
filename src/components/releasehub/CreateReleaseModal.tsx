@@ -13,14 +13,13 @@ export function CreateReleaseModal({ onClose }: Props) {
   const [name, setName] = useState('');
   const [targetDate, setTargetDate] = useState<Date | undefined>();
   const [version, setVersion] = useState('');
-  const [source, setSource] = useState('catalyst');
   const [error, setError] = useState('');
   const createRelease = useCreateRelease();
 
   const handleSubmit = () => {
     if (!name || !targetDate) return;
     setError('');
-    createRelease.mutate({ name, target_date: format(targetDate, 'yyyy-MM-dd'), version: version || undefined, source, status: 'todo' }, {
+    createRelease.mutate({ name, target_date: format(targetDate, 'yyyy-MM-dd'), version: version || undefined, source: 'catalyst', status: 'todo' }, {
       onSuccess: () => { toast.success('Release created'); onClose(); },
       onError: (err: any) => { setError(err.message || 'Failed to create release'); toast.error('Failed to create release'); },
     });
@@ -59,17 +58,6 @@ export function CreateReleaseModal({ onClose }: Props) {
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Version</label>
             <input type="text" value={version} onChange={e => setVersion(e.target.value)} placeholder="e.g. v2.0"
               className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] text-[13px] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
-          </div>
-          <div>
-            <label className="block text-[12px] font-semibold text-[#475569] mb-1">Source</label>
-            <div className="flex items-center gap-2">
-              {['catalyst', 'jira'].map(s => (
-                <button key={s} onClick={() => setSource(s)}
-                  className={`h-9 px-4 rounded-md text-[13px] font-medium border ${source === s ? 'border-[#2563EB] bg-[#EFF6FF] text-[#2563EB]' : 'border-[#E2E8F0] bg-white text-[#475569] hover:bg-[#F4F7FA]'}`}>
-                  {s.charAt(0).toUpperCase() + s.slice(1)}
-                </button>
-              ))}
-            </div>
           </div>
         </div>
         <div className="sticky bottom-0 bg-white border-t border-[#E2E8F0] px-6 py-3 flex justify-end gap-2">
