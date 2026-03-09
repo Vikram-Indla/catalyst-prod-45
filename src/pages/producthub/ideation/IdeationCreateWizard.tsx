@@ -416,16 +416,6 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <label style={labelBase}>Category</label>
-                <input
-                  value={category}
-                  onChange={e => setCategory(e.target.value)}
-                  placeholder="e.g., Process Improvement, Digital Services..."
-                  style={inputBase}
-                  {...focusHandlers}
-                />
-              </div>
             </div>
 
             {/* Row 6: Theme + Assigned Team */}
