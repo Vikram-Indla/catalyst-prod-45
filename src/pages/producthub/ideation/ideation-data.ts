@@ -93,11 +93,8 @@ export function getImpactColor(score: number) {
   return { gradient: 'linear-gradient(90deg, #EF4444, #F87171)', text: '#EF4444' };
 }
 
-// AI insight text for board cards
-export const AI_INSIGHTS: Record<string, string> = {
-  'IDH-001': '✦ 12 citizen services consolidated — 40% reduction target',
-  'IDH-002': '✦ 94.2% classification accuracy in pilot',
-  'IDH-004': '✦ Bilingual compliance: DGA-ACC-01 mandate',
+// AI insight text for board cards (deprecated — use DB ai_summary)
+export const AI_INSIGHTS: Record<string, string> = {};
   'IDH-005': '✦ 67% onboarding drop-off rate — critical fix',
   'IDH-006': '✦ 3 legacy systems at EOL in Q3 2026',
   'IDH-007': '✦ Mobile adoption: 78% field inspector preference',
