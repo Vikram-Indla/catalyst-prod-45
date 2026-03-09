@@ -15507,6 +15507,13 @@ export type Database = {
             referencedRelation: "ph_issues"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "jira_sync_conflicts_ph_issue_id_fkey"
+            columns: ["ph_issue_id"]
+            isOneToOne: false
+            referencedRelation: "workhub_items_view"
+            referencedColumns: ["id"]
+          },
         ]
       }
       jira_sync_history: {
@@ -16004,6 +16011,13 @@ export type Database = {
             columns: ["ph_issue_id"]
             isOneToOne: false
             referencedRelation: "ph_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_write_back_queue_ph_issue_id_fkey"
+            columns: ["ph_issue_id"]
+            isOneToOne: false
+            referencedRelation: "workhub_items_view"
             referencedColumns: ["id"]
           },
         ]
@@ -23801,6 +23815,7 @@ export type Database = {
           changelog: Json | null
           comments: Json | null
           components: Json | null
+          deleted_at: string | null
           description_adf: Json | null
           description_text: string | null
           due_date: string | null
@@ -23827,6 +23842,7 @@ export type Database = {
           reporter_account_id: string | null
           reporter_display_name: string | null
           resolution: string | null
+          sort_order: number | null
           source: string
           sprint_name: string | null
           status: string
@@ -23846,6 +23862,7 @@ export type Database = {
           changelog?: Json | null
           comments?: Json | null
           components?: Json | null
+          deleted_at?: string | null
           description_adf?: Json | null
           description_text?: string | null
           due_date?: string | null
@@ -23872,6 +23889,7 @@ export type Database = {
           reporter_account_id?: string | null
           reporter_display_name?: string | null
           resolution?: string | null
+          sort_order?: number | null
           source?: string
           sprint_name?: string | null
           status?: string
@@ -23891,6 +23909,7 @@ export type Database = {
           changelog?: Json | null
           comments?: Json | null
           components?: Json | null
+          deleted_at?: string | null
           description_adf?: Json | null
           description_text?: string | null
           due_date?: string | null
@@ -23917,6 +23936,7 @@ export type Database = {
           reporter_account_id?: string | null
           reporter_display_name?: string | null
           resolution?: string | null
+          sort_order?: number | null
           source?: string
           sprint_name?: string | null
           status?: string
@@ -62138,6 +62158,87 @@ export type Database = {
         }
         Relationships: []
       }
+      workhub_activity: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string
+          comment_text: string | null
+          created_at: string
+          field_changed: string | null
+          id: string
+          issue_key: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_name?: string
+          comment_text?: string | null
+          created_at?: string
+          field_changed?: string | null
+          id?: string
+          issue_key: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string
+          comment_text?: string | null
+          created_at?: string
+          field_changed?: string | null
+          id?: string
+          issue_key?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: []
+      }
+      workhub_saved_views: {
+        Row: {
+          column_config: Json
+          created_at: string
+          created_by: string | null
+          filter_config: Json
+          group_by: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          project_key: string
+          sort_config: Json
+          updated_at: string
+        }
+        Insert: {
+          column_config?: Json
+          created_at?: string
+          created_by?: string | null
+          filter_config?: Json
+          group_by?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          project_key: string
+          sort_config?: Json
+          updated_at?: string
+        }
+        Update: {
+          column_config?: Json
+          created_at?: string
+          created_by?: string | null
+          filter_config?: Json
+          group_by?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          project_key?: string
+          sort_config?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       workstream_members: {
         Row: {
           created_at: string
@@ -68196,6 +68297,59 @@ export type Database = {
           version: number | null
         }
         Relationships: []
+      }
+      workhub_items_view: {
+        Row: {
+          assignee_account_id: string | null
+          assignee_display_name: string | null
+          child_count: number | null
+          completed_child_count: number | null
+          components: Json | null
+          deleted_at: string | null
+          description_text: string | null
+          due_date: string | null
+          fix_versions: Json | null
+          id: string | null
+          issue_key: string | null
+          issue_type: string | null
+          jira_created_at: string | null
+          jira_updated_at: string | null
+          labels: Json | null
+          parent_key: string | null
+          parent_summary: string | null
+          priority: string | null
+          project_key: string | null
+          project_name: string | null
+          reporter_account_id: string | null
+          reporter_display_name: string | null
+          resolution: string | null
+          sort_order: number | null
+          source: string | null
+          sprint_name: string | null
+          status: string | null
+          status_category: string | null
+          story_points: number | null
+          summary: string | null
+          synced_at: string | null
+          theme_id: string | null
+          type_icon_url: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_issues_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "ph_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_issues_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_theme_progress"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
