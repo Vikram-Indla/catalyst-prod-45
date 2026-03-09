@@ -81,7 +81,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: '#E2E8F0' }}>
         <div className="flex items-center gap-3">
-          <WorkItemIcon type="epic" size={20} />
+          <JiraIssueTypeIcon type="epic" size={20} />
           <h1 className="text-base font-semibold" style={{ color: '#0F172A', fontWeight: 650 }}>Epic Backlog</h1>
           <span className="text-xs" style={{ color: '#64748B' }}>{totalEpics} epics across {groups.length} groups</span>
         </div>
