@@ -150,10 +150,11 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                   return (
                     <div
                       key={epic.id}
-                      className="group flex items-center h-[36px] px-2 border-b"
+                      className="group flex items-center h-[36px] px-2 border-b cursor-pointer"
                       style={{ borderColor: '#F1F5F9', maxHeight: 36, transition: 'background 120ms' }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
                       onMouseLeave={(e) => (e.currentTarget.style.background = '')}
+                      onClick={() => setDrawerEpicId(epic.id)}
                     >
                       {/* Checkbox */}
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
