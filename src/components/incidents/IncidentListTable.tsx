@@ -437,7 +437,7 @@ export function IncidentListTable({
                       onMouseLeave={() => setHoveredId(null)}
                       tabIndex={0}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && incident.id) navigate(`/release/incidents/${incident.id}`);
+                        if (e.key === 'Enter' && incident.id) navigate(`/incident-hub/view/${incident.id}`);
                       }}
                     >
                       {/* Key - left aligned */}
