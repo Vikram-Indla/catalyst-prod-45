@@ -573,7 +573,7 @@ export function IncidentListTable({
                               className="text-xs cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/release/incidents/${incident.id}?mode=edit`);
+                                navigate(`/incident-hub/view/${incident.id}?mode=edit`);
                               }}
                               disabled={isConverted}
                             >
