@@ -21,6 +21,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
   const projectId = propProjectId || params.projectId;
   const queryClient = useQueryClient();
   const { data: stories, isLoading, error } = useStoryBacklog(projectId || '');
+  const avatarsByName = useProfileAvatarsByName();
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [showCreate, setShowCreate] = useState(false);
