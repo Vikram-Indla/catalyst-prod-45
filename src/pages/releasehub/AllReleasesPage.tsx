@@ -40,9 +40,10 @@ export default function AllReleasesPage() {
   };
 
   const accentColor = (status: string) => {
-    if (status === 'in_progress') return RH.primary;
-    if (status === 'done') return RH.success;
-    return '#CBD5E1';
+    if (status === 'in_progress') return 'var(--cp-primary-60)';
+    if (status === 'done') return 'var(--cp-success-60)';
+    if (status === 'archived') return 'var(--cp-text-muted)';
+    return 'var(--cp-border-default)';
   };
 
   return (

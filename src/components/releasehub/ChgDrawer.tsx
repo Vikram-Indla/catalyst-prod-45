@@ -252,7 +252,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
             <div className="flex-1">
               <span className="text-[13px] font-medium" style={{ color: RH.ink2 }}>{s.stage}</span>
               {signoff && status === 'pending' && waitHours > 0 && (
-                <span className={`ml-2 text-[11px] font-bold ${waitHours > 48 ? 'text-[#DC2626]' : waitHours > 24 ? 'text-[#C2840A]' : 'text-[#64748B]'}`}>
+                <span className="ml-2 text-[11px] font-bold" style={{ color: waitHours > 48 ? 'var(--cp-danger-60)' : waitHours > 24 ? 'var(--cp-warning-60)' : 'var(--cp-text-muted)' }}>
                   {getSignoffWaitTime(signoff.wait_started_at)}
                 </span>
               )}
