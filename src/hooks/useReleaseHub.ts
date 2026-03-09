@@ -49,7 +49,7 @@ export const useChange = (id: string) =>
 export const useCreateChange = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (payload: Record<string, any>) => changeService.create(payload),
+    mutationFn: (payload: { chg_number: string; title: string; status?: string; risk_level?: string; source?: string; category?: string; deployment_date?: string }) => changeService.create(payload),
     onSuccess: () => qc.invalidateQueries({ queryKey: KEYS.changes }),
   });
 };
