@@ -290,7 +290,7 @@ export function IncidentListTable({
       toast.error('Cannot open incident: missing identifier');
       return;
     }
-    navigate(`/release/incidents/${incidentId}`);
+    navigate(`/incident-hub/view/${incidentId}`);
   };
 
   const handleCopyLink = (incidentId: string, incidentKey: string) => {
