@@ -214,8 +214,8 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                         <span>{formatDueDate(epic.end_date)}</span>
                         {/* Row actions */}
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: 'rgba(255,255,255,0.95)' }}>
-                          <button onClick={() => setEditEpicId(epic.id)} className="p-1 rounded hover:bg-gray-100" title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: '#64748B' }} /></button>
-                          <button onClick={() => setDeleteTarget(epic)} className="p-1 rounded hover:bg-gray-100" title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
+                          <button onClick={(e) => { e.stopPropagation(); setEditEpicId(epic.id); }} className="p-1 rounded hover:bg-gray-100" title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: '#64748B' }} /></button>
+                          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(epic); }} className="p-1 rounded hover:bg-gray-100" title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
                         </div>
                       </div>
                     </div>

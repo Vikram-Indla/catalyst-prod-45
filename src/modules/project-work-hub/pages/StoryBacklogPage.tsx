@@ -181,8 +181,8 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                       <div style={{ width: 78, flexShrink: 0, fontSize: 12, position: 'relative' }}>
                         <span style={{ color: getPriorityColor(story.priority) }}>{getPriorityLabel(story.priority)}</span>
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: 'rgba(255,255,255,0.95)' }}>
-                          <button onClick={() => setEditStoryId(story.id)} className="p-1 rounded hover:bg-gray-100" title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: '#64748B' }} /></button>
-                          <button onClick={() => setDeleteTarget(story)} className="p-1 rounded hover:bg-gray-100" title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
+                          <button onClick={(e) => { e.stopPropagation(); setEditStoryId(story.id); }} className="p-1 rounded hover:bg-gray-100" title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: '#64748B' }} /></button>
+                          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(story); }} className="p-1 rounded hover:bg-gray-100" title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: '#DC2626' }} /></button>
                         </div>
                       </div>
                     </div>
