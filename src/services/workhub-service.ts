@@ -250,7 +250,7 @@ export async function fetchSavedViews(projectKey: string) {
 export async function saveSavedView(view: Record<string, any>) {
   const { data, error } = await supabase
     .from('workhub_saved_views')
-    .upsert(view)
+    .upsert(view as any)
     .select()
     .single();
   if (error) throw error;
