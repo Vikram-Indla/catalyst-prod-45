@@ -21847,6 +21847,7 @@ export type Database = {
           ai_summary: string | null
           ai_tags: string[] | null
           alignment: number | null
+          assigned_team: string | null
           assigned_to: string | null
           business_value: number | null
           category: string | null
@@ -21880,6 +21881,8 @@ export type Database = {
           status: string
           submitted_by: string | null
           tags: string[] | null
+          target_release_date: string | null
+          theme: string | null
           time_criticality: number | null
           timeframe_score: number | null
           title: string
@@ -21895,6 +21898,7 @@ export type Database = {
           ai_summary?: string | null
           ai_tags?: string[] | null
           alignment?: number | null
+          assigned_team?: string | null
           assigned_to?: string | null
           business_value?: number | null
           category?: string | null
@@ -21928,6 +21932,8 @@ export type Database = {
           status?: string
           submitted_by?: string | null
           tags?: string[] | null
+          target_release_date?: string | null
+          theme?: string | null
           time_criticality?: number | null
           timeframe_score?: number | null
           title: string
@@ -21943,6 +21949,7 @@ export type Database = {
           ai_summary?: string | null
           ai_tags?: string[] | null
           alignment?: number | null
+          assigned_team?: string | null
           assigned_to?: string | null
           business_value?: number | null
           category?: string | null
@@ -21976,6 +21983,8 @@ export type Database = {
           status?: string
           submitted_by?: string | null
           tags?: string[] | null
+          target_release_date?: string | null
+          theme?: string | null
           time_criticality?: number | null
           timeframe_score?: number | null
           title?: string
