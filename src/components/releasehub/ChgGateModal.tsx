@@ -44,7 +44,7 @@ export function ChgGateModal({ changeId, chgNumber, onResolved }: Props) {
                 Link Work Item
               </button>
               <button onClick={onResolved}
-                className="w-full h-11 rounded-md border border-[#E2E8F0] text-[13px] font-medium text-[#94A3B8] hover:bg-[#F8FAFC]">
+                className="w-full h-11 rounded-md border border-[#E2E8F0] text-[13px] font-medium text-[#94A3B8] hover:bg-[#F4F7FA]">
                 Skip (RM only · logged)
               </button>
             </div>

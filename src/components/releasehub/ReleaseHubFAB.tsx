@@ -21,7 +21,7 @@ export function ReleaseHubFAB({ onNewRelease, onNewChange, onImportSN }: Props) 
       {open && items.map((item, i) => (
         <button key={item.label}
           onClick={() => { item.action(); setOpen(false); }}
-          className="flex items-center gap-2 h-10 pl-3 pr-4 rounded-full bg-white shadow-lg border border-[#E2E8F0] text-[13px] font-semibold text-[#1E293B] hover:bg-[#F8FAFC] animate-in fade-in slide-in-from-bottom-2"
+          className="flex items-center gap-2 h-10 pl-3 pr-4 rounded-full bg-white shadow-lg border border-[#E2E8F0] text-[13px] font-semibold text-[#1E293B] hover:bg-[#F4F7FA] animate-in fade-in slide-in-from-bottom-2"
           style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'both' }}>
           <item.icon size={14} className="text-[#2563EB]" />
           {item.label}

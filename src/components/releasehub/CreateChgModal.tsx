@@ -54,7 +54,7 @@ export function CreateChgModal({ onClose }: Props) {
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Category</label>
             <div className="relative">
-              <button onClick={() => setCatOpen(!catOpen)} className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] bg-white text-[13px] text-left flex items-center justify-between hover:bg-[#F8FAFC]">
+              <button onClick={() => setCatOpen(!catOpen)} className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] bg-white text-[13px] text-left flex items-center justify-between hover:bg-[#F4F7FA]">
                 <span className={category ? 'text-[#1E293B]' : 'text-[#94A3B8]'}>{category || 'Select category...'}</span>
                 <ChevronDown size={12} className="text-[#94A3B8]" />
               </button>
@@ -81,7 +81,7 @@ export function CreateChgModal({ onClose }: Props) {
           <div>
             <label className="block text-[12px] font-semibold text-[#475569] mb-1">Linked Release</label>
             <div className="relative">
-              <button onClick={() => setRelOpen(!relOpen)} className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] bg-white text-[13px] text-left flex items-center justify-between hover:bg-[#F8FAFC]">
+              <button onClick={() => setRelOpen(!relOpen)} className="w-full h-9 px-3 rounded-md border border-[#E2E8F0] bg-white text-[13px] text-left flex items-center justify-between hover:bg-[#F4F7FA]">
                 <span className={releaseId ? 'text-[#1E293B]' : 'text-[#94A3B8]'}>{releases.find((r: any) => r.id === releaseId)?.name || 'Select release...'}</span>
                 <ChevronDown size={12} className="text-[#94A3B8]" />
               </button>
@@ -124,7 +124,7 @@ export function CreateChgModal({ onClose }: Props) {
           )}
         </div>
         <div className="sticky bottom-0 bg-white border-t border-[#E2E8F0] px-6 py-3 flex justify-end gap-2">
-          <button onClick={onClose} className="h-9 px-4 rounded-md border border-[#E2E8F0] text-[13px] font-medium text-[#475569] hover:bg-[#F8FAFC]">Cancel</button>
+          <button onClick={onClose} className="h-9 px-4 rounded-md border border-[#E2E8F0] text-[13px] font-medium text-[#475569] hover:bg-[#F4F7FA]">Cancel</button>
           <button onClick={handleSubmit} disabled={!title || !deployDate || createChange.isPending}
             className="h-9 px-4 rounded-md bg-[#2563EB] text-white text-[13px] font-semibold hover:bg-[#1D4ED8] disabled:opacity-50">
             {createChange.isPending ? 'Creating...' : 'Create Change'}

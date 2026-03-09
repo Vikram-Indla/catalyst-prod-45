@@ -50,13 +50,13 @@ export function ReleaseDrawer({ release, onClose }: Props) {
         <div className="sticky top-0 bg-white z-10 border-b border-[#E2E8F0] px-6 py-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ background: release.source === 'jira' ? '#DBEAFE' : '#F0FDFA', color: release.source === 'jira' ? '#1E40AF' : '#0D9488' }}>{release.source}</span>
+              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ background: release.source === 'jira' ? '#FFF7ED' : '#F0FDFA', color: release.source === 'jira' ? '#9A3412' : '#0D9488', border: release.source === 'jira' ? '1px solid #FED7AA' : '1px solid #99F6E4' }}>{release.source}</span>
               {release.version && <span className="text-[10px] font-mono text-[#64748B] bg-[#F1F5F9] px-1.5 py-0.5 rounded">{release.version}</span>}
             </div>
             <div className="flex items-center gap-1.5">
               <button className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><Download size={14} /></button>
               <button className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><RefreshCw size={14} /></button>
-              <button onClick={onClose} className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
+              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
             </div>
           </div>
           <h2 className="text-[18px] font-extrabold mb-2" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{release.name}</h2>
@@ -147,7 +147,7 @@ function ChangesTab({ changes }: { changes: any[] }) {
       </thead>
       <tbody>
         {changes.map((c: any) => (
-          <tr key={c.id} className="border-b border-[#F1F5F9] hover:bg-[#FAFBFC]">
+          <tr key={c.id} className="border-b border-[#F1F5F9] hover:bg-[#F4F7FA]">
             <td className="px-3 py-2 font-bold text-[#0D9488]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</td>
             <td className="px-3 py-2 truncate max-w-[200px]" title={c.title}>{c.title}</td>
             <td className="px-3 py-2"><ChgStatusBadge status={c.status} /></td>
