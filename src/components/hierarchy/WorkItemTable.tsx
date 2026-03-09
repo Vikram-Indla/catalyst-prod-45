@@ -434,7 +434,7 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
           </div>
         );
       case 'parent':
-        return <ParentCell parentId={item.parentId} allRows={flatRows} onSelect={onSelect} />;
+        return <ParentCell item={item} allRows={flatRows} onSelect={onSelect} />;
       case 'assignee':
         return (
           <div style={{ width: 160, padding: '0 8px', overflow: 'hidden', position: 'relative' }}>
