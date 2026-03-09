@@ -26,9 +26,9 @@ const ProjectBoardPageLazy = lazy(() => import("./pages/project-hub/ProjectBoard
 const ProjectBoardManagerPageLazy = lazy(() => import("./pages/project-hub/ProjectBoardManagerPage"));
 const ProjectBoardCanvasPageLazy = lazy(() => import("./pages/project-hub/ProjectBoardCanvasPage"));
 const AllProjectsPageLazy = lazy(() => import("./pages/projecthub/AllProjectsPage"));
-const ProjectEpicBacklogPageLazy = lazy(() => import("./pages/project-hub/ProjectEpicBacklogPage"));
-const ProjectFeatureBacklogPageLazy = lazy(() => import("./pages/project-hub/ProjectFeatureBacklogPage"));
-const ProjectStoryBacklogPageLazy = lazy(() => import("./pages/project-hub/ProjectStoryBacklogPage"));
+const NativeEpicBacklogPageLazy = lazy(() => import("./pages/project-hub/NativeEpicBacklogPage"));
+const NativeFeatureBacklogPageLazy = lazy(() => import("./pages/project-hub/NativeFeatureBacklogPage"));
+const NativeStoryBacklogPageLazy = lazy(() => import("./pages/project-hub/NativeStoryBacklogPage"));
 const HierarchyPageLazy = lazy(() => import("./pages/project-hub/HierarchyPage"));
 import { List, Columns3, AlignJustify, GanttChart, Tag, BarChart3, Sparkles as SparklesIcon, Activity as ActivityIcon } from 'lucide-react';
 import PHPlaceholderBase from "./pages/project-hub/PhasePlaceholderPage";
