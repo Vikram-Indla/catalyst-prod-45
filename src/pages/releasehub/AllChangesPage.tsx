@@ -242,7 +242,7 @@ function ChangeRow({ change: c, section, onClick }: { change: any; section: Chan
             <span className="text-[10px] font-semibold text-[#64748B]">Work Items:</span>
             {visibleWI.map((wi: any) => (
               <WorkItemTag key={wi.id || wi.work_item_key} workItemKey={wi.work_item_key} title={wi.work_item_title} type={wi.work_item_type} status={wi.work_item_status}
-                onClick={(e: any) => { e?.stopPropagation?.(); }} />
+                onClick={() => { /* noop - prevent row click */ }} />
             ))}
             {!expanded && remaining > 0 && (
               <button onClick={e => { e.stopPropagation(); setExpanded(true); }}
