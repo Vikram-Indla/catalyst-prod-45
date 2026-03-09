@@ -77,8 +77,8 @@ export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500
       onDoubleClick={(e) => { e.stopPropagation(); setEditing(true); }}
       className="hi-inline-title"
       style={{
-        flex: 1, fontSize, fontWeight, color, overflow: 'hidden', textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap', cursor: 'text', position: 'relative',
+        flex: 1, fontSize, fontWeight, color, display: 'flex', alignItems: 'center',
+        overflow: 'hidden', cursor: 'text', position: 'relative', minWidth: 0,
         ...style,
       }}
       title={value}
