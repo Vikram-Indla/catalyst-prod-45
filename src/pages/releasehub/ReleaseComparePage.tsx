@@ -101,7 +101,7 @@ export default function ReleaseComparePage() {
                         {selectedReleases.map((r: any, i: number) => (
                           <td key={r.id} className="px-3 py-0">
                             <span className="inline-flex items-center gap-1">
-                              {row.render(row.values[i], r)}
+                              {row.render(row.values[i] as any, r)}
                               {row.bestIdx === i && <span className="text-[#0D9488]">★</span>}
                             </span>
                           </td>
