@@ -231,8 +231,6 @@ export default function HierarchyPage() {
     setOpenDropdown(null);
   }, []);
 
-  const gridCols = selectedItem ? '2fr 1fr' : '1fr';
-
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#F8FAFC', fontFamily: "'Inter', sans-serif" }}>
       {/* PAGE HEADER */}
