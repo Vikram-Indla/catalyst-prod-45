@@ -69,13 +69,13 @@ const IdeationPage = lazy(() => import("./pages/producthub/IdeationPage"));
 const ReqAssistLibrary = lazy(() => import("./pages/ReqAssistLibrary"));
 const ReqAssistGenerate = lazy(() => import("./pages/ReqAssistGenerate"));
 
-// IncidentHub lazy imports
-const IncidentHubPage = lazy(() => import("./pages/IncidentHub"));
-const IncidentHubKanbanPage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubKanbanPage })));
-const IncidentHubAnalyticsPage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubAnalyticsPage })));
-const IncidentHubInsightsPage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubInsightsPage })));
-const IncidentHubReportsPage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubReportsPage })));
-const IncidentHubCommitteeQueuePage = lazy(() => import("./pages/IncidentHub").then(m => ({ default: m.IncidentHubCommitteeQueuePage })));
+// IncidentHub lazy imports — wired to real incident components
+const IncidentHubListPage = lazy(() => import("./pages/release/IncidentRoomList"));
+const IncidentHubKanbanPage = lazy(() => import("./modules/incidents/kanban/pages/IncidentKanbanPage"));
+const IncidentHubAnalyticsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentAnalyticsPage"));
+const IncidentHubInsightsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentInsightsPage"));
+const IncidentHubReportsPage = lazy(() => import("./pages/release/IncidentReportsPage"));
+const IncidentHubCommitteeQueuePage = lazy(() => import("./pages/release/CAPCommitteeQueuePage"));
 
 
 // Wiki Module lazy imports
