@@ -14,7 +14,7 @@ export function useEpicBacklog(projectId: string) {
       if (!programId) return [];
       const { data, error } = await supabase
         .from('epics')
-        .select('id, epic_key, name, description, status, assignee_id, due_date, priority, deleted_at, primary_program_id')
+        .select('id, epic_key, name, description, status, assignee_id, end_date, priority, deleted_at, primary_program_id')
         .eq('primary_program_id', programId)
         .is('deleted_at', null)
         .order('global_rank', { ascending: true, nullsFirst: false });
@@ -32,7 +32,7 @@ export function useFeatureBacklog(projectId: string) {
     queryFn: async (): Promise<BacklogFeature[]> => {
       const { data, error } = await supabase
         .from('features')
-        .select('id, display_id, name, description, status, epic_id, project_id, assignee_id, due_date, priority, deleted_at')
+        .select('id, display_id, name, description, status, epic_id, project_id, assignee_id, planned_end_date, priority, deleted_at')
         .eq('project_id', projectId)
         .is('deleted_at', null)
         .order('global_rank', { ascending: true, nullsFirst: false });
@@ -48,7 +48,6 @@ export function useStoryBacklog(projectId: string) {
   return useQuery({
     queryKey: ['backlog-stories', projectId],
     queryFn: async (): Promise<BacklogStory[]> => {
-      // Phase 1: features for this project
       const { data: features, error: featError } = await supabase
         .from('features')
         .select('id, display_id, name, epic_id')
@@ -59,7 +58,6 @@ export function useStoryBacklog(projectId: string) {
 
       const featureIds = features.map(f => f.id);
 
-      // Fetch epics for parent chip
       const epicIds = [...new Set(features.map(f => f.epic_id).filter(Boolean))] as string[];
       const epicsMap: Record<string, { id: string; epic_key: string | null; name: string }> = {};
       if (epicIds.length > 0) {
@@ -72,7 +70,6 @@ export function useStoryBacklog(projectId: string) {
         }
       }
 
-      // Build feature map with epic data
       const featureMap: Record<string, BacklogStory['feature']> = {};
       for (const f of features) {
         featureMap[f.id] = {
@@ -84,19 +81,18 @@ export function useStoryBacklog(projectId: string) {
         };
       }
 
-      // Phase 2: stories for those features
       const { data: stories, error: storyError } = await supabase
         .from('stories')
-        .select('id, story_key, title, name, description, status, feature_id, assignee_id, due_date, priority, deleted_at, sort_order')
+        .select('id, story_key, title, name, description, status, feature_id, assignee_id, start_date, priority, deleted_at, rank_order')
         .in('feature_id', featureIds)
         .is('deleted_at', null)
-        .order('sort_order', { ascending: true, nullsFirst: false });
+        .order('rank_order', { ascending: true, nullsFirst: false });
       if (storyError) throw storyError;
 
-      return (stories || []).map(s => ({
+      return (stories || []).map((s: any) => ({
         ...s,
         feature: s.feature_id ? featureMap[s.feature_id] ?? null : null,
-      })) as any as BacklogStory[];
+      })) as BacklogStory[];
     },
     enabled: !!projectId,
   });

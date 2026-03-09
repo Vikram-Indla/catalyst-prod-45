@@ -21,7 +21,7 @@ export interface BacklogEpic {
   status: EpicStatus | null;
   assignee_id: string | null;
   assignee?: BacklogUser | null;
-  due_date: string | null;
+  end_date: string | null;
   priority: string | null;
   deleted_at: string | null;
   primary_program_id: string | null;
@@ -37,7 +37,7 @@ export interface BacklogFeature {
   project_id: string | null;
   assignee_id: string | null;
   assignee?: BacklogUser | null;
-  due_date: string | null;
+  planned_end_date: string | null;
   priority: string | null;
   deleted_at: string | null;
 }
@@ -52,7 +52,7 @@ export interface BacklogStory {
   feature_id: string | null;
   assignee_id: string | null;
   assignee?: BacklogUser | null;
-  due_date: string | null;
+  start_date: string | null;
   priority: string | null;
   deleted_at: string | null;
   feature?: {
