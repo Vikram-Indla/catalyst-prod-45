@@ -336,16 +336,15 @@ function ImpactSection({ idea, ideaKey, rawIdea }: { idea: Idea; ideaKey: string
 // ─── Comments Section ────────────────────────────────────────────
 function CommentsSection({ ideaId }: { ideaId: string | null }) {
   const { data: comments = [], isLoading } = useIdeaComments(ideaId);
-  const addComment = useAddIdeaComment(ideaId || '');
+  const addComment = useAddIdeaComment();
   const { user } = useAuth();
   const [newComment, setNewComment] = useState('');
 
   const handleSubmit = async () => {
     if (!newComment.trim() || !ideaId) return;
     try {
-      await addComment.mutateAsync({ body: newComment.trim(), userId: user?.id });
+      await addComment.mutateAsync({ ideaId, userId: user?.id || '', content: newComment.trim() });
       setNewComment('');
-      toast.success('Comment added');
     } catch {
       toast.error('Failed to add comment');
     }
