@@ -177,7 +177,7 @@ export default function IncidentRoomList() {
   return (
     <div className="flex flex-col h-full bg-background">
       <GlobalPageHeader
-        sectionLabel="RELEASE"
+        sectionLabel="INCIDENTS"
         pageTitle="Incident List"
         showDivider={false}
       />
