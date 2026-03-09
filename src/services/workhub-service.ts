@@ -112,7 +112,7 @@ export async function fetchWorkItem(itemId: string): Promise<WorkHubItem> {
     .eq('id', itemId)
     .single();
   if (error) throw error;
-  return data as WorkHubItem;
+  return data as unknown as WorkHubItem;
 }
 
 // ═══ UPDATE ═══
