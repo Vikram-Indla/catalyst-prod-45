@@ -39,6 +39,9 @@ export function useEpicBacklog(projectId: string) {
         health: null,
         deleted_at: null,
         primary_program_id: null,
+        jira_created_at: row.jira_created_at,
+        jira_updated_at: row.jira_updated_at,
+        source: 'jira' as const,
       })) as BacklogEpic[];
     },
     enabled: !!projectId && !!projectKey,
