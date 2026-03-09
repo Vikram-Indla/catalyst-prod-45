@@ -473,21 +473,46 @@ export default function HierarchyPage() {
         </div>
 
         {selectedItem && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            style={{ overflowY: 'auto', minHeight: 0 }}
-          >
-            <DetailPanel
-              item={selectedItem}
-              allItems={treeItems}
-              onClose={handleDeselect}
-              onSelectItem={handleSelect}
-              projectKey={projectKey}
-              allStatuses={allStatuses}
-            />
-          </motion.div>
+          <AnimatePresence>
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                onClick={handleDeselect}
+                style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.16)', zIndex: 60 }}
+              />
+              <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ duration: 0.24, ease: 'easeOut' }}
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  right: 0,
+                  height: '100vh',
+                  width: 'min(62vw, 920px)',
+                  minWidth: 480,
+                  background: '#FFFFFF',
+                  borderLeft: '1px solid #E2E8F0',
+                  zIndex: 61,
+                  padding: 16,
+                  overflowY: 'auto',
+                }}
+              >
+                <DetailPanel
+                  item={selectedItem}
+                  allItems={treeItems}
+                  onClose={handleDeselect}
+                  onSelectItem={handleSelect}
+                  projectKey={projectKey}
+                  allStatuses={allStatuses}
+                />
+              </motion.div>
+            </>
+          </AnimatePresence>
         )}
       </div>
     </div>
