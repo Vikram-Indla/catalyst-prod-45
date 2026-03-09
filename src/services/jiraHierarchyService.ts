@@ -68,6 +68,7 @@ function transformJiraIssue(row: any): WorkItem {
     hierarchyColorText: typeInfo.colorText,
     parentId: row.parent_key || null,
     parentKey: row.parent_key || null,
+    parentSummary: row.parent_summary || null,
     status: {
       id: row.status,
       name: row.status,
