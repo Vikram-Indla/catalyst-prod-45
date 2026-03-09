@@ -9,16 +9,23 @@ interface RoadmapDatesTableProps {
   mutatingIds: Set<string>;
 }
 
+const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
+  Q1: { bg: '#F3E8FF', color: '#6D28D9' },
+  Q2: { bg: '#EFF6FF', color: '#1D4ED8' },
+  Q3: { bg: '#ECFDF5', color: '#065F46' },
+  Q4: { bg: '#FFF7ED', color: '#92400E' },
+};
+
 const headerStyle: React.CSSProperties = {
   fontSize: 11, fontWeight: 700, color: '#64748B', fontFamily: "'Inter', sans-serif",
-  textTransform: 'uppercase', letterSpacing: '0.04em',
-  background: '#F8FAFC', height: 36, padding: '0 10px',
+  textTransform: 'uppercase', letterSpacing: '0.07em',
+  background: '#F8FAFC', height: 36, padding: '0 12px',
   borderBottom: '2px solid #E2E8F0', position: 'sticky', top: 0, zIndex: 2,
   textAlign: 'left', whiteSpace: 'nowrap',
 };
 
 const cellStyle: React.CSSProperties = {
-  height: 36, padding: '0 10px', borderBottom: '1px solid #F1F5F9',
+  height: 36, padding: '0 12px', borderBottom: '1px solid #F1F5F9',
   verticalAlign: 'middle', whiteSpace: 'nowrap',
 };
 
@@ -27,6 +34,8 @@ function formatDate(d: string | null): string {
   const date = new Date(d + 'T00:00:00');
   return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
 }
+
+const isConverted = (status: string) => status.toLowerCase() === 'converted';
 
 export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, mutatingIds }: RoadmapDatesTableProps) {
   return (
@@ -48,6 +57,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
         <tbody>
           {ideas.map(idea => {
             const isMutating = mutatingIds.has(idea.id);
+            const qStyle = idea.quarter ? QUARTER_STYLES[idea.quarter] : null;
             return (
               <tr
                 key={idea.id}
@@ -63,40 +73,33 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                   <span style={{
                     fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
                     color: '#94A3B8', textTransform: 'uppercase',
-                  }}>
-                    {idea.ideaKey}
-                  </span>
+                  }}>{idea.ideaKey}</span>
                 </td>
                 <td style={{ ...cellStyle, fontSize: 13, fontWeight: 650, color: '#0F172A' }}>
-                  <div style={{
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 300,
-                  }}>
-                    {idea.title}
-                  </div>
+                  <div
+                    title={idea.title.length > 50 ? idea.title : undefined}
+                    style={{
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 300,
+                    }}
+                  >{idea.title}</div>
                 </td>
                 <td style={cellStyle}>
                   {idea.team ? (
                     <span style={{
                       fontSize: 10, fontWeight: 600, background: '#F1F5F9',
                       color: '#475569', padding: '2px 6px', borderRadius: 4,
-                    }}>
-                      {idea.team}
-                    </span>
-                  ) : (
-                    <span style={{ color: '#CBD5E1' }}>—</span>
-                  )}
+                    }}>{idea.team}</span>
+                  ) : <span style={{ color: '#CBD5E1' }}>—</span>}
                 </td>
                 <td style={cellStyle}>
-                  {idea.quarter ? (
+                  {qStyle ? (
                     <span style={{
-                      fontSize: 10, fontWeight: 700, background: '#F0FDFA',
-                      color: '#0D9488', padding: '2px 8px', borderRadius: 100,
-                    }}>
-                      {idea.quarter}
-                    </span>
-                  ) : (
-                    <span style={{ color: '#CBD5E1' }}>—</span>
-                  )}
+                      fontSize: 10, fontWeight: 700, height: 20, display: 'inline-flex',
+                      alignItems: 'center', padding: '0 8px', borderRadius: 3,
+                      background: qStyle.bg, color: qStyle.color,
+                      fontFamily: "'Inter', sans-serif", textTransform: 'uppercase',
+                    }}>{idea.quarter}</span>
+                  ) : <span style={{ color: '#CBD5E1' }}>—</span>}
                 </td>
                 {MILESTONE_CONFIGS.map(m => (
                   <td key={m.key} style={cellStyle}>
@@ -104,9 +107,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                       fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
                       color: idea.milestones[m.key] ? '#334155' : '#CBD5E1',
                       fontVariantNumeric: 'tabular-nums',
-                    }}>
-                      {formatDate(idea.milestones[m.key])}
-                    </span>
+                    }}>{formatDate(idea.milestones[m.key])}</span>
                   </td>
                 ))}
                 <td style={cellStyle}>
@@ -115,30 +116,33 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                     disabled={isMutating}
                     style={{
                       width: 32, height: 18, borderRadius: 9, border: 'none', cursor: 'pointer',
-                      background: idea.isCommitted ? '#0D9488' : '#CBD5E1',
-                      position: 'relative',
+                      background: idea.isCommitted ? '#0D9488' : '#CBD5E1', position: 'relative',
+                      transition: 'background 150ms',
                     }}
                   >
                     <span style={{
                       position: 'absolute', top: 3, width: 12, height: 12, borderRadius: 6,
-                      background: '#FFFFFF',
-                      left: idea.isCommitted ? 17 : 3,
+                      background: '#FFFFFF', left: idea.isCommitted ? 17 : 3, transition: 'left 150ms',
                     }} />
                   </button>
                 </td>
                 <td style={cellStyle}>
-                  {idea.isCommitted && (
+                  {isConverted(idea.status) ? (
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, background: '#E3FCEF', color: '#006644',
+                      border: '1px solid #B7EBD1', padding: '2px 6px', borderRadius: 4,
+                    }}>✓</span>
+                  ) : idea.isCommitted ? (
                     <button
                       onClick={e => { e.stopPropagation(); onSelectIdea(idea); }}
                       style={{
                         height: 22, padding: '0 6px', borderRadius: 4,
                         border: '1px solid #E2E8F0', background: '#FFFFFF',
                         color: '#64748B', fontSize: 10, fontWeight: 600, cursor: 'pointer',
+                        transition: 'all 150ms',
                       }}
-                    >
-                      → Init
-                    </button>
-                  )}
+                    >→ Init</button>
+                  ) : null}
                 </td>
               </tr>
             );

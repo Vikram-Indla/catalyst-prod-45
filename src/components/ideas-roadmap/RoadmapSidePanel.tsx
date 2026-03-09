@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, ArrowRight } from 'lucide-react';
 import { MILESTONE_CONFIGS } from '@/types/ideasRoadmap';
 import type { RoadmapIdea, RoadmapMilestones, RoadmapQuarter } from '@/types/ideasRoadmap';
@@ -14,22 +14,55 @@ interface RoadmapSidePanelProps {
 }
 
 const QUARTERS: RoadmapQuarter[] = ['Q1', 'Q2', 'Q3', 'Q4'];
+const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
+  Q1: { bg: '#F3E8FF', color: '#6D28D9' },
+  Q2: { bg: '#EFF6FF', color: '#1D4ED8' },
+  Q3: { bg: '#ECFDF5', color: '#065F46' },
+  Q4: { bg: '#FFF7ED', color: '#92400E' },
+};
+const isConverted = (status: string) => status.toLowerCase() === 'converted';
 
 export function RoadmapSidePanel({
   idea, onClose, onSaveMilestones, onToggleCommitted, onConvertToInitiative, onQuarterChange, isSaving,
 }: RoadmapSidePanelProps) {
   const [milestones, setMilestones] = useState<RoadmapMilestones>({ ...idea.milestones });
   const [visible, setVisible] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { requestAnimationFrame(() => setVisible(true)); }, []);
+  useEffect(() => { setMilestones({ ...idea.milestones }); }, [idea.id]);
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose(); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose();
+    };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  useEffect(() => { setMilestones({ ...idea.milestones }); }, [idea.id]);
+  // DS-05: Focus trap
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    const focusable = panel.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    first.focus();
+
+    const trap = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+    panel.addEventListener('keydown', trap);
+    return () => panel.removeEventListener('keydown', trap);
+  }, [visible]);
 
   function handleClose() {
     setVisible(false);
@@ -59,7 +92,6 @@ export function RoadmapSidePanel({
 
   return (
     <div onKeyDown={handleKeyDown} style={{ position: 'fixed', inset: 0, zIndex: 50 }}>
-      {/* Backdrop */}
       <div
         onClick={handleClose}
         style={{
@@ -69,20 +101,18 @@ export function RoadmapSidePanel({
         }}
       />
 
-      {/* Panel */}
-      <div style={{
+      <div ref={panelRef} style={{
         position: 'absolute', top: 0, right: 0, bottom: 0, width: 480,
-        background: '#FFFFFF',
-        boxShadow: '-4px 0 24px rgba(0,0,0,.12)',
+        background: '#FFFFFF', boxShadow: '-4px 0 24px rgba(0,0,0,.12)',
         transform: visible ? 'translateX(0)' : 'translateX(100%)',
         transition: 'transform 200ms ease',
-        display: 'flex', flexDirection: 'column',
-        fontFamily: "'Inter', sans-serif",
+        display: 'flex', flexDirection: 'column', fontFamily: "'Inter', sans-serif",
       }}>
-        {/* Header */}
+        {/* Header — sticky */}
         <div style={{
           height: 56, display: 'flex', alignItems: 'center', gap: 12,
           padding: '0 20px', borderBottom: '1px solid #E2E8F0', flexShrink: 0,
+          position: 'sticky', top: 0, background: '#FFFFFF', zIndex: 1,
         }}>
           <button onClick={handleClose} style={{
             width: 32, height: 32, borderRadius: 6, border: '1px solid #E2E8F0',
@@ -91,7 +121,7 @@ export function RoadmapSidePanel({
           }}>
             <X size={14} color="#64748B" />
           </button>
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: '#94A3B8' }}>
               {idea.ideaKey}
             </span>
@@ -111,6 +141,7 @@ export function RoadmapSidePanel({
               style={{
                 width: 32, height: 18, borderRadius: 9, border: 'none', cursor: 'pointer',
                 background: idea.isCommitted ? '#0D9488' : '#CBD5E1', position: 'relative',
+                transition: 'background 150ms',
               }}
             >
               <span style={{
@@ -128,39 +159,51 @@ export function RoadmapSidePanel({
             <div>
               <div style={{ ...labelStyle, marginBottom: 8 }}>TARGET QUARTER</div>
               <div style={{ display: 'flex', gap: 6 }}>
-                {QUARTERS.map(q => (
-                  <button
-                    key={q}
-                    onClick={() => onQuarterChange(idea, q)}
-                    style={{
-                      flex: 1, height: 32, borderRadius: 6, border: '1px solid #E2E8F0',
-                      cursor: 'pointer', fontSize: 12, fontWeight: 700,
-                      fontFamily: "'Inter', sans-serif",
-                      background: idea.quarter === q ? '#0D9488' : '#FFFFFF',
-                      color: idea.quarter === q ? '#FFFFFF' : '#64748B',
-                    }}
-                  >
-                    {q}
-                  </button>
-                ))}
+                {QUARTERS.map(q => {
+                  const qs = QUARTER_STYLES[q];
+                  const active = idea.quarter === q;
+                  return (
+                    <button key={q} onClick={() => onQuarterChange(idea, q)} style={{
+                      flex: 1, height: 32, borderRadius: 6, cursor: 'pointer',
+                      fontSize: 12, fontWeight: 700, fontFamily: "'Inter', sans-serif",
+                      border: active ? 'none' : '1px solid #E2E8F0',
+                      background: active ? qs.bg : '#FFFFFF',
+                      color: active ? qs.color : '#64748B',
+                      transition: 'all 150ms',
+                    }}>
+                      {q}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
 
-          {/* Convert CTA */}
+          {/* Convert CTA — EC-07 */}
           {idea.isCommitted && (
-            <button
-              onClick={() => onConvertToInitiative(idea)}
-              style={{
-                width: '100%', height: 36, borderRadius: 6, border: 'none',
-                background: '#0D9488', color: '#FFFFFF', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                fontSize: 13, fontWeight: 650, fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              Convert to Initiative
-              <ArrowRight size={14} />
-            </button>
+            isConverted(idea.status) ? (
+              <div style={{
+                padding: '10px 16px', borderRadius: 6, background: '#E3FCEF',
+                color: '#006644', fontSize: 13, fontWeight: 650, textAlign: 'center',
+                border: '1px solid #B7EBD1',
+              }}>
+                ✓ Already converted to Initiative
+              </div>
+            ) : (
+              <button
+                onClick={() => onConvertToInitiative(idea)}
+                style={{
+                  width: '100%', height: 36, borderRadius: 6, border: 'none',
+                  background: '#0D9488', color: '#FFFFFF', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  fontSize: 13, fontWeight: 650, fontFamily: "'Inter', sans-serif",
+                  transition: 'all 150ms',
+                }}
+              >
+                Convert to Initiative
+                <ArrowRight size={14} />
+              </button>
+            )
           )}
 
           {/* Milestone Dates */}
@@ -180,8 +223,11 @@ export function RoadmapSidePanel({
                     style={{
                       flex: 1, height: 36, border: '1px solid #E2E8F0', borderRadius: 4,
                       padding: '0 10px', fontSize: 12, fontFamily: "'Inter', sans-serif",
-                      color: '#334155', outline: 'none',
+                      color: milestones[m.key] ? '#334155' : '#94A3B8', outline: 'none',
+                      transition: 'border-color 150ms',
                     }}
+                    onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
+                    onBlur={e => (e.currentTarget.style.borderColor = '#E2E8F0')}
                   />
                   {milestones[m.key] && (
                     <button
@@ -190,11 +236,9 @@ export function RoadmapSidePanel({
                         width: 24, height: 24, borderRadius: 4, border: '1px solid #E2E8F0',
                         background: '#FFFFFF', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#94A3B8', fontSize: 12,
+                        color: '#94A3B8', fontSize: 12, transition: 'all 150ms',
                       }}
-                    >
-                      ✕
-                    </button>
+                    >✕</button>
                   )}
                 </div>
               ))}
@@ -226,6 +270,7 @@ export function RoadmapSidePanel({
               <div style={{
                 fontSize: 13, color: '#334155', lineHeight: 1.5,
                 background: '#F8FAFC', borderRadius: 6, padding: 12,
+                whiteSpace: 'pre-wrap',
               }}>
                 {idea.description}
               </div>
@@ -243,8 +288,10 @@ export function RoadmapSidePanel({
             disabled={isSaving}
             style={{
               flex: 1, height: 36, borderRadius: 6, border: 'none',
-              background: isSaving ? '#94A3B8' : '#2563EB', color: '#FFFFFF', cursor: isSaving ? 'default' : 'pointer',
+              background: isSaving ? '#94A3B8' : '#2563EB', color: '#FFFFFF',
+              cursor: isSaving ? 'default' : 'pointer',
               fontSize: 13, fontWeight: 650, fontFamily: "'Inter', sans-serif",
+              transition: 'background 150ms',
             }}
           >
             {isSaving ? 'Saving…' : 'Save Changes'}

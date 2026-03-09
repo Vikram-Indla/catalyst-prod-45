@@ -9,18 +9,22 @@ interface RoadmapToolbarProps {
   onCommittedOnlyChange: (v: boolean) => void;
   totalCount: number;
   committedCount: number;
+  onPresent: () => void;
+  onExport: () => void;
+  onGantt: () => void;
 }
 
 export function RoadmapToolbar({
   view, onViewChange, committedOnly, onCommittedOnlyChange,
-  totalCount, committedCount,
+  totalCount, committedCount, onPresent, onExport, onGantt,
 }: RoadmapToolbarProps) {
+  const hasCommitted = committedCount > 0;
+
   return (
     <div style={{
       height: 56, display: 'flex', alignItems: 'center', gap: 12,
       padding: '0 24px', borderBottom: '1px solid #E2E8F0', background: '#FFFFFF',
     }}>
-      {/* Title */}
       <div>
         <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>
           Ideas Roadmap
@@ -32,36 +36,31 @@ export function RoadmapToolbar({
 
       <div style={{ flex: 1 }} />
 
-      {/* Stat pills */}
-      <div style={{
-        display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, fontFamily: "'Inter', sans-serif",
-      }}>
+      {/* Stat pills — EC-04: grey when 0 committed */}
+      <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>
         <span style={{
-          background: '#F0FDFA', color: '#0D9488', padding: '4px 10px', borderRadius: 100,
+          background: hasCommitted ? '#F0FDFA' : '#F8FAFC',
+          color: hasCommitted ? '#0D9488' : '#94A3B8',
+          padding: '4px 10px', borderRadius: 100,
         }}>
           {committedCount} committed
         </span>
-        <span style={{
-          background: '#F8FAFC', color: '#64748B', padding: '4px 10px', borderRadius: 100,
-        }}>
+        <span style={{ background: '#F8FAFC', color: '#64748B', padding: '4px 10px', borderRadius: 100 }}>
           {totalCount} total
         </span>
       </div>
 
-      {/* Divider */}
       <div style={{ width: 1, height: 20, background: '#E2E8F0' }} />
 
       {/* View toggle */}
-      <div style={{
-        display: 'flex', border: '2px solid #E2E8F0', borderRadius: 6, overflow: 'hidden',
-      }}>
+      <div style={{ display: 'flex', border: '2px solid #E2E8F0', borderRadius: 6, overflow: 'hidden' }}>
         {(['roadmap', 'dates'] as RoadmapView[]).map(v => (
           <button
             key={v}
             onClick={() => onViewChange(v)}
             style={{
               padding: '4px 14px', fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', sans-serif", outline: 'none', transition: 'all 150ms',
               background: view === v ? '#FFFFFF' : 'transparent',
               color: view === v ? '#1E293B' : '#64748B',
               boxShadow: view === v ? '0 1px 2px rgba(0,0,0,.06)' : 'none',
@@ -80,7 +79,7 @@ export function RoadmapToolbar({
           padding: '4px 10px', borderRadius: 100, border: '1px solid #E2E8F0',
           background: committedOnly ? '#F0FDFA' : '#FFFFFF', cursor: 'pointer',
           fontSize: 12, fontWeight: 600, fontFamily: "'Inter', sans-serif",
-          color: committedOnly ? '#0D9488' : '#64748B',
+          color: committedOnly ? '#0D9488' : '#64748B', transition: 'all 150ms',
         }}
       >
         <span style={{
@@ -97,40 +96,28 @@ export function RoadmapToolbar({
         Committed only
       </button>
 
-      {/* Divider */}
       <div style={{ width: 1, height: 20, background: '#E2E8F0' }} />
 
-      {/* Icon buttons */}
-      <button
-        onClick={() => (window as any).openPresentMode?.()}
-        title="Present"
-        style={{
-          width: 32, height: 32, borderRadius: 6, border: '1px solid #E2E8F0',
-          background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer',
-        }}
-      >
+      {/* INT-05/06: Toolbar buttons wired to parent callbacks */}
+      <button onClick={onPresent} title="Present" style={{
+        width: 32, height: 32, borderRadius: 6, border: '1px solid #E2E8F0',
+        background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer', transition: 'all 150ms',
+      }}>
         <MonitorPlay size={15} color="#64748B" />
       </button>
-      <button
-        onClick={() => console.log('Gantt modal — Stage E')}
-        title="Gantt view"
-        style={{
-          width: 32, height: 32, borderRadius: 6, border: '1px solid #E2E8F0',
-          background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer',
-        }}
-      >
+      <button onClick={onGantt} title="Gantt view" style={{
+        width: 32, height: 32, borderRadius: 6, border: '1px solid #E2E8F0',
+        background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer', transition: 'all 150ms',
+      }}>
         <BarChart3 size={15} color="#64748B" />
       </button>
-      <button
-        onClick={() => (window as any).exportPPTX?.()}
-        style={{
-          height: 32, padding: '0 12px', borderRadius: 6, border: 'none',
-          background: '#1E293B', color: '#FFFFFF', fontSize: 12, fontWeight: 600,
-          fontFamily: "'Inter', sans-serif", cursor: 'pointer',
-        }}
-      >
+      <button onClick={onExport} style={{
+        height: 32, padding: '0 12px', borderRadius: 6, border: 'none',
+        background: '#1E293B', color: '#FFFFFF', fontSize: 12, fontWeight: 600,
+        fontFamily: "'Inter', sans-serif", cursor: 'pointer', transition: 'all 150ms',
+      }}>
         Export PPTX
       </button>
     </div>
