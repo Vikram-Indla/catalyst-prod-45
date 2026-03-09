@@ -698,6 +698,14 @@ const App = () => (
                 <Route path="docs" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubDocsPage /></Suspense>} />
               </Route>
               
+              {/* IncidentHub — Incident Management */}
+              <Route path="/incident-hub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubPage /></Suspense>} />
+              <Route path="/incident-hub/kanban" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubKanbanPage /></Suspense>} />
+              <Route path="/incident-hub/analytics" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubAnalyticsPage /></Suspense>} />
+              <Route path="/incident-hub/insights" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubInsightsPage /></Suspense>} />
+              <Route path="/incident-hub/reports" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubReportsPage /></Suspense>} />
+              <Route path="/incident-hub/committee-queue" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IncidentHubCommitteeQueuePage /></Suspense>} />
+
               {/* ReleaseHub v2.1 — Release & Change Management */}
               <Route path="/releasehub" element={<Navigate to="/releasehub/command-center" replace />} />
               <Route path="/releasehub/command-center" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RH21CommandCenterPage /></Suspense>} />
