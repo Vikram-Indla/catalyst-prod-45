@@ -21867,9 +21867,16 @@ export type Database = {
           impact_total: number | null
           imperative: number | null
           innovation_drive_id: string | null
+          is_committed: boolean
           is_deleted: boolean | null
           job_size: number | null
           linked_initiative_id: string | null
+          milestone_beta: string | null
+          milestone_des: string | null
+          milestone_dev: string | null
+          milestone_prod: string | null
+          milestone_req: string | null
+          milestone_uat: string | null
           ministry_efficiency: number | null
           pain_severity: number | null
           parent_idea_id: string | null
@@ -21877,6 +21884,7 @@ export type Database = {
           reach: number | null
           rice_score: number | null
           risk_reduction: number | null
+          roadmap_quarter: string | null
           source: string
           status: string
           submitted_by: string | null
@@ -21918,9 +21926,16 @@ export type Database = {
           impact_total?: number | null
           imperative?: number | null
           innovation_drive_id?: string | null
+          is_committed?: boolean
           is_deleted?: boolean | null
           job_size?: number | null
           linked_initiative_id?: string | null
+          milestone_beta?: string | null
+          milestone_des?: string | null
+          milestone_dev?: string | null
+          milestone_prod?: string | null
+          milestone_req?: string | null
+          milestone_uat?: string | null
           ministry_efficiency?: number | null
           pain_severity?: number | null
           parent_idea_id?: string | null
@@ -21928,6 +21943,7 @@ export type Database = {
           reach?: number | null
           rice_score?: number | null
           risk_reduction?: number | null
+          roadmap_quarter?: string | null
           source?: string
           status?: string
           submitted_by?: string | null
@@ -21969,9 +21985,16 @@ export type Database = {
           impact_total?: number | null
           imperative?: number | null
           innovation_drive_id?: string | null
+          is_committed?: boolean
           is_deleted?: boolean | null
           job_size?: number | null
           linked_initiative_id?: string | null
+          milestone_beta?: string | null
+          milestone_des?: string | null
+          milestone_dev?: string | null
+          milestone_prod?: string | null
+          milestone_req?: string | null
+          milestone_uat?: string | null
           ministry_efficiency?: number | null
           pain_severity?: number | null
           parent_idea_id?: string | null
@@ -21979,6 +22002,7 @@ export type Database = {
           reach?: number | null
           rice_score?: number | null
           risk_reduction?: number | null
+          roadmap_quarter?: string | null
           source?: string
           status?: string
           submitted_by?: string | null
