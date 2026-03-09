@@ -23,7 +23,7 @@ export const useReleaseTestCycles = (releaseId: string) =>
 export const useCreateRelease = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (payload: Record<string, any>) => releaseService.create(payload),
+    mutationFn: (payload: { name: string; target_date: string; version?: string; status?: string; source?: string; jira_key?: string; project_id?: string }) => releaseService.create(payload),
     onSuccess: () => qc.invalidateQueries({ queryKey: KEYS.releases }),
   });
 };
