@@ -5425,3 +5425,11 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: none !important;
   border-color: transparent !important;
 }
+
+/* ReleaseHub v2.1 page container */
+.rh-page {
+  padding: 24px;
+  max-width: 100%;
+  min-height: calc(100vh - 48px);
+  background: hsl(var(--muted) / 0.4);
+}
