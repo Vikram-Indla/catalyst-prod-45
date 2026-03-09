@@ -18,8 +18,9 @@ export interface BacklogEpic {
   epic_key: string | null;
   name: string;
   description: string | null;
-  status: EpicStatus | null;
+  status: EpicStatus | string | null;
   assignee_id: string | null;
+  assignee_name?: string | null;
   assignee?: BacklogUser | null;
   end_date: string | null;
   health: string | null;
@@ -48,9 +49,10 @@ export interface BacklogStory {
   title: string;
   name: string | null;
   description: string | null;
-  status: StoryStatus | null;
+  status: StoryStatus | string | null;
   feature_id: string | null;
   assignee_id: string | null;
+  assignee_name?: string | null;
   assignee?: BacklogUser | null;
   start_date: string | null;
   priority: string | null;
