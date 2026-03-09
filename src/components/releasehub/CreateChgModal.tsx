@@ -124,7 +124,7 @@ export function CreateChgModal({ onClose }: Props) {
           )}
         </div>
         <div className="sticky bottom-0 bg-white border-t border-[#E2E8F0] px-6 py-3 flex justify-end gap-2">
-          <button onClick={onClose} className="h-9 px-4 rounded-md border border-[#E2E8F0] text-[13px] font-medium text-[#475569] hover:bg-[#F8FAFC]">Cancel</button>
+          <button onClick={onClose} className="h-9 px-4 rounded-md border border-[#E2E8F0] text-[13px] font-medium text-[#475569] hover:bg-[#F4F7FA]">Cancel</button>
           <button onClick={handleSubmit} disabled={!title || !deployDate || createChange.isPending}
             className="h-9 px-4 rounded-md bg-[#2563EB] text-white text-[13px] font-semibold hover:bg-[#1D4ED8] disabled:opacity-50">
             {createChange.isPending ? 'Creating...' : 'Create Change'}

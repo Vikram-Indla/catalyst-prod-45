@@ -147,7 +147,7 @@ function ChangesTab({ changes }: { changes: any[] }) {
       </thead>
       <tbody>
         {changes.map((c: any) => (
-          <tr key={c.id} className="border-b border-[#F1F5F9] hover:bg-[#FAFBFC]">
+          <tr key={c.id} className="border-b border-[#F1F5F9] hover:bg-[#F4F7FA]">
             <td className="px-3 py-2 font-bold text-[#0D9488]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</td>
             <td className="px-3 py-2 truncate max-w-[200px]" title={c.title}>{c.title}</td>
             <td className="px-3 py-2"><ChgStatusBadge status={c.status} /></td>

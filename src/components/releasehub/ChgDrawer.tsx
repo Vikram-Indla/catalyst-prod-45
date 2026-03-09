@@ -55,7 +55,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
                 <span className="text-[16px] font-black text-[#0D9488]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                 <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${RISK_STYLES[c.risk_level] || ''}`}>{c.risk_level}</span>
               </div>
-              <button onClick={onClose} className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
+              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
             </div>
             <h2 className="text-[18px] font-extrabold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{c.title}</h2>
             <div className="flex items-center gap-2 mb-4">
