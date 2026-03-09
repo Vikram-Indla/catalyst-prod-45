@@ -140,6 +140,8 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
       return 'ReleaseHub';
     case 'operations':
       return 'Operations';
+    case 'incidenthub':
+      return 'IncidentHub';
     case 'taskhub':
       return 'Taskhub';
     case 'testhub':
