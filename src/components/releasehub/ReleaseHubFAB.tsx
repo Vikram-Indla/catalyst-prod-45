@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Package, RefreshCw, Upload } from 'lucide-react';
 
 interface Props {
@@ -10,27 +10,79 @@ interface Props {
 export function ReleaseHubFAB({ onNewRelease, onNewChange, onImportSN }: Props) {
   const [open, setOpen] = useState(false);
 
+  const handleEsc = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') setOpen(false);
+  }, []);
+
+  useEffect(() => {
+    if (open) {
+      document.addEventListener('keydown', handleEsc);
+      return () => document.removeEventListener('keydown', handleEsc);
+    }
+  }, [open, handleEsc]);
+
   const items = [
-    { icon: Package, label: 'New Release', action: onNewRelease, key: 'R' },
-    { icon: RefreshCw, label: 'New Change', action: onNewChange, key: 'C' },
-    { icon: Upload, label: 'Import SN CHG', action: onImportSN || (() => {}), key: '' },
+    { icon: <Package size={14} className="text-[#2563EB]" />, label: 'New Release', action: onNewRelease, shortcut: 'R' },
+    { icon: <RefreshCw size={14} className="text-[#2563EB]" />, label: 'New Change', action: onNewChange, shortcut: 'C' },
+    { icon: <Upload size={14} className="text-[#2563EB]" />, label: 'Import SN CHG', action: onImportSN || (() => {}), shortcut: null as string | null },
   ];
 
   return (
-    <div className="fixed bottom-6 right-6 z-[200] flex flex-col-reverse items-end gap-2">
-      {open && items.map((item, i) => (
-        <button key={item.label}
-          onClick={() => { item.action(); setOpen(false); }}
-          className="flex items-center gap-2 h-10 pl-3 pr-4 rounded-full bg-white shadow-lg border border-[#E2E8F0] text-[13px] font-semibold text-[#1E293B] hover:bg-[#F4F7FA] animate-in fade-in slide-in-from-bottom-2"
-          style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'both' }}>
-          <item.icon size={14} className="text-[#2563EB]" />
-          {item.label}
-          {item.key && <kbd className="text-[9px] font-mono text-[#94A3B8] bg-[#F1F5F9] px-1 rounded">{item.key}</kbd>}
-        </button>
-      ))}
-      <button onClick={() => setOpen(!open)}
-        className="w-[52px] h-[52px] rounded-full bg-[#2563EB] text-white shadow-lg flex items-center justify-center hover:bg-[#1D4ED8] transition-all"
-        style={{ transform: open ? 'rotate(45deg)' : 'rotate(0deg)', transition: 'transform 200ms ease' }}>
+    <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 200, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+      {open && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+          {items.map((opt, i) => (
+            <button
+              key={opt.label}
+              onClick={() => { opt.action(); setOpen(false); }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                background: 'white',
+                border: '1px solid #E2E8F0',
+                borderRadius: 8,
+                padding: '8px 16px',
+                fontSize: 13,
+                fontWeight: 600,
+                color: '#1E293B',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
+                whiteSpace: 'nowrap',
+                animation: `fadeSlideIn 0.15s ease ${i * 50}ms both`,
+              }}
+            >
+              {opt.icon}
+              {opt.label}
+              {opt.shortcut && (
+                <kbd style={{ fontSize: 9, fontFamily: 'monospace', color: '#94A3B8', background: '#F1F5F9', padding: '1px 5px', borderRadius: 3 }}>
+                  {opt.shortcut}
+                </kbd>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <button
+        onClick={() => setOpen(!open)}
+        aria-label={open ? 'Close menu' : 'Open menu'}
+        style={{
+          width: 52,
+          height: 52,
+          borderRadius: '50%',
+          background: '#2563EB',
+          border: 'none',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 4px 16px rgba(37,99,235,0.40)',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+          transform: open ? 'rotate(45deg)' : 'rotate(0deg)',
+          color: 'white',
+        }}
+      >
         <Plus size={24} />
       </button>
     </div>
