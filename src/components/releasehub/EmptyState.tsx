@@ -1,0 +1,56 @@
+import React from 'react';
+import { RefreshCw, Package, TestTube2, Link2, ShieldCheck, AlertCircle } from 'lucide-react';
+import { RH } from '@/constants/releasehub.design';
+
+interface Props {
+  icon?: React.ElementType;
+  title: string;
+  subtitle?: string;
+  actions?: { label: string; onClick: () => void; variant?: 'primary' | 'ghost' | 'teal' }[];
+  className?: string;
+}
+
+const VARIANT_CLASSES = {
+  primary: 'bg-[#2563EB] text-white hover:bg-[#1D4ED8]',
+  ghost: 'border border-[#C9D3E0] text-[#1E293B] hover:bg-[#F4F7FA]',
+  teal: 'border border-[#0D9488] text-[#0D9488] hover:bg-[#F0FDFA]',
+};
+
+export function EmptyState({ icon: Icon = Package, title, subtitle, actions, className = '' }: Props) {
+  return (
+    <div className={`flex flex-col items-center justify-center py-12 ${className}`} aria-live="polite">
+      <div className="w-12 h-12 rounded-xl bg-[#F1F5F9] flex items-center justify-center mb-4">
+        <Icon size={24} className="text-[#94A3B8]" />
+      </div>
+      <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: RH.ink2 }}>{title}</h3>
+      {subtitle && <p className="text-[13px] text-[#64748B] max-w-sm text-center mb-4" style={{ fontFamily: RH.fontBody }}>{subtitle}</p>}
+      {actions && actions.length > 0 && (
+        <div className="flex items-center gap-2">
+          {actions.map(a => (
+            <button key={a.label} onClick={a.onClick}
+              className={`h-8 px-3.5 rounded-md text-[13px] font-semibold transition-colors ${VARIANT_CLASSES[a.variant || 'primary']}`}>
+              {a.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12" aria-live="assertive">
+      <div className="w-12 h-12 rounded-xl bg-[#FEF2F2] flex items-center justify-center mb-4">
+        <AlertCircle size={24} className="text-[#DC2626]" />
+      </div>
+      <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: '#DC2626' }}>Something went wrong</h3>
+      <p className="text-[13px] text-[#64748B] mb-4">{message}</p>
+      {onRetry && (
+        <button onClick={onRetry} className="h-8 px-3.5 rounded-md text-[13px] font-semibold bg-[#2563EB] text-white hover:bg-[#1D4ED8]">
+          Retry
+        </button>
+      )}
+    </div>
+  );
+}
