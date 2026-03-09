@@ -7,7 +7,9 @@
 
 import { 
   Home,
-  Square,
+  Box,
+  Layers,
+  BookOpen,
   Map,
   GitBranch,
   FlaskConical,
@@ -42,7 +44,9 @@ export function ProjectSidebar({
     label: projectName || 'Project',
     items: [
       { id: 'project-room', title: 'Project Room', path: `/projects/${projectId}/work`, icon: Home, exact: true },
-      { id: 'backlog', title: 'Backlog', path: `/projects/${projectId}/backlog`, icon: Square, exact: false },
+      { id: 'epic-backlog', title: 'Epic Backlog', path: `/projects/${projectId}/backlog/epics`, icon: Box, exact: false },
+      { id: 'feature-backlog', title: 'Feature Backlog', path: `/projects/${projectId}/backlog/features`, icon: Layers, exact: false },
+      { id: 'story-backlog', title: 'Story Backlog', path: `/projects/${projectId}/backlog/stories`, icon: BookOpen, exact: false },
       { id: 'board', title: 'Board', path: `/projects/${projectId}/boards`, icon: Columns3, exact: false },
       { id: 'roadmap', title: 'Roadmap', path: `/projects/${projectId}/roadmap`, icon: Map, exact: false },
       { id: 'dependencies', title: 'Dependencies', path: `/projects/${projectId}/dependencies`, icon: GitBranch, exact: false },
