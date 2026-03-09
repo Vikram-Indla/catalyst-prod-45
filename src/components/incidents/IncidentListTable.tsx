@@ -401,8 +401,10 @@ export function IncidentListTable({
 
               {/* Body */}
               {incidents.length === 0 ? (
-                <div className="py-10 text-center">
-                  <span className="text-sm text-muted-foreground">No incidents to display</span>
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <AlertTriangle className="h-8 w-8 text-muted-foreground/40 mb-3" />
+                  <p className="text-sm font-medium text-foreground mb-1">No incidents found</p>
+                  <p className="text-xs text-muted-foreground">Try adjusting your filters or search query</p>
                 </div>
               ) : (
                 incidents.map((incident) => {
