@@ -189,40 +189,55 @@ const TYPE_COLORS: Record<string, string> = {
 
 /* ── Parent cell (enriched: icon + key + title) ── */
 function ParentCell({ item, itemById, onSelect }: { item: WorkItem; itemById: Map<string, WorkItem>; onSelect: (item: WorkItem) => void }) {
-  const parentId = item.parentId;
-  const parentKey = item.parentKey;
+  const parentKey = item.parentKey || item.parentId;
 
-  if (!parentId) {
+  if (!parentKey) {
     return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
   }
 
-  const parent = itemById.get(parentId);
-  const displayKey = parent?.key || parentKey || parentId;
-  const iconType = parent?.issueType || parent?.hierarchyName || 'Task';
+  // Look up parent by id (which is issue_key) OR by key field
+  const parent = itemById.get(parentKey) || Array.from(itemById.values()).find(
+    i => i.key === parentKey || i.id === parentKey
+  );
+
+  const displayKey = parentKey;
+  const parentIssueType = parent?.issueType || parent?.hierarchyName;
+
+  if (!parent) {
+    // Parent exists but not in loaded data — show key only, no icon, no dash
+    return (
+      <div style={{ padding: '0 8px', minWidth: 0 }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', fontVariantNumeric: 'tabular-nums' }}>
+          {displayKey}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div
       className="hi-parent-cell"
-      title={parent ? `${displayKey} — ${parent.title}` : displayKey}
-      style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, overflow: 'hidden', paddingLeft: 12 }}
+      title={`${displayKey} — ${parent.title}`}
+      style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, overflow: 'hidden', padding: '0 8px', cursor: 'pointer' }}
       onClick={(e) => {
         e.stopPropagation();
-        if (parent) onSelect(parent);
+        onSelect(parent);
       }}
     >
-      <span className="hi-type-icon-wrapper"><JiraIssueTypeIcon type={iconType} size={16} /></span>
-      <span className="hi-parent-key" style={{
-        fontSize: 12,
-        fontWeight: 600,
-        color: '#2563EB',
-        flexShrink: 0,
+      <span className="hi-type-icon-wrapper">
+        <JiraIssueTypeIcon type={parentIssueType || 'Task'} size={14} />
+      </span>
+      <span style={{
+        fontSize: 11, fontWeight: 600, color: '#2563EB', flexShrink: 0,
         fontVariantNumeric: 'tabular-nums',
       }}>
         {displayKey}
       </span>
-      <span style={{ fontSize: 12, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
-        {parent?.title || '—'}
-      </span>
+      {parent.title && (
+        <span style={{ fontSize: 12, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+          {parent.title}
+        </span>
+      )}
     </div>
   );
 }
