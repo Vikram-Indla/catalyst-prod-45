@@ -86,6 +86,7 @@ export default function IdeasRoadmapPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [convertTarget, setConvertTarget] = useState<RoadmapIdea | null>(null);
   const [mutatingIds, setMutatingIds] = useState<Set<string>>(new Set());
+  const [showPresent, setShowPresent] = useState(false);
 
   // INT-04: Close panel on route change
   useEffect(() => { setSelectedIdea(null); }, [location.pathname]);
