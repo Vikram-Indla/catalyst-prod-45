@@ -80,6 +80,7 @@ function getMonthOptions() {
 
 /* ── Excel generation ── */
 async function generateExcel(selectedMonths: { label: string; start: Date; end: Date }[], deptFilter: string) {
+  const ExcelJS = await loadExcelJS();
   const wb = new ExcelJS.Workbook();
   wb.creator = 'Catalyst Platform';
   wb.created = new Date();
