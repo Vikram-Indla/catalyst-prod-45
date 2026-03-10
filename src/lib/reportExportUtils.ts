@@ -143,8 +143,9 @@ export async function reportExportToExcel(data: ExportData, options: ExportOptio
   XLSX.writeFile(workbook, `${sanitizeFilename(data.title)}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
 }
 
-export function reportExportToCSV(data: ExportData): void {
+export async function reportExportToCSV(data: ExportData): Promise<void> {
   if (!data.tableData) return;
+  const saveAs = await loadFileSaver();
   const csv = [
     data.tableData.headers.join(','),
     ...data.tableData.rows.map(row =>
