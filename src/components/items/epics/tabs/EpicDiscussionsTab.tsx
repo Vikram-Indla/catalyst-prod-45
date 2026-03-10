@@ -208,7 +208,7 @@ export function EpicDiscussionsTab({ epic }: EpicDiscussionsTabProps) {
                       </div>
                       <p 
                         className="text-sm whitespace-pre-wrap"
-                        dangerouslySetInnerHTML={{ __html: formatMessage(discussion.message) }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatMessage(discussion.message)) }}
                       />
                     </div>
                   </div>

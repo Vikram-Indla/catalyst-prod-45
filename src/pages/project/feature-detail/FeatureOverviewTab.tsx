@@ -263,7 +263,7 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
         </h3>
         <div className="prose prose-sm dark:prose-invert max-w-none text-foreground/90">
           {feature.description ? (
-            <div dangerouslySetInnerHTML={{ __html: feature.description.replace(/\n/g, '<br/>') }} />
+            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(feature.description.replace(/\n/g, '<br/>')) }} />
           ) : (
             <p className="text-muted-foreground italic">No description provided.</p>
           )}

@@ -202,7 +202,7 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
                       <p 
                         className="text-[13px] whitespace-pre-wrap"
                         style={{ color: 'var(--text-1)' }}
-                        dangerouslySetInnerHTML={{ __html: formatMessage(discussion.message) }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatMessage(discussion.message)) }}
                       />
                     </div>
                   </div>

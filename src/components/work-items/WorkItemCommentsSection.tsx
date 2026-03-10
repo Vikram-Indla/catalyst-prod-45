@@ -231,7 +231,7 @@ export function WorkItemCommentsSection({ entityType, entityId }: WorkItemCommen
                   ) : (
                     <p 
                       className="text-sm mt-1 whitespace-pre-wrap"
-                      dangerouslySetInnerHTML={{ __html: highlightMentions(comment.content) }}
+                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightMentions(comment.content)) }}
                     />
                   )}
                 </div>

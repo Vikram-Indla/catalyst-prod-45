@@ -75,7 +75,13 @@ serve(async (req) => {
     }
 
     // Verify webhook signature if secret is configured
-    if (connector.webhook_secret && signatureHeader) {
+    if (connector.webhook_secret) {
+      if (!signatureHeader) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Missing webhook signature" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
       const bodyText = JSON.stringify(payload);
       const encoder = new TextEncoder();
       const key = await crypto.subtle.importKey(
