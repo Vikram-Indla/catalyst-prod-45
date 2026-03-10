@@ -72,13 +72,17 @@ function skipHeavyModules(): Plugin {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode, command }) => {
+  // Only stub modules during production build, never in dev server
+  const isBuild = command === 'build';
+
+  return {
   server: {
     host: "::",
     port: 8080,
   },
   plugins: [
-    skipHeavyModules(),
+    isBuild ? skipHeavyModules() : null,
     react(),
     mode === "development" && componentTagger(),
   ].filter(Boolean),
@@ -133,4 +137,5 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
-}));
+};
+});
