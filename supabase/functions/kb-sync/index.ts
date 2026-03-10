@@ -4,7 +4,7 @@
 //   loads kb_embeddings with full metadata + tags
 // Actions: discover, sync_table, sync_all, status
 // ══════════════════════════════════════════════════════════════════
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// Using native Deno.serve — no deno.land import needed
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { requireAuth } from "../_shared/auth-guard.ts";
 
