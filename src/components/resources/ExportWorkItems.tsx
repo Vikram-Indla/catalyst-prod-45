@@ -53,7 +53,7 @@ const argb = (hex: string) => `FF${hex}`;
 const thinBorder = (): any => ({ style: 'thin', color: { argb: argb(C.BORDER) } });
 const allThinBorders = () => ({ top: thinBorder(), bottom: thinBorder(), left: thinBorder(), right: thinBorder() });
 
-const arialFont = (size: number, opts?: Partial<ExcelJS.Font>): Partial<ExcelJS.Font> => ({
+const arialFont = (size: number, opts?: any): any => ({
   name: 'Arial', size, ...opts,
 });
 
