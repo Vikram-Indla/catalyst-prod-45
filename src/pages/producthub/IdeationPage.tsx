@@ -476,7 +476,12 @@ function TypeBadge({ type }: { type: Idea['type'] }) {
 
 function PriorityBadge({ priority }: { priority: string }) {
   const c = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.P4;
-  return <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 800, background: c.bg, color: c.text, padding: '2px 7px', borderRadius: '4px' }}>{priority}</span>;
+  return <span style={{
+    fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', fontWeight: 700,
+    background: c.bg, color: c.text, border: `1px solid ${c.border}`,
+    height: 20, padding: '0 7px', borderRadius: '3px',
+    display: 'inline-flex', alignItems: 'center',
+  }}>{priority}</span>;
 }
 
 function ImpactCell({ score }: { score: number }) {
