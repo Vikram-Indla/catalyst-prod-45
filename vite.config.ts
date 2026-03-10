@@ -29,12 +29,16 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
+            if (id.includes('react-dom')) return 'vendor-react-dom';
             if (id.includes('react') || id.includes('scheduler')) return 'vendor-react';
             if (id.includes('@supabase')) return 'vendor-backend';
             if (id.includes('@tanstack/react-query')) return 'vendor-query';
             if (id.includes('@tanstack/react-table') || id.includes('@tanstack/react-virtual')) return 'vendor-table';
-            if (id.includes('@atlaskit/icon') || id.includes('@atlaskit/tokens')) return 'vendor-atlaskit-core';
-            if (id.includes('@atlaskit')) return 'vendor-atlaskit';
+            if (id.includes('@atlaskit/icon')) return 'vendor-atlaskit-icon';
+            if (id.includes('@atlaskit/tokens')) return 'vendor-atlaskit-tokens';
+            if (id.includes('@atlaskit/select') || id.includes('@atlaskit/dropdown-menu') || id.includes('@atlaskit/popup')) return 'vendor-atlaskit-select';
+            if (id.includes('@atlaskit/dynamic-table') || id.includes('@atlaskit/modal-dialog')) return 'vendor-atlaskit-heavy';
+            if (id.includes('@atlaskit')) return 'vendor-atlaskit-misc';
             if (id.includes('@tiptap')) return 'vendor-editor';
             if (id.includes('@radix-ui')) return 'vendor-radix';
             if (id.includes('d3')) return 'vendor-d3';
@@ -43,6 +47,7 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('framer-motion')) return 'vendor-motion';
             if (id.includes('lucide-react')) return 'vendor-icons';
             if (id.includes('react-router')) return 'vendor-router';
+            if (id.includes('styled-components')) return 'vendor-styled';
             if (id.includes('zustand') || id.includes('zod') || id.includes('date-fns')) return 'vendor-utils';
           }
           if (id.includes('/src/components/caty-ai/') || id.includes('/src/components/knowledge-assist/') || id.includes('/src/components/testhub-ai/')) return 'feature-ai-widgets';
