@@ -203,10 +203,10 @@ export default function IdeationPage() {
           const aiPct = total > 0 ? Math.round(aiReady / total * 100) + '%' : '0%';
           return [
             { label: 'TOTAL IDEAS', value: String(total), color: '#0F172A', trend: '', trendColor: '#16A34A' },
-            { label: 'AVG IMPACT', value: avgImpact, color: '#2563EB', trend: '', trendColor: '#16A34A' },
-            { label: 'PENDING REVIEW', value: String(pendingReview), color: '#D97706', trend: '—', trendColor: '#94A3B8' },
-            { label: 'CONVERSION RATE', value: convRate, color: '#0D9488', trend: `${converted} → Initiatives`, trendColor: '#16A34A' },
-            { label: 'AI ENRICHED', value: String(aiReady), color: '#7C3AED', trend: aiPct, trendColor: '#7C3AED' },
+            { label: 'AVG IMPACT', value: avgImpact, color: '#0F172A', trend: '', trendColor: '#16A34A' },
+            { label: 'PENDING REVIEW', value: String(pendingReview), color: '#0F172A', trend: '—', trendColor: '#94A3B8' },
+            { label: 'CONVERSION RATE', value: convRate, color: '#0F172A', trend: `${converted} → Initiatives`, trendColor: '#16A34A' },
+            { label: 'AI ENRICHED', value: String(aiReady), color: '#0F172A', trend: aiPct, trendColor: '#7C3AED' },
           ];
         })().map((stat, i, arr) => (
           <div key={stat.label} style={{
