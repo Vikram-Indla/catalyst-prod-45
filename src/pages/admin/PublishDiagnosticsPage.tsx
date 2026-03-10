@@ -134,6 +134,29 @@ export default function PublishDiagnosticsPage() {
       fix: withinLimit ? undefined : 'Disable ENABLE_AI and ENABLE_HEAVY_EXPORTS',
     });
 
+    // 4b. Edge function count — major publish bottleneck
+    const EDGE_FN_COUNT = 110;
+    results.push({
+      id: 'edge-fn-count',
+      label: `${EDGE_FN_COUNT}+ Edge Functions to deploy`,
+      status: EDGE_FN_COUNT > 80 ? 'fail' : EDGE_FN_COUNT > 40 ? 'warn' : 'pass',
+      detail: `Each function gets bundled separately during publish. ${EDGE_FN_COUNT}+ functions can cause deploy timeout or OOM even with a lean frontend build.`,
+      impact: 'critical',
+      fix: 'Consolidate related functions (e.g., merge all tm-* into one), or upgrade to ci_large instance in Settings → Cloud → Advanced.',
+    });
+
+    // 4c. Instance sizing
+    results.push({
+      id: 'instance-size',
+      label: 'CI instance: ci_medium',
+      status: EDGE_FN_COUNT > 80 ? 'warn' : 'pass',
+      detail: EDGE_FN_COUNT > 80
+        ? 'ci_medium may not have enough RAM for 110+ edge functions + frontend build. Consider ci_large.'
+        : 'ci_medium should be sufficient.',
+      impact: EDGE_FN_COUNT > 80 ? 'high' : 'low',
+      fix: EDGE_FN_COUNT > 80 ? 'Go to Settings → Cloud → Advanced settings → Upgrade to ci_large' : undefined,
+    });
+
     // 5. Dynamic import check for heavy libs
     const staticHeavy = HEAVY_DEPS.filter(d => !d.dynamic && d.used);
     if (staticHeavy.length > 6) {
