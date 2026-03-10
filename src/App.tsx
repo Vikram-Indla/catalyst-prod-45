@@ -7,8 +7,8 @@ const KBAdminSetup = ENABLE_AI ? lazy(() => import("./pages/KBAdminSetup")) : ()
 const KBAdminPage = ENABLE_AI ? lazy(() => import("./pages/KBAdminPage")) : () => <FeatureComingSoon title="KB Admin" />;
 const KBDataAuditPage = ENABLE_AI ? lazy(() => import("./pages/KBDataAudit")) : () => <FeatureComingSoon title="KB Data Audit" />;
 const RAGAuditPage = ENABLE_AI ? lazy(() => import("./pages/RAGAuditPage")) : () => <FeatureComingSoon title="RAG Audit" />;
-const WikiAdminPage = lazy(() => import("./pages/admin/WikiAdminPage"));
-const WikiDiagnosticPage = lazy(() => import("./pages/admin/WikiDiagnosticPage"));
+const WikiAdminPage = ENABLE_WIKI ? lazy(() => import("./pages/admin/WikiAdminPage")) : () => <FeatureComingSoon title="Wiki Admin" />;
+const WikiDiagnosticPage = ENABLE_WIKI ? lazy(() => import("./pages/admin/WikiDiagnosticPage")) : () => <FeatureComingSoon title="Wiki Diagnostic" />;
 const AdminDiagnosticPage = lazy(() => import("./pages/admin/AdminDiagnosticPage"));
 
 const Resource360PageNew = lazy(() => import("./components/resource360/Resource360PageNew"));
