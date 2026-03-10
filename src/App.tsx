@@ -11,6 +11,7 @@ import { AuthProvider } from "./lib/auth";
 import { NavigationProvider } from "./contexts/NavigationContext";
 import { ProcessStepsProvider } from "./contexts/ProcessStepsContext";
 import { CatalystToastProvider } from "./contexts/CatalystToastContext";
+import { FeatureFlagProvider } from "./contexts/FeatureFlagContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
@@ -50,6 +51,7 @@ const App = () => (
       <Toaster />
       <Suspense fallback={null}><HotToaster position="bottom-right" /></Suspense>
       <AuthProvider>
+        <FeatureFlagProvider>
         <NavigationProvider>
           <ProcessStepsProvider>
           <CatalystToastProvider position="top-right" maxToasts={5}>
@@ -80,6 +82,7 @@ const App = () => (
           </CatalystToastProvider>
           </ProcessStepsProvider>
         </NavigationProvider>
+        </FeatureFlagProvider>
       </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>

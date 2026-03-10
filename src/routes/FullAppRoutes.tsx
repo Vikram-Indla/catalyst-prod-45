@@ -2,7 +2,10 @@ import React, { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
+import { ModuleGate } from '../components/common/ModuleGate';
 import { ProtectedRoute } from "../components/ProtectedRoute";
+
+const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
 
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = ENABLE_AI ? lazy(() => import("../pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
@@ -402,6 +405,11 @@ const S = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="p-8">Loading...</div>}>{children}</Suspense>
 );
 
+/** Runtime module gate wrapper for route elements */
+function MG({ k, t, children }: { k: string; t: string; children: React.ReactNode }) {
+  return <ModuleGate moduleKey={k} fallbackTitle={t}>{children}</ModuleGate>;
+}
+
 function Resource360Redirect() {
   const { id } = useParams();
   return <Navigate to={`/project-hub/resource-360/${id || '009'}`} replace />;
@@ -445,25 +453,26 @@ export default function FullAppRoutes() {
 
         <Route path="/browse/:key" element={<S><BrowsePage /></S>} />
 
+        {/* ═══ ProductHub ═══ */}
         <Route path="/producthub" element={<Navigate to="/producthub/backlog" replace />} />
-        <Route path="/producthub/backlog" element={<S><InitiativeListingPage /></S>} />
-        <Route path="/producthub/table" element={<S><CatalystDemandTable /></S>} />
-        <Route path="/producthub/kanban" element={<S><ProductKanbanPage /></S>} />
-        <Route path="/producthub/dashboard" element={<S><DemandSummaryPage /></S>} />
+        <Route path="/producthub/backlog" element={<MG k="producthub" t="ProductHub"><S><InitiativeListingPage /></S></MG>} />
+        <Route path="/producthub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
+        <Route path="/producthub/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
+        <Route path="/producthub/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/producthub/roadmaps" element={<Navigate to="/producthub/roadmap" replace />} />
-        <Route path="/producthub/roadmaps-v1" element={<S><IndustryRoadmapPage /></S>} />
-        <Route path="/producthub/reports" element={<S><IndustryComingSoon /></S>} />
-        <Route path="/producthub/roadmap" element={<S><RoadmapPage /></S>} />
-        <Route path="/producthub/cards" element={<S><ProductCardsPage /></S>} />
-        <Route path="/producthub/ideation" element={<S><IdeationPage /></S>} />
-        <Route path="/product/ideas/roadmap" element={<S><IdeasRoadmapPage /></S>} />
-        <Route path="/producthub/requirement-assist" element={<S><RequirementAssistWorkspace /></S>} />
-        <Route path="/producthub/requirement-assist/compose" element={<S><RequirementAssistCompose /></S>} />
-        <Route path="/producthub/requirement-assist/categories" element={<S><RequirementAssistCategories /></S>} />
-        <Route path="/producthub/requirement-assist/:id" element={<S><RequirementAssistOutput /></S>} />
-        <Route path="/product/req-assist" element={<S><ReqAssistLibrary /></S>} />
-        <Route path="/product/req-assist/generate" element={<S><ReqAssistGenerate /></S>} />
-        <Route path="/req-assist/rag-audit" element={<S><RAGAuditPage /></S>} />
+        <Route path="/producthub/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
+        <Route path="/producthub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
+        <Route path="/producthub/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
+        <Route path="/producthub/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
+        <Route path="/producthub/ideation" element={<MG k="ai_features" t="Ideation"><S><IdeationPage /></S></MG>} />
+        <Route path="/product/ideas/roadmap" element={<MG k="ai_features" t="Ideas Roadmap"><S><IdeasRoadmapPage /></S></MG>} />
+        <Route path="/producthub/requirement-assist" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistWorkspace /></S></MG>} />
+        <Route path="/producthub/requirement-assist/compose" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCompose /></S></MG>} />
+        <Route path="/producthub/requirement-assist/categories" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCategories /></S></MG>} />
+        <Route path="/producthub/requirement-assist/:id" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistOutput /></S></MG>} />
+        <Route path="/product/req-assist" element={<MG k="ai_features" t="Requirement Assist"><S><ReqAssistLibrary /></S></MG>} />
+        <Route path="/product/req-assist/generate" element={<MG k="ai_features" t="Requirement Assist"><S><ReqAssistGenerate /></S></MG>} />
+        <Route path="/req-assist/rag-audit" element={<MG k="ai_features" t="RAG Audit"><S><RAGAuditPage /></S></MG>} />
         <Route path="/product-hub/req-assist" element={<Navigate to="/product/req-assist" replace />} />
         <Route path="/product-hub/req-assist/generate" element={<Navigate to="/product/req-assist/generate" replace />} />
         <Route path="/industry/*" element={<Navigate to="/producthub" replace />} />
@@ -471,15 +480,16 @@ export default function FullAppRoutes() {
         <Route path="/starred" element={<S><StarredPage /></S>} />
         <Route path="/search" element={<S><SearchPage /></S>} />
 
-        <Route path="/strategyhub" element={<S><StrategyRoom /></S>} />
-        <Route path="/strategyhub/themes" element={<S><StrategicThemesPage /></S>} />
-        <Route path="/strategyhub/goals" element={<S><GoalsKeyResultsPage /></S>} />
+        {/* ═══ StrategyHub ═══ */}
+        <Route path="/strategyhub" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
+        <Route path="/strategyhub/themes" element={<MG k="strategyhub" t="StrategyHub"><S><StrategicThemesPage /></S></MG>} />
+        <Route path="/strategyhub/goals" element={<MG k="strategyhub" t="StrategyHub"><S><GoalsKeyResultsPage /></S></MG>} />
         <Route path="/strategyhub/initiatives" element={<Navigate to="/producthub/backlog" replace />} />
-        <Route path="/strategyhub/investment" element={<S><StrategyComingSoon title="Investment Allocation" /></S>} />
-        <Route path="/strategyhub/snapshots" element={<S><StrategyComingSoon title="Snapshots" /></S>} />
-        <Route path="/strategyhub/ai-insights" element={<S><StrategyComingSoon title="AI Insights" /></S>} />
-        <Route path="/strategyhub/team-alignment" element={<S><StrategyComingSoon title="Team Alignment" /></S>} />
-        <Route path="/strategyhub/settings" element={<S><StrategyComingSoon title="Settings" /></S>} />
+        <Route path="/strategyhub/investment" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Investment Allocation" /></S></MG>} />
+        <Route path="/strategyhub/snapshots" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Snapshots" /></S></MG>} />
+        <Route path="/strategyhub/ai-insights" element={<MG k="ai_features" t="AI Insights"><S><StrategyComingSoon title="AI Insights" /></S></MG>} />
+        <Route path="/strategyhub/team-alignment" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Team Alignment" /></S></MG>} />
+        <Route path="/strategyhub/settings" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Settings" /></S></MG>} />
         <Route path="/strategy-room" element={<Navigate to="/strategyhub" replace />} />
         <Route path="/strategyhub/strategy-room" element={<Navigate to="/strategyhub" replace />} />
         <Route path="/strategyhub/roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
@@ -506,7 +516,8 @@ export default function FullAppRoutes() {
         <Route path="/taskhub-kanban" element={<S><KanbanPage /></S>} />
         <Route path="/taskhub/my-tasks" element={<S><MyTasksPage /></S>} />
 
-        <Route path="/testhub" element={<S><TestHubPage /></S>}>
+        {/* ═══ TestHub ═══ */}
+        <Route path="/testhub" element={<MG k="testhub" t="TestHub"><S><TestHubPage /></S></MG>}>
           <Route index element={<Navigate to="/testhub/dashboard" replace />} />
           <Route path="repository" element={<S><TestRepositoryPage /></S>} />
           <Route path="dashboard" element={<S><TestHubDashboardPage /></S>} />
@@ -540,17 +551,18 @@ export default function FullAppRoutes() {
           <Route path="releases/command-center" element={<S><CommandCenterPage /></S>} />
           <Route path="releases/quality-gates" element={<S><QualityGatesPage /></S>} />
           <Route path="releases/:releaseId" element={<S><ReleaseDetailPage /></S>} />
-          <Route path="caty" element={<S><CatyAIPage /></S>} />
+          <Route path="caty" element={<MG k="ai_features" t="Caty AI"><S><CatyAIPage /></S></MG>} />
           <Route path="docs" element={<S><TestHubDocsPage /></S>} />
         </Route>
 
-        <Route path="/incident-hub" element={<S><IncidentHubListPage /></S>} />
-        <Route path="/incident-hub/kanban" element={<S><IncidentHubKanbanPage /></S>} />
-        <Route path="/incident-hub/analytics" element={<S><IncidentHubAnalyticsPage /></S>} />
-        <Route path="/incident-hub/insights" element={<S><IncidentHubInsightsPage /></S>} />
-        <Route path="/incident-hub/reports" element={<S><IncidentHubReportsPage /></S>} />
-        <Route path="/incident-hub/committee-queue" element={<S><IncidentHubCommitteeQueuePage /></S>} />
-        <Route path="/incident-hub/view/:id" element={<S><IncidentRoomDetail /></S>} />
+        {/* ═══ IncidentHub ═══ */}
+        <Route path="/incident-hub" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubListPage /></S></MG>} />
+        <Route path="/incident-hub/kanban" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubKanbanPage /></S></MG>} />
+        <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />
+        <Route path="/incident-hub/insights" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubInsightsPage /></S></MG>} />
+        <Route path="/incident-hub/reports" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubReportsPage /></S></MG>} />
+        <Route path="/incident-hub/committee-queue" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubCommitteeQueuePage /></S></MG>} />
+        <Route path="/incident-hub/view/:id" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentRoomDetail /></S></MG>} />
 
         <Route path="/releasehub" element={<Navigate to="/releasehub/command-center" replace />} />
         <Route path="/releasehub/command-center" element={<S><RH21CommandCenterPage /></S>} />
@@ -816,6 +828,7 @@ export default function FullAppRoutes() {
           <Route path="wiki" element={<S><WikiAdminPage /></S>} />
           <Route path="wiki-diagnostic" element={<S><WikiDiagnosticPage /></S>} />
           <Route path="diagnostic" element={<S><AdminDiagnosticPage /></S>} />
+          <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
         </Route>
 
         <Route path="/reports-discovery" element={<S><AdminGuard><ReportsDiscovery /></AdminGuard></S>} />

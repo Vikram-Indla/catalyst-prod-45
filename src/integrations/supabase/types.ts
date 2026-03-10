@@ -8874,6 +8874,45 @@ export type Database = {
           },
         ]
       }
+      feature_flags: {
+        Row: {
+          description: string | null
+          group_name: string
+          icon: string | null
+          id: string
+          is_enabled: boolean
+          label: string
+          module_key: string
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          description?: string | null
+          group_name?: string
+          icon?: string | null
+          id?: string
+          is_enabled?: boolean
+          label: string
+          module_key: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          description?: string | null
+          group_name?: string
+          icon?: string | null
+          id?: string
+          is_enabled?: boolean
+          label?: string
+          module_key?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       feature_pi_objective_links: {
         Row: {
           contribution_pct: number | null
