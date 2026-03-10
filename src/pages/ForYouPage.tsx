@@ -3,21 +3,24 @@
  * Ring-fenced: all classes use fy- prefix
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { MessageSquare, AlertCircle, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useForYouData } from '@/hooks/useForYouData';
 import {
   ForYouHeader, ForYouSubTabs, ForYouToolbar, ForYouTable,
-  ForYouTableSkeleton, ForYouPagination, ForYouDetailPanel,
+  ForYouTableSkeleton, ForYouPagination,
 } from '@/components/for-you';
 import { StatusSummaryBar } from '@/components/for-you/StatusSummaryBar';
 import { ForYouInlineFilters, type ForYouFilters } from '@/components/for-you/ForYouInlineFilters';
 import { ForYouLightBulkBar } from '@/components/for-you/ForYouLightBulkBar';
-import { CatalystAIPanel } from '@/components/catalyst-ai';
 import { toast } from 'sonner';
 import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '@/components/catalyst-ai/CatalystAIPanel';
+
+// ─── Heavy panels: lazy-loaded so they never block initial render ────
+const ForYouDetailPanel = lazy(() => import('@/components/for-you/ForYouDetailPanel').then(m => ({ default: m.ForYouDetailPanel })));
+const CatalystAIPanel = lazy(() => import('@/components/catalyst-ai/CatalystAIPanel').then(m => ({ default: m.CatalystAIPanel })));
 
 export default function ForYouPage() {
   const {
@@ -177,25 +180,31 @@ export default function ForYouPage() {
         onDelete={handleBulkDelete}
       />
 
-      {/* Detail Panel */}
+      {/* Detail Panel — lazy loaded */}
       {selectedItem && (
-        <ForYouDetailPanel item={selectedItem} onClose={closeDetailPanel} />
+        <Suspense fallback={null}>
+          <ForYouDetailPanel item={selectedItem} onClose={closeDetailPanel} />
+        </Suspense>
       )}
 
-      {/* AI Panel */}
-      <CatalystAIPanel
-        isOpen={isAIPanelOpen}
-        onClose={() => setIsAIPanelOpen(false)}
-        userName={user.firstName}
-        criticalCount={aiData.criticalCount}
-        priorityItem={priorityItem}
-        nextItems={nextItems}
-        stats={stats}
-        suggestions={suggestions}
-        onItemClick={handleRowClick}
-        onStartTask={handleStartTask}
-        onKeyClick={handleKeyClick}
-      />
+      {/* AI Panel — lazy loaded */}
+      {isAIPanelOpen && (
+        <Suspense fallback={null}>
+          <CatalystAIPanel
+            isOpen={isAIPanelOpen}
+            onClose={() => setIsAIPanelOpen(false)}
+            userName={user.firstName}
+            criticalCount={aiData.criticalCount}
+            priorityItem={priorityItem}
+            nextItems={nextItems}
+            stats={stats}
+            suggestions={suggestions}
+            onItemClick={handleRowClick}
+            onStartTask={handleStartTask}
+            onKeyClick={handleKeyClick}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

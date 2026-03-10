@@ -3,9 +3,9 @@ import { useState, lazy, Suspense, ComponentType } from 'react';
 import { useLocation, useParams, Outlet, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { CatalystHeader } from '@/components/ja/CatalystHeader';
+const CatalystHeader = lazy(() => import('@/components/ja/CatalystHeader').then(m => ({ default: m.CatalystHeader })));
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
-import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
+const AnnouncementBanner = lazy(() => import('@/components/notifications/AnnouncementBanner').then(m => ({ default: m.AnnouncementBanner })));
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
 import { useEnabledModules } from '@/hooks/useModules';
 import { useRecentPlaceTracker } from '@/hooks/useRecentPlaceTracker';
@@ -336,7 +336,9 @@ function CatalystShellContent() {
     <div className="h-screen flex flex-col bg-surface-1 text-text-primary" onClickCapture={handleInternalLinkClickCapture}>
       {/* Global Header - Catalyst Native */}
       <div data-catalyst-header>
-        <CatalystHeader />
+        <Suspense fallback={<div className="h-12 bg-surface-1 border-b border-border-default" />}>
+          <CatalystHeader />
+        </Suspense>
       </div>
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
@@ -350,7 +352,7 @@ function CatalystShellContent() {
 
         {/* Route content scroll container (single scroll parent) - workspace frame */}
         <main data-catalyst-main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-surface-1">
-          <AnnouncementBanner />
+          <Suspense fallback={null}><AnnouncementBanner /></Suspense>
           <div className="flex-1 min-h-0 overflow-auto flex flex-col">
             <Outlet />
           </div>
