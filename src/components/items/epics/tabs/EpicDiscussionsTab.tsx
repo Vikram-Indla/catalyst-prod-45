@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -207,7 +208,7 @@ export function EpicDiscussionsTab({ epic }: EpicDiscussionsTabProps) {
                       </div>
                       <p 
                         className="text-sm whitespace-pre-wrap"
-                        dangerouslySetInnerHTML={{ __html: formatMessage(discussion.message) }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatMessage(discussion.message)) }}
                       />
                     </div>
                   </div>

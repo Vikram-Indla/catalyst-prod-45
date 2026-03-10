@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import DOMPurify from 'dompurify';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -187,7 +188,7 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
                     </div>
                     <p 
                       className="text-sm whitespace-pre-wrap text-foreground"
-                      dangerouslySetInnerHTML={{ __html: formatMessage(discussion.message) }}
+                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatMessage(discussion.message)) }}
                     />
                   </div>
                 </div>

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import DOMPurify from 'dompurify';
 import { useParams, Link } from 'react-router-dom';
 import { 
   Eye, FileText, Upload, Link2, Edit2, 
@@ -311,7 +312,7 @@ export default function IncidentViewPage() {
               ) : (
                 <div className="text-sm text-foreground leading-relaxed">
                   {incident.description ? (
-                    <div dangerouslySetInnerHTML={{ __html: incident.description }} />
+                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(incident.description) }} />
                   ) : (
                     <p className="text-muted-foreground">No description provided.</p>
                   )}

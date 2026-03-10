@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import DOMPurify from 'dompurify';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -201,7 +202,7 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
                       <p 
                         className="text-[13px] whitespace-pre-wrap"
                         style={{ color: 'var(--text-1)' }}
-                        dangerouslySetInnerHTML={{ __html: formatMessage(discussion.message) }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatMessage(discussion.message)) }}
                       />
                     </div>
                   </div>
