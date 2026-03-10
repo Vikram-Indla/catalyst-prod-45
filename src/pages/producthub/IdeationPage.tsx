@@ -458,8 +458,12 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
 function StatusBadge({ status }: { status: IdeaStatus }) {
   const c = STATUS_CONFIG[status];
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: c.bg, color: c.text, padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap' }}>
-      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: c.dot, flexShrink: 0 }} />
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', background: c.bg, color: c.text,
+      height: 20, padding: '0 6px', borderRadius: 3,
+      fontSize: '11px', fontWeight: 700, whiteSpace: 'nowrap',
+      textTransform: 'uppercase', letterSpacing: '0.03em',
+    }}>
       {c.label}
     </span>
   );
