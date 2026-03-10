@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 
 interface DefectAssignee {
   name: string;
