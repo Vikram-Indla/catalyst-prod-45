@@ -2,7 +2,7 @@
  * PDF Export utility for the Product Roadmap
  */
 
-import jsPDF from 'jspdf';
+const loadJsPDF = () => import('jspdf').then(m => m.default);
 import type { RoadmapDemand, TimelineConfig } from '../types/roadmap';
 import { format } from 'date-fns';
 import { catalystTokens } from '../lib/design-tokens';

@@ -2,7 +2,7 @@
  * Chat History Export Utility
  * Export chat conversations as PDF or Markdown
  */
-import jsPDF from 'jspdf';
+const loadJsPDF = () => import('jspdf').then(m => m.default);
 import type { ChatMessage, PdfExportOptions, MarkdownExportOptions } from './types';
 
 /**

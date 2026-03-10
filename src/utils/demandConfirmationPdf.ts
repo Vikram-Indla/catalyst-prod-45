@@ -14,7 +14,8 @@ interface DemandConfirmationData {
   description: string;
 }
 
-export const generateDemandConfirmationPDF = (data: DemandConfirmationData): jsPDF => {
+export const generateDemandConfirmationPDF = async (data: DemandConfirmationData) => {
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   let y = 20;

@@ -2,9 +2,8 @@
  * Module 3C-2: Export File Generation Utilities
  */
 
-import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+const loadXLSX = () => import('xlsx');
+const loadJsPDF = () => import('jspdf').then(m => m.default);
 import type { ExportFormat } from '../types/batch-export';
 
 export interface GeneratedFile {

@@ -6,8 +6,8 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Download, ChevronDown, Calendar, Loader2, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
+const loadExcelJS = () => import('exceljs');
+const loadFileSaver = () => import('file-saver').then(m => m.saveAs);
 import { format, subMonths, addMonths, startOfMonth, endOfMonth } from 'date-fns';
 
 /* ── Color Palette ── */

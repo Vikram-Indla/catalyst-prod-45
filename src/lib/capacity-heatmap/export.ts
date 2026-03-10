@@ -9,6 +9,7 @@ import type { HeatmapResource } from '@/types/capacity-heatmap';
 import { formatMonth } from './utils';
 
 export async function exportToPNG(element: HTMLElement, filename: string): Promise<void> {
+  const html2canvas = await loadHtml2Canvas();
   const canvas = await html2canvas(element, {
     scale: 2,
     backgroundColor: '#ffffff',
