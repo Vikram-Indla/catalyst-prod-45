@@ -294,7 +294,7 @@ export default function IdeationPage() {
         <button style={{ background: 'none', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '5px 10px', fontSize: '12px', fontWeight: 500, color: '#334155', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
           <ArrowUpDown size={13} /> Rank
         </button>
-        <AIIntelligenceButton label="AI Triage (4)" onClick={() => setTriageOpen(true)} />
+        <AIIntelligenceButton label={`AI Triage (${ideasData.length})`} onClick={() => setTriageOpen(true)} />
       </div>
 
       {/* ─── View Content ─── */}
@@ -327,8 +327,8 @@ export default function IdeationPage() {
       {/* ─── Panels ─── */}
       {detailKey && <IdeationDetailPanel ideaKey={detailKey} onClose={() => setDetailKey(null)} onConvert={handleConvertIdea} />}
       <IdeationCreateWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />
-      <IdeationTriagePanel open={triageOpen} onClose={() => setTriageOpen(false)} onMerge={handleMergeIdeas} onConvert={handleConvertIdea} />
-      <IdeationIntelligenceHub open={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} onMerge={(pk, mk) => { setIntelligenceOpen(false); handleMergeIdeas(pk, mk); }} />
+      <IdeationTriagePanel open={triageOpen} onClose={() => setTriageOpen(false)} onMerge={handleMergeIdeas} onConvert={handleConvertIdea} ideas={ideasData} />
+      <IdeationIntelligenceHub open={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} onMerge={(pk, mk) => { setIntelligenceOpen(false); handleMergeIdeas(pk, mk); }} ideas={ideasData} />
       <CreateInitiativeDrawer
         open={convertDrawerOpen}
         onClose={() => { setConvertDrawerOpen(false); setConversionSource(null); }}
