@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import jsPDF from 'jspdf';
+const loadJsPDF = () => import('jspdf').then(m => m.default);
 
 export interface SharedReport {
   id: string;
