@@ -520,9 +520,13 @@ function AssigneeCell({ assignee }: { assignee: Idea['assignee'] }) {
   );
 }
 
-function AiBadge({ ai }: { ai: 'ready' | 'pending' }) {
-  if (ai === 'ready') {
-    return <span style={{ fontSize: '14px', fontWeight: 700, color: '#7C3AED', textAlign: 'center', display: 'block' }}>✦</span>;
-  }
-  return null;
+function DateCell({ date }: { date?: string | null }) {
+  if (!date) return <span style={{ color: '#94A3B8', fontSize: '12px' }}>—</span>;
+  const d = new Date(date);
+  const str = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return (
+    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 500, color: '#64748B' }}>
+      {str}
+    </span>
+  );
 }
