@@ -57,6 +57,7 @@ export const exportToPdf = async <T extends Record<string, any>>(
   );
 
   // Generate table
+  const autoTable = await loadAutoTable();
   autoTable(doc, {
     head: [tableHeaders],
     body: tableData,
