@@ -343,8 +343,10 @@ function CatalystShellContent() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - GPU layer for stability */}
         <div data-catalyst-sidebar className="relative flex-shrink-0" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
-          {renderSidebar()}
-        </div>
+            <Suspense fallback={null}>
+              {renderSidebar()}
+            </Suspense>
+          </div>
 
         {/* Route content scroll container (single scroll parent) - workspace frame */}
         <main data-catalyst-main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-surface-1">
