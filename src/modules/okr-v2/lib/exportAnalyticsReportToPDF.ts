@@ -47,6 +47,7 @@ export async function exportAnalyticsReportToPDF(
     await new Promise(resolve => setTimeout(resolve, 100));
 
     // Step 2: Capture with full dimensions
+    const html2canvas = await loadHtml2Canvas();
     const canvas = await html2canvas(contentElement, {
       scale: 2, // 2x for sharp output
       useCORS: true,
