@@ -142,13 +142,6 @@ export default function IdeationPage() {
             <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', sans-serif" }}>
               {pageTitle}
             </h1>
-            <span style={{
-              background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px',
-              padding: '1px 7px', fontSize: '11px', fontWeight: 600,
-              fontFamily: "'JetBrains Mono', monospace", color: '#94A3B8',
-            }}>
-              {isLoading ? '…' : ideasData.length}
-            </span>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
             <AIIntelligenceButton label="Intelligence" onClick={() => setIntelligenceOpen(true)} />
