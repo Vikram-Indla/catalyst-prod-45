@@ -106,9 +106,9 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 const CatalystShell = lazy(() => import("./components/layout/CatalystShell").then(m => ({ default: m.CatalystShell })));
 import { ErrorBoundary } from "./components/ErrorBoundary";
 const CatalystLoginPageLazy = lazy(() => import("./components/auth/login").then(m => ({ default: m.CatalystLoginPage })));
-const CatyFabPlaceholderLazy = lazy(() => import("./components/caty/CatyFabPlaceholder").then(m => ({ default: m.CatyFabPlaceholder })));
-const QAAssistantFabLazy = lazy(() => import("./components/testhub-ai").then(m => ({ default: m.QAAssistantFab })));
-const KnowledgeAssistFabLazy = lazy(() => import("./components/kb/KAFab").then(m => ({ default: m.KAFab })));
+const CatyFabPlaceholderLazy = ENABLE_AI ? lazy(() => import("./components/caty/CatyFabPlaceholder").then(m => ({ default: m.CatyFabPlaceholder }))) : () => null;
+const QAAssistantFabLazy = ENABLE_AI ? lazy(() => import("./components/testhub-ai").then(m => ({ default: m.QAAssistantFab }))) : () => null;
+const KnowledgeAssistFabLazy = ENABLE_AI ? lazy(() => import("./components/kb/KAFab").then(m => ({ default: m.KAFab }))) : () => null;
 
 // ─── Route group shells (lazy-loaded to reduce initial memory) ───
 const TeamRoutesShell = lazy(() => import("./routes/TeamRoutesShell").then(m => ({ default: m.TeamRoutes })));
