@@ -133,6 +133,8 @@ const adminPockets = [
     icon: Map,
     path: '/admin/routes-registry',
     children: [
+      { label: 'Feature Flags', path: '/admin/feature-flags' },
+      { label: 'Deployment Health', path: '/admin/deployment-health' },
       { label: 'Routes & Components', path: '/admin/routes-registry' },
       { label: 'Mock Data Generator', path: '/admin/mock-data' },
       { label: 'System Diagnostic', path: '/admin/diagnostic' },
