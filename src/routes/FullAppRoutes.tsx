@@ -453,25 +453,26 @@ export default function FullAppRoutes() {
 
         <Route path="/browse/:key" element={<S><BrowsePage /></S>} />
 
+        {/* ═══ ProductHub ═══ */}
         <Route path="/producthub" element={<Navigate to="/producthub/backlog" replace />} />
-        <Route path="/producthub/backlog" element={<S><InitiativeListingPage /></S>} />
-        <Route path="/producthub/table" element={<S><CatalystDemandTable /></S>} />
-        <Route path="/producthub/kanban" element={<S><ProductKanbanPage /></S>} />
-        <Route path="/producthub/dashboard" element={<S><DemandSummaryPage /></S>} />
+        <Route path="/producthub/backlog" element={<MG k="producthub" t="ProductHub"><S><InitiativeListingPage /></S></MG>} />
+        <Route path="/producthub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
+        <Route path="/producthub/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
+        <Route path="/producthub/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/producthub/roadmaps" element={<Navigate to="/producthub/roadmap" replace />} />
-        <Route path="/producthub/roadmaps-v1" element={<S><IndustryRoadmapPage /></S>} />
-        <Route path="/producthub/reports" element={<S><IndustryComingSoon /></S>} />
-        <Route path="/producthub/roadmap" element={<S><RoadmapPage /></S>} />
-        <Route path="/producthub/cards" element={<S><ProductCardsPage /></S>} />
-        <Route path="/producthub/ideation" element={<S><IdeationPage /></S>} />
-        <Route path="/product/ideas/roadmap" element={<S><IdeasRoadmapPage /></S>} />
-        <Route path="/producthub/requirement-assist" element={<S><RequirementAssistWorkspace /></S>} />
-        <Route path="/producthub/requirement-assist/compose" element={<S><RequirementAssistCompose /></S>} />
-        <Route path="/producthub/requirement-assist/categories" element={<S><RequirementAssistCategories /></S>} />
-        <Route path="/producthub/requirement-assist/:id" element={<S><RequirementAssistOutput /></S>} />
-        <Route path="/product/req-assist" element={<S><ReqAssistLibrary /></S>} />
-        <Route path="/product/req-assist/generate" element={<S><ReqAssistGenerate /></S>} />
-        <Route path="/req-assist/rag-audit" element={<S><RAGAuditPage /></S>} />
+        <Route path="/producthub/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
+        <Route path="/producthub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
+        <Route path="/producthub/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
+        <Route path="/producthub/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
+        <Route path="/producthub/ideation" element={<MG k="ai_features" t="Ideation"><S><IdeationPage /></S></MG>} />
+        <Route path="/product/ideas/roadmap" element={<MG k="ai_features" t="Ideas Roadmap"><S><IdeasRoadmapPage /></S></MG>} />
+        <Route path="/producthub/requirement-assist" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistWorkspace /></S></MG>} />
+        <Route path="/producthub/requirement-assist/compose" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCompose /></S></MG>} />
+        <Route path="/producthub/requirement-assist/categories" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCategories /></S></MG>} />
+        <Route path="/producthub/requirement-assist/:id" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistOutput /></S></MG>} />
+        <Route path="/product/req-assist" element={<MG k="ai_features" t="Requirement Assist"><S><ReqAssistLibrary /></S></MG>} />
+        <Route path="/product/req-assist/generate" element={<MG k="ai_features" t="Requirement Assist"><S><ReqAssistGenerate /></S></MG>} />
+        <Route path="/req-assist/rag-audit" element={<MG k="ai_features" t="RAG Audit"><S><RAGAuditPage /></S></MG>} />
         <Route path="/product-hub/req-assist" element={<Navigate to="/product/req-assist" replace />} />
         <Route path="/product-hub/req-assist/generate" element={<Navigate to="/product/req-assist/generate" replace />} />
         <Route path="/industry/*" element={<Navigate to="/producthub" replace />} />
