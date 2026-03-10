@@ -46,13 +46,40 @@ async function verifyAdmin(authHeader: string): Promise<{ userId: string; email:
   return { userId: user.id, email: user.email || '' };
 }
 
-// Simple encryption (use proper encryption in production)
-function encrypt(text: string): string {
-  return btoa(text);
+// AES-GCM encryption using ENCRYPTION_KEY from environment
+async function getEncryptionKey(): Promise<CryptoKey> {
+  const keyHex = Deno.env.get('ENCRYPTION_KEY');
+  if (!keyHex) throw new Error('ENCRYPTION_KEY not configured');
+  const keyBytes = new Uint8Array(keyHex.match(/.{1,2}/g)!.map(b => parseInt(b, 16)));
+  return crypto.subtle.importKey('raw', keyBytes, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
 }
 
-function decrypt(encrypted: string): string {
-  return atob(encrypted);
+async function encrypt(text: string): Promise<string> {
+  const key = await getEncryptionKey();
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const encoded = new TextEncoder().encode(text);
+  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
+  // Store as iv:ciphertext in hex
+  const ivHex = Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join('');
+  const ctHex = Array.from(new Uint8Array(ciphertext)).map(b => b.toString(16).padStart(2, '0')).join('');
+  return `${ivHex}:${ctHex}`;
+}
+
+async function decrypt(encrypted: string): Promise<string> {
+  // Support legacy base64-encoded values (migration path)
+  if (!encrypted.includes(':')) {
+    try {
+      return atob(encrypted);
+    } catch {
+      throw new Error('Invalid encrypted value format');
+    }
+  }
+  const key = await getEncryptionKey();
+  const [ivHex, ctHex] = encrypted.split(':');
+  const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(b => parseInt(b, 16)));
+  const ciphertext = new Uint8Array(ctHex.match(/.{1,2}/g)!.map(b => parseInt(b, 16)));
+  const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
+  return new TextDecoder().decode(plaintext);
 }
 
 // ============================================================

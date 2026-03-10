@@ -74,35 +74,42 @@ serve(async (req) => {
       );
     }
 
-    // Verify webhook signature if secret is configured
-    if (connector.webhook_secret) {
-      if (!signatureHeader) {
-        return new Response(
-          JSON.stringify({ success: false, error: "Missing webhook signature" }),
-          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      const bodyText = JSON.stringify(payload);
-      const encoder = new TextEncoder();
-      const key = await crypto.subtle.importKey(
-        "raw",
-        encoder.encode(connector.webhook_secret),
-        { name: "HMAC", hash: "SHA-256" },
-        false,
-        ["sign"]
+    // Reject requests when no webhook secret is configured
+    if (!connector.webhook_secret) {
+      console.error("Connector has no webhook_secret configured:", connectorId);
+      return new Response(
+        JSON.stringify({ success: false, error: "Connector not configured for webhook authentication" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
-      const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(bodyText));
-      const expectedSignature = Array.from(new Uint8Array(signature))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
-      
-      if (signatureHeader !== `sha256=${expectedSignature}`) {
-        console.error("Invalid webhook signature");
-        return new Response(
-          JSON.stringify({ success: false, error: "Invalid signature" }),
-          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+    }
+
+    // Verify webhook signature
+    if (!signatureHeader) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Missing webhook signature" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const bodyText = JSON.stringify(payload);
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(connector.webhook_secret),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign"]
+    );
+    const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(bodyText));
+    const expectedSignature = Array.from(new Uint8Array(signature))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+    
+    if (signatureHeader !== `sha256=${expectedSignature}`) {
+      console.error("Invalid webhook signature");
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid signature" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Validate results
