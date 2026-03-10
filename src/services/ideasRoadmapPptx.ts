@@ -1,4 +1,4 @@
-import PptxGenJS from 'pptxgenjs';
+const loadPptxGenJS = () => import('pptxgenjs').then(m => m.default);
 import type { RoadmapIdea } from '@/types/ideasRoadmap';
 
 const Q_COLORS: Record<string, string> = {
