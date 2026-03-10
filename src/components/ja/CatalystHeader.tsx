@@ -512,9 +512,11 @@ export function CatalystHeader() {
           </TooltipProvider>
         </nav>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu — only render on small screens to save memory */}
         <div className="md:hidden flex-1">
-          <MobileNavigationMenu />
+          <Suspense fallback={null}>
+            <MobileNavigationMenu />
+          </Suspense>
         </div>
         
         {/* ===== ACTIONS ZONE ===== */}
