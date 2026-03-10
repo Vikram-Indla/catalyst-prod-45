@@ -14,7 +14,7 @@ interface CreateLinkedAccountRequest {
 
 const DEFAULT_TEMPORARY_PASSWORD = "password@99";
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }

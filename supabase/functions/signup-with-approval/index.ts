@@ -19,7 +19,7 @@ const REJECTED_COOLDOWN_HOURS = 24;
 const IP_RATE_LIMIT_WINDOW_MINUTES = 60;
 const MAX_IP_ATTEMPTS = 10;
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
