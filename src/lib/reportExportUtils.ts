@@ -36,6 +36,7 @@ function sanitizeFilename(name: string): string {
 }
 
 export async function reportExportToPDF(data: ExportData, options: ExportOptions): Promise<void> {
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF({
     orientation: options.orientation || 'portrait',
     unit: 'mm',
