@@ -10,6 +10,11 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
+    // Auth check
+    const { requireAuth } = await import("../_shared/auth-guard.ts");
+    const auth = await requireAuth(req);
+    if (auth.error) return auth.error;
+
     const { text } = await req.json();
 
     if (!text || typeof text !== 'string' || text.trim().length < 50) {

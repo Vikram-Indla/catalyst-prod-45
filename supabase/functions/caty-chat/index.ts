@@ -12,6 +12,11 @@ serve(async (req) => {
   }
 
   try {
+    // Auth check
+    const { requireAuth } = await import("../_shared/auth-guard.ts");
+    const auth = await requireAuth(req);
+    if (auth.error) return auth.error;
+
     const { conversation_id, message, context } = await req.json();
 
     if (!conversation_id || !message) {
