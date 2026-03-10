@@ -30,6 +30,8 @@ export interface Idea {
   theme?: string | null;
   assigned_team?: string | null;
   target_release_date?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 // ─── IMPACT factor data per idea ──────────────────────────────────

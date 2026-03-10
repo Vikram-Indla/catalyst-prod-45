@@ -43,15 +43,11 @@ function getInitials(name: string): string {
 // ── Transform DB row to Idea ──────────────────────────────────────
 function toIdea(row: any): Idea {
   const assigneeName = row.assigned_to_name;
-  const source = row.source || '';
-  const created = row.created_at ? new Date(row.created_at) : null;
-  const dateStr = created ? `${created.toLocaleDateString('en-US', { month: 'short' })} ${created.getDate()}` : '';
-  const subtitle = `${source} · ${dateStr}`;
 
   return {
     key: row.idea_key,
     title: row.title,
-    subtitle,
+    subtitle: '',
     status: STATUS_MAP[row.status] || 'draft',
     type: TYPE_MAP[row.idea_type] || 'feature',
     priority: row.priority || 'P2',
@@ -66,6 +62,8 @@ function toIdea(row: any): Idea {
     theme: row.theme || null,
     assigned_team: row.assigned_team || null,
     target_release_date: row.target_release_date || null,
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
   };
 }
 
