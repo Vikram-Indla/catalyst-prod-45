@@ -16,7 +16,6 @@ serve(async (req: Request) => {
   try {
     // Auth check
     const auth = await requireAuth(req);
-    const auth = await requireAuth(req);
     if (auth.error) return auth.error;
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;

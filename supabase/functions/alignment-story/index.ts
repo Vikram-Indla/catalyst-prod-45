@@ -13,7 +13,6 @@ serve(async (req) => {
   try {
     // Auth check
     const auth = await requireAuth(req);
-    const auth = await requireAuth(req);
     if (auth.error) return auth.error;
 
     const { chainData } = await req.json();
