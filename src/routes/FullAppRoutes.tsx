@@ -516,7 +516,8 @@ export default function FullAppRoutes() {
         <Route path="/taskhub-kanban" element={<S><KanbanPage /></S>} />
         <Route path="/taskhub/my-tasks" element={<S><MyTasksPage /></S>} />
 
-        <Route path="/testhub" element={<S><TestHubPage /></S>}>
+        {/* ═══ TestHub ═══ */}
+        <Route path="/testhub" element={<MG k="testhub" t="TestHub"><S><TestHubPage /></S></MG>}>
           <Route index element={<Navigate to="/testhub/dashboard" replace />} />
           <Route path="repository" element={<S><TestRepositoryPage /></S>} />
           <Route path="dashboard" element={<S><TestHubDashboardPage /></S>} />
@@ -550,17 +551,18 @@ export default function FullAppRoutes() {
           <Route path="releases/command-center" element={<S><CommandCenterPage /></S>} />
           <Route path="releases/quality-gates" element={<S><QualityGatesPage /></S>} />
           <Route path="releases/:releaseId" element={<S><ReleaseDetailPage /></S>} />
-          <Route path="caty" element={<S><CatyAIPage /></S>} />
+          <Route path="caty" element={<MG k="ai_features" t="Caty AI"><S><CatyAIPage /></S></MG>} />
           <Route path="docs" element={<S><TestHubDocsPage /></S>} />
         </Route>
 
-        <Route path="/incident-hub" element={<S><IncidentHubListPage /></S>} />
-        <Route path="/incident-hub/kanban" element={<S><IncidentHubKanbanPage /></S>} />
-        <Route path="/incident-hub/analytics" element={<S><IncidentHubAnalyticsPage /></S>} />
-        <Route path="/incident-hub/insights" element={<S><IncidentHubInsightsPage /></S>} />
-        <Route path="/incident-hub/reports" element={<S><IncidentHubReportsPage /></S>} />
-        <Route path="/incident-hub/committee-queue" element={<S><IncidentHubCommitteeQueuePage /></S>} />
-        <Route path="/incident-hub/view/:id" element={<S><IncidentRoomDetail /></S>} />
+        {/* ═══ IncidentHub ═══ */}
+        <Route path="/incident-hub" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubListPage /></S></MG>} />
+        <Route path="/incident-hub/kanban" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubKanbanPage /></S></MG>} />
+        <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />
+        <Route path="/incident-hub/insights" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubInsightsPage /></S></MG>} />
+        <Route path="/incident-hub/reports" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubReportsPage /></S></MG>} />
+        <Route path="/incident-hub/committee-queue" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubCommitteeQueuePage /></S></MG>} />
+        <Route path="/incident-hub/view/:id" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentRoomDetail /></S></MG>} />
 
         <Route path="/releasehub" element={<Navigate to="/releasehub/command-center" replace />} />
         <Route path="/releasehub/command-center" element={<S><RH21CommandCenterPage /></S>} />
