@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { ENABLE_AI } from './lib/featureFlags';
+import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from './lib/featureFlags';
 import { FeatureComingSoon } from './components/common/FeatureComingSoon';
 
 // ─── Lazy page imports ───────────────────────────────────────────
