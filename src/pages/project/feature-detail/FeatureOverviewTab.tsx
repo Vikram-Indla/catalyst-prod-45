@@ -7,6 +7,7 @@
  * - Acceptance criteria checklist
  * - Attachments (real-time from database)
  */
+import DOMPurify from 'dompurify';
 
 import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
