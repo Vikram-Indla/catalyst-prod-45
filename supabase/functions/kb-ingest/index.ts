@@ -56,6 +56,10 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // ── Auth guard ──
+  const auth = await requireAuth(req);
+  if (auth.error) return auth.error;
+
   try {
     const body = await req.json();
     const action = body.action || "ingest_training";

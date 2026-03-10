@@ -264,6 +264,10 @@ const TABLE_CONFIGS: TableConfig[] = [
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
+  // ── Auth guard ──
+  const auth = await requireAuth(req);
+  if (auth.error) return auth.error;
+
   try {
     const { action = "status", table_name, custom_config, sync_run_id, record_id, table, content_field, source_type, metadata: reqMetadata } = await req.json().catch(() => ({ action: "status" }));
     const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);

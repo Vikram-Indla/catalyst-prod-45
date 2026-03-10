@@ -34,6 +34,10 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // ── Auth guard ──
+  const auth = await requireAuth(req);
+  if (auth.error) return auth.error;
+
   try {
     const { action = "embed_batch", offset = 0 } = await req.json();
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
