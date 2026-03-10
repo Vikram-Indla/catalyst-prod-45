@@ -34,13 +34,14 @@ const PAGE_WIDTH = 210 - (PAGE_MARGIN * 2); // A4 width minus margins
 const HEADER_HEIGHT = 8;
 const ROW_HEIGHT = 7;
 
-export function exportReportToPDF({
+export async function exportReportToPDF({
   reportTitle,
   insights,
   columns,
   data,
   filename,
-}: ExportOptions): void {
+}: ExportOptions): Promise<void> {
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF();
   let yPos = PAGE_MARGIN;
 
