@@ -108,9 +108,9 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 const CatalystShell = lazy(() => import("./components/layout/CatalystShell").then(m => ({ default: m.CatalystShell })));
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CatalystLoginPage } from "./components/auth/login";
-import { CatyFabPlaceholder } from "./components/caty/CatyFabPlaceholder";
-import { QAAssistantFab } from "./components/testhub-ai";
-import { KAFab } from "./components/kb/KAFab";
+const CatyFabPlaceholderLazy = lazy(() => import("./components/caty/CatyFabPlaceholder").then(m => ({ default: m.CatyFabPlaceholder })));
+const QAAssistantFabLazy = lazy(() => import("./components/testhub-ai").then(m => ({ default: m.QAAssistantFab })));
+const KAFabLazy = lazy(() => import("./components/kb/KAFab").then(m => ({ default: m.KAFab })));
 
 // ─── All page imports converted to lazy ──────────────────────────
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
