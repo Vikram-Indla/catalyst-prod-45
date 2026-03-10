@@ -64,6 +64,6 @@ export const generateReportPDF = async (reportData: ReportData, chartElement?: H
   return doc;
 };
 
-export const downloadPDF = (doc: jsPDF, filename: string) => {
+export const downloadPDF = (doc: any, filename: string) => {
   doc.save(`${filename}.pdf`);
 };

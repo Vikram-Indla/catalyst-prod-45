@@ -125,6 +125,7 @@ export const exportElementToPdf = async (
   });
 
   const imgData = canvas.toDataURL('image/png');
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF({
     orientation: options.orientation || 'portrait',
     unit: 'mm',
