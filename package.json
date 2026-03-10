@@ -11,7 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@atlaskit/dynamic-table": "^15.2.0",
     "@atlaskit/empty-state": "^7.12.3",
     "@atlaskit/form": "^10.6.3",
     "@atlaskit/icon": "^22.28.0",
