@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-// Build stamp: 2026-03-10T19:00Z — force clean publish on ci_medium
+
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = lazy(() => import("./pages/KBAdminSetup"));
 const KBAdminPage = lazy(() => import("./pages/KBAdminPage"));
