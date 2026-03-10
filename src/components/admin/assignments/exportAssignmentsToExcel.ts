@@ -74,7 +74,8 @@ function normalizeAssignmentType(type: string | null | undefined): string {
   return type;
 }
 
-export function exportAssignmentsToExcel(assignments: ResourceAssignment[]): void {
+export async function exportAssignmentsToExcel(assignments: ResourceAssignment[]): Promise<void> {
+  const XLSX = await loadXLSX();
   if (assignments.length === 0) {
     throw new Error('No data to export');
   }

@@ -64,14 +64,15 @@ export const exportToExcel = async <T extends Record<string, any>>(
 /**
  * Export multiple sheets to a single Excel file
  */
-export const exportMultiSheetExcel = (
+export const exportMultiSheetExcel = async (
   sheets: Array<{
     name: string;
     data: Record<string, any>[];
     columns: ExportColumn<any>[];
   }>,
   options: ExcelExportOptions
-): string => {
+): Promise<string> => {
+  const XLSX = await loadXLSX();
   if (sheets.length === 0) {
     throw new Error('No sheets to export');
   }

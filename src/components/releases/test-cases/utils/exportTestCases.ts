@@ -4,7 +4,7 @@
  */
 
 import { TestCase } from '@/types/test-cases';
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 
 export type ExportFormat = 'csv' | 'json' | 'xlsx';
 

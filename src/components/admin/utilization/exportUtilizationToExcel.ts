@@ -57,7 +57,8 @@ const buildExportColumns = (): ExportColumn[] => {
   return [...baseColumns, ...monthColumns, avgColumn];
 };
 
-export function exportUtilizationToExcel(resources: ResourceUtilizationItem[], year: number): void {
+export async function exportUtilizationToExcel(resources: ResourceUtilizationItem[], year: number): Promise<void> {
+  const XLSX = await loadXLSX();
   if (resources.length === 0) {
     throw new Error('No data to export');
   }

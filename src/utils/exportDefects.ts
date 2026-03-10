@@ -62,6 +62,7 @@ export const exportDefectsByStatus = async (
   defects: Defect[],
   format: 'csv' | 'xlsx'
 ): Promise<void> => {
+  const XLSX = await loadXLSX();
   const wb = XLSX.utils.book_new();
   
   const statuses = [...new Set(defects.map(d => d.status))];

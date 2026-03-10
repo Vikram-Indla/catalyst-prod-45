@@ -54,6 +54,7 @@ export async function exportUsersMultiTab(
   assignments: Array<{ id: string; assignment_id: string | null }>,
   vendors: Array<{ id: string; vendor_code: string | null }>
 ) {
+  const XLSX = await loadXLSX();
   const workbook = XLSX.utils.book_new();
   const today = format(new Date(), 'yyyy-MM-dd');
 

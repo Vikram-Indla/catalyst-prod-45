@@ -38,7 +38,8 @@ const EXPORT_COLUMNS: ExportColumn[] = [
   { key: 'location', header: 'Location', width: 14 },
 ];
 
-export function exportUsersToExcel(users: UserProfile[]): void {
+export async function exportUsersToExcel(users: UserProfile[]): Promise<void> {
+  const XLSX = await loadXLSX();
   if (users.length === 0) {
     throw new Error('No data to export');
   }
