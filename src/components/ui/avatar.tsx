@@ -28,10 +28,10 @@ const avatarVariants = cva(
 const fallbackColors = [
   "bg-[#dbeafe] text-[#2563eb]", // Blue
   "bg-[#ccfbf1] text-[#0d9488]", // Teal
-  "bg-[#ede9fe] text-[#7c3aed]", // Purple
-  "bg-[#fef3c7] text-[#d97706]", // Amber
   "bg-[#d1fae5] text-[#059669]", // Green
   "bg-[#fee2e2] text-[#dc2626]", // Red
+  "bg-[#e0f2fe] text-[#0284c7]", // Sky
+  "bg-[#fce7f3] text-[#db2777]", // Pink
 ];
 
 function getColorFromName(name: string): string {
