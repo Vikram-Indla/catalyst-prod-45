@@ -77,6 +77,7 @@ const App = () => (
                   <Route path="/admin" element={<S><AdminLayout /></S>}>
                     <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
                     <Route path="deployment-health" element={<S><DeploymentHealthPage /></S>} />
+                    <Route path="publish-diagnostics" element={<S><PublishDiagnosticsPage /></S>} />
                   </Route>
 
                   {/* All other routes — only when ENABLE_FULL_APP=true */}
