@@ -135,12 +135,6 @@ export default function IdeationPage() {
     <div className="flex flex-col h-full" style={{ background: '#F8FAFC' }}>
       {/* ─── Page Header ─── */}
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
-        {/* Breadcrumb */}
-        <div style={{ padding: '12px 28px 0' }}>
-          <span style={{ fontSize: '12px', color: '#94A3B8' }}>
-            ProductHub › Ideation › {pageTitle}
-          </span>
-        </div>
 
         {/* Title Row */}
         <div style={{ padding: '8px 28px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
