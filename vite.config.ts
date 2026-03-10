@@ -137,4 +137,5 @@ export default defineConfig(({ mode, command }) => {
       },
     },
   },
-}));
+};
+});
