@@ -12,7 +12,7 @@ import { useUsers, UserProfile } from '@/hooks/useUsers';
 import { UserDrawer } from './components/UserDrawer';
 import { BulkEditModal } from './components/BulkEditModal';
 import { supabase } from '@/integrations/supabase/client';
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 import { toast } from 'sonner';
 import { Search, X, Download, Plus, ChevronLeft, ChevronRight, Edit3, Trash2 } from 'lucide-react';
 
@@ -177,7 +177,7 @@ export default function UsersManagement() {
     setEditingUser(null);
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     const dataToExport = selectedIds.size > 0 
       ? users.filter(u => selectedIds.has(u.id))
       : filteredUsers;
@@ -200,6 +200,7 @@ export default function UsersManagement() {
       Location: u.location || '',
       CTC: u.ctc || ''
     }));
+    const XLSX = await loadXLSX();
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Users');

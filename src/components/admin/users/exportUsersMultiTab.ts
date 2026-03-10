@@ -4,7 +4,7 @@
  * - Sheet 1: Resources (from /admin/users)
  * - Sheet 2: Assignments (from /admin/resource-assignments)
  */
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -54,6 +54,7 @@ export async function exportUsersMultiTab(
   assignments: Array<{ id: string; assignment_id: string | null }>,
   vendors: Array<{ id: string; vendor_code: string | null }>
 ) {
+  const XLSX = await loadXLSX();
   const workbook = XLSX.utils.book_new();
   const today = format(new Date(), 'yyyy-MM-dd');
 

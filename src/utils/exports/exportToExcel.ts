@@ -2,14 +2,15 @@
  * Excel Export Utility
  * Export data to XLSX format
  */
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 import type { ExportColumn, ExcelExportOptions } from './types';
 
-export const exportToExcel = <T extends Record<string, any>>(
+export const exportToExcel = async <T extends Record<string, any>>(
   data: T[],
   columns: ExportColumn<T>[],
   options: ExcelExportOptions
-): string => {
+): Promise<string> => {
+  const XLSX = await loadXLSX();
   if (data.length === 0) {
     throw new Error('No data to export');
   }
@@ -63,14 +64,15 @@ export const exportToExcel = <T extends Record<string, any>>(
 /**
  * Export multiple sheets to a single Excel file
  */
-export const exportMultiSheetExcel = (
+export const exportMultiSheetExcel = async (
   sheets: Array<{
     name: string;
     data: Record<string, any>[];
     columns: ExportColumn<any>[];
   }>,
   options: ExcelExportOptions
-): string => {
+): Promise<string> => {
+  const XLSX = await loadXLSX();
   if (sheets.length === 0) {
     throw new Error('No sheets to export');
   }

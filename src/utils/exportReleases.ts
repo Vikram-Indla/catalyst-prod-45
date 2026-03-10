@@ -4,7 +4,7 @@
  */
 
 import Papa from 'papaparse';
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 
 export interface ReleaseExportData {
   id: string;
@@ -80,6 +80,7 @@ export async function exportReleasesAsCSV(releases: ReleaseExportData[]): Promis
 }
 
 export async function exportReleasesAsExcel(releases: ReleaseExportData[]): Promise<void> {
+  const XLSX = await loadXLSX();
   const rows = transformToExportRows(releases);
   
   const worksheet = XLSX.utils.json_to_sheet(rows);

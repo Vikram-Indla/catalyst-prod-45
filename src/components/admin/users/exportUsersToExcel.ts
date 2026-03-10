@@ -2,7 +2,7 @@
  * Enterprise-grade Excel export for User/Resource data
  * Features: Professional column widths, formatted dates, clean data presentation
  */
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 import { format } from 'date-fns';
 import type { UserProfile } from '@/hooks/useUsers';
 
@@ -38,7 +38,8 @@ const EXPORT_COLUMNS: ExportColumn[] = [
   { key: 'location', header: 'Location', width: 14 },
 ];
 
-export function exportUsersToExcel(users: UserProfile[]): void {
+export async function exportUsersToExcel(users: UserProfile[]): Promise<void> {
+  const XLSX = await loadXLSX();
   if (users.length === 0) {
     throw new Error('No data to export');
   }

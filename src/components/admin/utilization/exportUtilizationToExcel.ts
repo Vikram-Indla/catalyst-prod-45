@@ -3,7 +3,7 @@
  * Features: Professional column widths, monthly breakdown, clean data presentation
  * Primary Key: RID (Resource ID)
  */
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 import { format } from 'date-fns';
 import type { ResourceUtilizationItem } from '@/hooks/useResourceUtilization';
 import { MONTHS } from '@/hooks/useResourceUtilization';
@@ -57,7 +57,8 @@ const buildExportColumns = (): ExportColumn[] => {
   return [...baseColumns, ...monthColumns, avgColumn];
 };
 
-export function exportUtilizationToExcel(resources: ResourceUtilizationItem[], year: number): void {
+export async function exportUtilizationToExcel(resources: ResourceUtilizationItem[], year: number): Promise<void> {
+  const XLSX = await loadXLSX();
   if (resources.length === 0) {
     throw new Error('No data to export');
   }

@@ -3,7 +3,7 @@
  * Features: Professional column widths, formatted dates, clean data presentation
  * Primary Key: AID (Assignment ID)
  */
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 import { format } from 'date-fns';
 import type { ResourceAssignment } from '@/modules/capacity-planner/hooks/useResourceAssignments';
 
@@ -74,7 +74,8 @@ function normalizeAssignmentType(type: string | null | undefined): string {
   return type;
 }
 
-export function exportAssignmentsToExcel(assignments: ResourceAssignment[]): void {
+export async function exportAssignmentsToExcel(assignments: ResourceAssignment[]): Promise<void> {
+  const XLSX = await loadXLSX();
   if (assignments.length === 0) {
     throw new Error('No data to export');
   }

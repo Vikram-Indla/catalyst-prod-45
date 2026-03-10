@@ -3,7 +3,7 @@
  */
 
 import Papa from 'papaparse';
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 
 export interface ParsedTestCase {
   title: string;
@@ -139,6 +139,7 @@ export async function parseJSON(file: File): Promise<ParseResult> {
  */
 export async function parseXLSX(file: File): Promise<ParseResult> {
   try {
+    const XLSX = await loadXLSX();
     const arrayBuffer = await file.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer, { type: 'array' });
     

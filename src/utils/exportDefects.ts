@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 
 interface DefectAssignee {
   name: string;
@@ -23,6 +23,7 @@ export const exportDefects = async (
   defects: Defect[], 
   format: 'csv' | 'xlsx'
 ): Promise<void> => {
+  const XLSX = await loadXLSX();
   const data = defects.map(d => ({
     'ID': d.id,
     'Title': d.title,
@@ -61,6 +62,7 @@ export const exportDefectsByStatus = async (
   defects: Defect[],
   format: 'csv' | 'xlsx'
 ): Promise<void> => {
+  const XLSX = await loadXLSX();
   const wb = XLSX.utils.book_new();
   
   const statuses = [...new Set(defects.map(d => d.status))];

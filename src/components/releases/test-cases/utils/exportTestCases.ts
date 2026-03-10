@@ -4,7 +4,7 @@
  */
 
 import { TestCase } from '@/types/test-cases';
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 
 export type ExportFormat = 'csv' | 'json' | 'xlsx';
 
@@ -84,7 +84,8 @@ export function exportToJSON(testCases: TestCase[], fields: string[]): string {
   return JSON.stringify(data, null, 2);
 }
 
-export function exportToXLSX(testCases: TestCase[], fields: string[]): Blob {
+export async function exportToXLSX(testCases: TestCase[], fields: string[]): Promise<Blob> {
+  const XLSX = await loadXLSX();
   const headers = fields.map(f => fieldLabels[f] || f);
   const rows = testCases.map(tc => testCaseToRow(tc, fields));
   
@@ -97,7 +98,6 @@ export function exportToXLSX(testCases: TestCase[], fields: string[]): Blob {
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Test Cases');
   
-  // Auto-size columns
   const colWidths = headers.map((h, i) => {
     const maxLen = Math.max(
       h.length,
@@ -126,10 +126,10 @@ export function downloadFile(content: string | Blob, filename: string, mimeType?
   URL.revokeObjectURL(url);
 }
 
-export function exportTestCases(
+export async function exportTestCases(
   testCases: TestCase[],
   options: ExportOptions
-): void {
+): Promise<void> {
   const { format, selectedFields, filename } = options;
   const timestamp = new Date().toISOString().split('T')[0];
   const baseFilename = filename || `test-cases-export-${timestamp}`;
@@ -146,7 +146,7 @@ export function exportTestCases(
       break;
     }
     case 'xlsx': {
-      const xlsx = exportToXLSX(testCases, selectedFields);
+      const xlsx = await exportToXLSX(testCases, selectedFields);
       downloadFile(xlsx, `${baseFilename}.xlsx`);
       break;
     }
