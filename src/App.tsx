@@ -377,7 +377,7 @@ const WorkHubResourceDetail = lazy(() => import("./components/workhub/resource36
 const WorkHubCalendarPage = lazy(() => import("./components/workhub/calendar/CalendarPage").then(m => ({ default: m.CalendarPage })));
 const WorkHubCapacityPage = lazy(() => import("./components/workhub/capacity/CapacityPage").then(m => ({ default: m.CapacityPage })));
 const WorkHubAnalyticsPage = lazy(() => import("./components/workhub/analytics/AnalyticsPage").then(m => ({ default: m.AnalyticsPage })));
-const WorkHubCatyPage = lazy(() => import("./components/workhub/caty/CatyPage").then(m => ({ default: m.CatyPage })));
+const WorkHubCatyPage = ENABLE_AI ? lazy(() => import("./components/workhub/caty/CatyPage").then(m => ({ default: m.CatyPage }))) : () => <FeatureComingSoon title="WorkHub AI" />;
 
 const ForYouPage = lazy(() => import("./pages/ForYouPage"));
 const ProductRoadmapPage = lazy(() => import("./pages/ProductRoadmapPage"));
