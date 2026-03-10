@@ -2,7 +2,10 @@ import React, { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
+import { ModuleGate } from '../components/common/ModuleGate';
 import { ProtectedRoute } from "../components/ProtectedRoute";
+
+const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
 
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = ENABLE_AI ? lazy(() => import("../pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
