@@ -3,9 +3,10 @@
  * Uses jsPDF for PDF generation with professional formatting
  */
 
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import type { PlannerTask } from '../types';
+
+const loadJsPDF = () => import('jspdf').then(m => m.default || m.jsPDF);
+const loadAutoTable = () => import('jspdf-autotable').then(m => m.default);
 
 interface ExportOptions {
   title: string;
@@ -50,6 +51,7 @@ const STATUS_LABELS: Record<string, string> = {
 export async function exportPlannerToPDF(options: ExportOptions): Promise<void> {
   const { title, subtitle, viewType, tasks, dateRange, filters } = options;
   
+  const jsPDF = await loadJsPDF();
   const pdf = new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
@@ -176,7 +178,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
 
   // Add tasks table
   // Add tasks table
-  const addTasksTable = () => {
+  const addTasksTable = async () => {
     // Add spacing prefix for priority to make room for the indicator
     const tableData = tasks.map(task => [
       task.key,
@@ -189,6 +191,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
       `${task.progress}%`,
     ]);
 
+    const autoTable = await loadAutoTable();
     autoTable(pdf, {
       startY: currentY,
       head: [['ID', 'Title', 'Status', 'Priority', 'Workstream', 'Assignee', 'Due Date', 'Progress']],
@@ -266,7 +269,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
   addSummaryStats();
   
   if (tasks.length > 0) {
-    addTasksTable();
+    await addTasksTable();
   } else {
     pdf.setFontSize(12);
     pdf.setTextColor(BRAND_COLORS.textMuted);

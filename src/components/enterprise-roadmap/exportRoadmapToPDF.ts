@@ -2,8 +2,8 @@
 // Export Enterprise Roadmap to PDF - Landscape Mode
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
+const loadJsPDF = () => import('jspdf').then(m => m.jsPDF);
 
 interface ExportOptions {
   filename?: string;
@@ -42,6 +42,7 @@ export async function exportRoadmapToPDF(
     await new Promise(resolve => setTimeout(resolve, 150));
 
     // Capture the Gantt chart
+    const html2canvas = await loadHtml2Canvas();
     const ganttCanvas = await html2canvas(ganttElement, {
       scale: 2,
       useCORS: true,
@@ -82,6 +83,7 @@ export async function exportRoadmapToPDF(
     }
 
     // Create PDF in landscape A4
+    const jsPDF = await loadJsPDF();
     const pdf = new jsPDF({
       orientation: 'landscape',
       unit: 'mm',

@@ -1,4 +1,4 @@
-import PptxGenJS from 'pptxgenjs';
+const loadPptxGenJS = () => import('pptxgenjs').then(m => m.default);
 import type { RoadmapIdea } from '@/types/ideasRoadmap';
 
 const Q_COLORS: Record<string, string> = {
@@ -32,6 +32,7 @@ const Q_CFG = [
 export async function exportRoadmapPptx(ideas: RoadmapIdea[]): Promise<void> {
   const committed = ideas.filter(i => i.isCommitted);
 
+  const PptxGenJS = await loadPptxGenJS();
   const pptx = new PptxGenJS();
   pptx.layout = 'LAYOUT_WIDE';
 

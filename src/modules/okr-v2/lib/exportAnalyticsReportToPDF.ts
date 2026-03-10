@@ -3,8 +3,8 @@
 // Multi-page PDF generation with full content capture
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
+const loadJsPDF = () => import('jspdf').then(m => m.jsPDF);
 
 interface ExportOptions {
   filename?: string;
@@ -47,6 +47,7 @@ export async function exportAnalyticsReportToPDF(
     await new Promise(resolve => setTimeout(resolve, 100));
 
     // Step 2: Capture with full dimensions
+    const html2canvas = await loadHtml2Canvas();
     const canvas = await html2canvas(contentElement, {
       scale: 2, // 2x for sharp output
       useCORS: true,
@@ -73,6 +74,7 @@ export async function exportAnalyticsReportToPDF(
     const imgHeight = (canvas.height * contentWidth) / canvas.width;
     
     // Step 4: Create PDF
+    const jsPDF = await loadJsPDF();
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',

@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { ENABLE_AI } from './lib/featureFlags';
+import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from './lib/featureFlags';
 import { FeatureComingSoon } from './components/common/FeatureComingSoon';
 
 // ─── Lazy page imports ───────────────────────────────────────────
@@ -7,8 +7,8 @@ const KBAdminSetup = ENABLE_AI ? lazy(() => import("./pages/KBAdminSetup")) : ()
 const KBAdminPage = ENABLE_AI ? lazy(() => import("./pages/KBAdminPage")) : () => <FeatureComingSoon title="KB Admin" />;
 const KBDataAuditPage = ENABLE_AI ? lazy(() => import("./pages/KBDataAudit")) : () => <FeatureComingSoon title="KB Data Audit" />;
 const RAGAuditPage = ENABLE_AI ? lazy(() => import("./pages/RAGAuditPage")) : () => <FeatureComingSoon title="RAG Audit" />;
-const WikiAdminPage = lazy(() => import("./pages/admin/WikiAdminPage"));
-const WikiDiagnosticPage = lazy(() => import("./pages/admin/WikiDiagnosticPage"));
+const WikiAdminPage = ENABLE_WIKI ? lazy(() => import("./pages/admin/WikiAdminPage")) : () => <FeatureComingSoon title="Wiki Admin" />;
+const WikiDiagnosticPage = ENABLE_WIKI ? lazy(() => import("./pages/admin/WikiDiagnosticPage")) : () => <FeatureComingSoon title="Wiki Diagnostic" />;
 const AdminDiagnosticPage = lazy(() => import("./pages/admin/AdminDiagnosticPage"));
 
 const Resource360PageNew = lazy(() => import("./components/resource360/Resource360PageNew"));
@@ -77,19 +77,19 @@ const IncidentHubReportsPage = lazy(() => import("./pages/release/IncidentReport
 const IncidentHubCommitteeQueuePage = lazy(() => import("./pages/release/CAPCommitteeQueuePage"));
 
 // Wiki Module lazy imports
-const WikiHomePage = lazy(() => import("./pages/wiki/WikiHomePage"));
-const WikiSearchPage = lazy(() => import("./pages/wiki/WikiSearchPage"));
-const WikiCategoryPage = lazy(() => import("./pages/wiki/WikiCategoryPage"));
-const WikiArticlePage = lazy(() => import("./pages/wiki/WikiArticlePage"));
-const WikiWhatsNewPage = lazy(() => import("./pages/wiki/WikiWhatsNewPage"));
-const WikiLearningPathsPage = lazy(() => import("./pages/wiki/WikiLearningPathsPage"));
-const WikiLearningPathDetailPage = lazy(() => import("./pages/wiki/WikiLearningPathDetailPage"));
-const WikiSubscriptionsPage = lazy(() => import("./pages/wiki/WikiSubscriptionsPage"));
-const WikiAllArticlesPage = lazy(() => import("./pages/wiki/WikiAllArticlesPage"));
-const WikiVerificationPage = lazy(() => import("./pages/wiki/WikiVerificationPage"));
-const WikiAnalyticsPage = lazy(() => import("./pages/wiki/WikiAnalyticsPage"));
-const WikiTemplatesPage = lazy(() => import("./pages/wiki/WikiTemplatesPage"));
-const WikiKnowledgeGraphPage = ENABLE_AI ? lazy(() => import("./pages/wiki/WikiKnowledgeGraphPage")) : () => <FeatureComingSoon title="Knowledge Graph" />;
+const WikiHomePage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiHomePage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiSearchPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiSearchPage")) : () => <FeatureComingSoon title="Wiki Search" />;
+const WikiCategoryPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiCategoryPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiArticlePage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiArticlePage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiWhatsNewPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiWhatsNewPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiLearningPathsPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiLearningPathsPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiLearningPathDetailPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiLearningPathDetailPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiSubscriptionsPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiSubscriptionsPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiAllArticlesPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiAllArticlesPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiVerificationPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiVerificationPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiAnalyticsPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiAnalyticsPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiTemplatesPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiTemplatesPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiKnowledgeGraphPage = (ENABLE_AI && ENABLE_WIKI) ? lazy(() => import("./pages/wiki/WikiKnowledgeGraphPage")) : () => <FeatureComingSoon title="Knowledge Graph" />;
 
 // ─── Core infrastructure (keep eager) ────────────────────────────
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -386,7 +386,7 @@ const IndustryRoadmapPage = lazy(() => import("./pages/industry/IndustryRoadmapP
 
 const WorkTreePage = lazy(() => import("./pages/work-tree").then(m => ({ default: m.WorkTreePage })));
 const WorkManager = lazy(() => import("./pages/WorkManager"));
-const SkillsInventory = lazy(() => import("./pages/SkillsInventory"));
+const SkillsInventory = ENABLE_HEAVY_EXPORTS ? lazy(() => import("./pages/SkillsInventory")) : () => <FeatureComingSoon title="Skills Inventory" />;
 const StarredPage = lazy(() => import("./pages/StarredPage"));
 const WorkHubAllWork = lazy(() => import("./pages/workhub/AllWork"));
 const BusinessRequests = lazy(() => import("./pages/enterprise/BusinessRequests"));
@@ -406,9 +406,9 @@ const UnauthorizedPage = lazy(() => import("./pages/UnauthorizedPage"));
 const KanbanBoardView = lazy(() => import("./pages/KanbanBoardView"));
 const KanbanBoardSetup = lazy(() => import("./pages/KanbanBoardSetup"));
 const KanbanBoardAnalytics = lazy(() => import("./pages/KanbanBoardAnalytics"));
-const KnowledgeHubDocumentPage = lazy(() => import("./pages/KnowledgeHubDocumentPage"));
-const KnowledgeHubPage = lazy(() => import("./pages/KnowledgeHubPage"));
-const KnowledgeHubSpacePage = lazy(() => import("./pages/KnowledgeHubSpacePage"));
+const KnowledgeHubDocumentPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("./pages/KnowledgeHubDocumentPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
+const KnowledgeHubPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("./pages/KnowledgeHubPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
+const KnowledgeHubSpacePage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("./pages/KnowledgeHubSpacePage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
 
 // Release Management Module (Incidents only)
 const IncidentsList = lazy(() => import("./pages/release").then(m => ({ default: m.IncidentsList })));

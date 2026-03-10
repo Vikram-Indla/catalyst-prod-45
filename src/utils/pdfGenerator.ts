@@ -1,5 +1,5 @@
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+const loadJsPDF = () => import('jspdf').then(m => m.default);
+const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
 
 interface ReportData {
   totalTests: number;
@@ -10,6 +10,7 @@ interface ReportData {
 }
 
 export const generateReportPDF = async (reportData: ReportData, chartElement?: HTMLElement) => {
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF();
   
   // Header with brand colors
@@ -42,6 +43,7 @@ export const generateReportPDF = async (reportData: ReportData, chartElement?: H
   // Add chart if available
   if (chartElement) {
     try {
+      const html2canvas = await loadHtml2Canvas();
       const canvas = await html2canvas(chartElement, {
         backgroundColor: '#ffffff',
         scale: 2,
@@ -62,6 +64,6 @@ export const generateReportPDF = async (reportData: ReportData, chartElement?: H
   return doc;
 };
 
-export const downloadPDF = (doc: jsPDF, filename: string) => {
+export const downloadPDF = (doc: any, filename: string) => {
   doc.save(`${filename}.pdf`);
 };

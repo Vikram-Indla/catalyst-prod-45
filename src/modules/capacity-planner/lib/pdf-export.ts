@@ -1,6 +1,7 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import type { ResourceMetric, CapacitySummary } from '../types';
+
+const loadJsPDF = () => import('jspdf').then(m => m.default || m.jsPDF);
+const loadAutoTable = () => import('jspdf-autotable').then(m => m.default);
 
 interface ExportData {
   resources: ResourceMetric[];
@@ -10,6 +11,7 @@ interface ExportData {
 }
 
 export async function exportCapacityToPdf(data: ExportData): Promise<void> {
+  const jsPDF = await loadJsPDF();
   const pdf = new jsPDF('landscape', 'mm', 'a4');
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
@@ -97,6 +99,7 @@ export async function exportCapacityToPdf(data: ExportData): Promise<void> {
   // Name, Role, Department (not Division), Assignment (not Projects), Email, Allocation (no Status)
   const tableY = summaryY + 30;
   
+  const autoTable = await loadAutoTable();
   autoTable(pdf, {
     startY: tableY,
     head: [['Name', 'Role', 'Department', 'Assignment', 'Email', 'Allocation']],

@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import jsPDF from 'jspdf';
+const loadJsPDF = () => import('jspdf').then(m => m.default);
 
 export interface SharedReport {
   id: string;
@@ -84,6 +84,7 @@ export function useReportSharing(programId: string | null) {
     setExportProgress(10);
     
     try {
+      const jsPDF = await loadJsPDF();
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       

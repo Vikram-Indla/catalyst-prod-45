@@ -3,12 +3,13 @@
  * PDF, PNG, and CSV export functionality
  */
 
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
+const loadJsPDF = () => import('jspdf').then(m => m.default);
 import type { HeatmapResource } from '@/types/capacity-heatmap';
 import { formatMonth } from './utils';
 
 export async function exportToPNG(element: HTMLElement, filename: string): Promise<void> {
+  const html2canvas = await loadHtml2Canvas();
   const canvas = await html2canvas(element, {
     scale: 2,
     backgroundColor: '#ffffff',
@@ -22,6 +23,7 @@ export async function exportToPNG(element: HTMLElement, filename: string): Promi
 }
 
 export async function exportToPDF(element: HTMLElement, filename: string): Promise<void> {
+  const html2canvas = await loadHtml2Canvas();
   const canvas = await html2canvas(element, {
     scale: 2,
     backgroundColor: '#ffffff',
@@ -29,6 +31,7 @@ export async function exportToPDF(element: HTMLElement, filename: string): Promi
   });
   
   const imgData = canvas.toDataURL('image/png');
+  const jsPDF = await loadJsPDF();
   const pdf = new jsPDF({
     orientation: 'landscape',
     unit: 'px',

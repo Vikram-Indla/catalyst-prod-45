@@ -2,8 +2,8 @@
  * PDF Export Utility
  * Export data to PDF format using jsPDF
  */
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+const loadJsPDF = () => import('jspdf').then(m => m.default);
+const loadAutoTable = () => import('jspdf-autotable').then(m => m.default);
 import type { ExportColumn, PdfExportOptions } from './types';
 
 export const exportToPdf = async <T extends Record<string, any>>(
@@ -15,6 +15,7 @@ export const exportToPdf = async <T extends Record<string, any>>(
     throw new Error('No data to export');
   }
 
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF({
     orientation: options.orientation || 'portrait',
     unit: 'mm',
@@ -56,6 +57,7 @@ export const exportToPdf = async <T extends Record<string, any>>(
   );
 
   // Generate table
+  const autoTable = await loadAutoTable();
   autoTable(doc, {
     head: [tableHeaders],
     body: tableData,
@@ -123,6 +125,7 @@ export const exportElementToPdf = async (
   });
 
   const imgData = canvas.toDataURL('image/png');
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF({
     orientation: options.orientation || 'portrait',
     unit: 'mm',

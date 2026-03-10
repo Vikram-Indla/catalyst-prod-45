@@ -2,9 +2,8 @@
  * Module 3C-2: Export File Generation Utilities
  */
 
-import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+const loadXLSX = () => import('xlsx');
+const loadJsPDF = () => import('jspdf').then(m => m.default);
 import type { ExportFormat } from '../types/batch-export';
 
 export interface GeneratedFile {
@@ -68,11 +67,11 @@ function generateCSV(
   };
 }
 
-function generateExcel(
+async function generateExcel(
   data: Record<string, unknown>[],
   fields: string[],
   timestamp: string
-): GeneratedFile {
+): Promise<GeneratedFile> {
   // Filter data to only include selected fields
   const filteredData = data.map(row => {
     const filtered: Record<string, unknown> = {};
@@ -82,6 +81,7 @@ function generateExcel(
     return filtered;
   });
 
+  const XLSX = await loadXLSX();
   const ws = XLSX.utils.json_to_sheet(filteredData, { header: fields });
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Test Cases');
@@ -112,11 +112,12 @@ function generateJSON(
   };
 }
 
-function generatePDF(
+async function generatePDF(
   data: Record<string, unknown>[],
   fields: string[],
   timestamp: string
-): GeneratedFile {
+): Promise<GeneratedFile> {
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF();
 
   // Title

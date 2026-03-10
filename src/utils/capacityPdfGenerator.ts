@@ -3,8 +3,8 @@
  * Generates professionally formatted PDF reports with Catalyst branding
  */
 
-import jsPDF from 'jspdf';
 import { Resource, CapacityProject, Vacancy } from '@/types/capacity';
+type jsPDFType = import('jspdf').jsPDF;
 
 interface CapacityReportData {
   resources: Resource[];
@@ -22,7 +22,8 @@ function calculateUtilization(allocations: Resource['allocations'], weekNumber: 
     .reduce((sum, a) => sum + a.percentage, 0);
 }
 
-export const generateCapacityPDF = async (data: CapacityReportData): Promise<jsPDF> => {
+export const generateCapacityPDF = async (data: CapacityReportData): Promise<jsPDFType> => {
+  const { default: jsPDF } = await import('jspdf');
   const doc = new jsPDF('p', 'mm', 'a4');
   const pageWidth = 210;
   const pageHeight = 297;
@@ -360,6 +361,6 @@ export const generateCapacityPDF = async (data: CapacityReportData): Promise<jsP
   return doc;
 };
 
-export const downloadCapacityPDF = (doc: jsPDF, filename: string) => {
+export const downloadCapacityPDF = (doc: any, filename: string) => {
   doc.save(`${filename}.pdf`);
 };

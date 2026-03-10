@@ -16,7 +16,7 @@ import { users, teams, getUserById, getTeamById } from '@/lib/work-manager-data'
 import type { TaskExtended } from './types';
 import { cn } from '@/lib/utils';
 import { ManagerFollowUpNotes } from './ManagerFollowUpNotes';
-import { jsPDF } from 'jspdf';
+const loadJsPDF = () => import('jspdf').then(m => m.jsPDF);
 import { toast } from 'sonner';
 
 interface WorkManagerInsightsProps {
@@ -42,8 +42,9 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
   };
 
   // Export PDF function
-  const handleExportPdf = (insights: any, teamData: any) => {
+  const handleExportPdf = async (insights: any, teamData: any) => {
     try {
+      const jsPDF = await loadJsPDF();
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       let yPos = 20;

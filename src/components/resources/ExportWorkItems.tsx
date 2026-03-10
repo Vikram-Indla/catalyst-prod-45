@@ -6,8 +6,8 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Download, ChevronDown, Calendar, Loader2, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
+const loadExcelJS = () => import('exceljs');
+const loadFileSaver = () => import('file-saver').then(m => m.saveAs);
 import { format, subMonths, addMonths, startOfMonth, endOfMonth } from 'date-fns';
 
 /* ── Color Palette ── */
@@ -50,10 +50,10 @@ const DEFAULT_STATUS = { bg: "ECEFF1", text: "37474F" };
 
 /* ── Helpers ── */
 const argb = (hex: string) => `FF${hex}`;
-const thinBorder = (): Partial<ExcelJS.Border> => ({ style: 'thin', color: { argb: argb(C.BORDER) } });
+const thinBorder = (): any => ({ style: 'thin', color: { argb: argb(C.BORDER) } });
 const allThinBorders = () => ({ top: thinBorder(), bottom: thinBorder(), left: thinBorder(), right: thinBorder() });
 
-const arialFont = (size: number, opts?: Partial<ExcelJS.Font>): Partial<ExcelJS.Font> => ({
+const arialFont = (size: number, opts?: any): any => ({
   name: 'Arial', size, ...opts,
 });
 
@@ -80,6 +80,7 @@ function getMonthOptions() {
 
 /* ── Excel generation ── */
 async function generateExcel(selectedMonths: { label: string; start: Date; end: Date }[], deptFilter: string) {
+  const ExcelJS = await loadExcelJS();
   const wb = new ExcelJS.Workbook();
   wb.creator = 'Catalyst Platform';
   wb.created = new Date();
@@ -372,6 +373,7 @@ async function generateExcel(selectedMonths: { label: string; start: Date; end: 
   // Download
   const buffer = await wb.xlsx.writeBuffer();
   const today = format(new Date(), 'yyyy-MM-dd');
+  const saveAs = await loadFileSaver();
   saveAs(new Blob([buffer as BlobPart]), `Delivery-Work-Items-${today}.xlsx`);
 }
 

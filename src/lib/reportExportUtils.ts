@@ -1,8 +1,9 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
 import { format } from 'date-fns';
+
+const loadJsPDF = () => import('jspdf').then(m => m.default || m.jsPDF);
+const loadAutoTable = () => import('jspdf-autotable').then(m => m.default);
+const loadXLSX = () => import('xlsx');
+const loadFileSaver = () => import('file-saver').then(m => m.saveAs);
 
 export interface ExportData {
   title: string;
@@ -34,6 +35,7 @@ function sanitizeFilename(name: string): string {
 }
 
 export async function reportExportToPDF(data: ExportData, options: ExportOptions): Promise<void> {
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF({
     orientation: options.orientation || 'portrait',
     unit: 'mm',
@@ -98,6 +100,7 @@ export async function reportExportToPDF(data: ExportData, options: ExportOptions
     doc.setFontSize(12); doc.setTextColor(0, 0, 0);
     doc.text('Detailed Data', margin, yPosition);
     yPosition += 5;
+    const autoTable = await loadAutoTable();
     autoTable(doc, {
       startY: yPosition,
       head: [data.tableData.headers],
@@ -119,7 +122,8 @@ export async function reportExportToPDF(data: ExportData, options: ExportOptions
   doc.save(`${sanitizeFilename(data.title)}_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
 }
 
-export function reportExportToExcel(data: ExportData, options: ExportOptions): void {
+export async function reportExportToExcel(data: ExportData, options: ExportOptions): Promise<void> {
+  const XLSX = await loadXLSX();
   const workbook = XLSX.utils.book_new();
   if (options.includeSummary && data.metrics) {
     const summaryData = [
@@ -139,8 +143,9 @@ export function reportExportToExcel(data: ExportData, options: ExportOptions): v
   XLSX.writeFile(workbook, `${sanitizeFilename(data.title)}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
 }
 
-export function reportExportToCSV(data: ExportData): void {
+export async function reportExportToCSV(data: ExportData): Promise<void> {
   if (!data.tableData) return;
+  const saveAs = await loadFileSaver();
   const csv = [
     data.tableData.headers.join(','),
     ...data.tableData.rows.map(row =>

@@ -1,5 +1,5 @@
-import jsPDF from 'jspdf';
 import { format } from 'date-fns';
+const loadJsPDF = () => import('jspdf').then(m => m.default);
 
 interface DemandConfirmationData {
   requestId: string;
@@ -14,7 +14,8 @@ interface DemandConfirmationData {
   description: string;
 }
 
-export const generateDemandConfirmationPDF = (data: DemandConfirmationData): jsPDF => {
+export const generateDemandConfirmationPDF = async (data: DemandConfirmationData) => {
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   let y = 20;
@@ -192,7 +193,7 @@ export const generateDemandConfirmationPDF = (data: DemandConfirmationData): jsP
   return doc;
 };
 
-export const downloadDemandConfirmationPDF = (data: DemandConfirmationData, filename?: string) => {
-  const doc = generateDemandConfirmationPDF(data);
+export const downloadDemandConfirmationPDF = async (data: DemandConfirmationData, filename?: string) => {
+  const doc = await generateDemandConfirmationPDF(data);
   doc.save(filename || `Catalyst-Confirmation-${data.requestId}.pdf`);
 };

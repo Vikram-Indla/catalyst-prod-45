@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Users, Target, Star, Award, AlertTriangle, Download, Loader2 } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+const loadJsPDF = () => import('jspdf').then(m => m.default);
+const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
 import { toast } from 'sonner';
 
 interface ProgramFilter {
@@ -83,6 +83,7 @@ export const SkillsInventoryReport: React.FC = () => {
     
     try {
       // Capture the report content as canvas
+      const html2canvas = await loadHtml2Canvas();
       const canvas = await html2canvas(reportRef.current, {
         scale: 2,
         useCORS: true,
@@ -93,6 +94,7 @@ export const SkillsInventoryReport: React.FC = () => {
       const imgData = canvas.toDataURL('image/png');
       
       // Create PDF
+      const jsPDF = await loadJsPDF();
       const pdf = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',
