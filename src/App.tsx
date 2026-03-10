@@ -107,7 +107,7 @@ import { CatalystToastProvider } from "./contexts/CatalystToastContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 const CatalystShell = lazy(() => import("./components/layout/CatalystShell").then(m => ({ default: m.CatalystShell })));
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { CatalystLoginPage } from "./components/auth/login";
+const CatalystLoginPageLazy = lazy(() => import("./components/auth/login").then(m => ({ default: m.CatalystLoginPage })));
 const CatyFabPlaceholderLazy = lazy(() => import("./components/caty/CatyFabPlaceholder").then(m => ({ default: m.CatyFabPlaceholder })));
 const QAAssistantFabLazy = lazy(() => import("./components/testhub-ai").then(m => ({ default: m.QAAssistantFab })));
 const KAFabLazy = lazy(() => import("./components/kb/KAFab").then(m => ({ default: m.KAFab })));
