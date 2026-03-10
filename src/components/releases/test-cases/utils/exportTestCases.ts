@@ -126,10 +126,10 @@ export function downloadFile(content: string | Blob, filename: string, mimeType?
   URL.revokeObjectURL(url);
 }
 
-export function exportTestCases(
+export async function exportTestCases(
   testCases: TestCase[],
   options: ExportOptions
-): void {
+): Promise<void> {
   const { format, selectedFields, filename } = options;
   const timestamp = new Date().toISOString().split('T')[0];
   const baseFilename = filename || `test-cases-export-${timestamp}`;
