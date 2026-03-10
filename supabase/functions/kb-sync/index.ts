@@ -261,7 +261,7 @@ const TABLE_CONFIGS: TableConfig[] = [
 // SYNC ACTIONS
 // ══════════════════════════════════════════════════════════════════
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   // ── Auth guard ──
