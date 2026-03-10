@@ -11,6 +11,7 @@ interface ExportData {
 }
 
 export async function exportCapacityToPdf(data: ExportData): Promise<void> {
+  const jsPDF = await loadJsPDF();
   const pdf = new jsPDF('landscape', 'mm', 'a4');
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();

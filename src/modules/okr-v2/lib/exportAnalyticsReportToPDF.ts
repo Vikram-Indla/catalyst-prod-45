@@ -3,8 +3,8 @@
 // Multi-page PDF generation with full content capture
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
+const loadJsPDF = () => import('jspdf').then(m => m.jsPDF);
 
 interface ExportOptions {
   filename?: string;

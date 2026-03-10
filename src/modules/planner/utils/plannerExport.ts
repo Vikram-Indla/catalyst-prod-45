@@ -3,9 +3,10 @@
  * Uses jsPDF for PDF generation with professional formatting
  */
 
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import type { PlannerTask } from '../types';
+
+const loadJsPDF = () => import('jspdf').then(m => m.default || m.jsPDF);
+const loadAutoTable = () => import('jspdf-autotable').then(m => m.default);
 
 interface ExportOptions {
   title: string;
