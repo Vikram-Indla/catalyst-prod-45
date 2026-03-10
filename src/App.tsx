@@ -500,10 +500,10 @@ function QAAssistantRouteGuard() {
 }
 
 // Knowledge Assist FAB — shown only on /for-you route
-function KAFabRouteGuard() {
+function KnowledgeAssistFabRouteGuard() {
   const location = useLocation();
   if (location.pathname !== '/for-you') return null;
-  return <Suspense fallback={null}><KAFabLazy /></Suspense>;
+  return <Suspense fallback={null}><KnowledgeAssistFabLazy /></Suspense>;
 }
 
 const App = () => (
