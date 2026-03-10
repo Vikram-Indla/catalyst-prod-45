@@ -1,5 +1,5 @@
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+const loadJsPDF = () => import('jspdf').then(m => m.default);
+const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
 
 interface ReportData {
   totalTests: number;
