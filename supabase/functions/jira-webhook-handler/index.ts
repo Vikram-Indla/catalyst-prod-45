@@ -12,7 +12,55 @@ serve(async (req) => {
   }
 
   try {
-    const payload = await req.json();
+    // ── Security: validate webhook secret (same as jira-webhook) ──
+    const webhookSecret = Deno.env.get("JIRA_WEBHOOK_SECRET");
+    const bodyBytes = await req.arrayBuffer();
+    const bodyText = new TextDecoder().decode(bodyBytes);
+
+    if (!webhookSecret) {
+      console.error("[jira-webhook-handler] JIRA_WEBHOOK_SECRET not configured");
+      return new Response(JSON.stringify({ error: "Webhook secret not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const customHeader = req.headers.get("x-jira-webhook-secret") || "";
+    const hubSignature = req.headers.get("x-hub-signature") || "";
+    let valid = false;
+
+    // Method 1: Direct header match
+    if (customHeader && customHeader === webhookSecret) {
+      valid = true;
+    }
+
+    // Method 2: HMAC-SHA256 signature validation
+    if (!valid && hubSignature) {
+      try {
+        const key = await crypto.subtle.importKey(
+          "raw",
+          new TextEncoder().encode(webhookSecret),
+          { name: "HMAC", hash: "SHA-256" },
+          false,
+          ["sign"]
+        );
+        const sig = await crypto.subtle.sign("HMAC", key, new Uint8Array(bodyBytes));
+        const computed = "sha256=" + Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, "0")).join("");
+        valid = computed === hubSignature;
+      } catch (e) {
+        console.error("[jira-webhook-handler] HMAC validation error:", e);
+      }
+    }
+
+    if (!valid) {
+      console.error("[jira-webhook-handler] Unauthorized: invalid or missing webhook secret");
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const payload = JSON.parse(bodyText);
     console.log("Webhook received:", payload.webhookEvent);
 
     const supabaseClient = createClient(
