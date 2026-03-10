@@ -11,7 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@atlaskit/section-message": "^6.9.4",
     "@atlaskit/select": "^17.19.3",
     "@atlaskit/side-navigation": "^3.6.8",
     "@atlaskit/spinner": "^16.3.6",
