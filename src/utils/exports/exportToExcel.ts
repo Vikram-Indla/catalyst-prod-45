@@ -5,11 +5,12 @@
 const loadXLSX = () => import('xlsx');
 import type { ExportColumn, ExcelExportOptions } from './types';
 
-export const exportToExcel = <T extends Record<string, any>>(
+export const exportToExcel = async <T extends Record<string, any>>(
   data: T[],
   columns: ExportColumn<T>[],
   options: ExcelExportOptions
-): string => {
+): Promise<string> => {
+  const XLSX = await loadXLSX();
   if (data.length === 0) {
     throw new Error('No data to export');
   }
