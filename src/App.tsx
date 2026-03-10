@@ -20,6 +20,8 @@ const CatalystShell = lazy(() => import("./components/layout/CatalystShell").the
 const HotToaster = lazy(() => import('react-hot-toast').then(m => ({ default: m.Toaster })));
 const ForYouPage = lazy(() => import("./pages/ForYouPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout").then(m => ({ default: m.AdminLayout })));
+const FeatureFlagsPage = lazy(() => import("./pages/admin/FeatureFlagsPage").then(m => ({ default: m.default })));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
@@ -68,6 +70,11 @@ const App = () => (
                 <Route element={<ProtectedRoute><S><CatalystShell /></S></ProtectedRoute>}>
                   <Route path="/for-you" element={<S><ForYouPage /></S>} />
                   <Route path="/home" element={<Navigate to="/for-you" replace />} />
+
+                  {/* Admin routes — always available for incremental publishing control */}
+                  <Route path="/admin" element={<S><AdminLayout /></S>}>
+                    <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
+                  </Route>
 
                   {/* All other routes — only when ENABLE_FULL_APP=true */}
                   {FullAppRoutes && (
