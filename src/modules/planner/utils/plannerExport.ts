@@ -269,7 +269,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
   addSummaryStats();
   
   if (tasks.length > 0) {
-    addTasksTable();
+    await addTasksTable();
   } else {
     pdf.setFontSize(12);
     pdf.setTextColor(BRAND_COLORS.textMuted);
