@@ -1,6 +1,7 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import type { ResourceMetric, CapacitySummary } from '../types';
+
+const loadJsPDF = () => import('jspdf').then(m => m.default || m.jsPDF);
+const loadAutoTable = () => import('jspdf-autotable').then(m => m.default);
 
 interface ExportData {
   resources: ResourceMetric[];
