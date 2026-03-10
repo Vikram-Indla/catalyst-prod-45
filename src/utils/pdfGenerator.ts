@@ -10,6 +10,7 @@ interface ReportData {
 }
 
 export const generateReportPDF = async (reportData: ReportData, chartElement?: HTMLElement) => {
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF();
   
   // Header with brand colors

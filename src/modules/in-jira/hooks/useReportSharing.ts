@@ -84,6 +84,7 @@ export function useReportSharing(programId: string | null) {
     setExportProgress(10);
     
     try {
+      const jsPDF = await loadJsPDF();
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       

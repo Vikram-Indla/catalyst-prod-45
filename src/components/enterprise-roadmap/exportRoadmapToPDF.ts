@@ -83,6 +83,7 @@ export async function exportRoadmapToPDF(
     }
 
     // Create PDF in landscape A4
+    const jsPDF = await loadJsPDF();
     const pdf = new jsPDF({
       orientation: 'landscape',
       unit: 'mm',

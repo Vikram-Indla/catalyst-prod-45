@@ -15,6 +15,7 @@ export const exportToPdf = async <T extends Record<string, any>>(
     throw new Error('No data to export');
   }
 
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF({
     orientation: options.orientation || 'portrait',
     unit: 'mm',
