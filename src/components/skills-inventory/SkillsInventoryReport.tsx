@@ -83,6 +83,7 @@ export const SkillsInventoryReport: React.FC = () => {
     
     try {
       // Capture the report content as canvas
+      const html2canvas = await loadHtml2Canvas();
       const canvas = await html2canvas(reportRef.current, {
         scale: 2,
         useCORS: true,
@@ -93,6 +94,7 @@ export const SkillsInventoryReport: React.FC = () => {
       const imgData = canvas.toDataURL('image/png');
       
       // Create PDF
+      const jsPDF = await loadJsPDF();
       const pdf = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',
