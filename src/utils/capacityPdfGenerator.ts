@@ -3,8 +3,8 @@
  * Generates professionally formatted PDF reports with Catalyst branding
  */
 
-import jsPDF from 'jspdf';
 import { Resource, CapacityProject, Vacancy } from '@/types/capacity';
+type jsPDFType = import('jspdf').jsPDF;
 
 interface CapacityReportData {
   resources: Resource[];
