@@ -2,8 +2,8 @@
 // Export Enterprise Roadmap to PDF - Landscape Mode
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
+const loadJsPDF = () => import('jspdf').then(m => m.jsPDF);
 
 interface ExportOptions {
   filename?: string;
