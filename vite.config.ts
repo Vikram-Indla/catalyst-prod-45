@@ -1,7 +1,30 @@
-import { defineConfig } from "vite";
+import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+
+/**
+ * When VITE_ENABLE_FULL_APP is NOT set (Lovable publish),
+ * replace FullAppRoutes with a no-op module so Rollup never
+ * follows the 200+ page imports inside it.
+ */
+function skipFullRoutes(): Plugin {
+  const enabled = process.env.VITE_ENABLE_FULL_APP === 'true';
+  return {
+    name: 'skip-full-routes',
+    enforce: 'pre',
+    resolveId(source) {
+      if (!enabled && source.includes('FullAppRoutes')) {
+        return '\0empty-full-routes';
+      }
+    },
+    load(id) {
+      if (id === '\0empty-full-routes') {
+        return 'export default function FullAppRoutes() { return null; }';
+      }
+    },
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -9,7 +32,11 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    skipFullRoutes(),
+    react(),
+    mode === "development" && componentTagger(),
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
