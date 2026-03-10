@@ -100,6 +100,7 @@ export async function reportExportToPDF(data: ExportData, options: ExportOptions
     doc.setFontSize(12); doc.setTextColor(0, 0, 0);
     doc.text('Detailed Data', margin, yPosition);
     yPosition += 5;
+    const autoTable = await loadAutoTable();
     autoTable(doc, {
       startY: yPosition,
       head: [data.tableData.headers],
