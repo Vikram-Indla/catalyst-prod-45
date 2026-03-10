@@ -519,6 +519,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <Toaster />
+      <Suspense fallback={null}><HotToaster position="bottom-right" /></Suspense>
       <AuthProvider>
         <NavigationProvider>
           <ProcessStepsProvider>
