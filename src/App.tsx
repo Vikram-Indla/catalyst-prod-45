@@ -696,7 +696,7 @@ const App = () => (
               <Route path="/releasehub/compare" element={<S><RH21ReleaseComparePage /></S>} />
               <Route path="/releasehub/triage" element={<S><RH21TriageQueuePage /></S>} />
               <Route path="/releasehub/changes" element={<S><RH21AllChangesPage /></S>} />
-              <Route path="/releasehub/production-events" element={<S><RH21ProductionEventsPage /></S>} />
+              <Route path="/releasehub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
               {/* Legacy releasehub routes */}
               <Route path="/releasehub/dashboard" element={<Navigate to="/releasehub/command-center" replace />} />
               <Route path="/releasehub/all" element={<Navigate to="/releasehub/all-releases" replace />} />
