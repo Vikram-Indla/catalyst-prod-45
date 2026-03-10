@@ -47,10 +47,9 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
         items: [
           { id: 'idea-backlog', title: 'Idea Backlog', path: '/producthub/ideation', icon: Lightbulb, exact: true, badge: 15 },
           { id: 'idea-board', title: 'Idea Board', path: '/producthub/ideation?view=board', icon: Columns, exact: true },
-          { id: 'impact-matrix', title: 'Impact Matrix', path: '/producthub/ideation?view=matrix', icon: ScatterChart, exact: true },
-          { id: 'ideation-analytics', title: 'Analytics', path: '/producthub/ideation?view=analytics', icon: BarChart3, exact: true },
-          { id: 'innovation-drives', title: 'Innovation Drives', path: '/producthub/ideation?view=drives', icon: Rocket, exact: true },
           { id: 'ideas-roadmap', title: 'Ideas Roadmap', path: '/product/ideas/roadmap', icon: LayoutPanelLeft, exact: true },
+          { id: 'innovation-drives', title: 'Idea Drives', path: '/producthub/ideation?view=drives', icon: Rocket, exact: true },
+          { id: 'ideation-analytics', title: 'Idea Analytics', path: '/producthub/ideation?view=analytics', icon: BarChart3, exact: true },
         ],
       },
       {
