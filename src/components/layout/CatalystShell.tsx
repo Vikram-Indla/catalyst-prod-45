@@ -352,7 +352,7 @@ function CatalystShellContent() {
 
         {/* Route content scroll container (single scroll parent) - workspace frame */}
         <main data-catalyst-main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-surface-1">
-          <AnnouncementBanner />
+          <Suspense fallback={null}><AnnouncementBanner /></Suspense>
           <div className="flex-1 min-h-0 overflow-auto flex flex-col">
             <Outlet />
           </div>
