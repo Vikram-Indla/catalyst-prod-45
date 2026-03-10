@@ -1,14 +1,14 @@
 import { useParams } from 'react-router-dom';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, List } from 'lucide-react';
 
 interface PhasePageProps {
   title: string;
   phase: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   description: string;
 }
 
-export default function PhasePlaceholderPage({ title, phase, icon: Icon, description }: PhasePageProps) {
+export default function PhasePlaceholderPage({ title, phase, icon: Icon = List, description }: PhasePageProps) {
   const { key } = useParams<{ key: string }>();
 
   return (
