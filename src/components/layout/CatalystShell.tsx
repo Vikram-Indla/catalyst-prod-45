@@ -336,7 +336,9 @@ function CatalystShellContent() {
     <div className="h-screen flex flex-col bg-surface-1 text-text-primary" onClickCapture={handleInternalLinkClickCapture}>
       {/* Global Header - Catalyst Native */}
       <div data-catalyst-header>
-        <CatalystHeader />
+        <Suspense fallback={<div className="h-12 bg-surface-1 border-b border-border-default" />}>
+          <CatalystHeader />
+        </Suspense>
       </div>
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
