@@ -1,7 +1,12 @@
 /**
  * Feature flags — controlled via environment variables.
- * Set VITE_ENABLE_AI=false in your hosting provider to disable heavy AI/export modules.
+ * 
+ * Defaults to FALSE so that Lovable publish (which doesn't set env vars)
+ * gets a slim build. Set VITE_ENABLE_AI=true in your hosting provider
+ * to re-enable AI/heavy modules.
  */
 
-export const ENABLE_AI = import.meta.env.VITE_ENABLE_AI !== 'false';
-export const ENABLE_HEAVY_EXPORTS = import.meta.env.VITE_ENABLE_HEAVY_EXPORTS !== 'false';
+export const ENABLE_AI = import.meta.env.VITE_ENABLE_AI === 'true';
+export const ENABLE_HEAVY_EXPORTS = import.meta.env.VITE_ENABLE_HEAVY_EXPORTS === 'true';
+export const ENABLE_WIKI = import.meta.env.VITE_ENABLE_WIKI === 'true';
+export const ENABLE_KNOWLEDGE_HUB = import.meta.env.VITE_ENABLE_KNOWLEDGE_HUB === 'true';
