@@ -203,10 +203,10 @@ export default function IdeationPage() {
           const aiPct = total > 0 ? Math.round(aiReady / total * 100) + '%' : '0%';
           return [
             { label: 'TOTAL IDEAS', value: String(total), color: '#0F172A', trend: '', trendColor: '#16A34A' },
-            { label: 'AVG IMPACT', value: avgImpact, color: '#2563EB', trend: '', trendColor: '#16A34A' },
-            { label: 'PENDING REVIEW', value: String(pendingReview), color: '#D97706', trend: '—', trendColor: '#94A3B8' },
-            { label: 'CONVERSION RATE', value: convRate, color: '#0D9488', trend: `${converted} → Initiatives`, trendColor: '#16A34A' },
-            { label: 'AI ENRICHED', value: String(aiReady), color: '#7C3AED', trend: aiPct, trendColor: '#7C3AED' },
+            { label: 'AVG IMPACT', value: avgImpact, color: '#0F172A', trend: '', trendColor: '#16A34A' },
+            { label: 'PENDING REVIEW', value: String(pendingReview), color: '#0F172A', trend: '—', trendColor: '#94A3B8' },
+            { label: 'CONVERSION RATE', value: convRate, color: '#0F172A', trend: `${converted} → Initiatives`, trendColor: '#16A34A' },
+            { label: 'AI ENRICHED', value: String(aiReady), color: '#0F172A', trend: aiPct, trendColor: '#7C3AED' },
           ];
         })().map((stat, i, arr) => (
           <div key={stat.label} style={{
@@ -458,8 +458,12 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
 function StatusBadge({ status }: { status: IdeaStatus }) {
   const c = STATUS_CONFIG[status];
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: c.bg, color: c.text, padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap' }}>
-      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: c.dot, flexShrink: 0 }} />
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', background: c.bg, color: c.text,
+      height: 20, padding: '0 6px', borderRadius: 3,
+      fontSize: '11px', fontWeight: 700, whiteSpace: 'nowrap',
+      textTransform: 'uppercase', letterSpacing: '0.03em',
+    }}>
       {c.label}
     </span>
   );
@@ -472,18 +476,25 @@ function TypeBadge({ type }: { type: Idea['type'] }) {
 
 function PriorityBadge({ priority }: { priority: string }) {
   const c = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.P4;
-  return <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 800, background: c.bg, color: c.text, padding: '2px 7px', borderRadius: '4px' }}>{priority}</span>;
+  return <span style={{
+    fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', fontWeight: 700,
+    background: c.bg, color: c.text, border: `1px solid ${c.border}`,
+    height: 20, padding: '0 7px', borderRadius: '3px',
+    display: 'inline-flex', alignItems: 'center',
+  }}>{priority}</span>;
 }
 
 function ImpactCell({ score }: { score: number }) {
-  const { gradient, text } = getImpactColor(score);
+  const { gradient } = getImpactColor(score);
+  // V12: 0.00 = grey (#94A3B8), not red
+  const textColor = score >= 4 ? '#15803D' : score >= 3 ? '#2563EB' : score >= 2 ? '#64748B' : '#94A3B8';
   const fill = (score / 5) * 100;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
       <div style={{ width: '52px', height: '6px', background: '#E4E4E7', borderRadius: '3px', overflow: 'hidden' }}>
         <div style={{ width: `${fill}%`, height: '100%', background: gradient, borderRadius: '3px' }} />
       </div>
-      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: text }}>{score.toFixed(2)}</span>
+      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: textColor, fontVariantNumeric: 'tabular-nums' }}>{score.toFixed(2)}</span>
     </div>
   );
 }

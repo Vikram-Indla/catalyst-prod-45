@@ -197,7 +197,7 @@ function DetailsSection({ idea, rawIdea, onConvert }: { idea: Idea; rawIdea: any
           </span>
         </FieldRow>
         <FieldRow label="Priority">
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 800, background: pc.bg, color: pc.text, padding: '2px 7px', borderRadius: '4px' }}>{idea.priority}</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', fontWeight: 700, background: pc.bg, color: pc.text, border: `1px solid ${pc.border || '#E2E8F0'}`, height: 20, padding: '0 7px', borderRadius: '3px', display: 'inline-flex', alignItems: 'center' }}>{idea.priority}</span>
         </FieldRow>
         <FieldRow label="Type">
           <span style={{ background: tc.bg, color: tc.text, padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>{tc.label}</span>

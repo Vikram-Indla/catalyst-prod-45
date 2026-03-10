@@ -1,5 +1,6 @@
 /**
  * Shared data, types, and config for the Ideation module.
+ * V12 Hybrid Precision — 3-color StatusLozenge guardrail
  */
 
 // ─── Types ───────────────────────────────────────────────────────
@@ -41,14 +42,14 @@ export const IDEA_IMPACT_FACTORS: Record<string, ImpactFactors> = {};
 // ─── Data (deprecated — use useIdeas() hook instead) ─────────────
 export const ideas: Idea[] = [];
 
-// ─── Config Maps ─────────────────────────────────────────────────
+// ─── V12 STATUS LOZENGE — 3-COLOR GUARDRAIL (IMMUTABLE) ─────────
 export const STATUS_CONFIG: Record<IdeaStatus, { dot: string; bg: string; text: string; label: string }> = {
-  draft:        { dot: '#A1A1AA', bg: '#F4F4F5', text: '#71717A', label: 'Draft' },
-  submitted:    { dot: '#2563EB', bg: '#DBEAFE', text: '#1D4ED8', label: 'Submitted' },
-  under_review: { dot: '#D97706', bg: '#FEF3C7', text: '#B45309', label: 'Under Review' },
-  approved:     { dot: '#16A34A', bg: '#DCFCE7', text: '#15803D', label: 'Approved' },
-  rejected:     { dot: '#EF4444', bg: '#FECACA', text: '#B91C1C', label: 'Rejected' },
-  converted:    { dot: '#0D9488', bg: '#CCFBF1', text: '#0F766E', label: 'Converted' },
+  draft:        { dot: '#64748B', bg: '#DFE1E6', text: '#253858', label: 'Draft' },
+  submitted:    { dot: '#64748B', bg: '#DFE1E6', text: '#253858', label: 'Submitted' },
+  under_review: { dot: '#0747A6', bg: '#DEEBFF', text: '#0747A6', label: 'Under Review' },
+  approved:     { dot: '#006644', bg: '#E3FCEF', text: '#006644', label: 'Approved' },
+  rejected:     { dot: '#64748B', bg: '#DFE1E6', text: '#253858', label: 'Rejected' },
+  converted:    { dot: '#006644', bg: '#E3FCEF', text: '#006644', label: 'Converted' },
 };
 
 export const TYPE_CONFIG: Record<IdeaType, { bg: string; text: string; label: string }> = {
@@ -59,29 +60,31 @@ export const TYPE_CONFIG: Record<IdeaType, { bg: string; text: string; label: st
   problem:      { bg: '#FEF2F2', text: '#B91C1C', label: 'Problem' },
 };
 
-export const PRIORITY_CONFIG: Record<string, { bg: string; text: string }> = {
-  P1: { bg: '#FECACA', text: '#991B1B' },
-  P2: { bg: '#FED7AA', text: '#9A3412' },
-  P3: { bg: '#E4E4E7', text: '#52525B' },
-  P4: { bg: '#F4F4F5', text: '#A1A1AA' },
+// ─── V12 PRIORITY BADGES — No amber/orange ───────────────────────
+export const PRIORITY_CONFIG: Record<string, { bg: string; text: string; border: string }> = {
+  P1: { bg: '#FEF2F2', text: '#991B1B', border: '#FECACA' },
+  P2: { bg: '#F1F5F9', text: '#334155', border: '#E2E8F0' },
+  P3: { bg: '#F8FAFC', text: '#64748B', border: '#E2E8F0' },
+  P4: { bg: '#F8FAFC', text: '#94A3B8', border: '#E2E8F0' },
 };
 
 export const VIEW_TITLES: Record<IdeationView, string> = {
-  list: 'Idea Backlog',
-  board: 'Idea Board',
+  list: 'Ideas Backlog',
+  board: 'Ideas Board',
   matrix: 'Impact Matrix',
-  analytics: 'Analytics',
-  drives: 'Innovation Drives',
+  analytics: 'Ideas Analytics',
+  drives: 'Ideas Drives',
 };
 
 export type StatusFilter = 'all' | IdeaStatus | 'my_ideas';
 
+// ─── V12 FILTER DOTS — match 3-color guardrail ──────────────────
 export const FILTER_PILLS: { key: StatusFilter; label: string; dot?: string }[] = [
   { key: 'all', label: 'All' },
-  { key: 'submitted', label: 'Submitted', dot: '#2563EB' },
-  { key: 'under_review', label: 'Under Review', dot: '#D97706' },
-  { key: 'approved', label: 'Approved', dot: '#16A34A' },
-  { key: 'converted', label: 'Converted', dot: '#0D9488' },
+  { key: 'submitted', label: 'Submitted', dot: '#64748B' },
+  { key: 'under_review', label: 'Under Review', dot: '#0747A6' },
+  { key: 'approved', label: 'Approved', dot: '#006644' },
+  { key: 'converted', label: 'Converted', dot: '#006644' },
   { key: 'my_ideas', label: '⭐ My Ideas' },
 ];
 
@@ -89,8 +92,8 @@ export const FILTER_PILLS: { key: StatusFilter; label: string; dot?: string }[] 
 export function getImpactColor(score: number) {
   if (score >= 4.0) return { gradient: 'linear-gradient(90deg, #16A34A, #22C55E)', text: '#16A34A' };
   if (score >= 3.0) return { gradient: 'linear-gradient(90deg, #2563EB, #3B82F6)', text: '#2563EB' };
-  if (score >= 2.0) return { gradient: 'linear-gradient(90deg, #D97706, #F59E0B)', text: '#D97706' };
-  return { gradient: 'linear-gradient(90deg, #EF4444, #F87171)', text: '#EF4444' };
+  if (score >= 2.0) return { gradient: 'linear-gradient(90deg, #64748B, #94A3B8)', text: '#64748B' };
+  return { gradient: 'linear-gradient(90deg, #CBD5E1, #E2E8F0)', text: '#94A3B8' };
 }
 
 // AI insight text for board cards (deprecated — use DB ai_summary)

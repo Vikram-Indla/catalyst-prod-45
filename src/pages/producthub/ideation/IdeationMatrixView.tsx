@@ -1,8 +1,9 @@
 /**
  * IdeationMatrixView — Impact vs Complexity scatter plot with 4 quadrants
+ * V12: Submitted bubbles use #64748B slate (not primary blue)
  */
 import React, { useState } from 'react';
-import { ideas } from './ideation-data';
+import { useIdeas } from '@/hooks/useIdeation';
 
 interface Props {
   onOpenDetail: (key: string) => void;
@@ -13,21 +14,19 @@ interface DotData {
   title: string; impact: number; votes: number; status: string;
 }
 
-const DOTS: DotData[] = [
-  { key: 'IDH-001', num: '01', left: 30, bottom: 82, size: 32, color: '#16A34A', title: 'Unified Digital Services Portal', impact: 4.40, votes: 12, status: 'Converted' },
-  { key: 'IDH-002', num: '02', left: 52, bottom: 75, size: 26, color: '#7C3AED', title: 'AI-Powered Permit Classification', impact: 3.90, votes: 8, status: 'Under Review' },
-  { key: 'IDH-003', num: '03', left: 60, bottom: 53, size: 22, color: '#3B82F6', title: 'Real-Time Factory Compliance Dashboard', impact: 3.50, votes: 5, status: 'Submitted' },
-  { key: 'IDH-004', num: '04', left: 40, bottom: 68, size: 26, color: '#7C3AED', title: 'Bilingual Document Generation Engine', impact: 3.70, votes: 9, status: 'Under Review' },
-  { key: 'IDH-005', num: '05', left: 22, bottom: 90, size: 36, color: '#16A34A', title: 'Investor Onboarding Simplification', impact: 4.60, votes: 15, status: 'Approved' },
-  { key: 'IDH-006', num: '06', left: 80, bottom: 42, size: 22, color: '#7C3AED', title: 'Predictive Maintenance for Legacy Systems', impact: 2.80, votes: 6, status: 'Under Review' },
-  { key: 'IDH-007', num: '07', left: 68, bottom: 38, size: 20, color: '#3B82F6', title: 'Mobile-First Inspection App', impact: 3.20, votes: 4, status: 'Submitted' },
-  { key: 'IDH-009', num: '09', left: 85, bottom: 15, size: 16, color: '#EF4444', title: 'Blockchain-Based Certificate Verification', impact: 1.50, votes: -2, status: 'Rejected' },
-  { key: 'IDH-010', num: '10', left: 45, bottom: 48, size: 22, color: '#3B82F6', title: 'Stakeholder Communication Hub', impact: 3.30, votes: 7, status: 'Submitted' },
-  { key: 'IDH-011', num: '11', left: 72, bottom: 80, size: 30, color: '#7C3AED', title: 'Automated Regulatory Impact Assessment', impact: 4.20, votes: 11, status: 'Under Review' },
-  { key: 'IDH-013', num: '13', left: 25, bottom: 88, size: 34, color: '#16A34A', title: 'Integrated Payment Gateway for Ministry Fees', impact: 4.30, votes: 14, status: 'Converted' },
-  { key: 'IDH-014', num: '14', left: 55, bottom: 58, size: 22, color: '#3B82F6', title: 'Carbon Footprint Tracking Module', impact: 3.40, votes: 6, status: 'Submitted' },
-  { key: 'IDH-015', num: '15', left: 82, bottom: 78, size: 28, color: '#7C3AED', title: 'Cross-Ministry Data Sharing Framework', impact: 4.10, votes: 10, status: 'Under Review' },
-];
+// V12 bubble colors — submitted = slate, NOT primary blue
+const STATUS_BUBBLE_COLORS: Record<string, string> = {
+  'converted':    '#16A34A',
+  'approved':     '#16A34A',
+  'under_review': '#7C3AED',  // AI-enriched marker ✓
+  'submitted':    '#64748B',  // neutral slate — not primary blue
+  'rejected':     '#DC2626',
+  'draft':        '#94A3B8',
+};
+
+function getBubbleColor(status: string): string {
+  return STATUS_BUBBLE_COLORS[status] ?? '#64748B';
+}
 
 const QUADRANTS = [
   { top: 0, left: 0, label: 'QUICK WINS', bg: '#F0FDF4', labelColor: '#16A34A' },
@@ -38,6 +37,28 @@ const QUADRANTS = [
 
 export default function IdeationMatrixView({ onOpenDetail }: Props) {
   const [hoveredDot, setHoveredDot] = useState<string | null>(null);
+  const { data: ideas = [] } = useIdeas();
+
+  // Generate dot positions from real data
+  const dots: DotData[] = ideas.slice(0, 30).map((idea, i) => {
+    // Spread dots across the chart based on priority and index
+    const hash = idea.key.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    const complexity = ((hash * 7 + i * 13) % 80) + 10;
+    const strategic = idea.priority === 'P1' ? 70 + (hash % 25) : idea.priority === 'P2' ? 40 + (hash % 35) : 15 + (hash % 40);
+    const size = Math.max(16, Math.min(36, 18 + Math.abs(idea.votes) * 2));
+    return {
+      key: idea.key,
+      num: idea.key.replace('IDH-', ''),
+      left: complexity,
+      bottom: strategic,
+      size,
+      color: getBubbleColor(idea.status),
+      title: idea.title,
+      impact: idea.impact,
+      votes: idea.votes,
+      status: idea.status === 'under_review' ? 'Under Review' : idea.status.charAt(0).toUpperCase() + idea.status.slice(1),
+    };
+  });
 
   return (
     <div style={{ padding: '16px 28px' }}>
@@ -61,15 +82,14 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
         ))}
       </div>
 
-      {/* Chart */}
+      {/* Chart — V12: border-only, NO box-shadow */}
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{
           width: '100%', height: '520px', background: '#FFFFFF', border: '1px solid #E2E8F0',
-          borderRadius: '12px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', position: 'relative', overflow: 'hidden',
+          borderRadius: '6px', position: 'relative', overflow: 'hidden',
         }}>
           {/* Grid area */}
           <div style={{ position: 'absolute', top: '40px', right: '40px', bottom: '50px', left: '60px' }}>
-            {/* Quadrants */}
             {QUADRANTS.map(q => (
               <div key={q.label} style={{
                 position: 'absolute', top: q.top, left: q.left, width: '50%', height: '50%',
@@ -87,12 +107,12 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
               </div>
             ))}
 
-            {/* Midlines — slate-400 dashed */}
+            {/* Midlines */}
             <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 0, borderLeft: '1.5px dashed #94A3B8', zIndex: 1 }} />
             <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 0, borderTop: '1.5px dashed #94A3B8', zIndex: 1 }} />
 
             {/* Dots */}
-            {DOTS.map(dot => (
+            {dots.map(dot => (
               <div
                 key={dot.key}
                 onClick={() => onOpenDetail(dot.key)}
@@ -117,7 +137,6 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
               >
                 {dot.num}
 
-                {/* Tooltip */}
                 {hoveredDot === dot.key && (
                   <div style={{
                     position: 'absolute', bottom: `${dot.size + 8}px`, left: '50%', transform: 'translateX(-50%)',
@@ -140,7 +159,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
             ))}
           </div>
 
-          {/* Axis labels — darker */}
+          {/* Axis labels */}
           <div style={{
             position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)',
             fontSize: '11px', fontWeight: 700, color: '#334155', letterSpacing: '1px',
@@ -165,8 +184,8 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
         {[
           { color: '#16A34A', label: 'Approved / Converted' },
           { color: '#7C3AED', label: 'Under Review (AI-enriched)' },
-          { color: '#3B82F6', label: 'Submitted' },
-          { color: '#EF4444', label: 'Rejected' },
+          { color: '#64748B', label: 'Submitted' },
+          { color: '#DC2626', label: 'Rejected' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: l.color, flexShrink: 0 }} />
