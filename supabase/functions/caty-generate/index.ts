@@ -10,6 +10,11 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // Auth check
+    const { requireAuth } = await import("../_shared/auth-guard.ts");
+    const auth = await requireAuth(req);
+    if (auth.error) return auth.error;
+
     const { conversation_id, project_id, input_content, options } = await req.json();
     if (!input_content) throw new Error("Missing input_content");
 

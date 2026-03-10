@@ -32,6 +32,11 @@ serve(async (req) => {
   }
 
   try {
+    // Auth check
+    const { requireAuth } = await import("../_shared/auth-guard.ts");
+    const auth = await requireAuth(req);
+    if (auth.error) return auth.error;
+
     const { listId, weekId } = await req.json();
     
     if (!listId || !weekId) {

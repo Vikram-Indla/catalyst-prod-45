@@ -12,6 +12,11 @@ serve(async (req) => {
   }
 
   try {
+    // Auth check
+    const { requireAuth } = await import("../_shared/auth-guard.ts");
+    const auth = await requireAuth(req);
+    if (auth.error) return auth.error;
+
     const { metrics } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
