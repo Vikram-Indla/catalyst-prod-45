@@ -117,7 +117,7 @@ function Avatar({ name, size = 24 }: { name: string; size?: number }) {
   const nameAvatarMap = useProfileAvatarsByName();
   const avatarUrl = nameAvatarMap.get(name.toLowerCase());
   const ini = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  const clr = [T.primary, T.teal, T.warning, T.danger, '#7C3AED'][ini.charCodeAt(0) % 5];
+  const clr = [T.primary, T.teal, '#0284C7', T.danger, '#DB2777'][ini.charCodeAt(0) % 5];
 
   if (avatarUrl) {
     return <img src={avatarUrl} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: `1px solid ${T.border}` }} />;
