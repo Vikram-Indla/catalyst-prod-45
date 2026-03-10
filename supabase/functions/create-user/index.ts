@@ -14,9 +14,11 @@ interface CreateUserRequest {
   roleIds: string[];
 }
 
-// TODO: Replace this default-password + first-login-reset flow with a full email-based 
-// invitation + activation flow using the Catalyst HTML email template when we move to production.
-const DEFAULT_TEMPORARY_PASSWORD = "password@99";
+// Generate a cryptographically random temporary password per user
+function generateTempPassword(): string {
+  const randomPart = crypto.randomUUID().replace(/-/g, '');
+  return `${randomPart.substring(0, 16)}Aa1!`;
+}
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -99,13 +101,14 @@ serve(async (req) => {
       );
     }
 
-    // Create the auth user with the default temporary password
+    // Create the auth user with a unique random temporary password
     // User will be required to change this on first login
     const fullName = `${firstName} ${lastName}`.trim();
+    const tempPassword = generateTempPassword();
 
     const { data: newAuthUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email: email.toLowerCase(),
-      password: DEFAULT_TEMPORARY_PASSWORD,
+      password: tempPassword,
       email_confirm: true, // Auto-confirm email
       user_metadata: {
         full_name: fullName,
@@ -195,8 +198,7 @@ serve(async (req) => {
           email: email.toLowerCase(), 
           full_name: fullName 
         },
-        // Note: Admin should share the default password manually
-        message: "User created. Share the default password (password@99) with the user manually."
+        message: "User created successfully. The user must set their password via the admin password-reset flow."
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
