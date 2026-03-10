@@ -178,7 +178,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
 
   // Add tasks table
   // Add tasks table
-  const addTasksTable = () => {
+  const addTasksTable = async () => {
     // Add spacing prefix for priority to make room for the indicator
     const tableData = tasks.map(task => [
       task.key,
