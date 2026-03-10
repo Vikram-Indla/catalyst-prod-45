@@ -11,7 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@atlaskit/button-group": "^1.5.4",
     "@atlaskit/checkbox": "^13.7.1",
     "@atlaskit/css-reset": "^6.16.0",
     "@atlaskit/drawer": "^11.0.20",
