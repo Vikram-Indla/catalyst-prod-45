@@ -5,6 +5,7 @@
 // ══════════════════════════════════════════════════════════════════
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireAuth } from "../_shared/auth-guard.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -1417,6 +1418,11 @@ Language: ${lang === "ar" ? "Arabic (MSA)" : "English"}`;
 // ══════════════════════════════════════════════════════════════════
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+
+  // ── Auth guard ──
+  const auth = await requireAuth(req);
+  if (auth.error) return auth.error;
+
   const t0 = performance.now();
 
   try {

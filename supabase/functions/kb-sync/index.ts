@@ -6,6 +6,7 @@
 // ══════════════════════════════════════════════════════════════════
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireAuth } from "../_shared/auth-guard.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -262,6 +263,10 @@ const TABLE_CONFIGS: TableConfig[] = [
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+
+  // ── Auth guard ──
+  const auth = await requireAuth(req);
+  if (auth.error) return auth.error;
 
   try {
     const { action = "status", table_name, custom_config, sync_run_id, record_id, table, content_field, source_type, metadata: reqMetadata } = await req.json().catch(() => ({ action: "status" }));
