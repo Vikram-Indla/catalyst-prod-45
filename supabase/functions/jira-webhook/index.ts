@@ -51,10 +51,17 @@ serve(async (req) => {
     //   1. Custom header X-Jira-Webhook-Secret (manual setup)
     //   2. HMAC signature via X-Hub-Signature (Jira native webhook secret)
     const webhookSecret = Deno.env.get('JIRA_WEBHOOK_SECRET')
+    if (!webhookSecret) {
+      console.error('[jira-webhook] JIRA_WEBHOOK_SECRET is not configured')
+      return new Response(JSON.stringify({ error: 'Webhook secret not configured' }), {
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
     const bodyBytes = await req.arrayBuffer()
     const bodyText = new TextDecoder().decode(bodyBytes)
 
-    if (webhookSecret) {
+    {
       const customHeader = req.headers.get('x-jira-webhook-secret') || ''
       const hubSignature = req.headers.get('x-hub-signature') || ''
 
