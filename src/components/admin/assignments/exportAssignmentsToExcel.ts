@@ -3,7 +3,7 @@
  * Features: Professional column widths, formatted dates, clean data presentation
  * Primary Key: AID (Assignment ID)
  */
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 import { format } from 'date-fns';
 import type { ResourceAssignment } from '@/modules/capacity-planner/hooks/useResourceAssignments';
 
