@@ -101,13 +101,14 @@ serve(async (req) => {
       );
     }
 
-    // Create the auth user with the default temporary password
+    // Create the auth user with a unique random temporary password
     // User will be required to change this on first login
     const fullName = `${firstName} ${lastName}`.trim();
+    const tempPassword = generateTempPassword();
 
     const { data: newAuthUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email: email.toLowerCase(),
-      password: DEFAULT_TEMPORARY_PASSWORD,
+      password: tempPassword,
       email_confirm: true, // Auto-confirm email
       user_metadata: {
         full_name: fullName,
