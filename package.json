@@ -11,7 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@atlaskit/textarea": "^5.8.2",
     "@atlaskit/textfield": "^6.8.3",
     "@atlaskit/toggle": "^13.4.10",
     "@atlaskit/tokens": "^1.61.0",
