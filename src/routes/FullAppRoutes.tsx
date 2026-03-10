@@ -480,15 +480,16 @@ export default function FullAppRoutes() {
         <Route path="/starred" element={<S><StarredPage /></S>} />
         <Route path="/search" element={<S><SearchPage /></S>} />
 
-        <Route path="/strategyhub" element={<S><StrategyRoom /></S>} />
-        <Route path="/strategyhub/themes" element={<S><StrategicThemesPage /></S>} />
-        <Route path="/strategyhub/goals" element={<S><GoalsKeyResultsPage /></S>} />
+        {/* ═══ StrategyHub ═══ */}
+        <Route path="/strategyhub" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
+        <Route path="/strategyhub/themes" element={<MG k="strategyhub" t="StrategyHub"><S><StrategicThemesPage /></S></MG>} />
+        <Route path="/strategyhub/goals" element={<MG k="strategyhub" t="StrategyHub"><S><GoalsKeyResultsPage /></S></MG>} />
         <Route path="/strategyhub/initiatives" element={<Navigate to="/producthub/backlog" replace />} />
-        <Route path="/strategyhub/investment" element={<S><StrategyComingSoon title="Investment Allocation" /></S>} />
-        <Route path="/strategyhub/snapshots" element={<S><StrategyComingSoon title="Snapshots" /></S>} />
-        <Route path="/strategyhub/ai-insights" element={<S><StrategyComingSoon title="AI Insights" /></S>} />
-        <Route path="/strategyhub/team-alignment" element={<S><StrategyComingSoon title="Team Alignment" /></S>} />
-        <Route path="/strategyhub/settings" element={<S><StrategyComingSoon title="Settings" /></S>} />
+        <Route path="/strategyhub/investment" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Investment Allocation" /></S></MG>} />
+        <Route path="/strategyhub/snapshots" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Snapshots" /></S></MG>} />
+        <Route path="/strategyhub/ai-insights" element={<MG k="ai_features" t="AI Insights"><S><StrategyComingSoon title="AI Insights" /></S></MG>} />
+        <Route path="/strategyhub/team-alignment" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Team Alignment" /></S></MG>} />
+        <Route path="/strategyhub/settings" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Settings" /></S></MG>} />
         <Route path="/strategy-room" element={<Navigate to="/strategyhub" replace />} />
         <Route path="/strategyhub/strategy-room" element={<Navigate to="/strategyhub" replace />} />
         <Route path="/strategyhub/roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
