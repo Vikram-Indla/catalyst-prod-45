@@ -51,6 +51,7 @@ const STATUS_LABELS: Record<string, string> = {
 export async function exportPlannerToPDF(options: ExportOptions): Promise<void> {
   const { title, subtitle, viewType, tasks, dateRange, filters } = options;
   
+  const jsPDF = await loadJsPDF();
   const pdf = new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
