@@ -71,6 +71,11 @@ const App = () => (
                   <Route path="/for-you" element={<S><ForYouPage /></S>} />
                   <Route path="/home" element={<Navigate to="/for-you" replace />} />
 
+                  {/* Admin routes — always available for incremental publishing control */}
+                  <Route path="/admin" element={<S><AdminLayout /></S>}>
+                    <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
+                  </Route>
+
                   {/* All other routes — only when ENABLE_FULL_APP=true */}
                   {FullAppRoutes && (
                     <Route path="/*" element={<S><FullAppRoutes /></S>} />
