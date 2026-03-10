@@ -81,6 +81,7 @@ function generateExcel(
     return filtered;
   });
 
+  const XLSX = await loadXLSX();
   const ws = XLSX.utils.json_to_sheet(filteredData, { header: fields });
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Test Cases');
