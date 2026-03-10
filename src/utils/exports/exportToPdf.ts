@@ -2,8 +2,8 @@
  * PDF Export Utility
  * Export data to PDF format using jsPDF
  */
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+const loadJsPDF = () => import('jspdf').then(m => m.default);
+const loadAutoTable = () => import('jspdf-autotable').then(m => m.default);
 import type { ExportColumn, PdfExportOptions } from './types';
 
 export const exportToPdf = async <T extends Record<string, any>>(
