@@ -545,7 +545,7 @@ const App = () => (
               <BrowserRouter>
               <Routes>
  <Route path="/" element={<Navigate to="/for-you" replace />} />
-              <Route path="/auth" element={<CatalystLoginPage />} />
+              <Route path="/auth" element={<S><CatalystLoginPageLazy /></S>} />
               <Route path="/auth/slack/callback" element={<S><SlackOAuthCallback /></S>} />
               <Route path="/submit-request" element={<S><SubmitDemandRequest /></S>} />
               <Route path="/kb-admin-setup" element={<S><KBAdminSetup /></S>} />
