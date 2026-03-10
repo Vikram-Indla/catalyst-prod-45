@@ -82,23 +82,23 @@ export async function exportTestCyclesAsCSV(cycles: TestCycleExportData[]): Prom
 }
 
 export async function exportTestCyclesAsExcel(cycles: TestCycleExportData[]): Promise<void> {
+  const XLSX = await loadXLSX();
   const rows = transformToExportRows(cycles);
   
   const worksheet = XLSX.utils.json_to_sheet(rows);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Test Cycles');
   
-  // Auto-size columns
   const colWidths = [
-    { wch: 30 }, // Cycle Name
-    { wch: 15 }, // Status
-    { wch: 12 }, // Progress
-    { wch: 10 }, // Passed
-    { wch: 10 }, // Failed
-    { wch: 10 }, // Blocked
-    { wch: 12 }, // Start Date
-    { wch: 12 }, // End Date
-    { wch: 15 }, // Environment
+    { wch: 30 },
+    { wch: 15 },
+    { wch: 12 },
+    { wch: 10 },
+    { wch: 10 },
+    { wch: 10 },
+    { wch: 12 },
+    { wch: 12 },
+    { wch: 15 },
   ];
   worksheet['!cols'] = colWidths;
   

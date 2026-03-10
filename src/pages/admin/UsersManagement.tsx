@@ -200,6 +200,7 @@ export default function UsersManagement() {
       Location: u.location || '',
       CTC: u.ctc || ''
     }));
+    const XLSX = await loadXLSX();
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Users');

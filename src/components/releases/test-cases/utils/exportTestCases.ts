@@ -84,7 +84,8 @@ export function exportToJSON(testCases: TestCase[], fields: string[]): string {
   return JSON.stringify(data, null, 2);
 }
 
-export function exportToXLSX(testCases: TestCase[], fields: string[]): Blob {
+export async function exportToXLSX(testCases: TestCase[], fields: string[]): Promise<Blob> {
+  const XLSX = await loadXLSX();
   const headers = fields.map(f => fieldLabels[f] || f);
   const rows = testCases.map(tc => testCaseToRow(tc, fields));
   
@@ -97,7 +98,6 @@ export function exportToXLSX(testCases: TestCase[], fields: string[]): Blob {
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Test Cases');
   
-  // Auto-size columns
   const colWidths = headers.map((h, i) => {
     const maxLen = Math.max(
       h.length,

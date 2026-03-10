@@ -74,8 +74,9 @@ export function ImportStepSetup({
       } else if (extension === 'xlsx' || extension === 'xls') {
         // Parse Excel
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
           try {
+            const XLSX = await loadXLSX();
             const data = new Uint8Array(e.target?.result as ArrayBuffer);
             const workbook = XLSX.read(data, { type: 'array' });
             const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
