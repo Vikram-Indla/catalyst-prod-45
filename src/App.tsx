@@ -1,10 +1,12 @@
 import React, { lazy, Suspense } from "react";
+import { ENABLE_AI } from './lib/featureFlags';
+import { FeatureComingSoon } from './components/common/FeatureComingSoon';
 
 // ─── Lazy page imports ───────────────────────────────────────────
-const KBAdminSetup = lazy(() => import("./pages/KBAdminSetup"));
-const KBAdminPage = lazy(() => import("./pages/KBAdminPage"));
-const KBDataAuditPage = lazy(() => import("./pages/KBDataAudit"));
-const RAGAuditPage = lazy(() => import("./pages/RAGAuditPage"));
+const KBAdminSetup = ENABLE_AI ? lazy(() => import("./pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
+const KBAdminPage = ENABLE_AI ? lazy(() => import("./pages/KBAdminPage")) : () => <FeatureComingSoon title="KB Admin" />;
+const KBDataAuditPage = ENABLE_AI ? lazy(() => import("./pages/KBDataAudit")) : () => <FeatureComingSoon title="KB Data Audit" />;
+const RAGAuditPage = ENABLE_AI ? lazy(() => import("./pages/RAGAuditPage")) : () => <FeatureComingSoon title="RAG Audit" />;
 const WikiAdminPage = lazy(() => import("./pages/admin/WikiAdminPage"));
 const WikiDiagnosticPage = lazy(() => import("./pages/admin/WikiDiagnosticPage"));
 const AdminDiagnosticPage = lazy(() => import("./pages/admin/AdminDiagnosticPage"));
@@ -56,15 +58,15 @@ const GoalsKeyResultsPage = lazy(() => import("./pages/strategyhub/GoalsKeyResul
 const InitiativeListingPage = lazy(() => import("./pages/producthub/InitiativeListingPage"));
 const RoadmapPage = lazy(() => import("./pages/producthub/RoadmapPage"));
 const ProductKanbanPage = lazy(() => import("./pages/producthub/KanbanPage"));
-const RequirementAssistWorkspace = lazy(() => import("./pages/producthub/requirement-assist/index"));
-const RequirementAssistCompose = lazy(() => import("./pages/producthub/requirement-assist/compose"));
-const RequirementAssistCategories = lazy(() => import("./pages/producthub/requirement-assist/categories"));
-const RequirementAssistOutput = lazy(() => import("./pages/producthub/requirement-assist/output"));
+const RequirementAssistWorkspace = ENABLE_AI ? lazy(() => import("./pages/producthub/requirement-assist/index")) : () => <FeatureComingSoon title="Requirement Assist" />;
+const RequirementAssistCompose = ENABLE_AI ? lazy(() => import("./pages/producthub/requirement-assist/compose")) : () => <FeatureComingSoon title="Requirement Assist" />;
+const RequirementAssistCategories = ENABLE_AI ? lazy(() => import("./pages/producthub/requirement-assist/categories")) : () => <FeatureComingSoon title="Requirement Assist" />;
+const RequirementAssistOutput = ENABLE_AI ? lazy(() => import("./pages/producthub/requirement-assist/output")) : () => <FeatureComingSoon title="Requirement Assist" />;
 const ProductCardsPage = lazy(() => import("./pages/producthub/CardsPage"));
-const IdeationPage = lazy(() => import("./pages/producthub/IdeationPage"));
-const IdeasRoadmapPage = lazy(() => import("./pages/product/ideas/IdeasRoadmapPage"));
-const ReqAssistLibrary = lazy(() => import("./pages/ReqAssistLibrary"));
-const ReqAssistGenerate = lazy(() => import("./pages/ReqAssistGenerate"));
+const IdeationPage = ENABLE_AI ? lazy(() => import("./pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
+const IdeasRoadmapPage = ENABLE_AI ? lazy(() => import("./pages/product/ideas/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
+const ReqAssistLibrary = ENABLE_AI ? lazy(() => import("./pages/ReqAssistLibrary")) : () => <FeatureComingSoon title="Requirement Assist" />;
+const ReqAssistGenerate = ENABLE_AI ? lazy(() => import("./pages/ReqAssistGenerate")) : () => <FeatureComingSoon title="Requirement Assist" />;
 
 // IncidentHub lazy imports
 const IncidentHubListPage = lazy(() => import("./pages/release/IncidentRoomList"));
@@ -87,7 +89,7 @@ const WikiAllArticlesPage = lazy(() => import("./pages/wiki/WikiAllArticlesPage"
 const WikiVerificationPage = lazy(() => import("./pages/wiki/WikiVerificationPage"));
 const WikiAnalyticsPage = lazy(() => import("./pages/wiki/WikiAnalyticsPage"));
 const WikiTemplatesPage = lazy(() => import("./pages/wiki/WikiTemplatesPage"));
-const WikiKnowledgeGraphPage = lazy(() => import("./pages/wiki/WikiKnowledgeGraphPage"));
+const WikiKnowledgeGraphPage = ENABLE_AI ? lazy(() => import("./pages/wiki/WikiKnowledgeGraphPage")) : () => <FeatureComingSoon title="Knowledge Graph" />;
 
 // ─── Core infrastructure (keep eager) ────────────────────────────
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -104,9 +106,9 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 const CatalystShell = lazy(() => import("./components/layout/CatalystShell").then(m => ({ default: m.CatalystShell })));
 import { ErrorBoundary } from "./components/ErrorBoundary";
 const CatalystLoginPageLazy = lazy(() => import("./components/auth/login").then(m => ({ default: m.CatalystLoginPage })));
-const CatyFabPlaceholderLazy = lazy(() => import("./components/caty/CatyFabPlaceholder").then(m => ({ default: m.CatyFabPlaceholder })));
-const QAAssistantFabLazy = lazy(() => import("./components/testhub-ai").then(m => ({ default: m.QAAssistantFab })));
-const KnowledgeAssistFabLazy = lazy(() => import("./components/kb/KAFab").then(m => ({ default: m.KAFab })));
+const CatyFabPlaceholderLazy = ENABLE_AI ? lazy(() => import("./components/caty/CatyFabPlaceholder").then(m => ({ default: m.CatyFabPlaceholder }))) : () => null;
+const QAAssistantFabLazy = ENABLE_AI ? lazy(() => import("./components/testhub-ai").then(m => ({ default: m.QAAssistantFab }))) : () => null;
+const KnowledgeAssistFabLazy = ENABLE_AI ? lazy(() => import("./components/kb/KAFab").then(m => ({ default: m.KAFab }))) : () => null;
 
 // ─── Route group shells (lazy-loaded to reduce initial memory) ───
 const TeamRoutesShell = lazy(() => import("./routes/TeamRoutesShell").then(m => ({ default: m.TeamRoutes })));
@@ -191,7 +193,7 @@ const ImportExportPage = lazy(() => import("./pages/testhub/ImportExportPage"));
 const ReleasesListPage = lazy(() => import("./pages/testhub/ReleasesListPage"));
 const ReleaseDetailPage = lazy(() => import("./pages/testhub/ReleaseDetailPage"));
 const CommandCenterPage = lazy(() => import("./pages/testhub/CommandCenterPage"));
-const CatyAIPage = lazy(() => import("./pages/testhub/CatyAIPage"));
+const CatyAIPage = ENABLE_AI ? lazy(() => import("./pages/testhub/CatyAIPage")) : () => <FeatureComingSoon title="Caty AI" />;
 const TestHubDocsPage = lazy(() => import("./pages/testhub/TestHubDocsPage"));
 const QualityGatesPage = lazy(() => import("./pages/releases/QualityGatesPage"));
 const MyTestScopePage = lazy(() => import("./pages/releases/MyTestScopePage"));
@@ -208,7 +210,7 @@ const PlanEditorPage = lazy(() => import("./pages/planhub").then(m => ({ default
 const ScenarioComparePage = lazy(() => import("./pages/planhub").then(m => ({ default: m.ScenarioComparePage })));
 const MasterPlanPage = lazy(() => import("./pages/planhub").then(m => ({ default: m.MasterPlanPage })));
 const PlanHubResourcesPage = lazy(() => import("./pages/planhub").then(m => ({ default: m.ResourcesPage })));
-const PlanHubAIPage = lazy(() => import("./pages/planhub").then(m => ({ default: m.AIAssistantPage })));
+const PlanHubAIPage = ENABLE_AI ? lazy(() => import("./pages/planhub").then(m => ({ default: m.AIAssistantPage }))) : () => <FeatureComingSoon title="PlanHub AI" />;
 const PlanHubReportsPage = lazy(() => import("./pages/planhub").then(m => ({ default: m.ReportCenterPage })));
 
 const Defects = lazy(() => import("./pages/Defects"));
@@ -375,7 +377,7 @@ const WorkHubResourceDetail = lazy(() => import("./components/workhub/resource36
 const WorkHubCalendarPage = lazy(() => import("./components/workhub/calendar/CalendarPage").then(m => ({ default: m.CalendarPage })));
 const WorkHubCapacityPage = lazy(() => import("./components/workhub/capacity/CapacityPage").then(m => ({ default: m.CapacityPage })));
 const WorkHubAnalyticsPage = lazy(() => import("./components/workhub/analytics/AnalyticsPage").then(m => ({ default: m.AnalyticsPage })));
-const WorkHubCatyPage = lazy(() => import("./components/workhub/caty/CatyPage").then(m => ({ default: m.CatyPage })));
+const WorkHubCatyPage = ENABLE_AI ? lazy(() => import("./components/workhub/caty/CatyPage").then(m => ({ default: m.CatyPage }))) : () => <FeatureComingSoon title="WorkHub AI" />;
 
 const ForYouPage = lazy(() => import("./pages/ForYouPage"));
 const ProductRoadmapPage = lazy(() => import("./pages/ProductRoadmapPage"));
