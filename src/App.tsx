@@ -386,7 +386,7 @@ const IndustryRoadmapPage = lazy(() => import("./pages/industry/IndustryRoadmapP
 
 const WorkTreePage = lazy(() => import("./pages/work-tree").then(m => ({ default: m.WorkTreePage })));
 const WorkManager = lazy(() => import("./pages/WorkManager"));
-const SkillsInventory = lazy(() => import("./pages/SkillsInventory"));
+const SkillsInventory = ENABLE_HEAVY_EXPORTS ? lazy(() => import("./pages/SkillsInventory")) : () => <FeatureComingSoon title="Skills Inventory" />;
 const StarredPage = lazy(() => import("./pages/StarredPage"));
 const WorkHubAllWork = lazy(() => import("./pages/workhub/AllWork"));
 const BusinessRequests = lazy(() => import("./pages/enterprise/BusinessRequests"));
