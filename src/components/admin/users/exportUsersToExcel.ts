@@ -2,7 +2,7 @@
  * Enterprise-grade Excel export for User/Resource data
  * Features: Professional column widths, formatted dates, clean data presentation
  */
-import * as XLSX from 'xlsx';
+const loadXLSX = () => import('xlsx');
 import { format } from 'date-fns';
 import type { UserProfile } from '@/hooks/useUsers';
 
