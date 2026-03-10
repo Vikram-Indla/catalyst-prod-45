@@ -14520,6 +14520,38 @@ export type Database = {
           },
         ]
       }
+      injira_tenant_members: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          tenant_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: string
+          tenant_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          tenant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_tenant_members_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       injira_tenants: {
         Row: {
           created_at: string | null
