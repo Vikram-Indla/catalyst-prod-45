@@ -14,9 +14,11 @@ interface CreateUserRequest {
   roleIds: string[];
 }
 
-// TODO: Replace this default-password + first-login-reset flow with a full email-based 
-// invitation + activation flow using the Catalyst HTML email template when we move to production.
-const DEFAULT_TEMPORARY_PASSWORD = "password@99";
+// Generate a cryptographically random temporary password per user
+function generateTempPassword(): string {
+  const randomPart = crypto.randomUUID().replace(/-/g, '');
+  return `${randomPart.substring(0, 16)}Aa1!`;
+}
 
 serve(async (req) => {
   // Handle CORS preflight
