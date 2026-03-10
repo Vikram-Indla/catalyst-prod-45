@@ -485,14 +485,16 @@ function PriorityBadge({ priority }: { priority: string }) {
 }
 
 function ImpactCell({ score }: { score: number }) {
-  const { gradient, text } = getImpactColor(score);
+  const { gradient } = getImpactColor(score);
+  // V12: 0.00 = grey (#94A3B8), not red
+  const textColor = score >= 4 ? '#15803D' : score >= 3 ? '#2563EB' : score >= 2 ? '#64748B' : '#94A3B8';
   const fill = (score / 5) * 100;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
       <div style={{ width: '52px', height: '6px', background: '#E4E4E7', borderRadius: '3px', overflow: 'hidden' }}>
         <div style={{ width: `${fill}%`, height: '100%', background: gradient, borderRadius: '3px' }} />
       </div>
-      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: text }}>{score.toFixed(2)}</span>
+      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: textColor, fontVariantNumeric: 'tabular-nums' }}>{score.toFixed(2)}</span>
     </div>
   );
 }
