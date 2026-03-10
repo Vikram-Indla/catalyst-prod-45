@@ -475,7 +475,16 @@ const IncidentInsightsPage = lazy(() => import("./modules/incidents/analytics/pa
 const IncidentKanbanPage = lazy(() => import("./modules/incidents/kanban/pages/IncidentKanbanPage"));
 
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,       // 5 min — avoid refetches
+      gcTime: 10 * 60 * 1000,          // 10 min — GC unused cache fast
+      refetchOnWindowFocus: false,      // prevent storm of refetches
+      retry: 1,                         // reduce retry memory overhead
+    },
+  },
+});
 
 // Helper to wrap lazy components in Suspense
 const S = ({ children }: { children: React.ReactNode }) => (
