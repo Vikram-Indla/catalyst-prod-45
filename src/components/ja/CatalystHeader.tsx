@@ -19,6 +19,7 @@ const ProductSelectorDropdown = lazy(() => import("./ProductSelectorDropdown").t
 const MobileNavigationMenu = lazy(() => import("./MobileNavigationMenu").then(m => ({ default: m.MobileNavigationMenu })));
 const ReleaseDropdown = lazy(() => import("./ReleaseDropdown").then(m => ({ default: m.ReleaseDropdown })));
 const CreateEntityDialog = lazy(() => import("@/components/dialogs/CreateEntityDialog").then(m => ({ default: m.CreateEntityDialog })));
+import { catalystToast } from "@/lib/catalystToast";
 import { useCatalystContext } from "@/contexts/CatalystContext";
 import { getActiveNavItem } from "@/lib/workspaceContext";
 import {
