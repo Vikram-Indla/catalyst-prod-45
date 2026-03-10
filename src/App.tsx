@@ -406,9 +406,9 @@ const UnauthorizedPage = lazy(() => import("./pages/UnauthorizedPage"));
 const KanbanBoardView = lazy(() => import("./pages/KanbanBoardView"));
 const KanbanBoardSetup = lazy(() => import("./pages/KanbanBoardSetup"));
 const KanbanBoardAnalytics = lazy(() => import("./pages/KanbanBoardAnalytics"));
-const KnowledgeHubDocumentPage = lazy(() => import("./pages/KnowledgeHubDocumentPage"));
-const KnowledgeHubPage = lazy(() => import("./pages/KnowledgeHubPage"));
-const KnowledgeHubSpacePage = lazy(() => import("./pages/KnowledgeHubSpacePage"));
+const KnowledgeHubDocumentPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("./pages/KnowledgeHubDocumentPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
+const KnowledgeHubPage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("./pages/KnowledgeHubPage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
+const KnowledgeHubSpacePage = ENABLE_KNOWLEDGE_HUB ? lazy(() => import("./pages/KnowledgeHubSpacePage")) : () => <FeatureComingSoon title="Knowledge Hub" />;
 
 // Release Management Module (Incidents only)
 const IncidentsList = lazy(() => import("./pages/release").then(m => ({ default: m.IncidentsList })));
