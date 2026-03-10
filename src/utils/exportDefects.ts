@@ -23,6 +23,7 @@ export const exportDefects = async (
   defects: Defect[], 
   format: 'csv' | 'xlsx'
 ): Promise<void> => {
+  const XLSX = await loadXLSX();
   const data = defects.map(d => ({
     'ID': d.id,
     'Title': d.title,
