@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Users, Target, Star, Award, AlertTriangle, Download, Loader2 } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+const loadJsPDF = () => import('jspdf').then(m => m.default);
+const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
 import { toast } from 'sonner';
 
 interface ProgramFilter {
