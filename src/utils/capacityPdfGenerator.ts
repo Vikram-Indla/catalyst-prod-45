@@ -361,6 +361,6 @@ export const generateCapacityPDF = async (data: CapacityReportData): Promise<jsP
   return doc;
 };
 
-export const downloadCapacityPDF = (doc: jsPDF, filename: string) => {
+export const downloadCapacityPDF = (doc: any, filename: string) => {
   doc.save(`${filename}.pdf`);
 };

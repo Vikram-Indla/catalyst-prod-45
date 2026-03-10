@@ -191,6 +191,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
       `${task.progress}%`,
     ]);
 
+    const autoTable = await loadAutoTable();
     autoTable(pdf, {
       startY: currentY,
       head: [['ID', 'Title', 'Status', 'Priority', 'Workstream', 'Assignee', 'Due Date', 'Progress']],

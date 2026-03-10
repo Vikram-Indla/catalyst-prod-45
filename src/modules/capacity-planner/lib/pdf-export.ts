@@ -99,6 +99,7 @@ export async function exportCapacityToPdf(data: ExportData): Promise<void> {
   // Name, Role, Department (not Division), Assignment (not Projects), Email, Allocation (no Status)
   const tableY = summaryY + 30;
   
+  const autoTable = await loadAutoTable();
   autoTable(pdf, {
     startY: tableY,
     head: [['Name', 'Role', 'Department', 'Assignment', 'Email', 'Allocation']],

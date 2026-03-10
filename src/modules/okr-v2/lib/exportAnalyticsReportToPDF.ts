@@ -74,6 +74,7 @@ export async function exportAnalyticsReportToPDF(
     const imgHeight = (canvas.height * contentWidth) / canvas.width;
     
     // Step 4: Create PDF
+    const jsPDF = await loadJsPDF();
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
