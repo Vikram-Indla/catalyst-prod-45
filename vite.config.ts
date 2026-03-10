@@ -4,23 +4,68 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 /**
+ * RUTHLESS BUILD OPTIMIZER
  * When VITE_ENABLE_FULL_APP is NOT set (Lovable publish),
- * replace FullAppRoutes with a no-op module so Rollup never
- * follows the 200+ page imports inside it.
+ * stub out ALL non-essential modules so Rollup never processes them.
+ * This eliminates 24+ chunk generation and their entire dependency trees.
  */
-function skipFullRoutes(): Plugin {
+function skipHeavyModules(): Plugin {
   const enabled = process.env.VITE_ENABLE_FULL_APP === 'true';
+
+  // Patterns to stub out during lean builds (publish)
+  const STUB_PATTERNS = [
+    // Route manifest (700+ routes)
+    'FullAppRoutes',
+    // Sidebars (15 modules, each with deep dependency trees)
+    'UnifiedSidebar',
+    'EnterpriseSidebar',
+    'ProductRoomSidebar',
+    'ProjectSidebar',
+    'OperationsSidebar',      // ReleaseRoomSidebar
+    'TestManagementSidebar',
+    'ReleasesManagementSidebar',
+    'ReleaseHubSidebar',
+    'IncidentHubSidebar',
+    'PlanHubSidebar',
+    'TaskHubSidebar',
+    'TestHubSidebar',
+    'WorkHubSidebar',
+    'ProjectHubSidebar',
+    'WikiSidebar',
+    // Heavy header sub-components
+    'CreateDropdown',
+    'GlobalSearchPalette',
+    'NotificationsPanel',
+    'ProgramSelectorDropdown',
+    'ProjectSelectorDropdown',
+    'ProductSelectorDropdown',
+    'MobileNavigationMenu',
+    'ReleaseDropdown',
+    'CreateEntityDialog',
+    // Heavy panels
+    'CatalystAIPanel',
+    'AnnouncementBanner',
+    'ForYouDetailPanel',
+  ];
+
   return {
-    name: 'skip-full-routes',
+    name: 'skip-heavy-modules',
     enforce: 'pre',
     resolveId(source) {
-      if (!enabled && source.includes('FullAppRoutes')) {
-        return '\0empty-full-routes';
+      if (enabled) return; // Full app mode — let everything through
+      for (const pattern of STUB_PATTERNS) {
+        if (source.includes(pattern)) {
+          return `\0stub-${pattern}`;
+        }
       }
     },
     load(id) {
-      if (id === '\0empty-full-routes') {
-        return 'export default function FullAppRoutes() { return null; }';
+      if (id.startsWith('\0stub-')) {
+        // Return a no-op component that can be used as both default and named export
+        return `
+          export default function Stub() { return null; }
+          export const ${id.replace('\0stub-', '')} = Stub;
+        `;
       }
     },
   };
@@ -33,7 +78,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    skipFullRoutes(),
+    skipHeavyModules(),
     react(),
     mode === "development" && componentTagger(),
   ].filter(Boolean),
