@@ -405,6 +405,11 @@ const S = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="p-8">Loading...</div>}>{children}</Suspense>
 );
 
+/** Runtime module gate wrapper for route elements */
+function MG({ k, t, children }: { k: string; t: string; children: React.ReactNode }) {
+  return <ModuleGate moduleKey={k} fallbackTitle={t}>{children}</ModuleGate>;
+}
+
 function Resource360Redirect() {
   const { id } = useParams();
   return <Navigate to={`/project-hub/resource-360/${id || '009'}`} replace />;
