@@ -135,6 +135,7 @@ const adminPockets = [
     children: [
       { label: 'Feature Flags', path: '/admin/feature-flags' },
       { label: 'Deployment Health', path: '/admin/deployment-health' },
+      { label: 'Publish Diagnostics', path: '/admin/publish-diagnostics' },
       { label: 'Routes & Components', path: '/admin/routes-registry' },
       { label: 'Mock Data Generator', path: '/admin/mock-data' },
       { label: 'System Diagnostic', path: '/admin/diagnostic' },
