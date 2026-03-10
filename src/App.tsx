@@ -1,4 +1,6 @@
 import React, { lazy, Suspense } from "react";
+import { ENABLE_AI } from './lib/featureFlags';
+import { FeatureComingSoon } from './components/common/FeatureComingSoon';
 
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = lazy(() => import("./pages/KBAdminSetup"));
