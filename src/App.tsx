@@ -499,7 +499,7 @@ function QAAssistantRouteGuard() {
   return <Suspense fallback={null}><QAAssistantFabLazy /></Suspense>;
 }
 
-// Knowledge Assist FAB — shown only on home route
+// Knowledge Assist FAB — shown only on /for-you route
 function KAFabRouteGuard() {
   const location = useLocation();
   if (location.pathname !== '/for-you') return null;
