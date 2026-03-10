@@ -10,17 +10,15 @@ import { useEnabledModules } from "@/hooks/useModules";
 import { useModuleAccess } from "@/hooks/useModuleAccess";
 import { useSingleItemNavigation } from "@/hooks/useSingleItemNavigation";
 import { Button } from "@/components/ui/button";
-import { CreateDropdown } from "./CreateDropdown";
-import { GlobalSearchPalette } from "@/components/ui/global-search-palette";
-import { NotificationsPanel } from "./NotificationsPanel";
-import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
-import { ProjectSelectorDropdown } from "./ProjectSelectorDropdown";
-import { ProductSelectorDropdown } from "./ProductSelectorDropdown";
-
-import { MobileNavigationMenu } from "./MobileNavigationMenu";
-import { ReleaseDropdown } from "./ReleaseDropdown";
-import { catalystToast } from "@/lib/catalystToast";
-import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
+const CreateDropdown = lazy(() => import("./CreateDropdown").then(m => ({ default: m.CreateDropdown })));
+const GlobalSearchPalette = lazy(() => import("@/components/ui/global-search-palette").then(m => ({ default: m.GlobalSearchPalette })));
+const NotificationsPanel = lazy(() => import("./NotificationsPanel").then(m => ({ default: m.NotificationsPanel })));
+const ProgramSelectorDropdown = lazy(() => import("./ProgramSelectorDropdown").then(m => ({ default: m.ProgramSelectorDropdown })));
+const ProjectSelectorDropdown = lazy(() => import("./ProjectSelectorDropdown").then(m => ({ default: m.ProjectSelectorDropdown })));
+const ProductSelectorDropdown = lazy(() => import("./ProductSelectorDropdown").then(m => ({ default: m.ProductSelectorDropdown })));
+const MobileNavigationMenu = lazy(() => import("./MobileNavigationMenu").then(m => ({ default: m.MobileNavigationMenu })));
+const ReleaseDropdown = lazy(() => import("./ReleaseDropdown").then(m => ({ default: m.ReleaseDropdown })));
+const CreateEntityDialog = lazy(() => import("@/components/dialogs/CreateEntityDialog").then(m => ({ default: m.CreateEntityDialog })));
 import { useCatalystContext } from "@/contexts/CatalystContext";
 import { getActiveNavItem } from "@/lib/workspaceContext";
 import {
