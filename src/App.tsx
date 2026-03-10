@@ -3,10 +3,10 @@ import { ENABLE_AI } from './lib/featureFlags';
 import { FeatureComingSoon } from './components/common/FeatureComingSoon';
 
 // ─── Lazy page imports ───────────────────────────────────────────
-const KBAdminSetup = lazy(() => import("./pages/KBAdminSetup"));
-const KBAdminPage = lazy(() => import("./pages/KBAdminPage"));
-const KBDataAuditPage = lazy(() => import("./pages/KBDataAudit"));
-const RAGAuditPage = lazy(() => import("./pages/RAGAuditPage"));
+const KBAdminSetup = ENABLE_AI ? lazy(() => import("./pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
+const KBAdminPage = ENABLE_AI ? lazy(() => import("./pages/KBAdminPage")) : () => <FeatureComingSoon title="KB Admin" />;
+const KBDataAuditPage = ENABLE_AI ? lazy(() => import("./pages/KBDataAudit")) : () => <FeatureComingSoon title="KB Data Audit" />;
+const RAGAuditPage = ENABLE_AI ? lazy(() => import("./pages/RAGAuditPage")) : () => <FeatureComingSoon title="RAG Audit" />;
 const WikiAdminPage = lazy(() => import("./pages/admin/WikiAdminPage"));
 const WikiDiagnosticPage = lazy(() => import("./pages/admin/WikiDiagnosticPage"));
 const AdminDiagnosticPage = lazy(() => import("./pages/admin/AdminDiagnosticPage"));
