@@ -1,11 +1,11 @@
 /**
  * IdeationBoardView — Kanban columns by status
+ * V12 Hybrid Precision — no teal on titles, 3-color lozenges
  */
 import React from 'react';
 import { toast } from 'sonner';
 import { Idea, IdeaStatus, STATUS_CONFIG, PRIORITY_CONFIG, AI_INSIGHTS, getImpactColor } from './ideation-data';
 
-// Top 3 ideas by IMPACT score that have AI data get full insight strips
 const TOP_AI_KEYS = new Set(['IDH-005', 'IDH-001', 'IDH-013']);
 
 interface Props {
@@ -17,8 +17,8 @@ interface Props {
 const COLUMNS: { status: IdeaStatus; extra?: React.ReactNode }[] = [
   { status: 'submitted' },
   { status: 'under_review' },
-  { status: 'approved', extra: <span style={{ fontSize: '10px', color: '#16A34A', fontWeight: 600 }}>Ready to convert</span> },
-  { status: 'converted', extra: <span style={{ fontSize: '10px', color: '#0D9488', fontWeight: 600 }}>→ Initiatives</span> },
+  { status: 'approved', extra: <span style={{ fontSize: '10px', color: '#006644', fontWeight: 600 }}>Ready to convert</span> },
+  { status: 'converted', extra: <span style={{ fontSize: '10px', color: '#006644', fontWeight: 600 }}>→ Initiatives</span> },
   { status: 'draft' },
   { status: 'rejected' },
 ];
@@ -28,7 +28,6 @@ const INITIATIVE_LINKS: Record<string, string> = {
   'IDH-013': '↗ INIT-2026-002 · 2 ideas merged',
 };
 
-// Generate link text from initiative field if not in static map
 function getInitiativeLink(idea: Idea): string | null {
   if (INITIATIVE_LINKS[idea.key]) return INITIATIVE_LINKS[idea.key];
   if (idea.initiative) return `↗ ${idea.initiative} · Linked Initiative`;
@@ -46,16 +45,18 @@ export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Pr
         const colIdeas = ideas.filter(i => i.status === col.status);
         return (
           <div key={col.status} style={{ minWidth: '280px', width: '280px', flexShrink: 0 }}>
-            {/* Column Header */}
+            {/* Column Header — V12: #1E293B, 11px, uppercase */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', padding: '0 4px',
+              height: 36,
             }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: sc.dot, flexShrink: 0 }} />
-              <span style={{ fontSize: '13px', fontWeight: 700, color: '#334155' }}>{sc.label}</span>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#1E293B', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{sc.label}</span>
               <span style={{
-                fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 600,
-                background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px',
-                padding: '1px 7px', color: '#94A3B8',
+                fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                background: '#F1F5F9', borderRadius: '100px',
+                padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center',
+                color: '#64748B',
               }}>
                 {colIdeas.length}
               </span>
@@ -97,26 +98,22 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
       onClick={onClick}
       style={{
         position: 'relative',
-        background: isApproved
-          ? 'linear-gradient(135deg, #F0FDF4, #EFF6FF)'
-          : isConverted ? '#F0FDFA' : '#FFFFFF',
-        border: `1px solid ${isApproved ? '#86EFAC' : isConverted ? '#CCFBF1' : '#E2E8F0'}`,
+        background: '#FFFFFF',
+        border: '1px solid #E2E8F0',
         borderRadius: '8px', padding: '12px', marginBottom: '8px', cursor: 'grab',
         opacity: isDraft ? 0.7 : isRejected ? 0.55 : 1,
         transition: 'all 0.15s',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.07)';
-        e.currentTarget.style.borderColor = isApproved ? '#86EFAC' : isConverted ? '#99F6E4' : '#D4D4D8';
+        e.currentTarget.style.background = 'rgba(15,23,42,0.04)';
         e.currentTarget.style.transform = 'translateY(-1px)';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.boxShadow = 'none';
-        e.currentTarget.style.borderColor = isApproved ? '#86EFAC' : isConverted ? '#CCFBF1' : '#E2E8F0';
+        e.currentTarget.style.background = '#FFFFFF';
         e.currentTarget.style.transform = 'none';
       }}
     >
-      {/* Small AI dot indicator (non-top-3 AI cards) */}
+      {/* AI dot */}
       {isAiReady && !showFullAiStrip && (
         <div style={{
           position: 'absolute', top: '10px', right: '10px',
@@ -128,29 +125,30 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
         <span style={{
           fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600,
-          color: isConverted ? '#0D9488' : '#2563EB',
+          color: '#2563EB',
         }}>
           {idea.key}
         </span>
         <span style={{
           fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', fontWeight: 800,
           background: pc.bg, color: pc.text, padding: '1px 5px', borderRadius: '3px',
+          border: `1px solid ${pc.border}`,
         }}>
           {idea.priority}
         </span>
       </div>
 
-      {/* Title */}
+      {/* Title — ALWAYS #0F172A, never teal */}
       <div style={{
-        fontSize: '13px', fontWeight: 600,
-        color: isConverted ? '#0D9488' : '#0F172A',
+        fontSize: '13px', fontWeight: 650,
+        color: '#0F172A',
         display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
         marginBottom: '6px', lineHeight: 1.35,
       }}>
         {idea.title}
       </div>
 
-      {/* Type badge — muted gray for all */}
+      {/* Type badge */}
       <div style={{ marginBottom: '8px' }}>
         <span style={{
           background: '#F4F4F5', color: '#71717A', padding: '2px 6px', borderRadius: '4px',
@@ -174,7 +172,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
         </span>
       </div>
 
-      {/* AI insight strip — only top 3 */}
+      {/* AI insight strip */}
       {showFullAiStrip && (
         <div style={{
           marginTop: '8px', background: '#F5F3FF', borderRadius: '6px',
@@ -187,8 +185,8 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
       {/* Initiative link (converted) */}
       {isConverted && initLink && (
         <div style={{
-          marginTop: '8px', background: '#CCFBF1', border: '1px solid #99F6E4',
-          borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: '#0F766E', fontWeight: 600,
+          marginTop: '8px', background: '#E3FCEF', border: '1px solid #B7EBD1',
+          borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: '#006644', fontWeight: 600,
         }}>
           {initLink}
         </div>
@@ -197,10 +195,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
       {/* Convert button (approved) */}
       {isApproved && (
         <button
-          onClick={e => {
-            e.stopPropagation();
-            onConvert?.(idea.key);
-          }}
+          onClick={e => { e.stopPropagation(); onConvert?.(idea.key); }}
           style={{
             width: '100%', marginTop: '8px', padding: '6px', background: '#2563EB',
             color: '#FFFFFF', border: 'none', borderRadius: '6px', fontSize: '11px',

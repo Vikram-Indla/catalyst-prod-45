@@ -1,8 +1,9 @@
 /**
  * IdeationDrivesView — Innovation Drives with progress tracking (Supabase-wired)
+ * V12: Lucide icons only (no emoji), proper progress bars
  */
 import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Building2, Bot, Leaf, Target, Zap, Globe, TrendingUp, Lightbulb } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import CreateDriveModal from './CreateDriveModal';
@@ -29,7 +30,6 @@ function useDrives() {
         .order('created_at');
       if (error) throw error;
 
-      // Fetch linked ideas per drive
       const driveIds = (drives ?? []).map(d => d.id);
       const { data: ideas } = await supabase
         .from('ph_ideas')
@@ -44,17 +44,26 @@ function useDrives() {
   });
 }
 
-const EMOJI_MAP: Record<string, string> = {
-  'V2030': '🏛️',
-  'AI': '🤖',
-  'Sustainability': '🌱',
+// V12: Lucide icons instead of emoji
+const DRIVE_ICON_MAP: Record<string, React.ElementType> = {
+  'v2030': Building2,
+  'government': Building2,
+  'ai': Bot,
+  'automation': Bot,
+  'sustainability': Leaf,
+  'green': Leaf,
+  'innovation': Zap,
+  'global': Globe,
+  'growth': TrendingUp,
+  'digital': Target,
 };
 
-function getEmoji(title: string): string {
-  for (const [key, emoji] of Object.entries(EMOJI_MAP)) {
-    if (title.includes(key)) return emoji;
+function getDriveIcon(title: string): React.ElementType {
+  const lower = title.toLowerCase();
+  for (const [key, Icon] of Object.entries(DRIVE_ICON_MAP)) {
+    if (lower.includes(key)) return Icon;
   }
-  return '💡';
+  return Lightbulb;
 }
 
 export default function IdeationDrivesView() {
@@ -67,7 +76,7 @@ export default function IdeationDrivesView() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.5px', margin: 0 }}>Innovation Drives</h2>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', 'Inter', sans-serif" }}>Ideas Drives</h2>
             <span style={{
               background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px',
               padding: '1px 7px', fontSize: '11px', fontWeight: 600,
@@ -81,8 +90,8 @@ export default function IdeationDrivesView() {
         <button
           onClick={() => setCreateOpen(true)}
           style={{
-            background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '8px',
-            padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+            height: 36, background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '6px',
+            padding: '0 16px', fontSize: '13px', fontWeight: 650, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: '6px',
           }}
         >
@@ -105,22 +114,32 @@ export default function IdeationDrivesView() {
         const submitted = drive.ideas.length;
         const pct = drive.target_count > 0 ? Math.round((submitted / drive.target_count) * 100) : 0;
         const isActive = drive.status === 'active';
+        const IconComponent = getDriveIcon(drive.title);
         return (
           <div key={drive.id} style={{
-            background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px',
+            background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '6px',
             padding: '20px', marginBottom: '16px',
           }}>
-            {/* Title + Status */}
+            {/* Title + Icon + Status */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <span style={{ fontSize: '20px' }}>{getEmoji(drive.title)}</span>
-              <span style={{ fontSize: '16px', fontWeight: 700, color: '#0F172A', flex: 1 }}>{drive.title}</span>
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: '5px',
-                background: isActive ? '#DCFCE7' : '#F4F4F5',
-                color: isActive ? '#15803D' : '#71717A',
-                padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 600,
+              {/* V12: Lucide icon container */}
+              <div style={{
+                width: 36, height: 36, borderRadius: 8,
+                background: '#F1F5F9', border: '1px solid #E2E8F0',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0, color: '#475569',
               }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: isActive ? '#16A34A' : '#A1A1AA' }} />
+                <IconComponent size={18} strokeWidth={2} />
+              </div>
+              <span style={{ fontSize: '16px', fontWeight: 700, color: '#0F172A', flex: 1 }}>{drive.title}</span>
+              {/* V12 3-color lozenge for status */}
+              <span style={{
+                display: 'inline-flex', alignItems: 'center',
+                background: isActive ? '#DEEBFF' : '#DFE1E6',
+                color: isActive ? '#0747A6' : '#253858',
+                height: 20, padding: '0 6px', borderRadius: 3, fontSize: '11px', fontWeight: 700,
+                textTransform: 'uppercase', letterSpacing: '0.03em',
+              }}>
                 {isActive ? 'Active' : 'Draft'}
               </span>
             </div>
@@ -135,16 +154,22 @@ export default function IdeationDrivesView() {
               <span>Target: <strong>{drive.target_count}</strong> ideas</span>
             </div>
 
-            {/* Progress bar */}
+            {/* V12 Progress bar — always show structure */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-              <div style={{ flex: 1, height: '8px', background: '#CBD5E1', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{
+                flex: 1, height: 6, borderRadius: 3,
+                background: '#F1F5F9', overflow: 'hidden',
+                border: '1px solid #E2E8F0',
+              }}>
                 <div style={{
                   width: `${Math.min(pct, 100)}%`, height: '100%',
-                  background: isActive ? '#16A34A' : '#94A3B8', borderRadius: '4px',
+                  background: pct >= 100 ? '#16A34A' : '#2563EB',
+                  borderRadius: 3,
                   transition: 'width 0.3s',
+                  minWidth: pct > 0 ? 4 : 0,
                 }} />
               </div>
-              <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 700, color: '#334155' }}>
+              <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: '#64748B', minWidth: 32, textAlign: 'right' }}>
                 {submitted}/{drive.target_count}
               </span>
             </div>
