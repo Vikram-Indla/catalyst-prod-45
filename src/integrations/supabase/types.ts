@@ -240,6 +240,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_integration_settings: {
+        Row: {
+          api_key_encrypted: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          max_tokens: number | null
+          model: string | null
+          provider: string
+          temperature: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          api_key_encrypted?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_tokens?: number | null
+          model?: string | null
+          provider?: string
+          temperature?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          api_key_encrypted?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_tokens?: number | null
+          model?: string | null
+          provider?: string
+          temperature?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       assignment_license_allocations: {
         Row: {
           allocation_percent: number
