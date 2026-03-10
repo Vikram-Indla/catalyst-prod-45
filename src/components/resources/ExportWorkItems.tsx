@@ -50,7 +50,7 @@ const DEFAULT_STATUS = { bg: "ECEFF1", text: "37474F" };
 
 /* ── Helpers ── */
 const argb = (hex: string) => `FF${hex}`;
-const thinBorder = (): Partial<ExcelJS.Border> => ({ style: 'thin', color: { argb: argb(C.BORDER) } });
+const thinBorder = (): any => ({ style: 'thin', color: { argb: argb(C.BORDER) } });
 const allThinBorders = () => ({ top: thinBorder(), bottom: thinBorder(), left: thinBorder(), right: thinBorder() });
 
 const arialFont = (size: number, opts?: Partial<ExcelJS.Font>): Partial<ExcelJS.Font> => ({
