@@ -42,8 +42,9 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
   };
 
   // Export PDF function
-  const handleExportPdf = (insights: any, teamData: any) => {
+  const handleExportPdf = async (insights: any, teamData: any) => {
     try {
+      const jsPDF = await loadJsPDF();
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       let yPos = 20;
