@@ -42,6 +42,7 @@ export async function exportRoadmapToPDF(
     await new Promise(resolve => setTimeout(resolve, 150));
 
     // Capture the Gantt chart
+    const html2canvas = await loadHtml2Canvas();
     const ganttCanvas = await html2canvas(ganttElement, {
       scale: 2,
       useCORS: true,
