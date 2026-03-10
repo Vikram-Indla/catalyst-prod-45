@@ -43,6 +43,7 @@ export const generateReportPDF = async (reportData: ReportData, chartElement?: H
   // Add chart if available
   if (chartElement) {
     try {
+      const html2canvas = await loadHtml2Canvas();
       const canvas = await html2canvas(chartElement, {
         backgroundColor: '#ffffff',
         scale: 2,
