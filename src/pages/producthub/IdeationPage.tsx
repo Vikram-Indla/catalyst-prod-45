@@ -355,13 +355,13 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
             <th style={{ width: '32px', padding: '0 8px' }}>
               <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
             </th>
-            {['KEY', 'TITLE', 'STATUS', 'TYPE', 'PRI', 'IMPACT', 'VOTES', 'INITIATIVE', 'DEPT', 'ASSIGNEE', 'AI'].map((col, i) => (
+            {['KEY', 'TITLE', 'STATUS', 'TYPE', 'PRI', 'IMPACT', 'VOTES', 'INITIATIVE', 'DEPT', 'ASSIGNEE', 'CREATED', 'UPDATED'].map((col, i) => (
               <th key={col} style={{
                 textAlign: 'left', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
                 letterSpacing: '0.5px', color: '#94A3B8', padding: '0 8px',
-                width: i === 0 ? '80px' : i === 1 ? undefined : i === 2 ? '120px' : i === 3 ? '100px'
+                width: i === 0 ? '80px' : i === 1 ? undefined : i === 2 ? '120px' : i === 3 ? '80px'
                   : i === 4 ? '50px' : i === 5 ? '110px' : i === 6 ? '80px' : i === 7 ? '100px'
-                  : i === 8 ? '110px' : i === 9 ? '120px' : '40px',
+                  : i === 8 ? '100px' : i === 9 ? '120px' : '90px',
               }}>
                 {col}
               </th>
@@ -391,12 +391,11 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
               <td style={{ padding: '0 8px', maxWidth: '260px' }}>
                 <div style={{
                   fontSize: '13px', fontWeight: 600,
-                  color: idea.status === 'converted' ? '#0D9488' : '#0F172A',
+                  color: '#0F172A',
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 }}>
                   {idea.title}
                 </div>
-                <div style={{ fontSize: '11px', color: '#94A3B8' }}>{idea.subtitle}</div>
               </td>
               <td style={{ padding: '0 8px' }}><StatusBadge status={idea.status} /></td>
               <td style={{ padding: '0 8px' }}><TypeBadge type={idea.type} /></td>
@@ -414,7 +413,8 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
               </td>
               <td style={{ padding: '0 8px', fontSize: '12px', color: '#334155' }}>{idea.dept}</td>
               <td style={{ padding: '0 8px' }}><AssigneeCell assignee={idea.assignee} /></td>
-              <td style={{ padding: '0 8px' }}><AiBadge ai={idea.ai} /></td>
+              <td style={{ padding: '0 8px' }}><DateCell date={idea.created_at} /></td>
+              <td style={{ padding: '0 8px' }}><DateCell date={idea.updated_at} /></td>
             </tr>
           ))}
         </tbody>
