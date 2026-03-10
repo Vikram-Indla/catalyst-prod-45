@@ -67,11 +67,11 @@ function generateCSV(
   };
 }
 
-function generateExcel(
+async function generateExcel(
   data: Record<string, unknown>[],
   fields: string[],
   timestamp: string
-): GeneratedFile {
+): Promise<GeneratedFile> {
   // Filter data to only include selected fields
   const filteredData = data.map(row => {
     const filtered: Record<string, unknown> = {};
