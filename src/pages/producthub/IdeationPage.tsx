@@ -327,8 +327,8 @@ export default function IdeationPage() {
       {/* ─── Panels ─── */}
       {detailKey && <IdeationDetailPanel ideaKey={detailKey} onClose={() => setDetailKey(null)} onConvert={handleConvertIdea} />}
       <IdeationCreateWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />
-      <IdeationTriagePanel open={triageOpen} onClose={() => setTriageOpen(false)} onMerge={handleMergeIdeas} onConvert={handleConvertIdea} />
-      <IdeationIntelligenceHub open={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} onMerge={(pk, mk) => { setIntelligenceOpen(false); handleMergeIdeas(pk, mk); }} />
+      <IdeationTriagePanel open={triageOpen} onClose={() => setTriageOpen(false)} onMerge={handleMergeIdeas} onConvert={handleConvertIdea} ideas={ideasData} />
+      <IdeationIntelligenceHub open={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} onMerge={(pk, mk) => { setIntelligenceOpen(false); handleMergeIdeas(pk, mk); }} ideas={ideasData} />
       <CreateInitiativeDrawer
         open={convertDrawerOpen}
         onClose={() => { setConvertDrawerOpen(false); setConversionSource(null); }}
