@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-// Build stamp: 2026-03-10T19:00Z — force clean publish on ci_medium
+
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = lazy(() => import("./pages/KBAdminSetup"));
 const KBAdminPage = lazy(() => import("./pages/KBAdminPage"));
@@ -30,21 +30,20 @@ const NativeEpicBacklogPageLazy = lazy(() => import("./pages/project-hub/NativeE
 const NativeFeatureBacklogPageLazy = lazy(() => import("./pages/project-hub/NativeFeatureBacklogPage"));
 const NativeStoryBacklogPageLazy = lazy(() => import("./pages/project-hub/NativeStoryBacklogPage"));
 const HierarchyPageLazy = lazy(() => import("./pages/project-hub/HierarchyPage"));
-import { List, Columns3, AlignJustify, GanttChart, Tag, BarChart3, Sparkles as SparklesIcon, Activity as ActivityIcon } from 'lucide-react';
 const PHPlaceholderBase = lazy(() => import("./pages/project-hub/PhasePlaceholderPage"));
-const PH_ICONS: Record<string, any> = { Backlog: List, Board: Columns3, List: AlignJustify, Timeline: GanttChart, Releases: Tag, Reports: BarChart3, 'Sprint Predictor': SparklesIcon, 'Risk Scanner': ActivityIcon };
-const PH_DESCRIPTIONS: Record<string, string> = {
-  Backlog: 'Sprint backlog with drag-and-drop prioritization.',
-  Board: 'Kanban board with customizable swim lanes.',
-  List: 'Flat list view with inline editing and bulk actions.',
-  Timeline: 'Gantt-style timeline with dependency tracking.',
-  Releases: 'Release planning and version management.',
-  Reports: 'Velocity charts, burn-down, and team analytics.',
-  'Sprint Predictor': 'AI-powered sprint completion predictions.',
-  'Risk Scanner': 'AI-driven risk detection and mitigation.',
-};
 function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
-  return <Suspense fallback={<div className="p-8">Loading...</div>}><PHPlaceholderBase title={title} phase={phase} icon={PH_ICONS[title] || List} description={PH_DESCRIPTIONS[title] || `Coming in ${phase}`} /></Suspense>;
+  const PH_ICONS_MAP: Record<string, string> = { Backlog: 'List', Board: 'Columns3', List: 'AlignJustify', Timeline: 'GanttChart', Releases: 'Tag', Reports: 'BarChart3', 'Sprint Predictor': 'Sparkles', 'Risk Scanner': 'Activity' };
+  const PH_DESCRIPTIONS_MAP: Record<string, string> = {
+    Backlog: 'Sprint backlog with drag-and-drop prioritization.',
+    Board: 'Kanban board with customizable swim lanes.',
+    List: 'Flat list view with inline editing and bulk actions.',
+    Timeline: 'Gantt-style timeline with dependency tracking.',
+    Releases: 'Release planning and version management.',
+    Reports: 'Velocity charts, burn-down, and team analytics.',
+    'Sprint Predictor': 'AI-powered sprint completion predictions.',
+    'Risk Scanner': 'AI-driven risk detection and mitigation.',
+  };
+  return <Suspense fallback={<div className="p-8">Loading...</div>}><PHPlaceholderBase title={title} phase={phase} description={PH_DESCRIPTIONS_MAP[title] || `Coming in ${phase}`} /></Suspense>;
 }
 const ProductionEventsPageLazy = lazy(() => import("@/pages/release-hub/production-events/ProductionEventsPage"));
 // ReleaseHub v2.1 page shells
