@@ -77,19 +77,19 @@ const IncidentHubReportsPage = lazy(() => import("./pages/release/IncidentReport
 const IncidentHubCommitteeQueuePage = lazy(() => import("./pages/release/CAPCommitteeQueuePage"));
 
 // Wiki Module lazy imports
-const WikiHomePage = lazy(() => import("./pages/wiki/WikiHomePage"));
-const WikiSearchPage = lazy(() => import("./pages/wiki/WikiSearchPage"));
-const WikiCategoryPage = lazy(() => import("./pages/wiki/WikiCategoryPage"));
-const WikiArticlePage = lazy(() => import("./pages/wiki/WikiArticlePage"));
-const WikiWhatsNewPage = lazy(() => import("./pages/wiki/WikiWhatsNewPage"));
-const WikiLearningPathsPage = lazy(() => import("./pages/wiki/WikiLearningPathsPage"));
-const WikiLearningPathDetailPage = lazy(() => import("./pages/wiki/WikiLearningPathDetailPage"));
-const WikiSubscriptionsPage = lazy(() => import("./pages/wiki/WikiSubscriptionsPage"));
-const WikiAllArticlesPage = lazy(() => import("./pages/wiki/WikiAllArticlesPage"));
-const WikiVerificationPage = lazy(() => import("./pages/wiki/WikiVerificationPage"));
-const WikiAnalyticsPage = lazy(() => import("./pages/wiki/WikiAnalyticsPage"));
-const WikiTemplatesPage = lazy(() => import("./pages/wiki/WikiTemplatesPage"));
-const WikiKnowledgeGraphPage = ENABLE_AI ? lazy(() => import("./pages/wiki/WikiKnowledgeGraphPage")) : () => <FeatureComingSoon title="Knowledge Graph" />;
+const WikiHomePage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiHomePage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiSearchPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiSearchPage")) : () => <FeatureComingSoon title="Wiki Search" />;
+const WikiCategoryPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiCategoryPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiArticlePage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiArticlePage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiWhatsNewPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiWhatsNewPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiLearningPathsPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiLearningPathsPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiLearningPathDetailPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiLearningPathDetailPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiSubscriptionsPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiSubscriptionsPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiAllArticlesPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiAllArticlesPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiVerificationPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiVerificationPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiAnalyticsPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiAnalyticsPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiTemplatesPage = ENABLE_WIKI ? lazy(() => import("./pages/wiki/WikiTemplatesPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiKnowledgeGraphPage = (ENABLE_AI && ENABLE_WIKI) ? lazy(() => import("./pages/wiki/WikiKnowledgeGraphPage")) : () => <FeatureComingSoon title="Knowledge Graph" />;
 
 // ─── Core infrastructure (keep eager) ────────────────────────────
 import { TooltipProvider } from "@/components/ui/tooltip";
