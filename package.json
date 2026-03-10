@@ -11,7 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@atlaskit/badge": "^16.4.4",
     "@atlaskit/breadcrumbs": "^14.2.0",
     "@atlaskit/button": "^18.4.1",
     "@atlaskit/button-group": "^1.5.4",
