@@ -1,29 +1,31 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense, ComponentType } from 'react';
 
 import { useLocation, useParams, Outlet, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CatalystHeader } from '@/components/ja/CatalystHeader';
-import { UnifiedSidebar } from './UnifiedSidebar';
-import { EnterpriseSidebar } from './EnterpriseSidebar';
-import { ProductRoomSidebar } from './ProductRoomSidebar';
-import { ProjectSidebar } from './ProjectSidebar';
-import { ReleaseRoomSidebar } from './OperationsSidebar';
-import { TestManagementSidebar } from './TestManagementSidebar';
-import { ReleasesManagementSidebar } from './ReleasesManagementSidebar';
-import { ReleaseHubSidebar } from './ReleaseHubSidebar';
-import { IncidentHubSidebar } from './IncidentHubSidebar';
-import { PlanHubSidebar } from './PlanHubSidebar';
-import { TaskHubSidebar } from './TaskHubSidebar';
-import { TestHubSidebar } from './TestHubSidebar';
-import { WorkHubSidebar } from '@/components/workhub/layout/WorkHubSidebar';
-import { ProjectHubSidebar } from './ProjectHubSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
 import { useEnabledModules } from '@/hooks/useModules';
 import { useRecentPlaceTracker } from '@/hooks/useRecentPlaceTracker';
-import { WikiSidebar } from './WikiSidebar';
+
+// ─── Lazy-loaded sidebars (only the active one loads into memory) ────
+const UnifiedSidebar = lazy(() => import('./UnifiedSidebar').then(m => ({ default: m.UnifiedSidebar })));
+const EnterpriseSidebar = lazy(() => import('./EnterpriseSidebar').then(m => ({ default: m.EnterpriseSidebar })));
+const ProductRoomSidebar = lazy(() => import('./ProductRoomSidebar').then(m => ({ default: m.ProductRoomSidebar })));
+const ProjectSidebar = lazy(() => import('./ProjectSidebar').then(m => ({ default: m.ProjectSidebar })));
+const ReleaseRoomSidebar = lazy(() => import('./OperationsSidebar').then(m => ({ default: m.ReleaseRoomSidebar })));
+const TestManagementSidebar = lazy(() => import('./TestManagementSidebar').then(m => ({ default: m.TestManagementSidebar })));
+const ReleasesManagementSidebar = lazy(() => import('./ReleasesManagementSidebar').then(m => ({ default: m.ReleasesManagementSidebar })));
+const ReleaseHubSidebar = lazy(() => import('./ReleaseHubSidebar').then(m => ({ default: m.ReleaseHubSidebar })));
+const IncidentHubSidebar = lazy(() => import('./IncidentHubSidebar').then(m => ({ default: m.IncidentHubSidebar })));
+const PlanHubSidebar = lazy(() => import('./PlanHubSidebar').then(m => ({ default: m.PlanHubSidebar })));
+const TaskHubSidebar = lazy(() => import('./TaskHubSidebar').then(m => ({ default: m.TaskHubSidebar })));
+const TestHubSidebar = lazy(() => import('./TestHubSidebar').then(m => ({ default: m.TestHubSidebar })));
+const WorkHubSidebar = lazy(() => import('@/components/workhub/layout/WorkHubSidebar').then(m => ({ default: m.WorkHubSidebar })));
+const ProjectHubSidebar = lazy(() => import('./ProjectHubSidebar').then(m => ({ default: m.ProjectHubSidebar })));
+const WikiSidebar = lazy(() => import('./WikiSidebar').then(m => ({ default: m.WikiSidebar })));
 
 function CatalystShellContent() {
   // Dev-only instrumentation: prove shell doesn't remount on program navigation
@@ -341,8 +343,10 @@ function CatalystShellContent() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - GPU layer for stability */}
         <div data-catalyst-sidebar className="relative flex-shrink-0" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
-          {renderSidebar()}
-        </div>
+            <Suspense fallback={null}>
+              {renderSidebar()}
+            </Suspense>
+          </div>
 
         {/* Route content scroll container (single scroll parent) - workspace frame */}
         <main data-catalyst-main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-surface-1">
