@@ -12,7 +12,6 @@ const AdminDiagnosticPage = lazy(() => import("./pages/admin/AdminDiagnosticPage
 const Resource360PageNew = lazy(() => import("./components/resource360/Resource360PageNew"));
 const Resource360MemberDetail = lazy(() => import("./pages/Resource360MemberDetail"));
 const ResourceListingPageLazy = lazy(() => import("./pages/ResourceListingPage"));
-const R360ResourcesListingLazy = lazy(() => import("./pages/R360ResourcesListing"));
 const R360MemberDetailLazy = lazy(() => import("./pages/R360MemberDetail"));
 const R360ProfilePageLazy = lazy(() => import("./pages/R360ProfilePage"));
 
@@ -52,7 +51,6 @@ const RH21AllReleasesPage = lazy(() => import("./pages/releasehub/AllReleasesPag
 const RH21ReleaseComparePage = lazy(() => import("./pages/releasehub/ReleaseComparePage"));
 const RH21TriageQueuePage = lazy(() => import("./pages/releasehub/TriageQueuePage"));
 const RH21AllChangesPage = lazy(() => import("./pages/releasehub/AllChangesPage"));
-const RH21ProductionEventsPage = lazy(() => import("./pages/releasehub/ProductionEventsPage"));
 const StrategicThemesPage = lazy(() => import("./pages/strategyhub/StrategicThemesPage"));
 const GoalsKeyResultsPage = lazy(() => import("./pages/strategyhub/GoalsKeyResultsPage"));
 const InitiativeListingPage = lazy(() => import("./pages/producthub/InitiativeListingPage"));
@@ -92,12 +90,11 @@ const WikiTemplatesPage = lazy(() => import("./pages/wiki/WikiTemplatesPage"));
 const WikiKnowledgeGraphPage = lazy(() => import("./pages/wiki/WikiKnowledgeGraphPage"));
 
 // ─── Core infrastructure (keep eager) ────────────────────────────
-import { Resource360Redirect } from './components/workhub/resource360/Resource360Redirect';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 const HotToaster = lazy(() => import('react-hot-toast').then(m => ({ default: m.Toaster })));
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./lib/auth";
 import { NavigationProvider } from "./contexts/NavigationContext";
@@ -111,14 +108,21 @@ const CatyFabPlaceholderLazy = lazy(() => import("./components/caty/CatyFabPlace
 const QAAssistantFabLazy = lazy(() => import("./components/testhub-ai").then(m => ({ default: m.QAAssistantFab })));
 const KnowledgeAssistFabLazy = lazy(() => import("./components/kb/KAFab").then(m => ({ default: m.KAFab })));
 
-// ─── All page imports converted to lazy ──────────────────────────
+// ─── Route group shells (lazy-loaded to reduce initial memory) ───
+const TeamRoutesShell = lazy(() => import("./routes/TeamRoutesShell").then(m => ({ default: m.TeamRoutes })));
+const TeamsRoutesShell = lazy(() => import("./routes/TeamRoutesShell").then(m => ({ default: m.TeamsRoutes })));
+const PortfolioRoutesShell = lazy(() => import("./routes/PortfolioRoutesShell").then(m => ({ default: m.PortfolioRoutes })));
+const ProgramRoutesShell = lazy(() => import("./routes/ProgramRoutesShell").then(m => ({ default: m.ProgramRoutes })));
+const ProgramsRoutesShell = lazy(() => import("./routes/ProgramRoutesShell").then(m => ({ default: m.ProgramsRoutes })));
+const EnterpriseRoutesShell = lazy(() => import("./routes/EnterpriseRoutesShell").then(m => ({ default: m.EnterpriseRoutes })));
+
+// ─── Remaining page imports (consolidated) ──────────────────────
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
 const BrowsePage = lazy(() => import("./pages/BrowsePage"));
 const DependencyMapsPage = lazy(() => import("./pages/reports/DependencyMapsPage"));
 const SearchPage = lazy(() => import("./pages/SearchPage"));
 const PlaceholderPage = lazy(() => import("./pages/jira-align/PlaceholderPage"));
 
-// Strategy Hub pages
 const StrategyRoom = lazy(() => import("./pages/strategy/StrategyRoom"));
 const StrategyComingSoon = lazy(() => import("./pages/strategy/StrategyComingSoon"));
 const CapacityPlannerPage = lazy(() => import("./pages/enterprise/CapacityPlannerPage"));
@@ -189,15 +193,14 @@ const ReleaseDetailPage = lazy(() => import("./pages/testhub/ReleaseDetailPage")
 const CommandCenterPage = lazy(() => import("./pages/testhub/CommandCenterPage"));
 const CatyAIPage = lazy(() => import("./pages/testhub/CatyAIPage"));
 const TestHubDocsPage = lazy(() => import("./pages/testhub/TestHubDocsPage"));
+const QualityGatesPage = lazy(() => import("./pages/releases/QualityGatesPage"));
+const MyTestScopePage = lazy(() => import("./pages/releases/MyTestScopePage"));
 
 // Task10 pages
 const T10LandingPage = lazy(() => import("./modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
 const T10WeekPage = lazy(() => import("./modules/task10/pages/T10WeekPage").then(m => ({ default: m.T10WeekPage })));
 const T10WeekPageV3 = lazy(() => import("./modules/task10/pages/T10WeekPageV3").then(m => ({ default: m.T10WeekPageV3 })));
 const T10CompletedPage = lazy(() => import("./modules/task10/pages/T10CompletedPage").then(m => ({ default: m.T10CompletedPage })));
-// Priorities pages
-const PriListsPage = lazy(() => import("./modules/priorities/pages/PriListsPage").then(m => ({ default: m.PriListsPage })));
-const PriWeekPage = lazy(() => import("./modules/priorities/pages/PriWeekPage").then(m => ({ default: m.PriWeekPage })));
 
 // PlanHub pages
 const PlanLibraryPage = lazy(() => import("./pages/planhub").then(m => ({ default: m.PlanLibraryPage })));
@@ -218,17 +221,7 @@ const PortfolioRoadmap = lazy(() => import("./pages/PortfolioRoadmap"));
 const Roadmaps = lazy(() => import("./pages/Roadmaps"));
 const DependenciesPage = lazy(() => import("./pages/work/Dependencies"));
 const ProgramRoom = lazy(() => import("./pages/ProgramRoom"));
-const ProgramEpicsPage = lazy(() => import("./pages/ProgramEpicsPage"));
 const ProgramBoardHistory = lazy(() => import("./pages/ProgramBoardHistory"));
-const QuartersPage = lazy(() => import("./pages/program/QuartersPage"));
-const CapacityWithSidebar = lazy(() => import("./pages/program/CapacityWithSidebar"));
-const BacklogWithSidebar = lazy(() => import("./pages/program/BacklogWithSidebar"));
-const RoadmapsWithSidebar = lazy(() => import("./pages/program/RoadmapsWithSidebar"));
-const ProgramRoadmapPage = lazy(() => import("./pages/program/ProgramRoadmapPage"));
-const RoadmapsTestPage = lazy(() => import("./pages/program/RoadmapsTestPage"));
-const ExecutionWorkbenchPage = lazy(() => import("./pages/program/ExecutionWorkbench"));
-const FeaturesWithSidebar = lazy(() => import("./pages/program/FeaturesWithSidebar"));
-const ProgramRedirect = lazy(() => import("./pages/program/ProgramRedirect").then(m => ({ default: m.ProgramRedirect })));
 const PIObjectives = lazy(() => import("./pages/PIObjectives"));
 const CapacityPlanning = lazy(() => import("./pages/CapacityPlanning"));
 const Forecast = lazy(() => import("./pages/Forecast"));
@@ -241,33 +234,13 @@ const Backlog = lazy(() => import("./pages/Backlog"));
 const Sprints = lazy(() => import("./pages/Sprints"));
 const Stories = lazy(() => import("./pages/Stories"));
 const Subtasks = lazy(() => import("./pages/Subtasks"));
-const Releases = lazy(() => import("./pages/Releases"));
-const ReleasesCommandCenter = lazy(() => import("./pages/releases/CommandCenterPage"));
-const ReleasesPlaceholderPage = lazy(() => import("./pages/releases/PlaceholderPage"));
-const AllReleasesPage = lazy(() => import("./pages/releases/AllReleasesPageV2"));
-const ReleasesTestCasesPage = lazy(() => import("./pages/releases/TestCasesPage"));
-const ReleasesTestCasesLibraryPage = lazy(() => import("./pages/releases/TestCasesLibraryPage"));
-const ReleasesTestCaseDetailPage = lazy(() => import("./pages/releases/TestCaseDetailPage"));
-const ReleasesTestPlansPage = lazy(() => import("./pages/releases/TestPlansPage"));
-const ReleasesTestPlanDetailPage = lazy(() => import("./pages/releases/TestPlanDetailPage"));
-const ReleasesTestExecutionPage = lazy(() => import("./pages/releases/TestExecutionPage"));
-const TestExecutionFocusPage = lazy(() => import("./features/test-execution").then(m => ({ default: m.TestExecutionFocusPage })));
-const AskAIPage = lazy(() => import("./features/ask-ai/AskAIPage"));
-const RTMPage = lazy(() => import("./features/rtm/RTMPage"));
-const MyTestScopePage = lazy(() => import("./pages/releases/MyTestScopePage"));
-const CalendarPage = lazy(() => import("./pages/releases/CalendarPage"));
-const ComparePage = lazy(() => import("./pages/releases/ComparePage"));
-const CoverageReportsPage = lazy(() => import("./pages/releases/CoverageReportsPage"));
-const ReleaseDashboardV5Page = lazy(() => import("./pages/releases/ReleaseDashboardV5Page"));
-const ReleaseDashboardOverviewPage = lazy(() => import("./pages/releases/ReleaseDashboardOverviewPage"));
-const ReleasesTestCyclesPage = lazy(() => import("./pages/releases/TestCyclesPage"));
-const ReleasesCycleCommandCenter = lazy(() => import("./pages/releases/CycleCommandCenter"));
-const ReleasesCycleTemplatesPage = lazy(() => import("./pages/releases/CycleTemplatesPage"));
-const ReleasesDefectsPage = lazy(() => import("./pages/releases/DefectsPage"));
-const ReleasesDefectDetailPage = lazy(() => import("./pages/releases/DefectDetailPage"));
 const WorkloadDashboard = lazy(() => import("./pages/WorkloadDashboard"));
+const EnterpriseComingSoon = lazy(() => import("./pages/enterprise/ComingSoon"));
+const ReleaseDashboardV5Page = lazy(() => import("./pages/releases/ReleaseDashboardV5Page"));
 
-// Admin pages
+// Admin pages (lazy-loaded via AdminLayout)
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
+const AdminGuard = lazy(() => import("./components/admin/AdminGuard").then(m => ({ default: m.AdminGuard })));
 const OrgSetup = lazy(() => import("./pages/admin/OrgSetup"));
 const HierarchyConfig = lazy(() => import("./pages/admin/HierarchyConfig"));
 const CustomFields = lazy(() => import("./pages/admin/CustomFields"));
@@ -275,8 +248,6 @@ const BoardConfig = lazy(() => import("./pages/admin/BoardConfig"));
 const Permissions = lazy(() => import("./pages/admin/Permissions"));
 const Integrations = lazy(() => import("./pages/admin/Integrations"));
 const JiraIntegrationConfig = lazy(() => import("./pages/admin/JiraIntegrationConfig"));
-const AdminLayout = lazy(() => import('./pages/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const StoriesPage = lazy(() => import('./pages/stories/StoriesPage').then(m => ({ default: m.StoriesPage })));
 const Activity = lazy(() => import("./pages/admin/Activity"));
 const Changes = lazy(() => import("./pages/admin/Changes"));
@@ -349,7 +320,6 @@ const WorkHubStatusMappingPage = lazy(() => import("./modules/workhub/admin/page
 const WorkHubUserMappingPage = lazy(() => import("./modules/workhub/admin/pages/WorkHubUserMappingPage"));
 const WorkHubDataScopePage = lazy(() => import("./modules/workhub/admin/pages/WorkHubDataScopePage"));
 const WorkHubSyncLogs = lazy(() => import("./modules/workhub/admin/pages/WorkHubSyncLogsPage"));
-
 const SoftwareLicensesPage = lazy(() => import("./modules/budget/components/SoftwareLicensesPage").then(m => ({ default: m.SoftwareLicensesPage })));
 const RoutesComponentsRegistry = lazy(() => import("./pages/admin/RoutesComponentsRegistry"));
 const EpicStatuses = lazy(() => import("./pages/admin/EpicStatuses"));
@@ -407,29 +377,16 @@ const WorkHubCapacityPage = lazy(() => import("./components/workhub/capacity/Cap
 const WorkHubAnalyticsPage = lazy(() => import("./components/workhub/analytics/AnalyticsPage").then(m => ({ default: m.AnalyticsPage })));
 const WorkHubCatyPage = lazy(() => import("./components/workhub/caty/CatyPage").then(m => ({ default: m.CatyPage })));
 
-const AdminGuard = lazy(() => import("./components/admin/AdminGuard").then(m => ({ default: m.AdminGuard })));
-
 const ForYouPage = lazy(() => import("./pages/ForYouPage"));
 const ProductRoadmapPage = lazy(() => import("./pages/ProductRoadmapPage"));
 const ProductRoadmapV2Page = lazy(() => import("./pages/ProductRoadmapV2Page"));
 const IndustryRoadmapPage = lazy(() => import("./pages/industry/IndustryRoadmapPage"));
 
-const EnterpriseEpics = lazy(() => import("./pages/enterprise/EnterpriseEpics"));
 const WorkTreePage = lazy(() => import("./pages/work-tree").then(m => ({ default: m.WorkTreePage })));
 const WorkManager = lazy(() => import("./pages/WorkManager"));
-const EnterpriseTasks = lazy(() => import("./pages/enterprise/EnterpriseTasks"));
-const EnterpriseObjectives = lazy(() => import("./pages/enterprise/EnterpriseObjectives"));
-const EnterpriseDependencies = lazy(() => import("./pages/enterprise/EnterpriseDependencies"));
-const EnterpriseReleaseVehicles = lazy(() => import("./pages/enterprise/EnterpriseReleaseVehicles"));
-const EnterpriseSuccessCriteria = lazy(() => import("./pages/enterprise/EnterpriseSuccessCriteria"));
-const EnterpriseRisks = lazy(() => import("./pages/enterprise/EnterpriseRisks"));
-const EnterpriseComingSoon = lazy(() => import("./pages/enterprise/ComingSoon"));
 const SkillsInventory = lazy(() => import("./pages/SkillsInventory"));
 const StarredPage = lazy(() => import("./pages/StarredPage"));
-
-// WorkHub lazy imports
 const WorkHubAllWork = lazy(() => import("./pages/workhub/AllWork"));
-
 const BusinessRequests = lazy(() => import("./pages/enterprise/BusinessRequests"));
 const MiningComingSoon = lazy(() => import("./pages/enterprise/MiningComingSoon"));
 const IndustryPage = lazy(() => import("./pages/enterprise/DemandIntakeCatalyst"));
@@ -440,7 +397,6 @@ const CapacityPlanningPage = lazy(() => import("./pages/CapacityPlanningPage"));
 const CatalystDemandKanban = lazy(() => import("./modules/kanban/pages/CatalystDemandKanban"));
 const CatalystDemandList = lazy(() => import("./modules/product-backlog/pages/CatalystDemandList"));
 const CatalystDemandTable = lazy(() => import("./modules/product-backlog/pages/CatalystDemandTable"));
-
 const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const TeamComingSoon = lazy(() => import("./pages/team/ComingSoon"));
@@ -459,29 +415,24 @@ const IncidentsDashboard = lazy(() => import("./pages/release").then(m => ({ def
 const CreateIncident = lazy(() => import("./pages/release").then(m => ({ default: m.CreateIncident })));
 const CommitteeQueue = lazy(() => import("./pages/release").then(m => ({ default: m.CommitteeQueue })));
 const IncidentReports = lazy(() => import("./pages/release").then(m => ({ default: m.IncidentReports })));
-
-// Releases - Test Execution
-const ExecutionPage = lazy(() => import("./pages/releases/ExecutionPage"));
-const QualityGatesPage = lazy(() => import("./pages/releases/QualityGatesPage"));
-
-// Incident Room (New)
 const IncidentRoomList = lazy(() => import("./pages/release/IncidentRoomList"));
 const IncidentRoomDetail = lazy(() => import("./pages/release/IncidentRoomDetail"));
 const IncidentCommandCenter = lazy(() => import("./pages/release/IncidentCommandCenter"));
-
-// Incident Analytics
 const IncidentAnalyticsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentAnalyticsPage"));
 const IncidentInsightsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentInsightsPage"));
 const IncidentKanbanPage = lazy(() => import("./modules/incidents/kanban/pages/IncidentKanbanPage"));
 
+// Priorities pages
+const PriListsPage = lazy(() => import("./modules/priorities/pages/PriListsPage").then(m => ({ default: m.PriListsPage })));
+const PriWeekPage = lazy(() => import("./modules/priorities/pages/PriWeekPage").then(m => ({ default: m.PriWeekPage })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,       // 5 min — avoid refetches
-      gcTime: 10 * 60 * 1000,          // 10 min — GC unused cache fast
-      refetchOnWindowFocus: false,      // prevent storm of refetches
-      retry: 1,                         // reduce retry memory overhead
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      retry: 1,
     },
   },
 });
@@ -490,6 +441,12 @@ const queryClient = new QueryClient({
 const S = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="p-8">Loading...</div>}>{children}</Suspense>
 );
+
+// Resource360 redirect helper (inline to avoid eager module import)
+function Resource360Redirect() {
+  const { id } = useParams();
+  return <Navigate to={`/project-hub/resource-360/${id || '009'}`} replace />;
+}
 
 // Caty FAB on capacity planner and project hub routes
 function CatyWidgetRouteGuard() {
@@ -587,15 +544,7 @@ const App = () => (
               <Route path="/starred" element={<S><StarredPage /></S>} />
 
               <Route path="/search" element={<S><SearchPage /></S>} />
-              <Route path="/portfolio/:portfolioId/room" element={<S><PlaceholderPage /></S>} />
-              <Route path="/portfolio/:portfolioId/epics" element={<S><EpicsPage /></S>} />
-              <Route path="/portfolio/:portfolioId/backlog" element={<S><EpicBacklogWithSidebar /></S>} />
-              <Route path="/portfolio/:portfolioId/roadmaps" element={<S><PlaceholderPage /></S>} />
-              <Route path="/portfolio/:portfolioId/objective-tree" element={<S><PlaceholderPage /></S>} />
-              <Route path="/portfolio/:portfolioId/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/portfolio/:portfolioId/forecast" element={<S><Forecast /></S>} />
-              <Route path="/portfolio/:portfolioId/capacity" element={<S><PlaceholderPage /></S>} />
-              <Route path="/portfolio/:portfolioId/programs" element={<S><PlaceholderPage /></S>} />
+
               {/* ═══ Strategy Hub Routes ═══ */}
               <Route path="/strategyhub" element={<S><StrategyRoom /></S>} />
               <Route path="/strategyhub/themes" element={<S><StrategicThemesPage /></S>} />
@@ -606,34 +555,31 @@ const App = () => (
               <Route path="/strategyhub/ai-insights" element={<S><StrategyComingSoon title="AI Insights" /></S>} />
               <Route path="/strategyhub/team-alignment" element={<S><StrategyComingSoon title="Team Alignment" /></S>} />
               <Route path="/strategyhub/settings" element={<S><StrategyComingSoon title="Settings" /></S>} />
-              {/* Legacy strategy redirects */}
               <Route path="/strategy-room" element={<Navigate to="/strategyhub" replace />} />
               <Route path="/strategyhub/strategy-room" element={<Navigate to="/strategyhub" replace />} />
-              <Route path="/portfolio/:portfolioId/okr-hub" element={<S><PlaceholderPage /></S>} />
-              <Route path="/program/:programId/okr-hub" element={<S><PlaceholderPage /></S>} />
-              <Route path="/program" element={<S><ProgramRedirect /></S>} />
-              <Route path="/program/:programId/work-tree" element={<S><ExecutionWorkbenchPage /></S>} />
-              <Route path="/program/:programId/room" element={<S><ProgramRoom /></S>} />
-              <Route path="/program/:programId/epics" element={<S><ProgramEpicsPage /></S>} />
-              <Route path="/program/:programId/epic-backlog" element={<S><EpicBacklogWithSidebar /></S>} />
-              <Route path="/program/:programId/feature-backlog" element={<S><FeatureBacklogPage /></S>} />
-              <Route path="/program/:programId/features" element={<S><FeaturesWithSidebar /></S>} />
-              <Route path="/program/:programId/program-board" element={<S><PlaceholderPage /></S>} />
-              <Route path="/program/:programId/dependencies" element={<S><DependenciesPage /></S>} />
-              <Route path="/program/:programId/roadmaps" element={<S><ProgramRoadmapPage /></S>} />
-              <Route path="/program/:programId/roadmaps-test" element={<S><RoadmapsTestPage /></S>} />
-              <Route path="/program/:programId/objectives-tree" element={<S><PlaceholderPage /></S>} />
-              <Route path="/program/:programId/forecast" element={<S><PlaceholderPage /></S>} />
-              <Route path="/program/:programId/capacity" element={<S><CapacityWithSidebar /></S>} />
-              <Route path="/program/:programId/quarters" element={<S><QuartersPage /></S>} />
-              <Route path="/program/:programId/epic-balancing" element={<S><EpicBalancingPage /></S>} />
-              <Route path="/program/:programId/reports" element={<S><PlaceholderPage /></S>} />
-              <Route path="/team/:teamId/okr-hub" element={<S><PlaceholderPage /></S>} />
               <Route path="/strategyhub/roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
-              <Route path="/enterprise/roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
+              <Route path="/strategyhub/risks" element={<S><EnterpriseComingSoon /></S>} />
+
+              {/* ═══ Portfolio Routes — delegated to lazy shell ═══ */}
+              <Route path="/portfolio/:portfolioId/*" element={<S><PortfolioRoutesShell /></S>} />
+
+              {/* ═══ Program Routes — delegated to lazy shells ═══ */}
+              <Route path="/program" element={<S><PlaceholderPage /></S>} />
+              <Route path="/program/:programId/*" element={<S><ProgramRoutesShell /></S>} />
+              <Route path="/programs" element={<S><ProgramDirectory /></S>} />
+              <Route path="/programs/program-board" element={<Navigate to="/for-you" replace />} />
+              <Route path="/programs/program-board/history" element={<S><ProgramBoardHistory /></S>} />
+              <Route path="/programs/:programId/*" element={<S><ProgramsRoutesShell /></S>} />
+
+              {/* ═══ Team Routes — delegated to lazy shells ═══ */}
+              <Route path="/teams" element={<S><TeamComingSoon /></S>} />
+              <Route path="/teams/:teamId/*" element={<S><TeamsRoutesShell /></S>} />
+              <Route path="/team/:teamId/*" element={<S><TeamRoutesShell /></S>} />
+
+              {/* ═══ Enterprise Routes — delegated to lazy shell ═══ */}
+              <Route path="/enterprise/*" element={<S><EnterpriseRoutesShell /></S>} />
+
               <Route path="/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/enterprise/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/enterprise/kanban-boards" element={<S><EnterpriseComingSoon /></S>} />
               
               {/* Taskhub Module */}
               <Route path="/taskhub" element={<Navigate to="/taskhub/boards" replace />} />
@@ -697,7 +643,6 @@ const App = () => (
               <Route path="/releasehub/triage" element={<S><RH21TriageQueuePage /></S>} />
               <Route path="/releasehub/changes" element={<S><RH21AllChangesPage /></S>} />
               <Route path="/releasehub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
-              {/* Legacy releasehub routes */}
               <Route path="/releasehub/dashboard" element={<Navigate to="/releasehub/command-center" replace />} />
               <Route path="/releasehub/all" element={<Navigate to="/releasehub/all-releases" replace />} />
               <Route path="/releasehub/:releaseId" element={<S><ReleaseDashboardV5Page /></S>} />
@@ -707,12 +652,8 @@ const App = () => (
                <Route path="/priorities/completed" element={<S><T10CompletedPage /></S>} />
                <Route path="/priorities/list/:listId" element={<S><T10WeekPage /></S>} />
                <Route path="/priorities/list/:listId/week/:weekId" element={<S><T10WeekPageV3 /></S>} />
-               
-               {/* Legacy task10 routes - redirect to priorities */}
                <Route path="/taskhub/task10" element={<Navigate to="/priorities" replace />} />
                <Route path="/taskhub/task10/*" element={<Navigate to="/priorities" replace />} />
-               
-               {/* Legacy planner routes - redirect to taskhub */}
                <Route path="/planner" element={<Navigate to="/taskhub/boards" replace />} />
                <Route path="/planner/*" element={<Navigate to="/taskhub/boards" replace />} />
               
@@ -750,56 +691,8 @@ const App = () => (
               <Route path="/product/:productId/room" element={<S><ProductRoomPage /></S>} />
               <Route path="/product/capacity" element={<S><CapacityPlanningPage /></S>} />
 
-              <Route path="/strategyhub/risks" element={<S><EnterpriseRisks /></S>} />
-              <Route path="/enterprise/risks" element={<Navigate to="/strategyhub/risks" replace />} />
-              <Route path="/enterprise/impediments" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/epics" element={<S><EnterpriseEpics /></S>} />
-              
-              <Route path="/enterprise/features" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/stories" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/defects" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/tasks" element={<S><EnterpriseTasks /></S>} />
-              <Route path="/enterprise/objectives" element={<S><EnterpriseObjectives /></S>} />
-              <Route path="/enterprise/dependencies" element={<S><EnterpriseDependencies /></S>} />
-              <Route path="/enterprise/sprints" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/program-increments" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/release-vehicles" element={<S><EnterpriseReleaseVehicles /></S>} />
-              <Route path="/enterprise/success-criteria" element={<S><EnterpriseSuccessCriteria /></S>} />
-              <Route path="/enterprise/skills-inventory" element={<S><SkillsInventory /></S>} />
-              
-              {/* Enterprise More Items - Placeholder Routes */}
-              <Route path="/enterprise/brainstorming" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/innovation" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/canvas" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/mind-maps" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/competitors" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/goals" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/vision" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/personas" element={<S><EnterpriseComingSoon /></S>} />
-              
-              {/* Enterprise Reports - Placeholder Routes */}
-              <Route path="/enterprise/reports/assessment" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/reports/assessment-results" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/reports/cumulative-effort" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/reports/strategic-balancing" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/reports/folios" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/reports/external" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/reports/organizational-hierarchy" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/reports/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/enterprise/reports/demand-capacity" element={<S><CapacityPlanningPage /></S>} />
-              
-              {/* Enterprise More Pages - Placeholder Routes */}
-              <Route path="/enterprise/pages/assessments" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/pages/definition-of-done" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/pages/framework-maps" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/pages/lean-process" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/pages/metrics" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/pages/meetings" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/enterprise/pages/story-point-progress" element={<S><EnterpriseComingSoon /></S>} />
-              
               <Route path="/themes" element={<S><Themes /></S>} />
               <Route path="/themes/grid" element={<S><Themes /></S>} />
-              <Route path="/portfolio/:portfolioId/themes" element={<S><Themes /></S>} />
               <Route path="/initiatives" element={<S><Initiatives /></S>} />
               <Route path="/epics" element={<Navigate to="/program/b2c3d4e5-f6a7-8901-bcde-f12345678901/epic-backlog" replace />} />
               <Route path="/backlog/epics" element={<Navigate to="/program/b2c3d4e5-f6a7-8901-bcde-f12345678901/epic-backlog" replace />} />
@@ -814,7 +707,6 @@ const App = () => (
               <Route path="/items/epics/:epicId/responsibility-matrix" element={<S><EpicResponsibilityMatrix /></S>} />
               <Route path="/items/epics/:epicId/planning" element={<S><EpicPlanningPage /></S>} />
               <Route path="/items/epics/estimation" element={<S><EpicEstimationPage /></S>} />
-              <Route path="/portfolio/:portfolioId/epic-estimation" element={<S><EpicEstimationPage /></S>} />
               
               <Route path="/items/defects" element={<S><Defects /></S>} />
               <Route path="/items/tasks" element={<S><Tasks /></S>} />
@@ -828,61 +720,42 @@ const App = () => (
               <Route path="/reports/dependencies/maps" element={<S><DependencyMapsPage /></S>} />
               <Route path="/work-spend-grid" element={<S><WorkSpendGrid /></S>} />
               <Route path="/portfolio-insights" element={<S><EnterpriseComingSoon /></S>} />
-              <Route path="/programs/:programId/room" element={<S><ProgramRoom /></S>} />
-              <Route path="/programs/:programId/epics" element={<S><EpicsPage /></S>} />
-              <Route path="/programs/:programId/features" element={<S><FeaturesWithSidebar /></S>} />
-              <Route path="/programs/:programId/backlog" element={<S><BacklogWithSidebar /></S>} />
-              <Route path="/programs/:programId/epic-backlog" element={<S><EpicBacklogWithSidebar /></S>} />
-              <Route path="/programs/:programId/roadmaps" element={<S><ProgramRoadmapPage /></S>} />
-              <Route path="/programs/:programId/objective-tree" element={<S><PlaceholderPage /></S>} />
-              <Route path="/programs/:programId/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/programs/:programId/program-board" element={<S><PlaceholderPage /></S>} />
-              <Route path="/programs/:programId/forecast" element={<S><PlaceholderPage /></S>} />
-              <Route path="/programs/:programId/capacity" element={<S><CapacityWithSidebar /></S>} />
-              <Route path="/programs/:programId/settings" element={<S><PlaceholderPage /></S>} />
-              <Route path="/programs/:programId/quarters" element={<S><QuartersPage /></S>} />
+              
               <Route path="/program-room" element={<Navigate to="/for-you" replace />} />
               <Route path="/pis" element={<S><PlaceholderPage /></S>} />
               <Route path="/program-board" element={<Navigate to="/for-you" replace />} />
-              <Route path="/programs/program-board" element={<Navigate to="/for-you" replace />} />
-              <Route path="/programs/program-board/history" element={<S><ProgramBoardHistory /></S>} />
               <Route path="/pi-objectives" element={<S><PIObjectives /></S>} />
               <Route path="/capacity" element={<S><CapacityPlanning /></S>} />
               <Route path="/risks" element={<S><RisksGridPage /></S>} />
               <Route path="/risk-roam-report" element={<S><RiskRoamReportPage /></S>} />
               <Route path="/release-train-calendar" element={<div className="p-8"><h1 className="text-2xl font-bold">Release Calendar</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/program-backlog" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Backlog</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/programs" element={<S><ProgramDirectory /></S>} />
+
               <Route path="/projects" element={<S><ProjectDirectory /></S>} />
               <Route path="/projects/:projectKey" element={<Navigate to={`/projects`} replace />} />
               <Route path="/projects/:projectKey/summary" element={<Navigate to={`/projects`} replace />} />
 
-              {/* WorkHub All Work — new route */}
+              {/* WorkHub All Work */}
               <Route path="/workhub/all-work" element={<S><WorkHubAllWork /></S>} />
-              {/* LEGACY /projecthub — redirect to /project-hub */}
               <Route path="/workhub" element={<Navigate to="/project-hub" replace />} />
               <Route path="/projecthub" element={<Navigate to="/project-hub" replace />} />
               <Route path="/projecthub/resource360" element={<Navigate to="/project-hub/resource-360/009" replace />} />
               <Route path="/projecthub/resource360/:id" element={<Resource360Redirect />} />
-
-              {/* Resource 360° View — legacy redirect */}
               <Route path="/resource-360/:resourceId" element={<Navigate to="/project-hub/resource-360/009" replace />} />
 
               <Route path="/projects/:projectKey/settings" element={<S><ProjectSettingsPage /></S>} />
               <Route path="/projects/:projectId/features" element={<S><FeaturesPage /></S>} />
               <Route path="/projects/:projectId/features/:featureId" element={<S><FeatureDetailPage /></S>} />
               
-              {/* Project Workspace with Board/Timeline/FeatureMap views */}
+              {/* Project Workspace */}
               <Route path="/projects/:projectId" element={<S><ProjectWorkspace /></S>}>
                 <Route path="board" element={<S><BoardView /></S>} />
                 <Route path="timeline" element={<S><TimelineView /></S>} />
                 <Route path="feature-map" element={<div className="h-full flex items-center justify-center text-muted-foreground">Feature Map View - Coming Soon</div>} />
               </Route>
               
-              {/* Board Manager routes */}
               <Route path="/projects/:projectId/boards" element={<S><BoardManagerPage /></S>} />
               <Route path="/projects/:projectId/boards/:boardId" element={<S><BoardCanvasPage /></S>} />
-
               <Route path="/projects/:projectId/work" element={<S><ProjectWorkHubPage /></S>} />
               <Route path="/projects/:projectId/backlog" element={<S><ProjectBacklogPage /></S>} />
               <Route path="/projects/:projectId/roadmap" element={<S><ProjectComingSoonPage pageTitle="Roadmap" /></S>} />
@@ -902,145 +775,7 @@ const App = () => (
                 <Route path="release-management" element={<S><ReleaseManagementPage /></S>} />
                 <Route path="settings" element={<S><InJiraSettingsPage /></S>} />
               </Route>
-              <Route path="/teams" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/room" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/teams/:teamId/backlog" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/board" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/objective-tree" element={<S><PlaceholderPage /></S>} />
-              <Route path="/teams/:teamId/roadmaps" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/sprints" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/velocity" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/meetings" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/impediments" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/features" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/tasks" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/dependencies" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/risks" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/program-increments" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/release-vehicles" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/reports/stories-by-state" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/reports/story-point-progress" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/reports/team-velocity-trend" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/reports/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/teams/:teamId/pages/assessments" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/pages/metrics" element={<S><TeamComingSoon /></S>} />
-              <Route path="/teams/:teamId/kanban-boards" element={<S><TeamComingSoon /></S>} />
 
-              {/* Portfolio Routes with :portfolioId */}
-              <Route path="/portfolio/:portfolioId/room" element={<S><PlaceholderPage /></S>} />
-              <Route path="/portfolio/:portfolioId/objective-tree" element={<S><PlaceholderPage /></S>} />
-              <Route path="/portfolio/:portfolioId/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/portfolio/:portfolioId/backlog" element={<S><PlaceholderPage /></S>} />
-              <Route path="/portfolio/:portfolioId/roadmaps" element={<S><Roadmaps /></S>} />
-              <Route path="/portfolio/:portfolioId/forecast" element={<S><Forecast /></S>} />
-              <Route path="/portfolio/:portfolioId/capacity" element={<S><CapacityPlanning /></S>} />
-              <Route path="/portfolio/:portfolioId/initiatives" element={<S><Initiatives /></S>} />
-              <Route path="/portfolio/:portfolioId/features" element={<S><Features /></S>} />
-              <Route path="/portfolio/:portfolioId/stories" element={<S><Stories /></S>} />
-              <Route path="/portfolio/:portfolioId/defects" element={<S><Defects /></S>} />
-              <Route path="/portfolio/:portfolioId/tasks" element={<S><Tasks /></S>} />
-              <Route path="/portfolio/:portfolioId/dependencies" element={<S><DependenciesPage /></S>} />
-              <Route path="/portfolio/:portfolioId/risks" element={<S><RisksGridPage /></S>} />
-              <Route path="/portfolio/:portfolioId/impediments" element={<S><Impediments /></S>} />
-              <Route path="/portfolio/:portfolioId/sprints" element={<S><Sprints /></S>} />
-              <Route path="/portfolio/:portfolioId/program-increments" element={<S><PlaceholderPage /></S>} />
-              <Route path="/portfolio/:portfolioId/release-vehicles" element={<S><ReleaseVehicles /></S>} />
-              <Route path="/portfolio/:portfolioId/reports/epic-status" element={<S><EpicStatusReport /></S>} />
-              <Route path="/portfolio/:portfolioId/reports/epic-trace" element={<S><EpicTraceReport /></S>} />
-              <Route path="/portfolio/:portfolioId/reports/feature-status" element={<S><TeamComingSoon /></S>} />
-              <Route path="/portfolio/:portfolioId/reports/health" element={<S><TeamComingSoon /></S>} />
-              <Route path="/portfolio/:portfolioId/reports/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/portfolio/:portfolioId/pages/assessments" element={<S><TeamComingSoon /></S>} />
-              <Route path="/portfolio/:portfolioId/pages/metrics" element={<S><TeamComingSoon /></S>} />
-              <Route path="/portfolio/:portfolioId/pages/meetings" element={<S><TeamComingSoon /></S>} />
-              <Route path="/portfolio/:portfolioId/kanban-boards" element={<S><TeamComingSoon /></S>} />
-
-              {/* Program Routes with :programId */}
-              <Route path="/programs/:programId/room" element={<S><ProgramRoom /></S>} />
-              <Route path="/programs/:programId/program-board" element={<S><PlaceholderPage /></S>} />
-              <Route path="/programs/:programId/objective-tree" element={<S><PlaceholderPage /></S>} />
-              <Route path="/programs/:programId/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/programs/:programId/backlog" element={<S><BacklogWithSidebar /></S>} />
-              <Route path="/programs/:programId/roadmaps" element={<S><ProgramRoadmapPage /></S>} />
-              <Route path="/programs/:programId/program-roadmap" element={<S><ProgramRoadmapPage /></S>} />
-              <Route path="/programs/:programId/dependencies" element={<S><DependenciesPage /></S>} />
-              <Route path="/programs/:programId/forecast" element={<S><PlaceholderPage /></S>} />
-              <Route path="/programs/:programId/capacity" element={<S><CapacityWithSidebar /></S>} />
-              <Route path="/programs/:programId/increments" element={<S><PlaceholderPage /></S>} />
-              <Route path="/programs/:programId/epics" element={<S><EpicsPage /></S>} />
-              <Route path="/programs/:programId/features" element={<S><FeaturesWithSidebar /></S>} />
-              <Route path="/programs/:programId/stories" element={<S><Stories /></S>} />
-              <Route path="/programs/:programId/defects" element={<S><Defects /></S>} />
-              <Route path="/programs/:programId/tasks" element={<S><Tasks /></S>} />
-              <Route path="/programs/:programId/risks" element={<S><RisksGridPage /></S>} />
-              <Route path="/programs/:programId/impediments" element={<S><Impediments /></S>} />
-              <Route path="/programs/:programId/sprints" element={<S><Sprints /></S>} />
-              <Route path="/programs/:programId/release-vehicles" element={<S><ReleaseVehicles /></S>} />
-              <Route path="/programs/:programId/reports/feature-status" element={<S><TeamComingSoon /></S>} />
-              <Route path="/programs/:programId/reports/board-history" element={<S><ProgramBoardHistory /></S>} />
-              <Route path="/programs/:programId/reports/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/programs/:programId/reports/pi-objectives" element={<S><PIObjectives /></S>} />
-              <Route path="/programs/:programId/kanban-boards" element={<S><TeamComingSoon /></S>} />
-              <Route path="/programs/:programId/pages/assessments" element={<S><TeamComingSoon /></S>} />
-              <Route path="/programs/:programId/pages/metrics" element={<S><TeamComingSoon /></S>} />
-              <Route path="/programs/:programId/pages/meetings" element={<S><TeamComingSoon /></S>} />
-              
-              <Route path="/team/:teamId/room" element={<S><TeamComingSoon /></S>} />
-              
-              {/* Team Routes - Placeholder Routes */}
-              <Route path="/team/:teamId/backlog" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/stories" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/roadmaps" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/objective-tree" element={<S><PlaceholderPage /></S>} />
-              <Route path="/team/:teamId/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/team/:teamId/meetings" element={<S><TeamComingSoon /></S>} />
-              
-              {/* Team More Items - Placeholder Routes */}
-              <Route path="/team/:teamId/assign-tasks" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/defects" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/dependencies" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/design-components" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/estimation" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/impediments" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/sprints" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/tasks" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/objectives" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/teams" element={<S><TeamComingSoon /></S>} />
-              
-              {/* Team Reports - Placeholder Routes */}
-              <Route path="/team/:teamId/reports/assessment" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/assessment-results" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/burndowns" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/capacity-planning" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/cumulative-effort" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/dependency-maps" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/detailed-sprint-progress" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/external" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/impediments-risks" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/organizational-hierarchy" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/risk-impediment-status" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/sprint-coaching" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/sprint-health" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/sprint-metrics" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/sprint-performance" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/sprint-planning" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/sprint-review" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/sprint-scope-changes" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/sprint-status" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/stories-by-state" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/story-point-progress" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/team-velocity-trend" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/reports/work-tree" element={<S><WorkTreePage /></S>} />
-              <Route path="/team/:teamId/kanban-boards" element={<S><TeamComingSoon /></S>} />
-              
-              {/* Team More Pages - Placeholder Routes */}
-              <Route path="/team/:teamId/pages/assessments" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/pages/definition-of-done" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/pages/lean-process" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/pages/retrospectives" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/pages/surveys" element={<S><TeamComingSoon /></S>} />
-              
               <Route path="/team-room" element={<S><TeamRoom /></S>} />
               <Route path="/backlog" element={<S><Backlog /></S>} />
               <Route path="/backlog-phase2" element={<Navigate to="/backlog" replace />} />
@@ -1049,27 +784,17 @@ const App = () => (
               <Route path="/stories" element={<S><Stories /></S>} />
               <Route path="/work-items/stories" element={<S><Stories /></S>} />
               <Route path="/work-items/subtasks" element={<S><Subtasks /></S>} />
-               {/* Catch-all redirect for any remaining /releases routes to ReleaseHub */}
-               <Route path="/releases/*" element={<Navigate to="/releasehub/command-center" replace />} />
+              <Route path="/releases/*" element={<Navigate to="/releasehub/command-center" replace />} />
               
               <Route path="/unauthorized" element={<S><UnauthorizedPage /></S>} />
-              
-              {/* Kanban Boards Routes - Team Scoped */}
-              <Route path="/team/:teamId/kanban-boards" element={<S><TeamComingSoon /></S>} />
-              <Route path="/team/:teamId/kanban-boards/:boardId" element={<S><KanbanBoardView /></S>} />
-              <Route path="/team/:teamId/kanban-boards/:boardId/setup" element={<S><KanbanBoardSetup /></S>} />
-              <Route path="/team/:teamId/kanban-boards/:boardId/analytics" element={<S><KanbanBoardAnalytics /></S>} />
               
               {/* Knowledge Hub Routes */}
               <Route path="/knowledge-hub" element={<S><KnowledgeHubPage /></S>} />
               <Route path="/knowledge-hub/spaces/:spaceId" element={<S><KnowledgeHubSpacePage /></S>} />
               <Route path="/knowledge-hub/documents/:documentId" element={<S><KnowledgeHubDocumentPage /></S>} />
               
-              
               {/* Operations (Incidents) Routes */}
               <Route path="/release" element={<Navigate to="/release/incidents" replace />} />
-              
-              {/* Incident Module - Canonical Routes Only */}
               <Route path="/release/incidents" element={<S><IncidentRoomList /></S>} />
               <Route path="/release/incidents/dashboard" element={<S><IncidentsDashboard /></S>} />
               <Route path="/release/incidents/analytics" element={<S><IncidentAnalyticsPage /></S>} />
@@ -1078,26 +803,19 @@ const App = () => (
               <Route path="/release/incidents/create" element={<S><CreateIncident /></S>} />
               <Route path="/release/incidents/reports" element={<S><IncidentReports /></S>} />
               <Route path="/release/incidents/:incidentId" element={<S><IncidentRoomDetail /></S>} />
-              
-              {/* Legacy Route Redirects */}
               <Route path="/release/incident-room" element={<Navigate to="/release/incidents" replace />} />
               <Route path="/release/incident-room/:incidentId" element={<Navigate to="/release/incidents/:incidentId" replace />} />
               <Route path="/release/incident-reports" element={<Navigate to="/release/incidents/reports" replace />} />
-              
-              {/* Incident Support Routes */}
               <Route path="/release/incident-command-center" element={<S><IncidentCommandCenter /></S>} />
               <Route path="/release/committee-queue" element={<S><CommitteeQueue /></S>} />
-              {/* Kanban Boards Routes - Program Scoped */}
-              <Route path="/programs/:programId/kanban-boards" element={<S><TeamComingSoon /></S>} />
-              <Route path="/programs/:programId/kanban-boards/:boardId" element={<S><KanbanBoardView /></S>} />
-              <Route path="/programs/:programId/kanban-boards/:boardId/setup" element={<S><KanbanBoardSetup /></S>} />
-              <Route path="/programs/:programId/kanban-boards/:boardId/analytics" element={<S><KanbanBoardAnalytics /></S>} />
               
               <Route path="/insights/portfolio" element={<S><EnterpriseComingSoon /></S>} />
               <Route path="/insights/program" element={<S><EnterpriseComingSoon /></S>} />
               <Route path="/insights/team" element={<S><EnterpriseComingSoon /></S>} />
               <Route path="/insights/predictability" element={<S><EnterpriseComingSoon /></S>} />
               <Route path="/insights/dependency-risk" element={<S><EnterpriseComingSoon /></S>} />
+
+              {/* Admin standalone routes */}
               <Route path="/admin/org-setup" element={<S><AdminGuard><OrgSetup /></AdminGuard></S>} />
               <Route path="/admin/hierarchy" element={<S><AdminGuard><HierarchyConfig /></AdminGuard></S>} />
               <Route path="/admin/custom-fields" element={<S><AdminGuard><CustomFields /></AdminGuard></S>} />
@@ -1105,9 +823,9 @@ const App = () => (
               <Route path="/admin/user-roles" element={<S><AdminGuard><UserRoles /></AdminGuard></S>} />
               <Route path="/admin/permissions" element={<S><AdminGuard><Permissions /></AdminGuard></S>} />
               <Route path="/admin/integrations" element={<S><AdminGuard><Integrations /></AdminGuard></S>} />
-              
               <Route path="/admin/activity-log" element={<S><AdminGuard><ActivityLog /></AdminGuard></S>} />
               
+              {/* Admin Layout with sub-routes */}
               <Route path="/admin" element={<S><AdminLayout /></S>}>
                 <Route index element={<Navigate to="/admin/overview" replace />} />
                 <Route path="overview" element={<S><AdminOverview /></S>} />
@@ -1174,16 +892,13 @@ const App = () => (
                 <Route path="incidents/owning-teams" element={<S><IncidentOwningTeams /></S>} />
                 <Route path="mock-data" element={<S><MockDataGenerator /></S>} />
                 <Route path="ai-integration" element={<S><AiIntegrationPage /></S>} />
-                {/* PlanHub Admin Routes */}
                 <Route path="planhub" element={<Navigate to="/admin/planhub/general" replace />} />
                 <Route path="planhub/general" element={<S><PlanHubGeneralSettings /></S>} />
                 <Route path="planhub/templates" element={<S><PlanHubTemplates /></S>} />
                 <Route path="planhub/ai" element={<S><PlanHubAIConfig /></S>} />
                 <Route path="planhub/audit" element={<S><PlanHubActivityLog /></S>} />
                 <Route path="planhub/*" element={<Navigate to="/admin/planhub/general" replace />} />
-                {/* Slack Integration */}
                 <Route path="slack" element={<S><SlackIntegrationPage /></S>} />
-                {/* Enhanced Task List */}
                 <Route path="task-list" element={<S><TaskListPage /></S>} />
                 <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
                 <Route path="workhub" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
@@ -1195,19 +910,13 @@ const App = () => (
                 <Route path="workhub/data-scope" element={<S><WorkHubDataScopePage /></S>} />
                 <Route path="workhub/sync-logs" element={<S><WorkHubSyncLogs /></S>} />
                 <Route path="workhub/*" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
-                {/* Knowledge Base Admin */}
                 <Route path="kb" element={<S><KBAdminPage /></S>} />
                 <Route path="kb/*" element={<S><KBAdminPage /></S>} />
-                {/* Wiki Admin */}
                 <Route path="wiki" element={<S><WikiAdminPage /></S>} />
                 <Route path="wiki-diagnostic" element={<S><WikiDiagnosticPage /></S>} />
                 <Route path="diagnostic" element={<S><AdminDiagnosticPage /></S>} />
-                
               </Route>
 
-              <Route path="/items/epics/:epicId/status-report" element={<S><EpicStatusReport /></S>} />
-              <Route path="/items/epics/:epicId/trace" element={<S><EpicTraceReport /></S>} />
-              <Route path="/items/epics/:epicId/requirement-hierarchy" element={<S><EpicRequirementHierarchy /></S>} />
               <Route path="/reports-discovery" element={<S><AdminGuard><ReportsDiscovery /></AdminGuard></S>} />
               <Route path="/pi-wizard" element={<S><AdminGuard><PIWizard /></AdminGuard></S>} />
               <Route path="/jira-integration" element={<S><AdminGuard><JiraIntegration /></AdminGuard></S>} />
@@ -1216,7 +925,7 @@ const App = () => (
               <Route path="/admin/settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
               <Route path="/items/:type" element={<S><PlaceholderPage /></S>} />
 
-              {/* ═══ PROJECTHUB V5 — Now inside CatalystShell ═══ */}
+              {/* ═══ PROJECTHUB V5 ═══ */}
               <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />
               <Route path="/project-hub/projects" element={<S><AllProjectsPageLazy /></S>} />
               <Route path="/project/all-projects" element={<S><AllProjectsPageLazy /></S>} />
@@ -1229,7 +938,6 @@ const App = () => (
               <Route path="/project-hub/resource360/:id" element={<Navigate to="/project-hub/resource-360/009" replace />} />
               <Route path="/project-hub/resource-360/:resourceId" element={<S><Resource360PageNew /></S>} />
               <Route path="/resource360/members/:memberId" element={<S><Resource360MemberDetail /></S>} />
-              {/* R360 Profile Module (Stage A) */}
               <Route path="/resources" element={<S><R360ProfilePageLazy /></S>} />
               <Route path="/project-hub/:key" element={<Navigate to="dashboard" replace />} />
               <Route path="/project-hub/:key/dashboard" element={<S><ProjectDashboardPageLazy /></S>} />
@@ -1250,13 +958,12 @@ const App = () => (
               <Route path="/project-hub/:key/risk-scanner" element={<PHPlaceholder title="Risk Scanner" phase="Phase 5" />} />
             </Route>
 
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            {/* CATCH-ALL */}
             <Route path="*" element={<S><NotFound /></S>} />
             </Routes>
               <CatyWidgetRouteGuard />
               <QAAssistantRouteGuard />
               <KnowledgeAssistFabRouteGuard />
-              
               
           </BrowserRouter>
         </TooltipProvider>
