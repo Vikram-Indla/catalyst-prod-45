@@ -247,7 +247,7 @@ export function ForYouTable({
                           const reporterName = item.reporter || item.assignee.name;
                           const avatarUrl = nameAvatarMap.get(reporterName.toLowerCase());
                           const ini = reporterName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
-                          const clr = [T.primary, T.teal, T.warning, T.danger, '#7C3AED'][ini.charCodeAt(0) % 5];
+                          const clr = [T.primary, T.teal, '#0284C7', T.danger, '#DB2777'][ini.charCodeAt(0) % 5];
                           return avatarUrl ? (
                             <img src={avatarUrl} alt={reporterName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: `1px solid ${T.border}` }} />
                           ) : (
