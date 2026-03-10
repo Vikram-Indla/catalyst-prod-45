@@ -58,15 +58,15 @@ const GoalsKeyResultsPage = lazy(() => import("./pages/strategyhub/GoalsKeyResul
 const InitiativeListingPage = lazy(() => import("./pages/producthub/InitiativeListingPage"));
 const RoadmapPage = lazy(() => import("./pages/producthub/RoadmapPage"));
 const ProductKanbanPage = lazy(() => import("./pages/producthub/KanbanPage"));
-const RequirementAssistWorkspace = lazy(() => import("./pages/producthub/requirement-assist/index"));
-const RequirementAssistCompose = lazy(() => import("./pages/producthub/requirement-assist/compose"));
-const RequirementAssistCategories = lazy(() => import("./pages/producthub/requirement-assist/categories"));
-const RequirementAssistOutput = lazy(() => import("./pages/producthub/requirement-assist/output"));
+const RequirementAssistWorkspace = ENABLE_AI ? lazy(() => import("./pages/producthub/requirement-assist/index")) : () => <FeatureComingSoon title="Requirement Assist" />;
+const RequirementAssistCompose = ENABLE_AI ? lazy(() => import("./pages/producthub/requirement-assist/compose")) : () => <FeatureComingSoon title="Requirement Assist" />;
+const RequirementAssistCategories = ENABLE_AI ? lazy(() => import("./pages/producthub/requirement-assist/categories")) : () => <FeatureComingSoon title="Requirement Assist" />;
+const RequirementAssistOutput = ENABLE_AI ? lazy(() => import("./pages/producthub/requirement-assist/output")) : () => <FeatureComingSoon title="Requirement Assist" />;
 const ProductCardsPage = lazy(() => import("./pages/producthub/CardsPage"));
-const IdeationPage = lazy(() => import("./pages/producthub/IdeationPage"));
-const IdeasRoadmapPage = lazy(() => import("./pages/product/ideas/IdeasRoadmapPage"));
-const ReqAssistLibrary = lazy(() => import("./pages/ReqAssistLibrary"));
-const ReqAssistGenerate = lazy(() => import("./pages/ReqAssistGenerate"));
+const IdeationPage = ENABLE_AI ? lazy(() => import("./pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
+const IdeasRoadmapPage = ENABLE_AI ? lazy(() => import("./pages/product/ideas/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
+const ReqAssistLibrary = ENABLE_AI ? lazy(() => import("./pages/ReqAssistLibrary")) : () => <FeatureComingSoon title="Requirement Assist" />;
+const ReqAssistGenerate = ENABLE_AI ? lazy(() => import("./pages/ReqAssistGenerate")) : () => <FeatureComingSoon title="Requirement Assist" />;
 
 // IncidentHub lazy imports
 const IncidentHubListPage = lazy(() => import("./pages/release/IncidentRoomList"));
