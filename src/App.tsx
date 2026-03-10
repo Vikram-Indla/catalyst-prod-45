@@ -210,7 +210,7 @@ const PlanEditorPage = lazy(() => import("./pages/planhub").then(m => ({ default
 const ScenarioComparePage = lazy(() => import("./pages/planhub").then(m => ({ default: m.ScenarioComparePage })));
 const MasterPlanPage = lazy(() => import("./pages/planhub").then(m => ({ default: m.MasterPlanPage })));
 const PlanHubResourcesPage = lazy(() => import("./pages/planhub").then(m => ({ default: m.ResourcesPage })));
-const PlanHubAIPage = lazy(() => import("./pages/planhub").then(m => ({ default: m.AIAssistantPage })));
+const PlanHubAIPage = ENABLE_AI ? lazy(() => import("./pages/planhub").then(m => ({ default: m.AIAssistantPage }))) : () => <FeatureComingSoon title="PlanHub AI" />;
 const PlanHubReportsPage = lazy(() => import("./pages/planhub").then(m => ({ default: m.ReportCenterPage })));
 
 const Defects = lazy(() => import("./pages/Defects"));
