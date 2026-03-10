@@ -294,7 +294,7 @@ export default function IdeationPage() {
         <button style={{ background: 'none', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '5px 10px', fontSize: '12px', fontWeight: 500, color: '#334155', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
           <ArrowUpDown size={13} /> Rank
         </button>
-        <AIIntelligenceButton label="AI Triage (4)" onClick={() => setTriageOpen(true)} />
+        <AIIntelligenceButton label={`AI Triage (${ideasData.length})`} onClick={() => setTriageOpen(true)} />
       </div>
 
       {/* ─── View Content ─── */}
