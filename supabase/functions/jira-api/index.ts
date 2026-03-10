@@ -883,9 +883,27 @@ Deno.serve(async (req) => {
       return jiraError(401, ['Invalid or expired token'])
     }
 
-    // Get user's tenant (simplified - in production would check user's tenant assignment)
-    const tenantId = url.searchParams.get('tenantId') || 'default-tenant'
     const userId = user.id
+
+    // Look up the user's tenant server-side — never trust the client
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+
+    const { data: membership, error: membershipError } = await supabaseAdmin
+      .from('injira_tenant_members')
+      .select('tenant_id')
+      .eq('user_id', userId)
+      .limit(1)
+      .single()
+
+    if (membershipError || !membership) {
+      return jiraError(403, ['User is not a member of any tenant'])
+    }
+
+    const tenantId = membership.tenant_id
 
     // Parse body for POST/PUT requests
     let body = null

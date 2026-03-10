@@ -198,8 +198,7 @@ serve(async (req) => {
           email: email.toLowerCase(), 
           full_name: fullName 
         },
-        // Note: Admin should share the default password manually
-        message: "User created. Share the default password (password@99) with the user manually."
+        message: "User created successfully. The user must set their password via the admin password-reset flow."
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

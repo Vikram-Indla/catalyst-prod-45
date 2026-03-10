@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,6 +12,30 @@ serve(async (req) => {
   }
 
   try {
+    // Authenticate the caller
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !data?.claims) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { to, subject, body, notificationType } = await req.json();
 
     // MOCK EMAIL SENDING - Phase 1 implementation
@@ -20,7 +45,8 @@ serve(async (req) => {
     console.log(`  To: ${to}`);
     console.log(`  Subject: ${subject}`);
     console.log(`  Type: ${notificationType}`);
-    console.log(`  Body: ${body.substring(0, 100)}...`);
+    console.log(`  Body: ${body?.substring(0, 100)}...`);
+    console.log(`  Sent by user: ${data.claims.sub}`);
 
     // Simulate email delivery delay
     await new Promise(resolve => setTimeout(resolve, 100));
