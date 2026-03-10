@@ -95,7 +95,6 @@ const WikiKnowledgeGraphPage = lazy(() => import("./pages/wiki/WikiKnowledgeGrap
 import { Resource360Redirect } from './components/workhub/resource360/Resource360Redirect';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
-import { Toaster as HotToaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
