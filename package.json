@@ -11,7 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@atlaskit/icon": "^22.28.0",
     "@atlaskit/inline-edit": "^15.3.20",
     "@atlaskit/lozenge": "^11.14.0",
     "@atlaskit/modal-dialog": "^14.7.3",
