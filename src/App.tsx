@@ -20,6 +20,8 @@ const CatalystShell = lazy(() => import("./components/layout/CatalystShell").the
 const HotToaster = lazy(() => import('react-hot-toast').then(m => ({ default: m.Toaster })));
 const ForYouPage = lazy(() => import("./pages/ForYouPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout").then(m => ({ default: m.AdminLayout })));
+const FeatureFlagsPage = lazy(() => import("./pages/admin/FeatureFlagsPage").then(m => ({ default: m.default })));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
