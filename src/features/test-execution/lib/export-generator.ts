@@ -112,11 +112,12 @@ function generateJSON(
   };
 }
 
-function generatePDF(
+async function generatePDF(
   data: Record<string, unknown>[],
   fields: string[],
   timestamp: string
-): GeneratedFile {
+): Promise<GeneratedFile> {
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF();
 
   // Title

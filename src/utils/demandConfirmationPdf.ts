@@ -193,7 +193,7 @@ export const generateDemandConfirmationPDF = async (data: DemandConfirmationData
   return doc;
 };
 
-export const downloadDemandConfirmationPDF = (data: DemandConfirmationData, filename?: string) => {
-  const doc = generateDemandConfirmationPDF(data);
+export const downloadDemandConfirmationPDF = async (data: DemandConfirmationData, filename?: string) => {
+  const doc = await generateDemandConfirmationPDF(data);
   doc.save(filename || `Catalyst-Confirmation-${data.requestId}.pdf`);
 };

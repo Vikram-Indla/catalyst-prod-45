@@ -61,6 +61,7 @@ export async function exportRoadmapToPDF(config: ExportConfig): Promise<Blob> {
   const pageWidth = isLandscape ? size.height : size.width;
   const pageHeight = isLandscape ? size.width : size.height;
 
+  const jsPDF = await loadJsPDF();
   const pdf = new jsPDF({ orientation, unit: 'mm', format: paperSize });
 
   // Margins and spacing

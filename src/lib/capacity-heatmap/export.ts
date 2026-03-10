@@ -23,6 +23,7 @@ export async function exportToPNG(element: HTMLElement, filename: string): Promi
 }
 
 export async function exportToPDF(element: HTMLElement, filename: string): Promise<void> {
+  const html2canvas = await loadHtml2Canvas();
   const canvas = await html2canvas(element, {
     scale: 2,
     backgroundColor: '#ffffff',
@@ -30,6 +31,7 @@ export async function exportToPDF(element: HTMLElement, filename: string): Promi
   });
   
   const imgData = canvas.toDataURL('image/png');
+  const jsPDF = await loadJsPDF();
   const pdf = new jsPDF({
     orientation: 'landscape',
     unit: 'px',

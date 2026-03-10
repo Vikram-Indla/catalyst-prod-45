@@ -373,6 +373,7 @@ async function generateExcel(selectedMonths: { label: string; start: Date; end: 
   // Download
   const buffer = await wb.xlsx.writeBuffer();
   const today = format(new Date(), 'yyyy-MM-dd');
+  const saveAs = await loadFileSaver();
   saveAs(new Blob([buffer as BlobPart]), `Delivery-Work-Items-${today}.xlsx`);
 }
 

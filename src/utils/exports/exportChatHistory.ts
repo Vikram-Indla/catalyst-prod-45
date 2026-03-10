@@ -71,6 +71,7 @@ export const exportChatAsPdf = async (
     throw new Error('No messages to export');
   }
 
+  const jsPDF = await loadJsPDF();
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
