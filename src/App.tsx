@@ -89,7 +89,7 @@ const WikiAllArticlesPage = lazy(() => import("./pages/wiki/WikiAllArticlesPage"
 const WikiVerificationPage = lazy(() => import("./pages/wiki/WikiVerificationPage"));
 const WikiAnalyticsPage = lazy(() => import("./pages/wiki/WikiAnalyticsPage"));
 const WikiTemplatesPage = lazy(() => import("./pages/wiki/WikiTemplatesPage"));
-const WikiKnowledgeGraphPage = lazy(() => import("./pages/wiki/WikiKnowledgeGraphPage"));
+const WikiKnowledgeGraphPage = ENABLE_AI ? lazy(() => import("./pages/wiki/WikiKnowledgeGraphPage")) : () => <FeatureComingSoon title="Knowledge Graph" />;
 
 // ─── Core infrastructure (keep eager) ────────────────────────────
 import { TooltipProvider } from "@/components/ui/tooltip";
