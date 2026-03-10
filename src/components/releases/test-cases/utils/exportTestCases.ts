@@ -146,7 +146,7 @@ export function exportTestCases(
       break;
     }
     case 'xlsx': {
-      const xlsx = exportToXLSX(testCases, selectedFields);
+      const xlsx = await exportToXLSX(testCases, selectedFields);
       downloadFile(xlsx, `${baseFilename}.xlsx`);
       break;
     }

@@ -177,7 +177,7 @@ export default function UsersManagement() {
     setEditingUser(null);
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     const dataToExport = selectedIds.size > 0 
       ? users.filter(u => selectedIds.has(u.id))
       : filteredUsers;
