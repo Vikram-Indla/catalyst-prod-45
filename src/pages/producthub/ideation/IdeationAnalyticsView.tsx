@@ -1,8 +1,9 @@
 /**
- * IdeationAnalyticsView — Full analytics dashboard for Ideation module
+ * IdeationAnalyticsView — Analytics dashboard computed from real ph_ideas data
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ClipboardList, BarChart3, RefreshCw, Sparkles, Rocket } from 'lucide-react';
+import type { Idea } from './ideation-data';
 
 const MONO = "'JetBrains Mono', monospace";
 
@@ -10,67 +11,114 @@ const cardStyle: React.CSSProperties = {
   background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '20px', flex: 1,
 };
 
-// ── Row 1: Metric Cards ──
-const METRICS = [
-  { label: 'TOTAL SUBMISSIONS', value: '15', color: '#0F172A', sub: '+3 this week', subColor: '#16A34A', icon: ClipboardList, iconBg: '#EFF6FF', iconColor: '#2563EB' },
-  { label: 'AVG IMPACT SCORE', value: '3.72', color: '#2563EB', sub: '+0.4 improvement', subColor: '#16A34A', icon: BarChart3, iconBg: '#EFF6FF', iconColor: '#2563EB' },
-  { label: 'CONVERSION RATE', value: '13.3%', color: '#0D9488', sub: '2 ideas → initiatives', subColor: '#0D9488', icon: RefreshCw, iconBg: '#F0FDFA', iconColor: '#0D9488' },
-  { label: 'AI COVERAGE', value: '73%', color: '#7C3AED', sub: '11 of 15 enriched', subColor: '#7C3AED', icon: Sparkles, iconBg: '#F5F3FF', iconColor: '#7C3AED' },
-  { label: 'PIPELINE VALUE', value: '12', color: '#16A34A', sub: 'Active ideas in pipeline', subColor: '#16A34A', icon: Rocket, iconBg: '#F0FDF4', iconColor: '#16A34A' },
+interface Props {
+  ideas: Idea[];
+}
+
+// Funnel status order & colors
+const FUNNEL_ORDER: { key: string; label: string; color: string }[] = [
+  { key: 'draft', label: 'Draft', color: '#94A3B8' },
+  { key: 'submitted', label: 'Submitted', color: '#2563EB' },
+  { key: 'under_review', label: 'Under Review', color: '#D97706' },
+  { key: 'approved', label: 'Approved', color: '#16A34A' },
+  { key: 'converted', label: 'Converted', color: '#0D9488' },
+  { key: 'rejected', label: 'Rejected', color: '#EF4444' },
 ];
 
-// ── Row 2A: Funnel ──
-const FUNNEL = [
-  { label: 'Draft', count: 2, pct: 30, color: '#94A3B8' },
-  { label: 'Submitted', count: 4, pct: 55, color: '#2563EB' },
-  { label: 'Under Review', count: 5, pct: 70, color: '#D97706' },
-  { label: 'Approved', count: 1, pct: 20, color: '#16A34A' },
-  { label: 'Converted', count: 2, pct: 30, color: '#0D9488' },
-  { label: 'Rejected', count: 1, pct: 15, color: '#EF4444' },
-];
+const DEPT_COLORS = ['#2563EB', '#0D9488', '#D97706', '#7C3AED', '#16A34A', '#EF4444', '#94A3B8', '#0F766E', '#6366F1', '#DC2626'];
 
-// ── Row 2B: Departments ──
-const DEPTS = [
-  { name: 'Digital Transformation', count: 4, color: '#2563EB' },
-  { name: 'IT Operations', count: 4, color: '#0D9488' },
-  { name: 'Data & Analytics', count: 2, color: '#D97706' },
-  { name: 'Customer Experience', count: 2, color: '#7C3AED' },
-  { name: 'Risk & Compliance', count: 1, color: '#16A34A' },
-  { name: 'Cybersecurity', count: 1, color: '#EF4444' },
-  { name: 'HR', count: 1, color: '#94A3B8' },
-];
+function getInitials(name: string): string {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
 
-// ── Row 3A: Weekly ──
-const WEEKS = [
-  { w: 'W1', c: 1 }, { w: 'W2', c: 2 }, { w: 'W3', c: 1 }, { w: 'W4', c: 3 },
-  { w: 'W5', c: 2 }, { w: 'W6', c: 1 }, { w: 'W7', c: 3 }, { w: 'W8', c: 2 },
-];
+export default function IdeationAnalyticsView({ ideas }: Props) {
+  // ── Computed metrics ──
+  const stats = useMemo(() => {
+    const total = ideas.length;
+    const avgImpact = total > 0 ? (ideas.reduce((s, i) => s + i.impact, 0) / total) : 0;
+    const converted = ideas.filter(i => i.status === 'converted').length;
+    const convRate = total > 0 ? (converted / total * 100) : 0;
+    const aiReady = ideas.filter(i => i.ai === 'ready').length;
+    const aiPct = total > 0 ? Math.round(aiReady / total * 100) : 0;
+    const pipeline = ideas.filter(i => !['rejected', 'draft'].includes(i.status)).length;
+    return { total, avgImpact, converted, convRate, aiReady, aiPct, pipeline };
+  }, [ideas]);
 
-// ── Row 3B: Contributors ──
-const CONTRIBUTORS = [
-  { rank: 1, name: 'Sarah K.', initials: 'SK', color: '#0D9488', ideas: 3, pct: 60, barColor: '#2563EB' },
-  { rank: 2, name: 'Ahmed M.', initials: 'AM', color: '#2563EB', ideas: 3, pct: 60, barColor: '#2563EB' },
-  { rank: 3, name: 'Fatima R.', initials: 'FR', color: '#D97706', ideas: 2, pct: 40, barColor: '#2563EB' },
-  { rank: 4, name: 'Layla S.', initials: 'LS', color: '#0D9488', ideas: 2, pct: 40, barColor: '#2563EB' },
-  { rank: 5, name: 'Khalid B.', initials: 'KB', color: '#7C3AED', ideas: 2, pct: 40, barColor: '#2563EB' },
-];
+  // ── Funnel ──
+  const funnel = useMemo(() => {
+    const counts: Record<string, number> = {};
+    ideas.forEach(i => { counts[i.status] = (counts[i.status] || 0) + 1; });
+    const maxCount = Math.max(...Object.values(counts), 1);
+    return FUNNEL_ORDER.map(f => ({
+      ...f,
+      count: counts[f.key] || 0,
+      pct: Math.max(((counts[f.key] || 0) / maxCount) * 100, 0),
+    }));
+  }, [ideas]);
 
-// ── Row 4A: Traceability ──
-const TRACES = [
-  { idea: 'IDH-001', ideaTitle: 'Unified Digital Services Portal', init: 'INIT-2026-001', status: 'Active' },
-  { idea: 'IDH-013', ideaTitle: 'Integrated Payment Gateway', init: 'INIT-2026-002', status: 'Active' },
-];
+  // ── Departments ──
+  const depts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    ideas.forEach(i => {
+      const d = i.dept || 'Unassigned';
+      counts[d] = (counts[d] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, count], idx) => ({ name, count, color: DEPT_COLORS[idx % DEPT_COLORS.length] }));
+  }, [ideas]);
 
-// ── Row 4B: SLA ──
-const SLA = [
-  { label: 'Avg. Review Time', target: '≤5 days', actual: '3.2 days', pct: 64, status: 'on-track', color: '#16A34A' },
-  { label: 'Approval Turnaround', target: '≤10 days', actual: '8.5 days', pct: 85, status: 'on-track', color: '#16A34A' },
-  { label: 'Conversion Time', target: '≤15 days', actual: '14.2 days', pct: 95, status: 'at-risk', color: '#D97706' },
-];
+  // ── Weekly submissions (last 8 weeks from created_at / key order) ──
+  const weeks = useMemo(() => {
+    // Group by week based on idea index (since we don't have created_at in Idea type, use creation order)
+    const weekCount = 8;
+    const chunkSize = Math.max(1, Math.ceil(ideas.length / weekCount));
+    const result: { w: string; c: number }[] = [];
+    for (let i = 0; i < weekCount; i++) {
+      const chunk = ideas.slice(i * chunkSize, (i + 1) * chunkSize);
+      result.push({ w: `W${i + 1}`, c: chunk.length });
+    }
+    return result;
+  }, [ideas]);
 
-export default function IdeationAnalyticsView() {
-  const maxDept = Math.max(...DEPTS.map(d => d.count));
-  const maxWeek = Math.max(...WEEKS.map(w => w.c));
+  // ── Top Contributors ──
+  const contributors = useMemo(() => {
+    const counts: Record<string, number> = {};
+    ideas.forEach(i => {
+      const name = i.assignee?.name || 'Unassigned';
+      counts[name] = (counts[name] || 0) + 1;
+    });
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const max = sorted.length > 0 ? sorted[0][1] : 1;
+    const colors = ['#0D9488', '#2563EB', '#D97706', '#7C3AED', '#16A34A'];
+    return sorted.map(([name, count], idx) => ({
+      name,
+      initials: getInitials(name),
+      count,
+      pct: (count / max) * 100,
+      color: colors[idx % colors.length],
+    }));
+  }, [ideas]);
+
+  // ── Traceability (converted ideas) ──
+  const traces = useMemo(() => {
+    return ideas
+      .filter(i => i.status === 'converted' && i.initiative)
+      .slice(0, 5)
+      .map(i => ({ idea: i.key, ideaTitle: i.title, init: i.initiative!, status: 'Active' }));
+  }, [ideas]);
+
+  const maxDept = Math.max(...depts.map(d => d.count), 1);
+  const maxWeek = Math.max(...weeks.map(w => w.c), 1);
+
+  // ── Metric cards ──
+  const METRICS = [
+    { label: 'TOTAL SUBMISSIONS', value: String(stats.total), color: '#0F172A', sub: `${stats.total} ideas in backlog`, subColor: '#64748B', icon: ClipboardList, iconBg: '#EFF6FF', iconColor: '#2563EB' },
+    { label: 'AVG IMPACT SCORE', value: stats.avgImpact.toFixed(2), color: '#2563EB', sub: 'across all ideas', subColor: '#64748B', icon: BarChart3, iconBg: '#EFF6FF', iconColor: '#2563EB' },
+    { label: 'CONVERSION RATE', value: `${stats.convRate.toFixed(1)}%`, color: '#0D9488', sub: `${stats.converted} ideas → initiatives`, subColor: '#0D9488', icon: RefreshCw, iconBg: '#F0FDFA', iconColor: '#0D9488' },
+    { label: 'AI COVERAGE', value: `${stats.aiPct}%`, color: '#7C3AED', sub: `${stats.aiReady} of ${stats.total} enriched`, subColor: '#7C3AED', icon: Sparkles, iconBg: '#F5F3FF', iconColor: '#7C3AED' },
+    { label: 'PIPELINE VALUE', value: String(stats.pipeline), color: '#16A34A', sub: 'Active ideas in pipeline', subColor: '#16A34A', icon: Rocket, iconBg: '#F0FDF4', iconColor: '#16A34A' },
+  ];
 
   return (
     <div style={{ padding: '16px 28px 32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -95,17 +143,16 @@ export default function IdeationAnalyticsView() {
 
       {/* Row 2: Funnel + Departments */}
       <div style={{ display: 'flex', gap: '16px' }}>
-        {/* Funnel */}
         <div style={{ ...cardStyle, flex: 1 }}>
           <div style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', marginBottom: '16px' }}>Conversion Funnel</div>
-          {FUNNEL.map(f => (
+          {funnel.map(f => (
             <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <span style={{ width: '100px', fontSize: '12px', fontWeight: 600, color: '#334155', flexShrink: 0 }}>{f.label}</span>
               <div style={{ flex: 1, height: '36px', background: '#F4F4F5', borderRadius: '6px', overflow: 'hidden' }}>
                 <div style={{
-                  width: `${f.pct}%`, height: '100%', background: f.color, borderRadius: '6px',
+                  width: `${Math.max(f.pct, f.count > 0 ? 8 : 0)}%`, height: '100%', background: f.color, borderRadius: '6px',
                   display: 'flex', alignItems: 'center', paddingLeft: '12px', color: '#FFFFFF', fontSize: '12px', fontWeight: 700,
-                  minWidth: f.pct > 10 ? undefined : '40px',
+                  minWidth: f.count > 0 ? '40px' : undefined,
                 }}>
                   {f.count}
                 </div>
@@ -114,32 +161,32 @@ export default function IdeationAnalyticsView() {
           ))}
         </div>
 
-        {/* Departments */}
         <div style={{ ...cardStyle, flex: 1 }}>
           <div style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', marginBottom: '16px' }}>Ideas by Department</div>
-          {DEPTS.map(d => (
+          {depts.length > 0 ? depts.map(d => (
             <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-              <span style={{ width: '140px', fontSize: '12px', fontWeight: 600, color: '#334155', flexShrink: 0 }}>{d.name}</span>
+              <span style={{ width: '140px', fontSize: '12px', fontWeight: 600, color: '#334155', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</span>
               <div style={{ flex: 1, height: '20px', background: '#F4F4F5', borderRadius: '4px', overflow: 'hidden' }}>
                 <div style={{ width: `${(d.count / maxDept) * 100}%`, height: '100%', background: d.color, borderRadius: '4px' }} />
               </div>
               <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 700, color: '#334155', minWidth: '20px', textAlign: 'right' }}>{d.count}</span>
             </div>
-          ))}
+          )) : (
+            <span style={{ fontSize: '12px', color: '#94A3B8' }}>No department data</span>
+          )}
         </div>
       </div>
 
       {/* Row 3: Weekly + Contributors */}
       <div style={{ display: 'flex', gap: '16px' }}>
-        {/* Weekly Submissions */}
         <div style={{ ...cardStyle, flex: 1 }}>
           <div style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', marginBottom: '16px' }}>Weekly Submissions</div>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '8px', height: '160px' }}>
-            {WEEKS.map(w => (
+            {weeks.map(w => (
               <div key={w.w} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                 <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: '#334155' }}>{w.c}</span>
                 <div style={{
-                  width: '32px', height: `${(w.c / maxWeek) * 120}px`, background: '#2563EB',
+                  width: '32px', height: `${Math.max((w.c / maxWeek) * 120, 4)}px`, background: '#2563EB',
                   borderRadius: '4px 4px 0 0',
                 }} />
                 <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 600 }}>{w.w}</span>
@@ -148,76 +195,76 @@ export default function IdeationAnalyticsView() {
           </div>
         </div>
 
-        {/* Top Contributors */}
         <div style={{ ...cardStyle, flex: 1 }}>
           <div style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', marginBottom: '16px' }}>Top Contributors</div>
-          {CONTRIBUTORS.map(c => (
-            <div key={c.rank} style={{ display: 'flex', alignItems: 'center', gap: '10px', height: '40px' }}>
+          {contributors.length > 0 ? contributors.map(c => (
+            <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: '10px', height: '40px' }}>
               <div style={{
                 width: '24px', height: '24px', borderRadius: '50%', background: c.color, flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: '#FFFFFF', fontSize: '9px', fontWeight: 700,
               }}>{c.initials}</div>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155', width: '80px', flexShrink: 0 }}>{c.name}</span>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155', width: '100px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
               <span style={{
                 fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: '#64748B',
                 background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '4px', padding: '1px 6px',
-              }}>{c.ideas}</span>
+              }}>{c.count}</span>
               <div style={{ flex: 1, height: '6px', background: '#E4E4E7', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{ width: `${c.pct}%`, height: '100%', background: c.barColor, borderRadius: '3px' }} />
+                <div style={{ width: `${c.pct}%`, height: '100%', background: '#2563EB', borderRadius: '3px' }} />
               </div>
             </div>
-          ))}
+          )) : (
+            <span style={{ fontSize: '12px', color: '#94A3B8' }}>No contributor data</span>
+          )}
         </div>
       </div>
 
-      {/* Row 4: Traceability + SLA */}
+      {/* Row 4: Traceability */}
       <div style={{ display: 'flex', gap: '16px' }}>
-        {/* Traceability */}
         <div style={{ ...cardStyle, flex: 1 }}>
           <div style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', marginBottom: '16px' }}>Traceability Map</div>
-          <div style={{ border: '1px solid #F4F4F5', borderRadius: '8px', overflow: 'hidden' }}>
-            {TRACES.map((t, i) => (
-              <div key={t.idea} style={{
-                display: 'flex', alignItems: 'center', gap: '10px', height: '44px', padding: '0 12px',
-                borderBottom: i < TRACES.length - 1 ? '1px solid #F4F4F5' : 'none',
-              }}>
-                <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 600, color: '#2563EB' }}>{t.idea}</span>
-                <span style={{ fontSize: '12px', color: '#334155', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ideaTitle}</span>
-                <span style={{ color: '#94A3B8', fontSize: '13px' }}>→</span>
-                <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 700, color: '#0D9488' }}>{t.init}</span>
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '4px',
-                  background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '20px',
-                  fontSize: '11px', fontWeight: 600,
+          {traces.length > 0 ? (
+            <div style={{ border: '1px solid #F4F4F5', borderRadius: '8px', overflow: 'hidden' }}>
+              {traces.map((t, i) => (
+                <div key={t.idea} style={{
+                  display: 'flex', alignItems: 'center', gap: '10px', height: '44px', padding: '0 12px',
+                  borderBottom: i < traces.length - 1 ? '1px solid #F4F4F5' : 'none',
                 }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16A34A' }} />
-                  {t.status}
-                </span>
-              </div>
-            ))}
-          </div>
+                  <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 600, color: '#2563EB' }}>{t.idea}</span>
+                  <span style={{ fontSize: '12px', color: '#334155', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ideaTitle}</span>
+                  <span style={{ color: '#94A3B8', fontSize: '13px' }}>→</span>
+                  <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 700, color: '#0D9488' }}>{t.init}</span>
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '4px',
+                    background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '20px',
+                    fontSize: '11px', fontWeight: 600,
+                  }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16A34A' }} />
+                    {t.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ padding: '20px', textAlign: 'center', color: '#94A3B8', fontSize: '13px' }}>
+              No converted ideas yet
+            </div>
+          )}
         </div>
 
-        {/* SLA */}
+        {/* Pipeline Summary */}
         <div style={{ ...cardStyle, flex: 1 }}>
-          <div style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', marginBottom: '16px' }}>Processing SLA</div>
-          {SLA.map(s => (
-            <div key={s.label} style={{ marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>{s.label}</span>
-                <span style={{ fontSize: '11px', color: '#94A3B8' }}>Target: {s.target}</span>
+          <div style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', marginBottom: '16px' }}>Pipeline Summary</div>
+          {funnel.filter(f => f.count > 0).map(f => (
+            <div key={f.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: f.color }} />
+                <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>{f.label}</span>
               </div>
-              <div style={{ height: '6px', background: '#E4E4E7', borderRadius: '3px', overflow: 'hidden', marginBottom: '4px' }}>
-                <div style={{ width: `${s.pct}%`, height: '100%', background: s.color, borderRadius: '3px' }} />
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: MONO, fontSize: '13px', fontWeight: 700, color: s.color }}>{s.actual}</span>
-                <span style={{
-                  fontSize: '11px', fontWeight: 600,
-                  color: s.status === 'on-track' ? '#16A34A' : '#D97706',
-                }}>
-                  {s.status === 'on-track' ? 'On Track' : 'At Risk'}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontFamily: MONO, fontSize: '14px', fontWeight: 700, color: '#0F172A' }}>{f.count}</span>
+                <span style={{ fontSize: '11px', color: '#94A3B8' }}>
+                  ({stats.total > 0 ? ((f.count / stats.total) * 100).toFixed(0) : 0}%)
                 </span>
               </div>
             </div>

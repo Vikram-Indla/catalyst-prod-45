@@ -304,7 +304,7 @@ export default function IdeationPage() {
           <IdeationMatrixView onOpenDetail={setDetailKey} />
         )}
         {activeView === 'analytics' && (
-          <IdeationAnalyticsView />
+          <IdeationAnalyticsView ideas={ideasWithConversions} />
         )}
         {activeView === 'drives' && (
           <IdeationDrivesView />
