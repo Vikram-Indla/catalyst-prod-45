@@ -122,7 +122,8 @@ export async function reportExportToPDF(data: ExportData, options: ExportOptions
   doc.save(`${sanitizeFilename(data.title)}_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
 }
 
-export function reportExportToExcel(data: ExportData, options: ExportOptions): void {
+export async function reportExportToExcel(data: ExportData, options: ExportOptions): Promise<void> {
+  const XLSX = await loadXLSX();
   const workbook = XLSX.utils.book_new();
   if (options.includeSummary && data.metrics) {
     const summaryData = [
