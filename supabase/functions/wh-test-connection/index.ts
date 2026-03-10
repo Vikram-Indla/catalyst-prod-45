@@ -6,6 +6,37 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// ── Decryption helper ───────────────────────────────────────────────
+
+async function deriveKey(secret: string): Promise<CryptoKey> {
+  const enc = new TextEncoder()
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', enc.encode(secret), { name: 'PBKDF2' }, false, ['deriveKey']
+  )
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: enc.encode('catalyst-jira-salt'), iterations: 100_000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['decrypt']
+  )
+}
+
+async function decryptToken(stored: string, secret: string): Promise<string> {
+  // If not encrypted (legacy plaintext), return as-is
+  if (!stored.startsWith('enc:')) return stored
+
+  const [, ivB64, ctB64] = stored.split(':')
+  const iv = Uint8Array.from(atob(ivB64), c => c.charCodeAt(0))
+  const ciphertext = Uint8Array.from(atob(ctB64), c => c.charCodeAt(0))
+
+  const key = await deriveKey(secret)
+  const plainBuffer = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext)
+  return new TextDecoder().decode(plainBuffer)
+}
+
+// ── Check helpers ───────────────────────────────────────────────────
+
 interface CheckResult {
   name: string
   passed: boolean
@@ -38,8 +69,20 @@ serve(async (req) => {
       .update({ status: 'testing' })
       .eq('id', conn.id)
 
+    // Decrypt the token
+    const encryptionKey = Deno.env.get('ENCRYPTION_KEY')
+    let plainToken = conn.auth_token_encrypted
+    if (encryptionKey && conn.auth_token_encrypted) {
+      try {
+        plainToken = await decryptToken(conn.auth_token_encrypted, encryptionKey)
+      } catch (e) {
+        console.error('Token decryption failed, trying as plaintext:', e.message)
+        // Fall back to using raw value (legacy)
+      }
+    }
+
     const base = conn.site_url.replace(/\/$/, '')
-    const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
+    const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${plainToken}`)
     const checks: CheckResult[] = []
 
     // CHECK 1: Authentication
@@ -110,26 +153,21 @@ serve(async (req) => {
     const c3Start = Date.now()
     if (checks[0].passed) {
       try {
-        // The new /search/jql endpoint requires bounded JQL queries
         const boundedJql = 'updated >= -30d order by updated desc'
         const searchApproaches = [
-          // 1. New Jira Cloud endpoint: GET /rest/api/3/search/jql (bounded query required)
           () => fetch(`${base}/rest/api/3/search/jql?jql=${encodeURIComponent(boundedJql)}&maxResults=1&fields=summary`, {
             headers: { 'Authorization': authHeader, 'Accept': 'application/json' }
           }),
-          // 2. New Jira Cloud endpoint: POST /rest/api/3/search/jql
           () => fetch(`${base}/rest/api/3/search/jql`, {
             method: 'POST',
             headers: { 'Authorization': authHeader, 'Accept': 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify({ jql: boundedJql, maxResults: 1 })
           }),
-          // 3. POST to /rest/api/3/search (legacy)
           () => fetch(`${base}/rest/api/3/search`, {
             method: 'POST',
             headers: { 'Authorization': authHeader, 'Accept': 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify({ jql: boundedJql, maxResults: 1, fields: ['summary'] })
           }),
-          // 4. GET /rest/api/2/search (legacy)
           () => fetch(`${base}/rest/api/2/search?jql=${encodeURIComponent(boundedJql)}&maxResults=1&fields=summary`, {
             headers: { 'Authorization': authHeader, 'Accept': 'application/json' }
           }),

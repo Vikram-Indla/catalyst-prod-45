@@ -45,26 +45,17 @@ export function useUpdateJiraConnection() {
       auth_email: string;
       auth_token_encrypted: string;
     }) => {
-      // Get the singleton row id
-      const { data: existing, error: fetchErr } = await supabase
-        .from('ph_jira_connection')
-        .select('id')
-        .single();
-      if (fetchErr) throw new Error(fetchErr.message);
-
-      const userId = (await supabase.auth.getUser()).data.user?.id;
-
-      const { data, error } = await supabase
-        .from('ph_jira_connection')
-        .update({
-          ...input,
-          status: 'not_configured',
-          configured_by: userId || null,
-        })
-        .eq('id', existing.id)
-        .select()
-        .single();
+      // Route through edge function for server-side encryption
+      const { data, error } = await supabase.functions.invoke('wh-save-connection', {
+        body: {
+          site_url: input.site_url,
+          auth_method: input.auth_method,
+          auth_email: input.auth_email,
+          auth_token: input.auth_token_encrypted,
+        },
+      });
       if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
       return data;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['wh', 'jira-connection'] }),
