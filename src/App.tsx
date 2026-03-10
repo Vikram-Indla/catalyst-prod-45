@@ -488,7 +488,7 @@ function CatyWidgetRouteGuard() {
   const location = useLocation();
   const showCaty = location.pathname.startsWith('/planhub/capacity') || location.pathname.startsWith('/strategyhub/capacity') || location.pathname.startsWith('/enterprise/capacity');
   if (!showCaty) return null;
-  return <CatyFabPlaceholder />;
+  return <Suspense fallback={null}><CatyFabPlaceholderLazy /></Suspense>;
 }
 
 // QA Assistant FAB on TestHub routes
@@ -496,14 +496,14 @@ function QAAssistantRouteGuard() {
   const location = useLocation();
   const isTestHubRoute = location.pathname.startsWith('/testhub');
   if (!isTestHubRoute) return null;
-  return <QAAssistantFab />;
+  return <Suspense fallback={null}><QAAssistantFabLazy /></Suspense>;
 }
 
 // Knowledge Assist FAB — shown only on home route
 function KAFabRouteGuard() {
   const location = useLocation();
   if (location.pathname !== '/for-you') return null;
-  return <KAFab />;
+  return <Suspense fallback={null}><KAFabLazy /></Suspense>;
 }
 
 const App = () => (
