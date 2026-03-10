@@ -193,7 +193,7 @@ const ImportExportPage = lazy(() => import("./pages/testhub/ImportExportPage"));
 const ReleasesListPage = lazy(() => import("./pages/testhub/ReleasesListPage"));
 const ReleaseDetailPage = lazy(() => import("./pages/testhub/ReleaseDetailPage"));
 const CommandCenterPage = lazy(() => import("./pages/testhub/CommandCenterPage"));
-const CatyAIPage = lazy(() => import("./pages/testhub/CatyAIPage"));
+const CatyAIPage = ENABLE_AI ? lazy(() => import("./pages/testhub/CatyAIPage")) : () => <FeatureComingSoon title="Caty AI" />;
 const TestHubDocsPage = lazy(() => import("./pages/testhub/TestHubDocsPage"));
 const QualityGatesPage = lazy(() => import("./pages/releases/QualityGatesPage"));
 const MyTestScopePage = lazy(() => import("./pages/releases/MyTestScopePage"));
