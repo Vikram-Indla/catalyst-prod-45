@@ -6,7 +6,7 @@ const RAGAuditPage = lazy(() => import("./pages/RAGAuditPage"));
 const WikiAdminPage = lazy(() => import("./pages/admin/WikiAdminPage"));
 const WikiDiagnosticPage = lazy(() => import("./pages/admin/WikiDiagnosticPage"));
 const AdminDiagnosticPage = lazy(() => import("./pages/admin/AdminDiagnosticPage"));
-const PlatformDiagnosticsPage = lazy(() => import("./pages/admin/PlatformDiagnosticsPage"));
+
 
 import { Resource360Redirect } from './components/workhub/resource360/Resource360Redirect';
 const Resource360PageNew = lazy(() => import("./components/resource360/Resource360PageNew"));
