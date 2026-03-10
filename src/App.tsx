@@ -1272,7 +1272,7 @@ const App = () => (
             </Routes>
               <CatyWidgetRouteGuard />
               <QAAssistantRouteGuard />
-              <KAFabRouteGuard />
+              <KnowledgeAssistFabRouteGuard />
               
               
           </BrowserRouter>
