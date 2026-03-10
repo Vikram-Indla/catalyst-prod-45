@@ -828,6 +828,7 @@ export default function FullAppRoutes() {
           <Route path="wiki" element={<S><WikiAdminPage /></S>} />
           <Route path="wiki-diagnostic" element={<S><WikiDiagnosticPage /></S>} />
           <Route path="diagnostic" element={<S><AdminDiagnosticPage /></S>} />
+          <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
         </Route>
 
         <Route path="/reports-discovery" element={<S><AdminGuard><ReportsDiscovery /></AdminGuard></S>} />
