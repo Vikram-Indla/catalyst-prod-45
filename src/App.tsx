@@ -107,10 +107,10 @@ import { CatalystToastProvider } from "./contexts/CatalystToastContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 const CatalystShell = lazy(() => import("./components/layout/CatalystShell").then(m => ({ default: m.CatalystShell })));
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { CatalystLoginPage } from "./components/auth/login";
-import { CatyFabPlaceholder } from "./components/caty/CatyFabPlaceholder";
-import { QAAssistantFab } from "./components/testhub-ai";
-import { KAFab } from "./components/kb/KAFab";
+const CatalystLoginPageLazy = lazy(() => import("./components/auth/login").then(m => ({ default: m.CatalystLoginPage })));
+const CatyFabPlaceholderLazy = lazy(() => import("./components/caty/CatyFabPlaceholder").then(m => ({ default: m.CatyFabPlaceholder })));
+const QAAssistantFabLazy = lazy(() => import("./components/testhub-ai").then(m => ({ default: m.QAAssistantFab })));
+const KAFabLazy = lazy(() => import("./components/kb/KAFab").then(m => ({ default: m.KAFab })));
 
 // ─── All page imports converted to lazy ──────────────────────────
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
@@ -488,7 +488,7 @@ function CatyWidgetRouteGuard() {
   const location = useLocation();
   const showCaty = location.pathname.startsWith('/planhub/capacity') || location.pathname.startsWith('/strategyhub/capacity') || location.pathname.startsWith('/enterprise/capacity');
   if (!showCaty) return null;
-  return <CatyFabPlaceholder />;
+  return <Suspense fallback={null}><CatyFabPlaceholderLazy /></Suspense>;
 }
 
 // QA Assistant FAB on TestHub routes
@@ -496,14 +496,14 @@ function QAAssistantRouteGuard() {
   const location = useLocation();
   const isTestHubRoute = location.pathname.startsWith('/testhub');
   if (!isTestHubRoute) return null;
-  return <QAAssistantFab />;
+  return <Suspense fallback={null}><QAAssistantFabLazy /></Suspense>;
 }
 
 // Knowledge Assist FAB — shown only on home route
 function KAFabRouteGuard() {
   const location = useLocation();
   if (location.pathname !== '/for-you') return null;
-  return <KAFab />;
+  return <Suspense fallback={null}><KAFabLazy /></Suspense>;
 }
 
 const App = () => (
@@ -545,7 +545,7 @@ const App = () => (
               <BrowserRouter>
               <Routes>
  <Route path="/" element={<Navigate to="/for-you" replace />} />
-              <Route path="/auth" element={<CatalystLoginPage />} />
+              <Route path="/auth" element={<S><CatalystLoginPageLazy /></S>} />
               <Route path="/auth/slack/callback" element={<S><SlackOAuthCallback /></S>} />
               <Route path="/submit-request" element={<S><SubmitDemandRequest /></S>} />
               <Route path="/kb-admin-setup" element={<S><KBAdminSetup /></S>} />
