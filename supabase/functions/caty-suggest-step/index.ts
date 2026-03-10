@@ -12,7 +12,6 @@ serve(async (req) => {
   try {
     // Auth check
     const auth = await requireAuth(req);
-    const auth = await requireAuth(req);
     if (auth.error) return auth.error;
 
     const { test_case_title, test_case_description, existing_steps } = await req.json();
