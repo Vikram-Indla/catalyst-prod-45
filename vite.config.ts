@@ -89,6 +89,9 @@ export default defineConfig(({ mode, command }) => {
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "react": path.resolve(__dirname, "./node_modules/react"),
+      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
+      "react-is": path.resolve(__dirname, "./node_modules/react-is"),
     },
     dedupe: ['react', 'react-dom', 'react-is'],
   },
