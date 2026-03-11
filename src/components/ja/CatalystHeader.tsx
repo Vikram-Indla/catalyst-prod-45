@@ -56,6 +56,7 @@ export function CatalystHeader() {
   const canAccessSettings = isAdmin || isSuperAdmin || isProgramManager;
   const { isModuleEnabled, isLoading: modulesLoading } = useEnabledModules();
   const { canViewInNav, isLoading: accessLoading } = useModuleAccess();
+  const { isModuleEnabled: featureFlagEnabled } = useFeatureFlags();
   const { workspaceType, sidebarExpanded } = useCatalystContext();
   const singleItemNav = useSingleItemNavigation();
   
