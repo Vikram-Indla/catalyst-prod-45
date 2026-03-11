@@ -12,6 +12,7 @@ import {
   Pin,
   Code2,
   Map,
+  Flag,
   Wand2,
   Bell,
   Wallet,
