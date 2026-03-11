@@ -1,18 +1,16 @@
 /**
  * IdeationPage — /producthub/ideation
- * Ideation Module: Page Shell with sidebar-driven view switching
- * Tabs removed — sidebar items are sole navigators
+ * NUCLEAR REDESIGN — V12 Hybrid Precision
+ * Pure white backgrounds, no dots, proper contrast, quarter stats
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { 
-  Search, Download, Plus, ChevronUp, ChevronDown, ArrowUpDown,
-} from 'lucide-react';
+import { Search, Download, Plus } from 'lucide-react';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import {
   Idea, IdeationView, IdeaStatus, StatusFilter, VIEW_TITLES,
-  STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, FILTER_PILLS, getImpactColor,
+  STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, FILTER_PILLS, QUARTER_BADGE, getImpactColor,
 } from './ideation/ideation-data';
 import { useIdeas } from '@/hooks/useIdeation';
 import IdeationBoardView from './ideation/IdeationBoardView';
@@ -25,7 +23,6 @@ import IdeationTriagePanel from './ideation/IdeationTriagePanel';
 import IdeationIntelligenceHub from './ideation/IdeationIntelligenceHub';
 import { CreateInitiativeDrawer, type ConversionSource } from '@/components/producthub/shared/CreateInitiativeDrawer';
 
-// ─── Component ───────────────────────────────────────────────────
 export default function IdeationPage() {
   const [searchParams] = useSearchParams();
   const viewParam = searchParams.get('view') as string | null;
@@ -35,7 +32,6 @@ export default function IdeationPage() {
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState<StatusFilter>('all');
 
-  // FIX 2: Reset filter when view changes
   const prevViewRef = React.useRef(activeView);
   React.useEffect(() => {
     if (prevViewRef.current !== activeView) {
@@ -44,20 +40,15 @@ export default function IdeationPage() {
     }
   }, [activeView]);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-  // Track converted ideas: key → initiative key (e.g., 'IDH-005' → 'MIM-006')
   const [convertedIdeas, setConvertedIdeas] = useState<Record<string, string>>({});
 
-  // Panel states
   const [detailKey, setDetailKey] = useState<string | null>(null);
   const [wizardOpen, setWizardOpen] = useState(false);
   const [triageOpen, setTriageOpen] = useState(false);
   const [intelligenceOpen, setIntelligenceOpen] = useState(false);
-
-  // Convert to Initiative
   const [convertDrawerOpen, setConvertDrawerOpen] = useState(false);
   const [conversionSource, setConversionSource] = useState<ConversionSource | null>(null);
 
-  // ── Supabase data ──
   const { data: ideasData = [], isLoading } = useIdeas({
     status: activeFilter !== 'all' && activeFilter !== 'my_ideas' ? activeFilter : undefined,
     search: search || undefined,
@@ -66,16 +57,15 @@ export default function IdeationPage() {
   const handleConvertIdea = useCallback((ideaKey: string) => {
     const idea = ideasData.find(i => i.key === ideaKey);
     if (!idea) return;
-      // Fetch the real description from the idea's raw data
-      setConversionSource({
-        type: 'single',
-        primaryIdea: {
-          key: idea.key, title: idea.title, impact: idea.impact,
-          votes: idea.votes, dept: idea.dept, priority: idea.priority,
-          assignee: idea.assignee?.name,
-          description: idea.title,
-        },
-      });
+    setConversionSource({
+      type: 'single',
+      primaryIdea: {
+        key: idea.key, title: idea.title, impact: idea.impact,
+        votes: idea.votes, dept: idea.dept, priority: idea.priority,
+        assignee: idea.assignee?.name,
+        description: idea.title,
+      },
+    });
     setConvertDrawerOpen(true);
   }, [ideasData]);
 
@@ -98,7 +88,6 @@ export default function IdeationPage() {
     setTriageOpen(false);
   }, [ideasData]);
 
-  // Apply conversions to the ideas list
   const ideasWithConversions = useMemo(() => {
     return ideasData.map(idea => {
       if (convertedIdeas[idea.key]) {
@@ -108,10 +97,7 @@ export default function IdeationPage() {
     });
   }, [convertedIdeas, ideasData]);
 
-  const filteredIdeas = useMemo(() => {
-    // Filtering is now done server-side via useIdeas, just apply local conversions
-    return ideasWithConversions;
-  }, [ideasWithConversions]);
+  const filteredIdeas = useMemo(() => ideasWithConversions, [ideasWithConversions]);
 
   const toggleRow = (key: string) => {
     setSelectedRows(prev => {
@@ -129,25 +115,43 @@ export default function IdeationPage() {
     }
   };
 
+  // Stats
+  const stats = useMemo(() => {
+    const all = ideasWithConversions;
+    const total = all.length;
+    const converted = all.filter(i => i.status === 'converted').length;
+    const q1 = all.filter(i => i.roadmap_quarter === 'Q1').length;
+    const q2 = all.filter(i => i.roadmap_quarter === 'Q2').length;
+    const q3 = all.filter(i => i.roadmap_quarter === 'Q3').length;
+    const q4 = all.filter(i => i.roadmap_quarter === 'Q4').length;
+    const unassigned = all.filter(i => !i.roadmap_quarter).length;
+    return { total, converted, q1, q2, q3, q4, unassigned };
+  }, [ideasWithConversions]);
+
   const pageTitle = VIEW_TITLES[activeView];
 
   return (
-    <div className="flex flex-col h-full" style={{ background: '#F8FAFC' }}>
-      {/* ─── Page Header ─── */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
+    <div className="flex flex-col h-full" style={{ background: '#FFFFFF' }}>
+      {/* ─── Breadcrumb ─── */}
+      <div style={{ padding: '8px 28px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <span style={{ fontSize: '12px', color: '#94A3B8' }}>ProductHub</span>
+        <span style={{ fontSize: '12px', color: '#94A3B8' }}>›</span>
+        <span style={{ fontSize: '12px', color: '#94A3B8' }}>Ideation</span>
+        <span style={{ fontSize: '12px', color: '#94A3B8' }}>›</span>
+        <span style={{ fontSize: '12px', color: '#0F172A', fontWeight: 600 }}>Idea Backlog</span>
+      </div>
 
-        {/* Title Row */}
+      {/* ─── Page Header ─── */}
+      <div style={{ background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
         <div style={{ padding: '8px 28px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', sans-serif" }}>
-              {pageTitle}
-            </h1>
-          </div>
+          <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+            {pageTitle}
+          </h1>
           <div style={{ display: 'flex', gap: '8px' }}>
             <AIIntelligenceButton label="Intelligence" onClick={() => setIntelligenceOpen(true)} />
             <button style={{
-              background: '#FFFFFF', color: '#334155', border: '1px solid #E2E8F0',
-              borderRadius: '8px', padding: '7px 14px', fontSize: '13px', fontWeight: 500,
+              background: '#FFFFFF', color: '#334155', border: '1px solid rgba(15,23,42,0.12)',
+              borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 500,
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
             }}>
               <Download size={14} /> Export
@@ -156,16 +160,14 @@ export default function IdeationPage() {
               onClick={() => setWizardOpen(true)}
               style={{
                 background: '#2563EB', color: '#FFFFFF', border: 'none',
-                borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
+                borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px',
               }}
             >
-              + New Idea
+              <Plus size={14} /> New Idea
             </button>
           </div>
         </div>
-
-        {/* Subtitle */}
         <div style={{ padding: '4px 28px 14px' }}>
           <p style={{ fontSize: '13px', color: '#64748B', margin: 0 }}>
             Capture, evaluate, and promote ideas into initiatives — powered by IMPACT scoring & AI Intelligence
@@ -175,44 +177,64 @@ export default function IdeationPage() {
 
       {/* ─── Stats Bar ─── */}
       <div style={{
-        background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+        background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.08)',
         display: 'flex', alignItems: 'stretch',
       }}>
-        {(() => {
-          // Use ideasWithConversions to include local conversion overrides
-          const allIdeas = ideasWithConversions;
-          const total = allIdeas.length;
-          const avgImpact = total > 0 ? (allIdeas.reduce((s, i) => s + i.impact, 0) / total).toFixed(2) : '0';
-          const pendingReview = allIdeas.filter(i => i.status === 'under_review').length;
-          const converted = allIdeas.filter(i => i.status === 'converted').length;
-          const convRate = total > 0 ? (converted / total * 100).toFixed(1) + '%' : '0%';
-          const aiReady = allIdeas.filter(i => i.ai === 'ready').length;
-          const aiPct = total > 0 ? Math.round(aiReady / total * 100) + '%' : '0%';
-          return [
-            { label: 'TOTAL IDEAS', value: String(total), color: '#0F172A', trend: '', trendColor: '#16A34A' },
-            { label: 'AVG IMPACT', value: avgImpact, color: '#0F172A', trend: '', trendColor: '#16A34A' },
-            { label: 'PENDING REVIEW', value: String(pendingReview), color: '#0F172A', trend: '—', trendColor: '#94A3B8' },
-            { label: 'CONVERSION RATE', value: convRate, color: '#0F172A', trend: `${converted} → Initiatives`, trendColor: '#16A34A' },
-            { label: 'AI ENRICHED', value: String(aiReady), color: '#0F172A', trend: aiPct, trendColor: '#7C3AED' },
-          ];
-        })().map((stat, i, arr) => (
-          <div key={stat.label} style={{
-            flex: 1, padding: '14px 20px',
-            borderRight: i < arr.length - 1 ? '1px solid #E2E8F0' : 'none',
-          }}>
-            <div style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.3px', color: '#94A3B8', marginBottom: '4px' }}>
-              {stat.label}{activeFilter !== 'all' && stat.label === 'TOTAL IDEAS' && <span style={{ fontSize: '10px', color: '#94A3B8', marginLeft: '4px', fontWeight: 400 }}>(filtered)</span>}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-              <span style={{ fontSize: '20px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '-0.5px', color: stat.color }}>
-                {stat.value}
-              </span>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: stat.trendColor }}>
-                {stat.trend}
+        {/* Total Ideas */}
+        <div style={{ padding: '14px 24px', borderRight: '1px solid rgba(15,23,42,0.06)' }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '4px' }}>
+            TOTAL IDEAS
+          </div>
+          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: '#0F172A' }}>
+            {stats.total}
+          </span>
+        </div>
+
+        {/* Converted */}
+        <div style={{ padding: '14px 24px', borderRight: '1px solid rgba(15,23,42,0.06)' }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '4px' }}>
+            CONVERTED
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+            <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: '#006644' }}>
+              {stats.converted}
+            </span>
+            <span style={{ fontSize: '11px', color: '#64748B' }}>→ Initiatives</span>
+          </div>
+        </div>
+
+        {/* By Quarter */}
+        <div style={{ flex: 1, padding: '14px 24px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '8px' }}>
+            BY QUARTER
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {(['Q1', 'Q2', 'Q3', 'Q4'] as const).map(q => {
+              const qb = QUARTER_BADGE[q];
+              const count = q === 'Q1' ? stats.q1 : q === 'Q2' ? stats.q2 : q === 'Q3' ? stats.q3 : stats.q4;
+              return (
+                <div key={q} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    height: '20px', minWidth: '26px', padding: '0 4px',
+                    borderRadius: '3px', fontSize: '11px', fontWeight: 700,
+                    background: qb.bg, color: qb.text,
+                  }}>{q}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '16px', fontWeight: 700, color: '#0F172A' }}>
+                    {count}
+                  </span>
+                </div>
+              );
+            })}
+            <div style={{ width: '1px', height: '20px', background: 'rgba(15,23,42,0.08)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 500 }}>Unassigned</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '16px', fontWeight: 700, color: '#94A3B8' }}>
+                {stats.unassigned}
               </span>
             </div>
           </div>
-        ))}
+        </div>
       </div>
 
       {/* Filtered context indicator */}
@@ -230,10 +252,9 @@ export default function IdeationPage() {
 
       {/* ─── Toolbar ─── */}
       <div style={{
-        background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+        background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.08)',
         padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px',
       }}>
-        {/* Search */}
         <div style={{ position: 'relative', width: '220px' }}>
           <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input
@@ -242,15 +263,15 @@ export default function IdeationPage() {
             placeholder="Search ideas..."
             style={{
               width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px',
-              background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px',
+              background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px',
               fontSize: '13px', color: '#0F172A', outline: 'none',
             }}
             onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; e.currentTarget.style.borderColor = '#2563EB'; }}
-            onBlur={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = '#E2E8F0'; }}
+            onBlur={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)'; }}
           />
         </div>
 
-        {/* Filter pills */}
+        {/* Filter pills — NO DOTS */}
         {FILTER_PILLS.map(pill => {
           const isActive = activeFilter === pill.key;
           return (
@@ -260,32 +281,23 @@ export default function IdeationPage() {
               style={{
                 background: isActive ? '#2563EB' : '#FFFFFF',
                 color: isActive ? '#FFFFFF' : '#334155',
-                border: `1px solid ${isActive ? '#2563EB' : '#E2E8F0'}`,
+                border: `1px solid ${isActive ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
                 borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500,
-                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
+                cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
                 transition: 'all 150ms',
               }}
             >
-              {pill.dot && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: isActive ? '#FFFFFF' : pill.dot, flexShrink: 0 }} />}
               {pill.label}
             </button>
           );
         })}
 
         <div style={{ flex: 1 }} />
-        <div style={{ width: '1px', height: '24px', background: '#E2E8F0' }} />
-
-        <button style={{ background: 'none', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '5px 10px', fontSize: '12px', fontWeight: 500, color: '#334155', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-          <ArrowUpDown size={13} /> Group
-        </button>
-        <button style={{ background: 'none', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '5px 10px', fontSize: '12px', fontWeight: 500, color: '#334155', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-          <ArrowUpDown size={13} /> Rank
-        </button>
         <AIIntelligenceButton label={`AI Triage (${ideasData.length})`} onClick={() => setTriageOpen(true)} />
       </div>
 
       {/* ─── View Content ─── */}
-      <div style={{ flex: 1, overflow: 'auto' }}>
+      <div style={{ flex: 1, overflow: 'auto', background: '#FFFFFF' }}>
         {activeView === 'list' && (
           <div style={{ padding: '16px 28px 24px' }}>
             <IdeationListView
@@ -321,7 +333,6 @@ export default function IdeationPage() {
         onClose={() => { setConvertDrawerOpen(false); setConversionSource(null); }}
         conversionSource={conversionSource}
         onCreated={(initiativeKey: string) => {
-          // Mark source ideas as converted
           if (conversionSource) {
             const updates: Record<string, string> = {};
             updates[conversionSource.primaryIdea.key] = initiativeKey;
@@ -346,24 +357,33 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
 }) {
   return (
     <div style={{
-      background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0',
-      boxShadow: '0 1px 2px rgba(0,0,0,0.04)', overflow: 'hidden',
+      background: '#FFFFFF', borderRadius: '6px', border: '1px solid rgba(15,23,42,0.12)',
+      overflow: 'hidden',
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
-          <tr style={{ height: '36px', background: '#FAFAFA' }}>
-            <th style={{ width: '32px', padding: '0 8px' }}>
+          <tr style={{ height: '36px', background: '#F8FAFC' }}>
+            <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
               <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
             </th>
-            {['KEY', 'TITLE', 'STATUS', 'TYPE', 'PRI', 'IMPACT', 'VOTES', 'INITIATIVE', 'DEPT', 'ASSIGNEE', 'CREATED', 'UPDATED'].map((col, i) => (
-              <th key={col} style={{
+            {[
+              { label: 'KEY', width: '100px' },
+              { label: 'TITLE', width: undefined },
+              { label: 'STATUS', width: '130px' },
+              { label: 'TYPE', width: '80px' },
+              { label: 'PRI', width: '50px' },
+              { label: 'IMPACT', width: '70px' },
+              { label: 'QUARTER', width: '70px' },
+              { label: 'ASSIGNEE', width: '150px' },
+              { label: 'UPDATED', width: '90px' },
+            ].map(col => (
+              <th key={col.label} style={{
                 textAlign: 'left', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
-                letterSpacing: '0.5px', color: '#94A3B8', padding: '0 8px',
-                width: i === 0 ? '80px' : i === 1 ? undefined : i === 2 ? '120px' : i === 3 ? '80px'
-                  : i === 4 ? '50px' : i === 5 ? '110px' : i === 6 ? '80px' : i === 7 ? '100px'
-                  : i === 8 ? '100px' : i === 9 ? '120px' : '90px',
+                letterSpacing: '0.06em', color: '#64748B', padding: '10px 12px',
+                borderBottom: '0.75px solid rgba(15,23,42,0.08)',
+                whiteSpace: 'nowrap', width: col.width,
               }}>
-                {col}
+                {col.label}
               </th>
             ))}
           </tr>
@@ -374,47 +394,40 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
               key={idea.key}
               onClick={() => onOpenDetail(idea.key)}
               style={{
-                height: '44px', cursor: 'pointer',
-                borderBottom: rowIdx < ideas.length - 1 ? '1px solid #F4F4F5' : 'none',
-                background: selectedRows.has(idea.key) ? '#F0F4FF' : undefined,
-                transition: 'background 100ms',
+                height: '36px', maxHeight: '36px', cursor: 'pointer',
+                borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+                background: selectedRows.has(idea.key) ? '#F0F4FF' : '#FFFFFF',
+                transition: 'background 150ms ease',
               }}
-              onMouseEnter={e => { if (!selectedRows.has(idea.key)) e.currentTarget.style.background = '#FAFBFF'; }}
-              onMouseLeave={e => { if (!selectedRows.has(idea.key)) e.currentTarget.style.background = ''; }}
+              onMouseEnter={e => { if (!selectedRows.has(idea.key)) e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
+              onMouseLeave={e => { if (!selectedRows.has(idea.key)) e.currentTarget.style.background = '#FFFFFF'; }}
             >
-              <td style={{ padding: '0 8px' }} onClick={e => e.stopPropagation()}>
+              <td style={{ padding: '0 8px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
                 <input type="checkbox" checked={selectedRows.has(idea.key)} onChange={() => toggleRow(idea.key)} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
               </td>
-              <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', fontWeight: 600, color: '#2563EB', cursor: 'pointer' }}>
-                {idea.key}
+              <td style={{ padding: '8px 12px' }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 600, color: '#2563EB', cursor: 'pointer' }}
+                  onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                  onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                >
+                  {idea.key}
+                </span>
               </td>
-              <td style={{ padding: '0 8px', maxWidth: '260px' }}>
+              <td style={{ padding: '8px 12px', maxWidth: '400px' }}>
                 <div style={{
-                  fontSize: '13px', fontWeight: 600,
-                  color: '#0F172A',
+                  fontSize: '13px', fontWeight: 500, color: '#0F172A',
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 }}>
                   {idea.title}
                 </div>
               </td>
-              <td style={{ padding: '0 8px' }}><StatusBadge status={idea.status} /></td>
-              <td style={{ padding: '0 8px' }}><TypeBadge type={idea.type} /></td>
-              <td style={{ padding: '0 8px' }}><PriorityBadge priority={idea.priority} /></td>
-              <td style={{ padding: '0 8px' }}><ImpactCell score={idea.impact} /></td>
-              <td style={{ padding: '0 8px' }} onClick={e => e.stopPropagation()}><VotesCell votes={idea.votes} /></td>
-              <td style={{ padding: '0 8px' }}>
-                {idea.initiative ? (
-                  <span style={{
-                    fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 700,
-                    color: '#0D9488', background: '#F0FDFA', border: '1px solid #CCFBF1',
-                    borderRadius: '4px', padding: '2px 6px',
-                  }}>{idea.initiative}</span>
-                ) : <span style={{ color: '#94A3B8', fontSize: '13px' }}>—</span>}
-              </td>
-              <td style={{ padding: '0 8px', fontSize: '12px', color: '#334155' }}>{idea.dept}</td>
-              <td style={{ padding: '0 8px' }}><AssigneeCell assignee={idea.assignee} /></td>
-              <td style={{ padding: '0 8px' }}><DateCell date={idea.created_at} /></td>
-              <td style={{ padding: '0 8px' }}><DateCell date={idea.updated_at} /></td>
+              <td style={{ padding: '8px 12px' }}><StatusBadge status={idea.status} /></td>
+              <td style={{ padding: '8px 12px' }}><TypeBadge type={idea.type} /></td>
+              <td style={{ padding: '8px 12px' }}><PriorityBadge priority={idea.priority} /></td>
+              <td style={{ padding: '8px 12px' }}><ImpactCell score={idea.impact} /></td>
+              <td style={{ padding: '8px 12px' }}><QuarterBadge quarter={idea.roadmap_quarter} /></td>
+              <td style={{ padding: '8px 12px' }}><AssigneeCell assignee={idea.assignee} /></td>
+              <td style={{ padding: '8px 12px' }}><DateCell date={idea.updated_at} /></td>
             </tr>
           ))}
         </tbody>
@@ -423,19 +436,9 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
       {/* Footer */}
       <div style={{
         padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        borderTop: '1px solid #F4F4F5',
+        borderTop: '0.75px solid rgba(15,23,42,0.06)',
       }}>
-        <span style={{ fontSize: '12px', color: '#94A3B8' }}>Showing 1–{ideas.length} of {ideas.length} ideas</span>
-        <div style={{ display: 'flex', gap: '4px' }}>
-          {[1].map(p => (
-            <button key={p} style={{
-              width: '28px', height: '28px', borderRadius: '6px',
-              border: '1px solid #E2E8F0', background: p === 1 ? '#2563EB' : '#FFFFFF',
-              color: p === 1 ? '#FFFFFF' : '#334155', fontSize: '12px', fontWeight: 600,
-              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>{p}</button>
-          ))}
-        </div>
+        <span style={{ fontSize: '12px', color: '#64748B' }}>Showing 1–{ideas.length} of {ideas.length} ideas</span>
       </div>
     </div>
   );
@@ -447,9 +450,9 @@ function StatusBadge({ status }: { status: IdeaStatus }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', background: c.bg, color: c.text,
-      height: 20, padding: '0 6px', borderRadius: 3,
+      height: 20, padding: '0 8px', borderRadius: 3,
       fontSize: '11px', fontWeight: 700, whiteSpace: 'nowrap',
-      textTransform: 'uppercase', letterSpacing: '0.03em',
+      textTransform: 'uppercase', letterSpacing: '0',
     }}>
       {c.label}
     </span>
@@ -458,64 +461,75 @@ function StatusBadge({ status }: { status: IdeaStatus }) {
 
 function TypeBadge({ type }: { type: Idea['type'] }) {
   const c = TYPE_CONFIG[type];
-  return <span style={{ background: c.bg, color: c.text, padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>{c.label}</span>;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
+      borderRadius: 3, fontSize: '11px', fontWeight: 500,
+      background: c.bg, color: c.text, border: '1px solid #E2E8F0',
+    }}>
+      {c.label}
+    </span>
+  );
 }
 
 function PriorityBadge({ priority }: { priority: string }) {
   const c = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.P4;
-  return <span style={{
-    fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', fontWeight: 700,
-    background: c.bg, color: c.text, border: `1px solid ${c.border}`,
-    height: 20, padding: '0 7px', borderRadius: '3px',
-    display: 'inline-flex', alignItems: 'center',
-  }}>{priority}</span>;
-}
-
-function ImpactCell({ score }: { score: number }) {
-  const { gradient } = getImpactColor(score);
-  // V12: 0.00 = grey (#94A3B8), not red
-  const textColor = score >= 4 ? '#15803D' : score >= 3 ? '#2563EB' : score >= 2 ? '#64748B' : '#94A3B8';
-  const fill = (score / 5) * 100;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-      <div style={{ width: '52px', height: '6px', background: '#E4E4E7', borderRadius: '3px', overflow: 'hidden' }}>
-        <div style={{ width: `${fill}%`, height: '100%', background: gradient, borderRadius: '3px' }} />
-      </div>
-      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: textColor, fontVariantNumeric: 'tabular-nums' }}>{score.toFixed(2)}</span>
-    </div>
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      height: 20, minWidth: 26, padding: '0 4px', borderRadius: 3,
+      fontSize: '11px', fontWeight: 650,
+      background: c.bg, color: c.text, border: `1px solid ${c.border}`,
+    }}>
+      {priority}
+    </span>
   );
 }
 
-function VotesCell({ votes }: { votes: number }) {
-  const color = votes > 0 ? '#16A34A' : votes < 0 ? '#EF4444' : '#94A3B8';
+function ImpactCell({ score }: { score: number }) {
+  const textColor = score >= 4 ? '#16A34A' : score >= 3 ? '#2563EB' : score >= 2 ? '#64748B' : '#94A3B8';
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-      <button style={{ width: '22px', height: '22px', borderRadius: '4px', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8' }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#EFF6FF'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-      ><ChevronUp size={14} /></button>
-      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color, minWidth: '16px', textAlign: 'center' }}>{votes}</span>
-      <button style={{ width: '22px', height: '22px', borderRadius: '4px', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8' }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#EFF6FF'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-      ><ChevronDown size={14} /></button>
-    </div>
+    <span style={{
+      fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 500,
+      color: textColor,
+    }}>
+      {score.toFixed(2)}
+    </span>
+  );
+}
+
+function QuarterBadge({ quarter }: { quarter?: string | null }) {
+  if (!quarter) {
+    return <span style={{ fontSize: '11px', color: '#94A3B8' }}>—</span>;
+  }
+  const qb = QUARTER_BADGE[quarter];
+  if (!qb) return <span style={{ fontSize: '11px', color: '#94A3B8' }}>{quarter}</span>;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      height: 20, minWidth: 26, padding: '0 4px', borderRadius: 3,
+      fontSize: '11px', fontWeight: 700,
+      background: qb.bg, color: qb.text,
+    }}>
+      {quarter}
+    </span>
   );
 }
 
 function AssigneeCell({ assignee }: { assignee: Idea['assignee'] }) {
   if (!assignee) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: '1.5px dashed #CBD5E1' }} />
-        <span style={{ fontSize: '12px', color: '#94A3B8' }}>Unassigned</span>
-      </div>
-    );
+    return <span style={{ fontSize: '13px', color: '#94A3B8', fontStyle: 'italic' }}>Unassigned</span>;
   }
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-      <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: assignee.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '9px', fontWeight: 700 }}>{assignee.initials}</div>
-      <span style={{ fontSize: '12px', color: '#334155' }}>{assignee.name}</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{
+        width: '24px', height: '24px', borderRadius: '50%', background: '#2563EB',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: '#FFF', fontSize: '10px', fontWeight: 700, flexShrink: 0,
+      }}>{assignee.initials}</div>
+      <span style={{ fontSize: '13px', color: '#334155', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {assignee.name}
+      </span>
     </div>
   );
 }
@@ -523,9 +537,9 @@ function AssigneeCell({ assignee }: { assignee: Idea['assignee'] }) {
 function DateCell({ date }: { date?: string | null }) {
   if (!date) return <span style={{ color: '#94A3B8', fontSize: '12px' }}>—</span>;
   const d = new Date(date);
-  const str = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const str = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   return (
-    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 500, color: '#64748B' }}>
+    <span style={{ fontSize: '12px', color: '#64748B' }}>
       {str}
     </span>
   );

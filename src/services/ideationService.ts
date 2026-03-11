@@ -64,6 +64,7 @@ function toIdea(row: any): Idea {
     target_release_date: row.target_release_date || null,
     created_at: row.created_at || null,
     updated_at: row.updated_at || null,
+    roadmap_quarter: row.roadmap_quarter || null,
   };
 }
 
