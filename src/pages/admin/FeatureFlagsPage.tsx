@@ -399,10 +399,7 @@ export default function FeatureFlagsPage() {
     setSelectedIds(new Set());
   }, [confirmText, environment, bulkMutation]);
 
-  const handleEnvironmentChange = useCallback((env: EnvironmentScope) => {
-    setEnvironment(env);
-    setSelectedIds(new Set());
-  }, []);
+  // Environment tabs removed — production only
 
   const clearFilters = useCallback(() => {
     setSearchInput('');
