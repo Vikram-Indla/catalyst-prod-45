@@ -494,30 +494,6 @@ export default function FeatureFlagsPage() {
         </Button>
       </div>
 
-      {/* ── Environment Tabs ───────────────────────────── */}
-      <div className="flex items-center gap-1 mb-4" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.12)' }}>
-        {ENVIRONMENTS.map((env) => (
-          <button
-            key={env.value}
-            onClick={() => handleEnvironmentChange(env.value)}
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-            style={{
-              padding: '8px 12px',
-              fontFamily: "'Inter', system-ui, sans-serif",
-              fontSize: 12,
-              fontWeight: environment === env.value ? 650 : 500,
-              color: environment === env.value ? '#2563EB' : '#71717A',
-              borderBottom: environment === env.value ? '2px solid #2563EB' : '2px solid transparent',
-              marginBottom: -0.75,
-              background: 'transparent',
-              cursor: 'pointer',
-              transition: 'color 120ms ease, border-color 120ms ease',
-            }}
-          >
-            {env.label}
-          </button>
-        ))}
-      </div>
 
       {/* ── Stats Bar — D07 + D08 ──────────────────────── */}
       {stats && (
