@@ -63581,6 +63581,7 @@ export type Database = {
           impact: number | null
           impact_total: number | null
           imperative: number | null
+          is_committed: boolean | null
           is_deleted: boolean | null
           job_size: number | null
           linked_initiative_id: string | null
@@ -63593,6 +63594,7 @@ export type Database = {
           reach: number | null
           rice_score: number | null
           risk_reduction: number | null
+          roadmap_quarter: string | null
           source: string | null
           status: string | null
           submitted_by: string | null
