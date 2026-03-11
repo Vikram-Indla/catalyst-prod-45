@@ -10,7 +10,7 @@ import { componentTagger } from "lovable-tagger";
  * This eliminates 24+ chunk generation and their entire dependency trees.
  */
 function skipHeavyModules(): Plugin {
-  const enabled = process.env.VITE_ENABLE_FULL_APP === 'true';
+  const enabled = process.env.VITE_ENABLE_FULL_APP !== 'false';
 
   // Patterns to stub out during lean builds (publish)
   const STUB_PATTERNS = [
