@@ -7,6 +7,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, Download, Plus } from 'lucide-react';
+import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import {
   Idea, IdeationView, IdeaStatus, StatusFilter, VIEW_TITLES,
