@@ -7,6 +7,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, Download, Plus } from 'lucide-react';
+import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import {
   Idea, IdeationView, IdeaStatus, StatusFilter, VIEW_TITLES,
@@ -132,20 +133,18 @@ export default function IdeationPage() {
 
   return (
     <div className="flex flex-col h-full" style={{ background: '#FFFFFF' }}>
-      {/* Breadcrumb removed — sidebar + heading provide context */}
-
-      {/* ─── Page Header ─── */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
-        <div style={{ padding: '8px 28px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', sans-serif" }}>
-            {pageTitle}
-          </h1>
-          <div style={{ display: 'flex', gap: '8px' }}>
+      {/* ─── Page Header (For You pattern) ─── */}
+      <ProductHubPageHeader
+        title={pageTitle}
+        subtitle="Capture, evaluate, and promote ideas into initiatives — powered by IMPACT scoring & AI Intelligence"
+        actions={
+          <>
             <AIIntelligenceButton label="Intelligence" onClick={() => setIntelligenceOpen(true)} />
             <button style={{
               background: '#FFFFFF', color: '#334155', border: '1px solid rgba(15,23,42,0.12)',
               borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 500,
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
+              fontFamily: "'Inter', system-ui, sans-serif",
             }}>
               <Download size={14} /> Export
             </button>
@@ -155,18 +154,14 @@ export default function IdeationPage() {
                 background: '#2563EB', color: '#FFFFFF', border: 'none',
                 borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px',
+                fontFamily: "'Inter', system-ui, sans-serif",
               }}
             >
               <Plus size={14} /> New Idea
             </button>
-          </div>
-        </div>
-        <div style={{ padding: '4px 28px 14px' }}>
-          <p style={{ fontSize: '13px', color: '#64748B', margin: 0 }}>
-            Capture, evaluate, and promote ideas into initiatives — powered by IMPACT scoring & AI Intelligence
-          </p>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {/* ─── Stats Bar ─── */}
       <div style={{

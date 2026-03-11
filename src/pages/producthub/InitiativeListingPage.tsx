@@ -26,6 +26,7 @@ import { catalystToast } from '@/lib/catalystToast';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel } from '@/types/initiative';
 import { Search, X, Plus, Download } from 'lucide-react';
+import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
 import '@/styles/product-backlog.css';
 
 function toTimelineInitiative(i: Initiative): TimelineInitiative {
@@ -418,11 +419,11 @@ export default function InitiativeListingPage() {
 
   return (
     <div data-module="product-backlog" className="flex flex-col h-full" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-      {/* ── Page Header ── */}
-      <div className="pb-page-header">
-        <h1 className="pb-page-title">Product Backlog</h1>
-        <p className="pb-page-subtitle">Strategic initiative portfolio &amp; prioritization</p>
-      </div>
+      {/* ── Page Header (For You pattern) ── */}
+      <ProductHubPageHeader
+        title="Product Backlog"
+        subtitle="Strategic initiative portfolio & prioritization"
+      />
 
       {/* ── Toolbar — FIX 5: View toggle group added ── */}
       <div className="pb-toolbar">
