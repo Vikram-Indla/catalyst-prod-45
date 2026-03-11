@@ -1,18 +1,17 @@
 /**
  * Feature flags — controlled via environment variables.
  * 
- * Defaults to FALSE so that Lovable publish (which doesn't set env vars)
- * gets a slim build. Set VITE_ENABLE_AI=true in your hosting provider
- * to re-enable AI/heavy modules.
+ * Defaults to TRUE so all features are available in preview/dev.
+ * Set VITE_ENABLE_AI=false (etc.) to explicitly disable a module.
  */
 
-export const ENABLE_AI = import.meta.env.VITE_ENABLE_AI === 'true';
-export const ENABLE_HEAVY_EXPORTS = import.meta.env.VITE_ENABLE_HEAVY_EXPORTS === 'true';
-export const ENABLE_WIKI = import.meta.env.VITE_ENABLE_WIKI === 'true';
-export const ENABLE_KNOWLEDGE_HUB = import.meta.env.VITE_ENABLE_KNOWLEDGE_HUB === 'true';
+export const ENABLE_AI = import.meta.env.VITE_ENABLE_AI !== 'false';
+export const ENABLE_HEAVY_EXPORTS = import.meta.env.VITE_ENABLE_HEAVY_EXPORTS !== 'false';
+export const ENABLE_WIKI = import.meta.env.VITE_ENABLE_WIKI !== 'false';
+export const ENABLE_KNOWLEDGE_HUB = import.meta.env.VITE_ENABLE_KNOWLEDGE_HUB !== 'false';
 
 /**
- * Master gate — set VITE_ENABLE_FULL_APP=true in Vercel/hosting
- * to unlock ALL modules. When false, only auth + for-you render.
+ * Master gate — defaults to TRUE.
+ * Set VITE_ENABLE_FULL_APP=false to restrict to auth + for-you only.
  */
-export const ENABLE_FULL_APP = import.meta.env.VITE_ENABLE_FULL_APP === 'true';
+export const ENABLE_FULL_APP = import.meta.env.VITE_ENABLE_FULL_APP !== 'false';
