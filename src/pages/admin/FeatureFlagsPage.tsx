@@ -300,7 +300,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
 // ── Main Page ──────────────────────────────────────────────
 
 export default function FeatureFlagsPage() {
-  const [environment, setEnvironment] = useState<EnvironmentScope>('production');
+  const environment = ENVIRONMENT;
   const [searchInput, setSearchInput] = useState('');
   const searchQuery = useDebounce(searchInput, 150);
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
