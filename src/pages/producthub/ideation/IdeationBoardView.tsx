@@ -50,7 +50,7 @@ export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Pr
               display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', padding: '0 4px',
               height: 36,
             }}>
-              <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: sc.dot, flexShrink: 0 }} />
+              <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: sc.bg, flexShrink: 0 }} />
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#1E293B', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{sc.label}</span>
               <span style={{
                 fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
