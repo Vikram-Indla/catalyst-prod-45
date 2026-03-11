@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEnabledModules } from "@/hooks/useModules";
 import { useModuleAccess } from "@/hooks/useModuleAccess";
+import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { useSingleItemNavigation } from "@/hooks/useSingleItemNavigation";
 import { Button } from "@/components/ui/button";
 const CreateDropdown = lazy(() => import("./CreateDropdown").then(m => ({ default: m.CreateDropdown })));
