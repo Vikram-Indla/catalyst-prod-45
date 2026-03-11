@@ -23,7 +23,7 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  Checkbox,
+  Check,
   Filter,
   Compass,
   Calendar,
