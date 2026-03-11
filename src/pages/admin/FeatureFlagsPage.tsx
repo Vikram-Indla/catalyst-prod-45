@@ -3,7 +3,7 @@
  * V12 Hybrid Precision. All data from Supabase.
  */
 
-import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import {
   useAdminFeatureFlags,
   useAdminFeatureFlagStats,
@@ -11,7 +11,7 @@ import {
   useBulkToggleAdminFeatureFlags,
 } from '@/hooks/useAdminFeatureFlags';
 import { featureFlagService } from '@/services/feature-flags';
-import type { FeatureFlag, EnvironmentScope, ModuleCategory } from '@/types/feature-flags';
+import type { FeatureFlag, ModuleCategory } from '@/types/feature-flags';
 import { toast } from 'sonner';
 import {
   Search, RefreshCw, AlertCircle, Flag, Check, X,
