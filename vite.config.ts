@@ -107,8 +107,7 @@ export default defineConfig(({ mode, command }) => {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('react-dom')) return 'vendor-react-dom';
-            if (id.includes('react') || id.includes('scheduler')) return 'vendor-react';
+            if (id.includes('react-dom') || id.includes('react-is') || id.includes('react/') || id.includes('/react/') || id.includes('scheduler')) return 'vendor-react';
             if (id.includes('@supabase')) return 'vendor-backend';
             if (id.includes('@tanstack/react-query')) return 'vendor-query';
             if (id.includes('@tanstack/react-table') || id.includes('@tanstack/react-virtual')) return 'vendor-table';
