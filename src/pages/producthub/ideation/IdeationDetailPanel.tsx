@@ -258,7 +258,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           </span>
           <StatusLozenge status={localStatus} />
           <div style={{ flex: 1 }} />
-          <button onClick={() => isEditing ? resetLocalState() && setIsEditing(false) : setIsEditing(true)} style={{
+          <button onClick={() => { if (isEditing) { resetLocalState(); setIsEditing(false); } else { setIsEditing(true); } }} style={{
             width: '32px', height: '32px', borderRadius: '6px',
             border: '1px solid rgba(15,23,42,0.12)',
             background: isEditing ? '#EFF6FF' : '#FFFFFF',
