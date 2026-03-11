@@ -1,11 +1,14 @@
 /**
- * IdeationDetailPanel — Single-page slide-over panel
- * Sections: Details → IMPACT → Comments (no tabs)
+ * IdeationDetailPanel — NUCLEAR REDESIGN
+ * 480px drawer, edit mode, V12 contrast, no dots, neutral dimension circles
+ * Wiring Audit (Sacred Gate): CRUD calls ideationService, invalidates ['ideas','roadmap'] + ['initiatives']
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { X, Edit2, Send } from 'lucide-react';
 import { toast } from 'sonner';
-import { Idea, STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, IDEA_IMPACT_FACTORS, getImpactColor } from './ideation-data';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Idea, STATUS_CONFIG, PRIORITY_CONFIG, QUARTER_BADGE, IDEA_IMPACT_FACTORS, getImpactColor } from './ideation-data';
 import { useIdeaRaw, useImpactFactors, useIdeaComments, useAddIdeaComment } from '@/hooks/useIdeation';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -15,54 +18,93 @@ interface Props {
   onConvert?: (key: string) => void;
 }
 
-// Source enum formatter
+// ─── Update mutation ─────────────────────────────────────────────
+function useUpdateIdea() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Record<string, any> }) => {
+      const { data, error } = await supabase
+        .from('ph_ideas')
+        .update({ ...updates, updated_at: new Date().toISOString() } as any)
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      queryClient.invalidateQueries({ queryKey: ['ideas-roadmap'] });
+      queryClient.invalidateQueries({ queryKey: ['initiatives'] });
+    },
+  });
+}
+
 const formatSource = (source: string): string => {
   const map: Record<string, string> = {
-    'ministry_directive': 'Ministry Directive',
-    'Ministry Directive': 'Ministry Directive',
-    'internal': 'Internal',
-    'Internal': 'Internal',
-    'stakeholder': 'Stakeholder',
-    'Stakeholder': 'Stakeholder',
-    'customer': 'Customer Feedback',
-    'Customer': 'Customer Feedback',
-    'Customer Feedback': 'Customer Feedback',
-    'research': 'Research',
-    'Research': 'Research',
+    'ministry_directive': 'Ministry Directive', 'internal': 'Internal',
+    'stakeholder': 'Stakeholder', 'customer': 'Customer Feedback', 'research': 'Research',
   };
-  return map[source] || source;
-};
-
-// Parse tags from DB
-const parseTags = (tags: string | string[] | null | undefined): string[] => {
-  if (!tags) return [];
-  if (Array.isArray(tags)) return tags;
-  if (typeof tags === 'string') {
-    return tags.replace(/[{}]/g, '').split(',').filter(Boolean);
-  }
-  return [];
+  return map[source?.toLowerCase()] || source || '—';
 };
 
 export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Props) {
   const { data: rawIdea, isLoading } = useIdeaRaw(ideaKey);
+  const { data: dbFactors } = useImpactFactors(ideaKey);
+  const updateIdea = useUpdateIdea();
 
-  const localIdea: Idea | null = rawIdea ? {
-    key: rawIdea.idea_key,
-    title: rawIdea.title,
-    subtitle: `${rawIdea.source || 'Internal'} · ${rawIdea.created_at ? new Date(rawIdea.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}`,
-    status: ({'Draft': 'draft', 'Submitted': 'submitted', 'Under Review': 'under_review', 'Approved': 'approved', 'Rejected': 'rejected', 'Converted': 'converted'} as any)[rawIdea.status] || 'draft',
-    type: ({'Opportunity': 'opportunity', 'Solution': 'solution', 'Feature Request': 'feature', 'Improvement': 'improvement', 'Problem': 'problem'} as any)[rawIdea.idea_type] || 'feature',
-    priority: rawIdea.priority || 'P2',
-    impact: parseFloat(rawIdea.impact_total) || 0,
-    votes: rawIdea.vote_count || 0,
-    initiative: rawIdea.linked_initiative_key || null,
-    dept: rawIdea.department || '',
-    assignee: rawIdea.assigned_to_name ? { name: rawIdea.assigned_to_name, initials: rawIdea.assigned_to_name.split(' ').map((p: string) => p[0]).join('').toUpperCase().slice(0, 2), color: '#2563EB' } : null,
-    ai: rawIdea.ai_enrichment_status === 'completed' ? 'ready' : 'pending',
-    theme: rawIdea.theme || null,
-    assigned_team: rawIdea.assigned_team || null,
-    target_release_date: rawIdea.target_release_date || null,
-  } : null;
+  const [isEditing, setIsEditing] = useState(false);
+  const [localStatus, setLocalStatus] = useState('');
+  const [localPriority, setLocalPriority] = useState('');
+  const [localTheme, setLocalTheme] = useState('');
+  const [localTeam, setLocalTeam] = useState('');
+  const [localDescription, setLocalDescription] = useState('');
+  const isSaving = useRef(false);
+
+  // Populate local state when rawIdea loads
+  useEffect(() => {
+    if (rawIdea) {
+      setLocalStatus(rawIdea.status || 'Draft');
+      setLocalPriority(rawIdea.priority || 'P2');
+      setLocalTheme(rawIdea.theme || '');
+      setLocalTeam(rawIdea.assigned_team || '');
+      setLocalDescription(rawIdea.description || '');
+    }
+  }, [rawIdea]);
+
+  const resetLocalState = () => {
+    if (rawIdea) {
+      setLocalStatus(rawIdea.status || 'Draft');
+      setLocalPriority(rawIdea.priority || 'P2');
+      setLocalTheme(rawIdea.theme || '');
+      setLocalTeam(rawIdea.assigned_team || '');
+      setLocalDescription(rawIdea.description || '');
+    }
+  };
+
+  const handleSave = async () => {
+    if (!rawIdea?.id || isSaving.current) return;
+    isSaving.current = true;
+    try {
+      await updateIdea.mutateAsync({
+        id: rawIdea.id,
+        updates: {
+          status: localStatus,
+          priority: localPriority,
+          theme: localTheme || null,
+          assigned_team: localTeam || null,
+          description: localDescription || null,
+        },
+      });
+      toast.success('Idea updated successfully');
+      setIsEditing(false);
+    } catch (error) {
+      toast.error('Failed to update idea');
+      console.error(error);
+    } finally {
+      isSaving.current = false;
+    }
+  };
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -76,37 +118,48 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
   if (isLoading) return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '680px', background: '#FFFFFF', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: '#FFFFFF', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ color: '#94A3B8', fontSize: '14px' }}>Loading...</span>
       </div>
     </>
   );
-  if (!localIdea) return null;
+  if (!rawIdea) return null;
+
+  const impactScore = parseFloat(rawIdea.impact_total) || 0;
+  const factors = dbFactors || IDEA_IMPACT_FACTORS[rawIdea.idea_key] || { I: 0, M: 0, P: 0, A: 0, C: 0, T: 0 };
+  const assigneeName = rawIdea.assigned_to_name || null;
+  const assigneeInitials = assigneeName ? assigneeName.split(' ').map((p: string) => p[0]).join('').toUpperCase().slice(0, 2) : '?';
+  const quarter = rawIdea.roadmap_quarter || null;
 
   return (
     <>
-      {/* Overlay */}
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
-      {/* Panel */}
       <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, width: '680px',
+        position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px',
         background: '#FFFFFF', zIndex: 201, boxShadow: '-8px 0 32px rgba(0,0,0,0.12)',
         display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
-        {/* Header */}
+        {/* ─── HEADER ─── */}
         <div style={{
-          padding: '16px 24px', borderBottom: '1px solid #E2E8F0',
-          display: 'flex', alignItems: 'center', gap: '12px',
+          padding: '16px 24px', borderBottom: '1px solid rgba(15,23,42,0.08)',
+          display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0,
         }}>
           <span style={{
-            fontFamily: "'JetBrains Mono', monospace", fontSize: '14px', fontWeight: 700,
-            color: '#2563EB', background: '#EFF6FF', padding: '3px 10px', borderRadius: '6px',
+            fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700,
+            color: '#2563EB', background: '#EFF6FF', padding: '3px 10px', borderRadius: '4px',
           }}>
-            {localIdea.key}
+            {rawIdea.idea_key}
           </span>
-          <span style={{ fontSize: '17px', fontWeight: 700, flex: 1, color: '#0F172A' }}>{localIdea.title}</span>
-          <button onClick={() => {}} style={{ background: 'none', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '5px 8px', cursor: 'pointer', color: '#64748B' }}>
+          <StatusLozenge status={localStatus} />
+          <div style={{ flex: 1 }} />
+          <button onClick={() => setIsEditing(!isEditing)} style={{
+            width: '32px', height: '32px', borderRadius: '6px',
+            border: '1px solid rgba(15,23,42,0.12)',
+            background: isEditing ? '#EFF6FF' : '#FFFFFF',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#64748B',
+          }}>
             <Edit2 size={14} />
           </button>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#94A3B8' }}>
@@ -114,25 +167,229 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           </button>
         </div>
 
-        {/* Single scrollable content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
-          {/* ─── DETAILS SECTION ─── */}
-          <DetailsSection idea={localIdea} rawIdea={rawIdea} onConvert={onConvert} />
+        {/* ─── BODY ─── */}
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {/* Title */}
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0F172A', margin: 0, lineHeight: 1.3 }}>
+              {rawIdea.title}
+            </h2>
+          </div>
 
-          {/* ─── Divider ─── */}
-          <div style={{ height: '1px', background: '#E2E8F0', margin: '24px 0' }} />
+          {/* Convert banner */}
+          {localStatus === 'Approved' && (
+            <div style={{
+              margin: '16px 24px 0', background: '#F0FDF4', border: '1px solid #86EFAC',
+              borderRadius: '6px', padding: '12px 16px',
+              display: 'flex', alignItems: 'center', gap: '12px',
+            }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>Ready for promotion</div>
+                <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>Convert to an initiative to begin planning.</div>
+              </div>
+              <button onClick={() => onConvert?.(rawIdea.idea_key)} style={{
+                background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '6px',
+                padding: '7px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+              }}>
+                → Convert
+              </button>
+            </div>
+          )}
 
-          {/* ─── IMPACT SECTION ─── */}
-          <SectionHeader label="IMPACT Score" />
-          <ImpactSection idea={localIdea} ideaKey={ideaKey} rawIdea={rawIdea} />
+          {/* Details Grid */}
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <FieldPair label="Status" value={
+                isEditing ? (
+                  <select value={localStatus} onChange={e => setLocalStatus(e.target.value)} style={selectStyle}>
+                    {['Draft', 'Submitted', 'Under Review', 'Approved', 'Converted'].map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                ) : <StatusLozenge status={localStatus} />
+              } />
+              <FieldPair label="Priority" value={
+                isEditing ? (
+                  <select value={localPriority} onChange={e => setLocalPriority(e.target.value)} style={selectStyle}>
+                    {['P1', 'P2', 'P3', 'P4'].map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                ) : <PriorityLozenge priority={localPriority} />
+              } />
+              <FieldPair label="Type" value={
+                <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{rawIdea.idea_type || 'Feature'}</span>
+              } />
+              <FieldPair label="Source" value={
+                <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{formatSource(rawIdea.source)}</span>
+              } />
+              <FieldPair label="Theme" value={
+                isEditing ? (
+                  <input value={localTheme} onChange={e => setLocalTheme(e.target.value)} style={inputStyle} placeholder="Enter theme" />
+                ) : <span style={{ fontSize: '13px', fontWeight: 500, color: localTheme ? '#0F172A' : '#94A3B8' }}>{localTheme || '—'}</span>
+              } />
+              <FieldPair label="Assigned Team" value={
+                isEditing ? (
+                  <input value={localTeam} onChange={e => setLocalTeam(e.target.value)} style={inputStyle} placeholder="Enter team" />
+                ) : <span style={{ fontSize: '13px', fontWeight: 500, color: localTeam ? '#0F172A' : '#94A3B8' }}>{localTeam || '—'}</span>
+              } />
+              <FieldPair label="Target Release" value={
+                <span style={{ fontSize: '13px', fontWeight: 500, color: rawIdea.target_release_date ? '#0F172A' : '#94A3B8' }}>
+                  {rawIdea.target_release_date ? new Date(rawIdea.target_release_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—'}
+                </span>
+              } />
+              <FieldPair label="Quarter" value={
+                quarter ? (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    height: 20, padding: '0 6px', borderRadius: 3,
+                    fontSize: '11px', fontWeight: 700,
+                    background: QUARTER_BADGE[quarter]?.bg || '#E2E8F0',
+                    color: QUARTER_BADGE[quarter]?.text || '#94A3B8',
+                  }}>{quarter} 2026</span>
+                ) : <span style={{ fontSize: '13px', color: '#94A3B8' }}>—</span>
+              } />
+              <FieldPair label="Assignee" value={
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{
+                    width: '24px', height: '24px', borderRadius: '50%', background: '#2563EB',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#FFF', fontSize: '10px', fontWeight: 700, flexShrink: 0,
+                  }}>{assigneeInitials}</div>
+                  <span style={{ fontSize: '13px', fontWeight: 500, color: assigneeName ? '#0F172A' : '#94A3B8' }}>
+                    {assigneeName || 'Unassigned'}
+                  </span>
+                </div>
+              } />
+              <FieldPair label="Created" value={
+                <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>
+                  {rawIdea.created_at ? new Date(rawIdea.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                </span>
+              } />
+            </div>
+          </div>
 
-          {/* ─── Divider ─── */}
-          <div style={{ height: '1px', background: '#E2E8F0', margin: '24px 0' }} />
+          {/* Description */}
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '8px' }}>
+              DESCRIPTION
+            </div>
+            {isEditing ? (
+              <textarea
+                value={localDescription}
+                onChange={e => setLocalDescription(e.target.value)}
+                rows={4}
+                style={{
+                  width: '100%', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
+                  padding: '8px 12px', fontSize: '13px', color: '#0F172A', resize: 'vertical',
+                  fontFamily: "'Inter', sans-serif", outline: 'none',
+                }}
+              />
+            ) : (
+              <p style={{ fontSize: '13px', color: rawIdea.description ? '#0F172A' : '#94A3B8', lineHeight: 1.5, margin: 0 }}>
+                {rawIdea.description || 'No description provided'}
+              </p>
+            )}
+          </div>
 
-          {/* ─── COMMENTS SECTION ─── */}
-          <SectionHeader label="Comments" />
-          <CommentsSection ideaId={rawIdea?.id} />
+          {/* IMPACT Score */}
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '12px' }}>
+              IMPACT SCORE
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px' }}>
+              <span style={{
+                fontSize: '32px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace",
+                color: impactScore > 0 ? '#0F172A' : '#94A3B8',
+              }}>
+                {impactScore.toFixed(2)}
+              </span>
+              <span style={{ fontSize: '13px', color: '#64748B' }}>out of 5.00</span>
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px',
+                borderRadius: '3px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
+                ...(impactScore >= 3.5
+                  ? { backgroundColor: '#E3FCEF', color: '#006644' }
+                  : impactScore >= 2.0
+                    ? { backgroundColor: '#DEEBFF', color: '#0747A6' }
+                    : { backgroundColor: '#DFE1E6', color: '#253858' }),
+              }}>
+                {impactScore >= 3.5 ? 'HIGH' : impactScore >= 2.0 ? 'MEDIUM' : 'LOW'}
+              </span>
+            </div>
+
+            {[
+              { letter: 'I', name: 'Investor Fit', weight: '25%', score: (factors as any).I ?? 0 },
+              { letter: 'M', name: 'Investor Size', weight: '20%', score: (factors as any).M ?? 0 },
+              { letter: 'P', name: 'Problem Severity', weight: '20%', score: (factors as any).P ?? 0 },
+              { letter: 'A', name: 'Investor Benefit', weight: '15%', score: (factors as any).A ?? 0 },
+              { letter: 'C', name: 'Complexity (inv.)', weight: '10%', score: (factors as any).C ?? 0 },
+              { letter: 'T', name: 'Time to Value', weight: '10%', score: (factors as any).T ?? 0 },
+            ].map(dim => (
+              <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+                <div style={{
+                  width: '32px', height: '32px', borderRadius: '50%',
+                  backgroundColor: '#E2E8F0', color: '#475569',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '13px', fontWeight: 700, flexShrink: 0,
+                }}>
+                  {dim.letter}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{dim.name}</span>
+                    <span style={{ fontSize: '12px', color: '#64748B' }}>{dim.weight}</span>
+                  </div>
+                  <div style={{ height: '4px', borderRadius: '2px', backgroundColor: '#E2E8F0', overflow: 'hidden' }}>
+                    <div style={{
+                      height: '100%', width: `${(dim.score / 5) * 100}%`,
+                      backgroundColor: dim.score > 0 ? '#2563EB' : 'transparent',
+                      borderRadius: '2px', transition: 'width 300ms ease',
+                    }} />
+                  </div>
+                </div>
+                <span style={{
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: '14px', fontWeight: 650,
+                  color: dim.score > 0 ? '#0F172A' : '#94A3B8',
+                  minWidth: '30px', textAlign: 'right',
+                }}>
+                  {dim.score.toFixed(1)}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Comments */}
+          <div style={{ padding: '20px 24px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '12px' }}>
+              COMMENTS
+            </div>
+            <CommentsSection ideaId={rawIdea.id} />
+          </div>
         </div>
+
+        {/* ─── FOOTER (edit mode) ─── */}
+        {isEditing && (
+          <div style={{
+            padding: '12px 24px', borderTop: '1px solid rgba(15,23,42,0.08)',
+            backgroundColor: '#FFFFFF', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
+          }}>
+            <button onClick={() => { resetLocalState(); setIsEditing(false); }} style={{
+              height: '36px', padding: '0 16px', borderRadius: '6px',
+              border: '1px solid rgba(15,23,42,0.12)',
+              background: '#FFFFFF', color: '#334155',
+              fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+            }}>
+              Cancel
+            </button>
+            <button onClick={handleSave} disabled={updateIdea.isPending} style={{
+              height: '36px', padding: '0 16px', borderRadius: '6px',
+              border: 'none', background: '#2563EB', color: '#FFFFFF',
+              fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+              opacity: updateIdea.isPending ? 0.7 : 1,
+            }}>
+              {updateIdea.isPending ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        )}
       </div>
 
       <style>{`
@@ -145,191 +402,67 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
   );
 }
 
-// ─── Section Header ──────────────────────────────────────────────
-function SectionHeader({ label }: { label: string }) {
+// ─── Shared styles ───────────────────────────────────────────────
+const selectStyle: React.CSSProperties = {
+  height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
+  padding: '0 8px', fontSize: '13px', color: '#0F172A', width: '100%', outline: 'none',
+};
+
+const inputStyle: React.CSSProperties = {
+  height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
+  padding: '0 8px', fontSize: '13px', color: '#0F172A', width: '100%', outline: 'none',
+};
+
+// ─── Sub-components ──────────────────────────────────────────────
+function FieldPair({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '16px' }}>
-      {label}
+    <div>
+      <div style={{
+        fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
+        letterSpacing: '0.06em', color: '#64748B', marginBottom: '6px',
+      }}>
+        {label}
+      </div>
+      <div>{value}</div>
     </div>
   );
 }
 
-// ─── Details Section ─────────────────────────────────────────────
-function DetailsSection({ idea, rawIdea, onConvert }: { idea: Idea; rawIdea: any; onConvert?: (key: string) => void }) {
-  const sc = STATUS_CONFIG[idea.status];
-  const tc = TYPE_CONFIG[idea.type];
-  const pc = PRIORITY_CONFIG[idea.priority] || PRIORITY_CONFIG.P4;
-
-  const description = rawIdea?.description || null;
-  const source = rawIdea?.source ? formatSource(rawIdea.source) : idea.subtitle.split(' · ')[0];
-  const tags = parseTags(rawIdea?.tags);
-  const department = rawIdea?.department || idea.dept;
-
+function StatusLozenge({ status }: { status: string }) {
+  const statusMap: Record<string, { bg: string; text: string }> = {
+    'Draft':        { bg: '#DFE1E6', text: '#253858' },
+    'New':          { bg: '#DFE1E6', text: '#253858' },
+    'Submitted':    { bg: '#DFE1E6', text: '#253858' },
+    'Under Review': { bg: '#DEEBFF', text: '#0747A6' },
+    'In Progress':  { bg: '#DEEBFF', text: '#0747A6' },
+    'Approved':     { bg: '#E3FCEF', text: '#006644' },
+    'Converted':    { bg: '#E3FCEF', text: '#006644' },
+    'Done':         { bg: '#E3FCEF', text: '#006644' },
+  };
+  const style = statusMap[status] ?? { bg: '#DFE1E6', text: '#253858' };
   return (
-    <div>
-      {/* Convert banner for approved ideas */}
-      {idea.status === 'approved' && (
-        <div style={{
-          background: 'linear-gradient(90deg, #F0FDF4, #EFF6FF)', border: '1px solid #86EFAC',
-          borderRadius: '12px', padding: '14px 16px', marginBottom: '20px',
-          display: 'flex', alignItems: 'center', gap: '12px',
-        }}>
-          <span style={{ fontSize: '20px' }}>🚀</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>This idea is approved and ready for promotion</div>
-            <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>Convert to an initiative to begin planning and execution.</div>
-          </div>
-          <button onClick={() => onConvert?.(idea.key)} style={{
-            background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '8px',
-            padding: '8px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-          }}>
-            → Convert to Initiative
-          </button>
-        </div>
-      )}
-
-      {/* Field grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-        <FieldRow label="Status">
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: sc.bg, color: sc.text, padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 600 }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: sc.dot }} />
-            {sc.label}
-          </span>
-        </FieldRow>
-        <FieldRow label="Priority">
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', fontWeight: 700, background: pc.bg, color: pc.text, border: `1px solid ${pc.border || '#E2E8F0'}`, height: 20, padding: '0 7px', borderRadius: '3px', display: 'inline-flex', alignItems: 'center' }}>{idea.priority}</span>
-        </FieldRow>
-        <FieldRow label="Type">
-          <span style={{ background: tc.bg, color: tc.text, padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>{tc.label}</span>
-        </FieldRow>
-        <FieldRow label="Source"><span style={{ fontSize: '13px', color: '#334155' }}>{source}</span></FieldRow>
-        <FieldRow label="Department"><span style={{ fontSize: '13px', color: '#334155' }}>{department}</span></FieldRow>
-        <FieldRow label="Assignee">
-          {idea.assignee ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: idea.assignee.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '9px', fontWeight: 700 }}>{idea.assignee.initials}</div>
-              <span style={{ fontSize: '13px', color: '#334155' }}>{idea.assignee.name}</span>
-            </div>
-          ) : <span style={{ fontSize: '13px', color: '#94A3B8' }}>Unassigned</span>}
-        </FieldRow>
-        <FieldRow label="Created"><span style={{ fontSize: '13px', color: '#334155' }}>{idea.subtitle.split(' · ')[1]}</span></FieldRow>
-        <FieldRow label="Votes">
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: idea.votes > 0 ? '#16A34A' : idea.votes < 0 ? '#EF4444' : '#94A3B8' }}>
-            ▲ {idea.votes}
-          </span>
-        </FieldRow>
-        <FieldRow label="Theme">
-          <span style={{ fontSize: '13px', color: idea.theme ? '#334155' : '#94A3B8', fontStyle: idea.theme ? 'normal' : 'italic' }}>
-            {idea.theme || 'No theme'}
-          </span>
-        </FieldRow>
-        <FieldRow label="Assigned Team">
-          <span style={{ fontSize: '13px', color: idea.assigned_team ? '#334155' : '#94A3B8', fontStyle: idea.assigned_team ? 'normal' : 'italic' }}>
-            {idea.assigned_team || 'Unassigned'}
-          </span>
-        </FieldRow>
-        <FieldRow label="Target Release">
-          <span style={{ fontSize: '13px', color: idea.target_release_date ? '#334155' : '#94A3B8', fontStyle: idea.target_release_date ? 'normal' : 'italic' }}>
-            {idea.target_release_date ? new Date(idea.target_release_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Not set'}
-          </span>
-        </FieldRow>
-        <FieldRow label="Release Quarter">
-          <span style={{ fontSize: '13px', color: idea.target_release_date ? '#334155' : '#94A3B8' }}>
-            {idea.target_release_date ? `Q${Math.ceil((new Date(idea.target_release_date).getMonth() + 1) / 3)} ${new Date(idea.target_release_date).getFullYear()}` : '—'}
-          </span>
-        </FieldRow>
-      </div>
-
-      {/* Description */}
-      <div style={{ background: '#F8FAFC', padding: '12px', borderRadius: '8px', border: '1px solid #F4F4F5', marginBottom: '16px' }}>
-        <div style={{ fontSize: '11px', fontWeight: 600, color: '#94A3B8', marginBottom: '6px', textTransform: 'uppercase' }}>Description</div>
-        <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.6 }}>
-          {description || <span style={{ color: '#94A3B8', fontStyle: 'italic' }}>No description provided</span>}
-        </div>
-      </div>
-
-      {/* Tags */}
-      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-        {tags.length > 0 ? (
-          [...new Set(tags)].map(tag => (
-            <span key={tag} style={{
-              display: 'inline-flex', alignItems: 'center',
-              background: '#F1F5F9', color: '#475569', padding: '3px 8px', borderRadius: '6px',
-              fontSize: '11px', fontWeight: 500, border: '1px solid #E2E8F0',
-            }}>{tag}</span>
-          ))
-        ) : (
-          <span style={{ fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>No tags</span>
-        )}
-      </div>
-    </div>
+    <span style={{
+      display: 'inline-block', padding: '2px 8px', borderRadius: '3px',
+      backgroundColor: style.bg, color: style.text,
+      fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
+      lineHeight: '16px', whiteSpace: 'nowrap',
+    }}>
+      {status.toUpperCase()}
+    </span>
   );
 }
 
-function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
+function PriorityLozenge({ priority }: { priority: string }) {
+  const c = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.P4;
   return (
-    <div>
-      <div style={{ fontSize: '11px', fontWeight: 600, color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{label}</div>
-      {children}
-    </div>
-  );
-}
-
-// ─── IMPACT Section ──────────────────────────────────────────────
-function ImpactSection({ idea, ideaKey, rawIdea }: { idea: Idea; ideaKey: string | null; rawIdea: any }) {
-  const { data: dbFactors } = useImpactFactors(ideaKey);
-  const factors = dbFactors || IDEA_IMPACT_FACTORS[idea.key] || { I: 3, M: 3, P: 3, A: 3, C: 3, T: 3 };
-
-  const impactScore = rawIdea?.impact_total ? parseFloat(rawIdea.impact_total) : idea.impact;
-  const ic = getImpactColor(impactScore);
-  const ratingLabel = impactScore >= 4.0 ? 'Excellent' : impactScore >= 3.0 ? 'Good' : impactScore >= 2.0 ? 'Fair' : 'Low';
-  const ratingBg = impactScore >= 4.0 ? '#DCFCE7' : impactScore >= 3.0 ? '#DBEAFE' : impactScore >= 2.0 ? '#FEF3C7' : '#FECACA';
-  const ratingText = impactScore >= 4.0 ? '#15803D' : impactScore >= 3.0 ? '#1D4ED8' : impactScore >= 2.0 ? '#B45309' : '#B91C1C';
-
-  const FACTOR_DEFS = [
-    { key: 'I', name: 'Investor Fit', weight: 25, color: '#2563EB' },
-    { key: 'M', name: 'Investor Size', weight: 20, color: '#0D9488' },
-    { key: 'P', name: 'Problem Severity', weight: 20, color: '#D97706' },
-    { key: 'A', name: 'Investor Benefit', weight: 15, color: '#16A34A' },
-    { key: 'C', name: 'Complexity (inv.)', weight: 10, color: '#0D9488' },
-    { key: 'T', name: 'Time to Value', weight: 10, color: '#EF4444' },
-  ];
-
-  return (
-    <div>
-      {/* Score header */}
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px' }}>
-        <span style={{ fontSize: '36px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '-1px', color: ic.text }}>
-          {impactScore.toFixed(2)}
-        </span>
-        <span style={{ fontSize: '13px', color: '#94A3B8' }}>out of 5.00</span>
-        <span style={{ fontSize: '11px', fontWeight: 600, background: ratingBg, color: ratingText, padding: '3px 8px', borderRadius: '10px' }}>{ratingLabel}</span>
-      </div>
-
-      {/* Factor rows */}
-      {FACTOR_DEFS.map(f => {
-        const val = factors[f.key as keyof typeof factors];
-        return (
-          <div key={f.key} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: f.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>
-              {f.key}
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>{f.name}</span>
-                <span style={{ fontSize: '11px', color: '#94A3B8' }}>{f.weight}%</span>
-              </div>
-              <div style={{ height: '8px', background: '#E4E4E7', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ width: `${(val / 5) * 100}%`, height: '100%', background: f.color, borderRadius: '4px', transition: 'width 0.3s' }} />
-              </div>
-            </div>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: f.color, minWidth: '28px', textAlign: 'right' }}>
-              {val.toFixed(1)}
-            </span>
-          </div>
-        );
-      })}
-    </div>
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      height: 20, minWidth: 26, padding: '0 4px', borderRadius: 3,
+      fontSize: '11px', fontWeight: 650,
+      background: c.bg, color: c.text, border: `1px solid ${c.border}`,
+    }}>
+      {priority}
+    </span>
   );
 }
 
@@ -357,16 +490,12 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
     }
   };
 
-  if (isLoading) {
-    return <div style={{ fontSize: '13px', color: '#94A3B8' }}>Loading comments...</div>;
-  }
+  if (isLoading) return <div style={{ fontSize: '13px', color: '#94A3B8' }}>Loading comments...</div>;
 
   return (
     <div>
       {comments.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '24px', color: '#94A3B8', fontSize: '13px', fontStyle: 'italic' }}>
-          No comments yet. Be the first to add one.
-        </div>
+        <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>No comments yet</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
           {comments.map((c: any) => {
@@ -398,7 +527,6 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
         </div>
       )}
 
-      {/* Comment input */}
       <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
         <textarea
           value={newComment}
@@ -407,8 +535,8 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
           placeholder="Add a comment... (Ctrl+Enter to send)"
           style={{
             flex: 1, minHeight: '36px', maxHeight: '120px', resize: 'vertical',
-            border: '1px solid #E2E8F0', borderRadius: '6px', padding: '8px 12px',
-            fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none',
+            border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '8px 12px',
+            fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', color: '#0F172A',
           }}
         />
         {newComment.trim() && (
@@ -429,7 +557,6 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
   );
 }
 
-// ─── Relative time helper ────────────────────────────────────────
 function getRelativeTime(dateStr: string): string {
   const now = new Date();
   const date = new Date(dateStr);
