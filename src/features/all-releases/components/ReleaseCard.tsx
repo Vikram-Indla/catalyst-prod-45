@@ -94,13 +94,29 @@ export function ReleaseCard({ release, isSelected = false, onSelect, onClick }: 
       onClick={onClick}
       onKeyDown={handleKeyDown}
       className={cn(
-        "relative rounded-lg border bg-white cursor-pointer transition-all duration-150 group",
-        "hover:border-slate-300 hover:shadow-[0_4px_16px_rgba(0,0,0,0.10)] hover:-translate-y-px",
+        "relative rounded-lg border bg-white cursor-pointer transition-all duration-150 group overflow-hidden",
+        "hover:border-slate-300 hover:-translate-y-[2px]",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600",
         isSelected
           ? "border-blue-600 bg-blue-50/40"
           : "border-slate-200"
       )}
+      style={{
+        borderLeft: `3px solid ${
+          release.status === 'in_progress' || release.status === 'active' ? 'var(--cp-primary-60)' :
+          release.status === 'released' ? 'var(--cp-success-60)' :
+          release.status === 'cancelled' ? 'var(--cp-neutral-40)' :
+          ['planning', 'planned', 'todo'].includes(release.status) ? 'var(--cp-neutral-30)' :
+          'var(--cp-neutral-30)'
+        }`,
+        boxShadow: 'var(--cp-shadow-sm)',
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.boxShadow = 'var(--cp-shadow-lg)';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.boxShadow = 'var(--cp-shadow-sm)';
+      }}
     >
       {/* Rows 1-4: 16px padding, 8px gaps */}
       <div className="px-4 pt-4 pb-3 flex flex-col gap-2">
