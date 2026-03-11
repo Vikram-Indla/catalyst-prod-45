@@ -191,7 +191,7 @@ export default function CommandCenterPage() {
                           <span className="ml-2 text-[12px] text-[#475569]">{c.status?.replace(/_/g, ' ')}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className={`text-[11px] font-bold ${waitHours > 48 ? 'text-[#DC2626]' : waitHours > 24 ? 'text-[#C2840A]' : 'text-[#64748B]'}`}>
+                          <span className="text-[11px] font-bold" style={{ color: waitHours > 48 ? 'var(--cp-danger-60)' : waitHours > 24 ? 'var(--cp-warning-60)' : 'var(--cp-text-muted)' }}>
                             {c.oldest_pending_signoff_at ? getSignoffWaitTime(c.oldest_pending_signoff_at) : '—'}
                           </span>
                           {waitHours > 48 && <CatalystAIChip label="escalate" />}
