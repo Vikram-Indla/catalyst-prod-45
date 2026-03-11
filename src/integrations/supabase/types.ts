@@ -8874,42 +8874,151 @@ export type Database = {
           },
         ]
       }
+      feature_flag_audit: {
+        Row: {
+          action: string
+          environment: string
+          flag_id: string | null
+          flag_module_key: string
+          id: string
+          metadata: Json | null
+          performed_at: string
+          performed_by: string | null
+          performed_by_name: string
+        }
+        Insert: {
+          action: string
+          environment?: string
+          flag_id?: string | null
+          flag_module_key: string
+          id?: string
+          metadata?: Json | null
+          performed_at?: string
+          performed_by?: string | null
+          performed_by_name?: string
+        }
+        Update: {
+          action?: string
+          environment?: string
+          flag_id?: string | null
+          flag_module_key?: string
+          id?: string
+          metadata?: Json | null
+          performed_at?: string
+          performed_by?: string | null
+          performed_by_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_flag_audit_flag_id_fkey"
+            columns: ["flag_id"]
+            isOneToOne: false
+            referencedRelation: "feature_flags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feature_flag_dependencies: {
+        Row: {
+          created_at: string
+          dependency_type: string
+          depends_on_key: string
+          description: string
+          flag_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          dependency_type?: string
+          depends_on_key: string
+          description?: string
+          flag_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          dependency_type?: string
+          depends_on_key?: string
+          description?: string
+          flag_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_flag_dependencies_flag_id_fkey"
+            columns: ["flag_id"]
+            isOneToOne: false
+            referencedRelation: "feature_flags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_flags: {
         Row: {
+          category: string
+          created_at: string
           description: string | null
+          enabled: boolean
+          environment: string
           group_name: string
           icon: string | null
+          icon_color: string
+          icon_name: string
           id: string
           is_enabled: boolean
           label: string
           module_key: string
+          module_name: string
+          route: string
           sort_order: number
+          status: string
           updated_at: string
           updated_by: string | null
+          updated_by_name: string
         }
         Insert: {
+          category?: string
+          created_at?: string
           description?: string | null
+          enabled?: boolean
+          environment?: string
           group_name?: string
           icon?: string | null
+          icon_color?: string
+          icon_name?: string
           id?: string
           is_enabled?: boolean
           label: string
           module_key: string
+          module_name?: string
+          route?: string
           sort_order?: number
+          status?: string
           updated_at?: string
           updated_by?: string | null
+          updated_by_name?: string
         }
         Update: {
+          category?: string
+          created_at?: string
           description?: string | null
+          enabled?: boolean
+          environment?: string
           group_name?: string
           icon?: string | null
+          icon_color?: string
+          icon_name?: string
           id?: string
           is_enabled?: boolean
           label?: string
           module_key?: string
+          module_name?: string
+          route?: string
           sort_order?: number
+          status?: string
           updated_at?: string
           updated_by?: string | null
+          updated_by_name?: string
         }
         Relationships: []
       }
