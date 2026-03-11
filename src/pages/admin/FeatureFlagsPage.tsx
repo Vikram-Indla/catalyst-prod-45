@@ -61,11 +61,7 @@ const CATEGORY_BADGE: Record<ModuleCategory, { bg: string; text: string; border:
   Operations: { bg: '#FEF2F2', text: '#DC2626', border: '#FECACA' },
 };
 
-const ENVIRONMENTS: { value: EnvironmentScope; label: string }[] = [
-  { value: 'production', label: 'Production' },
-  { value: 'staging', label: 'Staging' },
-  { value: 'development', label: 'Development' },
-];
+const ENVIRONMENT = 'production' as const;
 
 const CATEGORIES: ModuleCategory[] = ['Strategy', 'Product', 'Delivery', 'Quality', 'Operations'];
 
