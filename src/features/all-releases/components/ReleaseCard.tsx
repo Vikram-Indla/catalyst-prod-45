@@ -103,7 +103,7 @@ export function ReleaseCard({ release, isSelected = false, onSelect, onClick }: 
       )}
       style={{
         borderLeft: `3px solid ${
-          release.status === 'in_progress' || release.status === 'active' ? 'var(--cp-primary-60)' :
+          release.status === 'in_progress' ? 'var(--cp-primary-60)' :
           release.status === 'released' ? 'var(--cp-success-60)' :
           release.status === 'cancelled' ? 'var(--cp-neutral-40)' :
           ['planning', 'planned', 'todo'].includes(release.status) ? 'var(--cp-neutral-30)' :
