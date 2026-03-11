@@ -206,31 +206,31 @@ export function ProductRoadmapPage() {
     <div className="flex flex-col h-full" style={{ fontFamily: FONT.body }}>
       {/* Page Header */}
       {!isFullscreen && (
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${SURFACE.border}`, background: SURFACE.card }}>
-          <div>
-            <h1 style={{ fontSize: 22, fontWeight: 800, color: INK[1], margin: 0, lineHeight: 1.3 }}>Product Roadmap</h1>
-            <p style={{ fontSize: 13, fontWeight: 500, color: INK[3], margin: 0 }}>Initiative timeline & delivery planning</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              className="inline-flex items-center gap-1.5 h-9 px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-              style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, color: INK[2], transition: 'background-color 0.15s ease' }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-            >
-              <Download className="w-4 h-4" /> Export
-            </button>
-            <button
-              onClick={toggleFullscreen}
-              className="inline-flex items-center gap-1.5 h-9 px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-              style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, color: INK[2], transition: 'background-color 0.15s ease' }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-            >
-              <Maximize2 className="w-4 h-4" /> Fullscreen
-            </button>
-          </div>
-        </div>
+        <ProductHubPageHeader
+          title="Product Roadmap"
+          subtitle="Initiative timeline & delivery planning"
+          actions={
+            <>
+              <button
+                className="inline-flex items-center gap-1.5 h-9 px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, color: INK[2], transition: 'background-color 0.15s ease', fontFamily: "'Inter', system-ui, sans-serif" }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
+                <Download className="w-4 h-4" /> Export
+              </button>
+              <button
+                onClick={toggleFullscreen}
+                className="inline-flex items-center gap-1.5 h-9 px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, color: INK[2], transition: 'background-color 0.15s ease', fontFamily: "'Inter', system-ui, sans-serif" }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
+                <Maximize2 className="w-4 h-4" /> Fullscreen
+              </button>
+            </>
+          }
+        />
       )}
 
       {isFullscreen && (
