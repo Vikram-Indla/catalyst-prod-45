@@ -174,6 +174,6 @@ export function useEnabledModules() {
   return {
     enabledModules,
     isLoading,
-    isModuleEnabled: (code: string) => enabledModules.includes(code),
+    isModuleEnabled: (code: string) => isLoading || enabledModules.includes(code),
   };
 }
