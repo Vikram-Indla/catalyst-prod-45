@@ -3,7 +3,7 @@
  * V12 Hybrid Precision. All data from Supabase.
  */
 
-import React, { useState, useMemo, useCallback, memo } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import {
   useAdminFeatureFlags,
   useAdminFeatureFlagStats,
