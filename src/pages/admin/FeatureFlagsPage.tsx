@@ -11,7 +11,7 @@ import {
   useBulkToggleAdminFeatureFlags,
 } from '@/hooks/useAdminFeatureFlags';
 import { featureFlagService } from '@/services/feature-flags';
-import type { FeatureFlag, EnvironmentScope, ModuleCategory } from '@/types/feature-flags';
+import type { FeatureFlag, ModuleCategory } from '@/types/feature-flags';
 import { toast } from 'sonner';
 import {
   Search, RefreshCw, AlertCircle, Flag, Check, X,
@@ -61,11 +61,7 @@ const CATEGORY_BADGE: Record<ModuleCategory, { bg: string; text: string; border:
   Operations: { bg: '#FEF2F2', text: '#DC2626', border: '#FECACA' },
 };
 
-const ENVIRONMENTS: { value: EnvironmentScope; label: string }[] = [
-  { value: 'production', label: 'Production' },
-  { value: 'staging', label: 'Staging' },
-  { value: 'development', label: 'Development' },
-];
+const ENVIRONMENT = 'production' as const;
 
 const CATEGORIES: ModuleCategory[] = ['Strategy', 'Product', 'Delivery', 'Quality', 'Operations'];
 
@@ -304,7 +300,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
 // ── Main Page ──────────────────────────────────────────────
 
 export default function FeatureFlagsPage() {
-  const [environment, setEnvironment] = useState<EnvironmentScope>('production');
+  const environment = ENVIRONMENT;
   const [searchInput, setSearchInput] = useState('');
   const searchQuery = useDebounce(searchInput, 150);
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
@@ -403,10 +399,7 @@ export default function FeatureFlagsPage() {
     setSelectedIds(new Set());
   }, [confirmText, environment, bulkMutation]);
 
-  const handleEnvironmentChange = useCallback((env: EnvironmentScope) => {
-    setEnvironment(env);
-    setSelectedIds(new Set());
-  }, []);
+  // Environment tabs removed — production only
 
   const clearFilters = useCallback(() => {
     setSearchInput('');
@@ -501,30 +494,6 @@ export default function FeatureFlagsPage() {
         </Button>
       </div>
 
-      {/* ── Environment Tabs ───────────────────────────── */}
-      <div className="flex items-center gap-1 mb-4" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.12)' }}>
-        {ENVIRONMENTS.map((env) => (
-          <button
-            key={env.value}
-            onClick={() => handleEnvironmentChange(env.value)}
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-            style={{
-              padding: '8px 12px',
-              fontFamily: "'Inter', system-ui, sans-serif",
-              fontSize: 12,
-              fontWeight: environment === env.value ? 650 : 500,
-              color: environment === env.value ? '#2563EB' : '#71717A',
-              borderBottom: environment === env.value ? '2px solid #2563EB' : '2px solid transparent',
-              marginBottom: -0.75,
-              background: 'transparent',
-              cursor: 'pointer',
-              transition: 'color 120ms ease, border-color 120ms ease',
-            }}
-          >
-            {env.label}
-          </button>
-        ))}
-      </div>
 
       {/* ── Stats Bar — D07 + D08 ──────────────────────── */}
       {stats && (

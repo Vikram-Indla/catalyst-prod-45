@@ -1,7 +1,7 @@
 /**
  * useAdminFeatureFlags — TanStack Query hooks for the Feature Flags admin page.
  * Provides optimistic updates, rollback, and toast notifications.
- * NOTE: This is separate from the existing useFeatureFlags hook used by FeatureFlagContext.
+ * Also invalidates the global FeatureFlagContext on mutations.
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -9,6 +9,7 @@ import { featureFlagService } from '@/services/feature-flags';
 import type { EnvironmentScope, FeatureFlagTogglePayload, FeatureFlag } from '@/types/feature-flags';
 import { toast } from 'sonner';
 import { useAuth } from '@/lib/auth';
+import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 
 const QUERY_KEY = 'admin-feature-flags';
 
@@ -36,6 +37,7 @@ export function useAdminFeatureFlagAudit(flagId?: string) {
 export function useToggleAdminFeatureFlag() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { refetch: refetchGlobalFlags } = useFeatureFlags();
 
   return useMutation({
     mutationFn: (payload: FeatureFlagTogglePayload) =>
@@ -71,6 +73,8 @@ export function useToggleAdminFeatureFlag() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
+      // Invalidate global feature flag context so nav updates immediately
+      refetchGlobalFlags();
     },
   });
 }
@@ -78,6 +82,7 @@ export function useToggleAdminFeatureFlag() {
 export function useBulkToggleAdminFeatureFlags() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { refetch: refetchGlobalFlags } = useFeatureFlags();
 
   return useMutation({
     mutationFn: ({ enabled, environment }: { enabled: boolean; environment: EnvironmentScope }) =>
@@ -95,6 +100,8 @@ export function useBulkToggleAdminFeatureFlags() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
+      // Invalidate global feature flag context so nav updates immediately
+      refetchGlobalFlags();
     },
   });
 }

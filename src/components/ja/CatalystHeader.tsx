@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEnabledModules } from "@/hooks/useModules";
 import { useModuleAccess } from "@/hooks/useModuleAccess";
+import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { useSingleItemNavigation } from "@/hooks/useSingleItemNavigation";
 import { Button } from "@/components/ui/button";
 const CreateDropdown = lazy(() => import("./CreateDropdown").then(m => ({ default: m.CreateDropdown })));
@@ -55,6 +56,7 @@ export function CatalystHeader() {
   const canAccessSettings = isAdmin || isSuperAdmin || isProgramManager;
   const { isModuleEnabled, isLoading: modulesLoading } = useEnabledModules();
   const { canViewInNav, isLoading: accessLoading } = useModuleAccess();
+  const { isModuleEnabled: featureFlagEnabled } = useFeatureFlags();
   const { workspaceType, sidebarExpanded } = useCatalystContext();
   const singleItemNav = useSingleItemNavigation();
   
@@ -146,21 +148,21 @@ export function CatalystHeader() {
   };
 
   // Define nav items with their module keys (must match admin_nav_modules.module_key)
+  // featureFlagKey maps to feature_flags.module_key for visibility gating
   const allNavItems = [
-    { label: "Home", path: "/for-you", moduleKey: "home", visibleToProductOwner: true },
-    { label: "StrategyHub", path: "/strategyhub", moduleKey: "enterprise", requiresEnterpriseAccess: true, visibleToProductOwner: true },
-    { label: "ProductHub", path: "/producthub", moduleKey: "product", visibleToProductOwner: true },
-    { label: "ProjectHub", path: "/project-hub", moduleKey: "workhub", visibleToProductOwner: true },
-    { label: "ReleaseHub", path: "/releasehub/command-center", moduleKey: "releases", visibleToProductOwner: false },
-    { label: "TestHub", path: "/testhub/dashboard", moduleKey: "testhub", visibleToProductOwner: false },
-    { label: "IncidentHub", path: "/incident-hub", moduleKey: "operations", visibleToProductOwner: false },
-    { label: "TaskHub", path: "/taskhub/boards", moduleKey: "planner", visibleToProductOwner: true },
-    { label: "PlanHub", path: "/planhub", moduleKey: "planhub", visibleToProductOwner: true },
-    { label: "WikiHub", path: "/wiki", moduleKey: "wiki", visibleToProductOwner: true },
+    { label: "Home", path: "/for-you", moduleKey: "home", featureFlagKey: null, visibleToProductOwner: true },
+    { label: "StrategyHub", path: "/strategyhub", moduleKey: "enterprise", featureFlagKey: "strategy_hub", requiresEnterpriseAccess: true, visibleToProductOwner: true },
+    { label: "ProductHub", path: "/producthub", moduleKey: "product", featureFlagKey: "product_hub", visibleToProductOwner: true },
+    { label: "ProjectHub", path: "/project-hub", moduleKey: "workhub", featureFlagKey: "project_hub", visibleToProductOwner: true },
+    { label: "ReleaseHub", path: "/releasehub/command-center", moduleKey: "releases", featureFlagKey: "release_hub", visibleToProductOwner: false },
+    { label: "TestHub", path: "/testhub/dashboard", moduleKey: "testhub", featureFlagKey: "test_hub", visibleToProductOwner: false },
+    { label: "IncidentHub", path: "/incident-hub", moduleKey: "operations", featureFlagKey: "incident_hub", visibleToProductOwner: false },
+    { label: "TaskHub", path: "/taskhub/boards", moduleKey: "planner", featureFlagKey: "task_hub", visibleToProductOwner: true },
+    { label: "PlanHub", path: "/planhub", moduleKey: "planhub", featureFlagKey: "plan_hub", visibleToProductOwner: true },
+    { label: "WikiHub", path: "/wiki", moduleKey: "wiki", featureFlagKey: "wiki_hub", visibleToProductOwner: true },
   ];
 
-  // Get all nav items with their enabled status based on role-based module access
-  // Uses canViewInNav which returns true for 'full' or 'view' access levels
+  // Get all nav items with their enabled status based on role-based module access + feature flags
   const navItems = allNavItems
     .filter(item => !isProductOwnerOnly || item.visibleToProductOwner)
     .map(item => ({
@@ -169,6 +171,11 @@ export function CatalystHeader() {
         ? canViewInNav(item.moduleKey) && canAccessEnterprise
         : canViewInNav(item.moduleKey),
     }))
+    // Also filter by feature flags — if a module is disabled via feature flags, hide from nav
+    .filter(item => {
+      if (!item.featureFlagKey) return true; // Home always visible
+      return featureFlagEnabled(item.featureFlagKey);
+    })
     .filter(item => item.isEnabled); // Only show items user can view in nav
 
   

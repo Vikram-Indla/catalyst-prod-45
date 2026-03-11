@@ -5,12 +5,53 @@ export interface FeatureFlag {
   id: string;
   module_key: string;
   label: string;
+  module_name: string;
   description: string | null;
   group_name: string;
   is_enabled: boolean;
+  enabled: boolean;
   sort_order: number;
   icon: string | null;
   updated_at: string;
+}
+
+/**
+ * Mapping from legacy org_modules / route keys → feature_flags.module_key
+ * This bridges the old module system to the new feature_flags table.
+ */
+const MODULE_KEY_ALIASES: Record<string, string> = {
+  // Route-level MG keys → feature_flags.module_key
+  producthub: 'product_hub',
+  strategyhub: 'strategy_hub',
+  testhub: 'test_hub',
+  workhub: 'work_hub',
+  planner: 'task_hub',
+  planhub: 'plan_hub',
+  wiki: 'wiki_hub',
+  operations: 'incident_hub',
+  releases: 'release_hub',
+  // CatalystHeader nav moduleKeys (from org_modules) → feature_flags.module_key
+  enterprise: 'strategy_hub',
+  product: 'product_hub',
+  // Direct matches (no alias needed, but listed for completeness)
+  strategy_hub: 'strategy_hub',
+  product_hub: 'product_hub',
+  project_hub: 'project_hub',
+  work_hub: 'work_hub',
+  test_hub: 'test_hub',
+  release_hub: 'release_hub',
+  incident_hub: 'incident_hub',
+  task_hub: 'task_hub',
+  plan_hub: 'plan_hub',
+  wiki_hub: 'wiki_hub',
+  capacity_hub: 'capacity_hub',
+  analytics_hub: 'analytics_hub',
+  budget_hub: 'budget_hub',
+};
+
+/** Resolve any module key (legacy or canonical) to the feature_flags.module_key */
+function resolveModuleKey(key: string): string {
+  return MODULE_KEY_ALIASES[key] ?? key;
 }
 
 interface FeatureFlagContextType {
@@ -45,20 +86,21 @@ export function FeatureFlagProvider({ children }: { children: React.ReactNode })
 
   const fetchFlags = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('feature_flags')
         .select('*')
         .order('sort_order');
 
       if (error) {
         console.error('Failed to fetch feature flags:', error);
-        // Default all to true on error so app doesn't break
         return;
       }
 
       const flagMap: Record<string, boolean> = {};
       (data || []).forEach((f: any) => {
-        flagMap[f.module_key] = f.is_enabled;
+        // Use 'enabled' column (canonical from admin page), fallback to is_enabled
+        const isOn = f.enabled ?? f.is_enabled ?? true;
+        flagMap[f.module_key] = isOn;
       });
 
       setAllFlags(data as FeatureFlag[]);
@@ -72,37 +114,58 @@ export function FeatureFlagProvider({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     fetchFlags();
+
+    // Refetch on window focus for near-instant admin updates
+    const onFocus = () => fetchFlags();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [fetchFlags]);
+
+  // Auto-refresh every 60s
+  useEffect(() => {
+    const interval = setInterval(fetchFlags, 60_000);
+    return () => clearInterval(interval);
   }, [fetchFlags]);
 
   const isModuleEnabled = useCallback(
     (moduleKey: string) => {
+      // During loading, default to enabled (don't flash content away)
+      if (isLoading) return true;
+      // Resolve aliases (e.g., 'producthub' → 'product_hub')
+      const canonical = resolveModuleKey(moduleKey);
       // Default to true if flag not found (graceful degradation)
-      return flags[moduleKey] ?? true;
+      return flags[canonical] ?? true;
     },
-    [flags]
+    [flags, isLoading]
   );
 
   const toggleFlag = useCallback(
     async (moduleKey: string, enabled: boolean) => {
+      const canonical = resolveModuleKey(moduleKey);
+
       // Optimistic update
-      setFlags((prev) => ({ ...prev, [moduleKey]: enabled }));
+      setFlags((prev) => ({ ...prev, [canonical]: enabled }));
       setAllFlags((prev) =>
         prev.map((f) =>
-          f.module_key === moduleKey
-            ? { ...f, is_enabled: enabled, updated_at: new Date().toISOString() }
+          f.module_key === canonical
+            ? { ...f, enabled, is_enabled: enabled, updated_at: new Date().toISOString() }
             : f
         )
       );
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('feature_flags')
-        .update({ is_enabled: enabled, updated_at: new Date().toISOString() })
-        .eq('module_key', moduleKey);
+        .update({
+          enabled,
+          is_enabled: enabled,
+          status: enabled ? 'live' : 'draft',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('module_key', canonical);
 
       if (error) {
         console.error('Failed to toggle flag:', error);
-        // Revert on error
-        setFlags((prev) => ({ ...prev, [moduleKey]: !enabled }));
+        setFlags((prev) => ({ ...prev, [canonical]: !enabled }));
         fetchFlags();
       }
     },
