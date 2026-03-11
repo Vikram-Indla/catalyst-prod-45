@@ -26,6 +26,7 @@ import { catalystToast } from '@/lib/catalystToast';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel } from '@/types/initiative';
 import { Search, X, Plus, Download } from 'lucide-react';
+import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
 import '@/styles/product-backlog.css';
 
 function toTimelineInitiative(i: Initiative): TimelineInitiative {
