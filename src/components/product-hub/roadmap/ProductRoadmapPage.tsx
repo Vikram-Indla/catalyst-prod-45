@@ -4,6 +4,7 @@
  */
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Download, Maximize2, Minimize2, AlertCircle, RefreshCw, Plus } from 'lucide-react';
+import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
 import { addMonths, subMonths } from 'date-fns';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 
