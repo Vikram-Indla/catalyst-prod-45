@@ -1,10 +1,9 @@
 /**
- * FeatureFlagsPage — Stage E: QA & Polish (Cycles 1-3)
- * All interactions wired to Supabase. Zero hardcoded data.
- * V12 Hybrid Precision design system compliant.
+ * FeatureFlagsPage — Nuclear Fix: 11 Critical Defects
+ * V12 Hybrid Precision. All data from Supabase.
  */
 
-import React, { useState, useMemo, useCallback, useEffect, useRef, memo } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import {
   useAdminFeatureFlags,
   useAdminFeatureFlagStats,
@@ -15,51 +14,51 @@ import { featureFlagService } from '@/services/feature-flags';
 import type { FeatureFlag, EnvironmentScope, ModuleCategory } from '@/types/feature-flags';
 import { toast } from 'sonner';
 import {
-  Search, RefreshCw, AlertCircle, Flag, ToggleLeft, ToggleRight,
-  ArrowUpDown, ArrowUp, ArrowDown, Filter, X,
+  Search, RefreshCw, AlertCircle, Flag, Check, X,
+  ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, ChevronRight,
   Compass, Calendar, CheckSquare, Package, FolderKanban,
   Layers, Users, ShieldCheck, Rocket, AlertTriangle,
-  BookOpen, BarChart3, DollarSign, Sparkles, Library,
-  ListChecks, Building2, Box, Settings,
+  BookOpen, BarChart3, DollarSign, Box, Settings, MoreHorizontal,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
-} from '@/components/ui/dialog';
+  AlertDialog, AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 // ── Constants ──────────────────────────────────────────────
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Compass, Calendar, CheckSquare, Package, FolderKanban,
   Layers, Users, ShieldCheck, Rocket, AlertTriangle,
-  BookOpen, BarChart3, DollarSign, Sparkles, Library,
-  ListChecks, Building2, Box, Flag, Settings,
+  BookOpen, BarChart3, DollarSign, Box, Settings,
 };
 
 const resolveIcon = (name: string): React.ElementType => ICON_MAP[name] || Box;
 
-const COLOR_MAP: Record<string, string> = {
-  blue: 'bg-[#DEEBFF] text-[#0747A6]',
-  purple: 'bg-[#EDE9FE] text-[#7C3AED]',
-  teal: 'bg-[#E3FCEF] text-[#006644]',
-  red: 'bg-[#FFEBE6] text-[#BF2600]',
-  neutral: 'bg-[#DFE1E6] text-[#253858]',
+const ICON_COLOR_MAP: Record<string, { bg: string; text: string }> = {
+  blue:    { bg: '#DEEBFF', text: '#0747A6' },
+  teal:    { bg: '#E3FCEF', text: '#006644' },
+  red:     { bg: '#FFEBE6', text: '#BF2600' },
+  neutral: { bg: '#DFE1E6', text: '#253858' },
 };
 
-// V12 StatusLozenge: Grey, Blue, Green ONLY
+// V12 StatusLozenge: LIVE=Green, DRAFT=Grey, BETA=Blue
 const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
   live:  { bg: '#E3FCEF', text: '#006644' },
   draft: { bg: '#DFE1E6', text: '#253858' },
   beta:  { bg: '#DEEBFF', text: '#0747A6' },
 };
 
-const CATEGORY_LOZENGE: Record<ModuleCategory, { bg: string; text: string }> = {
-  Strategy:   { bg: '#DEEBFF', text: '#0747A6' },
-  Product:    { bg: '#DEEBFF', text: '#0747A6' },
-  Delivery:   { bg: '#DEEBFF', text: '#0747A6' },
-  Quality:    { bg: '#E3FCEF', text: '#006644' },
-  Operations: { bg: '#DFE1E6', text: '#253858' },
+// D03: Category badges with distinct colors per MARAM V3.1.1
+const CATEGORY_BADGE: Record<ModuleCategory, { bg: string; text: string; border: string }> = {
+  Strategy:   { bg: '#EFF6FF', text: '#2563EB', border: '#BFDBFE' },
+  Product:    { bg: '#F4F4F5', text: '#3F3F46', border: '#D4D4D8' },
+  Delivery:   { bg: '#EFF6FF', text: '#2563EB', border: '#BFDBFE' },
+  Quality:    { bg: '#F0FDFA', text: '#0D9488', border: '#99F6E4' },
+  Operations: { bg: '#FEF2F2', text: '#DC2626', border: '#FECACA' },
 };
 
 const ENVIRONMENTS: { value: EnvironmentScope; label: string }[] = [
@@ -71,6 +70,9 @@ const ENVIRONMENTS: { value: EnvironmentScope; label: string }[] = [
 const CATEGORIES: ModuleCategory[] = ['Strategy', 'Product', 'Delivery', 'Quality', 'Operations'];
 
 type FilterMode = 'all' | 'enabled' | 'disabled';
+
+// Grid columns: checkbox | module | category | status | enabled(toggle) | updated | actions
+const GRID_COLS = '40px 1fr 100px 80px 72px 150px 72px';
 
 // ── Debounce hook ──────────────────────────────────────────
 function useDebounce(value: string, delay: number) {
@@ -93,23 +95,24 @@ interface RowProps {
 
 const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, onSelect }: RowProps) {
   const Icon = resolveIcon(flag.icon_name);
-  const colorClass = COLOR_MAP[flag.icon_color] || COLOR_MAP.neutral;
+  const iconColor = ICON_COLOR_MAP[flag.icon_color] || ICON_COLOR_MAP.neutral;
   const statusStyle = STATUS_LOZENGE[flag.status] || STATUS_LOZENGE.draft;
+  const catStyle = CATEGORY_BADGE[flag.category] || CATEGORY_BADGE.Operations;
   const description = flag.description || flag.module_key;
   const updatedByName = flag.updated_by_name || 'System';
 
   return (
     <div
-      className={`grid items-center gap-0 transition-colors duration-[120ms] ease-out ${
-        isSelected
-          ? 'bg-[rgba(37,99,235,0.08)]'
-          : 'hover:bg-[rgba(15,23,42,0.04)]'
-      }`}
+      className="group grid items-center gap-0 bg-white"
       style={{
-        gridTemplateColumns: '40px 1fr 100px 80px 80px 140px 60px',
-        height: 44,
+        gridTemplateColumns: GRID_COLS,
+        height: 52,
         borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+        transition: 'background-color 120ms ease',
+        ...(isSelected ? { backgroundColor: 'rgba(37,99,235,0.08)' } : {}),
       }}
+      onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'rgba(15,23,42,0.04)'; }}
+      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = '#FFFFFF'; }}
     >
       {/* Checkbox */}
       <div className="flex items-center justify-center">
@@ -124,29 +127,23 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
 
       {/* Module */}
       <div className="flex items-center gap-3 px-3 min-w-0">
-        <div className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 ${colorClass}`}>
+        <div
+          className="w-[34px] h-[34px] rounded-md flex items-center justify-center flex-shrink-0"
+          style={{ background: iconColor.bg, color: iconColor.text }}
+        >
           <Icon size={16} />
         </div>
         <div className="min-w-0">
           <div
             className="truncate"
-            style={{
-              fontFamily: "'Inter', system-ui, sans-serif",
-              fontSize: 13,
-              fontWeight: 600,
-              color: '#0F172A',
-            }}
+            style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 13, fontWeight: 600, color: '#0F172A' }}
             title={flag.module_name}
           >
             {flag.module_name}
           </div>
           <div
             className="truncate"
-            style={{
-              fontFamily: "'Inter', system-ui, sans-serif",
-              fontSize: 11,
-              color: '#71717A',
-            }}
+            style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 11, color: '#71717A', maxWidth: 280 }}
             title={description}
           >
             {description}
@@ -154,19 +151,21 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
         </div>
       </div>
 
-      {/* Category — V12 Lozenge */}
+      {/* Category Badge — D03 */}
       <div className="px-3">
         <span
-          className="inline-flex items-center px-2 rounded"
+          className="inline-flex items-center"
           style={{
             height: 20,
-            background: CATEGORY_LOZENGE[flag.category]?.bg || '#DFE1E6',
-            color: CATEGORY_LOZENGE[flag.category]?.text || '#253858',
+            padding: '0 6px',
+            background: catStyle.bg,
+            color: catStyle.text,
+            border: `1px solid ${catStyle.border}`,
             fontFamily: "'Inter', system-ui, sans-serif",
             fontSize: 11,
-            fontWeight: 700,
+            fontWeight: 600,
             letterSpacing: '0.03em',
-            textTransform: 'uppercase' as const,
+            textTransform: 'uppercase',
             borderRadius: 3,
           }}
           aria-label={`Category: ${flag.category}`}
@@ -175,19 +174,20 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
         </span>
       </div>
 
-      {/* Status — V12 StatusLozenge */}
+      {/* Status — D06: LIVE=Green */}
       <div className="px-3">
         <span
-          className="inline-flex items-center px-2 rounded"
+          className="inline-flex items-center"
           style={{
             height: 20,
+            padding: '0 6px',
             background: statusStyle.bg,
             color: statusStyle.text,
             fontFamily: "'Inter', system-ui, sans-serif",
             fontSize: 11,
             fontWeight: 700,
             letterSpacing: '0.03em',
-            textTransform: 'uppercase' as const,
+            textTransform: 'uppercase',
             borderRadius: 3,
           }}
           aria-label={`Status: ${flag.status}`}
@@ -196,77 +196,107 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
         </span>
       </div>
 
-      {/* State */}
-      <div className="px-3">
-        <span
-          className="inline-flex items-center gap-1"
+      {/* Toggle — D04: Real switch */}
+      <div className="flex items-center justify-center">
+        <Switch
+          checked={flag.enabled}
+          onCheckedChange={(checked) => onToggle(flag, checked)}
+          disabled={isPending}
+          aria-label={`${flag.enabled ? 'Disable' : 'Enable'} ${flag.module_name}`}
           style={{
-            fontFamily: "'Inter', system-ui, sans-serif",
-            fontSize: 11,
-            fontWeight: 600,
-            color: flag.enabled ? '#16A34A' : '#71717A',
+            opacity: isPending ? 0.6 : 1,
+            cursor: isPending ? 'wait' : 'pointer',
           }}
-        >
-          <span
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: '50%',
-              background: flag.enabled ? '#16A34A' : 'rgba(113,113,122,0.4)',
-            }}
-          />
-          {flag.enabled ? 'On' : 'Off'}
-        </span>
+        />
       </div>
 
       {/* Updated */}
       <div className="px-3 min-w-0">
-        <div
-          style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 12,
-            color: '#334155',
-            fontVariantNumeric: 'tabular-nums',
-          }}
-        >
-          {new Date(flag.updated_at).toLocaleDateString('en-GB', {
-            day: '2-digit', month: 'short', year: 'numeric',
-          })}
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#334155', fontVariantNumeric: 'tabular-nums' }}>
+          {new Date(flag.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
         </div>
         <div
           className="truncate"
-          style={{
-            fontFamily: "'Inter', system-ui, sans-serif",
-            fontSize: 11,
-            color: '#94A3B8',
-          }}
+          style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 11, color: '#94A3B8', maxWidth: 120 }}
           title={updatedByName}
         >
           {updatedByName}
         </div>
       </div>
 
-      {/* Toggle */}
-      <div className="flex items-center justify-center">
+      {/* D10: Hover-reveal row actions */}
+      <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-[120ms]">
         <button
-          role="switch"
-          aria-checked={flag.enabled}
-          aria-label={`${flag.enabled ? 'Disable' : 'Enable'} ${flag.module_name}`}
-          onClick={() => onToggle(flag, !flag.enabled)}
-          disabled={isPending}
-          className="transition-opacity duration-200 rounded-full p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-          style={{
-            opacity: isPending ? 0.6 : 1,
-            cursor: isPending ? 'wait' : 'pointer',
-          }}
+          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+          aria-label="Configure module"
+          style={{ borderRadius: 4 }}
         >
-          {flag.enabled ? (
-            <ToggleRight size={28} style={{ color: '#16A34A' }} />
-          ) : (
-            <ToggleLeft size={28} style={{ color: '#94A3B8' }} />
-          )}
+          <Settings size={16} style={{ color: '#64748B' }} />
+        </button>
+        <button
+          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+          aria-label="More options"
+          style={{ borderRadius: 4 }}
+        >
+          <MoreHorizontal size={16} style={{ color: '#64748B' }} />
         </button>
       </div>
+    </div>
+  );
+});
+
+// ── Group Header Row ───────────────────────────────────────
+interface GroupHeaderProps {
+  category: ModuleCategory;
+  count: number;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+  isFirst: boolean;
+}
+
+const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollapsed, onToggleCollapse, isFirst }: GroupHeaderProps) {
+  return (
+    <div
+      className="flex items-center gap-2 cursor-pointer select-none"
+      onClick={onToggleCollapse}
+      style={{
+        height: 36,
+        padding: '0 12px',
+        background: '#F8FAFC',
+        borderTop: isFirst ? 'none' : '0.75px solid rgba(15,23,42,0.12)',
+        borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+      }}
+      role="row"
+      aria-expanded={!isCollapsed}
+    >
+      {isCollapsed ? (
+        <ChevronRight size={16} style={{ color: '#94A3B8' }} />
+      ) : (
+        <ChevronDown size={16} style={{ color: '#94A3B8' }} />
+      )}
+      <span style={{
+        fontFamily: "'Inter', system-ui, sans-serif",
+        fontSize: 11,
+        fontWeight: 600,
+        letterSpacing: '0.06em',
+        textTransform: 'uppercase',
+        color: '#64748B',
+      }}>
+        {category}
+      </span>
+      <span
+        style={{
+          fontFamily: "'Inter', system-ui, sans-serif",
+          fontSize: 11,
+          fontWeight: 500,
+          color: '#64748B',
+          background: '#E5E5E5',
+          borderRadius: 9999,
+          padding: '1px 6px',
+        }}
+      >
+        {count}
+      </span>
     </div>
   );
 });
@@ -284,13 +314,14 @@ export default function FeatureFlagsPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDisableOpen, setBulkDisableOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<ModuleCategory>>(new Set());
 
   const { data: flags, isLoading, isFetching, error, refetch } = useAdminFeatureFlags(environment);
   const { data: stats } = useAdminFeatureFlagStats(environment);
   const toggleMutation = useToggleAdminFeatureFlag();
   const bulkMutation = useBulkToggleAdminFeatureFlags();
 
-  // Derived: filter + search + sort (all from Supabase data)
+  // Derived: filter + search + sort
   const filteredFlags = useMemo(() => {
     if (!flags) return [];
     let result = [...flags];
@@ -314,6 +345,18 @@ export default function FeatureFlagsPage() {
     }
     return result;
   }, [flags, filterMode, categoryFilter, searchQuery, sortField, sortDir]);
+
+  // Group by category
+  const groupedFlags = useMemo(() => {
+    const groups: { category: ModuleCategory; flags: FeatureFlag[] }[] = [];
+    for (const cat of CATEGORIES) {
+      const catFlags = filteredFlags.filter((f) => f.category === cat);
+      if (catFlags.length > 0) {
+        groups.push({ category: cat, flags: catFlags.sort((a, b) => a.sort_order - b.sort_order) });
+      }
+    }
+    return groups;
+  }, [filteredFlags]);
 
   // Handlers
   const handleToggle = useCallback(
@@ -352,11 +395,6 @@ export default function FeatureFlagsPage() {
     setSelectedIds((prev) => { const next = new Set(prev); checked ? next.add(id) : next.delete(id); return next; });
   }, []);
 
-  const handleBulkEnable = useCallback(() => {
-    selectedIds.forEach((id) => toggleMutation.mutate({ id, enabled: true, environment }));
-    setSelectedIds(new Set());
-  }, [selectedIds, environment, toggleMutation]);
-
   const handleBulkDisableConfirm = useCallback(() => {
     if (confirmText !== 'DISABLE') return;
     bulkMutation.mutate({ enabled: false, environment });
@@ -376,25 +414,33 @@ export default function FeatureFlagsPage() {
     setCategoryFilter('all');
   }, []);
 
+  const toggleGroupCollapse = useCallback((cat: ModuleCategory) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      next.has(cat) ? next.delete(cat) : next.add(cat);
+      return next;
+    });
+  }, []);
+
   const allEnabled = flags?.every((f) => f.enabled) ?? false;
   const noneEnabled = flags?.every((f) => !f.enabled) ?? true;
+  const hasActiveFilters = searchInput.trim() || filterMode !== 'all' || categoryFilter !== 'all';
 
   // ── Loading: first load → full skeleton ────────────────
   if (isLoading) {
     return (
-      <div className="flex-1 min-w-0" style={{ padding: '24px 32px' }}>
-        <div className="h-7 w-48 bg-muted rounded mb-1 animate-pulse" />
-        <div className="h-4 w-80 bg-muted rounded mb-6 animate-pulse" />
-        <div className="h-14 bg-muted/50 border border-border rounded-md mb-4 animate-pulse" />
+      <div className="flex-1 min-w-0 bg-white" style={{ padding: '24px 32px' }}>
+        <div className="h-7 w-48 bg-[#F1F5F9] rounded mb-1 animate-pulse" />
+        <div className="h-4 w-80 bg-[#F1F5F9] rounded mb-6 animate-pulse" />
+        <div className="h-14 bg-[#F1F5F9] rounded-md mb-4 animate-pulse" style={{ border: '0.75px solid rgba(15,23,42,0.12)', borderRadius: 6 }} />
         <div className="flex gap-2 mb-3">
-          <div className="h-9 w-64 bg-muted rounded animate-pulse" />
-          <div className="h-9 w-16 bg-muted rounded animate-pulse" />
-          <div className="h-9 w-24 bg-muted rounded animate-pulse" />
+          <div className="h-9 w-64 bg-[#F1F5F9] rounded animate-pulse" />
+          <div className="h-9 w-16 bg-[#F1F5F9] rounded animate-pulse" />
         </div>
-        <div className="overflow-hidden" style={{ border: '0.75px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-          <div className="h-10" style={{ background: '#F8FAFC', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }} />
+        <div className="overflow-hidden bg-white" style={{ border: '0.75px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
+          <div style={{ height: 40, background: '#F1F5F9', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }} />
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="animate-pulse" style={{ height: 44, borderBottom: '0.75px solid rgba(15,23,42,0.06)' }} />
+            <div key={i} className="animate-pulse bg-white" style={{ height: 52, borderBottom: '0.75px solid rgba(15,23,42,0.06)' }} />
           ))}
         </div>
       </div>
@@ -404,7 +450,7 @@ export default function FeatureFlagsPage() {
   // ── Error state ─────────────────────────────────────────
   if (error) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center py-20 gap-3">
+      <div className="flex-1 flex flex-col items-center justify-center py-20 gap-3 bg-white">
         <AlertCircle className="w-12 h-12" style={{ color: '#DC2626' }} />
         <p style={{ fontFamily: "'Inter', system-ui", fontSize: 14, fontWeight: 650, color: '#0F172A' }}>
           Failed to load feature flags
@@ -427,10 +473,9 @@ export default function FeatureFlagsPage() {
 
   const allSelected = filteredFlags.length > 0 && selectedIds.size === filteredFlags.length;
   const someSelected = selectedIds.size > 0 && selectedIds.size < filteredFlags.length;
-  const hasActiveFilters = searchInput.trim() || filterMode !== 'all' || categoryFilter !== 'all';
 
   return (
-    <div className="flex-1 min-w-0" style={{ padding: '24px 32px' }}>
+    <div className="flex-1 min-w-0 bg-white" style={{ padding: '24px 32px' }}>
       {/* ── Header ─────────────────────────────────────── */}
       <div className="flex items-start justify-between mb-5">
         <div>
@@ -481,46 +526,99 @@ export default function FeatureFlagsPage() {
         ))}
       </div>
 
-      {/* ── Stats Bar ──────────────────────────────────── */}
+      {/* ── Stats Bar — D07 + D08 ──────────────────────── */}
       {stats && (
         <div
-          className="flex items-center gap-6 mb-4"
+          className="flex items-center mb-4"
           style={{
-            padding: '12px 16px',
+            padding: '10px 16px',
             border: '0.75px solid rgba(15,23,42,0.12)',
             borderRadius: 6,
-            background: '#F8FAFC',
+            background: '#F1F5F9',
+            gap: 0,
           }}
         >
-          <div className="flex items-center gap-2">
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, color: '#0F172A', fontVariantNumeric: 'tabular-nums' }}>
+          {/* Left: count */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 700, color: '#0F172A', fontVariantNumeric: 'tabular-nums' }}>
               {stats.enabled}
             </span>
-            <span style={{ fontSize: 16, color: '#94A3B8' }}>/</span>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, color: '#94A3B8', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: 14, color: '#94A3B8' }}>/</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: '#94A3B8', fontVariantNumeric: 'tabular-nums' }}>
               {stats.total}
             </span>
-            <span style={{ fontFamily: "'Inter', system-ui", fontSize: 12, color: '#71717A', marginLeft: 4 }}>modules enabled</span>
+            <span style={{ fontFamily: "'Inter', system-ui", fontSize: 12, color: '#71717A', marginLeft: 2 }}>modules enabled</span>
           </div>
-          <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: '#DFE1E6' }}>
-            <div
-              className="h-full rounded-full"
+
+          {/* Divider */}
+          <div style={{ width: 0.75, height: 28, background: 'rgba(15,23,42,0.12)', margin: '0 16px', flexShrink: 0 }} />
+
+          {/* Center: progress */}
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: '#DFE1E6' }}>
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: stats.total > 0 ? `${(stats.enabled / stats.total) * 100}%` : '0%',
+                  background: '#16A34A',
+                  transition: 'width 300ms ease-out',
+                }}
+              />
+            </div>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#71717A', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
+              {stats.total > 0 ? ((stats.enabled / stats.total) * 100).toFixed(1) : '0.0'}%
+            </span>
+          </div>
+
+          {/* Divider */}
+          <div style={{ width: 0.75, height: 28, background: 'rgba(15,23,42,0.12)', margin: '0 16px', flexShrink: 0 }} />
+
+          {/* Right: Enable All / Disable All — D08 */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => { if (!allEnabled) bulkMutation.mutate({ enabled: true, environment }); }}
+              disabled={allEnabled || bulkMutation.isPending}
+              className="inline-flex items-center gap-1.5 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
-                width: stats.total > 0 ? `${(stats.enabled / stats.total) * 100}%` : '0%',
-                background: '#2563EB',
-                transition: 'width 300ms ease-out',
+                height: 36,
+                padding: '0 14px',
+                borderRadius: 6,
+                background: '#16A34A',
+                fontFamily: "'Inter', system-ui",
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: allEnabled ? 'not-allowed' : 'pointer',
+                transition: 'background 120ms ease',
               }}
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            {Object.entries(stats.by_category).map(([cat, data]) => (
-              <span key={cat} style={{ fontFamily: "'Inter', system-ui", fontSize: 11 }}>
-                <span style={{ fontWeight: 650, color: '#0F172A' }}>{cat}</span>{' '}
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#71717A', fontVariantNumeric: 'tabular-nums' }}>
-                  {data.enabled}/{data.total}
-                </span>
-              </span>
-            ))}
+              onMouseEnter={(e) => { if (!allEnabled) (e.currentTarget.style.background = '#15803D'); }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#16A34A'; }}
+            >
+              {bulkMutation.isPending ? <RefreshCw size={14} className="animate-spin" /> : <Check size={16} />}
+              Enable All
+            </button>
+            <button
+              onClick={() => { if (!noneEnabled) setBulkDisableOpen(true); }}
+              disabled={noneEnabled || bulkMutation.isPending}
+              className="inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                height: 36,
+                padding: '0 14px',
+                borderRadius: 6,
+                background: 'transparent',
+                border: '0.75px solid #DC2626',
+                color: '#DC2626',
+                fontFamily: "'Inter', system-ui",
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: noneEnabled ? 'not-allowed' : 'pointer',
+                transition: 'background 120ms ease',
+              }}
+              onMouseEnter={(e) => { if (!noneEnabled) (e.currentTarget.style.background = '#FEF2F2'); }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <X size={16} />
+              Disable All
+            </button>
           </div>
         </div>
       )}
@@ -583,7 +681,7 @@ export default function FeatureFlagsPage() {
           {CATEGORIES.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
         </select>
 
-        {/* Bulk actions */}
+        {/* Bulk actions for selected */}
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-2 ml-auto animate-fade-in">
             <span style={{ fontFamily: "'Inter', system-ui", fontSize: 12, color: '#71717A' }}>
@@ -594,30 +692,23 @@ export default function FeatureFlagsPage() {
               variant="outline"
               className="h-8 gap-1 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
               style={{ fontSize: 12, borderRadius: 6 }}
-              onClick={handleBulkEnable}
+              onClick={() => {
+                selectedIds.forEach((id) => toggleMutation.mutate({ id, enabled: true, environment }));
+                setSelectedIds(new Set());
+              }}
               disabled={toggleMutation.isPending}
             >
-              {toggleMutation.isPending ? <RefreshCw size={12} className="animate-spin" /> : <ToggleRight size={13} />}
-              Enable
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8 gap-1 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-              style={{ fontSize: 12, borderRadius: 6, color: '#DC2626', borderColor: 'rgba(220,38,38,0.3)' }}
-              onClick={() => setBulkDisableOpen(true)}
-            >
-              <ToggleLeft size={13} />
-              Disable All
+              Enable Selected
             </Button>
           </div>
         )}
       </div>
 
-      {/* ── Table ──────────────────────────────────────── */}
+      {/* ── Table — D05 grouped + D09 52px rows ────────── */}
       <div
         aria-label="Feature flags"
         role="table"
+        className="bg-white"
         style={{
           border: '0.75px solid rgba(15,23,42,0.12)',
           borderRadius: 6,
@@ -626,14 +717,14 @@ export default function FeatureFlagsPage() {
           transition: 'opacity 200ms ease',
         }}
       >
-        {/* Header */}
+        {/* Header — thead on #F1F5F9 */}
         <div
           role="row"
           className="grid items-center gap-0"
           style={{
-            gridTemplateColumns: '40px 1fr 100px 80px 80px 140px 60px',
+            gridTemplateColumns: GRID_COLS,
             height: 40,
-            background: '#F8FAFC',
+            background: '#F1F5F9',
             borderBottom: '0.75px solid rgba(15,23,42,0.06)',
             fontFamily: "'Inter', system-ui, sans-serif",
             fontSize: 11,
@@ -641,7 +732,6 @@ export default function FeatureFlagsPage() {
             letterSpacing: '0.06em',
             textTransform: 'uppercase',
             color: '#71717A',
-            padding: '0',
           }}
         >
           <div className="flex items-center justify-center">
@@ -657,11 +747,11 @@ export default function FeatureFlagsPage() {
           <div style={{ padding: '0 12px' }}>Module</div>
           <div style={{ padding: '0 12px' }}>Category</div>
           <div style={{ padding: '0 12px' }}>Status</div>
-          <div style={{ padding: '0 12px' }}>State</div>
+          <div style={{ padding: '0 12px', textAlign: 'center' }}>Enabled</div>
           <div
             style={{ padding: '0 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
             onClick={() => handleSort('updated_at')}
-            className="select-none hover:text-foreground transition-colors duration-[120ms]"
+            className="select-none hover:text-[#0F172A] transition-colors duration-[120ms]"
             role="columnheader"
             tabIndex={0}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort('updated_at'); } }}
@@ -673,12 +763,12 @@ export default function FeatureFlagsPage() {
               <ArrowUpDown size={11} className="opacity-40" />
             )}
           </div>
-          <div style={{ padding: '0 12px', textAlign: 'center' }}>Toggle</div>
+          <div />
         </div>
 
-        {/* Rows */}
+        {/* Rows — grouped by category */}
         {filteredFlags.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3">
+          <div className="flex flex-col items-center justify-center py-16 gap-3 bg-white">
             {flags?.length === 0 ? (
               <>
                 <Settings size={48} style={{ color: 'rgba(15,23,42,0.15)' }} />
@@ -696,13 +786,7 @@ export default function FeatureFlagsPage() {
                   No modules match your filters
                 </p>
                 {hasActiveFilters && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={clearFilters}
-                    className="gap-1.5 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-                    style={{ borderRadius: 6 }}
-                  >
+                  <Button variant="outline" size="sm" onClick={clearFilters} className="gap-1.5" style={{ borderRadius: 6 }}>
                     <X size={13} />
                     Clear Filters
                   </Button>
@@ -711,15 +795,27 @@ export default function FeatureFlagsPage() {
             )}
           </div>
         ) : (
-          filteredFlags.map((flag) => (
-            <FlagRow
-              key={flag.id}
-              flag={flag}
-              isSelected={selectedIds.has(flag.id)}
-              isPending={toggleMutation.isPending}
-              onToggle={handleToggle}
-              onSelect={handleSelectRow}
-            />
+          groupedFlags.map((group, gi) => (
+            <React.Fragment key={group.category}>
+              <GroupHeaderRow
+                category={group.category}
+                count={group.flags.length}
+                isCollapsed={collapsedGroups.has(group.category)}
+                onToggleCollapse={() => toggleGroupCollapse(group.category)}
+                isFirst={gi === 0}
+              />
+              {!collapsedGroups.has(group.category) &&
+                group.flags.map((flag) => (
+                  <FlagRow
+                    key={flag.id}
+                    flag={flag}
+                    isSelected={selectedIds.has(flag.id)}
+                    isPending={toggleMutation.isPending}
+                    onToggle={handleToggle}
+                    onSelect={handleSelectRow}
+                  />
+                ))}
+            </React.Fragment>
           ))
         )}
       </div>
@@ -741,33 +837,32 @@ export default function FeatureFlagsPage() {
         <span>Changes take effect immediately for all users</span>
       </div>
 
-      {/* ── Bulk Disable Confirmation Modal ─────────────── */}
-      <Dialog open={bulkDisableOpen} onOpenChange={(open) => { setBulkDisableOpen(open); if (!open) setConfirmText(''); }}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2" style={{ color: '#DC2626' }}>
+      {/* ── Bulk Disable Confirmation — AlertDialog (D08) ── */}
+      <AlertDialog open={bulkDisableOpen} onOpenChange={(open) => { setBulkDisableOpen(open); if (!open) setConfirmText(''); }}>
+        <AlertDialogContent className="sm:max-w-md" style={{ borderRadius: 8 }}>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2" style={{ color: '#DC2626' }}>
               <AlertCircle size={18} />
-              Disable All Modules
-            </DialogTitle>
-            <DialogDescription>
-              This will disable <strong>all modules</strong> across the{' '}
-              <strong>{environment}</strong> environment. Users will see "Coming Soon"
-              placeholders. Type <strong>DISABLE</strong> to confirm.
-            </DialogDescription>
-          </DialogHeader>
+              Disable All Modules?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will disable all <strong>{stats?.total ?? 0}</strong> modules in the{' '}
+              <strong>{environment}</strong> environment. Users will lose access to all hub functionality.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
           <Input
-            placeholder="Type DISABLE to confirm"
+            placeholder='Type "DISABLE" to confirm'
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
             className="mt-2 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
             style={{ borderRadius: 4, border: '0.75px solid rgba(15,23,42,0.14)' }}
             autoFocus
-            onKeyDown={(e) => { if (e.key === 'Enter') handleBulkDisableConfirm(); }}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleBulkDisableConfirm(); if (e.key === 'Escape') { setBulkDisableOpen(false); setConfirmText(''); } }}
           />
-          <DialogFooter className="mt-4">
+          <AlertDialogFooter className="mt-4">
             <Button
               variant="outline"
-              onClick={() => setBulkDisableOpen(false)}
+              onClick={() => { setBulkDisableOpen(false); setConfirmText(''); }}
               style={{ borderRadius: 6 }}
               className="focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
             >
@@ -783,9 +878,9 @@ export default function FeatureFlagsPage() {
               {bulkMutation.isPending && <RefreshCw size={14} className="animate-spin mr-2" />}
               Disable All Modules
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
