@@ -163,7 +163,7 @@ export function useIsModuleEnabled(moduleCode: string) {
   if (!orgModules) return true; // Default to enabled while loading
   
   const module = orgModules.find(m => m.module_code === moduleCode);
-  return module?.is_enabled ?? false;
+  return module?.is_enabled ?? true;
 }
 
 export function useEnabledModules() {
@@ -174,6 +174,6 @@ export function useEnabledModules() {
   return {
     enabledModules,
     isLoading,
-    isModuleEnabled: (code: string) => enabledModules.includes(code),
+    isModuleEnabled: (code: string) => isLoading || enabledModules.includes(code),
   };
 }

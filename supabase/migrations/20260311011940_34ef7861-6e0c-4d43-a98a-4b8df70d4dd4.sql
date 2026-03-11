@@ -1,0 +1,1 @@
+UPDATE org_modules SET is_enabled = true, updated_at = now() WHERE is_enabled = false;
