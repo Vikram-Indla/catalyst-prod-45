@@ -132,14 +132,7 @@ export default function IdeationPage() {
 
   return (
     <div className="flex flex-col h-full" style={{ background: '#FFFFFF' }}>
-      {/* ─── Breadcrumb ─── */}
-      <div style={{ padding: '8px 28px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <span style={{ fontSize: '12px', color: '#94A3B8' }}>ProductHub</span>
-        <span style={{ fontSize: '12px', color: '#94A3B8' }}>›</span>
-        <span style={{ fontSize: '12px', color: '#94A3B8' }}>Ideation</span>
-        <span style={{ fontSize: '12px', color: '#94A3B8' }}>›</span>
-        <span style={{ fontSize: '12px', color: '#0F172A', fontWeight: 600 }}>Idea Backlog</span>
-      </div>
+      {/* Breadcrumb removed — sidebar + heading provide context */}
 
       {/* ─── Page Header ─── */}
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.08)' }}>

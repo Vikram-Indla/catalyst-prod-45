@@ -49,7 +49,7 @@ export const ideas: Idea[] = [];
 // ─── V12 STATUS LOZENGE — 3-COLOR GUARDRAIL (IMMUTABLE) — NO DOTS ─
 export const STATUS_CONFIG: Record<IdeaStatus, { bg: string; text: string; label: string }> = {
   draft:        { bg: '#DFE1E6', text: '#253858', label: 'Draft' },
-  submitted:    { bg: '#DFE1E6', text: '#253858', label: 'Submitted' },
+  submitted:    { bg: '#DEEBFF', text: '#0747A6', label: 'Submitted' },
   under_review: { bg: '#DEEBFF', text: '#0747A6', label: 'Under Review' },
   approved:     { bg: '#E3FCEF', text: '#006644', label: 'Approved' },
   rejected:     { bg: '#DFE1E6', text: '#253858', label: 'Rejected' },

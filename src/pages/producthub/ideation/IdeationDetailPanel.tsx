@@ -1,14 +1,14 @@
 /**
- * IdeationDetailPanel — NUCLEAR REDESIGN
- * 480px drawer, edit mode, V12 contrast, no dots, neutral dimension circles
- * Wiring Audit (Sacred Gate): CRUD calls ideationService, invalidates ['ideas','roadmap'] + ['initiatives']
+ * IdeationDetailPanel — NUCLEAR REWRITE
+ * 480px drawer, ALL 12 fields editable, V12 contrast, no dots, neutral dimension circles
+ * Wiring Audit (Sacred Gate): CRUD calls ph_ideas .update(), invalidates all idea query keys
  */
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Edit2, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Idea, STATUS_CONFIG, PRIORITY_CONFIG, QUARTER_BADGE, IDEA_IMPACT_FACTORS, getImpactColor } from './ideation-data';
+import { PRIORITY_CONFIG, QUARTER_BADGE } from './ideation-data';
 import { useIdeaRaw, useImpactFactors, useIdeaComments, useAddIdeaComment } from '@/hooks/useIdeation';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -23,21 +23,99 @@ function useUpdateIdea() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Record<string, any> }) => {
+      console.log('[useUpdateIdea] Updating idea:', id, updates);
       const { data, error } = await supabase
         .from('ph_ideas')
         .update({ ...updates, updated_at: new Date().toISOString() } as any)
         .eq('id', id)
         .select()
         .single();
-      if (error) throw error;
+      if (error) {
+        console.error('[useUpdateIdea] Supabase error:', error);
+        throw error;
+      }
+      console.log('[useUpdateIdea] Update successful:', data);
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      queryClient.invalidateQueries({ queryKey: ['ideas', 'roadmap'] });
       queryClient.invalidateQueries({ queryKey: ['ideas-roadmap'] });
       queryClient.invalidateQueries({ queryKey: ['initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['ideaRaw'] });
+      queryClient.invalidateQueries({ queryKey: ['ideaImpactFactors'] });
+      queryClient.invalidateQueries({ queryKey: ['ideaStatusCounts'] });
+      toast.success('Idea updated successfully');
+    },
+    onError: (error: any) => {
+      console.error('[useUpdateIdea] Mutation error:', error);
+      toast.error('Failed to update idea: ' + (error?.message || 'Unknown error'));
     },
   });
+}
+
+// ─── Status Lozenge — 3-color guardrail, NO DOTS ─────────────────
+const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
+  'Draft':        { bg: '#DFE1E6', text: '#253858' },
+  'New':          { bg: '#DFE1E6', text: '#253858' },
+  'Submitted':    { bg: '#DEEBFF', text: '#0747A6' },
+  'Under Review': { bg: '#DEEBFF', text: '#0747A6' },
+  'In Progress':  { bg: '#DEEBFF', text: '#0747A6' },
+  'Approved':     { bg: '#E3FCEF', text: '#006644' },
+  'Converted':    { bg: '#E3FCEF', text: '#006644' },
+  'Done':         { bg: '#E3FCEF', text: '#006644' },
+};
+
+function StatusLozenge({ status }: { status: string }) {
+  const s = STATUS_LOZENGE[status] ?? { bg: '#DFE1E6', text: '#253858' };
+  return (
+    <span style={{
+      display: 'inline-block', padding: '2px 8px', borderRadius: '3px',
+      backgroundColor: s.bg, color: s.text,
+      fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
+      lineHeight: '16px', whiteSpace: 'nowrap',
+    }}>
+      {status.toUpperCase()}
+    </span>
+  );
+}
+
+function PriorityLozenge({ priority }: { priority: string }) {
+  const c = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.P4;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      height: 20, minWidth: 26, padding: '0 4px', borderRadius: 3,
+      fontSize: '11px', fontWeight: 650,
+      background: c.bg, color: c.text, border: `1px solid ${c.border}`,
+    }}>
+      {priority}
+    </span>
+  );
+}
+
+// ─── Shared styles ───────────────────────────────────────────────
+const selectStyle: React.CSSProperties = {
+  height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
+  padding: '0 8px', fontSize: '13px', color: '#0F172A', width: '100%', outline: 'none',
+};
+const inputStyle: React.CSSProperties = {
+  height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
+  padding: '0 8px', fontSize: '13px', color: '#0F172A', width: '100%', outline: 'none',
+};
+
+function FieldPair({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div>
+      <div style={{
+        fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
+        letterSpacing: '0.06em', color: '#64748B', marginBottom: '6px',
+      }}>
+        {label}
+      </div>
+      <div>{value}</div>
+    </div>
+  );
 }
 
 const formatSource = (source: string): string => {
@@ -48,40 +126,63 @@ const formatSource = (source: string): string => {
   return map[source?.toLowerCase()] || source || '—';
 };
 
+// ─── Main Component ──────────────────────────────────────────────
 export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Props) {
   const { data: rawIdea, isLoading } = useIdeaRaw(ideaKey);
   const { data: dbFactors } = useImpactFactors(ideaKey);
   const updateIdea = useUpdateIdea();
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [localStatus, setLocalStatus] = useState('');
-  const [localPriority, setLocalPriority] = useState('');
-  const [localTheme, setLocalTheme] = useState('');
-  const [localTeam, setLocalTeam] = useState('');
-  const [localDescription, setLocalDescription] = useState('');
   const isSaving = useRef(false);
 
-  // Populate local state when rawIdea loads
+  const [isEditing, setIsEditing] = useState(false);
+
+  // ═══ LOCAL STATE FOR ALL 11 EDITABLE FIELDS ═══
+  const [localStatus, setLocalStatus] = useState('');
+  const [localPriority, setLocalPriority] = useState('');
+  const [localType, setLocalType] = useState('');
+  const [localSource, setLocalSource] = useState('');
+  const [localTheme, setLocalTheme] = useState('');
+  const [localTeam, setLocalTeam] = useState('');
+  const [localTargetRelease, setLocalTargetRelease] = useState('');
+  const [localQuarter, setLocalQuarter] = useState('');
+  const [localAssignee, setLocalAssignee] = useState('');
+  const [localDescription, setLocalDescription] = useState('');
+  const [localIsCommitted, setLocalIsCommitted] = useState(false);
+
+  // ═══ SYNC LOCAL STATE FROM RAW IDEA ═══
   useEffect(() => {
     if (rawIdea) {
       setLocalStatus(rawIdea.status || 'Draft');
       setLocalPriority(rawIdea.priority || 'P2');
+      setLocalType(rawIdea.idea_type || 'Feature Request');
+      setLocalSource(rawIdea.source || 'internal');
       setLocalTheme(rawIdea.theme || '');
       setLocalTeam(rawIdea.assigned_team || '');
+      setLocalTargetRelease(rawIdea.target_release_date || '');
+      setLocalQuarter(rawIdea.roadmap_quarter || '');
+      setLocalAssignee(rawIdea.assigned_to_name || '');
       setLocalDescription(rawIdea.description || '');
+      setLocalIsCommitted(rawIdea.is_committed ?? false);
+      setIsEditing(false);
     }
-  }, [rawIdea]);
+  }, [rawIdea?.id]);
 
   const resetLocalState = () => {
     if (rawIdea) {
       setLocalStatus(rawIdea.status || 'Draft');
       setLocalPriority(rawIdea.priority || 'P2');
+      setLocalType(rawIdea.idea_type || 'Feature Request');
+      setLocalSource(rawIdea.source || 'internal');
       setLocalTheme(rawIdea.theme || '');
       setLocalTeam(rawIdea.assigned_team || '');
+      setLocalTargetRelease(rawIdea.target_release_date || '');
+      setLocalQuarter(rawIdea.roadmap_quarter || '');
+      setLocalAssignee(rawIdea.assigned_to_name || '');
       setLocalDescription(rawIdea.description || '');
+      setLocalIsCommitted(rawIdea.is_committed ?? false);
     }
   };
 
+  // ═══ SAVE — ALL FIELDS ═══
   const handleSave = async () => {
     if (!rawIdea?.id || isSaving.current) return;
     isSaving.current = true;
@@ -91,16 +192,20 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         updates: {
           status: localStatus,
           priority: localPriority,
+          idea_type: localType || null,
+          source: localSource || null,
           theme: localTheme || null,
           assigned_team: localTeam || null,
+          target_release_date: localTargetRelease || null,
+          roadmap_quarter: localQuarter || null,
+          assigned_to_name: localAssignee || null,
           description: localDescription || null,
+          is_committed: localIsCommitted,
         },
       });
-      toast.success('Idea updated successfully');
       setIsEditing(false);
     } catch (error) {
-      toast.error('Failed to update idea');
-      console.error(error);
+      console.error('[IdeationDetailPanel] Save failed:', error);
     } finally {
       isSaving.current = false;
     }
@@ -126,7 +231,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
   if (!rawIdea) return null;
 
   const impactScore = parseFloat(rawIdea.impact_total) || 0;
-  const factors = dbFactors || IDEA_IMPACT_FACTORS[rawIdea.idea_key] || { I: 0, M: 0, P: 0, A: 0, C: 0, T: 0 };
+  const factors = dbFactors || { I: 0, M: 0, P: 0, A: 0, C: 0, T: 0 };
   const assigneeName = rawIdea.assigned_to_name || null;
   const assigneeInitials = assigneeName ? assigneeName.split(' ').map((p: string) => p[0]).join('').toUpperCase().slice(0, 2) : '?';
   const quarter = rawIdea.roadmap_quarter || null;
@@ -153,7 +258,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           </span>
           <StatusLozenge status={localStatus} />
           <div style={{ flex: 1 }} />
-          <button onClick={() => setIsEditing(!isEditing)} style={{
+          <button onClick={() => isEditing ? resetLocalState() && setIsEditing(false) : setIsEditing(true)} style={{
             width: '32px', height: '32px', borderRadius: '6px',
             border: '1px solid rgba(15,23,42,0.12)',
             background: isEditing ? '#EFF6FF' : '#FFFFFF',
@@ -196,9 +301,11 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
             </div>
           )}
 
-          {/* Details Grid */}
+          {/* ═══ DETAILS GRID — ALL 12 FIELDS ═══ */}
           <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+
+              {/* STATUS — editable */}
               <FieldPair label="Status" value={
                 isEditing ? (
                   <select value={localStatus} onChange={e => setLocalStatus(e.target.value)} style={selectStyle}>
@@ -208,6 +315,8 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   </select>
                 ) : <StatusLozenge status={localStatus} />
               } />
+
+              {/* PRIORITY — editable */}
               <FieldPair label="Priority" value={
                 isEditing ? (
                   <select value={localPriority} onChange={e => setLocalPriority(e.target.value)} style={selectStyle}>
@@ -215,50 +324,97 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   </select>
                 ) : <PriorityLozenge priority={localPriority} />
               } />
+
+              {/* TYPE — editable */}
               <FieldPair label="Type" value={
-                <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{rawIdea.idea_type || 'Feature'}</span>
+                isEditing ? (
+                  <select value={localType} onChange={e => setLocalType(e.target.value)} style={selectStyle}>
+                    {['Feature Request', 'Opportunity', 'Solution', 'Improvement', 'Problem'].map(t => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{rawIdea.idea_type || 'Feature'}</span>
+                )
               } />
+
+              {/* SOURCE — editable */}
               <FieldPair label="Source" value={
-                <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{formatSource(rawIdea.source)}</span>
+                isEditing ? (
+                  <select value={localSource} onChange={e => setLocalSource(e.target.value)} style={selectStyle}>
+                    {['internal', 'ministry_directive', 'stakeholder', 'customer', 'research'].map(s => (
+                      <option key={s} value={s}>{formatSource(s)}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{formatSource(rawIdea.source)}</span>
+                )
               } />
+
+              {/* THEME — editable */}
               <FieldPair label="Theme" value={
                 isEditing ? (
                   <input value={localTheme} onChange={e => setLocalTheme(e.target.value)} style={inputStyle} placeholder="Enter theme" />
                 ) : <span style={{ fontSize: '13px', fontWeight: 500, color: localTheme ? '#0F172A' : '#94A3B8' }}>{localTheme || '—'}</span>
               } />
+
+              {/* ASSIGNED TEAM — editable */}
               <FieldPair label="Assigned Team" value={
                 isEditing ? (
                   <input value={localTeam} onChange={e => setLocalTeam(e.target.value)} style={inputStyle} placeholder="Enter team" />
                 ) : <span style={{ fontSize: '13px', fontWeight: 500, color: localTeam ? '#0F172A' : '#94A3B8' }}>{localTeam || '—'}</span>
               } />
+
+              {/* TARGET RELEASE — editable */}
               <FieldPair label="Target Release" value={
-                <span style={{ fontSize: '13px', fontWeight: 500, color: rawIdea.target_release_date ? '#0F172A' : '#94A3B8' }}>
-                  {rawIdea.target_release_date ? new Date(rawIdea.target_release_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—'}
-                </span>
-              } />
-              <FieldPair label="Quarter" value={
-                quarter ? (
-                  <span style={{
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    height: 20, padding: '0 6px', borderRadius: 3,
-                    fontSize: '11px', fontWeight: 700,
-                    background: QUARTER_BADGE[quarter]?.bg || '#E2E8F0',
-                    color: QUARTER_BADGE[quarter]?.text || '#94A3B8',
-                  }}>{quarter} 2026</span>
-                ) : <span style={{ fontSize: '13px', color: '#94A3B8' }}>—</span>
-              } />
-              <FieldPair label="Assignee" value={
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{
-                    width: '24px', height: '24px', borderRadius: '50%', background: '#2563EB',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#FFF', fontSize: '10px', fontWeight: 700, flexShrink: 0,
-                  }}>{assigneeInitials}</div>
-                  <span style={{ fontSize: '13px', fontWeight: 500, color: assigneeName ? '#0F172A' : '#94A3B8' }}>
-                    {assigneeName || 'Unassigned'}
+                isEditing ? (
+                  <input type="date" value={localTargetRelease} onChange={e => setLocalTargetRelease(e.target.value)} style={inputStyle} />
+                ) : (
+                  <span style={{ fontSize: '13px', fontWeight: 500, color: rawIdea.target_release_date ? '#0F172A' : '#94A3B8' }}>
+                    {rawIdea.target_release_date ? new Date(rawIdea.target_release_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—'}
                   </span>
-                </div>
+                )
               } />
+
+              {/* QUARTER — editable (KEY MISSING FIELD) */}
+              <FieldPair label="Quarter" value={
+                isEditing ? (
+                  <select value={localQuarter} onChange={e => setLocalQuarter(e.target.value)} style={selectStyle}>
+                    <option value="">Unassigned</option>
+                    {['Q1', 'Q2', 'Q3', 'Q4'].map(q => <option key={q} value={q}>{q} 2026</option>)}
+                  </select>
+                ) : (
+                  quarter ? (
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      height: 20, padding: '0 6px', borderRadius: 3,
+                      fontSize: '11px', fontWeight: 700,
+                      background: QUARTER_BADGE[quarter]?.bg || '#E2E8F0',
+                      color: QUARTER_BADGE[quarter]?.text || '#94A3B8',
+                    }}>{quarter} 2026</span>
+                  ) : <span style={{ fontSize: '13px', color: '#94A3B8' }}>—</span>
+                )
+              } />
+
+              {/* ASSIGNEE — editable */}
+              <FieldPair label="Assignee" value={
+                isEditing ? (
+                  <input value={localAssignee} onChange={e => setLocalAssignee(e.target.value)} style={inputStyle} placeholder="Enter assignee name" />
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{
+                      width: '24px', height: '24px', borderRadius: '50%', background: '#2563EB',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#FFF', fontSize: '10px', fontWeight: 700, flexShrink: 0,
+                    }}>{assigneeInitials}</div>
+                    <span style={{ fontSize: '13px', fontWeight: 500, color: assigneeName ? '#0F172A' : '#94A3B8' }}>
+                      {assigneeName || 'Unassigned'}
+                    </span>
+                  </div>
+                )
+              } />
+
+              {/* CREATED — always read-only */}
               <FieldPair label="Created" value={
                 <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>
                   {rawIdea.created_at ? new Date(rawIdea.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
@@ -266,6 +422,39 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               } />
             </div>
           </div>
+
+          {/* ═══ COMMITTED TOGGLE — only in edit mode ═══ */}
+          {isEditing && (
+            <div style={{ padding: '16px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B' }}>
+                    COMMITTED TO ROADMAP
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '2px' }}>
+                    Mark as committed to include in roadmap view
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setLocalIsCommitted(!localIsCommitted)}
+                  style={{
+                    width: '44px', height: '24px', borderRadius: '12px', border: 'none',
+                    backgroundColor: localIsCommitted ? '#2563EB' : '#E2E8F0',
+                    cursor: 'pointer', position: 'relative', transition: 'background 200ms ease',
+                  }}
+                >
+                  <div style={{
+                    width: '18px', height: '18px', borderRadius: '50%', background: '#FFFFFF',
+                    position: 'absolute', top: '3px',
+                    left: localIsCommitted ? '23px' : '3px',
+                    transition: 'left 200ms ease',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                  }} />
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Description */}
           <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
@@ -277,6 +466,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 value={localDescription}
                 onChange={e => setLocalDescription(e.target.value)}
                 rows={4}
+                placeholder="Add a description..."
                 style={{
                   width: '100%', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
                   padding: '8px 12px', fontSize: '13px', color: '#0F172A', resize: 'vertical',
@@ -316,6 +506,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               </span>
             </div>
 
+            {/* Dimension rows — ALL circles SAME neutral colour */}
             {[
               { letter: 'I', name: 'Investor Fit', weight: '25%', score: (factors as any).I ?? 0 },
               { letter: 'M', name: 'Investor Size', weight: '20%', score: (factors as any).M ?? 0 },
@@ -399,70 +590,6 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         }
       `}</style>
     </>
-  );
-}
-
-// ─── Shared styles ───────────────────────────────────────────────
-const selectStyle: React.CSSProperties = {
-  height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
-  padding: '0 8px', fontSize: '13px', color: '#0F172A', width: '100%', outline: 'none',
-};
-
-const inputStyle: React.CSSProperties = {
-  height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
-  padding: '0 8px', fontSize: '13px', color: '#0F172A', width: '100%', outline: 'none',
-};
-
-// ─── Sub-components ──────────────────────────────────────────────
-function FieldPair({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div>
-      <div style={{
-        fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
-        letterSpacing: '0.06em', color: '#64748B', marginBottom: '6px',
-      }}>
-        {label}
-      </div>
-      <div>{value}</div>
-    </div>
-  );
-}
-
-function StatusLozenge({ status }: { status: string }) {
-  const statusMap: Record<string, { bg: string; text: string }> = {
-    'Draft':        { bg: '#DFE1E6', text: '#253858' },
-    'New':          { bg: '#DFE1E6', text: '#253858' },
-    'Submitted':    { bg: '#DFE1E6', text: '#253858' },
-    'Under Review': { bg: '#DEEBFF', text: '#0747A6' },
-    'In Progress':  { bg: '#DEEBFF', text: '#0747A6' },
-    'Approved':     { bg: '#E3FCEF', text: '#006644' },
-    'Converted':    { bg: '#E3FCEF', text: '#006644' },
-    'Done':         { bg: '#E3FCEF', text: '#006644' },
-  };
-  const style = statusMap[status] ?? { bg: '#DFE1E6', text: '#253858' };
-  return (
-    <span style={{
-      display: 'inline-block', padding: '2px 8px', borderRadius: '3px',
-      backgroundColor: style.bg, color: style.text,
-      fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
-      lineHeight: '16px', whiteSpace: 'nowrap',
-    }}>
-      {status.toUpperCase()}
-    </span>
-  );
-}
-
-function PriorityLozenge({ priority }: { priority: string }) {
-  const c = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.P4;
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      height: 20, minWidth: 26, padding: '0 4px', borderRadius: 3,
-      fontSize: '11px', fontWeight: 650,
-      background: c.bg, color: c.text, border: `1px solid ${c.border}`,
-    }}>
-      {priority}
-    </span>
   );
 }
 
