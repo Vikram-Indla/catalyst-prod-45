@@ -111,7 +111,7 @@ export default function CommandCenterPage() {
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-[13px]" style={{ fontFamily: RH.fontMono, fontWeight: 650, color: '#2563EB' }}>{latestDeployed.chg_number}</span>
                 <ChgStatusBadge status={latestDeployed.status} />
-                {latestDeployed.deployment_result && <DeployResultBadge result={latestDeployed.deployment_result} />}
+                {(latestDeployed as any).deployment_result && <DeployResultBadge result={(latestDeployed as any).deployment_result} />}
               </div>
               <p className="text-[14px] mb-3" style={{ fontWeight: 650, color: RH.ink1 }}>{latestDeployed.title}</p>
               <div className="grid grid-cols-2 gap-3">
