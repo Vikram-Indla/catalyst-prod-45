@@ -163,16 +163,13 @@ export default function IncidentDetailPage() {
             </p>
           </div>
 
-          {/* Linked Items */}
-          {incident.work_items && incident.work_items.length > 0 && (
+          {/* Tags/Labels */}
+          {incident.labels && Array.isArray(incident.labels) && incident.labels.length > 0 && (
             <div className="mb-6">
-              <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>Linked Items</h3>
-              <div className="space-y-2">
-                {incident.work_items.map((wi: any) => (
-                  <div key={wi.id} className="flex items-center gap-2 p-2" style={{ border: '1px solid rgba(15,23,42,0.08)', borderRadius: 4 }}>
-                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#2563EB' }}>{wi.work_item_key}</span>
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#334155' }}>{wi.work_item_title || '\u2014'}</span>
-                  </div>
+              <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>Labels</h3>
+              <div className="flex flex-wrap gap-1">
+                {(incident.labels as string[]).map((label: string) => (
+                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: '#F1F5F9', border: '1px solid rgba(15,23,42,0.08)', borderRadius: 3, color: '#475569' }}>{label}</span>
                 ))}
               </div>
             </div>
