@@ -21,9 +21,9 @@ import { formatDistanceToNow } from 'date-fns';
 export default function IncidentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: incident, isLoading } = useIncident(id || '');
-  const updateIncident = useUpdateIncident();
-  const addComment = useAddComment();
+  const { data: incident, isLoading } = useProductionIncident(id || '');
+  const updateIncident = { mutateAsync: async (_: any) => { throw new Error('Read-only'); } };
+  const addComment = { mutateAsync: async (_: any) => { throw new Error('Read-only'); } };
   const [activeTab, setActiveTab] = useState<'comments' | 'history'>('comments');
   const [commentText, setCommentText] = useState('');
   const [showCommittee, setShowCommittee] = useState(false);
