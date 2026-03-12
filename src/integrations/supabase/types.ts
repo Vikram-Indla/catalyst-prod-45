@@ -22071,6 +22071,7 @@ export type Database = {
           confidence: number | null
           converted_at: string | null
           converted_by: string | null
+          converted_initiative_id: string | null
           created_at: string
           custom_score: number | null
           department: string | null
@@ -22136,6 +22137,7 @@ export type Database = {
           confidence?: number | null
           converted_at?: string | null
           converted_by?: string | null
+          converted_initiative_id?: string | null
           created_at?: string
           custom_score?: number | null
           department?: string | null
@@ -22201,6 +22203,7 @@ export type Database = {
           confidence?: number | null
           converted_at?: string | null
           converted_by?: string | null
+          converted_initiative_id?: string | null
           created_at?: string
           custom_score?: number | null
           department?: string | null
