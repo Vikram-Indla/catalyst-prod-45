@@ -357,6 +357,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
             {[
               { label: 'KEY', width: '100px' },
               { label: 'TITLE', width: undefined },
+              { label: 'IDEAS THEME', width: '150px' },
               { label: 'STATUS', width: '130px' },
               { label: 'TYPE', width: '80px' },
               { label: 'PRI', width: '50px' },
