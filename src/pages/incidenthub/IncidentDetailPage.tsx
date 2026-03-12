@@ -297,15 +297,15 @@ export default function IncidentDetailPage() {
           {/* Custom Fields */}
           <div className="mt-4 pt-4" style={{ borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
             <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 80 }}>Impact</span>
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 18, fontWeight: 700, color: incident.impact === 'high' ? '#DC2626' : '#0F172A' }}>
-                {incident.impact?.toUpperCase() || '\u2014'}
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 80 }}>Created</span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#64748B' }}>
+                {incident.created_at ? new Date(incident.created_at).toLocaleString() : '\u2014'}
               </span>
             </div>
             <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 80 }}>Reported</span>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 80 }}>Updated</span>
               <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#64748B' }}>
-                {incident.created_at ? new Date(incident.created_at).toLocaleString() : '\u2014'}
+                {incident.updated_at ? new Date(incident.updated_at).toLocaleString() : '\u2014'}
               </span>
             </div>
           </div>
