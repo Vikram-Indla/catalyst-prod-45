@@ -1,6 +1,8 @@
 /**
  * Shared data, types, and config for the Ideation module.
  * V12 Hybrid Precision — 3-color StatusLozenge guardrail
+ * Updated: Approved = BLUE (active state), Converted to Initiative = GREEN (terminal)
+ * Submitted = GREY (initial state)
  */
 
 // ─── Types ───────────────────────────────────────────────────────
@@ -43,11 +45,12 @@ export const IDEA_IMPACT_FACTORS: Record<string, ImpactFactors> = {};
 export const ideas: Idea[] = [];
 
 // ─── V12 STATUS LOZENGE — 3-COLOR GUARDRAIL — NO DOTS ──────────
+// UPDATED: Approved = BLUE (active/in-progress), Submitted = GREY
 export const STATUS_CONFIG: Record<IdeaStatus, { bg: string; text: string; label: string }> = {
   draft:        { bg: '#DFE1E6', text: '#253858', label: 'Draft' },
-  submitted:    { bg: '#DEEBFF', text: '#0747A6', label: 'Submitted' },
+  submitted:    { bg: '#DFE1E6', text: '#253858', label: 'Submitted' },
   under_review: { bg: '#DEEBFF', text: '#0747A6', label: 'Under Review' },
-  approved:     { bg: '#E3FCEF', text: '#006644', label: 'Approved' },
+  approved:     { bg: '#DEEBFF', text: '#0747A6', label: 'Approved' },
   rejected:     { bg: '#DFE1E6', text: '#253858', label: 'Rejected' },
   converted:    { bg: '#E3FCEF', text: '#006644', label: 'Converted' },
 };
@@ -85,6 +88,7 @@ export const FILTER_PILLS: { key: StatusFilter; label: string }[] = [
   { key: 'submitted', label: 'Submitted' },
   { key: 'under_review', label: 'Under Review' },
   { key: 'approved', label: 'Approved' },
+  { key: 'converted', label: 'Converted' },
   { key: 'my_ideas', label: '⭐ My Ideas' },
 ];
 
@@ -114,13 +118,15 @@ export const STATUS_DB_TO_UI: Record<string, IdeaStatus> = {
   'Approved': 'approved',
   'Rejected': 'rejected',
   'Converted': 'converted',
+  'Converted to Initiative': 'converted',
 };
 
 export const STATUS_LOZENGE_COLORS: Record<string, { bg: string; text: string }> = {
-  'Draft':        { bg: '#DFE1E6', text: '#253858' },
-  'Submitted':    { bg: '#DEEBFF', text: '#0747A6' },
-  'Under Review': { bg: '#DEEBFF', text: '#0747A6' },
-  'Approved':     { bg: '#E3FCEF', text: '#006644' },
-  'Rejected':     { bg: '#DFE1E6', text: '#253858' },
-  'Converted':    { bg: '#E3FCEF', text: '#006644' },
+  'Draft':                    { bg: '#DFE1E6', text: '#253858' },
+  'Submitted':                { bg: '#DFE1E6', text: '#253858' },
+  'Under Review':             { bg: '#DEEBFF', text: '#0747A6' },
+  'Approved':                 { bg: '#DEEBFF', text: '#0747A6' },
+  'Rejected':                 { bg: '#DFE1E6', text: '#253858' },
+  'Converted':                { bg: '#E3FCEF', text: '#006644' },
+  'Converted to Initiative':  { bg: '#E3FCEF', text: '#006644' },
 };
