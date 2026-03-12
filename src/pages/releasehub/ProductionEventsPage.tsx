@@ -138,7 +138,8 @@ export default function ProductionEventsPage() {
             const typeKey = ev.event_type?.toUpperCase() || 'DEPLOYMENT';
             const resultKey = ev.deployment_result?.toUpperCase();
             const typeLoz = EVENT_TYPE_LOZENGE[typeKey];
-            const resultBadge = resultKey ? RESULT_BADGE[resultKey] : null;
+            // Skip result badge when redundant with event type (ROLLBACK + ROLLED_BACK)
+            const resultBadge = (resultKey && !(typeKey === 'ROLLBACK' && resultKey === 'ROLLED_BACK')) ? RESULT_BADGE[resultKey] : null;
 
             return (
               <div key={ev.id} className="relative" style={{ paddingBottom: idx === filtered.length - 1 ? 0 : 24 }}>
