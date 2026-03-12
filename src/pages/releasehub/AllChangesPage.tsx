@@ -178,7 +178,7 @@ export default function AllChangesPage() {
                     <td className="px-3 py-0">
                       {relName ? <span className="text-[12px] font-medium text-[#2563EB]">{relName}</span> : <span className="text-[#94A3B8]">—</span>}
                     </td>
-                    <td className="px-3 py-0"><SourceBadge source={c.source === 'servicenow' ? 'catalyst' : c.source} /></td>
+                    <td className="px-3 py-0"><SourceBadge source={c.source} /></td>
                     <td className="px-3 py-0">
                       <span className="text-[12px] text-[#64748B]" style={{ fontFamily: RH.fontMono }}>
                         {c.pending_signoffs > 0 ? `${c.pending_signoffs} pending` : '—'}
