@@ -260,7 +260,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
             </div>
             {signoff && status === 'pending' && (
               <div className="flex items-center gap-2">
-                <button onClick={() => approveSignoff.mutate(signoff.id, { onSuccess: () => toast.success('Approved') })}
+                <button onClick={() => approveSignoff.mutate({ signoffId: signoff.id }, { onSuccess: () => toast.success('Approved') })}
                   disabled={approveSignoff.isPending}
                   className="h-7 px-3 rounded bg-[#15803D] text-white text-[11px] font-bold hover:bg-[#166534] disabled:opacity-50">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: signoff.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
