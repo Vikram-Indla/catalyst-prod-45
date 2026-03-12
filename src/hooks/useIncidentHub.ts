@@ -100,6 +100,8 @@ export function useIncidentListView() {
         labels: row.labels,
         due_date: row.due_date,
         type_icon_url: row.type_icon_url,
+        parent_key: row.parent_key,
+        parent_summary: row.parent_summary,
         comments_json: row.comments,
         changelog_json: row.changelog,
         // SLA-related (derived from due_date)
