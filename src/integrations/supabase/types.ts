@@ -22080,7 +22080,13 @@ export type Database = {
           idea_key: string
           idea_type: string
           impact: number | null
+          impact_complexity_inv: number | null
+          impact_investor_fit: number | null
+          impact_market_size: number | null
+          impact_problem_severity: number | null
+          impact_time_to_value: number | null
           impact_total: number | null
+          impact_user_benefit: number | null
           imperative: number | null
           innovation_drive_id: string | null
           is_committed: boolean
@@ -22139,7 +22145,13 @@ export type Database = {
           idea_key: string
           idea_type?: string
           impact?: number | null
+          impact_complexity_inv?: number | null
+          impact_investor_fit?: number | null
+          impact_market_size?: number | null
+          impact_problem_severity?: number | null
+          impact_time_to_value?: number | null
           impact_total?: number | null
+          impact_user_benefit?: number | null
           imperative?: number | null
           innovation_drive_id?: string | null
           is_committed?: boolean
@@ -22198,7 +22210,13 @@ export type Database = {
           idea_key?: string
           idea_type?: string
           impact?: number | null
+          impact_complexity_inv?: number | null
+          impact_investor_fit?: number | null
+          impact_market_size?: number | null
+          impact_problem_severity?: number | null
+          impact_time_to_value?: number | null
           impact_total?: number | null
+          impact_user_benefit?: number | null
           imperative?: number | null
           innovation_drive_id?: string | null
           is_committed?: boolean

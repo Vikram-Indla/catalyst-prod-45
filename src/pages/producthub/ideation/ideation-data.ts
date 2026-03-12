@@ -1,7 +1,6 @@
 /**
  * Shared data, types, and config for the Ideation module.
  * V12 Hybrid Precision — 3-color StatusLozenge guardrail
- * NUCLEAR REDESIGN — no dots, neutral badges, proper contrast
  */
 
 // ─── Types ───────────────────────────────────────────────────────
@@ -36,17 +35,14 @@ export interface Idea {
   roadmap_quarter?: string | null;
 }
 
-// ─── IMPACT factor data per idea ──────────────────────────────────
 export interface ImpactFactors {
   I: number; M: number; P: number; A: number; C: number; T: number;
 }
 
 export const IDEA_IMPACT_FACTORS: Record<string, ImpactFactors> = {};
-
-// ─── Data (deprecated — use useIdeas() hook instead) ─────────────
 export const ideas: Idea[] = [];
 
-// ─── V12 STATUS LOZENGE — 3-COLOR GUARDRAIL (IMMUTABLE) — NO DOTS ─
+// ─── V12 STATUS LOZENGE — 3-COLOR GUARDRAIL — NO DOTS ──────────
 export const STATUS_CONFIG: Record<IdeaStatus, { bg: string; text: string; label: string }> = {
   draft:        { bg: '#DFE1E6', text: '#253858', label: 'Draft' },
   submitted:    { bg: '#DEEBFF', text: '#0747A6', label: 'Submitted' },
@@ -56,7 +52,7 @@ export const STATUS_CONFIG: Record<IdeaStatus, { bg: string; text: string; label
   converted:    { bg: '#E3FCEF', text: '#006644', label: 'Converted' },
 };
 
-// ─── TYPE CONFIG — ALL NEUTRAL GREY ──────────────────────────────
+// ─── TYPE CONFIG — ALL NEUTRAL GREY ─────────────────────────────
 export const TYPE_CONFIG: Record<IdeaType, { bg: string; text: string; label: string }> = {
   opportunity:  { bg: '#F1F5F9', text: '#334155', label: 'Opportunity' },
   solution:     { bg: '#F1F5F9', text: '#334155', label: 'Solution' },
@@ -65,12 +61,12 @@ export const TYPE_CONFIG: Record<IdeaType, { bg: string; text: string; label: st
   problem:      { bg: '#F1F5F9', text: '#334155', label: 'Problem' },
 };
 
-// ─── V12 PRIORITY BADGES — No amber/orange ───────────────────────
+// ─── V12 PRIORITY BADGES — ALL NEUTRAL GREY ─────────────────────
 export const PRIORITY_CONFIG: Record<string, { bg: string; text: string; border: string }> = {
-  P1: { bg: '#FEF2F2', text: '#991B1B', border: '#FECACA' },
+  P1: { bg: '#F1F5F9', text: '#334155', border: '#E2E8F0' },
   P2: { bg: '#F1F5F9', text: '#334155', border: '#E2E8F0' },
-  P3: { bg: '#F8FAFC', text: '#64748B', border: '#E2E8F0' },
-  P4: { bg: '#F8FAFC', text: '#94A3B8', border: '#E2E8F0' },
+  P3: { bg: '#F1F5F9', text: '#334155', border: '#E2E8F0' },
+  P4: { bg: '#F1F5F9', text: '#334155', border: '#E2E8F0' },
 };
 
 export const VIEW_TITLES: Record<IdeationView, string> = {
@@ -83,25 +79,24 @@ export const VIEW_TITLES: Record<IdeationView, string> = {
 
 export type StatusFilter = 'all' | IdeaStatus | 'my_ideas';
 
-// ─── FILTER PILLS — NO DOTS ─────────────────────────────────────
+// ─── FILTER PILLS — NO DOTS ────────────────────────────────────
 export const FILTER_PILLS: { key: StatusFilter; label: string }[] = [
   { key: 'all', label: 'All' },
   { key: 'submitted', label: 'Submitted' },
   { key: 'under_review', label: 'Under Review' },
   { key: 'approved', label: 'Approved' },
-  { key: 'converted', label: 'Converted' },
   { key: 'my_ideas', label: '⭐ My Ideas' },
 ];
 
-// ─── Quarter badge config ────────────────────────────────────────
+// ─── Quarter badge — HIGH CONTRAST (AAA) ────────────────────────
 export const QUARTER_BADGE: Record<string, { bg: string; text: string }> = {
-  Q1: { bg: '#7C3AED', text: '#FFFFFF' },
-  Q2: { bg: '#2563EB', text: '#FFFFFF' },
-  Q3: { bg: '#0D9488', text: '#FFFFFF' },
-  Q4: { bg: '#D97706', text: '#FFFFFF' },
+  Q1: { bg: '#991B1B', text: '#FFFFFF' },
+  Q2: { bg: '#1E40AF', text: '#FFFFFF' },
+  Q3: { bg: '#115E59', text: '#FFFFFF' },
+  Q4: { bg: '#78350F', text: '#FFFFFF' },
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────
 export function getImpactColor(score: number) {
   if (score >= 4.0) return { gradient: 'linear-gradient(90deg, #16A34A, #22C55E)', text: '#16A34A' };
   if (score >= 3.0) return { gradient: 'linear-gradient(90deg, #2563EB, #3B82F6)', text: '#2563EB' };
@@ -109,5 +104,23 @@ export function getImpactColor(score: number) {
   return { gradient: 'linear-gradient(90deg, #CBD5E1, #E2E8F0)', text: '#94A3B8' };
 }
 
-// AI insight text for board cards (deprecated — use DB ai_summary)
 export const AI_INSIGHTS: Record<string, string> = {};
+
+// ─── STATUS DB MAP ──────────────────────────────────────────────
+export const STATUS_DB_TO_UI: Record<string, IdeaStatus> = {
+  'Draft': 'draft',
+  'Submitted': 'submitted',
+  'Under Review': 'under_review',
+  'Approved': 'approved',
+  'Rejected': 'rejected',
+  'Converted': 'converted',
+};
+
+export const STATUS_LOZENGE_COLORS: Record<string, { bg: string; text: string }> = {
+  'Draft':        { bg: '#DFE1E6', text: '#253858' },
+  'Submitted':    { bg: '#DEEBFF', text: '#0747A6' },
+  'Under Review': { bg: '#DEEBFF', text: '#0747A6' },
+  'Approved':     { bg: '#E3FCEF', text: '#006644' },
+  'Rejected':     { bg: '#DFE1E6', text: '#253858' },
+  'Converted':    { bg: '#E3FCEF', text: '#006644' },
+};
