@@ -267,10 +267,8 @@ export function CatalystHeader() {
               
               // V10 TopNav item styles — Inter 500, 0.84rem
               // Active state uses 2px bottom border (underline), no background fill
-              // IncidentHub uses red (#DC2626) active accent per spec
-              const isIncidentHub = item.label === 'IncidentHub';
-              const activeColor = isIncidentHub ? '#DC2626' : '#2563EB';
-              const activeBg = isIncidentHub ? '#FEF2F2' : 'transparent';
+              const activeColor = '#2563EB';
+              const activeBg = 'transparent';
               const navButtonStyle: React.CSSProperties = {
                 height: '100%',
                 padding: '0 14px',
