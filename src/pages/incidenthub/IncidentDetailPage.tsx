@@ -89,11 +89,6 @@ export default function IncidentDetailPage() {
   const slaWarning = !slaBreached && incident.sla?.resolution_due_at &&
     (new Date(incident.sla.resolution_due_at).getTime() - Date.now()) <= 3600000;
 
-  const committee = incident.committee;
-  const approveCount = committee?.approved_count || 0;
-  const totalMembers = committee?.members?.length || 0;
-  const quorumMet = approveCount >= 3;
-
   return (
     <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: '#FFFFFF' }}>
       {/* Breadcrumb */}
