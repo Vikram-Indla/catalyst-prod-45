@@ -138,7 +138,6 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
           target_release_date: localRelease || null,
           roadmap_quarter: localQuarter || null,
           assigned_to: localAssigneeId || null,
-          assigned_to_name: assignee?.full_name || null,
           description: localDescription || null,
           is_committed: localIsCommitted,
           impact_investor_fit: investorFit,
