@@ -58,6 +58,8 @@ export const LOZENGE = {
   green: { bg: '#E3FCEF', text: '#006644' },
 } as const;
 
+type LozengeStyle = { bg: string; text: string };
+
 // Release statuses → map to guardrail
 export const RELEASE_STATUS_LABELS: Record<string, string> = {
   planning: 'Planning', in_progress: 'In Progress', released: 'Released', archived: 'Archived',
