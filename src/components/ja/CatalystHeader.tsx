@@ -154,7 +154,7 @@ export function CatalystHeader() {
     { label: "StrategyHub", path: "/strategyhub", moduleKey: "enterprise", featureFlagKey: "strategy_hub", requiresEnterpriseAccess: true, visibleToProductOwner: true },
     { label: "ProductHub", path: "/producthub", moduleKey: "product", featureFlagKey: "product_hub", visibleToProductOwner: true },
     { label: "ProjectHub", path: "/project-hub", moduleKey: "workhub", featureFlagKey: "project_hub", visibleToProductOwner: true },
-    { label: "ReleaseHub", path: "/releasehub/command-center", moduleKey: "releases", featureFlagKey: "release_hub", visibleToProductOwner: false },
+    { label: "ReleaseHub", path: "/release-hub/command-center", moduleKey: "releases", featureFlagKey: "release_hub", visibleToProductOwner: false },
     { label: "TestHub", path: "/testhub/dashboard", moduleKey: "testhub", featureFlagKey: "test_hub", visibleToProductOwner: false },
     { label: "IncidentHub", path: "/incident-hub", moduleKey: "operations", featureFlagKey: "incident_hub", visibleToProductOwner: false },
     { label: "TaskHub", path: "/taskhub/boards", moduleKey: "planner", featureFlagKey: "task_hub", visibleToProductOwner: true },

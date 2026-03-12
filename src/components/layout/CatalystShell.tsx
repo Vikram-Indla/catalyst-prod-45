@@ -83,7 +83,7 @@ function CatalystShellContent() {
   const isReleasesRoute = location.pathname.startsWith('/releases');
   
   // Check on releasehub route (new Release Management module)
-  const isReleaseHubRoute = location.pathname.startsWith('/releasehub');
+  const isReleaseHubRoute = location.pathname.startsWith('/release-hub') || location.pathname.startsWith('/releasehub');
   
   // Check if on test management route
   const isTestsRoute = location.pathname.startsWith('/tests');

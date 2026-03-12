@@ -58,6 +58,7 @@ const RH21AllReleasesPage = lazy(() => import("../pages/releasehub/AllReleasesPa
 const RH21ReleaseComparePage = lazy(() => import("../pages/releasehub/ReleaseComparePage"));
 const RH21TriageQueuePage = lazy(() => import("../pages/releasehub/TriageQueuePage"));
 const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage"));
+const RH21SignOffQueuePage = lazy(() => import("../pages/release-hub/SignOffQueuePage"));
 const StrategicThemesPage = lazy(() => import("../pages/strategyhub/StrategicThemesPage"));
 const GoalsKeyResultsPage = lazy(() => import("../pages/strategyhub/GoalsKeyResultsPage"));
 const InitiativeListingPage = lazy(() => import("../pages/producthub/InitiativeListingPage"));
@@ -575,16 +576,26 @@ export default function FullAppRoutes() {
         <Route path="/incident-hub/committee-queue" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubCommitteeQueuePage /></S></MG>} />
         <Route path="/incident-hub/view/:id" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
 
-        <Route path="/releasehub" element={<Navigate to="/releasehub/command-center" replace />} />
-        <Route path="/releasehub/command-center" element={<S><RH21CommandCenterPage /></S>} />
-        <Route path="/releasehub/all-releases" element={<S><RH21AllReleasesPage /></S>} />
-        <Route path="/releasehub/compare" element={<S><RH21ReleaseComparePage /></S>} />
-        <Route path="/releasehub/triage" element={<S><RH21TriageQueuePage /></S>} />
-        <Route path="/releasehub/changes" element={<S><RH21AllChangesPage /></S>} />
-        <Route path="/releasehub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
-        <Route path="/releasehub/dashboard" element={<Navigate to="/releasehub/command-center" replace />} />
-        <Route path="/releasehub/all" element={<Navigate to="/releasehub/all-releases" replace />} />
-        <Route path="/releasehub/:releaseId" element={<S><ReleaseDashboardV5Page /></S>} />
+        <Route path="/release-hub" element={<Navigate to="/release-hub/command-center" replace />} />
+        <Route path="/release-hub/command-center" element={<S><RH21CommandCenterPage /></S>} />
+        <Route path="/release-hub/releases" element={<S><RH21AllReleasesPage /></S>} />
+        <Route path="/release-hub/compare" element={<S><RH21ReleaseComparePage /></S>} />
+        <Route path="/release-hub/triage" element={<S><RH21TriageQueuePage /></S>} />
+        <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />
+        <Route path="/release-hub/sign-off-queue" element={<S><RH21SignOffQueuePage /></S>} />
+        <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
+        <Route path="/release-hub/:releaseId" element={<S><ReleaseDashboardV5Page /></S>} />
+
+        {/* Legacy releasehub redirects */}
+        <Route path="/releasehub" element={<Navigate to="/release-hub/command-center" replace />} />
+        <Route path="/releasehub/command-center" element={<Navigate to="/release-hub/command-center" replace />} />
+        <Route path="/releasehub/all-releases" element={<Navigate to="/release-hub/releases" replace />} />
+        <Route path="/releasehub/compare" element={<Navigate to="/release-hub/compare" replace />} />
+        <Route path="/releasehub/triage" element={<Navigate to="/release-hub/triage" replace />} />
+        <Route path="/releasehub/changes" element={<Navigate to="/release-hub/changes" replace />} />
+        <Route path="/releasehub/production-events" element={<Navigate to="/release-hub/production-events" replace />} />
+        <Route path="/releasehub/dashboard" element={<Navigate to="/release-hub/command-center" replace />} />
+        <Route path="/releasehub/all" element={<Navigate to="/release-hub/releases" replace />} />
 
         <Route path="/priorities" element={<S><T10LandingPage /></S>} />
         <Route path="/priorities/completed" element={<S><T10CompletedPage /></S>} />
@@ -712,7 +723,7 @@ export default function FullAppRoutes() {
         <Route path="/stories" element={<S><Stories /></S>} />
         <Route path="/work-items/stories" element={<S><Stories /></S>} />
         <Route path="/work-items/subtasks" element={<S><Subtasks /></S>} />
-        <Route path="/releases/*" element={<Navigate to="/releasehub/command-center" replace />} />
+        <Route path="/releases/*" element={<Navigate to="/release-hub/command-center" replace />} />
 
         <Route path="/unauthorized" element={<S><UnauthorizedPage /></S>} />
 
