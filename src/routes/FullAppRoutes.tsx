@@ -573,7 +573,7 @@ export default function FullAppRoutes() {
         <Route path="/incident-hub/insights" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubInsightsPage /></S></MG>} />
         <Route path="/incident-hub/reports" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubReportsPage /></S></MG>} />
         <Route path="/incident-hub/committee-queue" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubCommitteeQueuePage /></S></MG>} />
-        <Route path="/incident-hub/view/:id" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentRoomDetail /></S></MG>} />
+        <Route path="/incident-hub/view/:id" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
 
         <Route path="/releasehub" element={<Navigate to="/releasehub/command-center" replace />} />
         <Route path="/releasehub/command-center" element={<S><RH21CommandCenterPage /></S>} />

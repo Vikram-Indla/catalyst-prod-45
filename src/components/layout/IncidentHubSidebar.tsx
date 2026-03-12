@@ -1,14 +1,14 @@
 /**
  * IncidentHubSidebar — Incident Management sidebar
  * 
- * Sections: INCIDENTS, ANALYTICS, REPORTS
+ * 6 items: Incident List, Analytics, Insights, Kanban, (divider), Incident Reports, Committee Queue
  */
 
 import { 
   List,
-  Columns3,
   BarChart3,
-  Lightbulb,
+  Sparkles,
+  LayoutGrid,
   FileText,
   Users,
 } from 'lucide-react';
@@ -24,15 +24,10 @@ const sections: SidebarSection[] = [
   {
     title: 'Incidents',
     items: [
-      { id: 'incident-list', title: 'Incident List', path: '/incident-hub', icon: List, exact: true },
-      { id: 'kanban-board', title: 'Kanban Board', path: '/incident-hub/kanban', icon: Columns3, exact: false },
-    ],
-  },
-  {
-    title: 'Analytics',
-    items: [
+      { id: 'incident-list', title: 'Incident List', path: '/incident-hub', icon: List, exact: true, badgeVariant: 'danger' },
       { id: 'analytics', title: 'Analytics', path: '/incident-hub/analytics', icon: BarChart3, exact: false },
-      { id: 'insights', title: 'Insights', path: '/incident-hub/insights', icon: Lightbulb, exact: false },
+      { id: 'insights', title: 'Insights', path: '/incident-hub/insights', icon: Sparkles, exact: false },
+      { id: 'kanban', title: 'Kanban', path: '/incident-hub/kanban', icon: LayoutGrid, exact: false },
     ],
   },
   {
