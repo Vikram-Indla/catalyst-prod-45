@@ -1,0 +1,71 @@
+/**
+ * StatusLozenge — 3-color immutable guardrail
+ * Grey (#DFE1E6/#253858): open, triage, on_hold, closed, converted
+ * Blue (#DEEBFF/#0747A6): in_progress, in_review, to_committee
+ * Green (#E3FCEF/#006644): resolved
+ */
+
+import { cn } from '@/lib/utils';
+
+const LOZENGE_MAP: Record<string, { bg: string; text: string }> = {
+  open:         { bg: '#DFE1E6', text: '#253858' },
+  triage:       { bg: '#DFE1E6', text: '#253858' },
+  on_hold:      { bg: '#DFE1E6', text: '#253858' },
+  closed:       { bg: '#DFE1E6', text: '#253858' },
+  converted:    { bg: '#DFE1E6', text: '#253858' },
+  in_progress:  { bg: '#DEEBFF', text: '#0747A6' },
+  in_review:    { bg: '#DEEBFF', text: '#0747A6' },
+  to_committee: { bg: '#DEEBFF', text: '#0747A6' },
+  resolved:     { bg: '#E3FCEF', text: '#006644' },
+};
+
+const LABELS: Record<string, string> = {
+  open: 'OPEN',
+  triage: 'TRIAGE',
+  on_hold: 'ON HOLD',
+  closed: 'CLOSED',
+  converted: 'CONVERTED',
+  in_progress: 'IN PROGRESS',
+  in_review: 'IN REVIEW',
+  to_committee: 'COMMITTEE',
+  resolved: 'RESOLVED',
+};
+
+interface StatusLozengeProps {
+  status: string;
+  onClick?: () => void;
+  className?: string;
+}
+
+export function StatusLozenge({ status, onClick, className }: StatusLozengeProps) {
+  const key = status?.toLowerCase().replace(/\s+/g, '_') || 'open';
+  const colors = LOZENGE_MAP[key] || LOZENGE_MAP.open;
+  const label = LABELS[key] || status?.toUpperCase() || 'UNKNOWN';
+
+  return (
+    <span
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={onClick ? (e) => { if (e.key === 'Enter') onClick(); } : undefined}
+      className={cn(
+        'inline-flex items-center justify-center px-2 select-none whitespace-nowrap',
+        onClick && 'cursor-pointer',
+        className,
+      )}
+      style={{
+        height: 20,
+        fontSize: 11,
+        fontWeight: 700,
+        textTransform: 'uppercase',
+        letterSpacing: '0.03em',
+        borderRadius: 3,
+        backgroundColor: colors.bg,
+        color: colors.text,
+        lineHeight: '20px',
+      }}
+    >
+      {label}
+    </span>
+  );
+}
