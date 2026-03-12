@@ -88,6 +88,12 @@ export default function IdeasBacklogPage() {
   const convertedCount = stats?.byStatus.find(s => s.status === 'Converted to Initiative')?.count || 0;
   const conversionRate = stats && stats.total > 0 ? ((convertedCount / stats.total) * 100).toFixed(1) : '0.0';
 
+  const ideasData = useMemo(() => ideas.map(toIdea), [ideas]);
+
+  const handleMergeIdeas = useCallback((primaryKey: string, mergeKey: string) => {
+    toast.info(`Merging ${mergeKey} into ${primaryKey}`, { description: 'Merge functionality coming soon.' });
+  }, []);
+
   const handleConvertIdea = (idea: IdeaRow) => {
     setConversionSource({
       type: 'single',
