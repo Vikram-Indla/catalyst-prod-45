@@ -188,7 +188,7 @@ export default function IdeasBacklogPage() {
           );
         })}
         <div style={{ flex: 1 }} />
-        <button onClick={() => toast.info('AI Triage will be available in the next release.', { description: 'AI-powered features are being connected to the RAG pipeline.' })} style={{ background: '#2563EB', color: '#FFF', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <button onClick={() => setTriageOpen(true)} style={{ background: '#2563EB', color: '#FFF', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
           <Sparkles size={12} /> AI Triage ({ideas.length})
         </button>
       </div>
