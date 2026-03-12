@@ -263,7 +263,7 @@ export default function IncidentListPage() {
                 <div className="px-3"><PriorityChip priority={item.priority || 'P4'} /></div>
                 <div className="px-3"><StatusLozenge status={item.status || 'open'} /></div>
                 <div className="px-3 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>
-                  {'\u2014'}
+                  {item.project_name || '\u2014'}
                 </div>
                 <div className="px-3 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#334155' }}>
                   {item.assignee_name || 'Unassigned'}
