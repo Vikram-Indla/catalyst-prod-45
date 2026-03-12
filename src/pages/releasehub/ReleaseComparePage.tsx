@@ -7,7 +7,7 @@ import { EmptyState } from '@/components/releasehub/EmptyState';
 import { BarChart3 } from 'lucide-react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from 'recharts';
 
-const RADAR_COLORS = ['#2563EB', '#0D9488', '#DC2626', '#7C3AED'];
+const RADAR_COLORS = ['#2563EB', '#0D9488', '#DC2626', '#64748B'];
 const statusScore: Record<string, number> = { todo: 20, in_progress: 55, done: 100, archived: 10 };
 
 export default function ReleaseComparePage() {

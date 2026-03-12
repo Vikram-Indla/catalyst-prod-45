@@ -1,7 +1,7 @@
-export type ReleaseStatus = 'todo' | 'in_progress' | 'done' | 'archived';
+export type ReleaseStatus = 'planning' | 'in_progress' | 'released' | 'archived' | 'todo' | 'done';
 export type ChangeStatus = 'new' | 'in_qa' | 'in_uat' | 'in_beta' | 'in_production';
-export type RiskLevel = 'low' | 'medium' | 'high' | 'critical';
-export type ChangeSource = 'catalyst' | 'jira' | 'servicenow';
+export type RiskLevel = 'standard' | 'high' | 'emergency';
+export type ChangeSource = 'catalyst' | 'jira';
 export type ReleaseSource = 'catalyst' | 'jira';
 export type TestCycleStatus = 'not_started' | 'running' | 'passed' | 'failed' | 'blocked';
 
@@ -31,15 +31,10 @@ export interface Change {
   release_id?: string;
   category: string;
   deployment_date?: string;
-  frontend_required: boolean;
-  frontend_commit?: string;
-  backend_required: boolean;
-  backend_commit?: string;
   dependency?: string;
   deployment_process?: string;
   additional_commands?: string;
   additional_comments?: string;
-  sn_imported: boolean;
   created_by: string;
   project_id: string;
   created_at: string;
