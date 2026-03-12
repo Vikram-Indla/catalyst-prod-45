@@ -88,7 +88,7 @@ export default function TriageQueuePage() {
                       <span className="text-[13px] text-[#0F172A] truncate block">{c.title}</span>
                     </td>
                     <td className="px-3 py-2"><RiskBadge risk={mapRisk(c.risk_level)} /></td>
-                    <td className="px-3 py-2"><SourceBadge source={c.source === 'servicenow' ? 'catalyst' : c.source} /></td>
+                    <td className="px-3 py-2"><SourceBadge source={c.source} /></td>
                     <td className="px-3 py-2 text-[#64748B]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
                       {c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
                     </td>

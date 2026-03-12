@@ -2,8 +2,11 @@ import React from 'react';
 import { SOURCE_BADGE } from '@/constants/releasehub.design';
 
 export function SourceBadge({ source }: { source: string }) {
-  const normalized = source?.toLowerCase() || 'catalyst';
+  // Normalize: servicenow → catalyst (ServiceNow is banned)
+  let normalized = source?.toLowerCase() || 'catalyst';
+  if (normalized === 'servicenow') normalized = 'catalyst';
   const badge = SOURCE_BADGE[normalized] || SOURCE_BADGE.catalyst;
+  const label = normalized === 'jira' ? 'JIRA' : 'CATALYST';
   return (
     <span
       className="inline-flex items-center whitespace-nowrap"
@@ -19,7 +22,7 @@ export function SourceBadge({ source }: { source: string }) {
         lineHeight: '18px',
       }}
     >
-      {source?.toUpperCase() || 'CATALYST'}
+      {label}
     </span>
   );
 }

@@ -224,7 +224,7 @@ function KanbanView({ changes, onSelect }: { changes: any[]; onSelect: (c: any) 
                   <span className="text-[13px] font-medium text-[#0F172A] block truncate">{c.title}</span>
                   <div className="flex items-center gap-2 mt-2">
                     <RiskBadge risk={c.risk_level?.toLowerCase() === 'low' || c.risk_level?.toLowerCase() === 'medium' ? 'standard' : c.risk_level} />
-                    <SourceBadge source={c.source === 'servicenow' ? 'catalyst' : c.source} />
+                    <SourceBadge source={c.source} />
                   </div>
                 </button>
               ))}
