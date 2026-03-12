@@ -5,7 +5,7 @@
  * Fixes: Converted filter, conversion rate stat, Intelligence as outline button,
  *        Convert to Initiative integration via CreateInitiativeDrawer
  */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, Download, Plus, Sparkles, ArrowUpRight } from 'lucide-react';
 import { useIdeasHub, useIdeaStats, useUpdateIdea, type IdeaRow } from '@/hooks/useIdeasHub';
@@ -13,8 +13,35 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import IdeaDrawer from './ideation/IdeaDrawer';
+import IdeationTriagePanel from './ideation/IdeationTriagePanel';
+import IdeationIntelligenceHub from './ideation/IdeationIntelligenceHub';
 import { CreateInitiativeDrawer, type ConversionSource } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from './ideation/ideation-data';
+import type { Idea } from './ideation/ideation-data';
+
+/** Map IdeaRow (from Supabase) → Idea (legacy type used by Triage/Intelligence panels) */
+function toIdea(r: IdeaRow): Idea {
+  return {
+    key: r.idea_key,
+    title: r.title,
+    subtitle: r.description || '',
+    status: (r.status?.toLowerCase().replace(/ /g, '_') || 'draft') as any,
+    type: (r.idea_type?.toLowerCase().replace(/ /g, '_') || 'feature_request') as any,
+    priority: r.priority || 'P2',
+    impact: r.impact_total,
+    votes: r.vote_count,
+    initiative: r.linked_initiative_key || null,
+    dept: r.assigned_team || '',
+    assignee: r.assigned_to_name ? { name: r.assigned_to_name, initials: r.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2) } : null,
+    ai: r.ai_enrichment_status === 'completed' ? 'ready' : 'pending',
+    theme: r.theme,
+    assigned_team: r.assigned_team,
+    target_release_date: r.target_release_date,
+    created_at: r.created_at,
+    updated_at: r.updated_at,
+    roadmap_quarter: r.roadmap_quarter,
+  };
+}
 
 const FILTER_PILLS = [
   { key: 'all', label: 'All' },
