@@ -328,6 +328,8 @@ export default function IdeasBacklogPage() {
           }
         }}
       />
+      <IdeationTriagePanel open={triageOpen} onClose={() => setTriageOpen(false)} onMerge={handleMergeIdeas} ideas={ideasData} />
+      <IdeationIntelligenceHub open={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} onMerge={handleMergeIdeas} ideas={ideasData} />
     </div>
   );
 }
