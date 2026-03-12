@@ -273,53 +273,17 @@ export default function IncidentDetailPage() {
           padding: 16,
           backgroundColor: '#FFFFFF',
         }}>
-          {/* Committee Summary */}
-          {committee && (
-            <div className="mb-4 p-3" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-              <h4 style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>Escalation Committee</h4>
-              <div className="mb-2" style={{ height: 6, borderRadius: 3, backgroundColor: '#E2E8F0', overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%',
-                  width: `${totalMembers > 0 ? (approveCount / totalMembers) * 100 : 0}%`,
-                  backgroundColor: approveCount / totalMembers >= 0.6 ? '#16A34A' : '#D97706',
-                  borderRadius: 3,
-                  transition: 'width 400ms ease',
-                }} />
-              </div>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', marginBottom: 8 }}>
-                {approveCount} of {totalMembers} approved
-              </p>
-              <Button variant="outline" size="sm" className="w-full mb-2" style={{ borderRadius: 6, fontSize: 11 }} onClick={() => setShowCommittee(true)}>
-                View Details
-              </Button>
-              <Button
-                size="sm"
-                className="w-full"
-                disabled={!quorumMet}
-                title={!quorumMet ? 'Requires \u22653 approvals to submit decision' : ''}
-                style={{
-                  borderRadius: 6,
-                  fontSize: 11,
-                  backgroundColor: quorumMet ? '#2563EB' : undefined,
-                  opacity: quorumMet ? 1 : 0.5,
-                  cursor: quorumMet ? 'pointer' : 'not-allowed',
-                }}
-              >
-                Submit Decision
-              </Button>
-            </div>
-          )}
-
           {/* Metadata Grid */}
           <div className="space-y-3">
             {[
               { label: 'Status', value: <StatusLozenge status={incident.status} /> },
+              { label: 'Jira Status', value: incident.jira_status || '\u2014' },
               { label: 'Severity', value: <SeverityChip severity={incident.severity} /> },
               { label: 'Priority', value: <PriorityChip priority={incident.priority || 'P4'} /> },
-              { label: 'Project', value: incident.project?.name || incident.jira_project_name || '\u2014' },
-              { label: 'Assignee', value: incident.assignee?.full_name || 'Unassigned' },
-              { label: 'Environment', value: incident.environment?.name || '\u2014' },
-              { label: 'Reporter', value: incident.reporter?.full_name || incident.reporter_name || '\u2014' },
+              { label: 'Project', value: incident.project_name || '\u2014' },
+              { label: 'Assignee', value: incident.assignee_name || 'Unassigned' },
+              { label: 'Reporter', value: incident.reporter_name || '\u2014' },
+              { label: 'Resolution', value: incident.resolution || '\u2014' },
             ].map(row => (
               <div key={row.label} className="flex items-center gap-2">
                 <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 80, flexShrink: 0 }}>{row.label}</span>
