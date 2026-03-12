@@ -253,9 +253,6 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                   </span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
                     <StatusLoz status="Under Review" />
-                    <span style={{ fontSize: '12px', color: '#64748B' }}>
-                      {rawIdea.converted_at ? new Date(rawIdea.converted_at as string).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
-                    </span>
                   </div>
                 </div>
               </div>
