@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, MoreHorizontal, FolderKanban, Zap, Wrench, Link, type LucideIcon } from 'lucide-react';
+import { Star, MoreHorizontal, FolderKanban, Zap, Wrench, Link, Lightbulb, type LucideIcon } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
 import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
 import { InitiativeMetrics } from '@/components/backlog/MetricBars';
@@ -39,6 +39,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; Icon: LucideIc
   enhancement: { label: 'Enhancement', color: '#2563EB', Icon: Zap },
   improvement: { label: 'Improvement', color: '#D97706', Icon: Wrench },
   entity_integration: { label: 'Entity Integration', color: '#7C3AED', Icon: Link },
+  business_request: { label: 'Business Request', color: '#B45309', Icon: Lightbulb },
 };
 
 

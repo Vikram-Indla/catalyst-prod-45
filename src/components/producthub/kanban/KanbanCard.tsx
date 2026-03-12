@@ -20,6 +20,7 @@ const TYPE_COLORS: Record<string, string> = {
   enhancement: '#2563EB',
   improvement: '#D97706',
   entity_integration: '#7C3AED',
+  business_request: '#B45309',
 };
 
 function getPriorityBars(score: number | null): number {
