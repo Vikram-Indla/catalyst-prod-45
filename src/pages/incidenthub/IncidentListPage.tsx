@@ -1,21 +1,23 @@
 /**
- * IncidentListPage — V12 Redesigned Incident List
+ * IncidentListPage — V13 with Avatars, Reporter, Updated, Parent columns
  * Catalyst V12 Hybrid Precision | 36px rows | 3-color lozenges
  */
 
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, Search, Download, Plus, Loader2 } from 'lucide-react';
+import { AlertTriangle, Search, Download, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useIncidentListView, useIncidentStats } from '@/hooks/useIncidentHub';
 import { StatusLozenge } from './components/StatusLozenge';
 import { SeverityChip } from './components/SeverityChip';
 import { PriorityChip } from './components/PriorityChip';
 import { NewIncidentModal } from './components/NewIncidentModal';
-import { formatDistanceToNow } from 'date-fns';
+
+const GRID_COLS = '36px 110px 1fr 64px 54px 96px 86px 130px 130px 90px 90px 100px';
 
 export default function IncidentListPage() {
   const navigate = useNavigate();
@@ -58,19 +60,7 @@ export default function IncidentListPage() {
     return new Date(d).toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
   };
 
-  const getSlaDisplay = (item: any) => {
-    if (item.resolution_breached) return { text: 'BREACHED', color: '#DC2626' };
-    if (item.response_breached) return { text: '\u26A0 WARNING', color: '#D97706' };
-    if (item.resolution_due_at) {
-      const remaining = new Date(item.resolution_due_at).getTime() - Date.now();
-      if (remaining <= 0) return { text: 'BREACHED', color: '#DC2626' };
-      if (remaining <= 3600000) return { text: '\u26A0 WARNING', color: '#D97706' };
-      const hours = Math.floor(remaining / 3600000);
-      const mins = Math.floor((remaining % 3600000) / 60000);
-      return { text: `${hours}h ${mins}m`, color: '#16A34A' };
-    }
-    return { text: '\u2014', color: '#94A3B8' };
-  };
+  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   const statusChips = [
     { key: 'all', label: 'All' },
@@ -162,20 +152,16 @@ export default function IncidentListPage() {
         <div style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden' }}>
           {/* Table Header */}
           <div className="grid items-center" style={{
-            gridTemplateColumns: '36px 130px 1fr 80px 70px 105px 90px 90px 130px 100px',
+            gridTemplateColumns: GRID_COLS,
             backgroundColor: '#F1F5F9',
             height: 36,
             borderBottom: '0.75px solid rgba(15,23,42,0.06)',
           }}>
             <div className="flex justify-center"><Checkbox className="h-3.5 w-3.5" /></div>
-            {['KEY', 'TITLE', 'SEV', 'PRI', 'STATUS', 'PROJECT', 'ASSIGNEE', 'SLA', 'REPORTED'].map(h => (
-              <div key={h} className="px-3" style={{
-                fontFamily: 'Inter, sans-serif',
-                fontSize: 11,
-                fontWeight: 700,
-                textTransform: 'uppercase' as const,
-                letterSpacing: '0.06em',
-                color: '#64748B',
+            {['KEY', 'TITLE', 'SEV', 'PRI', 'STATUS', 'PROJECT', 'ASSIGNEE', 'REPORTER', 'UPDATED', 'PARENT', 'REPORTED'].map(h => (
+              <div key={h} className="px-2" style={{
+                fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700,
+                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: '#64748B',
               }}>{h}</div>
             ))}
           </div>
@@ -183,12 +169,11 @@ export default function IncidentListPage() {
           {/* Loading */}
           {isLoading && Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="grid items-center" style={{
-              gridTemplateColumns: '36px 130px 1fr 80px 70px 105px 90px 90px 130px 100px',
-              height: 36,
+              gridTemplateColumns: GRID_COLS, height: 36,
               borderBottom: '0.75px solid rgba(15,23,42,0.06)',
             }}>
-              {Array.from({ length: 10 }).map((_, j) => (
-                <div key={j} className="px-3"><Skeleton className="h-3 w-full" /></div>
+              {Array.from({ length: 12 }).map((_, j) => (
+                <div key={j} className="px-2"><Skeleton className="h-3 w-full" /></div>
               ))}
             </div>
           ))}
@@ -209,74 +194,94 @@ export default function IncidentListPage() {
           )}
 
           {/* Data Rows */}
-          {paginated.map(item => {
-            const sla = getSlaDisplay(item);
-            return (
-              <div
-                key={item.id}
-                className="grid items-center cursor-pointer transition-colors"
-                style={{
-                  gridTemplateColumns: '36px 130px 1fr 80px 70px 105px 90px 90px 130px 100px',
-                  height: 36,
-                  maxHeight: 36,
-                  borderBottom: '0.75px solid rgba(15,23,42,0.06)',
-                  backgroundColor: '#FFFFFF',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(15,23,42,0.04)')}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
-                onClick={() => navigate(`/incident-hub/view/${item.id}`)}
-              >
-                <div className="flex justify-center" onClick={e => e.stopPropagation()}>
-                  <Checkbox
-                    className="h-3.5 w-3.5"
-                    checked={selectedIds.has(item.id!)}
-                    onCheckedChange={() => toggleSelect(item.id!)}
-                  />
-                </div>
-                <div className="px-3 flex items-center gap-1.5">
-                  {/* Production Incident icon */}
-                  {item.type_icon_url ? (
-                    <img src={item.type_icon_url} alt="Incident" style={{ width: 14, height: 14, flexShrink: 0 }} />
-                  ) : (
-                    <svg width="14" height="14" viewBox="0 0 16 16" className="shrink-0">
-                      <path fill="#FF5630" fillRule="evenodd" d="M4.78545267,10 L11.2145473,10 L10.5007848,8 L5.49921516,8 L4.78545267,10 Z M4,11 C3.44771525,11 3,11.4477153 3,12 L3,13 L13,13 L13,12 C13,11.4477153 12.5522847,11 12,11 L4,11 Z M5.8560964,7 L10.1439036,7 L8.94181993,3.63169838 C8.8409899,3.34916733 8.61864892,3.12682636 8.33611787,3.02599632 C7.81596508,2.84036355 7.24381284,3.1115456 7.05818007,3.63169838 L5.8560964,7 Z M2,0 L14,0 C15.1045695,-2.02906125e-16 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 1.3527075e-16,15.1045695 0,14 L0,2 C-1.3527075e-16,0.8954305 0.8954305,2.02906125e-16 2,0 Z"/>
-                    </svg>
-                  )}
-                  <span
-                    className="inline-flex items-center px-1.5"
-                    style={{
-                      fontFamily: 'JetBrains Mono, monospace',
-                      fontSize: 12,
-                      fontWeight: 500,
-                      color: '#2563EB',
-                      backgroundColor: '#EFF6FF',
-                      borderRadius: 3,
-                    }}
-                  >
-                    {item.incident_key || '\u2014'}
-                  </span>
-                </div>
-                <div className="px-3 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 650, color: '#0F172A' }}>
-                  {item.title || '\u2014'}
-                </div>
-                <div className="px-3"><SeverityChip severity={item.severity || 'SEV4'} /></div>
-                <div className="px-3"><PriorityChip priority={item.priority || 'P4'} /></div>
-                <div className="px-3"><StatusLozenge status={item.status || 'open'} /></div>
-                <div className="px-3 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>
-                  {item.project_name || '\u2014'}
-                </div>
-                <div className="px-3 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#334155' }}>
-                  {item.assignee_name || 'Unassigned'}
-                </div>
-                <div className="px-3" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: sla.color }}>
-                  {sla.text}
-                </div>
-                <div className="px-3" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#64748B' }}>
-                  {formatDate(item.created_at)}
-                </div>
+          {paginated.map(item => (
+            <div
+              key={item.id}
+              className="grid items-center cursor-pointer transition-colors"
+              style={{
+                gridTemplateColumns: GRID_COLS,
+                height: 36, maxHeight: 36,
+                borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+                backgroundColor: '#FFFFFF',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(15,23,42,0.04)')}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
+              onClick={() => navigate(`/incident-hub/view/${item.id}`)}
+            >
+              <div className="flex justify-center" onClick={e => e.stopPropagation()}>
+                <Checkbox className="h-3.5 w-3.5" checked={selectedIds.has(item.id!)} onCheckedChange={() => toggleSelect(item.id!)} />
               </div>
-            );
-          })}
+              {/* Key */}
+              <div className="px-2 flex items-center gap-1.5">
+                {item.type_icon_url ? (
+                  <img src={item.type_icon_url} alt="" style={{ width: 14, height: 14, flexShrink: 0 }} />
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 16 16" className="shrink-0">
+                    <path fill="#FF5630" fillRule="evenodd" d="M4.78545267,10 L11.2145473,10 L10.5007848,8 L5.49921516,8 L4.78545267,10 Z M4,11 C3.44771525,11 3,11.4477153 3,12 L3,13 L13,13 L13,12 C13,11.4477153 12.5522847,11 12,11 L4,11 Z M5.8560964,7 L10.1439036,7 L8.94181993,3.63169838 C8.8409899,3.34916733 8.61864892,3.12682636 8.33611787,3.02599632 C7.81596508,2.84036355 7.24381284,3.1115456 7.05818007,3.63169838 L5.8560964,7 Z M2,0 L14,0 C15.1045695,-2.02906125e-16 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 1.3527075e-16,15.1045695 0,14 L0,2 C-1.3527075e-16,0.8954305 0.8954305,2.02906125e-16 2,0 Z"/>
+                  </svg>
+                )}
+                <span className="inline-flex items-center px-1" style={{
+                  fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 500,
+                  color: '#2563EB', backgroundColor: '#EFF6FF', borderRadius: 3,
+                }}>
+                  {item.incident_key || '\u2014'}
+                </span>
+              </div>
+              {/* Title */}
+              <div className="px-2 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 650, color: '#0F172A' }}>
+                {item.title || '\u2014'}
+              </div>
+              <div className="px-2"><SeverityChip severity={item.severity || 'SEV4'} /></div>
+              <div className="px-2"><PriorityChip priority={item.priority || 'P4'} /></div>
+              <div className="px-2"><StatusLozenge status={item.status || 'open'} /></div>
+              {/* Project */}
+              <div className="px-2 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>
+                {item.project_name || '\u2014'}
+              </div>
+              {/* Assignee with Avatar */}
+              <div className="px-2 flex items-center gap-1.5 min-w-0">
+                {item.assignee_name ? (
+                  <>
+                    <Avatar size="xs" className="shrink-0">
+                      <AvatarFallback name={item.assignee_name} className="text-[9px]">{getInitials(item.assignee_name)}</AvatarFallback>
+                    </Avatar>
+                    <span className="truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#334155' }}>
+                      {item.assignee_name}
+                    </span>
+                  </>
+                ) : (
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>Unassigned</span>
+                )}
+              </div>
+              {/* Reporter with Avatar */}
+              <div className="px-2 flex items-center gap-1.5 min-w-0">
+                {item.reporter_name ? (
+                  <>
+                    <Avatar size="xs" className="shrink-0">
+                      <AvatarFallback name={item.reporter_name} className="text-[9px]">{getInitials(item.reporter_name)}</AvatarFallback>
+                    </Avatar>
+                    <span className="truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#334155' }}>
+                      {item.reporter_name}
+                    </span>
+                  </>
+                ) : (
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>&mdash;</span>
+                )}
+              </div>
+              {/* Updated */}
+              <div className="px-2" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#64748B' }}>
+                {formatDate(item.updated_at)}
+              </div>
+              {/* Parent */}
+              <div className="px-2 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 11 }}>
+                {item.parent_key ? <span style={{ color: '#2563EB' }}>{item.parent_key}</span> : '\u2014'}
+              </div>
+              {/* Reported */}
+              <div className="px-2" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#64748B' }}>
+                {formatDate(item.created_at)}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Pagination */}
@@ -291,10 +296,7 @@ export default function IncidentListPage() {
                   key={p}
                   onClick={() => setPage(p)}
                   style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: 4,
-                    fontSize: 12,
+                    width: 28, height: 28, borderRadius: 4, fontSize: 12,
                     fontFamily: 'Inter, sans-serif',
                     fontWeight: page === p ? 650 : 400,
                     backgroundColor: page === p ? '#2563EB' : 'transparent',
