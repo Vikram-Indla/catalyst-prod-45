@@ -764,21 +764,6 @@ function RecentActivity({ rawIdea }: { rawIdea: any }) {
 /*  Shared sub-components                                          */
 /* ═══════════════════════════════════════════════════════════════ */
 
-function StatusLoz({ status }: { status: string }) {
-  const s = STATUS_LOZENGE_COLORS[status] ?? { bg: '#DFE1E6', text: '#253858' };
-  const label = status === 'Converted to Initiative' ? 'CONVERTED' : status.toUpperCase();
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: '3px',
-      backgroundColor: s.bg, color: s.text,
-      fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
-      lineHeight: '16px', whiteSpace: 'nowrap', height: 20,
-    }}>
-      {label}
-    </span>
-  );
-}
-
 function FieldRow({ label, editing, display, input }: { label: string; editing: boolean; display: React.ReactNode; input: React.ReactNode }) {
   return (
     <div>
