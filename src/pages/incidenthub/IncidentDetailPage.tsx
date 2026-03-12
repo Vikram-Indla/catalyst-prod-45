@@ -313,14 +313,7 @@ export default function IncidentDetailPage() {
       </div>
 
       {/* Modals */}
-      {committee && (
-        <CommitteeModal
-          open={showCommittee}
-          onClose={() => setShowCommittee(false)}
-          committee={committee}
-          incidentId={id || ''}
-        />
-      )}
+      <ConvertDialog open={showConvert} onClose={() => setShowConvert(false)} incidentId={id || ''} />
       <ConvertDialog open={showConvert} onClose={() => setShowConvert(false)} incidentId={id || ''} />
     </div>
   );
