@@ -25,23 +25,23 @@ interface EnterpriseTableViewProps {
 const STATUS_PILL: Record<string, { label: string; dot: string; text: string }> = {
   planning: { label: 'Planning', dot: 'bg-slate-400', text: 'text-slate-600' },
   in_progress: { label: 'Development', dot: 'bg-blue-500', text: 'text-blue-600' },
-  testing: { label: 'Testing', dot: 'bg-orange-500', text: 'text-orange-600' },
-  staging: { label: 'Staging', dot: 'bg-purple-500', text: 'text-purple-600' },
+  testing: { label: 'Testing', dot: 'bg-blue-400', text: 'text-blue-500' },
+  staging: { label: 'Staging', dot: 'bg-slate-500', text: 'text-slate-600' },
   released: { label: 'Released', dot: 'bg-emerald-500', text: 'text-emerald-600' },
   cancelled: { label: 'Cancelled', dot: 'bg-slate-300', text: 'text-slate-400' },
 };
 
 const HEALTH_DOT: Record<HealthLevel, string> = {
   critical: 'bg-red-500',
-  at_risk: 'bg-orange-500',
-  attention: 'bg-yellow-500',
+  at_risk: 'bg-red-400',
+  attention: 'bg-blue-400',
   healthy: 'bg-emerald-500',
 };
 
 const HEALTH_TEXT: Record<HealthLevel, string> = {
   critical: 'text-red-600',
-  at_risk: 'text-orange-600',
-  attention: 'text-yellow-600',
+  at_risk: 'text-red-500',
+  attention: 'text-blue-600',
   healthy: 'text-emerald-600',
 };
 

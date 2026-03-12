@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { X, ExternalLink, ChevronRight } from 'lucide-react';
-import { RH, CHG_STATUS_ORDER, CHG_STATUS_LABELS, RISK_STYLES } from '@/constants/releasehub.design';
-import { ChgStatusBadge } from './ChgStatusBadge';
+import { RH, CHG_STATUS_ORDER, CHG_STATUS_LABELS } from '@/constants/releasehub.design';
+import { StatusLozenge } from './StatusLozenge';
+import { RiskBadge } from './RiskBadge';
+import { SourceBadge } from './SourceBadge';
 import { WorkItemTag } from './WorkItemTag';
 import { CatalystAIChip } from './CatalystAIChip';
 import { ChgGateModal } from './ChgGateModal';
@@ -14,6 +16,13 @@ import type { ChangeStatus } from '@/types/releasehub';
 interface Props {
   change: any;
   onClose: () => void;
+}
+
+function mapRisk(risk: string) {
+  const r = risk?.toLowerCase() || 'standard';
+  if (r === 'low' || r === 'medium') return 'standard';
+  if (r === 'critical') return 'emergency';
+  return r;
 }
 
 const TABS = ['Overview', 'Work Items', 'Sign-offs', 'Activity'] as const;
@@ -48,24 +57,24 @@ export function ChgDrawer({ change: c, onClose }: Props) {
         <div className="relative w-[700px] h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
           onClick={e => e.stopPropagation()}>
           {/* Header */}
-          <div className="sticky top-0 bg-white z-10 border-b border-[#E2E8F0] px-6 py-4">
+          <div className="sticky top-0 bg-white z-10 border-b border-[rgba(15,23,42,0.12)] px-6 py-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                {c.sn_imported && <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-[#DBEAFE] text-[#1E40AF]">ServiceNow</span>}
-                <span className="text-[16px] font-black text-[#0D9488]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
-                <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${RISK_STYLES[c.risk_level] || ''}`}>{c.risk_level}</span>
+                <span className="text-[16px] font-black text-[#2563EB]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
+                <RiskBadge risk={mapRisk(c.risk_level)} />
+                <SourceBadge source={c.source === 'servicenow' ? 'catalyst' : c.source} />
               </div>
               <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
             </div>
             <h2 className="text-[18px] font-extrabold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{c.title}</h2>
             <div className="flex items-center gap-2 mb-4">
-              <ChgStatusBadge status={c.status} />
+              <StatusLozenge status={c.status} />
               {c.category && <span className="text-[12px] text-[#64748B]">{c.category}</span>}
-              {c.deployment_date && <span className="text-[12px] text-[#64748B]">Planned: {new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
+              {c.deployment_date && <span className="text-[12px] text-[#64748B]" style={{ fontFamily: RH.fontMono }}>Planned: {new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
               {nextStatus && (
                 <button onClick={() => handleAdvanceStatus(nextStatus)}
                   disabled={updateStatus.isPending}
-                  className="ml-auto h-7 px-3 rounded-md bg-[#0D9488] text-white text-[11px] font-bold flex items-center gap-1 hover:bg-[#0B7C71] disabled:opacity-50">
+                  className="ml-auto h-7 px-3 rounded-md bg-[#2563EB] text-white text-[11px] font-bold flex items-center gap-1 hover:bg-[#1D4ED8] disabled:opacity-50">
                   Advance to {CHG_STATUS_LABELS[nextStatus]} <ChevronRight size={12} />
                 </button>
               )}
@@ -78,9 +87,9 @@ export function ChgDrawer({ change: c, onClose }: Props) {
                 const isCurrent = i === currentIdx;
                 return (
                   <React.Fragment key={s}>
-                    {i > 0 && <div className={`flex-1 h-0.5 ${isDone || isCurrent ? 'bg-[#0D9488]' : 'bg-[#E2E8F0]'}`} />}
+                    {i > 0 && <div className={`flex-1 h-0.5 ${isDone || isCurrent ? 'bg-[#2563EB]' : 'bg-[rgba(15,23,42,0.12)]'}`} />}
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 ${
-                      isDone ? 'bg-[#0D9488] text-white' : isCurrent ? 'bg-[#2563EB] text-white' : 'bg-[#F1F5F9] text-[#94A3B8] border border-[#E2E8F0]'
+                      isDone ? 'bg-[#006644] text-white' : isCurrent ? 'bg-[#2563EB] text-white' : 'bg-[#F1F5F9] text-[#94A3B8] border border-[rgba(15,23,42,0.12)]'
                     }`}>
                       {isDone ? '✓' : isCurrent ? '●' : i + 1}
                     </div>
@@ -90,18 +99,18 @@ export function ChgDrawer({ change: c, onClose }: Props) {
             </div>
             <div className="flex justify-between mt-1">
               {CHG_STATUS_ORDER.map(s => (
-                <span key={s} className="text-[8px] font-medium text-[#94A3B8] text-center" style={{ width: 60 }}>{CHG_STATUS_LABELS[s]}</span>
+                <span key={s} className="text-[9px] font-medium text-[#94A3B8] text-center" style={{ width: 60 }}>{CHG_STATUS_LABELS[s]}</span>
               ))}
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="border-b border-[#E2E8F0] px-6 flex gap-0">
+          <div className="border-b border-[rgba(15,23,42,0.12)] px-6 flex gap-0">
             {TABS.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
                 className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[#2563EB] text-[#2563EB]' : 'border-transparent text-[#64748B] hover:text-[#475569]'}`}>
                 {tab}
-                {tab === 'Work Items' && workItems.length > 0 && <span className="ml-1 text-[10px] font-bold bg-[#F0FDFA] text-[#0D9488] px-1 rounded">{workItems.length}</span>}
+                {tab === 'Work Items' && workItems.length > 0 && <span className="ml-1 text-[10px] font-bold bg-[#F1F5F9] text-[#475569] px-1 rounded">{workItems.length}</span>}
               </button>
             ))}
           </div>
@@ -135,10 +144,10 @@ function OverviewTab({ change: c }: { change: any }) {
             const isCurrent = i === activeIdx;
             return (
               <React.Fragment key={s}>
-                {i > 0 && <div className={`flex-1 h-0.5 ${isDone ? 'bg-[#15803D]' : 'bg-[#E2E8F0]'}`} />}
+                {i > 0 && <div className={`flex-1 h-0.5 ${isDone ? 'bg-[#006644]' : 'bg-[rgba(15,23,42,0.12)]'}`} />}
                 <div className="flex flex-col items-center gap-1">
                   <div className={`w-9 h-9 rounded-full flex items-center justify-center text-[12px] font-bold ${
-                    isDone ? 'bg-[#15803D] text-white' : isCurrent ? 'border-2 border-[#2563EB] text-[#2563EB]' : 'border border-[#E2E8F0] text-[#94A3B8]'
+                    isDone ? 'bg-[#006644] text-white' : isCurrent ? 'border-2 border-[#2563EB] text-[#2563EB]' : 'border border-[rgba(15,23,42,0.12)] text-[#94A3B8]'
                   }`}>
                     {isDone ? '✓' : isCurrent ? '●' : i + 1}
                   </div>
@@ -154,15 +163,13 @@ function OverviewTab({ change: c }: { change: any }) {
         <div className="grid grid-cols-2 gap-3">
           {[
             { label: 'CHG Number', value: c.chg_number, mono: true },
+            { label: 'Source', value: c.source?.toUpperCase() },
+            { label: 'Risk Level', value: mapRisk(c.risk_level)?.toUpperCase() },
             { label: 'Category', value: c.category },
-            { label: 'Frontend Required', value: c.frontend_required ? 'Yes' : 'No' },
-            { label: 'Frontend Commit', value: c.frontend_commit, mono: true },
-            { label: 'Backend Required', value: c.backend_required ? 'Yes' : 'No' },
-            { label: 'Backend Commit', value: c.backend_commit, mono: true },
             { label: 'Dependency', value: c.dependency },
             { label: 'Deployment Process', value: c.deployment_process },
           ].map(f => (
-            <div key={f.label} className="bg-[#F4F7FA] rounded-lg p-3">
+            <div key={f.label} className="bg-[#F8FAFC] rounded-lg p-3">
               <p className="text-[10px] font-bold uppercase text-[#64748B] mb-1">{f.label}</p>
               <p className="text-[13px] font-medium"
                 style={{ fontFamily: f.mono ? RH.fontMono : RH.fontBody, color: f.value ? RH.ink2 : '#94A3B8' }}>
@@ -196,21 +203,21 @@ function WorkItemsTab({ workItems, changeId }: { workItems: any[]; changeId: str
         <WorkItemTag key={wi.id || wi.work_item_key} workItemKey={wi.work_item_key} title={wi.work_item_title} type={wi.work_item_type} status={wi.work_item_status} />
       ))}
       {showLink ? (
-        <div className="border border-[#E2E8F0] rounded-lg p-3 space-y-2">
+        <div className="border border-[rgba(15,23,42,0.12)] rounded-lg p-3 space-y-2">
           <input type="text" value={key} onChange={e => setKey(e.target.value)} placeholder="Key (e.g. BAU-4612)"
-            className="w-full h-8 px-2 rounded border border-[#E2E8F0] text-[12px] font-mono" />
+            className="w-full h-8 px-2 rounded border border-[rgba(15,23,42,0.12)] text-[12px] font-mono" />
           <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Title"
-            className="w-full h-8 px-2 rounded border border-[#E2E8F0] text-[12px]" />
+            className="w-full h-8 px-2 rounded border border-[rgba(15,23,42,0.12)] text-[12px]" />
           <div className="flex gap-2">
-            <button onClick={() => setShowLink(false)} className="h-7 px-3 rounded border border-[#E2E8F0] text-[11px] text-[#475569]">Cancel</button>
+            <button onClick={() => setShowLink(false)} className="h-7 px-3 rounded border border-[rgba(15,23,42,0.12)] text-[11px] text-[#475569]">Cancel</button>
             <button onClick={handleLink} disabled={!key || !title || linkWorkItem.isPending}
-              className="h-7 px-3 rounded bg-[#0D9488] text-white text-[11px] font-bold disabled:opacity-50">
+              className="h-7 px-3 rounded bg-[#2563EB] text-white text-[11px] font-bold disabled:opacity-50">
               {linkWorkItem.isPending ? 'Linking...' : 'Link'}
             </button>
           </div>
         </div>
       ) : (
-        <button onClick={() => setShowLink(true)} className="h-8 px-3 rounded-md border border-[#99F6E4] text-[#0D9488] text-[12px] font-semibold hover:bg-[#F0FDFA]">
+        <button onClick={() => setShowLink(true)} className="h-8 px-3 rounded-md border border-[#DBEAFE] text-[#2563EB] text-[12px] font-semibold hover:bg-[#EFF6FF]">
           + Link Work Item
         </button>
       )}
@@ -240,10 +247,10 @@ function SignoffsTab({ changeId }: { changeId: string }) {
         const waitHours = signoff?.wait_started_at ? differenceInHours(new Date(), new Date(signoff.wait_started_at)) : 0;
 
         return (
-          <div key={s.stage} className="flex items-center gap-3 py-3 border-b border-[#F1F5F9] last:border-0">
+          <div key={s.stage} className="flex items-center gap-3 py-3 border-b border-[rgba(15,23,42,0.06)] last:border-0">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
-              status === 'approved' ? 'bg-[#DCFCE7] text-[#15803D]' :
-              status === 'pending' ? 'bg-[#DBEAFE] text-[#1E40AF]' :
+              status === 'approved' ? 'bg-[#E3FCEF] text-[#006644]' :
+              status === 'pending' ? 'bg-[#DEEBFF] text-[#0747A6]' :
               status === 'rejected' ? 'bg-[#FEF2F2] text-[#DC2626]' :
               'bg-[#F1F5F9] text-[#94A3B8]'
             }`}>
@@ -252,7 +259,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
             <div className="flex-1">
               <span className="text-[13px] font-medium" style={{ color: RH.ink2 }}>{s.stage}</span>
               {signoff && status === 'pending' && waitHours > 0 && (
-                <span className="ml-2 text-[11px] font-bold" style={{ color: waitHours > 48 ? 'var(--cp-danger-60)' : waitHours > 24 ? 'var(--cp-warning-60)' : 'var(--cp-text-muted)' }}>
+                <span className="ml-2 text-[11px] font-bold" style={{ color: waitHours > 48 ? '#DC2626' : waitHours > 24 ? '#2563EB' : '#94A3B8' }}>
                   {getSignoffWaitTime(signoff.wait_started_at)}
                 </span>
               )}
@@ -262,7 +269,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
               <div className="flex items-center gap-2">
                 <button onClick={() => approveSignoff.mutate({ signoffId: signoff.id }, { onSuccess: () => toast.success('Approved') })}
                   disabled={approveSignoff.isPending}
-                  className="h-7 px-3 rounded bg-[#15803D] text-white text-[11px] font-bold hover:bg-[#166534] disabled:opacity-50">Approve</button>
+                  className="h-7 px-3 rounded bg-[#006644] text-white text-[11px] font-bold hover:bg-[#004D33] disabled:opacity-50">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: signoff.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
                   disabled={rejectSignoff.isPending}
                   className="h-7 px-3 rounded border border-[#FCA5A5] text-[#DC2626] text-[11px] font-bold hover:bg-[#FEF2F2] disabled:opacity-50">Reject</button>
@@ -285,8 +292,8 @@ function ActivityTab({ changeId }: { changeId: string }) {
   return (
     <div className="space-y-2">
       {history.map((h: any) => (
-        <div key={h.id} className="flex items-start gap-3 py-2 border-b border-[#F1F5F9] last:border-0">
-          <div className="w-2 h-2 rounded-full bg-[#0D9488] mt-1.5 shrink-0" />
+        <div key={h.id} className="flex items-start gap-3 py-2 border-b border-[rgba(15,23,42,0.06)] last:border-0">
+          <div className="w-2 h-2 rounded-full bg-[#2563EB] mt-1.5 shrink-0" />
           <div>
             <p className="text-[12px] text-[#475569]">
               Status changed {h.from_status ? `from ${CHG_STATUS_LABELS[h.from_status] || h.from_status}` : ''} to <span className="font-bold">{CHG_STATUS_LABELS[h.to_status] || h.to_status}</span>

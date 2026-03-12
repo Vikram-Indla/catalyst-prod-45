@@ -1,6 +1,5 @@
 /**
- * AI Insights Drawer
- * Slide-out right panel replacing inline AIInsightsBar
+ * AI Insights Drawer — Blue theme (no purple)
  */
 
 import { useEffect, useCallback } from 'react';
@@ -23,8 +22,8 @@ function InsightItem({ insight, onActionClick }: { insight: AIReleaseInsight; on
       bg: 'bg-red-50 border-red-200',
     },
     warning: {
-      icon: <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />,
-      bg: 'bg-amber-50 border-amber-200',
+      icon: <AlertTriangle className="w-4 h-4 text-[#64748B] flex-shrink-0" />,
+      bg: 'bg-[#F1F5F9] border-[rgba(15,23,42,0.12)]',
     },
     positive: {
       icon: <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />,
@@ -43,7 +42,7 @@ function InsightItem({ insight, onActionClick }: { insight: AIReleaseInsight; on
       </div>
       <button
         onClick={() => onActionClick?.(insight)}
-        className="mt-2 flex items-center gap-1 text-[11px] font-medium text-blue-600 hover:text-blue-700 transition-colors"
+        className="mt-2 flex items-center gap-1 text-[11px] font-medium text-[#2563EB] hover:text-[#1D4ED8] transition-colors"
       >
         {insight.action}
         <ArrowRight className="w-3 h-3" />
@@ -69,15 +68,10 @@ export function AIInsightsDrawer({ isOpen, onClose, insights, onActionClick }: A
 
   return (
     <>
-      {/* Overlay */}
       {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 z-50 transition-opacity"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 bg-black/20 z-50 transition-opacity" onClick={onClose} />
       )}
       
-      {/* Drawer */}
       <div
         role="dialog"
         aria-label="AI Insights Panel"
@@ -89,11 +83,10 @@ export function AIInsightsDrawer({ isOpen, onClose, insights, onActionClick }: A
         )}
         style={{ top: 'var(--app-top-offset, 56px)', height: 'calc(100dvh - var(--app-top-offset, 56px))' }}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
           <div className="flex items-center gap-2.5">
-            <div className="p-1.5 bg-purple-100 rounded-lg">
-              <Sparkles className="w-4 h-4 text-purple-600" />
+            <div className="p-1.5 rounded-lg" style={{ background: '#DBEAFE' }}>
+              <Sparkles className="w-4 h-4" style={{ color: '#2563EB' }} />
             </div>
             <h2 className="font-semibold text-sm text-slate-900">AI Insights</h2>
             {criticalCount > 0 && (
@@ -102,7 +95,7 @@ export function AIInsightsDrawer({ isOpen, onClose, insights, onActionClick }: A
               </span>
             )}
             {warningCount > 0 && (
-              <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-semibold rounded-full">
+              <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full" style={{ background: '#DBEAFE', color: '#0747A6' }}>
                 {warningCount} warnings
               </span>
             )}
@@ -112,7 +105,6 @@ export function AIInsightsDrawer({ isOpen, onClose, insights, onActionClick }: A
           </Button>
         </div>
 
-        {/* Body */}
         <div className="overflow-y-auto p-5 space-y-3" style={{ height: 'calc(100% - 57px)' }}>
           {insights.length === 0 ? (
             <div className="text-center py-12">
