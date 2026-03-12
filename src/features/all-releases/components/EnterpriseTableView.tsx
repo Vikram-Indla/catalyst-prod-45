@@ -287,7 +287,7 @@ export function EnterpriseTableView({
                   {ownerInitials}
                 </div>
               ) : (
-                <span className="text-[11px] text-amber-500 font-medium">Unassigned</span>
+                <span className="text-[11px] text-slate-400 font-medium">Unassigned</span>
               )}
             </div>
           </div>
