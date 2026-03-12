@@ -1,14 +1,13 @@
 /**
  * Ideas Theme Page — /product/ideas/themes
  * 4-column card grid derived from SELECT DISTINCT theme FROM ph_ideas.
- * NO "ACTIVE" lozenges. Progress bar + conversion counts.
- * ZERO hardcoded theme data. ALL from useIdeaThemeSummary().
+ * Progress bars use PRIMARY BLUE (#2563EB). GREEN only at 100% conversion.
+ * NO dead CTAs — "+ New Theme" replaced with info text.
  */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Building2, Globe, BarChart3, Lightbulb, Target, Zap, TrendingUp, Leaf, Bot, Settings } from 'lucide-react';
+import { Building2, Globe, BarChart3, Lightbulb, Target, Zap, TrendingUp, Settings, Info } from 'lucide-react';
 import { useIdeaThemeSummary, useIdeasHub } from '@/hooks/useIdeasHub';
-import { toast } from 'sonner';
 
 const MONO = "'JetBrains Mono', monospace";
 
@@ -40,7 +39,6 @@ export default function IdeasThemePage() {
 
   const ideasWithTheme = allIdeas.filter(i => i.theme).length;
   const convertedCount = allIdeas.filter(i => (i.status === 'Converted to Initiative' || i.status === 'Converted') && i.theme).length;
-  const maxCount = Math.max(...themes.map(t => t.idea_count), 1);
 
   // Compute per-theme converted counts
   const themeConvertedMap: Record<string, number> = {};
@@ -59,13 +57,10 @@ export default function IdeasThemePage() {
             <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>Ideas Theme</h1>
             <p style={{ fontSize: '13px', color: '#64748B', margin: '4px 0 0' }}>Strategic themes grouping related ideas — sourced from backlog THEME field</p>
           </div>
-          <button onClick={() => toast.info('Theme management coming soon')} style={{
-            background: '#2563EB', color: '#FFF', border: 'none', borderRadius: '6px',
-            padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: '4px',
-          }}>
-            <Plus size={14} /> New Theme
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748B', fontSize: '12px' }}>
+            <Info size={14} />
+            <span>Themes are auto-discovered from the Ideas Theme field</span>
+          </div>
         </div>
       </div>
 
@@ -91,7 +86,7 @@ export default function IdeasThemePage() {
           <div style={{ padding: '40px', textAlign: 'center', color: '#94A3B8' }}>Loading themes...</div>
         ) : themes.length === 0 ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏷️</div>
+            <Lightbulb size={48} style={{ color: '#94A3B8', margin: '0 auto 16px' }} />
             <div style={{ fontSize: '16px', fontWeight: 600, color: '#0F172A' }}>No themes found</div>
             <div style={{ fontSize: '13px', color: '#94A3B8' }}>Add themes to ideas in the backlog</div>
           </div>
@@ -100,9 +95,12 @@ export default function IdeasThemePage() {
             {themes.map(theme => {
               const IconComp = THEME_ICONS[theme.theme] || Lightbulb;
               const arabic = isArabic(theme.theme);
-              const pct = (theme.idea_count / maxCount) * 100;
               const converted = themeConvertedMap[theme.theme] || 0;
               const convRate = theme.idea_count > 0 ? Math.round((converted / theme.idea_count) * 100) : 0;
+              // Progress = converted / total for that theme
+              const progressPct = theme.idea_count > 0 ? (converted / theme.idea_count) * 100 : 0;
+              // BLUE for progress, GREEN only at 100%
+              const barColor = convRate >= 100 ? '#16A34A' : '#2563EB';
               return (
                 <div key={theme.theme} onClick={() => navigate(`/product/ideas/backlog?theme=${encodeURIComponent(theme.theme)}`)}
                   style={{
@@ -113,7 +111,6 @@ export default function IdeasThemePage() {
                   onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.08)'; e.currentTarget.style.transform = 'none'; }}
                 >
-                  {/* Top: count + icon */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                     <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: '#64748B' }}>
                       {theme.idea_count} {theme.idea_count === 1 ? 'idea' : 'ideas'}
@@ -126,7 +123,6 @@ export default function IdeasThemePage() {
                     </div>
                   </div>
 
-                  {/* Theme title */}
                   <div style={{
                     fontSize: '14px', fontWeight: 650, color: '#0F172A', marginBottom: '4px',
                     lineHeight: 1.4, fontFamily: "'Sora', sans-serif",
@@ -136,21 +132,20 @@ export default function IdeasThemePage() {
 
                   <div style={{ flex: 1 }} />
 
-                  {/* Footer: conversion + progress */}
                   <div style={{ borderTop: '1px solid rgba(15,23,42,0.06)', paddingTop: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: converted > 0 ? '#11853D' : '#64748B' }}>
-                        {converted} converted
+                        {converted}/{theme.idea_count} converted
                       </span>
                       <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: '#64748B' }}>
-                        {convRate}% conv.
+                        {convRate}%
                       </span>
                     </div>
                     <div style={{ height: 6, borderRadius: 3, background: '#F1F5F9', overflow: 'hidden', border: '1px solid #E2E8F0' }}>
                       <div style={{
-                        width: `${Math.min(pct, 100)}%`, height: '100%',
-                        background: pct >= 100 ? '#16A34A' : '#2563EB', borderRadius: 3, transition: 'width 0.3s',
-                        minWidth: theme.idea_count > 0 ? 4 : 0,
+                        width: `${Math.min(progressPct, 100)}%`, height: '100%',
+                        background: barColor, borderRadius: 3, transition: 'width 0.3s',
+                        minWidth: converted > 0 ? 4 : 0,
                       }} />
                     </div>
                   </div>

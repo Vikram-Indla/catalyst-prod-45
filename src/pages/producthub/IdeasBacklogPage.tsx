@@ -2,13 +2,12 @@
  * Ideas Backlog Page — /product/ideas/backlog
  * V12 Hybrid Precision — 36px rows, 3-color lozenges, high-contrast quarters
  * ALL data from useIdeasHub() — ZERO hardcoded.
- * Fixes: Converted filter, conversion rate stat, Intelligence as outline button,
- *        Convert to Initiative integration via CreateInitiativeDrawer
+ * + New Idea wired to useCreateIdea(). Row click opens drawer.
  */
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Download, Plus, Sparkles, ArrowUpRight } from 'lucide-react';
-import { useIdeasHub, useIdeaStats, useUpdateIdea, type IdeaRow } from '@/hooks/useIdeasHub';
+import { Search, Plus, Sparkles, ArrowUpRight } from 'lucide-react';
+import { useIdeasHub, useIdeaStats, useUpdateIdea, useCreateIdea, type IdeaRow } from '@/hooks/useIdeasHub';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -18,8 +17,10 @@ import IdeationIntelligenceHub from './ideation/IdeationIntelligenceHub';
 import { CreateInitiativeDrawer, type ConversionSource } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from './ideation/ideation-data';
 import type { Idea } from './ideation/ideation-data';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-/** Map IdeaRow (from Supabase) → Idea (legacy type used by Triage/Intelligence panels) */
+/** Map IdeaRow → Idea for Triage/Intelligence panels */
 function toIdea(r: IdeaRow): Idea {
   return {
     key: r.idea_key,
@@ -52,6 +53,13 @@ const FILTER_PILLS = [
   { key: 'Draft', label: 'Draft' },
 ];
 
+const THEMES = [
+  'Provide Services for SBC', 'Digital Maturity 2026', 'Marketplace', 'UX',
+  'اتاحة خدمات', 'استعلام تحققي', 'المسح الصناعي', 'تحسين إجراء قائم',
+  'تحسين خدمة الشركاء', 'تضمين خدمة قطاعية', 'تقارير ومؤشرات', 'رقمنة إجراء جديد',
+  'كفاءة الموقع', 'مهام داخلية',
+];
+
 export default function IdeasBacklogPage() {
   const [searchParams] = useSearchParams();
   const themeFilter = searchParams.get('theme') || undefined;
@@ -63,6 +71,7 @@ export default function IdeasBacklogPage() {
   const [conversionSource, setConversionSource] = useState<ConversionSource | null>(null);
   const [triageOpen, setTriageOpen] = useState(false);
   const [intelligenceOpen, setIntelligenceOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: ideas = [], isLoading } = useIdeasHub({
@@ -91,20 +100,15 @@ export default function IdeasBacklogPage() {
   const ideasData = useMemo(() => ideas.map(toIdea), [ideas]);
 
   const handleMergeIdeas = useCallback((primaryKey: string, mergeKey: string) => {
-    toast.info(`Merging ${mergeKey} into ${primaryKey}`, { description: 'Merge functionality coming soon.' });
+    toast.info(`Merging ${mergeKey} into ${primaryKey}`);
   }, []);
 
   const handleConvertIdea = (idea: IdeaRow) => {
     setConversionSource({
       type: 'single',
       primaryIdea: {
-        key: idea.idea_key,
-        title: idea.title,
-        description: idea.description || idea.title,
-        impact: idea.impact_total || 0,
-        votes: idea.vote_count || 0,
-        dept: idea.assigned_team || '',
-        priority: idea.priority || 'P3',
+        key: idea.idea_key, title: idea.title, description: idea.description || idea.title,
+        impact: idea.impact_total || 0, votes: idea.vote_count || 0, dept: idea.assigned_team || '', priority: idea.priority || 'P3',
       },
     });
     setConvertDrawerOpen(true);
@@ -123,10 +127,7 @@ export default function IdeasBacklogPage() {
             <button onClick={() => setIntelligenceOpen(true)} style={{ background: '#FFFFFF', color: '#2563EB', border: '1px solid #2563EB', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Sparkles size={14} /> Intelligence
             </button>
-            <button onClick={() => toast.info('Export will be available in the next release.')} style={{ background: '#FFFFFF', color: '#334155', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Download size={14} /> Export
-            </button>
-            <button onClick={() => toast.info('New Idea creation coming soon')} style={{ background: '#2563EB', color: '#FFF', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button onClick={() => setCreateOpen(true)} style={{ background: '#2563EB', color: '#FFF', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Plus size={14} /> New Idea
             </button>
           </div>
@@ -214,7 +215,7 @@ export default function IdeasBacklogPage() {
                   {[
                     { label: 'KEY', width: '90px' }, { label: 'TITLE' }, { label: 'STATUS', width: '140px' },
                     { label: 'TYPE', width: '70px' }, { label: 'PRI', width: '40px' }, { label: 'IMPACT', width: '60px' },
-                    { label: 'THEME', width: '130px' }, { label: 'QTR', width: '60px' },
+                    { label: 'THEME', width: '140px' }, { label: 'QTR', width: '60px' },
                     { label: 'ASSIGNEE', width: '140px' }, { label: 'UPDATED', width: '80px' },
                   ].map(col => (
                     <th key={col.label} style={{
@@ -230,7 +231,7 @@ export default function IdeasBacklogPage() {
                   const isConverted = idea.status === 'Converted to Initiative' || idea.status === 'Converted';
                   return (
                     <tr key={idea.idea_key} onClick={() => setDrawerKey(idea.idea_key)}
-                      style={{ height: '36px', cursor: 'pointer', borderBottom: '0.75px solid rgba(15,23,42,0.06)', background: selectedRows.has(idea.idea_key) ? '#F0F4FF' : '#FFFFFF', transition: 'background 150ms' }}
+                      style={{ height: '36px', maxHeight: '36px', cursor: 'pointer', borderBottom: '0.75px solid rgba(15,23,42,0.06)', background: selectedRows.has(idea.idea_key) ? '#F0F4FF' : '#FFFFFF', transition: 'background 150ms' }}
                       onMouseEnter={e => { if (!selectedRows.has(idea.idea_key)) e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
                       onMouseLeave={e => { if (!selectedRows.has(idea.idea_key)) e.currentTarget.style.background = '#FFFFFF'; }}
                     >
@@ -271,14 +272,14 @@ export default function IdeasBacklogPage() {
                           {idea.impact_total.toFixed(2)}
                         </span>
                       </td>
-                      <td style={{ padding: '8px 12px' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 500, color: idea.theme ? '#334155' : '#94A3B8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', maxWidth: '130px' }}>
+                      <td style={{ padding: '8px 12px' }} title={idea.theme || undefined}>
+                        <span style={{ fontSize: '12px', fontWeight: 500, color: idea.theme ? '#334155' : '#94A3B8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', maxWidth: '140px' }}>
                           {idea.theme || '—'}
                         </span>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
                         {idea.roadmap_quarter ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 18, padding: '0 4px', borderRadius: 3, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[idea.roadmap_quarter]?.bg || '#E2E8F0', color: QUARTER_BADGE[idea.roadmap_quarter]?.text || '#94A3B8' }}>{idea.roadmap_quarter}</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 18, padding: '0 4px', borderRadius: 3, fontSize: '11px', fontWeight: 700, background: QUARTER_BADGE[idea.roadmap_quarter]?.bg || '#E2E8F0', color: QUARTER_BADGE[idea.roadmap_quarter]?.text || '#94A3B8' }}>{idea.roadmap_quarter}</span>
                         ) : <span style={{ fontSize: '11px', color: '#94A3B8' }}>—</span>}
                       </td>
                       <td style={{ padding: '8px 12px' }}>
@@ -330,6 +331,7 @@ export default function IdeasBacklogPage() {
       />
       <IdeationTriagePanel open={triageOpen} onClose={() => setTriageOpen(false)} onMerge={handleMergeIdeas} ideas={ideasData} />
       <IdeationIntelligenceHub open={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} onMerge={handleMergeIdeas} ideas={ideasData} />
+      <CreateIdeaDialog open={createOpen} onClose={() => setCreateOpen(false)} />
     </div>
   );
 }
@@ -343,5 +345,90 @@ function StatusBadge({ status }: { status: string }) {
       height: 20, padding: '0 8px', borderRadius: 3,
       fontSize: '11px', fontWeight: 700, whiteSpace: 'nowrap', textTransform: 'uppercase',
     }}>{label}</span>
+  );
+}
+
+/** Create Idea Dialog — wired to useCreateIdea() */
+function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const createIdea = useCreateIdea();
+  const [title, setTitle] = useState('');
+  const [priority, setPriority] = useState('P3');
+  const [type, setType] = useState('Feature Request');
+  const [theme, setTheme] = useState('');
+  const [description, setDescription] = useState('');
+
+  const handleCreate = async () => {
+    if (!title.trim()) { toast.error('Title is required'); return; }
+    await createIdea.mutateAsync({
+      title: title.trim(),
+      status: 'Draft',
+      priority,
+      idea_type: type,
+      source: 'Internal',
+      theme: theme || undefined,
+      description: description || undefined,
+    });
+    setTitle(''); setPriority('P3'); setType('Feature Request'); setTheme(''); setDescription('');
+    onClose();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
+      <DialogContent className="bg-white sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle style={{ fontFamily: "'Sora', sans-serif", fontWeight: 650, fontSize: '18px' }}>New Idea</DialogTitle>
+        </DialogHeader>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '8px' }}>
+          <div>
+            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>TITLE *</label>
+            <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter idea title..."
+              style={{ width: '100%', height: '36px', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '0 12px', fontSize: '13px', outline: 'none' }}
+            />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>PRIORITY</label>
+              <Select value={priority} onValueChange={setPriority}>
+                <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-white">
+                  {['P1', 'P2', 'P3', 'P4'].map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>TYPE</label>
+              <Select value={type} onValueChange={setType}>
+                <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-white">
+                  {['Feature Request', 'Enhancement', 'Bug Fix', 'Opportunity', 'Solution'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div>
+            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>IDEAS THEME</label>
+            <Select value={theme || '__none__'} onValueChange={v => setTheme(v === '__none__' ? '' : v)}>
+              <SelectTrigger className="h-9 bg-white"><SelectValue placeholder="Select theme" /></SelectTrigger>
+              <SelectContent className="bg-white">
+                <SelectItem value="__none__">— None —</SelectItem>
+                {THEMES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>DESCRIPTION</label>
+            <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} placeholder="Optional description..."
+              style={{ width: '100%', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', resize: 'vertical', outline: 'none', fontFamily: "'Inter', sans-serif" }}
+            />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
+            <button onClick={onClose} style={{ height: '36px', padding: '0 16px', borderRadius: '6px', border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', color: '#334155', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+            <button onClick={handleCreate} disabled={createIdea.isPending} style={{ height: '36px', padding: '0 16px', borderRadius: '6px', border: 'none', background: '#2563EB', color: '#FFFFFF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', opacity: createIdea.isPending ? 0.7 : 1 }}>
+              {createIdea.isPending ? 'Creating...' : 'Create Idea'}
+            </button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
