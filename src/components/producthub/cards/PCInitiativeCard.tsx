@@ -39,6 +39,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; Icon: LucideIc
   enhancement: { label: 'Enhancement', color: '#2563EB', Icon: Zap },
   improvement: { label: 'Improvement', color: '#D97706', Icon: Wrench },
   entity_integration: { label: 'Entity Integration', color: '#7C3AED', Icon: Link },
+  business_request: { label: 'Business Request', color: '#B45309', Icon: Lightbulb },
 };
 
 
