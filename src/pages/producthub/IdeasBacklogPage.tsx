@@ -5,7 +5,7 @@
  * Fixes: Converted filter, conversion rate stat, Intelligence as outline button,
  *        Convert to Initiative integration via CreateInitiativeDrawer
  */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, Download, Plus, Sparkles, ArrowUpRight } from 'lucide-react';
 import { useIdeasHub, useIdeaStats, useUpdateIdea, type IdeaRow } from '@/hooks/useIdeasHub';
@@ -13,8 +13,35 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import IdeaDrawer from './ideation/IdeaDrawer';
+import IdeationTriagePanel from './ideation/IdeationTriagePanel';
+import IdeationIntelligenceHub from './ideation/IdeationIntelligenceHub';
 import { CreateInitiativeDrawer, type ConversionSource } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from './ideation/ideation-data';
+import type { Idea } from './ideation/ideation-data';
+
+/** Map IdeaRow (from Supabase) → Idea (legacy type used by Triage/Intelligence panels) */
+function toIdea(r: IdeaRow): Idea {
+  return {
+    key: r.idea_key,
+    title: r.title,
+    subtitle: r.description || '',
+    status: (r.status?.toLowerCase().replace(/ /g, '_') || 'draft') as any,
+    type: (r.idea_type?.toLowerCase().replace(/ /g, '_') || 'feature_request') as any,
+    priority: r.priority || 'P2',
+    impact: r.impact_total,
+    votes: r.vote_count,
+    initiative: r.linked_initiative_key || null,
+    dept: r.assigned_team || '',
+    assignee: r.assigned_to_name ? { name: r.assigned_to_name, initials: r.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2), color: '#2563EB' } : null,
+    ai: r.ai_enrichment_status === 'completed' ? 'ready' : 'pending',
+    theme: r.theme,
+    assigned_team: r.assigned_team,
+    target_release_date: r.target_release_date,
+    created_at: r.created_at,
+    updated_at: r.updated_at,
+    roadmap_quarter: r.roadmap_quarter,
+  };
+}
 
 const FILTER_PILLS = [
   { key: 'all', label: 'All' },
@@ -34,6 +61,8 @@ export default function IdeasBacklogPage() {
   const [drawerKey, setDrawerKey] = useState<string | null>(null);
   const [convertDrawerOpen, setConvertDrawerOpen] = useState(false);
   const [conversionSource, setConversionSource] = useState<ConversionSource | null>(null);
+  const [triageOpen, setTriageOpen] = useState(false);
+  const [intelligenceOpen, setIntelligenceOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: ideas = [], isLoading } = useIdeasHub({
@@ -58,6 +87,12 @@ export default function IdeasBacklogPage() {
 
   const convertedCount = stats?.byStatus.find(s => s.status === 'Converted to Initiative')?.count || 0;
   const conversionRate = stats && stats.total > 0 ? ((convertedCount / stats.total) * 100).toFixed(1) : '0.0';
+
+  const ideasData = useMemo(() => ideas.map(toIdea), [ideas]);
+
+  const handleMergeIdeas = useCallback((primaryKey: string, mergeKey: string) => {
+    toast.info(`Merging ${mergeKey} into ${primaryKey}`, { description: 'Merge functionality coming soon.' });
+  }, []);
 
   const handleConvertIdea = (idea: IdeaRow) => {
     setConversionSource({
@@ -85,7 +120,7 @@ export default function IdeasBacklogPage() {
             <p style={{ fontSize: '13px', color: '#64748B', margin: '4px 0 0' }}>Capture, evaluate, and promote ideas into initiatives — powered by IMPACT scoring & AI Intelligence</p>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => toast.info('Intelligence will be available in the next release.', { description: 'AI-powered features are being connected to the RAG pipeline.' })} style={{ background: '#FFFFFF', color: '#2563EB', border: '1px solid #2563EB', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button onClick={() => setIntelligenceOpen(true)} style={{ background: '#FFFFFF', color: '#2563EB', border: '1px solid #2563EB', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Sparkles size={14} /> Intelligence
             </button>
             <button onClick={() => toast.info('Export will be available in the next release.')} style={{ background: '#FFFFFF', color: '#334155', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -153,7 +188,7 @@ export default function IdeasBacklogPage() {
           );
         })}
         <div style={{ flex: 1 }} />
-        <button onClick={() => toast.info('AI Triage will be available in the next release.', { description: 'AI-powered features are being connected to the RAG pipeline.' })} style={{ background: '#2563EB', color: '#FFF', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <button onClick={() => setTriageOpen(true)} style={{ background: '#2563EB', color: '#FFF', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
           <Sparkles size={12} /> AI Triage ({ideas.length})
         </button>
       </div>
@@ -293,6 +328,8 @@ export default function IdeasBacklogPage() {
           }
         }}
       />
+      <IdeationTriagePanel open={triageOpen} onClose={() => setTriageOpen(false)} onMerge={handleMergeIdeas} ideas={ideasData} />
+      <IdeationIntelligenceHub open={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} onMerge={handleMergeIdeas} ideas={ideasData} />
     </div>
   );
 }
