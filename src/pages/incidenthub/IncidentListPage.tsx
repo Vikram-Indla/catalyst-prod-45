@@ -23,6 +23,7 @@ export default function IncidentListPage() {
   const navigate = useNavigate();
   const { data: incidents, isLoading } = useIncidentListView();
   const stats = useIncidentStats();
+  const avatarsByName = useProfileAvatarsByName();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
