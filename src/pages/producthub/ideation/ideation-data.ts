@@ -78,7 +78,7 @@ export const VIEW_TITLES: Record<IdeationView, string> = {
   board: 'Ideas Board',
   matrix: 'Impact Matrix',
   analytics: 'Ideas Analytics',
-  drives: 'Ideas Drives',
+  drives: 'Ideas Themes',
 };
 
 export type StatusFilter = 'all' | IdeaStatus | 'my_ideas';

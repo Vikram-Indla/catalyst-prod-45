@@ -76,7 +76,7 @@ export default function IdeationDrivesView() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', 'Inter', sans-serif" }}>Ideas Drives</h2>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', 'Inter', sans-serif" }}>Ideas Themes</h2>
             <span style={{
               background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px',
               padding: '1px 7px', fontSize: '11px', fontWeight: 600,
