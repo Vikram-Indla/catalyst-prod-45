@@ -52,7 +52,7 @@ function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
   return <Suspense fallback={<div className="p-8">Loading...</div>}><PHPlaceholderBase title={title} phase={phase} description={PH_DESCRIPTIONS_MAP[title] || `Coming in ${phase}`} /></Suspense>;
 }
 
-const ProductionEventsPageLazy = lazy(() => import("../pages/release-hub/production-events/ProductionEventsPage"));
+const ProductionEventsPageLazy = lazy(() => import("../pages/releasehub/ProductionEventsPage"));
 const RH21CommandCenterPage = lazy(() => import("../pages/releasehub/CommandCenterPage"));
 const RH21AllReleasesPage = lazy(() => import("../pages/releasehub/AllReleasesPage"));
 const RH21ReleaseComparePage = lazy(() => import("../pages/releasehub/ReleaseComparePage"));
