@@ -67,7 +67,7 @@ export const RELEASE_STATUS_LABELS: Record<string, string> = {
   todo: 'Planning', done: 'Released',
 };
 
-export const RELEASE_STATUS_LOZENGE: Record<string, typeof LOZENGE.grey> = {
+export const RELEASE_STATUS_LOZENGE: Record<string, LozengeStyle> = {
   planning: LOZENGE.blue,
   in_progress: LOZENGE.blue,
   released: LOZENGE.green,
