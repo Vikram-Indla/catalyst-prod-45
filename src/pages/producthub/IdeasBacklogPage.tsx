@@ -32,7 +32,7 @@ function toIdea(r: IdeaRow): Idea {
     votes: r.vote_count,
     initiative: r.linked_initiative_key || null,
     dept: r.assigned_team || '',
-    assignee: r.assigned_to_name ? { name: r.assigned_to_name, initials: r.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2) } : null,
+    assignee: r.assigned_to_name ? { name: r.assigned_to_name, initials: r.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2), color: '#2563EB' } : null,
     ai: r.ai_enrichment_status === 'completed' ? 'ready' : 'pending',
     theme: r.theme,
     assigned_team: r.assigned_team,
