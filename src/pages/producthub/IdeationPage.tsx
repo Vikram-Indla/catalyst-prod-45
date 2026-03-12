@@ -357,6 +357,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
             {[
               { label: 'KEY', width: '100px' },
               { label: 'TITLE', width: undefined },
+              { label: 'IDEAS THEME', width: '150px' },
               { label: 'STATUS', width: '130px' },
               { label: 'TYPE', width: '80px' },
               { label: 'PRI', width: '50px' },
@@ -408,6 +409,15 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
                 }}>
                   {idea.title}
                 </div>
+              </td>
+              <td style={{ padding: '8px 12px' }}>
+                <span style={{
+                  fontSize: '12px', fontWeight: 500, color: idea.theme ? '#334155' : '#94A3B8',
+                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                  display: 'block', maxWidth: '150px',
+                }}>
+                  {idea.theme || '—'}
+                </span>
               </td>
               <td style={{ padding: '8px 12px' }}><StatusBadge status={idea.status} /></td>
               <td style={{ padding: '8px 12px' }}><TypeBadge type={idea.type} /></td>

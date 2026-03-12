@@ -351,10 +351,10 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 )
               } />
 
-              {/* THEME — editable */}
-              <FieldPair label="Theme" value={
+              {/* IDEAS THEME — editable */}
+              <FieldPair label="Ideas Theme" value={
                 isEditing ? (
-                  <input value={localTheme} onChange={e => setLocalTheme(e.target.value)} style={inputStyle} placeholder="Enter theme" />
+                  <input value={localTheme} onChange={e => setLocalTheme(e.target.value)} style={inputStyle} placeholder="Enter ideas theme" />
                 ) : <span style={{ fontSize: '13px', fontWeight: 500, color: localTheme ? '#0F172A' : '#94A3B8' }}>{localTheme || '—'}</span>
               } />
 
