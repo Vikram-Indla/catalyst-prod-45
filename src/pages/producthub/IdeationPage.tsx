@@ -410,6 +410,15 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
                   {idea.title}
                 </div>
               </td>
+              <td style={{ padding: '8px 12px' }}>
+                <span style={{
+                  fontSize: '12px', fontWeight: 500, color: idea.theme ? '#334155' : '#94A3B8',
+                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                  display: 'block', maxWidth: '150px',
+                }}>
+                  {idea.theme || '—'}
+                </span>
+              </td>
               <td style={{ padding: '8px 12px' }}><StatusBadge status={idea.status} /></td>
               <td style={{ padding: '8px 12px' }}><TypeBadge type={idea.type} /></td>
               <td style={{ padding: '8px 12px' }}><PriorityBadge priority={idea.priority} /></td>

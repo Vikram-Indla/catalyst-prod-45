@@ -148,14 +148,23 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
         {idea.title}
       </div>
 
-      {/* Type badge */}
-      <div style={{ marginBottom: '8px' }}>
+      {/* Type badge + Ideas Theme */}
+      <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
         <span style={{
           background: '#F4F4F5', color: '#71717A', padding: '2px 6px', borderRadius: '4px',
           fontSize: '10px', fontWeight: 600,
         }}>
           {idea.type.charAt(0).toUpperCase() + idea.type.slice(1)}
         </span>
+        {idea.theme && (
+          <span style={{
+            background: '#EFF6FF', color: '#1E40AF', padding: '2px 6px', borderRadius: '4px',
+            fontSize: '10px', fontWeight: 600, maxWidth: '160px',
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>
+            {idea.theme}
+          </span>
+        )}
       </div>
 
       {/* Divider + stats */}
