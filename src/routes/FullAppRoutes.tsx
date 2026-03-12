@@ -78,12 +78,13 @@ const IdeasAnalyticsPage = ENABLE_AI ? lazy(() => import("../pages/producthub/Id
 const ReqAssistLibrary = ENABLE_AI ? lazy(() => import("../pages/ReqAssistLibrary")) : () => <FeatureComingSoon title="Requirement Assist" />;
 const ReqAssistGenerate = ENABLE_AI ? lazy(() => import("../pages/ReqAssistGenerate")) : () => <FeatureComingSoon title="Requirement Assist" />;
 
-const IncidentHubListPage = lazy(() => import("../pages/release/IncidentRoomList"));
-const IncidentHubKanbanPage = lazy(() => import("../modules/incidents/kanban/pages/IncidentKanbanPage"));
-const IncidentHubAnalyticsPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentAnalyticsPage"));
-const IncidentHubInsightsPage = lazy(() => import("../modules/incidents/analytics/pages/IncidentInsightsPage"));
-const IncidentHubReportsPage = lazy(() => import("../pages/release/IncidentReportsPage"));
-const IncidentHubCommitteeQueuePage = lazy(() => import("../pages/release/CAPCommitteeQueuePage"));
+const IncidentHubListPage = lazy(() => import("../pages/incidenthub/IncidentListPage"));
+const IncidentHubKanbanPage = lazy(() => import("../pages/incidenthub/IncidentKanbanPage"));
+const IncidentHubAnalyticsPage = lazy(() => import("../pages/incidenthub/IncidentAnalyticsPage"));
+const IncidentHubInsightsPage = lazy(() => import("../pages/incidenthub/IncidentInsightsPage"));
+const IncidentHubReportsPage = lazy(() => import("../pages/incidenthub/IncidentReportsPage"));
+const IncidentHubCommitteeQueuePage = lazy(() => import("../pages/incidenthub/CommitteeQueuePage"));
+const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDetailPage"));
 
 const WikiHomePage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiHomePage")) : () => <FeatureComingSoon title="Wiki" />;
 const WikiSearchPage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiSearchPage")) : () => <FeatureComingSoon title="Wiki Search" />;
