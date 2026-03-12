@@ -15,7 +15,10 @@ export default function IncidentReportsPage() {
 
   const breachedCount = incidents?.filter(i => i.resolution_breached).length || 0;
   const avgAge = incidents?.length
-    ? Math.round(incidents.reduce((sum, i) => sum + (i.age_days || 0), 0) / incidents.length)
+    ? Math.round(incidents.reduce((sum, i) => {
+        const created = i.created_at ? new Date(i.created_at).getTime() : Date.now();
+        return sum + ((Date.now() - created) / (1000 * 60 * 60 * 24));
+      }, 0) / incidents.length)
     : 0;
 
   if (isLoading) {

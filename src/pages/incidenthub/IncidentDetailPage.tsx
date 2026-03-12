@@ -9,7 +9,7 @@ import { AlertTriangle, ChevronRight, Clock, Plus, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useIncident, useUpdateIncident, useAddComment } from '@/hooks/useIncidents';
+import { useProductionIncident } from '@/hooks/useIncidentHub';
 import { StatusLozenge } from './components/StatusLozenge';
 import { SeverityChip } from './components/SeverityChip';
 import { PriorityChip } from './components/PriorityChip';
