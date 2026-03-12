@@ -83,7 +83,7 @@ export const CHG_STATUS_LABELS: Record<string, string> = {
   in_qa: 'In QA',
 };
 
-export const CHG_STATUS_LOZENGE: Record<string, typeof LOZENGE.grey> = {
+export const CHG_STATUS_LOZENGE: Record<string, LozengeStyle> = {
   new: LOZENGE.grey,
   in_uat: LOZENGE.blue,
   in_beta: LOZENGE.blue,
