@@ -178,7 +178,7 @@ export default function AllChangesPage() {
                     <td className="px-3 py-0">
                       {relName ? <span className="text-[12px] font-medium text-[#2563EB]">{relName}</span> : <span className="text-[#94A3B8]">—</span>}
                     </td>
-                    <td className="px-3 py-0"><SourceBadge source={c.source === 'servicenow' ? 'catalyst' : c.source} /></td>
+                    <td className="px-3 py-0"><SourceBadge source={c.source} /></td>
                     <td className="px-3 py-0">
                       <span className="text-[12px] text-[#64748B]" style={{ fontFamily: RH.fontMono }}>
                         {c.pending_signoffs > 0 ? `${c.pending_signoffs} pending` : '—'}
@@ -224,7 +224,7 @@ function KanbanView({ changes, onSelect }: { changes: any[]; onSelect: (c: any) 
                   <span className="text-[13px] font-medium text-[#0F172A] block truncate">{c.title}</span>
                   <div className="flex items-center gap-2 mt-2">
                     <RiskBadge risk={c.risk_level?.toLowerCase() === 'low' || c.risk_level?.toLowerCase() === 'medium' ? 'standard' : c.risk_level} />
-                    <SourceBadge source={c.source === 'servicenow' ? 'catalyst' : c.source} />
+                    <SourceBadge source={c.source} />
                   </div>
                 </button>
               ))}

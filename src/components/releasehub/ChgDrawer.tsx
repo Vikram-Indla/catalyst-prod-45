@@ -62,7 +62,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
               <div className="flex items-center gap-2">
                 <span className="text-[16px] font-black text-[#2563EB]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                 <RiskBadge risk={mapRisk(c.risk_level)} />
-                <SourceBadge source={c.source === 'servicenow' ? 'catalyst' : c.source} />
+                <SourceBadge source={c.source} />
               </div>
               <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
             </div>
@@ -130,55 +130,66 @@ export function ChgDrawer({ change: c, onClose }: Props) {
 }
 
 function OverviewTab({ change: c }: { change: any }) {
-  const envStages = ['Staging', 'UAT', 'Beta', 'Production', 'Live'];
-  const statusMap: Record<string, number> = { new: 0, in_qa: 0, in_uat: 1, in_beta: 2, in_production: 3 };
-  const activeIdx = statusMap[c.status] ?? 0;
+  const normalizeSource = (s: string) => {
+    if (!s || s === 'servicenow') return 'CATALYST';
+    return s.toUpperCase();
+  };
+
+  const fields = [
+    { label: 'CHG Number', value: c.chg_number, mono: true },
+    { label: 'Release', value: c.release_name || '—', link: true },
+    { label: 'Planned Date', value: c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—', mono: true },
+    { label: 'Created', value: c.created_at ? new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—', mono: true },
+    { label: 'Risk Level', value: mapRisk(c.risk_level)?.toUpperCase() },
+    { label: 'Source', value: normalizeSource(c.source) },
+  ];
 
   return (
     <div className="space-y-5">
-      <div>
-        <h3 className="text-[13px] font-bold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Environment Pipeline</h3>
-        <div className="flex items-center gap-0">
-          {envStages.map((s, i) => {
-            const isDone = i < activeIdx;
-            const isCurrent = i === activeIdx;
-            return (
-              <React.Fragment key={s}>
-                {i > 0 && <div className={`flex-1 h-0.5 ${isDone ? 'bg-[#006644]' : 'bg-[rgba(15,23,42,0.12)]'}`} />}
-                <div className="flex flex-col items-center gap-1">
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-[12px] font-bold ${
-                    isDone ? 'bg-[#006644] text-white' : isCurrent ? 'border-2 border-[#2563EB] text-[#2563EB]' : 'border border-[rgba(15,23,42,0.12)] text-[#94A3B8]'
-                  }`}>
-                    {isDone ? '✓' : isCurrent ? '●' : i + 1}
-                  </div>
-                  <span className="text-[9px] font-medium text-[#64748B]">{s}</span>
-                </div>
-              </React.Fragment>
-            );
-          })}
+      {/* Description */}
+      {c.description && (
+        <div>
+          <h3 className="text-[13px] font-bold mb-2" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Description</h3>
+          <p className="text-[13px] leading-relaxed" style={{ color: RH.ink2 }}>{c.description}</p>
         </div>
-      </div>
+      )}
+
+      {/* Detail Grid */}
       <div>
-        <h3 className="text-[13px] font-bold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Deployment Details</h3>
+        <h3 className="text-[13px] font-bold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Details</h3>
         <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: 'CHG Number', value: c.chg_number, mono: true },
-            { label: 'Source', value: c.source?.toUpperCase() },
-            { label: 'Risk Level', value: mapRisk(c.risk_level)?.toUpperCase() },
-            { label: 'Category', value: c.category },
-            { label: 'Dependency', value: c.dependency },
-            { label: 'Deployment Process', value: c.deployment_process },
-          ].map(f => (
-            <div key={f.label} className="bg-[#F8FAFC] rounded-lg p-3">
-              <p className="text-[10px] font-bold uppercase text-[#64748B] mb-1">{f.label}</p>
+          {fields.map(f => (
+            <div key={f.label} className="rounded-lg p-3" style={{ background: '#F8FAFC' }}>
+              <p className="text-[11px] font-bold uppercase text-[#64748B] mb-1" style={{ letterSpacing: '0.06em' }}>{f.label}</p>
               <p className="text-[13px] font-medium"
-                style={{ fontFamily: f.mono ? RH.fontMono : RH.fontBody, color: f.value ? RH.ink2 : '#94A3B8' }}>
+                style={{
+                  fontFamily: f.mono ? RH.fontMono : RH.fontBody,
+                  color: f.link ? '#2563EB' : (f.value && f.value !== '—' ? RH.ink2 : '#94A3B8'),
+                }}>
                 {f.value || '—'}
               </p>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Work Items count */}
+      {(c.work_item_count > 0 || (c.rh_change_work_items?.length > 0)) && (
+        <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: '#EFF6FF', border: '1px solid #DBEAFE' }}>
+          <span className="text-[12px] font-bold" style={{ color: '#2563EB' }}>
+            {c.work_item_count || c.rh_change_work_items?.length || 0} work items linked
+          </span>
+        </div>
+      )}
+
+      {/* Pending sign-offs */}
+      {c.pending_signoffs > 0 && (
+        <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: '#FEF2F2', border: '1px solid #FCA5A5' }}>
+          <span className="text-[12px] font-bold" style={{ color: '#DC2626' }}>
+            {c.pending_signoffs} sign-off{c.pending_signoffs > 1 ? 's' : ''} pending
+          </span>
+        </div>
+      )}
     </div>
   );
 }

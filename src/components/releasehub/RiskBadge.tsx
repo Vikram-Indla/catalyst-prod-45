@@ -1,9 +1,17 @@
 import React from 'react';
 import { RISK_BADGE } from '@/constants/releasehub.design';
 
+const RISK_MAP: Record<string, string> = {
+  low: 'standard',
+  medium: 'standard',
+  critical: 'emergency',
+};
+
 export function RiskBadge({ risk }: { risk: string }) {
-  const normalized = risk?.toLowerCase() || 'standard';
+  let normalized = risk?.toLowerCase() || 'standard';
+  if (RISK_MAP[normalized]) normalized = RISK_MAP[normalized];
   const badge = RISK_BADGE[normalized] || RISK_BADGE.standard;
+  const label = normalized.toUpperCase();
   return (
     <span
       className="inline-flex items-center whitespace-nowrap"
@@ -19,7 +27,7 @@ export function RiskBadge({ risk }: { risk: string }) {
         lineHeight: '18px',
       }}
     >
-      {risk?.toUpperCase() || 'STANDARD'}
+      {label}
     </span>
   );
 }
