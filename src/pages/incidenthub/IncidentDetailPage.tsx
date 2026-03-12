@@ -9,7 +9,7 @@ import { AlertTriangle, ChevronRight, Clock, Plus, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useIncident, useUpdateIncident, useAddComment } from '@/hooks/useIncidents';
+import { useProductionIncident } from '@/hooks/useIncidentHub';
 import { StatusLozenge } from './components/StatusLozenge';
 import { SeverityChip } from './components/SeverityChip';
 import { PriorityChip } from './components/PriorityChip';
@@ -21,9 +21,9 @@ import { formatDistanceToNow } from 'date-fns';
 export default function IncidentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: incident, isLoading } = useIncident(id || '');
-  const updateIncident = useUpdateIncident();
-  const addComment = useAddComment();
+  const { data: incident, isLoading } = useProductionIncident(id || '');
+  const updateIncident = { mutateAsync: async (_: any) => { throw new Error('Read-only'); } };
+  const addComment = { mutateAsync: async (_: any) => { throw new Error('Read-only'); } };
   const [activeTab, setActiveTab] = useState<'comments' | 'history'>('comments');
   const [commentText, setCommentText] = useState('');
   const [showCommittee, setShowCommittee] = useState(false);
@@ -88,11 +88,6 @@ export default function IncidentDetailPage() {
   const slaBreached = incident.sla?.resolution_breached || slaCountdown === 'BREACHED';
   const slaWarning = !slaBreached && incident.sla?.resolution_due_at &&
     (new Date(incident.sla.resolution_due_at).getTime() - Date.now()) <= 3600000;
-
-  const committee = incident.committee;
-  const approveCount = committee?.approved_count || 0;
-  const totalMembers = committee?.members?.length || 0;
-  const quorumMet = approveCount >= 3;
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: '#FFFFFF' }}>
@@ -168,16 +163,13 @@ export default function IncidentDetailPage() {
             </p>
           </div>
 
-          {/* Linked Items */}
-          {incident.work_items && incident.work_items.length > 0 && (
+          {/* Tags/Labels */}
+          {incident.labels && Array.isArray(incident.labels) && incident.labels.length > 0 && (
             <div className="mb-6">
-              <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>Linked Items</h3>
-              <div className="space-y-2">
-                {incident.work_items.map((wi: any) => (
-                  <div key={wi.id} className="flex items-center gap-2 p-2" style={{ border: '1px solid rgba(15,23,42,0.08)', borderRadius: 4 }}>
-                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#2563EB' }}>{wi.work_item_key}</span>
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#334155' }}>{wi.work_item_title || '\u2014'}</span>
-                  </div>
+              <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>Labels</h3>
+              <div className="flex flex-wrap gap-1">
+                {(incident.labels as string[]).map((label: string) => (
+                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: '#F1F5F9', border: '1px solid rgba(15,23,42,0.08)', borderRadius: 3, color: '#475569' }}>{label}</span>
                 ))}
               </div>
             </div>
@@ -281,53 +273,17 @@ export default function IncidentDetailPage() {
           padding: 16,
           backgroundColor: '#FFFFFF',
         }}>
-          {/* Committee Summary */}
-          {committee && (
-            <div className="mb-4 p-3" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-              <h4 style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>Escalation Committee</h4>
-              <div className="mb-2" style={{ height: 6, borderRadius: 3, backgroundColor: '#E2E8F0', overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%',
-                  width: `${totalMembers > 0 ? (approveCount / totalMembers) * 100 : 0}%`,
-                  backgroundColor: approveCount / totalMembers >= 0.6 ? '#16A34A' : '#D97706',
-                  borderRadius: 3,
-                  transition: 'width 400ms ease',
-                }} />
-              </div>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', marginBottom: 8 }}>
-                {approveCount} of {totalMembers} approved
-              </p>
-              <Button variant="outline" size="sm" className="w-full mb-2" style={{ borderRadius: 6, fontSize: 11 }} onClick={() => setShowCommittee(true)}>
-                View Details
-              </Button>
-              <Button
-                size="sm"
-                className="w-full"
-                disabled={!quorumMet}
-                title={!quorumMet ? 'Requires \u22653 approvals to submit decision' : ''}
-                style={{
-                  borderRadius: 6,
-                  fontSize: 11,
-                  backgroundColor: quorumMet ? '#2563EB' : undefined,
-                  opacity: quorumMet ? 1 : 0.5,
-                  cursor: quorumMet ? 'pointer' : 'not-allowed',
-                }}
-              >
-                Submit Decision
-              </Button>
-            </div>
-          )}
-
           {/* Metadata Grid */}
           <div className="space-y-3">
             {[
               { label: 'Status', value: <StatusLozenge status={incident.status} /> },
+              { label: 'Jira Status', value: incident.jira_status || '\u2014' },
               { label: 'Severity', value: <SeverityChip severity={incident.severity} /> },
               { label: 'Priority', value: <PriorityChip priority={incident.priority || 'P4'} /> },
-              { label: 'Project', value: incident.project?.name || incident.jira_project_name || '\u2014' },
-              { label: 'Assignee', value: incident.assignee?.full_name || 'Unassigned' },
-              { label: 'Environment', value: incident.environment?.name || '\u2014' },
-              { label: 'Reporter', value: incident.reporter?.full_name || incident.reporter_name || '\u2014' },
+              { label: 'Project', value: incident.project_name || '\u2014' },
+              { label: 'Assignee', value: incident.assignee_name || 'Unassigned' },
+              { label: 'Reporter', value: incident.reporter_name || '\u2014' },
+              { label: 'Resolution', value: incident.resolution || '\u2014' },
             ].map(row => (
               <div key={row.label} className="flex items-center gap-2">
                 <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 80, flexShrink: 0 }}>{row.label}</span>
@@ -341,15 +297,15 @@ export default function IncidentDetailPage() {
           {/* Custom Fields */}
           <div className="mt-4 pt-4" style={{ borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
             <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 80 }}>Impact</span>
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 18, fontWeight: 700, color: incident.impact === 'high' ? '#DC2626' : '#0F172A' }}>
-                {incident.impact?.toUpperCase() || '\u2014'}
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 80 }}>Created</span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#64748B' }}>
+                {incident.created_at ? new Date(incident.created_at).toLocaleString() : '\u2014'}
               </span>
             </div>
             <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 80 }}>Reported</span>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', width: 80 }}>Updated</span>
               <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#64748B' }}>
-                {incident.created_at ? new Date(incident.created_at).toLocaleString() : '\u2014'}
+                {incident.updated_at ? new Date(incident.updated_at).toLocaleString() : '\u2014'}
               </span>
             </div>
           </div>
@@ -357,14 +313,7 @@ export default function IncidentDetailPage() {
       </div>
 
       {/* Modals */}
-      {committee && (
-        <CommitteeModal
-          open={showCommittee}
-          onClose={() => setShowCommittee(false)}
-          committee={committee}
-          incidentId={id || ''}
-        />
-      )}
+      <ConvertDialog open={showConvert} onClose={() => setShowConvert(false)} incidentId={id || ''} />
       <ConvertDialog open={showConvert} onClose={() => setShowConvert(false)} incidentId={id || ''} />
     </div>
   );

@@ -233,7 +233,15 @@ export default function IncidentListPage() {
                     onCheckedChange={() => toggleSelect(item.id!)}
                   />
                 </div>
-                <div className="px-3">
+                <div className="px-3 flex items-center gap-1.5">
+                  {/* Production Incident icon */}
+                  {item.type_icon_url ? (
+                    <img src={item.type_icon_url} alt="Incident" style={{ width: 14, height: 14, flexShrink: 0 }} />
+                  ) : (
+                    <svg width="14" height="14" viewBox="0 0 16 16" className="shrink-0">
+                      <path fill="#FF5630" fillRule="evenodd" d="M4.78545267,10 L11.2145473,10 L10.5007848,8 L5.49921516,8 L4.78545267,10 Z M4,11 C3.44771525,11 3,11.4477153 3,12 L3,13 L13,13 L13,12 C13,11.4477153 12.5522847,11 12,11 L4,11 Z M5.8560964,7 L10.1439036,7 L8.94181993,3.63169838 C8.8409899,3.34916733 8.61864892,3.12682636 8.33611787,3.02599632 C7.81596508,2.84036355 7.24381284,3.1115456 7.05818007,3.63169838 L5.8560964,7 Z M2,0 L14,0 C15.1045695,-2.02906125e-16 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 1.3527075e-16,15.1045695 0,14 L0,2 C-1.3527075e-16,0.8954305 0.8954305,2.02906125e-16 2,0 Z"/>
+                    </svg>
+                  )}
                   <span
                     className="inline-flex items-center px-1.5"
                     style={{
@@ -255,7 +263,7 @@ export default function IncidentListPage() {
                 <div className="px-3"><PriorityChip priority={item.priority || 'P4'} /></div>
                 <div className="px-3"><StatusLozenge status={item.status || 'open'} /></div>
                 <div className="px-3 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>
-                  {'\u2014'}
+                  {item.project_name || '\u2014'}
                 </div>
                 <div className="px-3 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#334155' }}>
                   {item.assignee_name || 'Unassigned'}
