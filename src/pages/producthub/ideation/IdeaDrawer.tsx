@@ -1,13 +1,14 @@
 /**
- * IdeaDrawer — Shared side drawer for view/edit/create ideas
+ * IdeaDrawer — Shared side drawer for view/edit ideas
  * Used by ALL 5 ideation pages. 480px right overlay.
  * ALL dropdowns = shadcn Select. NO native <select>.
  * Impact sliders interactive with live composite calculation.
+ * Supports Convert to Initiative flow.
  */
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Edit2, Send } from 'lucide-react';
+import { X, Edit2, Send, ArrowUpRight } from 'lucide-react';
 import { toast } from 'sonner';
-import { useIdeaByKey, useUpdateIdea, useIdeaHubComments, useCreateIdeaComment, useProfiles } from '@/hooks/useIdeasHub';
+import { useIdeaByKey, useUpdateIdea, useIdeaHubComments, useCreateIdeaComment, useProfiles, type IdeaRow } from '@/hooks/useIdeasHub';
 import { useAuth } from '@/hooks/useAuth';
 import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from './ideation-data';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -30,6 +31,7 @@ const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
 function StatusLoz({ status }: { status: string }) {
   const s = STATUS_LOZENGE_COLORS[status] ?? { bg: '#DFE1E6', text: '#253858' };
+  const label = status === 'Converted to Initiative' ? 'CONVERTED' : status.toUpperCase();
   return (
     <span style={{
       display: 'inline-block', padding: '2px 8px', borderRadius: '3px',
@@ -37,7 +39,7 @@ function StatusLoz({ status }: { status: string }) {
       fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
       lineHeight: '16px', whiteSpace: 'nowrap',
     }}>
-      {status.toUpperCase()}
+      {label}
     </span>
   );
 }
@@ -45,9 +47,10 @@ function StatusLoz({ status }: { status: string }) {
 interface Props {
   ideaKey: string | null;
   onClose: () => void;
+  onConvert?: (idea: IdeaRow) => void;
 }
 
-export default function IdeaDrawer({ ideaKey, onClose }: Props) {
+export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
   const { data: rawIdea, isLoading } = useIdeaByKey(ideaKey);
   const { data: profiles = [] } = useProfiles();
   const updateIdea = useUpdateIdea();
@@ -76,6 +79,8 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
 
   const composite = (investorFit * 0.25) + (marketSize * 0.20) + (problemSeverity * 0.20) +
     (userBenefit * 0.15) + (complexityInv * 0.10) + (timeToValue * 0.10);
+
+  const isConverted = rawIdea?.status === 'Converted to Initiative' || rawIdea?.status === 'Converted';
 
   useEffect(() => {
     if (rawIdea) {
@@ -125,7 +130,6 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
     if (!rawIdea?.id || isSaving.current) return;
     isSaving.current = true;
     try {
-      const assignee = profiles.find(p => p.id === localAssigneeId);
       await updateIdea.mutateAsync({
         id: rawIdea.id,
         updates: {
@@ -149,8 +153,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
         },
       });
       setIsEditing(false);
-    } catch {
-    } finally {
+    } catch {} finally {
       isSaving.current = false;
     }
   };
@@ -191,6 +194,8 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
     { letter: 'T', name: 'Time to Value', weight: '10%', value: timeToValue, set: setTimeToValue },
   ];
 
+  const canEdit = !isConverted;
+
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
@@ -213,14 +218,16 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
           </span>
           <StatusLoz status={localStatus} />
           <div style={{ flex: 1 }} />
-          <button onClick={() => { if (isEditing) { resetLocal(); setIsEditing(false); } else setIsEditing(true); }} style={{
-            width: '32px', height: '32px', borderRadius: '6px',
-            border: '1px solid rgba(15,23,42,0.12)',
-            background: isEditing ? '#EFF6FF' : '#FFFFFF',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B',
-          }}>
-            <Edit2 size={14} />
-          </button>
+          {canEdit && (
+            <button onClick={() => { if (isEditing) { resetLocal(); setIsEditing(false); } else setIsEditing(true); }} style={{
+              width: '32px', height: '32px', borderRadius: '6px',
+              border: '1px solid rgba(15,23,42,0.12)',
+              background: isEditing ? '#EFF6FF' : '#FFFFFF',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B',
+            }}>
+              <Edit2 size={14} />
+            </button>
+          )}
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#94A3B8' }}>
             <X size={18} />
           </button>
@@ -235,10 +242,30 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
             </h2>
           </div>
 
+          {/* Converted: Linked Initiative Card */}
+          {isConverted && rawIdea.linked_initiative_key && (
+            <div style={{ padding: '16px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+              <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#11853D', marginBottom: '8px' }}>LINKED INITIATIVE</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: '#11853D' }}>
+                    {rawIdea.linked_initiative_key}
+                  </span>
+                  <ArrowUpRight size={14} style={{ color: '#11853D' }} />
+                </div>
+                {(rawIdea as any).converted_at && (
+                  <div style={{ fontSize: '12px', color: '#64748B', marginTop: '4px' }}>
+                    Converted {new Date((rawIdea as any).converted_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Fields Grid */}
           <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <FieldRow label="Status" editing={isEditing}
+              <FieldRow label="Status" editing={isEditing && canEdit}
                 display={<StatusLoz status={localStatus} />}
                 input={
                   <Select value={localStatus} onValueChange={setLocalStatus}>
@@ -247,7 +274,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
                   </Select>
                 }
               />
-              <FieldRow label="Priority" editing={isEditing}
+              <FieldRow label="Priority" editing={isEditing && canEdit}
                 display={<PriBadge p={localPriority} />}
                 input={
                   <Select value={localPriority} onValueChange={setLocalPriority}>
@@ -256,7 +283,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
                   </Select>
                 }
               />
-              <FieldRow label="Type" editing={isEditing}
+              <FieldRow label="Type" editing={isEditing && canEdit}
                 display={<span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{localType || '—'}</span>}
                 input={
                   <Select value={localType} onValueChange={setLocalType}>
@@ -265,7 +292,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
                   </Select>
                 }
               />
-              <FieldRow label="Source" editing={isEditing}
+              <FieldRow label="Source" editing={isEditing && canEdit}
                 display={<span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{localSource || '—'}</span>}
                 input={
                   <Select value={localSource} onValueChange={setLocalSource}>
@@ -274,7 +301,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
                   </Select>
                 }
               />
-              <FieldRow label="Ideas Theme" editing={isEditing}
+              <FieldRow label="Ideas Theme" editing={isEditing && canEdit}
                 display={<span style={{ fontSize: '13px', fontWeight: 500, color: localTheme ? '#0F172A' : '#94A3B8' }}>{localTheme || '—'}</span>}
                 input={
                   <Select value={localTheme || '__none__'} onValueChange={v => setLocalTheme(v === '__none__' ? '' : v)}>
@@ -286,7 +313,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
                   </Select>
                 }
               />
-              <FieldRow label="Assigned Team" editing={isEditing}
+              <FieldRow label="Assigned Team" editing={isEditing && canEdit}
                 display={<span style={{ fontSize: '13px', fontWeight: 500, color: localTeam ? '#0F172A' : '#94A3B8' }}>{localTeam || '—'}</span>}
                 input={
                   <Select value={localTeam || '__none__'} onValueChange={v => setLocalTeam(v === '__none__' ? '' : v)}>
@@ -298,7 +325,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
                   </Select>
                 }
               />
-              <FieldRow label="Target Release" editing={isEditing}
+              <FieldRow label="Target Release" editing={isEditing && canEdit}
                 display={<span style={{ fontSize: '13px', fontWeight: 500, color: localRelease ? '#0F172A' : '#94A3B8' }}>{localRelease || '—'}</span>}
                 input={
                   <Select value={localRelease || '__none__'} onValueChange={v => setLocalRelease(v === '__none__' ? '' : v)}>
@@ -310,7 +337,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
                   </Select>
                 }
               />
-              <FieldRow label="Quarter" editing={isEditing}
+              <FieldRow label="Quarter" editing={isEditing && canEdit}
                 display={
                   localQuarter ? (
                     <span style={{
@@ -331,7 +358,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
                   </Select>
                 }
               />
-              <FieldRow label="Assignee" editing={isEditing}
+              <FieldRow label="Assignee" editing={isEditing && canEdit}
                 display={
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{
@@ -366,7 +393,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
           </div>
 
           {/* Committed Toggle */}
-          {isEditing && (
+          {isEditing && canEdit && (
             <div style={{ padding: '16px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
@@ -392,7 +419,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
           {/* Description */}
           <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
             <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '8px' }}>DESCRIPTION</div>
-            {isEditing ? (
+            {isEditing && canEdit ? (
               <textarea value={localDescription} onChange={e => setLocalDescription(e.target.value)} rows={4}
                 placeholder="Add a description..."
                 style={{ width: '100%', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)', padding: '8px 12px', fontSize: '13px', color: '#0F172A', resize: 'vertical', fontFamily: "'Inter', sans-serif", outline: 'none' }}
@@ -434,7 +461,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
                     <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{dim.name}</span>
                     <span style={{ fontSize: '12px', color: '#64748B' }}>{dim.weight}</span>
                   </div>
-                  {isEditing ? (
+                  {isEditing && canEdit ? (
                     <Slider
                       value={[dim.value]}
                       min={0} max={5} step={0.1}
@@ -459,6 +486,22 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
             ))}
           </div>
 
+          {/* Convert to Initiative section — only for non-converted, approved ideas */}
+          {!isConverted && onConvert && rawIdea && (
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+              <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A', marginBottom: '8px' }}>Ready to promote?</div>
+                <button onClick={() => onConvert(rawIdea)} style={{
+                  width: '100%', height: '36px', borderRadius: '6px', border: 'none',
+                  background: '#16A34A', color: '#FFFFFF', fontSize: '13px', fontWeight: 600,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                }}>
+                  <ArrowUpRight size={14} /> Convert to Initiative
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Comments */}
           <div style={{ padding: '20px 24px' }}>
             <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '12px' }}>COMMENTS</div>
@@ -467,7 +510,7 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
         </div>
 
         {/* FOOTER */}
-        {isEditing && (
+        {isEditing && canEdit ? (
           <div style={{
             padding: '12px 24px', borderTop: '1px solid rgba(15,23,42,0.08)',
             backgroundColor: '#FFFFFF', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
@@ -484,7 +527,18 @@ export default function IdeaDrawer({ ideaKey, onClose }: Props) {
               opacity: updateIdea.isPending ? 0.7 : 1,
             }}>{updateIdea.isPending ? 'Saving...' : 'Save Changes'}</button>
           </div>
-        )}
+        ) : isConverted ? (
+          <div style={{
+            padding: '12px 24px', borderTop: '1px solid rgba(15,23,42,0.08)',
+            backgroundColor: '#FFFFFF', display: 'flex', justifyContent: 'flex-end', flexShrink: 0,
+          }}>
+            <button onClick={onClose} style={{
+              height: '36px', padding: '0 16px', borderRadius: '6px',
+              border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', color: '#334155',
+              fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+            }}>Close</button>
+          </div>
+        ) : null}
       </div>
 
       <style>{`

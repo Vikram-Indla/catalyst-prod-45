@@ -1,11 +1,12 @@
 /**
  * Ideas Roadmap Page — /product/ideas/roadmap
- * Kanban by QUARTER. NO milestone chips. Cards sorted by impact DESC.
+ * Kanban by QUARTER. Cards sorted by impact DESC.
+ * NO Export PPTX button. Theme tags as neutral grey pills.
  * ALL data from useIdeasHub() — ZERO hardcoded.
  */
 import React, { useState, useMemo } from 'react';
-import { Download } from 'lucide-react';
 import { useIdeasHub, type IdeaRow } from '@/hooks/useIdeasHub';
+import { toast } from 'sonner';
 import IdeaDrawer from './ideation/IdeaDrawer';
 import { QUARTER_BADGE } from './ideation/ideation-data';
 
@@ -33,7 +34,7 @@ export default function IdeasRoadmapPage() {
   }, [ideas, teamFilter, committedOnly]);
 
   const pipelineCount = filtered.filter(i => i.roadmap_quarter).length;
-  const committedCount = filtered.filter(i => i.is_committed).length;
+  const convertedCount = filtered.filter(i => i.status === 'Converted to Initiative').length;
 
   return (
     <div className="flex flex-col h-full" style={{ background: '#FFFFFF' }}>
@@ -47,15 +48,12 @@ export default function IdeasRoadmapPage() {
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <span style={{ fontSize: '13px', color: '#334155', fontWeight: 500 }}>
               <strong style={{ fontFamily: "'JetBrains Mono', monospace" }}>{pipelineCount}</strong> in pipeline ·{' '}
-              <strong style={{ fontFamily: "'JetBrains Mono', monospace" }}>{committedCount}</strong> committed
+              <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: '#11853D' }}>{convertedCount}</strong> converted
             </span>
             <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#334155', cursor: 'pointer' }}>
               <input type="checkbox" checked={committedOnly} onChange={e => setCommittedOnly(e.target.checked)} style={{ accentColor: '#2563EB' }} />
               Committed only
             </label>
-            <button style={{ background: '#FFFFFF', color: '#334155', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Download size={14} /> Export PPTX
-            </button>
           </div>
         </div>
       </div>
@@ -107,10 +105,12 @@ export default function IdeasRoadmapPage() {
 }
 
 function RoadmapCard({ idea, onClick }: { idea: IdeaRow; onClick: () => void }) {
+  const isConverted = idea.status === 'Converted to Initiative';
   return (
     <div onClick={onClick} style={{
-      background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px',
+      background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.08)', borderRadius: '6px',
       padding: '12px', marginBottom: '8px', cursor: 'pointer', transition: 'all 0.15s',
+      borderLeft: isConverted ? '3px solid #16A34A' : undefined,
     }}
       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
       onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.transform = 'none'; }}
@@ -119,16 +119,20 @@ function RoadmapCard({ idea, onClick }: { idea: IdeaRow; onClick: () => void }) 
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, color: '#2563EB' }}>{idea.idea_key}</span>
         <span style={{ fontSize: '9px', fontWeight: 800, background: '#F1F5F9', color: '#334155', padding: '1px 5px', borderRadius: '3px', border: '1px solid #E2E8F0', fontFamily: "'JetBrains Mono', monospace" }}>{idea.priority || 'P2'}</span>
       </div>
-      <div style={{ fontSize: '13px', fontWeight: 650, color: '#0F172A', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '6px', lineHeight: 1.35 }}>{idea.title}</div>
+      <div style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '6px', lineHeight: 1.35 }}>{idea.title}</div>
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-        <span style={{ background: '#F4F4F5', color: '#71717A', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 600 }}>{idea.idea_type || 'Feature'}</span>
-        {idea.assigned_team && <span style={{ background: '#F4F4F5', color: '#71717A', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 600 }}>{idea.assigned_team}</span>}
-        {idea.theme && <span style={{ background: '#EFF6FF', color: '#1E40AF', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 600, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.theme}</span>}
+        {idea.assigned_team && <span style={{ background: '#F1F5F9', color: '#64748B', padding: '2px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 600 }}>{idea.assigned_team}</span>}
+        {idea.theme && <span style={{ background: '#F1F5F9', color: '#64748B', padding: '2px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 600, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.theme}</span>}
       </div>
-      <div style={{ borderTop: '1px solid #F4F4F5', paddingTop: '8px' }}>
+      <div style={{ borderTop: '1px solid rgba(15,23,42,0.06)', paddingTop: '8px' }}>
         <span style={{ fontSize: '11px', fontWeight: 700, color: idea.impact_total > 0 ? '#334155' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>IMPACT {idea.impact_total.toFixed(2)}</span>
         {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, color: '#006644', background: '#E3FCEF', padding: '1px 6px', borderRadius: '3px' }}>COMMITTED</span>}
       </div>
+      {isConverted && idea.linked_initiative_key && (
+        <div style={{ marginTop: '6px', fontSize: '11px', fontWeight: 600, color: '#11853D', fontFamily: "'JetBrains Mono', monospace" }}>
+          → {idea.linked_initiative_key} (Converted)
+        </div>
+      )}
     </div>
   );
 }
