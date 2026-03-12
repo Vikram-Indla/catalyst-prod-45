@@ -32,16 +32,16 @@ export const classifyChangeDate = (deploymentDate: string | null | undefined, st
   return 'future';
 };
 
-export const groupChangesBySection = (changes: ChangeSummary[]) => {
-  const sections: Record<ChangeSection, ChangeSummary[]> = {
+export const groupChangesBySection = (changes: any[]) => {
+  const sections: Record<ChangeSection, any[]> = {
     past: [], today: [], this_week: [], upcoming: [], future: []
   };
   changes.forEach(c => {
-    const section = classifyChangeDate(c.deployment_date, (c as any).status);
+    const section = classifyChangeDate(c.deployment_date, c.status);
     sections[section].push(c);
   });
   Object.values(sections).forEach(arr =>
-    arr.sort((a, b) => new Date(a.deployment_date || '9999').getTime() - new Date(b.deployment_date || '9999').getTime())
+    arr.sort((a: any, b: any) => new Date(a.deployment_date || '9999').getTime() - new Date(b.deployment_date || '9999').getTime())
   );
   return sections;
 };
