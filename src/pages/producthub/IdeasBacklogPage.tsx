@@ -61,6 +61,8 @@ export default function IdeasBacklogPage() {
   const [drawerKey, setDrawerKey] = useState<string | null>(null);
   const [convertDrawerOpen, setConvertDrawerOpen] = useState(false);
   const [conversionSource, setConversionSource] = useState<ConversionSource | null>(null);
+  const [triageOpen, setTriageOpen] = useState(false);
+  const [intelligenceOpen, setIntelligenceOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: ideas = [], isLoading } = useIdeasHub({
