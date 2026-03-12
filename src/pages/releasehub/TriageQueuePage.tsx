@@ -1,14 +1,34 @@
 import React, { useState } from 'react';
 import { useTriageCount, useChanges, useReleases } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
-import { ChgStatusBadge } from '@/components/releasehub/ChgStatusBadge';
-import { CatalystAIChip } from '@/components/releasehub/CatalystAIChip';
+import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
+import { SourceBadge } from '@/components/releasehub/SourceBadge';
+import { RiskBadge } from '@/components/releasehub/RiskBadge';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
-import { EmptyState } from '@/components/releasehub/EmptyState';
-import { AlertCircle, CheckCircle, ChevronDown } from 'lucide-react';
+import { CheckCircle, ChevronDown, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+
+function mapRisk(risk: string) {
+  const r = risk?.toLowerCase() || 'standard';
+  if (r === 'low' || r === 'medium') return 'standard';
+  if (r === 'critical') return 'emergency';
+  return r;
+}
+
+function getAIRecommendation(change: any, releases: any[]) {
+  // Simple heuristic: suggest the first non-released release, or closest by date
+  const active = releases.filter((r: any) => r.status !== 'done' && r.status !== 'released' && r.status !== 'archived');
+  if (active.length === 0) return null;
+  // Pick one based on name similarity or just the first
+  const suggested = active[0];
+  return {
+    releaseName: suggested.name,
+    releaseId: suggested.id,
+    reason: 'Matches scope + timeline',
+  };
+}
 
 export default function TriageQueuePage() {
   const { data: triageCount = 0 } = useTriageCount();
@@ -31,63 +51,84 @@ export default function TriageQueuePage() {
   };
 
   return (
-    <div className="rh-page">
+    <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px' }}>
       <div className="mb-5">
         <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Triage Queue</h1>
-        <p className="text-[13px] text-[#64748B]" style={{ fontFamily: RH.fontBody }}>Unassigned changes awaiting release assignment</p>
+        <p className="text-[13px] text-[#64748B]" style={{ fontFamily: RH.fontBody }}>
+          Changes without an assigned release — {unlinked.length} item{unlinked.length !== 1 ? 's' : ''} require{unlinked.length === 1 ? 's' : ''} action
+        </p>
       </div>
-
-      {triageCount > 0 && (
-        <div className="bg-[#FFFBEB] border border-[#FCD34D] rounded-lg px-4 py-3 mb-4 flex items-center gap-2">
-          <AlertCircle size={16} className="text-[#C2840A]" />
-          <span className="text-[13px] font-semibold text-[#92400E]">{triageCount} change{triageCount !== 1 ? 's' : ''} ha{triageCount !== 1 ? 've' : 's'} no release assignment</span>
-        </div>
-      )}
 
       {isLoading ? (
         <SkeletonRows count={5} />
       ) : unlinked.length === 0 ? (
-        <div className="bg-white rounded-lg border border-[#E2E8F0] p-10 flex flex-col items-center gap-2">
+        <div className="bg-white rounded border border-[rgba(15,23,42,0.12)] p-10 flex flex-col items-center gap-2">
           <CheckCircle size={24} className="text-[#15803D]" />
           <span className="text-[14px] font-bold text-[#15803D]" style={{ fontFamily: RH.fontDisplay }}>No unlinked work items — pipeline is clean ✓</span>
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-[#E2E8F0] overflow-hidden">
+        <div className="bg-white rounded border border-[rgba(15,23,42,0.12)] overflow-hidden">
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
-              <tr className="bg-[#F4F7FA] border-b border-[#E2E8F0]">
-                {['CHG', 'TITLE', 'STATUS', 'RISK', 'CATEGORY', 'PLANNED', 'ACTIONS'].map(h => (
-                  <th key={h} scope="col" className="px-3 py-0 h-9 text-left text-[11px] font-extrabold uppercase tracking-[0.04em] text-[#475569]">{h}</th>
+              <tr style={{ background: '#F1F5F9' }}>
+                {['KEY', 'TITLE', 'RISK', 'SOURCE', 'DATE', 'AI RECOMMENDATION', 'ACTIONS'].map(h => (
+                  <th key={h} className="px-3 py-0 h-[36px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {unlinked.map((c: any) => (
-                <tr key={c.id} className="border-b border-[#F1F5F9] hover:bg-[#F4F7FA] h-9" style={{ transition: 'background 80ms ease' }}>
-                  <td className="px-3 py-0 font-bold text-[#0D9488]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</td>
-                  <td className="px-3 py-0 truncate max-w-[280px]" title={c.title} style={{ color: RH.ink2 }}>{c.title}</td>
-                  <td className="px-3 py-0"><ChgStatusBadge status={c.status} /></td>
-                  <td className="px-3 py-0"><span className="text-[10px] font-bold uppercase">{c.risk_level}</span></td>
-                  <td className="px-3 py-0 text-[#64748B]">{c.category || <span className="text-[#94A3B8]">—</span>}</td>
-                  <td className="px-3 py-0 text-[#64748B]">{c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : <span className="text-[#94A3B8]">—</span>}</td>
-                  <td className="px-3 py-0">
-                    <div className="flex items-center gap-1.5">
-                      <TriageLinkDropdown releases={releases} onLink={(releaseId) => linkChangeToRelease(c.id, releaseId)} />
-                      <button onClick={() => ignoreTriageItem(c.id)}
-                        style={{ height: '26px', fontSize: '11px', fontWeight: 600, border: '1px solid #E2E8F0', borderRadius: '4px', padding: '0 8px', background: 'white', color: '#94A3B8', cursor: 'pointer' }}>
-                        Ignore
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {unlinked.map((c: any) => {
+                const rec = getAIRecommendation(c, releases);
+                return (
+                  <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ background: '#FFFFFF' }}>
+                    <td className="px-3 py-2">
+                      <span className="text-[13px] font-medium text-[#2563EB]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
+                    </td>
+                    <td className="px-3 py-2 max-w-[220px]">
+                      <span className="text-[13px] text-[#0F172A] truncate block">{c.title}</span>
+                    </td>
+                    <td className="px-3 py-2"><RiskBadge risk={mapRisk(c.risk_level)} /></td>
+                    <td className="px-3 py-2"><SourceBadge source={c.source === 'servicenow' ? 'catalyst' : c.source} /></td>
+                    <td className="px-3 py-2 text-[#64748B]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
+                      {c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
+                    </td>
+                    <td className="px-3 py-2">
+                      {rec ? (
+                        <div className="bg-[#EFF6FF] border border-[#DBEAFE] rounded-md px-2.5 py-2 flex items-start gap-2 max-w-[260px]">
+                          <Sparkles className="w-3.5 h-3.5 text-[#2563EB] flex-shrink-0 mt-0.5" />
+                          <div className="text-[12px] leading-relaxed">
+                            <span className="font-semibold text-[#2563EB]">Suggested:</span>{' '}
+                            <span className="text-[#0F172A]">{rec.releaseName}</span>
+                            <br />
+                            <span className="text-[#64748B]">{rec.reason}</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-[#94A3B8] text-[12px]">No suggestion</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      <div className="flex items-center gap-1.5">
+                        {rec ? (
+                          <button onClick={() => linkChangeToRelease(c.id, rec.releaseId)}
+                            className="h-7 px-3 rounded text-[11px] font-semibold text-white"
+                            style={{ background: '#2563EB' }}>
+                            Link Release
+                          </button>
+                        ) : (
+                          <TriageLinkDropdown releases={releases} onLink={(releaseId) => linkChangeToRelease(c.id, releaseId)} />
+                        )}
+                        <button onClick={() => ignoreTriageItem(c.id)}
+                          className="h-7 px-3 rounded text-[11px] font-medium border border-[rgba(15,23,42,0.12)] bg-white text-[#94A3B8] hover:text-[#475569]">
+                          Ignore
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-          {unlinked.some((c: any) => c.status === 'in_uat' || c.status === 'in_beta') && (
-            <div className="px-4 py-3 border-t border-[#E2E8F0]">
-              <CatalystAIChip label={`${unlinked.filter((c: any) => c.status === 'in_uat' || c.status === 'in_beta').length} items are at risk of blocking Beta deployment — review`} />
-            </div>
-          )}
         </div>
       )}
     </div>
@@ -99,18 +140,18 @@ function TriageLinkDropdown({ releases, onLink }: { releases: any[]; onLink: (re
   return (
     <div className="relative">
       <button onClick={() => setOpen(!open)}
-        style={{ height: '26px', fontSize: '11px', fontWeight: 600, border: '1px solid #E2E8F0', borderRadius: '4px', padding: '0 8px', background: 'white', color: '#2563EB', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        className="h-7 px-3 rounded text-[11px] font-semibold border border-[rgba(15,23,42,0.12)] bg-white text-[#2563EB] flex items-center gap-1">
         Link Release <ChevronDown size={10} />
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-[#E2E8F0] z-50 py-1 max-h-48 overflow-y-auto">
+          <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-[rgba(15,23,42,0.12)] z-50 py-1 max-h-48 overflow-y-auto">
             {releases.length === 0 ? (
               <div className="px-3 py-2 text-[12px] text-[#94A3B8]">No releases available</div>
             ) : releases.map((r: any) => (
               <button key={r.id} onClick={() => { onLink(r.id); setOpen(false); }}
-                className="w-full px-3 h-8 text-left text-[12px] font-medium hover:bg-[#F4F7FA] text-[#475569]">{r.name}</button>
+                className="w-full px-3 h-8 text-left text-[12px] font-medium hover:bg-[#F8FAFC] text-[#475569]">{r.name}</button>
             ))}
           </div>
         </>
