@@ -1,0 +1,93 @@
+/**
+ * IncidentInsightsPage — AI-branded, purple accent
+ */
+
+import { Sparkles } from 'lucide-react';
+import { useIncidentListView } from '@/hooks/useIncidentHub';
+
+export default function IncidentInsightsPage() {
+  const { data: incidents } = useIncidentListView();
+  const sev1Count = incidents?.filter(i => i.severity === 'SEV1').length || 0;
+  const breachedCount = incidents?.filter(i => i.resolution_breached).length || 0;
+
+  return (
+    <div className="flex-1 overflow-auto" style={{ backgroundColor: '#FFFFFF' }}>
+      <div className="px-6 pt-6 pb-4">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#F3E8FF' }}>
+            <Sparkles size={18} style={{ color: '#7C3AED' }} />
+          </div>
+          <div className="flex items-center gap-2">
+            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A' }}>Insights</h1>
+            <span className="px-1.5 py-0.5" style={{ fontSize: 10, fontWeight: 700, backgroundColor: '#F3E8FF', color: '#7C3AED', borderRadius: 3 }}>AI</span>
+          </div>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B', marginLeft: 'auto' }}>Pattern analysis and recommendations</p>
+        </div>
+
+        {/* Featured AI Card */}
+        <div className="p-4 mb-6" style={{ border: '1px solid #E9D5FF', borderRadius: 6, backgroundColor: '#FFFFFF' }}>
+          <div className="flex items-start gap-3">
+            <div className="shrink-0 rounded-full flex items-center justify-center" style={{
+              width: 36, height: 36,
+              background: 'linear-gradient(135deg, #7C3AED, #0D9488)',
+            }}>
+              <Sparkles size={18} style={{ color: '#FFFFFF' }} />
+            </div>
+            <div>
+              <h3 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 650, color: '#0F172A', marginBottom: 4 }}>
+                Pattern Analysis
+              </h3>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#334155', lineHeight: 1.6 }}>
+                {sev1Count > 0
+                  ? `${sev1Count} SEV-1 incident(s) detected in the current window. Analysis suggests correlation with recent deployment activities. ${breachedCount > 0 ? `${breachedCount} SLA breach(es) require immediate attention.` : 'SLA targets are currently being met.'}`
+                  : 'No critical incidents detected. System health appears stable across all monitored services.'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 2-Column Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Risk Signals */}
+          <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
+            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#0F172A' }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#DC2626', display: 'inline-block' }} />
+              Risk Signals
+            </h3>
+            <div className="space-y-3">
+              {[
+                { title: 'Recurring authentication failures', desc: 'Multiple incidents linked to auth service in past 7 days' },
+                { title: 'SLA breach pattern detected', desc: 'SEV-1 incidents averaging resolution above target threshold' },
+              ].map((item, i) => (
+                <div key={i} className="p-2.5" style={{ backgroundColor: '#FEF2F2', borderRadius: 4, border: '1px solid #FECACA' }}>
+                  <h4 style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: '#991B1B', marginBottom: 2 }}>{item.title}</h4>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#B91C1C' }}>{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Improvements */}
+          <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
+            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#0F172A' }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#16A34A', display: 'inline-block' }} />
+              Improvements
+            </h3>
+            <div className="space-y-3">
+              {[
+                { title: 'Automated rollback triggers', desc: 'Implement auto-rollback for auth service config changes to reduce MTTR' },
+                { title: 'Pre-deployment health checks', desc: 'Add mandatory health check gates before production deployments' },
+              ].map((item, i) => (
+                <div key={i} className="p-2.5" style={{ backgroundColor: '#F0FDF4', borderRadius: 4, border: '1px solid #BBF7D0' }}>
+                  <h4 style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: '#166534', marginBottom: 2 }}>{item.title}</h4>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#15803D' }}>{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
