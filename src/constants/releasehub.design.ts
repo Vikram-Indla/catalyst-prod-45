@@ -117,7 +117,7 @@ export const DEPLOY_RESULT_BADGE: Record<string, { bg: string; text: string }> =
 };
 
 // Sign-off decision lozenges
-export const SIGNOFF_LOZENGE: Record<string, typeof LOZENGE.grey> = {
+export const SIGNOFF_LOZENGE: Record<string, LozengeStyle> = {
   approved: LOZENGE.green,
   rejected: LOZENGE.grey,
   pending: LOZENGE.grey,
