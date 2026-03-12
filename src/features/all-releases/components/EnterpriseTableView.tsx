@@ -63,7 +63,7 @@ function getDaysInfo(release: Release) {
   if (release.status === 'released') return { label: 'Released', className: 'bg-emerald-50 text-emerald-600' };
   const days = release.schedule.daysRemaining;
   if (days < 0) return { label: 'Overdue', className: 'bg-red-50 text-red-600' };
-  if (days <= 14) return { label: `${days}d`, className: 'bg-amber-50 text-amber-600' };
+  if (days <= 14) return { label: `${days}d`, className: 'bg-blue-50 text-blue-600' };
   return { label: `${days}d`, className: 'bg-slate-50 text-slate-500' };
 }
 
