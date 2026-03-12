@@ -36195,6 +36195,54 @@ export type Database = {
         }
         Relationships: []
       }
+      rh_change_activity_log: {
+        Row: {
+          action: string
+          actor_initials: string
+          actor_name: string
+          change_id: string
+          created_at: string | null
+          detail: string | null
+          id: string
+          is_ai: boolean | null
+        }
+        Insert: {
+          action: string
+          actor_initials: string
+          actor_name: string
+          change_id: string
+          created_at?: string | null
+          detail?: string | null
+          id?: string
+          is_ai?: boolean | null
+        }
+        Update: {
+          action?: string
+          actor_initials?: string
+          actor_name?: string
+          change_id?: string
+          created_at?: string | null
+          detail?: string | null
+          id?: string
+          is_ai?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_change_activity_log_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "rh_change_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_change_activity_log_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "rh_changes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rh_change_signoffs: {
         Row: {
           actioned_at: string | null
@@ -36294,6 +36342,57 @@ export type Database = {
           },
         ]
       }
+      rh_change_test_cycles: {
+        Row: {
+          change_id: string
+          created_at: string | null
+          cycle_name: string
+          id: string
+          passed_cases: number
+          result: string
+          run_date: string | null
+          runner_id: string | null
+          total_cases: number
+        }
+        Insert: {
+          change_id: string
+          created_at?: string | null
+          cycle_name: string
+          id?: string
+          passed_cases?: number
+          result?: string
+          run_date?: string | null
+          runner_id?: string | null
+          total_cases?: number
+        }
+        Update: {
+          change_id?: string
+          created_at?: string | null
+          cycle_name?: string
+          id?: string
+          passed_cases?: number
+          result?: string
+          run_date?: string | null
+          runner_id?: string | null
+          total_cases?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_change_test_cycles_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "rh_change_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_change_test_cycles_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "rh_changes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rh_change_work_items: {
         Row: {
           change_id: string
@@ -36346,6 +36445,7 @@ export type Database = {
         Row: {
           additional_commands: string | null
           additional_comments: string | null
+          assignee_id: string | null
           backend_commit: string | null
           backend_required: boolean | null
           category: string | null
@@ -36355,13 +36455,17 @@ export type Database = {
           dependency: string | null
           deployment_date: string | null
           deployment_process: string | null
+          deployment_result: string | null
+          description: string | null
           frontend_commit: string | null
           frontend_required: boolean | null
           id: string
+          planned_date: string | null
           project_id: string | null
           release_id: string | null
           risk_level: string
           risk_score: number | null
+          sign_off_template_id: string | null
           sn_imported: boolean | null
           source: string
           status: string
@@ -36371,6 +36475,7 @@ export type Database = {
         Insert: {
           additional_commands?: string | null
           additional_comments?: string | null
+          assignee_id?: string | null
           backend_commit?: string | null
           backend_required?: boolean | null
           category?: string | null
@@ -36380,13 +36485,17 @@ export type Database = {
           dependency?: string | null
           deployment_date?: string | null
           deployment_process?: string | null
+          deployment_result?: string | null
+          description?: string | null
           frontend_commit?: string | null
           frontend_required?: boolean | null
           id?: string
+          planned_date?: string | null
           project_id?: string | null
           release_id?: string | null
           risk_level?: string
           risk_score?: number | null
+          sign_off_template_id?: string | null
           sn_imported?: boolean | null
           source?: string
           status?: string
@@ -36396,6 +36505,7 @@ export type Database = {
         Update: {
           additional_commands?: string | null
           additional_comments?: string | null
+          assignee_id?: string | null
           backend_commit?: string | null
           backend_required?: boolean | null
           category?: string | null
@@ -36405,13 +36515,17 @@ export type Database = {
           dependency?: string | null
           deployment_date?: string | null
           deployment_process?: string | null
+          deployment_result?: string | null
+          description?: string | null
           frontend_commit?: string | null
           frontend_required?: boolean | null
           id?: string
+          planned_date?: string | null
           project_id?: string | null
           release_id?: string | null
           risk_level?: string
           risk_score?: number | null
+          sign_off_template_id?: string | null
           sn_imported?: boolean | null
           source?: string
           status?: string
@@ -36478,6 +36592,96 @@ export type Database = {
           start_date?: string
         }
         Relationships: []
+      }
+      rh_production_events: {
+        Row: {
+          change_key: string | null
+          created_at: string | null
+          deployed_at: string
+          deployed_by: string
+          deployment_result: string | null
+          duration_minutes: number | null
+          event_type: string
+          id: string
+          notes: string | null
+          release_key: string | null
+          title: string
+        }
+        Insert: {
+          change_key?: string | null
+          created_at?: string | null
+          deployed_at: string
+          deployed_by: string
+          deployment_result?: string | null
+          duration_minutes?: number | null
+          event_type: string
+          id?: string
+          notes?: string | null
+          release_key?: string | null
+          title: string
+        }
+        Update: {
+          change_key?: string | null
+          created_at?: string | null
+          deployed_at?: string
+          deployed_by?: string
+          deployment_result?: string | null
+          duration_minutes?: number | null
+          event_type?: string
+          id?: string
+          notes?: string | null
+          release_key?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      rh_release_activity_log: {
+        Row: {
+          action: string
+          actor_initials: string
+          actor_name: string
+          created_at: string | null
+          detail: string | null
+          id: string
+          is_ai: boolean | null
+          release_id: string
+        }
+        Insert: {
+          action: string
+          actor_initials: string
+          actor_name: string
+          created_at?: string | null
+          detail?: string | null
+          id?: string
+          is_ai?: boolean | null
+          release_id: string
+        }
+        Update: {
+          action?: string
+          actor_initials?: string
+          actor_name?: string
+          created_at?: string | null
+          detail?: string | null
+          id?: string
+          is_ai?: boolean | null
+          release_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_release_activity_log_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "rh_release_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_release_activity_log_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "rh_releases"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rh_release_test_cycle_links: {
         Row: {
@@ -36554,8 +36758,10 @@ export type Database = {
         Row: {
           chg_count: number | null
           created_at: string | null
+          description: string | null
           id: string
           jira_key: string | null
+          key: string | null
           name: string
           owner_id: string | null
           project_id: string | null
@@ -36568,8 +36774,10 @@ export type Database = {
         Insert: {
           chg_count?: number | null
           created_at?: string | null
+          description?: string | null
           id?: string
           jira_key?: string | null
+          key?: string | null
           name: string
           owner_id?: string | null
           project_id?: string | null
@@ -36582,8 +36790,10 @@ export type Database = {
         Update: {
           chg_count?: number | null
           created_at?: string | null
+          description?: string | null
           id?: string
           jira_key?: string | null
+          key?: string | null
           name?: string
           owner_id?: string | null
           project_id?: string | null
@@ -36609,6 +36819,62 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rh_sign_off_template_gates: {
+        Row: {
+          approver_role: string
+          gate_name: string
+          gate_order: number
+          id: string
+          template_id: string
+        }
+        Insert: {
+          approver_role: string
+          gate_name: string
+          gate_order: number
+          id?: string
+          template_id: string
+        }
+        Update: {
+          approver_role?: string
+          gate_name?: string
+          gate_order?: number
+          id?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_sign_off_template_gates_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "rh_sign_off_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rh_sign_off_templates: {
+        Row: {
+          created_at: string | null
+          gate_count: number
+          id: string
+          name: string
+          risk_level: string
+        }
+        Insert: {
+          created_at?: string | null
+          gate_count: number
+          id?: string
+          name: string
+          risk_level: string
+        }
+        Update: {
+          created_at?: string | null
+          gate_count?: number
+          id?: string
+          name?: string
+          risk_level?: string
+        }
+        Relationships: []
       }
       risk_links: {
         Row: {
@@ -66120,6 +66386,16 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rh_command_center_kpis: {
+        Row: {
+          active_releases: number | null
+          changes_in_flight: number | null
+          signoffs_pending: number | null
+          test_cycles_running: number | null
+          triage_count: number | null
+        }
+        Relationships: []
       }
       rh_release_summary: {
         Row: {
