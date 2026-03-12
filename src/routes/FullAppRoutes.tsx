@@ -70,6 +70,11 @@ const RequirementAssistOutput = ENABLE_AI ? lazy(() => import("../pages/producth
 const ProductCardsPage = lazy(() => import("../pages/producthub/CardsPage"));
 const IdeationPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
 const IdeasRoadmapPage = ENABLE_AI ? lazy(() => import("../pages/product/ideas/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
+const IdeasBacklogPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasBacklogPage")) : () => <FeatureComingSoon title="Ideas Backlog" />;
+const IdeasBoardPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasBoardPage")) : () => <FeatureComingSoon title="Ideas Board" />;
+const IdeasRoadmapPageNew = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
+const IdeasThemePage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasThemePage")) : () => <FeatureComingSoon title="Ideas Theme" />;
+const IdeasAnalyticsPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasAnalyticsPage")) : () => <FeatureComingSoon title="Ideas Analytics" />;
 const ReqAssistLibrary = ENABLE_AI ? lazy(() => import("../pages/ReqAssistLibrary")) : () => <FeatureComingSoon title="Requirement Assist" />;
 const ReqAssistGenerate = ENABLE_AI ? lazy(() => import("../pages/ReqAssistGenerate")) : () => <FeatureComingSoon title="Requirement Assist" />;
 
