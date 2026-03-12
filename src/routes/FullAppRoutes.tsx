@@ -723,7 +723,7 @@ export default function FullAppRoutes() {
         <Route path="/stories" element={<S><Stories /></S>} />
         <Route path="/work-items/stories" element={<S><Stories /></S>} />
         <Route path="/work-items/subtasks" element={<S><Subtasks /></S>} />
-        <Route path="/releases/*" element={<Navigate to="/releasehub/command-center" replace />} />
+        <Route path="/releases/*" element={<Navigate to="/release-hub/command-center" replace />} />
 
         <Route path="/unauthorized" element={<S><UnauthorizedPage /></S>} />
 
