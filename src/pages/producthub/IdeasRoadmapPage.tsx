@@ -1,22 +1,21 @@
 /**
  * Ideas Roadmap Page — /product/ideas/roadmap
- * Kanban by QUARTER. Cards sorted by impact DESC.
- * NO Export PPTX button. Theme tags as neutral grey pills.
- * ALL data from useIdeasHub() — ZERO hardcoded.
+ * Kanban by QUARTER with colored left borders.
+ * Committed filter = Approved or Converted ideas.
  */
 import React, { useState, useMemo } from 'react';
 import { useIdeasHub, type IdeaRow } from '@/hooks/useIdeasHub';
-import { toast } from 'sonner';
 import IdeaDrawer from './ideation/IdeaDrawer';
-import { QUARTER_BADGE } from './ideation/ideation-data';
+import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from './ideation/ideation-data';
 
 const TEAMS = ['All Teams', 'Senaie BAU', 'Integration Team', 'Mobile App Team'];
+
 const ROADMAP_COLS = [
-  { key: null, label: 'NO QUARTER', borderColor: '#94A3B8' },
-  { key: 'Q1', label: 'Q1 2026', borderColor: '#991B1B' },
-  { key: 'Q2', label: 'Q2 2026', borderColor: '#1E40AF' },
-  { key: 'Q3', label: 'Q3 2026', borderColor: '#115E59' },
-  { key: 'Q4', label: 'Q4 2026', borderColor: '#78350F' },
+  { key: null, label: 'NO QUARTER', borderColor: 'transparent', textColor: '#94A3B8' },
+  { key: 'Q1', label: 'Q1 2026', borderColor: '#991B1B', textColor: '#991B1B' },
+  { key: 'Q2', label: 'Q2 2026', borderColor: '#1E40AF', textColor: '#1E40AF' },
+  { key: 'Q3', label: 'Q3 2026', borderColor: '#115E59', textColor: '#115E59' },
+  { key: 'Q4', label: 'Q4 2026', borderColor: '#78350F', textColor: '#78350F' },
 ];
 
 export default function IdeasRoadmapPage() {
@@ -29,7 +28,7 @@ export default function IdeasRoadmapPage() {
   const filtered = useMemo(() => {
     let result = ideas;
     if (teamFilter !== 'All Teams') result = result.filter(i => i.assigned_team === teamFilter);
-    if (committedOnly) result = result.filter(i => i.is_committed);
+    if (committedOnly) result = result.filter(i => i.status === 'Approved' || i.status === 'Converted to Initiative');
     return result;
   }, [ideas, teamFilter, committedOnly]);
 
@@ -79,12 +78,13 @@ export default function IdeasRoadmapPage() {
               .filter(i => col.key === null ? !i.roadmap_quarter : i.roadmap_quarter === col.key)
               .sort((a, b) => b.impact_total - a.impact_total);
             return (
-              <div key={col.label} style={{ minWidth: '240px', flex: 1 }}>
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', padding: '0 4px', height: 36,
-                  borderLeft: `3px solid ${col.borderColor}`, paddingLeft: '8px',
-                }}>
-                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#1E293B', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{col.label}</span>
+              <div key={col.label} style={{
+                minWidth: '240px', flex: 1,
+                borderLeft: col.key ? `3px solid ${col.borderColor}` : undefined,
+                paddingLeft: col.key ? '12px' : undefined,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', height: 36 }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: col.textColor, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{col.label}</span>
                   <span style={{ fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, background: '#F1F5F9', borderRadius: '100px', padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center', color: '#64748B' }}>{colIdeas.length}</span>
                 </div>
                 {colIdeas.length === 0 && (
@@ -108,12 +108,22 @@ function RoadmapCard({ idea, onClick }: { idea: IdeaRow; onClick: () => void }) 
   const isConverted = idea.status === 'Converted to Initiative';
   return (
     <div onClick={onClick} style={{
-      background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.08)', borderRadius: '6px',
-      padding: '12px', marginBottom: '8px', cursor: 'pointer', transition: 'all 0.15s',
-      borderLeft: isConverted ? '3px solid #16A34A' : undefined,
+      background: '#FFFFFF',
+      border: '1px solid rgba(15,23,42,0.12)',
+      borderLeft: isConverted ? '3px solid #16A34A' : '1px solid rgba(15,23,42,0.12)',
+      borderRadius: '6px',
+      padding: '12px', marginBottom: '8px', cursor: 'pointer',
+      transition: 'box-shadow 150ms ease, transform 150ms ease',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
     }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.transform = 'none'; }}
+      onMouseEnter={e => {
+        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.10)';
+        e.currentTarget.style.transform = 'translateY(-1px)';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)';
+        e.currentTarget.style.transform = 'none';
+      }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, color: '#2563EB' }}>{idea.idea_key}</span>
@@ -121,8 +131,8 @@ function RoadmapCard({ idea, onClick }: { idea: IdeaRow; onClick: () => void }) 
       </div>
       <div style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '6px', lineHeight: 1.35 }}>{idea.title}</div>
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-        {idea.assigned_team && <span style={{ background: '#F1F5F9', color: '#64748B', padding: '2px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 600 }}>{idea.assigned_team}</span>}
-        {idea.theme && <span style={{ background: '#F1F5F9', color: '#64748B', padding: '2px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 600, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.theme}</span>}
+        {idea.assigned_team && <span style={{ background: '#F1F5F9', color: '#64748B', padding: '1px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 500 }}>{idea.assigned_team}</span>}
+        {idea.theme && <span style={{ background: '#F1F5F9', color: '#64748B', padding: '1px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.theme}</span>}
       </div>
       <div style={{ borderTop: '1px solid rgba(15,23,42,0.06)', paddingTop: '8px' }}>
         <span style={{ fontSize: '11px', fontWeight: 700, color: idea.impact_total > 0 ? '#334155' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>IMPACT {idea.impact_total.toFixed(2)}</span>

@@ -1,16 +1,15 @@
 /**
  * Ideas Analytics Page — /product/ideas/analytics
  * ALL data from useIdeaStats() — ZERO hardcoded numbers.
- * Conversion funnel + Quarter + Theme + Conversion by Quarter/Theme
- * Updated: Approved=BLUE, Submitted=GREY, Converted=GREEN
+ * Fixes: AVG TIME shows "—" when 0 conversions. Funnel shows all 5 lifecycle stages in order.
  */
-import React from 'react';
-import { Download } from 'lucide-react';
+import React, { useMemo } from 'react';
 import { useIdeaStats, useIdeasHub } from '@/hooks/useIdeasHub';
-import { toast } from 'sonner';
 import { QUARTER_BADGE } from './ideation/ideation-data';
 
 const MONO = "'JetBrains Mono', monospace";
+
+const LIFECYCLE_ORDER = ['Draft', 'Submitted', 'Under Review', 'Approved', 'Converted to Initiative'];
 
 const STATUS_BAR_COLORS: Record<string, string> = {
   'Draft': '#DFE1E6',
@@ -18,7 +17,6 @@ const STATUS_BAR_COLORS: Record<string, string> = {
   'Under Review': '#DEEBFF',
   'Approved': '#DEEBFF',
   'Converted to Initiative': '#E3FCEF',
-  'Rejected': '#FEE2E2',
 };
 const STATUS_TEXT_COLORS: Record<string, string> = {
   'Draft': '#253858',
@@ -26,12 +24,24 @@ const STATUS_TEXT_COLORS: Record<string, string> = {
   'Under Review': '#0747A6',
   'Approved': '#0747A6',
   'Converted to Initiative': '#006644',
-  'Rejected': '#B91C1C',
 };
 
 export default function IdeasAnalyticsPage() {
   const { data: stats, isLoading } = useIdeaStats();
   const { data: allIdeas = [] } = useIdeasHub();
+
+  // Compute avg time to convert
+  const avgTimeToConvert = useMemo(() => {
+    const converted = allIdeas.filter(i =>
+      i.status === 'Converted to Initiative' && (i as any).converted_at && i.created_at
+    );
+    if (converted.length === 0) return null;
+    const totalDays = converted.reduce((sum, i) => {
+      const diff = new Date((i as any).converted_at).getTime() - new Date(i.created_at).getTime();
+      return sum + diff / (1000 * 60 * 60 * 24);
+    }, 0);
+    return Math.round(totalDays / converted.length);
+  }, [allIdeas]);
 
   if (isLoading || !stats) {
     return (
@@ -48,11 +58,17 @@ export default function IdeasAnalyticsPage() {
   const conversionRate = stats.total > 0 ? ((convertedCount / stats.total) * 100).toFixed(1) : '0.0';
   const pendingConversion = stats.byStatus.find(s => s.status === 'Approved')?.count || 0;
 
-  const maxStatus = Math.max(...stats.byStatus.map(s => s.count), 1);
+  // Build funnel in LIFECYCLE order with all 5 stages
+  const funnelData = LIFECYCLE_ORDER.map(status => {
+    const found = stats.byStatus.find(s => s.status === status);
+    return { status, count: found?.count || 0 };
+  });
+  const maxFunnel = Math.max(...funnelData.map(s => s.count), 1);
+
   const maxTheme = Math.max(...stats.byTheme.map(t => t.count), 1);
   const maxQuarter = Math.max(...stats.byQuarter.map(q => q.count), 1);
 
-  // Compute conversion by theme (top 4)
+  // Conversion by theme (top 4)
   const themeConvMap: Record<string, { total: number; converted: number }> = {};
   allIdeas.forEach(i => {
     if (!i.theme) return;
@@ -85,14 +101,9 @@ export default function IdeasAnalyticsPage() {
     <div className="flex flex-col h-full" style={{ background: '#FFFFFF' }}>
       {/* Header */}
       <div style={{ padding: '20px 28px 16px', borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>Ideas Analytics</h1>
-            <p style={{ fontSize: '13px', color: '#64748B', margin: '4px 0 0' }}>Comprehensive insights across the ideation pipeline</p>
-          </div>
-          <button onClick={() => toast.info('Export will be available in the next release.')} style={{ background: '#FFFFFF', color: '#334155', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Download size={14} /> Export
-          </button>
+        <div>
+          <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>Ideas Analytics</h1>
+          <p style={{ fontSize: '13px', color: '#64748B', margin: '4px 0 0' }}>Comprehensive insights across the ideation pipeline</p>
         </div>
       </div>
 
@@ -101,26 +112,32 @@ export default function IdeasAnalyticsPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
           <StatCard label="Total Ideas" value={String(stats.total)} subtitle="in backlog pipeline" color="#0F172A" />
           <StatCard label="Conversion Rate" value={`${conversionRate}%`} subtitle={`${convertedCount} converted to initiatives`} color="#11853D" />
-          <StatCard label="Avg Time to Convert" value="18d" subtitle="from created to converted" color="#0F172A" />
+          <StatCard
+            label="Avg Time to Convert"
+            value={avgTimeToConvert !== null ? `${avgTimeToConvert}d` : '—'}
+            subtitle={avgTimeToConvert !== null ? 'from created to converted' : 'no conversions yet'}
+            color="#0F172A"
+          />
           <StatCard label="Pending Conversion" value={String(pendingConversion)} subtitle="approved, awaiting conversion" color="#2563EB" />
         </div>
 
-        {/* Row 1: Status Funnel + Quarter Distribution */}
+        {/* Row 1: Conversion Funnel + Quarter Distribution */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
           <div style={{ background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '20px' }}>
             <div style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', marginBottom: '16px', fontFamily: "'Sora', sans-serif" }}>Conversion Funnel</div>
-            {stats.byStatus.map(s => {
+            {funnelData.map(s => {
               const label = s.status === 'Converted to Initiative' ? 'Converted' : s.status;
-              const isConverted = s.status === 'Converted to Initiative';
+              const isConv = s.status === 'Converted to Initiative';
               return (
                 <div key={s.status} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <span style={{ width: '100px', fontSize: '12px', fontWeight: isConverted ? 700 : 600, color: '#334155', flexShrink: 0 }}>{label}</span>
+                  <span style={{ width: '100px', fontSize: '12px', fontWeight: isConv ? 700 : 600, color: '#334155', flexShrink: 0 }}>{label}</span>
                   <div style={{ flex: 1, height: '28px', background: '#F4F4F5', borderRadius: '4px', overflow: 'hidden' }}>
                     <div style={{
-                      width: `${Math.max((s.count / maxStatus) * 100, s.count > 0 ? 8 : 0)}%`, height: '100%',
+                      width: `${Math.max((s.count / maxFunnel) * 100, s.count > 0 ? 8 : 0)}%`, height: '100%',
                       background: STATUS_BAR_COLORS[s.status] || '#DFE1E6', borderRadius: '4px',
                       display: 'flex', alignItems: 'center', paddingLeft: '8px',
-                      color: STATUS_TEXT_COLORS[s.status] || '#253858', fontSize: '12px', fontWeight: 700, minWidth: s.count > 0 ? '32px' : undefined,
+                      color: STATUS_TEXT_COLORS[s.status] || '#253858', fontSize: '12px', fontWeight: 700,
+                      minWidth: s.count > 0 ? '32px' : undefined,
                     }}>{s.count}</div>
                   </div>
                 </div>
