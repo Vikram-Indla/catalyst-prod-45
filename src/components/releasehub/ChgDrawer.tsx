@@ -62,7 +62,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
               <div className="flex items-center gap-2">
                 <span className="text-[16px] font-black text-[#2563EB]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                 <RiskBadge risk={mapRisk(c.risk_level)} />
-                <SourceBadge source={c.source === 'servicenow' ? 'catalyst' : c.source} />
+                <SourceBadge source={c.source} />
               </div>
               <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
             </div>
