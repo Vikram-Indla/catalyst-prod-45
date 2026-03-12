@@ -16,6 +16,8 @@ import { SeverityChip } from './components/SeverityChip';
 import { PriorityChip } from './components/PriorityChip';
 import { NewIncidentModal } from './components/NewIncidentModal';
 import { formatDistanceToNow } from 'date-fns';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 export default function IncidentListPage() {
   const navigate = useNavigate();
