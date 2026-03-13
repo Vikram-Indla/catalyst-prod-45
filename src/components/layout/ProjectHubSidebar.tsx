@@ -72,6 +72,9 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
   const { pathname } = useLocation();
   const projectKey = extractProjectKey(pathname);
 
+  // Preload page chunks as soon as ProjectHub sidebar renders
+  preloadProjectHubChunks();
+
   // If inside a project context, show project-specific nav with sections
   if (projectKey) {
     const base = `/project-hub/${projectKey}`;
