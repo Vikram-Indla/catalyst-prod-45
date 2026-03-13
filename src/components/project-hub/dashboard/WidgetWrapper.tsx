@@ -1,11 +1,12 @@
 /**
  * WidgetWrapper — V12 Hybrid Precision widget chrome
- * Header: #F1F5F9 sunken, 0.75px border
- * Body: #FFFFFF, 14px padding (or 0 for flush tables)
+ * Header: var(--cp-bg-sunken) #F1F5F9, 0.75px border
+ * Body: var(--cp-bg-page) #FFFFFF, 14px padding (or 0 for flush)
  * Footer: 0.75px top border, link styling
+ * Includes per-widget error boundary.
  */
 import { ChevronDown } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { Component, type ReactNode, type ErrorInfo } from 'react';
 
 interface WidgetWrapperProps {
   title: string;
@@ -18,6 +19,39 @@ interface WidgetWrapperProps {
   children: ReactNode;
   span?: 1 | 2 | 3;
   flushBody?: boolean;
+}
+
+// Error boundary for individual widgets
+class WidgetErrorBoundary extends Component<
+  { title: string; children: ReactNode },
+  { hasError: boolean; error: string }
+> {
+  constructor(props: { title: string; children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: '' };
+  }
+  static getDerivedStateFromError(err: Error) {
+    return { hasError: true, error: err.message };
+  }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error(`Widget "${this.props.title}" error:`, error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center py-6 text-center" style={{ padding: 14 }}>
+          <div style={{ fontSize: 28, color: 'var(--cp-text-muted)', marginBottom: 8 }}>⚠</div>
+          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-secondary)' }}>
+            Widget error
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', maxWidth: 260, marginTop: 4 }}>
+            {this.state.error || 'Something went wrong loading this widget.'}
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 export default function WidgetWrapper({
@@ -63,7 +97,7 @@ export default function WidgetWrapper({
               fontSize: 13,
               fontWeight: 650,
               color: 'var(--cp-text-primary)',
-              fontFamily: "var(--cp-font-heading)",
+              fontFamily: 'var(--cp-font-heading)',
             }}
           >
             {title}
@@ -93,7 +127,9 @@ export default function WidgetWrapper({
       {/* Body */}
       {!collapsed && (
         <div className="flex-1" style={{ padding: flushBody ? 0 : 14, background: 'var(--cp-bg-page)' }}>
-          {children}
+          <WidgetErrorBoundary title={title}>
+            {children}
+          </WidgetErrorBoundary>
         </div>
       )}
 
