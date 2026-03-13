@@ -13,6 +13,7 @@
 @import './modules/task10/styles/task10.css';
 @import './styles/taskhub-responsive.css';
 @import './styles/strategy-tokens.css';
+@import './styles/theme-tokens.css';
 /* @import './styles/priority-lists.css'; */
 
 @tailwind base;
