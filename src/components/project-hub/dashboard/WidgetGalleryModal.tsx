@@ -1,6 +1,8 @@
 /**
  * WidgetGalleryModal — V12 Hybrid Precision widget gallery
+ * Escape key closes. Focus trapped inside.
  */
+import { useEffect, useRef, useCallback } from 'react';
 import { X, RotateCcw } from 'lucide-react';
 import { WIDGET_REGISTRY, WIDGET_GROUPS } from './widget-registry';
 
@@ -19,14 +21,35 @@ export default function WidgetGalleryModal({
   onToggleVisibility,
   onReset,
 }: WidgetGalleryModalProps) {
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Escape key
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') onClose();
+  }, [onClose]);
+
+  useEffect(() => {
+    if (!open) return;
+    document.addEventListener('keydown', handleKeyDown);
+    // Focus trap — focus the panel
+    panelRef.current?.focus();
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, handleKeyDown]);
+
   if (!open) return null;
 
   const visibilityMap = new Map(widgets.map(w => [w.id, w.visible]));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.4)' }}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: 'rgba(0,0,0,0.4)' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
       <div
-        className="relative flex flex-col"
+        ref={panelRef}
+        tabIndex={-1}
+        className="relative flex flex-col outline-none"
         style={{
           width: 480,
           maxHeight: '80vh',
@@ -86,8 +109,9 @@ export default function WidgetGalleryModal({
                         type="checkbox"
                         checked={isVisible}
                         onChange={() => onToggleVisibility(widget.id)}
-                        className="accent-blue-600"
-                        style={{ width: 14, height: 14 }}
+                        style={{
+                          width: 14, height: 14, accentColor: 'var(--cp-primary-60)',
+                        }}
                       />
                       <div className="min-w-0">
                         <div className="truncate" style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-primary)' }}>
