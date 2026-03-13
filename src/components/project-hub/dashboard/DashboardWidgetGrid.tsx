@@ -1,5 +1,5 @@
 /**
- * DashboardWidgetGrid — 3-column grid container for dashboard widgets
+ * DashboardWidgetGrid — 3-column grid, 16px gap
  * Handles widget visibility, ordering, and collapse state persistence
  */
 import { useMemo, useEffect, useRef } from 'react';
@@ -75,18 +75,15 @@ export function useDashboardWidgetConfig(projectId: string) {
       if (!userId) return;
       const { error } = await (supabase as any)
         .from('dashboard_widget_config')
-        .upsert(
-          {
-            project_id: projectId,
-            user_id: userId,
-            widget_id: updates.widget_id,
-            visible: updates.visible ?? true,
-            position: updates.position ?? 0,
-            collapsed: updates.collapsed ?? false,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'project_id,user_id,widget_id' }
-        );
+        .upsert({
+          project_id: projectId,
+          user_id: userId,
+          widget_id: updates.widget_id,
+          visible: updates.visible ?? true,
+          position: updates.position ?? 0,
+          collapsed: updates.collapsed ?? false,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'project_id,user_id,widget_id' });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -116,7 +113,6 @@ export function useDashboardWidgetConfig(projectId: string) {
     },
   });
 
-  // Merge registry defaults with user config
   const widgets = useMemo(() => {
     const configMap = new Map((configs ?? []).map(c => [c.widget_id, c]));
     return WIDGET_REGISTRY.map(def => {
@@ -165,7 +161,7 @@ export function useDashboardWidgetConfig(projectId: string) {
   };
 }
 
-// Grid layout: defines which row each widget sits in and its span
+// Fixed grid layout — 3 columns, 16px gap
 const GRID_LAYOUT: { widgetIds: string[]; spans: number[] }[] = [
   { widgetIds: ['milestones', 'release-health'], spans: [2, 1] },
   { widgetIds: ['items-by-status', 'overdue', 'on-hold'], spans: [1, 1, 1] },
@@ -180,7 +176,7 @@ export default function DashboardWidgetGrid({ projectId, projectKey }: Dashboard
   const widgetMap = useMemo(() => new Map(widgets.map(w => [w.id, w])), [widgets]);
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col" style={{ gap: 16 }}>
       {GRID_LAYOUT.map((row, rowIdx) => {
         const visibleInRow = row.widgetIds.filter(id => widgetMap.get(id)?.visible);
         if (visibleInRow.length === 0) return null;
@@ -188,8 +184,7 @@ export default function DashboardWidgetGrid({ projectId, projectKey }: Dashboard
         return (
           <div
             key={rowIdx}
-            className="grid gap-2.5"
-            style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}
           >
             {row.widgetIds.map((widgetId, colIdx) => {
               const w = widgetMap.get(widgetId);

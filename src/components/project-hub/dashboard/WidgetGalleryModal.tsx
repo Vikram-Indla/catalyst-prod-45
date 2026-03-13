@@ -1,5 +1,5 @@
 /**
- * WidgetGalleryModal — Add/remove widgets from dashboard
+ * WidgetGalleryModal — V12 Hybrid Precision widget gallery
  */
 import { X, RotateCcw } from 'lucide-react';
 import { WIDGET_REGISTRY, WIDGET_GROUPS } from './widget-registry';
@@ -30,19 +30,19 @@ export default function WidgetGalleryModal({
         style={{
           width: 480,
           maxHeight: '80vh',
-          background: 'var(--cp-float)',
-          border: '1px solid var(--cp-bd)',
-          borderRadius: 10,
-          boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+          background: 'var(--cp-bg-page)',
+          border: '0.75px solid var(--cp-border-default)',
+          borderRadius: 'var(--cp-radius-lg)',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.18)',
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3.5" style={{ borderBottom: '1px solid var(--cp-bd)' }}>
+        <div className="flex items-center justify-between px-5 py-3.5" style={{ borderBottom: '0.75px solid var(--cp-border-default)' }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--cp-t1)', fontFamily: "'Sora', sans-serif" }}>
+            <div style={{ fontSize: 15, fontWeight: 650, color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-heading)' }}>
               Widget Gallery
             </div>
-            <div style={{ fontSize: 11, color: 'var(--cp-t3)', marginTop: 2 }}>
+            <div style={{ fontSize: 11, color: 'var(--cp-text-tertiary)', marginTop: 2 }}>
               {WIDGET_REGISTRY.length} widgets available
             </div>
           </div>
@@ -50,11 +50,11 @@ export default function WidgetGalleryModal({
             onClick={onClose}
             className="flex items-center justify-center"
             style={{
-              width: 28, height: 28, borderRadius: 6,
-              border: '1px solid var(--cp-bd)', background: 'transparent', cursor: 'pointer',
+              width: 28, height: 28, borderRadius: 'var(--cp-radius-default)',
+              border: '0.75px solid var(--cp-border-default)', background: 'transparent', cursor: 'pointer',
             }}
           >
-            <X size={14} style={{ color: 'var(--cp-t3)' }} />
+            <X size={14} style={{ color: 'var(--cp-text-tertiary)' }} />
           </button>
         </div>
 
@@ -63,8 +63,8 @@ export default function WidgetGalleryModal({
           {WIDGET_GROUPS.map(group => (
             <div key={group.key}>
               <div
-                className="uppercase tracking-wider mb-2"
-                style={{ fontSize: 10, fontWeight: 700, color: 'var(--cp-t3)', letterSpacing: '0.06em' }}
+                className="uppercase mb-2"
+                style={{ fontSize: 10, fontWeight: 700, color: 'var(--cp-text-tertiary)', letterSpacing: '0.06em' }}
               >
                 {group.label}
               </div>
@@ -74,25 +74,27 @@ export default function WidgetGalleryModal({
                   return (
                     <label
                       key={widget.id}
-                      className="flex items-center gap-2.5 rounded-md px-3 py-2 cursor-pointer transition-colors"
+                      className="flex items-center gap-2.5 px-3 py-2 cursor-pointer"
                       style={{
-                        border: '1px solid var(--cp-bd)',
-                        background: isVisible ? 'var(--cp-blue-wash)' : 'transparent',
+                        borderRadius: 'var(--cp-radius-default)',
+                        border: `0.75px solid ${isVisible ? 'var(--cp-primary-60)' : 'var(--cp-border-default)'}`,
+                        background: isVisible ? 'var(--cp-interact-selected)' : 'transparent',
+                        transition: 'all 120ms ease',
                       }}
                     >
                       <input
                         type="checkbox"
                         checked={isVisible}
                         onChange={() => onToggleVisibility(widget.id)}
-                        className="accent-blue-500"
+                        className="accent-blue-600"
                         style={{ width: 14, height: 14 }}
                       />
                       <div className="min-w-0">
-                        <div className="truncate" style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-t1)' }}>
+                        <div className="truncate" style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-primary)' }}>
                           {widget.title}
                         </div>
                         {widget.subtitle && (
-                          <div className="truncate" style={{ fontSize: 10, color: 'var(--cp-t3)' }}>
+                          <div className="truncate" style={{ fontSize: 10, color: 'var(--cp-text-tertiary)' }}>
                             {widget.subtitle}
                           </div>
                         )}
@@ -106,12 +108,12 @@ export default function WidgetGalleryModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid var(--cp-bd)' }}>
+        <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '0.75px solid var(--cp-border-default)' }}>
           <button
             onClick={onReset}
             className="flex items-center gap-1.5"
             style={{
-              fontSize: 12, fontWeight: 600, color: 'var(--cp-err-text)',
+              fontSize: 12, fontWeight: 600, color: 'var(--cp-danger-60)',
               background: 'transparent', border: 'none', cursor: 'pointer',
             }}
           >
@@ -120,10 +122,11 @@ export default function WidgetGalleryModal({
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-md"
+            className="px-4 py-1.5"
             style={{
-              fontSize: 12, fontWeight: 600, color: '#FFFFFF',
-              background: 'var(--cp-blue)', border: 'none', cursor: 'pointer',
+              fontSize: 12, fontWeight: 600, color: 'var(--cp-text-inverse)',
+              background: 'var(--cp-primary-60)', border: 'none', cursor: 'pointer',
+              borderRadius: 'var(--cp-radius-default)',
             }}
           >
             Done

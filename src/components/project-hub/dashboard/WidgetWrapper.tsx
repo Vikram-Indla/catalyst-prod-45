@@ -1,7 +1,10 @@
 /**
- * WidgetWrapper — Standard widget chrome with collapsible header/body/footer
+ * WidgetWrapper — V12 Hybrid Precision widget chrome
+ * Header: #F1F5F9 sunken, 0.75px border
+ * Body: #FFFFFF, 14px padding (or 0 for flush tables)
+ * Footer: 0.75px top border, link styling
  */
-import { ChevronDown, MoreVertical } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 interface WidgetWrapperProps {
@@ -14,6 +17,7 @@ interface WidgetWrapperProps {
   footer?: ReactNode;
   children: ReactNode;
   span?: 1 | 2 | 3;
+  flushBody?: boolean;
 }
 
 export default function WidgetWrapper({
@@ -26,6 +30,7 @@ export default function WidgetWrapper({
   footer,
   children,
   span = 1,
+  flushBody = false,
 }: WidgetWrapperProps) {
   return (
     <div
@@ -34,18 +39,19 @@ export default function WidgetWrapper({
       className="overflow-hidden flex flex-col"
       style={{
         gridColumn: `span ${span}`,
-        background: 'var(--cp-bg)',
-        border: '1px solid var(--cp-bd)',
-        borderRadius: 8,
+        background: 'var(--cp-bg-page)',
+        border: '0.75px solid var(--cp-border-default)',
+        borderRadius: 'var(--cp-radius-default)',
       }}
     >
       {/* Header */}
       <button
         onClick={onToggleCollapse}
-        className="w-full flex items-center justify-between gap-2 px-3.5 py-2 cursor-pointer border-0 text-left"
+        className="w-full flex items-center justify-between gap-2 cursor-pointer border-0 text-left"
         style={{
+          padding: '10px 14px',
           background: 'var(--cp-bg-sunken)',
-          borderBottom: collapsed ? 'none' : '0.75px solid var(--cp-bd)',
+          borderBottom: collapsed ? 'none' : '0.75px solid var(--cp-border-default)',
           minHeight: 38,
         }}
       >
@@ -55,10 +61,9 @@ export default function WidgetWrapper({
             className="truncate"
             style={{
               fontSize: 13,
-              fontWeight: 700,
-              color: 'var(--cp-t1)',
-              fontFamily: "'Sora', sans-serif",
-              letterSpacing: '-0.01em',
+              fontWeight: 650,
+              color: 'var(--cp-text-primary)',
+              fontFamily: "var(--cp-font-heading)",
             }}
           >
             {title}
@@ -66,18 +71,18 @@ export default function WidgetWrapper({
           {subtitle && (
             <span
               className="hidden sm:inline truncate"
-              style={{ fontSize: 11, color: 'var(--cp-t3)', fontWeight: 500 }}
+              style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', fontFamily: 'var(--cp-font-body)' }}
             >
               · {subtitle}
             </span>
           )}
-          {headerBadges}
         </div>
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
+          {headerBadges}
           <ChevronDown
             size={14}
             style={{
-              color: 'var(--cp-t3)',
+              color: 'var(--cp-text-tertiary)',
               transition: 'transform 200ms ease',
               transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
             }}
@@ -87,7 +92,7 @@ export default function WidgetWrapper({
 
       {/* Body */}
       {!collapsed && (
-        <div className="flex-1" style={{ padding: 14, background: 'var(--cp-bg)' }}>
+        <div className="flex-1" style={{ padding: flushBody ? 0 : 14, background: 'var(--cp-bg-page)' }}>
           {children}
         </div>
       )}
@@ -96,9 +101,9 @@ export default function WidgetWrapper({
       {!collapsed && footer && (
         <div
           style={{
-            borderTop: '0.75px solid var(--cp-bd)',
-            padding: '6px 14px',
-            background: 'var(--cp-bg)',
+            borderTop: '0.75px solid var(--cp-border-subtle)',
+            padding: '8px 14px',
+            background: 'var(--cp-bg-page)',
           }}
         >
           {footer}
