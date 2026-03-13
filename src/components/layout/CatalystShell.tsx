@@ -333,7 +333,7 @@ function CatalystShellContent() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-surface-1 text-text-primary" onClickCapture={handleInternalLinkClickCapture}>
+    <div className="h-screen flex flex-col text-[var(--cp-t1)]" style={{ background: 'var(--cp-bg)' }} onClickCapture={handleInternalLinkClickCapture}>
       {/* Global Header - Catalyst Native */}
       <div data-catalyst-header>
         <Suspense fallback={<div className="h-12 bg-surface-1 border-b border-border-default" />}>
