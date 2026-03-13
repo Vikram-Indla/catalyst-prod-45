@@ -27,6 +27,17 @@ import {
 import { useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
+// Eagerly preload ProjectHub page chunks when this sidebar mounts
+// so clicking "All Projects" or "Resource 360™" is instant
+const preloaded = { done: false };
+function preloadProjectHubChunks() {
+  if (preloaded.done) return;
+  preloaded.done = true;
+  import('../../pages/projecthub/AllProjectsPage').catch(() => { preloaded.done = false; });
+  import('../../pages/ResourceListingPage').catch(() => { preloaded.done = false; });
+}
+
+
 interface ProjectHubSidebarProps {
   expanded: boolean;
   onToggle: () => void;
@@ -60,6 +71,9 @@ function extractProjectKey(pathname: string): string | undefined {
 export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubSidebarProps) {
   const { pathname } = useLocation();
   const projectKey = extractProjectKey(pathname);
+
+  // Preload page chunks as soon as ProjectHub sidebar renders
+  preloadProjectHubChunks();
 
   // If inside a project context, show project-specific nav with sections
   if (projectKey) {
