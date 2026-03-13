@@ -98,8 +98,8 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
               <div style={{ width: 110, flexShrink: 0, ...COL_HEADER }}>KEY</div>
               <div style={{ flex: 1, minWidth: 0, ...COL_HEADER }}>SUMMARY</div>
               <div style={{ width: 138, flexShrink: 0, ...COL_HEADER }}>STATUS</div>
-              <div style={{ width: 210, flexShrink: 0, ...COL_HEADER }}>PARENT</div>
-              <div style={{ width: 148, flexShrink: 0, ...COL_HEADER }}>ASSIGNEE</div>
+              <div style={{ width: 240, flexShrink: 0, ...COL_HEADER }}>PARENT</div>
+              <div style={{ width: 160, flexShrink: 0, ...COL_HEADER }}>ASSIGNEE</div>
               <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>CREATED</div>
               <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>UPDATED</div>
               <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>DUE DATE</div>
@@ -145,7 +145,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                         {sc && ls && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>{sc.label}</span>}
                       </div>
                       {/* PARENT */}
-                      <div style={{ width: 210, flexShrink: 0 }}>
+                      <div style={{ width: 240, flexShrink: 0, overflow: 'hidden' }}>
                         {story.feature?.epic ? (
                           <ParentEpicChip epicId={story.feature.epic.id} epicKey={story.feature.epic.epic_key} epicName={story.feature.epic.name} />
                         ) : (
@@ -153,7 +153,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                         )}
                       </div>
                       {/* ASSIGNEE — real name or italic Unassigned */}
-                      <div style={{ width: 148, flexShrink: 0, fontSize: 13, color: story.assignee_name ? '#0F172A' : '#94A3B8', fontStyle: story.assignee_name ? 'normal' : 'italic', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 160, flexShrink: 0, fontSize: 13, color: story.assignee_name ? '#0F172A' : '#94A3B8', fontStyle: story.assignee_name ? 'normal' : 'italic', display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
                         {avatarUrl ? (
                           <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
                         ) : (
