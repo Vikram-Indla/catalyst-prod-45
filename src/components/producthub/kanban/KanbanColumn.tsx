@@ -4,7 +4,6 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { MoreHorizontal, ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { KanbanCard } from './KanbanCard';
-import { WipIndicator } from './WipIndicator';
 import { QuickAddCard } from './QuickAddCard';
 import { SwimlaneHeader } from './SwimlaneHeader';
 
@@ -12,7 +11,6 @@ export interface ColumnConfig {
   key: InitiativeStatus;
   label: string;
   color: string;
-  wip: number | null;
 }
 
 export type SwimlaneField = 'none' | 'department' | 'assignee' | 'quarter' | 'priority';
@@ -56,6 +54,12 @@ function groupBySwimlane(items: Initiative[], swimlane: SwimlaneField): Record<s
   return groups;
 }
 
+function getCountStyle(count: number) {
+  if (count > 50) return { color: '#DC2626', background: '#FEF2F2' };
+  if (count > 10) return { color: '#D97706', background: '#FFFBEB' };
+  return { color: '#64748B', background: '#F1F5F9' };
+}
+
 export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   config,
   items,
@@ -71,38 +75,55 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   const [collapsedLanes, setCollapsedLanes] = useState<Record<string, boolean>>({});
   const [showMenu, setShowMenu] = useState(false);
 
-  const overWip = config.wip !== null && items.length >= config.wip;
-  const approachingWip = config.wip !== null && !overWip && items.length >= config.wip - 1;
-
   const grouped = useMemo(() => groupBySwimlane(items, swimlane), [items, swimlane]);
   const laneKeys = Object.keys(grouped).sort();
+  const countStyle = getCountStyle(items.length);
 
   const toggleLane = (key: string) =>
     setCollapsedLanes(prev => ({ ...prev, [key]: !prev[key] }));
 
   if (isCollapsed) {
     return (
-      <button onClick={onToggleCollapse} className="pk-column-collapsed" aria-label={`Expand ${config.label} column`}>
-        <span className="pk-column-dot" style={{ backgroundColor: config.color }} />
+      <button
+        onClick={onToggleCollapse}
+        className="pk-column-collapsed"
+        aria-label={`Expand ${config.label} column`}
+      >
+        <div style={{ width: '100%', height: 4, backgroundColor: config.color, borderRadius: '2px 2px 0 0', flexShrink: 0 }} />
         <span className="pk-column-collapsed-name">{config.label}</span>
         <span className="pk-column-collapsed-count">{items.length}</span>
-        <ChevronRight size={14} style={{ color: 'var(--pk-ink-muted)', marginTop: 8 }} />
+        <ChevronRight size={14} style={{ color: '#94A3B8', marginTop: 8 }} />
       </button>
     );
   }
 
-  const totalScore = items.reduce((sum, i) => sum + (i.computed_score ?? 0), 0);
-
   return (
     <div
-      className={`pk-column${isOver ? ' pk-column--over' : ''}${overWip ? ' pk-column--wip-over' : ''}${approachingWip ? ' pk-column--wip-approaching' : ''}`}
+      className={`pk-column${isOver ? ' pk-column--over' : ''}`}
       aria-label={`${config.label} column with ${items.length} items`}
     >
+      {/* 4px colour bar */}
+      <div style={{ width: '100%', height: 4, backgroundColor: config.color, flexShrink: 0 }} />
+
       {/* Header */}
       <div className="pk-column-header">
-        <span className="pk-column-dot" style={{ backgroundColor: config.color }} />
-        <span className="pk-column-name">{config.label}</span>
-        <WipIndicator count={items.length} limit={config.wip} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+          <span className="pk-column-name">{config.label}</span>
+          <span
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 11,
+              fontWeight: 700,
+              color: countStyle.color,
+              background: countStyle.background,
+              padding: '2px 6px',
+              borderRadius: 3,
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {items.length}
+          </span>
+        </div>
         <div className="pk-column-actions">
           <button onClick={onToggleCollapse} className="pk-column-action-btn" aria-label={`Collapse ${config.label}`}>
             <ChevronLeft size={14} />
@@ -115,10 +136,6 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
                 <div className="pk-dropdown" style={{ right: 0, left: 'auto' }}>
-                  <div style={{ padding: '6px 12px', fontSize: 10, color: 'var(--pk-ink-muted)', fontFamily: 'var(--pk-font-mono)' }}>
-                    Total Score: {totalScore.toFixed(1)}
-                  </div>
-                  <div className="pk-context-separator" />
                   <button onClick={() => { onToggleCollapse(); setShowMenu(false); }} className="pk-dropdown-item">
                     Collapse Column
                   </button>
@@ -129,11 +146,11 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
         </div>
       </div>
 
-      {/* Body */}
+      {/* Body — ALL cards, vertical scroll, NO pagination */}
       <div
         ref={setNodeRef}
         className="pk-column-body"
-        style={{ maxHeight: 'calc(100vh - 280px)' }}
+        style={{ maxHeight: 'calc(100vh - 260px)' }}
         role="listbox"
         aria-label={`${config.label} cards`}
       >
@@ -177,7 +194,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
 
         {items.length === 0 && (
           <div className="pk-empty">
-            <Inbox size={36} className="pk-empty-icon" />
+            <Inbox size={28} className="pk-empty-icon" />
             <p className="pk-empty-text">No initiatives</p>
             <p className="pk-empty-hint">Drag cards here or add new</p>
           </div>
