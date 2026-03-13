@@ -336,6 +336,15 @@
   border-collapse: collapse;
   font-family: var(--cp-font-body);
   font-size: 13px;
+  background-color: #FFFFFF;
+}
+
+/* Force pure white page background for product-backlog */
+[data-module="product-backlog"] {
+  background-color: #FFFFFF !important;
+}
+[data-module="product-backlog"] .flex-1 {
+  background-color: #FFFFFF !important;
 }
 .pb-table thead,
 .pb-table thead tr {

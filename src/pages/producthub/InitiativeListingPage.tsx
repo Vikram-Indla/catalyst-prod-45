@@ -418,7 +418,7 @@ export default function InitiativeListingPage() {
   }, [isNative, invalidateAll]);
 
   return (
-    <div data-module="product-backlog" className="flex flex-col h-full" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div data-module="product-backlog" className="flex flex-col h-full" style={{ fontFamily: "'Inter', system-ui, sans-serif", backgroundColor: '#FFFFFF' }}>
       {/* ── Page Header (For You pattern) ── */}
       <ProductHubPageHeader
         title="Product Backlog"

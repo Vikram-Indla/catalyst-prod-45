@@ -10,9 +10,9 @@ import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@
 const TYPE_ICON_MAP: Record<string, { Icon: LucideIcon; color: string }> = {
   business_request: { Icon: Lightbulb, color: '#B45309' },
   project: { Icon: FolderKanban, color: '#2563EB' },
-  enhancement: { Icon: Zap, color: '#0D9488' },
+  enhancement: { Icon: Zap, color: '#0EA5E9' },
   improvement: { Icon: Wrench, color: '#D97706' },
-  entity_integration: { Icon: Link, color: '#8B5CF6' },
+  entity_integration: { Icon: Link, color: '#64748B' },
 };
 /* ── Status Cell ── */
 export function StatusCell({ status }: { status: InitiativeStatus }) {
