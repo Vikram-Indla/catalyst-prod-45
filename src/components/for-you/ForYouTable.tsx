@@ -1,6 +1,5 @@
 /**
- * For You Work Items Table - MARAM V3.1 spec
- * Full columns: Key, Summary, Status, Project, Hub, Priority, Updated, Reported by
+ * For You Work Items Table - MARAM V3.1 spec · Theme-aware
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
@@ -30,28 +29,14 @@ const PRIORITY_LABELS: Record<number, string> = {
   1: 'Lowest', 2: 'Low', 3: 'Medium', 4: 'High',
 };
 
-// Design tokens
-const T = {
-  ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
-  inkMuted: '#71717A',
-  surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
-  border: '#E4E4E7',
-  primary: '#2563EB',
-  teal: '#0D9488', tealText: '#0A8277', tealBg: '#F0FDFA',
-  success: '#16A34A', successText: '#11853D', successBg: '#F0FDF4',
-  warning: '#D97706', warningText: '#AF6003', warningBg: '#FFFBEB',
-  danger: '#DC2626', dangerText: '#D92525', dangerBg: '#FEF2F2',
-  primaryBg: '#EFF6FF',
-};
-
-// Stronger hub colors — each hub has a DISTINCT color
+// Hub badges use semantic colors — these are non-themeable accent palette
 const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
   Project:  { bg: '#EFF6FF', color: '#1D4ED8', border: '#2563EB' },
   Product:  { bg: '#F5F3FF', color: '#6D28D9', border: '#7C3AED' },
   Task:     { bg: '#FFF7ED', color: '#C2410C', border: '#EA580C' },
   Incident: { bg: '#FEF2F2', color: '#B91C1C', border: '#DC2626' },
-  Release:  { bg: T.successBg, color: T.successText, border: T.success },
-  Test:     { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
+  Release:  { bg: 'var(--cp-ok-bg)', color: 'var(--cp-ok)', border: 'var(--cp-ok)' },
+  Test:     { bg: 'var(--cp-hover)', color: 'var(--cp-t3)', border: 'var(--cp-t3)' },
 };
 
 export function ForYouTable({ 
@@ -103,10 +88,10 @@ export function ForYouTable({
 
   if (groups.length === 0) {
     return (
-      <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: `1px solid ${T.border}`, borderRadius: 8 }}>
+      <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: '1px solid var(--cp-bd)', borderRadius: 8, background: 'var(--cp-bg)' }}>
         <span style={{ fontSize: 24, marginBottom: 12 }}>📋</span>
-        <p style={{ fontSize: 13, fontWeight: 600, color: T.ink, marginBottom: 4 }}>No work items found</p>
-        <p style={{ fontSize: 11, color: T.inkMuted }}>Try adjusting your filters or search</p>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-t1)', marginBottom: 4 }}>No work items found</p>
+        <p style={{ fontSize: 11, color: 'var(--cp-t3)' }}>Try adjusting your filters or search</p>
       </div>
     );
   }
@@ -115,20 +100,20 @@ export function ForYouTable({
 
   const thStyle: React.CSSProperties = {
     height: 32, padding: '0 12px',
-    background: T.surfaceSecondary, borderBottom: `1px solid ${T.border}`,
-    fontSize: 11, fontWeight: 600, color: T.inkMuted,
+    background: 'var(--cp-bg)', borderBottom: '1px solid var(--cp-bd)',
+    fontSize: 11, fontWeight: 600, color: 'var(--cp-t3)',
     textTransform: 'uppercase', letterSpacing: '0.06em',
     textAlign: 'left', whiteSpace: 'nowrap',
     position: 'sticky', top: 48, zIndex: 10,
   };
 
   return (
-    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none' }}>
+    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '1px solid var(--cp-bd)', borderRadius: 6, overflow: 'hidden' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
         <thead>
           <tr>
             <th style={{ ...thStyle, width: 36 }}>
-              <input type="checkbox" checked={isAllSelected} onChange={e => handleSelectAll(e.target.checked)} style={{ width: 16, height: 16, accentColor: T.primary, cursor: 'pointer' }} />
+              <input type="checkbox" checked={isAllSelected} onChange={e => handleSelectAll(e.target.checked)} style={{ width: 16, height: 16, accentColor: 'var(--cp-blue)', cursor: 'pointer' }} />
             </th>
             <th style={{ ...thStyle, width: 32 }} />
             <th style={{ ...thStyle, width: 140 }}>Key</th>
@@ -144,14 +129,14 @@ export function ForYouTable({
         <tbody>
           {groups.map(group => (
             <React.Fragment key={group}>
-              {/* Group header — bolder */}
+              {/* Group header — zone borders, no fill in dark mode */}
               <tr>
                 <td colSpan={10} style={{
                   height: 32, padding: '0 12px',
-                  background: '#F0F0F5',
-                  borderBottom: `1px solid ${T.border}`,
-                  borderTop: `1px solid ${T.border}`,
-                  fontSize: 11, fontWeight: 700, color: '#18181B',
+                  background: 'var(--cp-bg)',
+                  borderBottom: '1px solid var(--cp-bd-zone)',
+                  borderTop: '1px solid var(--cp-bd-zone)',
+                  fontSize: 11, fontWeight: 700, color: 'var(--cp-t2)',
                   textTransform: 'uppercase', letterSpacing: '0.08em',
                 }}>
                   {GROUP_LABELS[group]}
@@ -165,24 +150,22 @@ export function ForYouTable({
                 const isFocused = focusedIndex === currentRowIndex;
                 const hubCfg = HUB_CFG[item.hubLabel] || HUB_CFG.Task;
                 const priorityLabel = PRIORITY_LABELS[item.priorityLevel] || `Priority ${item.priorityLevel}`;
-                // Zebra striping
-                const zebraBg = idx % 2 === 0 ? '#FFFFFF' : '#FAFAFA';
 
                 return (
                   <tr
                     key={item.id}
                     onClick={() => { setFocusedIndex(currentRowIndex); onRowClick(item.id); }}
                     style={{
-                      height: 40, borderBottom: `1px solid ${T.border}`, cursor: 'pointer',
-                      background: isSelected ? '#EFF6FF' : isFocused ? T.surfaceSecondary : zebraBg,
+                      height: 40, borderBottom: '1px solid var(--cp-bd-table)', cursor: 'pointer',
+                      background: isSelected ? 'var(--cp-blue-wash)' : isFocused ? 'var(--cp-hover)' : 'var(--cp-bg)',
                       transition: 'background .1s',
                     }}
-                    onMouseEnter={e => { if (!isSelected && !isFocused) e.currentTarget.style.background = T.surfaceSecondary; }}
-                    onMouseLeave={e => { if (!isSelected && !isFocused) e.currentTarget.style.background = zebraBg; }}
+                    onMouseEnter={e => { if (!isSelected && !isFocused) e.currentTarget.style.background = 'var(--cp-hover)'; }}
+                    onMouseLeave={e => { if (!isSelected && !isFocused) e.currentTarget.style.background = 'var(--cp-bg)'; }}
                   >
                     {/* Checkbox */}
                     <td style={{ padding: '0 12px', width: 36 }}>
-                      <input type="checkbox" checked={isSelected} onClick={e => e.stopPropagation()} onChange={e => handleSelectItem(item.id, e.target.checked)} style={{ width: 16, height: 16, accentColor: T.primary, cursor: 'pointer' }} />
+                      <input type="checkbox" checked={isSelected} onClick={e => e.stopPropagation()} onChange={e => handleSelectItem(item.id, e.target.checked)} style={{ width: 16, height: 16, accentColor: 'var(--cp-blue)', cursor: 'pointer' }} />
                     </td>
 
                     {/* Star */}
@@ -192,7 +175,7 @@ export function ForYouTable({
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4 }}
                         title={item.starred ? 'Unstar' : 'Star'}
                       >
-                        <Star size={14} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : T.border} strokeWidth={2} />
+                        <Star size={14} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : 'var(--cp-bd)'} strokeWidth={2} />
                       </button>
                     </td>
 
@@ -200,12 +183,12 @@ export function ForYouTable({
                     <td style={{ padding: '0 12px', width: 140 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <JiraIssueTypeIcon issueType={item.issueType} size={16} />
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary }}>{item.key}</span>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: 'var(--cp-blue-link)' }}>{item.key}</span>
                       </div>
                     </td>
 
                     {/* Summary */}
-                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: T.ink, maxWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: 'var(--cp-t1)', maxWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {item.summary}
                     </td>
 
@@ -214,29 +197,29 @@ export function ForYouTable({
                       <StatusLozenge status={item.status} />
                     </td>
 
-                    {/* Project — wider, with title tooltip */}
-                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: T.inkSecondary, width: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {/* Project */}
+                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)', width: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       <span title={item.project}>{item.project}</span>
                     </td>
 
-                    {/* Hub — distinct colors */}
+                    {/* Hub */}
                     <td style={{ padding: '0 12px', width: 95 }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
                         {item.hubLabel}
                       </span>
                     </td>
 
-                    {/* Priority — with tooltip */}
+                    {/* Priority */}
                     <td style={{ padding: '0 12px', width: 75 }} title={priorityLabel}>
                       <div style={{ display: 'flex', gap: 2 }}>
                         {[1,2,3,4].map(i => (
-                          <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: i <= item.priorityLevel ? T.inkMuted : T.border }} />
+                          <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: i <= item.priorityLevel ? 'var(--cp-t3)' : 'var(--cp-prg-bg)' }} />
                         ))}
                       </div>
                     </td>
 
                     {/* Updated */}
-                    <td style={{ padding: '0 12px', fontSize: 12, fontWeight: 500, color: T.inkTertiary, width: 100 }}>
+                    <td style={{ padding: '0 12px', fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', width: 100 }}>
                       {item.updatedAt}
                     </td>
 
@@ -247,14 +230,15 @@ export function ForYouTable({
                           const reporterName = item.reporter || item.assignee.name;
                           const avatarUrl = nameAvatarMap.get(reporterName.toLowerCase());
                           const ini = reporterName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
-                          const clr = [T.primary, T.teal, '#0284C7', T.danger, '#DB2777'][ini.charCodeAt(0) % 5];
+                          // Non-semantic avatar colors — preserved in both modes
+                          const clr = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'][ini.charCodeAt(0) % 5];
                           return avatarUrl ? (
-                            <img src={avatarUrl} alt={reporterName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: `1px solid ${T.border}` }} />
+                            <img src={avatarUrl} alt={reporterName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-bd)' }} />
                           ) : (
                             <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                           );
                         })()}
-                        <span style={{ fontSize: 13, fontWeight: 500, color: T.inkSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reporter || item.assignee.name}</span>
+                        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reporter || item.assignee.name}</span>
                       </div>
                     </td>
                   </tr>

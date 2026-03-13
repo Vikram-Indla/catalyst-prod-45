@@ -1,6 +1,6 @@
 /**
  * For You Page Header - Title + subtitle + Intelligence button
- * MARAM V3.1 · fy- ring-fenced
+ * MARAM V3.1 · fy- ring-fenced · Theme-aware
  */
 
 import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
@@ -44,11 +44,11 @@ export function ForYouHeader() {
         <div>
           <h1 style={{
             fontFamily: "'Sora', system-ui", fontSize: 22, fontWeight: 700,
-            color: '#09090B', letterSpacing: '-0.025em', margin: 0,
+            color: 'var(--cp-t1)', letterSpacing: '-0.025em', margin: 0,
           }}>
             For You
           </h1>
-          <p style={{ fontSize: 13, color: '#71717A', marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: 'var(--cp-t3)', marginTop: 2 }}>
             Your work across all projects and hubs
           </p>
         </div>
@@ -59,7 +59,7 @@ export function ForYouHeader() {
             onClick={() => setShowDeptPicker(v => !v)}
             className="fy-intelligence-btn"
             style={{
-              background: '#2563EB',
+              background: 'var(--cp-blue)',
               color: '#FFFFFF', border: 'none',
               borderRadius: 20, padding: '0 16px', height: 32,
               fontSize: 12, fontWeight: 600, letterSpacing: '0.3px',
@@ -68,7 +68,7 @@ export function ForYouHeader() {
               fontFamily: "'Inter', system-ui, sans-serif",
               transition: 'all 200ms ease',
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px rgba(37,99,235,0.15)'; }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px var(--cp-blue-wash)'; }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = ''; }}
           >
             <Zap size={13} strokeWidth={2.2} />
@@ -78,10 +78,10 @@ export function ForYouHeader() {
           {showDeptPicker && (
             <div style={{
               position: 'absolute', top: '100%', right: 0, marginTop: 6,
-              background: '#FFFFFF', border: '1px solid #E4E4E7', borderRadius: 10,
+              background: 'var(--cp-float)', border: '1px solid var(--cp-bd)', borderRadius: 10,
               boxShadow: '0 8px 30px rgba(0,0,0,0.12)', minWidth: 220, padding: 6, zIndex: 50,
             }}>
-              <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 600, color: '#71717A', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 600, color: 'var(--cp-t3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Select Department
               </div>
               {DEPT_OPTIONS.map(dept => (
@@ -92,12 +92,12 @@ export function ForYouHeader() {
                     display: 'flex', alignItems: 'center', gap: 10, width: '100%',
                     padding: '9px 12px', border: 'none', background: 'transparent',
                     borderRadius: 7, cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                    color: '#18181B', transition: 'background 100ms', textAlign: 'left',
+                    color: 'var(--cp-t1)', transition: 'background 100ms', textAlign: 'left',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#F4F4F5'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-hover)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: DEPT_COLORS[dept] || '#71717A', flexShrink: 0 }} />
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: DEPT_COLORS[dept] || 'var(--cp-t3)', flexShrink: 0 }} />
                   {dept}
                 </button>
               ))}

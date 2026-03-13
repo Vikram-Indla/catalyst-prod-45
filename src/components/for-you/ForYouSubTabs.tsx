@@ -1,5 +1,5 @@
 /**
- * For You Sub Tabs - Worked on, Assigned, Starred (CATALYST10 v3 spec)
+ * For You Sub Tabs - Worked on, Assigned, Starred · Theme-aware
  */
 
 import React from 'react';
@@ -34,25 +34,38 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
             role="tab"
             aria-selected={isActive}
             onClick={() => onTabChange(tab.id)}
-            className={cn(
-              "inline-flex items-center gap-2 px-4 py-2 rounded-[20px] text-[13px]",
-              "transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(217,91%,60%)]",
-              isActive
-                ? "font-semibold bg-[#2563EB] text-white shadow-sm"
-                : "font-medium text-[hsl(215,25%,27%)] border border-[hsl(214,32%,91%)] hover:bg-[hsl(210,40%,96%)]"
-            )}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 16px',
+              borderRadius: 20,
+              fontSize: 13,
+              transition: 'all 200ms cubic-bezier(0.4,0,0.2,1)',
+              cursor: 'pointer',
+              border: isActive ? 'none' : '1px solid var(--cp-bd)',
+              background: isActive ? 'var(--cp-blue)' : 'transparent',
+              color: isActive ? '#FFFFFF' : 'var(--cp-t2)',
+              fontWeight: isActive ? 600 : 500,
+              outline: 'none',
+            }}
           >
             {tab.label}
-            {/* Count badge */}
             <span
-              className={cn(
-                "min-w-[22px] h-[18px] px-1.5 rounded-[10px] text-[11px] font-bold tabular-nums",
-                "inline-flex items-center justify-center",
-                isActive
-                  ? "bg-white text-[hsl(217,91%,60%)]"
-                  : "bg-[hsl(210,40%,96%)] text-[hsl(215,16%,47%)]"
-              )}
+              style={{
+                minWidth: 22,
+                height: 18,
+                padding: '0 6px',
+                borderRadius: 10,
+                fontSize: 11,
+                fontWeight: 700,
+                fontVariantNumeric: 'tabular-nums',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: isActive ? 'rgba(255,255,255,0.9)' : 'var(--cp-hover)',
+                color: isActive ? 'var(--cp-blue-text)' : 'var(--cp-t3)',
+              }}
             >
               {tab.count > 99 ? '99+' : tab.count}
             </span>
