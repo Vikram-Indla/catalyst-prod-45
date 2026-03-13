@@ -667,7 +667,7 @@ export function CatalystHeader() {
                       <menuItem.icon style={{ width: '16px', height: '16px' }} />
                       <span>{menuItem.label}</span>
                     </button>
-                  )))}
+                  ))}
                 </div>
               )}
             </div>
