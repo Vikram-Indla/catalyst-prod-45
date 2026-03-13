@@ -433,11 +433,12 @@ function renderMenuItem(
         borderRadius: '6px',
       }}
       onMouseEnter={(e) => {
+        prefetchRoute(item.path);
         if (!active) {
           e.currentTarget.style.background = 'var(--sidebar-item-hover-bg, #F1F5F9)';
           e.currentTarget.style.color = '#0F172A';
         }
-      }}
+      }
       onMouseLeave={(e) => {
         e.currentTarget.style.background = active ? 'var(--sidebar-item-active-bg, #EFF6FF)' : 'transparent';
         e.currentTarget.style.color = active ? 'var(--sidebar-item-active-text, #2563EB)' : 'var(--sidebar-item-text, #334155)';
