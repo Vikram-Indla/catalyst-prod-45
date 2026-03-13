@@ -41,7 +41,36 @@ export function useDashboardWidgetConfig(projectId: string) {
     staleTime: 60000,
   });
 
-  const upsertMutation = useMutation({
+  // Auto-initialize defaults when no config exists
+  const initRef = useRef(false);
+  const initMutation = useMutation({
+    mutationFn: async () => {
+      if (!userId) return;
+      const rows = WIDGET_REGISTRY.map(def => ({
+        project_id: projectId,
+        user_id: userId,
+        widget_id: def.id,
+        visible: true,
+        position: def.defaultPosition,
+        collapsed: false,
+      }));
+      await (supabase as any)
+        .from('dashboard_widget_config')
+        .upsert(rows, { onConflict: 'project_id,user_id,widget_id' });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dashboard-widget-config', projectId, userId] });
+    },
+  });
+
+  useEffect(() => {
+    if (!isLoading && configs && configs.length === 0 && userId && !initRef.current) {
+      initRef.current = true;
+      initMutation.mutate();
+    }
+  }, [isLoading, configs, userId]);
+
+
     mutationFn: async (updates: Partial<WidgetConfig> & { widget_id: string }) => {
       if (!userId) return;
       const { error } = await (supabase as any)
