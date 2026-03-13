@@ -70,7 +70,7 @@ export function useDashboardWidgetConfig(projectId: string) {
     }
   }, [isLoading, configs, userId]);
 
-
+  const upsertMutation = useMutation({
     mutationFn: async (updates: Partial<WidgetConfig> & { widget_id: string }) => {
       if (!userId) return;
       const { error } = await (supabase as any)
