@@ -29,12 +29,12 @@ const PRIORITY_LABELS: Record<number, string> = {
   1: 'Lowest', 2: 'Low', 3: 'Medium', 4: 'High',
 };
 
-// Hub badges use semantic colors — these are non-themeable accent palette
+// Hub badges — token-referenced for dark mode compatibility
 const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
-  Project:  { bg: '#EFF6FF', color: '#1D4ED8', border: '#2563EB' },
-  Product:  { bg: '#F5F3FF', color: '#6D28D9', border: '#7C3AED' },
-  Task:     { bg: '#FFF7ED', color: '#C2410C', border: '#EA580C' },
-  Incident: { bg: '#FEF2F2', color: '#B91C1C', border: '#DC2626' },
+  Project:  { bg: 'var(--cp-blue-wash)', color: 'var(--cp-blue-text)', border: 'var(--cp-blue)' },
+  Product:  { bg: 'var(--cp-blue-wash)', color: 'var(--cp-blue-text)', border: 'var(--cp-blue)' },
+  Task:     { bg: 'var(--cp-warn-bg)', color: 'var(--cp-warn)', border: 'var(--cp-warn)' },
+  Incident: { bg: 'var(--cp-err-bg)', color: 'var(--cp-err)', border: 'var(--cp-err)' },
   Release:  { bg: 'var(--cp-ok-bg)', color: 'var(--cp-ok)', border: 'var(--cp-ok)' },
   Test:     { bg: 'var(--cp-hover)', color: 'var(--cp-t3)', border: 'var(--cp-t3)' },
 };
