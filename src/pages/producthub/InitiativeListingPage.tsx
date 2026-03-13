@@ -66,10 +66,10 @@ const QUICK_FILTERS = [
 ];
 
 const TYPE_LEGEND = [
-  { key: 'project', label: 'Project', color: '#0D9488' },
-  { key: 'enhancement', label: 'Enhancement', color: '#2563EB' },
+  { key: 'project', label: 'Project', color: '#2563EB' },
+  { key: 'enhancement', label: 'Enhancement', color: '#0EA5E9' },
   { key: 'improvement', label: 'Improvement', color: '#D97706' },
-  { key: 'entity_integration', label: 'Entity Integration', color: '#7C3AED' },
+  { key: 'entity_integration', label: 'Entity Integration', color: '#64748B' },
 ];
 
 function loadColumns(): ColumnConfig[] {
