@@ -337,27 +337,31 @@
   font-family: var(--cp-font-body);
   font-size: 13px;
 }
+.pb-table thead,
+.pb-table thead tr {
+  background-color: #F1F5F9 !important;
+}
 .pb-table thead th {
   position: sticky;
   top: 0;
   z-index: 10;
   height: 32px;
   padding: 10px 12px;
-  background: var(--cp-bg-sunken);
+  background-color: #F1F5F9 !important;
   font-size: 11px;
-  font-weight: 650;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--cp-text-tertiary);
+  color: #64748B;
   text-align: start;
   white-space: nowrap;
-  border-bottom: 1.5px solid var(--cp-border-default);
+  border-bottom: 0.75px solid rgba(15, 23, 42, 0.12);
   cursor: pointer;
   user-select: none;
   transition: background var(--cp-duration-instant) var(--cp-easing-standard);
 }
 .pb-table thead th:hover {
-  background: var(--cp-interact-hover);
+  background-color: rgba(15, 23, 42, 0.06) !important;
 }
 /* V12: 36px rows, 0.75px dividers, rgba hover — PURE WHITE rows */
 .pb-table tbody,
