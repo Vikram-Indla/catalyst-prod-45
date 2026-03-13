@@ -2,7 +2,7 @@
  * DashboardWidgetGrid — 3-column grid container for dashboard widgets
  * Handles widget visibility, ordering, and collapse state persistence
  */
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
@@ -40,6 +40,35 @@ export function useDashboardWidgetConfig(projectId: string) {
     enabled: !!projectId && !!userId,
     staleTime: 60000,
   });
+
+  // Auto-initialize defaults when no config exists
+  const initRef = useRef(false);
+  const initMutation = useMutation({
+    mutationFn: async () => {
+      if (!userId) return;
+      const rows = WIDGET_REGISTRY.map(def => ({
+        project_id: projectId,
+        user_id: userId,
+        widget_id: def.id,
+        visible: true,
+        position: def.defaultPosition,
+        collapsed: false,
+      }));
+      await (supabase as any)
+        .from('dashboard_widget_config')
+        .upsert(rows, { onConflict: 'project_id,user_id,widget_id' });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dashboard-widget-config', projectId, userId] });
+    },
+  });
+
+  useEffect(() => {
+    if (!isLoading && configs && configs.length === 0 && userId && !initRef.current) {
+      initRef.current = true;
+      initMutation.mutate();
+    }
+  }, [isLoading, configs, userId]);
 
   const upsertMutation = useMutation({
     mutationFn: async (updates: Partial<WidgetConfig> & { widget_id: string }) => {
