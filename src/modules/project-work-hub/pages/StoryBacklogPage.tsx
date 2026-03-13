@@ -145,7 +145,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                         {sc && ls && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', background: ls.bg, color: ls.text }}>{sc.label}</span>}
                       </div>
                       {/* PARENT */}
-                      <div style={{ width: 210, flexShrink: 0 }}>
+                      <div style={{ width: 240, flexShrink: 0, overflow: 'hidden' }}>
                         {story.feature?.epic ? (
                           <ParentEpicChip epicId={story.feature.epic.id} epicKey={story.feature.epic.epic_key} epicName={story.feature.epic.name} />
                         ) : (
