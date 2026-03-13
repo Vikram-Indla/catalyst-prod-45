@@ -1,8 +1,7 @@
 /**
- * ProjectDashboard V4 — Overhauled widget-based dashboard
- * 11 configurable, collapsible widgets with persistence
+ * ProjectDashboard V4 — 11 widget dashboard with V12 Hybrid Precision tokens
  */
-import { useState, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,28 +35,36 @@ export default function ProjectDashboardPage() {
 
   const { widgets, visibleCount, toggleVisibility, resetToDefaults } = useDashboardWidgetConfig(projectId ?? 'none');
 
+  const btnStyle: React.CSSProperties = {
+    fontSize: 12, fontWeight: 600, color: 'var(--cp-text-secondary)',
+    background: 'transparent', border: '0.75px solid var(--cp-border-default)',
+    cursor: 'pointer', borderRadius: 'var(--cp-radius-default)',
+    display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
+    transition: 'all 120ms ease',
+  };
+
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif", background: 'var(--cp-bg)', minHeight: '100%' }}>
-      <div style={{ padding: '12px 16px' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-page)', minHeight: '100%' }}>
+      <div style={{ padding: '16px 20px' }}>
         {/* Breadcrumb */}
         <div className="flex items-center gap-1.5 mb-3">
           <span
             className="cursor-pointer hover:underline"
-            style={{ fontSize: 13, color: 'var(--cp-t3)', fontWeight: 500 }}
+            style={{ fontSize: 13, color: 'var(--cp-text-tertiary)', fontWeight: 500 }}
             onClick={() => navigate('/project-hub/projects')}
           >
             ProjectHub
           </span>
-          <ChevronRight size={12} style={{ color: 'var(--cp-t4)' }} />
-          <span style={{ fontSize: 13, color: 'var(--cp-t3)', fontWeight: 500 }}>{pKey}</span>
-          <ChevronRight size={12} style={{ color: 'var(--cp-t4)' }} />
-          <span style={{ fontSize: 13, color: 'var(--cp-t1)', fontWeight: 700 }}>Dashboard</span>
+          <ChevronRight size={12} style={{ color: 'var(--cp-text-muted)' }} />
+          <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary)', fontWeight: 500 }}>{pKey}</span>
+          <ChevronRight size={12} style={{ color: 'var(--cp-text-muted)' }} />
+          <span style={{ fontSize: 13, color: 'var(--cp-text-primary)', fontWeight: 650 }}>Dashboard</span>
         </div>
 
         {isLoading ? (
           <div className="space-y-4 animate-pulse">
             <div className="h-12 rounded-lg" style={{ background: 'var(--cp-bg-sunken)' }} />
-            <div className="grid grid-cols-3 gap-2.5">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="h-40 rounded-lg" style={{ background: 'var(--cp-bg-sunken)' }} />
               ))}
@@ -66,50 +73,25 @@ export default function ProjectDashboardPage() {
         ) : (
           <>
             {/* Management Bar */}
-            <div
-              className="flex items-center justify-between flex-wrap gap-3 mb-3 px-1"
-            >
+            <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
               <div>
-                <div style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-t1)', fontFamily: "'Sora', sans-serif" }}>
+                <div style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-heading)' }}>
                   Dashboard
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--cp-t3)', marginTop: 1 }}>
+                <div style={{ fontSize: 11, color: 'var(--cp-text-tertiary)', marginTop: 2 }}>
                   Showing {visibleCount} of 11 widgets
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setGalleryOpen(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors"
-                  style={{
-                    fontSize: 12, fontWeight: 600, color: 'var(--cp-t2)',
-                    background: 'transparent', border: '1px solid var(--cp-bd)',
-                    cursor: 'pointer',
-                  }}
-                >
+                <button onClick={() => setGalleryOpen(true)} style={btnStyle}>
                   <Plus size={13} />
                   Add Widget
                 </button>
-                <button
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors"
-                  style={{
-                    fontSize: 12, fontWeight: 600, color: 'var(--cp-t2)',
-                    background: 'transparent', border: '1px solid var(--cp-bd)',
-                    cursor: 'pointer',
-                  }}
-                >
+                <button style={btnStyle}>
                   <LayoutGrid size={13} />
                   Edit Layout
                 </button>
-                <button
-                  onClick={resetToDefaults}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors"
-                  style={{
-                    fontSize: 12, fontWeight: 600, color: 'var(--cp-t3)',
-                    background: 'transparent', border: '1px solid var(--cp-bd)',
-                    cursor: 'pointer',
-                  }}
-                >
+                <button onClick={resetToDefaults} style={{ ...btnStyle, color: 'var(--cp-text-tertiary)' }}>
                   <RotateCcw size={13} />
                   Reset
                 </button>
