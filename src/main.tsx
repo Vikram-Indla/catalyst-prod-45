@@ -2,6 +2,26 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 
+// Auto-reload on stale chunk errors (happens after new Vercel deployments)
+window.addEventListener('unhandledrejection', (event) => {
+  const msg = String(event.reason?.message || event.reason || '');
+  if (
+    msg.includes('Failed to fetch dynamically imported module') ||
+    msg.includes('Importing a module script failed') ||
+    msg.includes('Loading chunk') ||
+    msg.includes('ChunkLoadError')
+  ) {
+    const key = 'catalyst-chunk-reload';
+    const last = sessionStorage.getItem(key);
+    const now = Date.now();
+    if (!last || now - Number(last) > 10_000) {
+      sessionStorage.setItem(key, String(now));
+      window.location.reload();
+      return;
+    }
+  }
+});
+
 const el = document.getElementById("root");
 if (!el) throw new Error("Missing #root element");
 
