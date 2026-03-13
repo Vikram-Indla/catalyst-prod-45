@@ -59,9 +59,14 @@
     <!-- No-flash theme initialization - MUST run before React -->
     <script>
       (function() {
-        // Catalyst is light-mode only — always force light
-        document.documentElement.setAttribute('data-theme', 'light');
-        document.documentElement.classList.remove('dark');
+        var t = localStorage.getItem('catalyst-theme');
+        if (t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+          document.documentElement.classList.remove('dark');
+        }
       })();
     </script>
     

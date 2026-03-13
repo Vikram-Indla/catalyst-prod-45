@@ -1,21 +1,10 @@
 /**
- * For You Inline Filters — Rich dropdowns with hub dots, reporter avatars, searchable
- * FINAL spec · fy- ring-fenced
+ * For You Inline Filters — Theme-aware
  */
 
 import React, { useState, useRef, useEffect } from 'react';
 import { X, ChevronDown, Search, Check } from 'lucide-react';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
-
-// Design tokens
-const T = {
-  ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
-  inkMuted: '#71717A',
-  surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
-  border: '#E4E4E7',
-  primary: '#2563EB', primaryBg: '#EFF6FF',
-  dangerText: '#D92525',
-};
 
 const HUB_DOT_COLORS: Record<string, string> = {
   Project: '#2563EB',
@@ -88,11 +77,10 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
           height: 34, padding: '0 14px', borderRadius: 7,
           fontSize: 13, fontWeight: value ? 600 : 500,
           transition: 'all 0.15s',
-          border: value ? '1px solid #2563EB' : '1px solid hsl(214,32%,91%)',
-          background: value ? '#EFF6FF' : '#FFFFFF',
-          color: value ? '#2563EB' : T.inkSecondary,
+          border: value ? '1px solid var(--cp-blue)' : '1px solid var(--cp-bd)',
+          background: value ? 'var(--cp-blue-wash)' : 'var(--cp-bg)',
+          color: value ? 'var(--cp-blue-text)' : 'var(--cp-t2)',
           cursor: 'pointer',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
         }}
       >
         {value || label}
@@ -102,8 +90,8 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 16, height: 16, borderRadius: '50%',
-              backgroundColor: 'rgba(37,99,235,0.15)', border: 'none',
-              cursor: 'pointer', color: T.primary, fontSize: 10, fontWeight: 700,
+              backgroundColor: 'var(--cp-blue-wash)', border: 'none',
+              cursor: 'pointer', color: 'var(--cp-blue-text)', fontSize: 10, fontWeight: 700,
               marginLeft: 2,
             }}
           >
@@ -114,7 +102,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
         )}
       </button>
 
-      {/* Dropdown panel — ABSOLUTE positioned, floats over content */}
+      {/* Dropdown panel — float surface */}
       {open && (
         <div
           style={{
@@ -122,7 +110,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
             top: 'calc(100% + 8px)',
             ...(alignRight ? { right: 0, left: 'auto' } : { left: 0 }),
             minWidth: 260, maxHeight: 340, overflowY: 'auto',
-            background: T.surface, border: `1px solid ${T.border}`,
+            background: 'var(--cp-float)', border: '1px solid var(--cp-bd)',
             borderRadius: 10,
             boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)',
             zIndex: 50, padding: 6,
@@ -133,10 +121,10 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '10px 12px',
-            borderBottom: `1px solid ${T.border}`,
+            borderBottom: '1px solid var(--cp-bd)',
             marginBottom: 4,
           }}>
-            <Search size={14} style={{ color: T.inkMuted, flexShrink: 0 }} />
+            <Search size={14} style={{ color: 'var(--cp-t3)', flexShrink: 0 }} />
             <input
               type="text"
               placeholder={`Filter ${label.toLowerCase()}…`}
@@ -145,7 +133,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
               autoFocus
               style={{
                 flex: 1, border: 'none', background: 'transparent', outline: 'none',
-                fontSize: 13, color: T.ink, fontFamily: "'Inter', system-ui",
+                fontSize: 13, color: 'var(--cp-t1)', fontFamily: "'Inter', system-ui",
               }}
             />
           </div>
@@ -158,16 +146,16 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
               width: '100%', textAlign: 'left', padding: '10px 12px',
               borderRadius: 8, fontSize: 13,
               fontWeight: !value ? 600 : 500,
-              color: !value ? T.primary : T.ink,
-              background: !value ? 'rgba(37,99,235,0.08)' : 'transparent',
+              color: !value ? 'var(--cp-blue-text)' : 'var(--cp-t1)',
+              background: !value ? 'var(--cp-blue-wash)' : 'transparent',
               border: 'none', cursor: 'pointer',
               transition: 'background 0.1s', lineHeight: '1.4',
             }}
-            onMouseEnter={e => { if (value) e.currentTarget.style.background = T.surfaceTertiary; }}
+            onMouseEnter={e => { if (value) e.currentTarget.style.background = 'var(--cp-hover)'; }}
             onMouseLeave={e => { if (value) e.currentTarget.style.background = 'transparent'; }}
           >
             All {label}
-            {!value && <Check size={14} style={{ color: T.primary }} />}
+            {!value && <Check size={14} style={{ color: 'var(--cp-blue-text)' }} />}
           </button>
 
           {filtered.map(option => {
@@ -180,20 +168,18 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
                   display: 'flex', alignItems: 'center', gap: 10, width: '100%',
                   textAlign: 'left', padding: '10px 12px', borderRadius: 8,
                   fontSize: 13, fontWeight: isSelected ? 600 : 500,
-                  color: isSelected ? T.primary : T.ink,
-                  background: isSelected ? 'rgba(37,99,235,0.08)' : 'transparent',
+                  color: isSelected ? 'var(--cp-blue-text)' : 'var(--cp-t1)',
+                  background: isSelected ? 'var(--cp-blue-wash)' : 'transparent',
                   border: 'none', cursor: 'pointer',
                   transition: 'background 0.1s', lineHeight: '1.4',
                 }}
-                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = T.surfaceTertiary; }}
-                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.08)' : 'transparent'; }}
+                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--cp-hover)'; }}
+                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isSelected ? 'var(--cp-blue-wash)' : 'transparent'; }}
               >
-                {/* Hub dot — 8px */}
                 {variant === 'hub' && (
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: HUB_DOT_COLORS[option] || T.inkMuted, flexShrink: 0 }} />
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: HUB_DOT_COLORS[option] || 'var(--cp-t3)', flexShrink: 0 }} />
                 )}
 
-                {/* Reporter avatar — 28px */}
                 {variant === 'reporter' && (() => {
                   const avatarUrl = nameAvatarMap.get(option.toLowerCase());
                   const ini = getInitials(option);
@@ -207,13 +193,13 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
 
                 <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{option}</span>
 
-                {isSelected && <Check size={14} style={{ color: T.primary, flexShrink: 0 }} />}
+                {isSelected && <Check size={14} style={{ color: 'var(--cp-blue-text)', flexShrink: 0 }} />}
               </button>
             );
           })}
 
           {filtered.length === 0 && (
-            <div style={{ padding: '12px 10px', fontSize: 12, color: T.inkMuted, textAlign: 'center' }}>No matches</div>
+            <div style={{ padding: '12px 10px', fontSize: 12, color: 'var(--cp-t3)', textAlign: 'center' }}>No matches</div>
           )}
         </div>
       )}
@@ -226,36 +212,15 @@ export function ForYouInlineFilters({ filters, onFiltersChange, projectOptions, 
 
   return (
     <div className="fy-controls" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, position: 'relative' }}>
-      {/* No dead "FILTERS" label — chips ARE the filters */}
+      <FilterDropdown label="Project" value={filters.project} options={projectOptions} onChange={v => onFiltersChange({ ...filters, project: v })} />
+      <FilterDropdown label="Hub" value={filters.hub} options={hubOptions} onChange={v => onFiltersChange({ ...filters, hub: v })} variant="hub" />
+      <FilterDropdown label="Reported by" value={filters.reportedBy} options={reportedByOptions} onChange={v => onFiltersChange({ ...filters, reportedBy: v })} variant="reporter" alignRight />
 
-      <FilterDropdown
-        label="Project"
-        value={filters.project}
-        options={projectOptions}
-        onChange={v => onFiltersChange({ ...filters, project: v })}
-      />
-      <FilterDropdown
-        label="Hub"
-        value={filters.hub}
-        options={hubOptions}
-        onChange={v => onFiltersChange({ ...filters, hub: v })}
-        variant="hub"
-      />
-      <FilterDropdown
-        label="Reported by"
-        value={filters.reportedBy}
-        options={reportedByOptions}
-        onChange={v => onFiltersChange({ ...filters, reportedBy: v })}
-        variant="reporter"
-        alignRight
-      />
-
-      {/* Clear all */}
       {activeCount > 0 && (
         <button
           onClick={() => onFiltersChange({ project: null, hub: null, reportedBy: null })}
           style={{
-            fontSize: 12, fontWeight: 600, color: T.dangerText,
+            fontSize: 12, fontWeight: 600, color: 'var(--cp-err-text)',
             background: 'none', border: 'none', cursor: 'pointer',
             marginLeft: 4, transition: 'opacity 0.15s',
           }}

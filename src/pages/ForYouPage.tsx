@@ -117,7 +117,7 @@ export default function ForYouPage() {
   ];
 
   return (
-    <div className="fy-page" style={{ fontFamily: "'Inter', system-ui", minHeight: '100vh' }}>
+    <div className="fy-page" style={{ fontFamily: "'Inter', system-ui", minHeight: '100vh', background: 'var(--cp-bg)', color: 'var(--cp-t1)' }}>
       <main style={{ width: '100%', padding: '24px 32px 48px' }}>
         <ForYouHeader />
 
@@ -136,7 +136,7 @@ export default function ForYouPage() {
         {/* Search + Filters */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <ForYouToolbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-          <div style={{ width: 1, height: 20, backgroundColor: '#E4E4E7', margin: '0 4px' }} />
+          <div style={{ width: 1, height: 20, backgroundColor: 'var(--cp-bd)', margin: '0 4px' }} />
           <ForYouInlineFilters
             filters={inlineFilters}
             onFiltersChange={setInlineFilters}

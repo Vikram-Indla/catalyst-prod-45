@@ -333,10 +333,10 @@ function CatalystShellContent() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-surface-1 text-text-primary" onClickCapture={handleInternalLinkClickCapture}>
+    <div className="h-screen flex flex-col text-[var(--cp-t1)]" style={{ background: 'var(--cp-bg)' }} onClickCapture={handleInternalLinkClickCapture}>
       {/* Global Header - Catalyst Native */}
       <div data-catalyst-header>
-        <Suspense fallback={<div className="h-12 bg-surface-1 border-b border-border-default" />}>
+        <Suspense fallback={<div className="h-12 border-b" style={{ background: 'var(--cp-bg)', borderColor: 'var(--cp-bd)' }} />}>
           <CatalystHeader />
         </Suspense>
       </div>
@@ -351,7 +351,7 @@ function CatalystShellContent() {
           </div>
 
         {/* Route content scroll container (single scroll parent) - workspace frame */}
-        <main data-catalyst-main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-surface-1">
+        <main data-catalyst-main className="flex-1 min-w-0 flex flex-col overflow-hidden" style={{ background: 'var(--cp-bg)' }}>
           <Suspense fallback={null}><AnnouncementBanner /></Suspense>
           <div className="flex-1 min-h-0 overflow-auto flex flex-col">
             <Outlet />

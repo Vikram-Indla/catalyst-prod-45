@@ -1,0 +1,143 @@
+/* ══════════════════════════════════════════════
+   CATALYST THEME TOKENS — V12 HYBRID PRECISION
+   Light mode = default. Dark mode = NOCTURNE.
+   All UI references these tokens. Zero hardcoded hex.
+══════════════════════════════════════════════ */
+
+/* ── LIGHT MODE (DEFAULT) ── */
+:root, [data-theme="light"] {
+  /* Surfaces */
+  --cp-bg:              #FFFFFF;
+  --cp-bg-sidebar-hdr:  #F8FAFC;
+  --cp-bg-sunken:       #F1F5F9;
+  --cp-float:           #FFFFFF;
+
+  /* Text */
+  --cp-t1:              #111827;
+  --cp-t2:              #374151;
+  --cp-t3:              #6B7280;
+  --cp-t4:              #9CA3AF;
+
+  /* Borders */
+  --cp-bd:              #E5E7EB;
+  --cp-bd-zone:         #F3F4F6;
+  --cp-bd-hover:        #D1D5DB;
+  --cp-bd-table:        #F3F4F6;
+
+  /* Interactive */
+  --cp-hover:           rgba(0,0,0,0.04);
+  --cp-press:           rgba(0,0,0,0.08);
+  --cp-focus-ring:      rgba(59,130,246,0.45);
+
+  /* Brand */
+  --cp-blue:            #3B82F6;
+  --cp-blue-text:       #2563EB;
+  --cp-blue-link:       #2563EB;
+  --cp-blue-wash:       rgba(59,130,246,0.08);
+
+  /* Status */
+  --cp-ok:              #16A34A;
+  --cp-ok-bg:           rgba(22,163,74,0.08);
+  --cp-warn:            #D97706;
+  --cp-warn-bg:         rgba(217,119,6,0.08);
+  --cp-err:             #DC2626;
+  --cp-err-bg:          rgba(220,38,38,0.08);
+  --cp-err-text:        #DC2626;
+
+  /* AI */
+  --cp-ai-bg:           rgba(59,130,246,0.06);
+  --cp-ai-bd:           rgba(59,130,246,0.12);
+  --cp-ai-t:            #2563EB;
+
+  /* StatusLozenge */
+  --cp-lz-gy-bg:        #DFE1E6;
+  --cp-lz-gy-t:         #253858;
+  --cp-lz-bl-bg:        #DEEBFF;
+  --cp-lz-bl-t:         #0747A6;
+  --cp-lz-gn-bg:        #E3FCEF;
+  --cp-lz-gn-t:         #006644;
+  --cp-lz-rd-bg:        #FFEBE6;
+  --cp-lz-rd-t:         #BF2600;
+
+  /* Progress */
+  --cp-prg-bg:          rgba(0,0,0,0.06);
+
+  /* Scrollbar */
+  --cp-scroll:          rgba(0,0,0,0.12);
+}
+
+/* ── DARK MODE — V12 NOCTURNE WARM CHARCOAL ── */
+[data-theme="dark"] {
+  /* Surfaces — ONE SURFACE MODEL. No luminance zones. */
+  --cp-bg:              #1A1714;
+  --cp-bg-sidebar-hdr:  #1A1714;
+  --cp-bg-sunken:       #1A1714;
+  --cp-float:           #232019;
+
+  /* Text — warm off-white opacity scale */
+  --cp-t1:              rgba(248,244,240, 0.92);
+  --cp-t2:              rgba(248,244,240, 0.72);
+  --cp-t3:              rgba(248,244,240, 0.55);
+  --cp-t4:              rgba(248,244,240, 0.30);
+
+  /* Borders — warm off-white opacity scale */
+  --cp-bd:              rgba(248,244,240, 0.10);
+  --cp-bd-zone:         rgba(248,244,240, 0.08);
+  --cp-bd-hover:        rgba(248,244,240, 0.18);
+  --cp-bd-table:        rgba(248,244,240, 0.08);
+
+  /* Interactive */
+  --cp-hover:           rgba(248,244,240, 0.03);
+  --cp-press:           rgba(248,244,240, 0.06);
+  --cp-focus-ring:      rgba(59,130,246, 0.45);
+
+  /* Brand */
+  --cp-blue:            #3B82F6;
+  --cp-blue-text:       #60A5FA;
+  --cp-blue-link:       #7DB8FC;
+  --cp-blue-wash:       rgba(59,130,246, 0.10);
+
+  /* Status — bright on dark for readability */
+  --cp-ok:              #4ADE80;
+  --cp-ok-bg:           rgba(74,222,128, 0.12);
+  --cp-warn:            #FDE68A;
+  --cp-warn-bg:         rgba(253,230,138, 0.10);
+  --cp-err:             #FCA5A5;
+  --cp-err-bg:          rgba(239,68,68, 0.10);
+  --cp-err-text:        #FCA5A5;
+
+  /* AI — Catalyst Blue, NEVER purple */
+  --cp-ai-bg:           rgba(59,130,246, 0.08);
+  --cp-ai-bd:           rgba(59,130,246, 0.16);
+  --cp-ai-t:            #60A5FA;
+
+  /* StatusLozenge — NOCTURNE dark values */
+  --cp-lz-gy-bg:        #2C2926;
+  --cp-lz-gy-t:         #B8BCC8;
+  --cp-lz-bl-bg:        #1E2636;
+  --cp-lz-bl-t:         #93C5FD;
+  --cp-lz-gn-bg:        #1A2A1E;
+  --cp-lz-gn-t:         #86EFAC;
+  --cp-lz-rd-bg:        #2E1C18;
+  --cp-lz-rd-t:         #FCA5A5;
+
+  /* Progress */
+  --cp-prg-bg:          rgba(248,244,240, 0.05);
+
+  /* Scrollbar */
+  --cp-scroll:          rgba(248,244,240, 0.10);
+}
+
+/* ── Scrollbar dark mode ── */
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--cp-scroll);
+}
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ── Reduced motion ── */
+[data-reduced-motion="true"] * {
+  transition-duration: 0.01ms !important;
+  animation-duration: 0.01ms !important;
+}
