@@ -336,6 +336,19 @@
   border-collapse: collapse;
   font-family: var(--cp-font-body);
   font-size: 13px;
+  background-color: #FFFFFF;
+}
+
+/* Force pure white page background for product-backlog */
+[data-module="product-backlog"] {
+  background-color: #FFFFFF !important;
+}
+[data-module="product-backlog"] .flex-1 {
+  background-color: #FFFFFF !important;
+}
+.pb-table thead,
+.pb-table thead tr {
+  background-color: #F1F5F9 !important;
 }
 .pb-table thead th {
   position: sticky;
@@ -343,52 +356,64 @@
   z-index: 10;
   height: 32px;
   padding: 10px 12px;
-  background: var(--cp-bg-sunken);
+  background-color: #F1F5F9 !important;
   font-size: 11px;
-  font-weight: 650;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--cp-text-tertiary);
+  color: #64748B;
   text-align: start;
   white-space: nowrap;
-  border-bottom: 1.5px solid var(--cp-border-default);
+  border-bottom: 0.75px solid rgba(15, 23, 42, 0.12);
   cursor: pointer;
   user-select: none;
   transition: background var(--cp-duration-instant) var(--cp-easing-standard);
 }
 .pb-table thead th:hover {
-  background: var(--cp-interact-hover);
+  background-color: rgba(15, 23, 42, 0.06) !important;
 }
-/* V12: 36px rows, 0.75px dividers, rgba hover */
+/* V12: 36px rows, 0.75px dividers, rgba hover — PURE WHITE rows */
+.pb-table tbody,
 .pb-table tbody tr {
-  height: var(--cp-size-table-row);
-  max-height: var(--cp-size-table-row);
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+}
+.pb-table tbody tr {
+  height: 36px;
+  max-height: 36px;
+  min-height: 36px;
   border-bottom: 0.75px solid var(--cp-border-subtle);
   cursor: pointer;
   transition: background var(--cp-duration-instant) var(--cp-easing-standard);
 }
+.pb-table tbody td {
+  background-color: transparent !important;
+  background: transparent !important;
+}
 .pb-table tbody tr:hover {
-  background: var(--cp-interact-hover);
+  background: rgba(15, 23, 42, 0.04) !important;
 }
 .pb-table tbody tr.pb-row-selected {
-  background: var(--cp-interact-selected);
+  background: var(--cp-interact-selected) !important;
 }
 .pb-table tbody tr.pb-row-selected:hover {
-  background: var(--cp-interact-selected-hover);
+  background: var(--cp-interact-selected-hover) !important;
 }
 .pb-table tbody tr:active {
-  background: var(--cp-interact-press);
+  background: var(--cp-interact-press) !important;
 }
 .pb-table tbody tr:last-child {
   border-bottom: none;
 }
 .pb-table tbody td {
   padding: 8px 12px;
+  height: 36px;
   vertical-align: middle;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.2;
+  font-size: 13px;
 }
 
 /* ═══ Status Lozenge — V12 GUARDRAIL: 3-color ONLY ═══ */
