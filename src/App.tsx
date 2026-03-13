@@ -51,7 +51,7 @@ const S = ({ children }: { children: React.ReactNode }) => (
 const App = () => (
   <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+    <ThemeProvider>
       <Toaster />
       <Suspense fallback={null}><HotToaster position="bottom-right" /></Suspense>
       <AuthProvider>
