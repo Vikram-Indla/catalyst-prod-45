@@ -359,36 +359,48 @@
 .pb-table thead th:hover {
   background: var(--cp-interact-hover);
 }
-/* V12: 36px rows, 0.75px dividers, rgba hover */
+/* V12: 36px rows, 0.75px dividers, rgba hover — PURE WHITE rows */
+.pb-table tbody,
 .pb-table tbody tr {
-  height: var(--cp-size-table-row);
-  max-height: var(--cp-size-table-row);
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+}
+.pb-table tbody tr {
+  height: 36px;
+  max-height: 36px;
+  min-height: 36px;
   border-bottom: 0.75px solid var(--cp-border-subtle);
   cursor: pointer;
   transition: background var(--cp-duration-instant) var(--cp-easing-standard);
 }
+.pb-table tbody td {
+  background-color: transparent !important;
+  background: transparent !important;
+}
 .pb-table tbody tr:hover {
-  background: var(--cp-interact-hover);
+  background: rgba(15, 23, 42, 0.04) !important;
 }
 .pb-table tbody tr.pb-row-selected {
-  background: var(--cp-interact-selected);
+  background: var(--cp-interact-selected) !important;
 }
 .pb-table tbody tr.pb-row-selected:hover {
-  background: var(--cp-interact-selected-hover);
+  background: var(--cp-interact-selected-hover) !important;
 }
 .pb-table tbody tr:active {
-  background: var(--cp-interact-press);
+  background: var(--cp-interact-press) !important;
 }
 .pb-table tbody tr:last-child {
   border-bottom: none;
 }
 .pb-table tbody td {
   padding: 8px 12px;
+  height: 36px;
   vertical-align: middle;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.2;
+  font-size: 13px;
 }
 
 /* ═══ Status Lozenge — V12 GUARDRAIL: 3-color ONLY ═══ */
