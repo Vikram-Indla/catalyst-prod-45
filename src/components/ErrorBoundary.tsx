@@ -2,6 +2,18 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+const RELOAD_KEY = 'catalyst-chunk-reload';
+
+function isChunkLoadError(error: Error): boolean {
+  const msg = error.message || '';
+  return (
+    msg.includes('Failed to fetch dynamically imported module') ||
+    msg.includes('Importing a module script failed') ||
+    msg.includes('Loading chunk') ||
+    msg.includes('ChunkLoadError')
+  );
+}
+
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -24,6 +36,18 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+
+    // Auto-reload once for stale chunk errors (new deployment invalidated old chunks)
+    if (isChunkLoadError(error)) {
+      const lastReload = sessionStorage.getItem(RELOAD_KEY);
+      const now = Date.now();
+      // Only auto-reload if we haven't done so in the last 10 seconds
+      if (!lastReload || now - Number(lastReload) > 10_000) {
+        sessionStorage.setItem(RELOAD_KEY, String(now));
+        window.location.reload();
+        return;
+      }
+    }
   }
 
   private handleRetry = () => {
