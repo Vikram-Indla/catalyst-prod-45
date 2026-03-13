@@ -14,7 +14,7 @@ const UI_TO_DB_STATUS: Record<string, string> = {
   technical_validation: 'under_review',
   estimate: 'under_review',
   demand_approved: 'approved',
-  in_progress: 'in_progress',
+  under_implementation: 'in_progress',
   done: 'closed',
 };
 

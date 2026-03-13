@@ -23,7 +23,7 @@ export const COLUMNS: ColumnConfig[] = [
   { key: 'technical_validation',   label: 'Technical Validation',   color: '#0EA5E9' },
   { key: 'estimate',               label: 'Estimate',               color: '#D97706' },
   { key: 'demand_approved',        label: 'Demand Approved',        color: '#16A34A' },
-  { key: 'in_progress',            label: 'In Progress',            color: '#2563EB' },
+  { key: 'under_implementation',   label: 'In Progress',            color: '#2563EB' },
   { key: 'done',                   label: 'Done',                   color: '#0D9488' },
 ];
 
