@@ -24,7 +24,7 @@ import {
   BookOpen,
   GitBranch,
 } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
 interface ProjectHubSidebarProps {
@@ -47,9 +47,19 @@ const MODULE_NAV_CONFIG: SidebarConfig = {
   ],
 };
 
+/** Extract project key from pathname: /project-hub/:key/... */
+function extractProjectKey(pathname: string): string | undefined {
+  const match = pathname.match(/^\/project-hub\/([^/]+)/);
+  if (!match) return undefined;
+  const segment = match[1];
+  // These are module-level routes, not project keys
+  if (['projects', 'resources'].includes(segment)) return undefined;
+  return segment;
+}
+
 export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubSidebarProps) {
-  const params = useParams<{ key?: string }>();
-  const projectKey = params.key;
+  const { pathname } = useLocation();
+  const projectKey = extractProjectKey(pathname);
 
   // If inside a project context, show project-specific nav with sections
   if (projectKey) {
