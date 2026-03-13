@@ -2,11 +2,11 @@
  * DashboardWidgetGrid — 3-column grid container for dashboard widgets
  * Handles widget visibility, ordering, and collapse state persistence
  */
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
-import { WIDGET_REGISTRY, type WidgetDefinition } from './widget-registry';
+import { WIDGET_REGISTRY } from './widget-registry';
 
 interface DashboardWidgetGridProps {
   projectId: string;
@@ -29,7 +29,7 @@ export function useDashboardWidgetConfig(projectId: string) {
     queryKey: ['dashboard-widget-config', projectId, userId],
     queryFn: async () => {
       if (!userId) return [];
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('dashboard_widget_config')
         .select('widget_id, visible, position, collapsed')
         .eq('project_id', projectId)
@@ -44,7 +44,7 @@ export function useDashboardWidgetConfig(projectId: string) {
   const upsertMutation = useMutation({
     mutationFn: async (updates: Partial<WidgetConfig> & { widget_id: string }) => {
       if (!userId) return;
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('dashboard_widget_config')
         .upsert(
           {
@@ -77,7 +77,7 @@ export function useDashboardWidgetConfig(projectId: string) {
         collapsed: item.collapsed ?? false,
         updated_at: new Date().toISOString(),
       }));
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('dashboard_widget_config')
         .upsert(rows, { onConflict: 'project_id,user_id,widget_id' });
       if (error) throw error;

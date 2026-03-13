@@ -2803,6 +2803,42 @@ export type Database = {
           },
         ]
       }
+      dashboard_widget_config: {
+        Row: {
+          collapsed: boolean
+          created_at: string
+          id: string
+          position: number
+          project_id: string
+          updated_at: string
+          user_id: string
+          visible: boolean
+          widget_id: string
+        }
+        Insert: {
+          collapsed?: boolean
+          created_at?: string
+          id?: string
+          position?: number
+          project_id: string
+          updated_at?: string
+          user_id: string
+          visible?: boolean
+          widget_id: string
+        }
+        Update: {
+          collapsed?: boolean
+          created_at?: string
+          id?: string
+          position?: number
+          project_id?: string
+          updated_at?: string
+          user_id?: string
+          visible?: boolean
+          widget_id?: string
+        }
+        Relationships: []
+      }
       dashboard_widgets: {
         Row: {
           config: Json
