@@ -153,7 +153,7 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
                         )}
                       </div>
                       {/* ASSIGNEE — real name or italic Unassigned */}
-                      <div style={{ width: 148, flexShrink: 0, fontSize: 13, color: story.assignee_name ? '#0F172A' : '#94A3B8', fontStyle: story.assignee_name ? 'normal' : 'italic', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 160, flexShrink: 0, fontSize: 13, color: story.assignee_name ? '#0F172A' : '#94A3B8', fontStyle: story.assignee_name ? 'normal' : 'italic', display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
                         {avatarUrl ? (
                           <img src={avatarUrl} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} alt="" />
                         ) : (
