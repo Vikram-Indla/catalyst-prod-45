@@ -5,6 +5,23 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+// "Active" releases = not archived/released/shipped
+const INACTIVE_STATUSES = ['archived', 'released', 'shipped'] as const;
+
+async function getProjectKey(projectId: string): Promise<string | null> {
+  const { data } = await supabase.from('projects').select('key').eq('id', projectId).single();
+  return data?.key ?? null;
+}
+
+async function getActiveReleaseNames(projectId: string): Promise<string[]> {
+  const { data } = await supabase
+    .from('releases')
+    .select('name')
+    .eq('project_id', projectId)
+    .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
+  return (data ?? []).map(r => r.name).filter(Boolean) as string[];
+}
+
 // ─── Active Releases ───
 export function useActiveReleases(projectId: string | null | undefined) {
   return useQuery({
@@ -14,7 +31,7 @@ export function useActiveReleases(projectId: string | null | undefined) {
         .from('releases')
         .select('id, name, status, start_date, target_date')
         .eq('project_id', projectId!)
-        .eq('status', 'active');
+        .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
       if (error) throw error;
       return data ?? [];
     },
@@ -28,29 +45,13 @@ export function useDashboardStatusCounts(projectId: string | null | undefined) {
   return useQuery({
     queryKey: ['ph-dashboard-status-counts', projectId],
     queryFn: async () => {
-      if (!projectId) return { todo: 0, inProgress: 0, done: 0, total: 0 };
+      const pKey = await getProjectKey(projectId!);
+      if (!pKey) return { todo: 0, inProgress: 0, done: 0, total: 0 };
 
-      // Get project key first
-      const { data: proj } = await supabase
-        .from('projects')
-        .select('key')
-        .eq('id', projectId)
-        .single();
-      if (!proj?.key) return { todo: 0, inProgress: 0, done: 0, total: 0 };
-
-      // Get active releases
-      const { data: releases } = await supabase
-        .from('releases')
-        .select('name')
-        .eq('project_id', projectId)
-        .eq('status', 'active');
-      const releaseNames = (releases ?? []).map(r => r.name).filter(Boolean);
-
-      // Query ph_issues by project_key
       const { data: issues, error } = await supabase
         .from('ph_issues')
         .select('status_category')
-        .eq('project_key', proj.key)
+        .eq('project_key', pKey)
         .is('deleted_at', null);
       if (error) throw error;
 
@@ -74,18 +75,14 @@ export function useDashboardOverdueItems(projectId: string | null | undefined) {
   return useQuery({
     queryKey: ['ph-dashboard-overdue', projectId],
     queryFn: async () => {
-      const { data: proj } = await supabase
-        .from('projects')
-        .select('key')
-        .eq('id', projectId!)
-        .single();
-      if (!proj?.key) return [];
+      const pKey = await getProjectKey(projectId!);
+      if (!pKey) return [];
 
       const today = new Date().toISOString().split('T')[0];
       const { data, error } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status, status_category, due_date, assignee_display_name, issue_type')
-        .eq('project_key', proj.key)
+        .eq('project_key', pKey)
         .is('deleted_at', null)
         .neq('status_category', 'Done')
         .lt('due_date', today)
@@ -105,17 +102,13 @@ export function useDashboardOnHoldItems(projectId: string | null | undefined) {
   return useQuery({
     queryKey: ['ph-dashboard-on-hold', projectId],
     queryFn: async () => {
-      const { data: proj } = await supabase
-        .from('projects')
-        .select('key')
-        .eq('id', projectId!)
-        .single();
-      if (!proj?.key) return [];
+      const pKey = await getProjectKey(projectId!);
+      if (!pKey) return [];
 
       const { data, error } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status, assignee_display_name, issue_type')
-        .eq('project_key', proj.key)
+        .eq('project_key', pKey)
         .is('deleted_at', null)
         .ilike('status', '%hold%')
         .limit(50);
@@ -132,22 +125,17 @@ export function useDashboardTeamWorkload(projectId: string | null | undefined) {
   return useQuery({
     queryKey: ['ph-dashboard-team-workload', projectId],
     queryFn: async () => {
-      const { data: proj } = await supabase
-        .from('projects')
-        .select('key')
-        .eq('id', projectId!)
-        .single();
-      if (!proj?.key) return [];
+      const pKey = await getProjectKey(projectId!);
+      if (!pKey) return [];
 
       const { data: issues, error } = await supabase
         .from('ph_issues')
         .select('assignee_display_name, issue_type, status_category')
-        .eq('project_key', proj.key)
+        .eq('project_key', pKey)
         .is('deleted_at', null)
         .neq('status_category', 'Done');
       if (error) throw error;
 
-      // Group by assignee
       const map = new Map<string, { assignee: string; total: number; stories: number; bugs: number }>();
       for (const issue of issues ?? []) {
         const name = issue.assignee_display_name || 'Unassigned';
@@ -171,26 +159,20 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
   return useQuery({
     queryKey: ['ph-dashboard-scope-change', projectId],
     queryFn: async () => {
-      const { data: proj } = await supabase
-        .from('projects')
-        .select('key')
-        .eq('id', projectId!)
-        .single();
-      if (!proj?.key) return [];
+      const pKey = await getProjectKey(projectId!);
+      if (!pKey) return [];
 
-      // Get active releases with start dates
       const { data: releases } = await supabase
         .from('releases')
         .select('id, name, start_date')
         .eq('project_id', projectId!)
-        .eq('status', 'active');
+        .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
       if (!releases?.length) return [];
 
-      // Get all issues for this project
       const { data: issues } = await supabase
         .from('ph_issues')
         .select('fix_versions, jira_created_at')
-        .eq('project_key', proj.key)
+        .eq('project_key', pKey)
         .is('deleted_at', null);
 
       const results: { releaseName: string; totalItems: number; addedAfterStart: number; deltaPercent: number }[] = [];
@@ -202,14 +184,12 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
         let addedAfterStart = 0;
 
         for (const issue of issues ?? []) {
-          // Check if issue belongs to this release via fix_versions
           const fv = issue.fix_versions;
           const versions = Array.isArray(fv) ? fv : [];
           const belongsToRelease = versions.some((v: any) =>
             typeof v === 'string' ? v === rel.name : v?.name === rel.name
           );
           if (!belongsToRelease) continue;
-
           totalItems++;
           if (issue.jira_created_at && new Date(issue.jira_created_at) > startDate) {
             addedAfterStart++;
@@ -284,17 +264,13 @@ export function useDashboardRecentActivity(projectId: string | null | undefined)
   return useQuery({
     queryKey: ['ph-dashboard-recent-activity', projectId],
     queryFn: async () => {
-      const { data: proj } = await supabase
-        .from('projects')
-        .select('key')
-        .eq('id', projectId!)
-        .single();
-      if (!proj?.key) return [];
+      const pKey = await getProjectKey(projectId!);
+      if (!pKey) return [];
 
       const { data, error } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status, assignee_display_name, jira_updated_at, issue_type')
-        .eq('project_key', proj.key)
+        .eq('project_key', pKey)
         .is('deleted_at', null)
         .order('jira_updated_at', { ascending: false })
         .limit(15);
@@ -311,25 +287,20 @@ export function useDashboardReleaseHealth(projectId: string | null | undefined) 
   return useQuery({
     queryKey: ['ph-dashboard-release-health', projectId],
     queryFn: async () => {
-      const { data: proj } = await supabase
-        .from('projects')
-        .select('key')
-        .eq('id', projectId!)
-        .single();
-      if (!proj?.key) return [];
+      const pKey = await getProjectKey(projectId!);
+      if (!pKey) return [];
 
       const { data: releases } = await supabase
         .from('releases')
         .select('id, name, status, target_date, start_date')
         .eq('project_id', projectId!)
-        .eq('status', 'active');
+        .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
       if (!releases?.length) return [];
 
-      // Get all issues for this project
       const { data: issues } = await supabase
         .from('ph_issues')
         .select('fix_versions, status_category')
-        .eq('project_key', proj.key)
+        .eq('project_key', pKey)
         .is('deleted_at', null);
 
       return releases.map(rel => {
