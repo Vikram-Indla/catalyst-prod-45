@@ -2,7 +2,7 @@
  * DashboardWidgetGrid — 3-column grid container for dashboard widgets
  * Handles widget visibility, ordering, and collapse state persistence
  */
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
