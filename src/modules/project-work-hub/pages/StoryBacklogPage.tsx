@@ -98,8 +98,8 @@ export default function StoryBacklogPage({ projectId: propProjectId }: { project
               <div style={{ width: 110, flexShrink: 0, ...COL_HEADER }}>KEY</div>
               <div style={{ flex: 1, minWidth: 0, ...COL_HEADER }}>SUMMARY</div>
               <div style={{ width: 138, flexShrink: 0, ...COL_HEADER }}>STATUS</div>
-              <div style={{ width: 210, flexShrink: 0, ...COL_HEADER }}>PARENT</div>
-              <div style={{ width: 148, flexShrink: 0, ...COL_HEADER }}>ASSIGNEE</div>
+              <div style={{ width: 240, flexShrink: 0, ...COL_HEADER }}>PARENT</div>
+              <div style={{ width: 160, flexShrink: 0, ...COL_HEADER }}>ASSIGNEE</div>
               <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>CREATED</div>
               <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>UPDATED</div>
               <div style={{ width: 90, flexShrink: 0, ...COL_HEADER }}>DUE DATE</div>
