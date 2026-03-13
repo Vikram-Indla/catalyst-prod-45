@@ -30,6 +30,33 @@ import {
 import { useFavorites } from '@/hooks/useFavorites';
 import { useTheme } from '@/hooks/useTheme';
 
+/**
+ * Route-to-chunk prefetch map — preload lazy page chunks on sidebar hover
+ * so navigation feels instant. Each entry maps a route prefix to the
+ * dynamic import() that Vite will resolve to the same chunk as the lazy().
+ */
+const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
+  '/project-hub/projects': () => import('../../pages/projecthub/AllProjectsPage'),
+  '/project-hub/resources': () => import('../../pages/ResourceListingPage'),
+  '/producthub/backlog': () => import('../../pages/producthub/ProductBacklogPage'),
+  '/producthub/ideation': () => import('../../pages/producthub/IdeationPage'),
+  '/producthub/kanban': () => import('../../components/producthub/kanban/KanbanBoard'),
+};
+
+const prefetchedRoutes = new Set<string>();
+
+function prefetchRoute(path: string) {
+  // Find the best matching prefix
+  const matchKey = Object.keys(ROUTE_PREFETCH_MAP).find(prefix => path.startsWith(prefix));
+  if (!matchKey || prefetchedRoutes.has(matchKey)) return;
+  prefetchedRoutes.add(matchKey);
+  // Fire-and-forget — Vite caches the module so lazy() resolves instantly
+  ROUTE_PREFETCH_MAP[matchKey]().catch(() => {
+    // Remove from set so it can retry
+    prefetchedRoutes.delete(matchKey);
+  });
+}
+
 export interface SidebarMenuItem {
   id: string;
   title: string | React.ReactNode;
