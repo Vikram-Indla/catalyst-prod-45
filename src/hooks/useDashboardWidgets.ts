@@ -269,7 +269,7 @@ export function useDashboardRecentActivity(projectId: string | null | undefined)
 
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, status, assignee_display_name, jira_updated_at, issue_type')
+        .select('id, issue_key, summary, status, status_category, assignee_display_name, jira_updated_at, issue_type')
         .eq('project_key', pKey)
         .is('deleted_at', null)
         .order('jira_updated_at', { ascending: false })
