@@ -1,10 +1,9 @@
 import React, { useCallback } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { MoreHorizontal, CalendarDays } from 'lucide-react';
+import { GripVertical, AlertOctagon, ArrowUp, Minus, ArrowDown, User } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
 import { getAvatarColor, getInitials } from '@/types/initiative';
-import { format, isPast } from 'date-fns';
 
 interface KanbanCardProps {
   initiative: Initiative;
@@ -16,23 +15,37 @@ interface KanbanCardProps {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  project: '#0D9488',
-  enhancement: '#2563EB',
+  project: '#2563EB',
+  enhancement: '#0EA5E9',
   improvement: '#D97706',
-  entity_integration: '#7C3AED',
-  business_request: '#B45309',
+  entity_integration: '#64748B',
+  business_request: '#2563EB',
 };
 
-function getPriorityBars(score: number | null): number {
-  if (score === null) return 0;
-  if (score >= 4.0) return 4;
-  if (score >= 3.0) return 3;
-  if (score >= 2.0) return 2;
-  return 1;
+const PRIORITY_MAP: Record<string, { icon: React.ElementType; color: string }> = {
+  P1: { icon: AlertOctagon, color: '#DC2626' },
+  P2: { icon: ArrowUp, color: '#D97706' },
+  P3: { icon: Minus, color: '#64748B' },
+  P4: { icon: ArrowDown, color: '#94A3B8' },
+};
+
+function getAge(dateStr: string): string {
+  const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+  if (days === 0) return 'Today';
+  if (days === 1) return '1d';
+  if (days < 7) return `${days}d`;
+  if (days < 30) return `${Math.floor(days / 7)}w`;
+  return `${Math.floor(days / 30)}mo`;
 }
 
-
-export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onContextMenu, isOverlay, isFocused, isSelected }) => {
+export const KanbanCard: React.FC<KanbanCardProps> = ({
+  initiative,
+  onClick,
+  onContextMenu,
+  isOverlay,
+  isFocused,
+  isSelected,
+}) => {
   const {
     attributes,
     listeners,
@@ -51,9 +64,9 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onC
   };
 
   const isCancelled = initiative.status === 'cancelled';
-  const typeColor = initiative.initiative_type_color_hex || TYPE_COLORS[initiative.initiative_type_key ?? ''] || null;
-  const filledBars = getPriorityBars(initiative.computed_score);
-  const isOverdue = initiative.target_complete && isPast(new Date(initiative.target_complete)) && initiative.progress < 100 && !['done', 'cancelled'].includes(initiative.status);
+  const typeColor = initiative.initiative_type_color_hex || TYPE_COLORS[initiative.initiative_type_key ?? ''] || '#64748B';
+  const priority = (initiative as any).priority as string | undefined;
+  const priorityInfo = priority ? PRIORITY_MAP[priority] : null;
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -81,89 +94,90 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onC
       className={cardClass}
       tabIndex={0}
     >
-      {/* Top: ID + More */}
-      <div className="pk-card-top">
-        <span className="pk-card-id">{initiative.initiative_key}</span>
-        <button
-          className="pk-card-more"
-          onClick={e => { e.stopPropagation(); onContextMenu?.(e, initiative); }}
-        >
-          <MoreHorizontal size={14} />
-        </button>
+      {/* ROW 1: Type dot + ID + Priority + Drag handle */}
+      <div className="pk-card-row1">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              backgroundColor: typeColor,
+              flexShrink: 0,
+            }}
+          />
+          <span className="pk-card-id">{initiative.initiative_key}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          {priorityInfo && (
+            <priorityInfo.icon size={14} color={priorityInfo.color} style={{ flexShrink: 0 }} />
+          )}
+          <span className="pk-card-drag-handle">
+            <GripVertical size={14} />
+          </span>
+        </div>
       </div>
 
-      {/* Title */}
+      {/* ROW 2: Title */}
       <div className={`pk-card-title${isCancelled ? ' pk-card-title--cancelled' : ''}`}>
         {initiative.is_favorited && <span style={{ color: '#F59E0B', marginRight: 4 }}>★</span>}
         {initiative.title}
       </div>
 
-      {/* Meta */}
-      <div className="pk-card-meta">
-        {typeColor && initiative.initiative_type_label && (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            <span className="pk-card-type-dot" style={{ backgroundColor: typeColor }} />
-            <span className="pk-card-type-label" style={{ color: typeColor }}>{initiative.initiative_type_label}</span>
-          </span>
-        )}
-        {initiative.department_name && (
-          <span className="pk-card-tag">{initiative.department_name}</span>
-        )}
-        {initiative.target_quarter && (
-          <span className="pk-card-quarter">{initiative.target_quarter}</span>
-        )}
-        {initiative.target_complete && (
-          <span className={`pk-card-date${isOverdue ? ' pk-card-date--overdue' : ''}`}>
-            <CalendarDays size={11} />
-            {format(new Date(initiative.target_complete), 'MMM d')}
-          </span>
-        )}
-      </div>
-
-      {/* Bottom: Priority bars + Progress + Avatar — ALL in one flex row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
-        {/* Priority: 4 solid rectangles */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
-          {[1, 2, 3, 4].map(level => (
-            <div
-              key={level}
-              style={{
-                width: 12,
-                height: 3,
-                borderRadius: 1,
-                backgroundColor: level <= filledBars ? '#71717A' : '#E4E4E7',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Progress: solid continuous track */}
-        <div style={{ flex: 1, height: 4, backgroundColor: '#F4F4F5', borderRadius: 2, overflow: 'hidden' }}>
-          <div style={{
-            height: '100%',
-            width: `${Math.min(initiative.progress, 100)}%`,
-            backgroundColor: initiative.progress >= 75 ? '#16A34A' : initiative.progress >= 50 ? '#0D9488' : '#2563EB',
-            borderRadius: 2,
-            transition: 'width 0.3s ease',
-          }} />
-        </div>
-
-        {/* Percentage */}
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, color: '#52525B', minWidth: 28, textAlign: 'right' as const, flexShrink: 0 }}>
-          {initiative.progress}%
-        </span>
-
-        {/* Avatar */}
+      {/* ROW 3: Assignee + Age */}
+      <div className="pk-card-row3">
         {initiative.assignee_name ? (
-          <div
-            style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: getAvatarColor(initiative.assignee_name), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#fff', flexShrink: 0 }}
-            title={initiative.assignee_name}
-          >
-            {getInitials(initiative.assignee_name)}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: '50%',
+                backgroundColor: getAvatarColor(initiative.assignee_name),
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 9,
+                fontWeight: 700,
+                color: '#fff',
+                flexShrink: 0,
+              }}
+            >
+              {getInitials(initiative.assignee_name)}
+            </div>
+            <span style={{ fontSize: 12, color: '#64748B', fontWeight: 500 }}>
+              {initiative.assignee_name.split(' ')[0]}
+            </span>
           </div>
         ) : (
-          <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: '#E4E4E7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 600, color: '#71717A', flexShrink: 0 }}>?</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: '50%',
+                backgroundColor: '#E2E8F0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <User size={10} color="#94A3B8" />
+            </div>
+            <span style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>Unassigned</span>
+          </div>
         )}
+        <span
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 11,
+            color: '#94A3B8',
+            fontWeight: 500,
+          }}
+        >
+          {getAge(initiative.created_at)}
+        </span>
       </div>
     </div>
   );

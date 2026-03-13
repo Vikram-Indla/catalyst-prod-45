@@ -6,7 +6,7 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
-  closestCenter,
+  closestCorners,
 } from '@dnd-kit/core';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { KanbanColumn, type ColumnConfig, type SwimlaneField } from './KanbanColumn';
@@ -18,19 +18,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export const COLUMNS: ColumnConfig[] = [
-  { key: 'new',                    label: 'New',                    color: '#3B82F6', wip: 5  },
-  { key: 'portfolio_review',       label: 'Portfolio Review',       color: '#8B5CF6', wip: 4  },
-  { key: 'technical_validation',   label: 'Technical Validation',   color: '#A855F7', wip: 6  },
-  { key: 'estimate',               label: 'Estimate',               color: '#6366F1', wip: 5  },
-  { key: 'demand_approved',        label: 'Demand Approved',        color: '#06B6D4', wip: 6  },
-  { key: 'analysis',               label: 'Analysis',               color: '#0EA5E9', wip: 5  },
-  { key: 'ready_for_development',  label: 'Ready for Dev',          color: '#14B8A6', wip: 6  },
-  { key: 'under_implementation',   label: 'Under Implementation',   color: '#F59E0B', wip: 8  },
-  { key: 'on_hold',                label: 'On Hold',                color: '#6B7280', wip: 3  },
-  { key: 'implementation_review',  label: 'Impl. Review',           color: '#F97316', wip: 4  },
-  { key: 'in_support',             label: 'In Support',             color: '#10B981', wip: null },
-  { key: 'done',                   label: 'Done',                   color: '#22C55E', wip: null },
-  { key: 'cancelled',              label: 'Cancelled',              color: '#EF4444', wip: null },
+  { key: 'new',                    label: 'New',                    color: '#94A3B8' },
+  { key: 'portfolio_review',       label: 'Portfolio Review',       color: '#2563EB' },
+  { key: 'technical_validation',   label: 'Technical Validation',   color: '#0EA5E9' },
+  { key: 'estimate',               label: 'Estimate',               color: '#D97706' },
+  { key: 'demand_approved',        label: 'Demand Approved',        color: '#16A34A' },
+  { key: 'in_progress',            label: 'In Progress',            color: '#2563EB' },
+  { key: 'done',                   label: 'Done',                   color: '#0D9488' },
 ];
 
 interface KanbanBoardProps {
@@ -66,7 +60,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   sortBy,
   swimlane,
   onCardClick,
-  totalCount,
 }) => {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -108,68 +101,16 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
-      // Silent auto-save
     },
     onError: () => toast.error('Failed to update status'),
   });
 
   const boardRef = useRef<HTMLDivElement>(null);
-  const [focusedCol, setFocusedCol] = useState(0);
-  const [focusedCard, setFocusedCard] = useState(0);
-
-  const visibleColumns = COLUMNS.filter(c => !collapsedCols.has(c.key));
-  const currentColItems = columnItems(visibleColumns[focusedCol]?.key as InitiativeStatus ?? 'new');
-  const focusedCardId = currentColItems[focusedCard]?.id ?? null;
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    const cols = COLUMNS.filter(c => !collapsedCols.has(c.key));
-    switch (e.key) {
-      case 'ArrowRight':
-        e.preventDefault();
-        setFocusedCol(prev => Math.min(prev + 1, cols.length - 1));
-        setFocusedCard(0);
-        break;
-      case 'ArrowLeft':
-        e.preventDefault();
-        setFocusedCol(prev => Math.max(prev - 1, 0));
-        setFocusedCard(0);
-        break;
-      case 'ArrowDown': {
-        e.preventDefault();
-        const items = columnItems(cols[focusedCol]?.key as InitiativeStatus ?? 'new');
-        setFocusedCard(prev => Math.min(prev + 1, items.length - 1));
-        break;
-      }
-      case 'ArrowUp':
-        e.preventDefault();
-        setFocusedCard(prev => Math.max(prev - 1, 0));
-        break;
-      case 'Enter': {
-        e.preventDefault();
-        const items = columnItems(cols[focusedCol]?.key as InitiativeStatus ?? 'new');
-        if (items[focusedCard]) onCardClick(items[focusedCard]);
-        break;
-      }
-      case 'f':
-      case 'F':
-        if (!e.ctrlKey && !e.metaKey) {
-          e.preventDefault();
-          const searchInput = document.querySelector<HTMLInputElement>('.pk-search-input');
-          searchInput?.focus();
-        }
-        break;
-      case '1': case '2': case '3': case '4': case '5': case '6': case '7': {
-        const idx = parseInt(e.key) - 1;
-        if (idx < cols.length) { setFocusedCol(idx); setFocusedCard(0); }
-        break;
-      }
-    }
-  }, [collapsedCols, focusedCol, focusedCard, onCardClick]);
 
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={closestCorners}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       accessibility={{
@@ -189,8 +130,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
           ref={boardRef}
           className="pk-board"
           tabIndex={0}
-          onKeyDown={handleKeyDown}
-          aria-label="Kanban board. Use arrow keys to navigate, Enter to open card details."
+          aria-label="Kanban board"
           style={{ outline: 'none' }}
         >
           {COLUMNS.map((col) => (
@@ -202,12 +142,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
               onCardContextMenu={handleCardContextMenu}
               activeId={activeId}
               swimlane={swimlane}
-              focusedCardId={
-                !collapsedCols.has(col.key) &&
-                visibleColumns[focusedCol]?.key === col.key
-                  ? focusedCardId
-                  : null
-              }
+              focusedCardId={null}
               isCollapsed={collapsedCols.has(col.key)}
               onToggleCollapse={() => toggleCollapse(col.key)}
             />
