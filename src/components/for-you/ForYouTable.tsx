@@ -212,9 +212,11 @@ export function ForYouTable({
                     {/* Priority */}
                     <td style={{ padding: '0 12px', width: 75 }} title={priorityLabel}>
                       <div style={{ display: 'flex', gap: 2 }}>
-                        {[1,2,3,4].map(i => (
-                          <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: i <= item.priorityLevel ? 'var(--cp-t3)' : 'var(--cp-prg-bg)' }} />
-                        ))}
+                        {[1,2,3,4].map(i => {
+                          const filled = i <= item.priorityLevel;
+                          const fillColor = item.priorityLevel >= 4 ? 'var(--cp-err-text)' : item.priorityLevel >= 3 ? 'var(--cp-warn)' : 'var(--cp-ok)';
+                          return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : 'var(--cp-prg-bg)' }} />;
+                        })}
                       </div>
                     </td>
 
