@@ -11,6 +11,7 @@ import { useModuleAccess } from "@/hooks/useModuleAccess";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { useSingleItemNavigation } from "@/hooks/useSingleItemNavigation";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 const CreateDropdown = lazy(() => import("./CreateDropdown").then(m => ({ default: m.CreateDropdown })));
 const GlobalSearchPalette = lazy(() => import("@/components/ui/global-search-palette").then(m => ({ default: m.GlobalSearchPalette })));
 const NotificationsPanel = lazy(() => import("./NotificationsPanel").then(m => ({ default: m.NotificationsPanel })));
@@ -52,7 +53,6 @@ export function CatalystHeader() {
   const headerRef = useRef<HTMLElement | null>(null);
   const { isAdmin, isSuperAdmin, isProgramManager, canAccessEnterprise, isProductOwnerOnly } = useUserRole();
   
-  // Settings access: admin, super_admin, or program_manager (management)
   const canAccessSettings = isAdmin || isSuperAdmin || isProgramManager;
   const { isModuleEnabled, isLoading: modulesLoading } = useEnabledModules();
   const { canViewInNav, isLoading: accessLoading } = useModuleAccess();
@@ -60,16 +60,11 @@ export function CatalystHeader() {
   const { workspaceType, sidebarExpanded } = useCatalystContext();
   const singleItemNav = useSingleItemNavigation();
   
-  // Get active nav item based on workspace context
   const activeNavItem = getActiveNavItem(workspaceType);
-
-  // Keep global --app-header-h / --app-top-offset in sync with real header height
   useAppHeaderOffset(headerRef);
 
-  // Create entity dialog states - lifted from dropdowns
   const [createDialogType, setCreateDialogType] = useState<'program' | 'project' | 'product' | null>(null);
 
-  // Get current user
   const { data: user } = useQuery({
     queryKey: ['current-user'],
     queryFn: async () => {
@@ -78,7 +73,6 @@ export function CatalystHeader() {
     },
   });
 
-  // Handle create success callbacks
   const handleCreateSuccess = (entity: { id: string; name: string; key?: string }) => {
     if (createDialogType === 'program') {
       navigate(`/program/${entity.id}/room`);
@@ -98,33 +92,26 @@ export function CatalystHeader() {
 
   const handleSignOut = async () => {
     try {
-      // Always attempt to sign out - don't check for session first
-      // Use scope: 'local' to clear local session even if server session is gone
       await supabase.auth.signOut({ scope: 'local' });
       toast.success('Signed out successfully');
       navigate('/auth');
     } catch (error: any) {
-      // If sign out fails, still redirect to auth page
       console.error('Sign out error:', error);
       navigate('/auth');
     }
   };
 
-  // Close avatar menu on outside click / Escape
   useEffect(() => {
     if (!userMenuOpen) return;
-
     const onPointerDown = (e: MouseEvent | TouchEvent) => {
       const target = e.target as Node | null;
       if (!target) return;
       if (userMenuRef.current?.contains(target)) return;
       setUserMenuOpen(false);
     };
-
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setUserMenuOpen(false);
     };
-
     document.addEventListener('mousedown', onPointerDown);
     document.addEventListener('touchstart', onPointerDown);
     document.addEventListener('keydown', onKeyDown);
@@ -135,20 +122,14 @@ export function CatalystHeader() {
     };
   }, [userMenuOpen]);
 
-  // Handle click on disabled module
   const handleDisabledModuleClick = (label: string) => {
     if (isAdmin) {
       navigate('/admin/modules-packages');
     } else {
-      catalystToast.info(
-        'Module Disabled',
-        'This module is disabled by your organization.'
-      );
+      catalystToast.info('Module Disabled', 'This module is disabled by your organization.');
     }
   };
 
-  // Define nav items with their module keys (must match admin_nav_modules.module_key)
-  // featureFlagKey maps to feature_flags.module_key for visibility gating
   const allNavItems = [
     { label: "Home", path: "/for-you", moduleKey: "home", featureFlagKey: null, visibleToProductOwner: true },
     { label: "StrategyHub", path: "/strategyhub", moduleKey: "enterprise", featureFlagKey: "strategy_hub", requiresEnterpriseAccess: true, visibleToProductOwner: true },
@@ -162,7 +143,6 @@ export function CatalystHeader() {
     { label: "WikiHub", path: "/wiki", moduleKey: "wiki", featureFlagKey: "wiki_hub", visibleToProductOwner: true },
   ];
 
-  // Get all nav items with their enabled status based on role-based module access + feature flags
   const navItems = allNavItems
     .filter(item => !isProductOwnerOnly || item.visibleToProductOwner)
     .map(item => ({
@@ -171,18 +151,14 @@ export function CatalystHeader() {
         ? canViewInNav(item.moduleKey) && canAccessEnterprise
         : canViewInNav(item.moduleKey),
     }))
-    // Also filter by feature flags — if a module is disabled via feature flags, hide from nav
     .filter(item => {
-      if (!item.featureFlagKey) return true; // Home always visible
+      if (!item.featureFlagKey) return true;
       return featureFlagEnabled(item.featureFlagKey);
     })
-    .filter(item => item.isEnabled); // Only show items user can view in nav
-
-  
+    .filter(item => item.isEnabled);
 
   return (
     <>
-      {/* TopNav: 52px fixed height per V10 spec, theme-aware bg, elevation + bottom border */}
       <header
         ref={headerRef}
         className="sticky top-0 z-[100] flex items-center"
@@ -191,36 +167,30 @@ export function CatalystHeader() {
           paddingTop: 'var(--app-safe-top)',
           paddingLeft: '20px',
           paddingRight: '20px',
-          borderBottom: '1px solid var(--nav-border, #E2E8F0)',
+          borderBottom: '1px solid var(--cp-bd)',
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          backgroundColor: 'var(--nav-bg, #FFFFFF)',
-          boxShadow: 'var(--nav-shadow, 0 1px 0 rgba(15, 23, 42, 0.06))',
+          backgroundColor: 'var(--cp-bg)',
+          boxShadow: 'none',
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
         }}
       >
-        {/* ===== LOGO ZONE — Convergence Hub Icon + Umbrella-C Wordmark ===== */}
+        {/* ===== LOGO ZONE ===== */}
         <a 
-          className="flex items-center flex-shrink-0 cursor-pointer no-underline rounded-lg transition-colors p-1 -m-1 hover:bg-black/[0.04]"
+          className="flex items-center flex-shrink-0 cursor-pointer no-underline rounded-lg transition-colors p-1 -m-1"
           style={{ 
             marginRight: '4px',
             paddingRight: '20px',
-            borderRight: '1px solid var(--nav-logo-separator, #F1F5F9)',
+            borderRight: '1px solid var(--cp-bd-zone)',
           }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--cp-hover)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           onClick={() => navigate('/home')}
         >
           {!sidebarExpanded ? (
-            <img 
-              src={catalystLogoMark2} 
-              alt="Catalyst" 
-              style={{ height: '28px', width: '28px' }} 
-            />
+            <img src={catalystLogoMark2} alt="Catalyst" style={{ height: '28px', width: '28px' }} />
           ) : (
-            <img 
-              src={catalystWordmark3} 
-              alt="Catalyst" 
-              style={{ height: '32px', width: 'auto' }} 
-            />
+            <img src={catalystWordmark3} alt="Catalyst" style={{ height: '32px', width: 'auto' }} />
           )}
         </a>
         
@@ -228,7 +198,6 @@ export function CatalystHeader() {
         <nav className="hidden md:flex items-center flex-1" style={{ gap: '4px' }}>
           <TooltipProvider>
             {navItems.map((item) => {
-              // Disabled module rendering
               if (!item.isEnabled) {
                 return (
                   <Tooltip key={item.label}>
@@ -240,7 +209,7 @@ export function CatalystHeader() {
                           padding: '0 14px',
                           fontSize: '14px',
                           fontWeight: 500,
-                          color: 'var(--nav-text)',
+                          color: 'var(--cp-t3)',
                           borderRadius: '6px',
                           gap: '4px',
                           border: 'none',
@@ -262,47 +231,39 @@ export function CatalystHeader() {
                 );
               }
 
-              // Check if this nav item is active
               const isActive = item.label === activeNavItem;
-              
-              // V10 TopNav item styles — Inter 500, 0.84rem
-              // Active state uses 2px bottom border (underline), no background fill
-              const activeColor = '#2563EB';
-              const activeBg = 'transparent';
+              const activeColor = 'var(--cp-blue-text)';
               const navButtonStyle: React.CSSProperties = {
                 height: '100%',
                 padding: '0 14px',
                 fontSize: '13px',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? activeColor : 'var(--nav-text, #64748B)',
+                color: isActive ? activeColor : 'var(--cp-t3)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '1px',
                 cursor: 'pointer',
                 transition: 'color 0.15s ease',
                 border: 'none',
-                background: isActive ? activeBg : 'transparent',
+                background: 'transparent',
                 position: 'relative' as const,
                 fontFamily: "'Inter', sans-serif",
                 outline: 'none',
                 letterSpacing: '-0.1px',
                 borderRadius: '0',
-                borderBottom: isActive ? `2px solid ${activeColor}` : '2px solid transparent',
+                borderBottom: isActive ? `2px solid var(--cp-blue-text)` : '2px solid transparent',
               };
               
-              // Hover handler - only change color, no backgrounds
               const handleHover = (e: React.MouseEvent<HTMLButtonElement>, isEnter: boolean) => {
                 if (!isActive) {
-                  e.currentTarget.style.color = isEnter ? '#0F172A' : 'var(--nav-text, #64748B)';
-                  // Ghost underline preview
-                  e.currentTarget.style.borderBottom = isEnter ? '2px solid #E2E8F0' : '2px solid transparent';
+                  e.currentTarget.style.color = isEnter ? 'var(--cp-t1)' : 'var(--cp-t3)';
+                  e.currentTarget.style.borderBottom = isEnter ? '2px solid var(--cp-bd)' : '2px solid transparent';
                 }
               };
               
               return (
                 <div key={item.label} className="inline-flex items-center relative">
                   {item.label === "Product" ? (
-                    // Product: Direct navigation if single active product line
                     singleItemNav.product.hasSingleItem && singleItemNav.product.directPath ? (
                       <button
                         style={navButtonStyle}
@@ -338,7 +299,6 @@ export function CatalystHeader() {
                       </Popover>
                     )
                   ) : item.label === "Program" ? (
-                    // Program: Direct navigation if single accessible program
                     singleItemNav.program.hasSingleItem && singleItemNav.program.directPath ? (
                       <button
                         style={navButtonStyle}
@@ -374,7 +334,6 @@ export function CatalystHeader() {
                       </Popover>
                     )
                   ) : item.label === "Project" ? (
-                    // Project: Direct navigation if single accessible project
                     singleItemNav.project.hasSingleItem && singleItemNav.project.directPath ? (
                       <button
                         style={navButtonStyle}
@@ -410,17 +369,16 @@ export function CatalystHeader() {
                       </Popover>
                     )
                   ) : item.label === "Release" ? (
-                    // Release: Direct navigation for non-admins (no dropdown options)
                     singleItemNav.release.hasSingleItem && singleItemNav.release.directPath ? (
                       <button
                         style={{
                           ...navButtonStyle,
-                          color: location.pathname.startsWith('/release') ? '#2563eb' : navButtonStyle.color,
+                          color: location.pathname.startsWith('/release') ? 'var(--cp-blue-text)' : navButtonStyle.color,
                           fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
-                          borderBottom: location.pathname.startsWith('/release') ? '2px solid #2563eb' : '2px solid transparent',
+                          borderBottom: location.pathname.startsWith('/release') ? '2px solid var(--cp-blue-text)' : '2px solid transparent',
                         }}
-                        onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#2563eb'; }}
-                        onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--nav-text, #475569)'; }}
+                        onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--cp-t1)'; }}
+                        onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--cp-t3)'; }}
                         onClick={() => navigate(singleItemNav.release.directPath!)}
                       >
                         {item.label}
@@ -434,12 +392,12 @@ export function CatalystHeader() {
                           <button 
                             style={{
                               ...navButtonStyle,
-                              color: location.pathname.startsWith('/release') ? '#2563eb' : navButtonStyle.color,
+                              color: location.pathname.startsWith('/release') ? 'var(--cp-blue-text)' : navButtonStyle.color,
                               fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
-                              borderBottom: location.pathname.startsWith('/release') ? '2px solid #2563eb' : '2px solid transparent',
+                              borderBottom: location.pathname.startsWith('/release') ? '2px solid var(--cp-blue-text)' : '2px solid transparent',
                             }}
-                            onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#2563eb'; }}
-                            onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--nav-text, #475569)'; }}
+                            onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--cp-t1)'; }}
+                            onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--cp-t3)'; }}
                           >
                             {item.label}
                             <ChevronDown style={{ width: '16px', height: '16px' }} />
@@ -453,37 +411,34 @@ export function CatalystHeader() {
                       </Popover>
                     )
                   ) : item.label === "TaskHub" ? (
-                    // TaskHub: Direct navigation to taskhub boards
                     <button
                       style={{
                         ...navButtonStyle,
-                        color: location.pathname.startsWith('/taskhub') ? '#2563eb' : navButtonStyle.color,
+                        color: location.pathname.startsWith('/taskhub') ? 'var(--cp-blue-text)' : navButtonStyle.color,
                         fontWeight: location.pathname.startsWith('/taskhub') ? 600 : navButtonStyle.fontWeight,
-                        borderBottom: location.pathname.startsWith('/taskhub') ? '2px solid #2563eb' : '2px solid transparent',
+                        borderBottom: location.pathname.startsWith('/taskhub') ? '2px solid var(--cp-blue-text)' : '2px solid transparent',
                       }}
-                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = '#2563eb'; }}
-                      onMouseLeave={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = 'var(--nav-text, #475569)'; }}
+                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = 'var(--cp-t1)'; }}
+                      onMouseLeave={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = 'var(--cp-t3)'; }}
                       onClick={() => navigate('/taskhub/boards')}
                     >
                       {item.label}
                     </button>
                   ) : item.label === "Releases" ? (
-                    // Releases: Direct navigation with active state
                     <button
                       style={{
                         ...navButtonStyle,
-                        color: location.pathname.startsWith('/releases') ? '#2563eb' : navButtonStyle.color,
+                        color: location.pathname.startsWith('/releases') ? 'var(--cp-blue-text)' : navButtonStyle.color,
                         fontWeight: location.pathname.startsWith('/releases') ? 600 : navButtonStyle.fontWeight,
-                        borderBottom: location.pathname.startsWith('/releases') ? '2px solid #2563eb' : '2px solid transparent',
+                        borderBottom: location.pathname.startsWith('/releases') ? '2px solid var(--cp-blue-text)' : '2px solid transparent',
                       }}
-                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = '#2563eb'; }}
-                      onMouseLeave={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = 'var(--nav-text, #475569)'; }}
+                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = 'var(--cp-t1)'; }}
+                      onMouseLeave={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = 'var(--cp-t3)'; }}
                       onClick={() => navigate('/releases/command-center')}
                     >
                       {item.label}
                     </button>
                   ) : (item as any).isLabel ? (
-                    // Label-only nav item (no interaction, just display)
                     <span
                       style={{
                         height: '36px',
@@ -491,7 +446,7 @@ export function CatalystHeader() {
                         fontSize: '0.84rem',
                         fontWeight: 500,
                         fontFamily: "'Inter', sans-serif",
-                        color: 'var(--nav-text)',
+                        color: 'var(--cp-t3)',
                         borderRadius: '6px',
                         display: 'flex',
                         alignItems: 'center',
@@ -517,7 +472,7 @@ export function CatalystHeader() {
           </TooltipProvider>
         </nav>
 
-        {/* Mobile Menu — only render on small screens to save memory */}
+        {/* Mobile Menu */}
         <div className="md:hidden flex-1">
           <Suspense fallback={null}>
             <MobileNavigationMenu />
@@ -526,7 +481,7 @@ export function CatalystHeader() {
         
         {/* ===== ACTIONS ZONE ===== */}
         <div className="flex items-center flex-shrink-0" style={{ gap: '8px' }}>
-          {/* Create Button (Primary CTA) */}
+          {/* Create Button */}
           <CreateDropdown />
           
           <TooltipProvider>
@@ -540,7 +495,7 @@ export function CatalystHeader() {
               </TooltipContent>
             </Tooltip>
 
-            {/* Settings — 40×40 icon button (Commercial SaaS spec) */}
+            {/* Settings */}
             {canAccessSettings && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -549,18 +504,18 @@ export function CatalystHeader() {
                     style={{
                       width: '36px',
                       height: '36px',
-                      color: '#64748B',
+                      color: 'var(--cp-t3)',
                       background: 'transparent',
                       border: 'none',
                       cursor: 'pointer',
                       borderRadius: '8px',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = '#334155';
-                      e.currentTarget.style.background = '#F1F5F9';
+                      e.currentTarget.style.color = 'var(--cp-t1)';
+                      e.currentTarget.style.background = 'var(--cp-hover)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = '#64748B';
+                      e.currentTarget.style.color = 'var(--cp-t3)';
                       e.currentTarget.style.background = 'transparent';
                     }}
                     onClick={() => navigate('/admin/users')}
@@ -575,37 +530,38 @@ export function CatalystHeader() {
               </Tooltip>
             )}
 
-            {/* Search Trigger — V11 light surface */}
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
+            {/* Search Trigger */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="hidden sm:flex items-center gap-2 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+              className="hidden sm:flex items-center gap-2 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cp-focus-ring)] focus-visible:ring-offset-1"
               style={{ 
                 minWidth: '240px',
                 height: '34px',
                 padding: '0 12px',
-                background: '#F1F5F9',
-                border: '1px solid #E2E8F0',
+                background: 'var(--cp-bg)',
+                border: '1px solid var(--cp-bd)',
                 borderRadius: '8px',
                 cursor: 'pointer',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#CBD5E1';
-                e.currentTarget.style.background = '#FFFFFF';
+                e.currentTarget.style.borderColor = 'var(--cp-bd-hover)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#E2E8F0';
-                e.currentTarget.style.background = '#F1F5F9';
+                e.currentTarget.style.borderColor = 'var(--cp-bd)';
               }}
             >
-              <Search className="h-4 w-4" style={{ color: '#94A3B8' }} />
-              <span style={{ fontSize: '13px', fontFamily: "'Inter', sans-serif", color: '#94A3B8', flex: 1, textAlign: 'left' }}>
+              <Search className="h-4 w-4" style={{ color: 'var(--cp-t4)' }} />
+              <span style={{ fontSize: '13px', fontFamily: "'Inter', sans-serif", color: 'var(--cp-t4)', flex: 1, textAlign: 'left' }}>
                 Search anything...
               </span>
               <div className="flex gap-1">
-                <kbd style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '22px', height: '22px', padding: '0 6px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '4px', fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: '#94A3B8' }}>
+                <kbd style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '22px', height: '22px', padding: '0 6px', background: 'var(--cp-bg)', border: '1px solid var(--cp-bd)', borderRadius: '4px', fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: 'var(--cp-t4)' }}>
                   ⌘
                 </kbd>
-                <kbd style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '22px', height: '22px', padding: '0 6px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '4px', fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: '#94A3B8' }}>
+                <kbd style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '22px', height: '22px', padding: '0 6px', background: 'var(--cp-bg)', border: '1px solid var(--cp-bd)', borderRadius: '4px', fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: 'var(--cp-t4)' }}>
                   K
                 </kbd>
               </div>
@@ -613,20 +569,20 @@ export function CatalystHeader() {
             {/* Mobile search icon */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="sm:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+              className="sm:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cp-focus-ring)] focus-visible:ring-offset-1"
               style={{
                 width: '36px',
                 height: '36px',
-                color: '#64748B',
+                color: 'var(--cp-t3)',
                 background: 'transparent',
                 borderRadius: '8px',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = '#334155';
-                e.currentTarget.style.background = '#F1F5F9';
+                e.currentTarget.style.color = 'var(--cp-t1)';
+                e.currentTarget.style.background = 'var(--cp-hover)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = '#64748B';
+                e.currentTarget.style.color = 'var(--cp-t3)';
                 e.currentTarget.style.background = 'transparent';
               }}
             >
@@ -643,11 +599,11 @@ export function CatalystHeader() {
                   aria-expanded={userMenuOpen}
                   className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   style={{
-                    background: 'linear-gradient(135deg, #2563EB, #6366F1)',
+                    background: 'linear-gradient(135deg, var(--cp-blue), #6366F1)',
                     color: '#FFFFFF',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 0 2px #DBEAFE';
+                    e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-blue-wash)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.boxShadow = 'none';
@@ -661,91 +617,57 @@ export function CatalystHeader() {
                 <div
                   role="menu"
                   aria-label="User menu"
-                  className={cn(
-                    "absolute right-0 top-full mt-2",
-                    "z-[9999] w-56",
-                    "rounded-md border border-border/50 bg-popover text-popover-foreground shadow-lg",
-                    "p-1"
-                  )}
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: '100%',
+                    marginTop: '8px',
+                    zIndex: 9999,
+                    width: '224px',
+                    borderRadius: '6px',
+                    border: '1px solid var(--cp-bd)',
+                    background: 'var(--cp-float)',
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                    padding: '4px',
+                  }}
                 >
-                  <div className="flex flex-col space-y-1 p-2">
-                    <p className="text-sm font-medium truncate">{user?.email}</p>
-                    <p className="text-xs text-muted-foreground">User Account</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px' }}>
+                    <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email}</p>
+                    <p style={{ fontSize: '12px', color: 'var(--cp-t3)' }}>User Account</p>
                   </div>
 
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      setUserMenuOpen(false);
-                      navigate('/profile');
-                    }}
-                    className={cn(
-                      "w-full flex items-center rounded-sm px-2 py-1.5 text-sm",
-                      "transition-colors",
-                      "hover:bg-accent hover:text-accent-foreground",
-                      "focus:outline-none focus:bg-accent focus:text-accent-foreground"
-                    )}
-                  >
-                    <User className="mr-2 h-4 w-4" />
-                    <span>My Profile</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      setUserMenuOpen(false);
-                      navigate('/admin/settings/notifications');
-                    }}
-                    className={cn(
-                      "w-full flex items-center rounded-sm px-2 py-1.5 text-sm",
-                      "transition-colors",
-                      "hover:bg-accent hover:text-accent-foreground",
-                      "focus:outline-none focus:bg-accent focus:text-accent-foreground"
-                    )}
-                  >
-                    <Bell className="mr-2 h-4 w-4" />
-                    <span>Notification Settings</span>
-                  </button>
-
-                  {canAccessSettings && (
+                  {[
+                    { icon: User, label: 'My Profile', onClick: () => { setUserMenuOpen(false); navigate('/profile'); } },
+                    { icon: Bell, label: 'Notification Settings', onClick: () => { setUserMenuOpen(false); navigate('/admin/settings/notifications'); } },
+                    ...(canAccessSettings ? [{ icon: Settings, label: 'Administration', onClick: () => { setUserMenuOpen(false); navigate('/admin/users'); } }] : []),
+                    { icon: LogOut, label: 'Sign out', onClick: () => { setUserMenuOpen(false); void handleSignOut(); } },
+                  ].map((menuItem) => (
                     <button
+                      key={menuItem.label}
                       type="button"
                       role="menuitem"
-                      onClick={() => {
-                        setUserMenuOpen(false);
-                        navigate('/admin/users');
+                      onClick={menuItem.onClick}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '6px 8px',
+                        borderRadius: '4px',
+                        border: 'none',
+                        background: 'transparent',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        color: 'var(--cp-t2)',
+                        transition: 'background 0.1s',
                       }}
-                      className={cn(
-                        "w-full flex items-center rounded-sm px-2 py-1.5 text-sm",
-                        "transition-colors",
-                        "hover:bg-accent hover:text-accent-foreground",
-                        "focus:outline-none focus:bg-accent focus:text-accent-foreground"
-                      )}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--cp-hover)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Administration</span>
+                      <menuItem.icon style={{ width: '16px', height: '16px' }} />
+                      <span>{menuItem.label}</span>
                     </button>
-                  )}
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      setUserMenuOpen(false);
-                      void handleSignOut();
-                    }}
-                    className={cn(
-                      "w-full flex items-center rounded-sm px-2 py-1.5 text-sm",
-                      "transition-colors",
-                      "hover:bg-accent hover:text-accent-foreground",
-                      "focus:outline-none focus:bg-accent focus:text-accent-foreground"
-                    )}
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Sign out</span>
-                  </button>
+                  )))}
                 </div>
               )}
             </div>
@@ -756,7 +678,7 @@ export function CatalystHeader() {
       {/* Global Search Command Palette */}
       <GlobalSearchPalette open={isSearchOpen} onOpenChange={setIsSearchOpen} />
 
-      {/* Create Entity Dialog - lifted from dropdowns to prevent stacking */}
+      {/* Create Entity Dialog */}
       {createDialogType && (
         <CreateEntityDialog
           open={true}
@@ -765,7 +687,6 @@ export function CatalystHeader() {
           onSuccess={handleCreateSuccess}
         />
       )}
-
     </>
   );
 }
