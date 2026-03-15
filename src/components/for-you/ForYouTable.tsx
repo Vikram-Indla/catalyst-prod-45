@@ -226,7 +226,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Reported by */}
-                    <td style={{ padding: '0 12px', width: 170 }}>
+                    <td style={{ padding: '8px 12px', width: 170 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {(() => {
                           const reporterName = item.reporter || item.assignee.name;

@@ -104,7 +104,7 @@ function ExecutiveSummaryV5({ data, avatarMap, roleMap }: { data: ExecSummaryV5 
       {tc && (
         <div className="di-spotlight">
           <div className="di-trophy">
-            <Trophy size={24} color="white" />
+            <Trophy size={24} />
           </div>
           <div className="di-spot-info">
             <div className="di-spot-pre">W{tc.consecutiveWeeks > 1 ? '' : ''} TOP CONTRIBUTOR</div>
