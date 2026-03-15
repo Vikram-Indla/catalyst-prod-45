@@ -198,7 +198,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Project */}
-                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)', width: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)', width: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       <span title={item.project}>{item.project}</span>
                     </td>
 
