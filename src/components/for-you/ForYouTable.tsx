@@ -210,7 +210,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Priority */}
-                    <td style={{ padding: '0 12px', width: 75 }} title={priorityLabel}>
+                    <td style={{ padding: '8px 12px', width: 75 }} title={priorityLabel}>
                       <div style={{ display: 'flex', gap: 2 }}>
                         {[1,2,3,4].map(i => {
                           const filled = i <= item.priorityLevel;
