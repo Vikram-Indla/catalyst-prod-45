@@ -188,7 +188,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Summary */}
-                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: 'var(--cp-t1)', maxWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 500, color: 'var(--cp-t1)', maxWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {item.summary}
                     </td>
 
