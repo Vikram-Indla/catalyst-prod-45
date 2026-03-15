@@ -156,7 +156,7 @@ export function ForYouTable({
                     key={item.id}
                     onClick={() => { setFocusedIndex(currentRowIndex); onRowClick(item.id); }}
                     style={{
-                      height: 40, borderBottom: '1px solid var(--cp-bd-table)', cursor: 'pointer',
+                      height: 36, maxHeight: 36, borderBottom: '1px solid var(--cp-bd-table)', cursor: 'pointer',
                       background: isSelected ? 'var(--cp-blue-wash)' : isFocused ? 'var(--cp-hover)' : 'var(--cp-bg)',
                       transition: 'background .1s',
                     }}
