@@ -193,7 +193,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Status */}
-                    <td style={{ padding: '0 8px', width: 150, textAlign: 'center' }}>
+                    <td style={{ padding: '8px 8px', width: 150, textAlign: 'center' }}>
                       <StatusLozenge status={item.status} />
                     </td>
 
