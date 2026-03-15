@@ -99,9 +99,9 @@ export function ForYouTable({
   let rowIndex = -1;
 
   const thStyle: React.CSSProperties = {
-    height: 32, padding: '0 12px',
+    height: 36, padding: '10px 12px',
     background: 'var(--cp-bg)', borderBottom: '1px solid var(--cp-bd)',
-    fontSize: 11, fontWeight: 600, color: 'var(--cp-t3)',
+    fontSize: 11, fontWeight: 700, color: 'var(--cp-t3)',
     textTransform: 'uppercase', letterSpacing: '0.06em',
     textAlign: 'left', whiteSpace: 'nowrap',
     position: 'sticky', top: 48, zIndex: 10,
