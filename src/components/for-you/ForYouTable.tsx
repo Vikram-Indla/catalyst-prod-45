@@ -203,7 +203,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Hub */}
-                    <td style={{ padding: '0 12px', width: 95 }}>
+                    <td style={{ padding: '8px 12px', width: 95 }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
                         {item.hubLabel}
                       </span>
