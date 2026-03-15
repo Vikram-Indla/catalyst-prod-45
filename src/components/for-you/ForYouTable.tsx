@@ -99,9 +99,9 @@ export function ForYouTable({
   let rowIndex = -1;
 
   const thStyle: React.CSSProperties = {
-    height: 32, padding: '0 12px',
+    height: 36, padding: '10px 12px',
     background: 'var(--cp-bg)', borderBottom: '1px solid var(--cp-bd)',
-    fontSize: 11, fontWeight: 600, color: 'var(--cp-t3)',
+    fontSize: 11, fontWeight: 700, color: 'var(--cp-t3)',
     textTransform: 'uppercase', letterSpacing: '0.06em',
     textAlign: 'left', whiteSpace: 'nowrap',
     position: 'sticky', top: 48, zIndex: 10,
@@ -156,7 +156,7 @@ export function ForYouTable({
                     key={item.id}
                     onClick={() => { setFocusedIndex(currentRowIndex); onRowClick(item.id); }}
                     style={{
-                      height: 40, borderBottom: '1px solid var(--cp-bd-table)', cursor: 'pointer',
+                      height: 36, maxHeight: 36, borderBottom: '1px solid var(--cp-bd-table)', cursor: 'pointer',
                       background: isSelected ? 'var(--cp-blue-wash)' : isFocused ? 'var(--cp-hover)' : 'var(--cp-bg)',
                       transition: 'background .1s',
                     }}
@@ -164,12 +164,12 @@ export function ForYouTable({
                     onMouseLeave={e => { if (!isSelected && !isFocused) e.currentTarget.style.background = 'var(--cp-bg)'; }}
                   >
                     {/* Checkbox */}
-                    <td style={{ padding: '0 12px', width: 36 }}>
+                    <td style={{ padding: '8px 12px', width: 36 }}>
                       <input type="checkbox" checked={isSelected} onClick={e => e.stopPropagation()} onChange={e => handleSelectItem(item.id, e.target.checked)} style={{ width: 16, height: 16, accentColor: 'var(--cp-blue)', cursor: 'pointer' }} />
                     </td>
 
                     {/* Star */}
-                    <td style={{ padding: '0 4px', width: 32 }}>
+                    <td style={{ padding: '8px 4px', width: 32 }}>
                       <button
                         onClick={e => { e.stopPropagation(); onStarToggle?.(item.id); }}
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4 }}
@@ -180,7 +180,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Key */}
-                    <td style={{ padding: '0 12px', width: 140 }}>
+                    <td style={{ padding: '8px 12px', width: 140 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <JiraIssueTypeIcon issueType={item.issueType} size={16} />
                         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: 'var(--cp-blue-link)' }}>{item.key}</span>
@@ -188,29 +188,29 @@ export function ForYouTable({
                     </td>
 
                     {/* Summary */}
-                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: 'var(--cp-t1)', maxWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 500, color: 'var(--cp-t1)', maxWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {item.summary}
                     </td>
 
                     {/* Status */}
-                    <td style={{ padding: '0 8px', width: 150, textAlign: 'center' }}>
+                    <td style={{ padding: '8px 8px', width: 150, textAlign: 'center' }}>
                       <StatusLozenge status={item.status} />
                     </td>
 
                     {/* Project */}
-                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)', width: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)', width: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       <span title={item.project}>{item.project}</span>
                     </td>
 
                     {/* Hub */}
-                    <td style={{ padding: '0 12px', width: 95 }}>
+                    <td style={{ padding: '8px 12px', width: 95 }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
                         {item.hubLabel}
                       </span>
                     </td>
 
                     {/* Priority */}
-                    <td style={{ padding: '0 12px', width: 75 }} title={priorityLabel}>
+                    <td style={{ padding: '8px 12px', width: 75 }} title={priorityLabel}>
                       <div style={{ display: 'flex', gap: 2 }}>
                         {[1,2,3,4].map(i => {
                           const filled = i <= item.priorityLevel;
@@ -221,12 +221,12 @@ export function ForYouTable({
                     </td>
 
                     {/* Updated */}
-                    <td style={{ padding: '0 12px', fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', width: 100 }}>
+                    <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', width: 100 }}>
                       {item.updatedAt}
                     </td>
 
                     {/* Reported by */}
-                    <td style={{ padding: '0 12px', width: 170 }}>
+                    <td style={{ padding: '8px 12px', width: 170 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {(() => {
                           const reporterName = item.reporter || item.assignee.name;
