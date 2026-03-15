@@ -169,7 +169,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Star */}
-                    <td style={{ padding: '0 4px', width: 32 }}>
+                    <td style={{ padding: '8px 4px', width: 32 }}>
                       <button
                         onClick={e => { e.stopPropagation(); onStarToggle?.(item.id); }}
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4 }}
