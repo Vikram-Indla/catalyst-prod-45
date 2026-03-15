@@ -164,7 +164,7 @@ export function ForYouTable({
                     onMouseLeave={e => { if (!isSelected && !isFocused) e.currentTarget.style.background = 'var(--cp-bg)'; }}
                   >
                     {/* Checkbox */}
-                    <td style={{ padding: '0 12px', width: 36 }}>
+                    <td style={{ padding: '8px 12px', width: 36 }}>
                       <input type="checkbox" checked={isSelected} onClick={e => e.stopPropagation()} onChange={e => handleSelectItem(item.id, e.target.checked)} style={{ width: 16, height: 16, accentColor: 'var(--cp-blue)', cursor: 'pointer' }} />
                     </td>
 
