@@ -42,13 +42,14 @@ export function ThemeToggle() {
       <TooltipTrigger asChild>
         <button
           onClick={handleClick}
+          aria-label={LABELS[theme]}
           className="relative flex items-center justify-center rounded-lg transition-all"
           style={{
             width: '36px',
             height: '36px',
-            color: 'var(--cp-t3)',
+            color: 'var(--cp-t2)',
             background: 'transparent',
-            border: 'none',
+            border: '1px solid var(--cp-bd)',
             cursor: 'pointer',
             borderRadius: '8px',
           }}
