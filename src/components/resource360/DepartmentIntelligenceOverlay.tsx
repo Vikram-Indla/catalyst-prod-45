@@ -152,7 +152,7 @@ function ExecutiveSummaryV5({ data, avatarMap, roleMap }: { data: ExecSummaryV5 
                   <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                     <span className="di-res-name">{res.name}</span>
                     {roleMap.get(res.name.toLowerCase()) && (
-                      <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 500, lineHeight: 1.2 }}>
+                      <span style={{ fontSize: 10, color: 'var(--di-ink-muted)', fontWeight: 500, lineHeight: 1.2 }}>
                         {roleMap.get(res.name.toLowerCase())}
                       </span>
                     )}
