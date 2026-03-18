@@ -62,10 +62,10 @@
   /* StatusBadge — Jira-grade pill tokens */
   --status-todo-bg:         #DFE1E6;
   --status-todo-text:       #42526E;
-  --status-inprogress-bg:   #DEEBFF;
-  --status-inprogress-text: #0747A6;
-  --status-done-bg:         #E3FCEF;
-  --status-done-text:       #006644;
+  --status-inprogress-bg:   #0C66E4;
+  --status-inprogress-text: #FFFFFF;
+  --status-done-bg:         #36B37E;
+  --status-done-text:       #FFFFFF;
 
   /* Progress */
   --cp-prg-bg:          rgba(0,0,0,0.06);
