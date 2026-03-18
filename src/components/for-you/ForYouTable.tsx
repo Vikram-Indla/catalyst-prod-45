@@ -132,12 +132,13 @@ export function ForYouTable({
               {/* Group header — zone borders, no fill in dark mode */}
               <tr>
                 <td colSpan={10} style={{
-                  height: 32, padding: '0 12px',
+                  height: 44, padding: '12px 12px',
                   background: 'var(--cp-bg)',
                   borderBottom: '1px solid var(--cp-bd-zone)',
                   borderTop: '1px solid var(--cp-bd-zone)',
                   fontSize: 11, fontWeight: 700, color: 'var(--cp-t2)',
                   textTransform: 'uppercase', letterSpacing: '0.08em',
+                  verticalAlign: 'middle',
                 }}>
                   {GROUP_LABELS[group]}
                 </td>
