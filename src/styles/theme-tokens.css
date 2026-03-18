@@ -59,6 +59,14 @@
   --cp-lz-rd-bg:        #FFEBE6;
   --cp-lz-rd-t:         #BF2600;
 
+  /* StatusBadge — Jira-grade pill tokens */
+  --status-todo-bg:         #DFE1E6;
+  --status-todo-text:       #42526E;
+  --status-inprogress-bg:   #0052CC;
+  --status-inprogress-text: #FFFFFF;
+  --status-done-bg:         #36B37E;
+  --status-done-text:       #FFFFFF;
+
   /* Progress */
   --cp-prg-bg:          rgba(0,0,0,0.06);
 
@@ -120,6 +128,14 @@
   --cp-lz-gn-t:         #86EFAC;
   --cp-lz-rd-bg:        #2E1C18;
   --cp-lz-rd-t:         #FCA5A5;
+
+  /* StatusBadge — Jira-grade pill tokens (dark) */
+  --status-todo-bg:         #2C2926;
+  --status-todo-text:       #B8BCC8;
+  --status-inprogress-bg:   #0747A6;
+  --status-inprogress-text: #B3D4FF;
+  --status-done-bg:         #006644;
+  --status-done-text:       #ABF5D1;
 
   /* Progress */
   --cp-prg-bg:          rgba(248,244,240, 0.05);

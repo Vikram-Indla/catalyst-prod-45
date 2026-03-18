@@ -20,6 +20,38 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── StatusBadge — Jira-grade pill ── */
+.status-badge-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.status-badge-todo {
+  background: var(--status-todo-bg);
+  color: var(--status-todo-text);
+}
+.status-badge-inprogress {
+  background: var(--status-inprogress-bg);
+  color: var(--status-inprogress-text);
+}
+.status-badge-done {
+  background: var(--status-done-bg);
+  color: var(--status-done-text);
+}
+
 /* =============================================================
    APP LAYOUT CONTRACT — Header + Safe Area
    Single source of truth for any fixed drawers/overlays.

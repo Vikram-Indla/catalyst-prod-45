@@ -6,7 +6,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Star } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import type { WorkItem, WorkGroup } from '@/hooks/useForYouData';
 
@@ -195,7 +195,7 @@ export function ForYouTable({
 
                     {/* Status */}
                     <td style={{ padding: '8px 8px', width: 150, textAlign: 'center' }}>
-                      <StatusLozenge status={item.status} />
+                      <StatusBadge status={item.status} />
                     </td>
 
                     {/* Project */}
