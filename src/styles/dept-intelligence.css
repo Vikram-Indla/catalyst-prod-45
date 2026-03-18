@@ -40,6 +40,32 @@
   --di-r-full: 9999px;
 }
 
+/* ── Dark mode overrides ── */
+[data-theme="dark"] {
+  --di-ink: rgba(248,244,240, 0.92);
+  --di-ink-secondary: rgba(248,244,240, 0.82);
+  --di-ink-tertiary: rgba(248,244,240, 0.65);
+  --di-ink-muted: rgba(248,244,240, 0.45);
+  --di-surface: #1A1714;
+  --di-surface-secondary: #1E1B17;
+  --di-surface-tertiary: #232019;
+  --di-border: rgba(248,244,240, 0.10);
+  --di-border-strong: rgba(248,244,240, 0.16);
+  --di-primary: #3B82F6;
+  --di-primary-hover: #60A5FA;
+  --di-primary-bg: rgba(59,130,246, 0.10);
+  --di-teal: #2DD4BF;
+  --di-teal-bg: rgba(45,212,191, 0.08);
+  --di-success: #4ADE80;
+  --di-success-bg: rgba(74,222,128, 0.08);
+  --di-warning: #FDE68A;
+  --di-warning-bg: rgba(253,230,138, 0.06);
+  --di-danger: #FCA5A5;
+  --di-danger-bg: rgba(239,68,68, 0.08);
+  --di-purple: #A78BFA;
+  --di-purple-bg: rgba(167,139,250, 0.08);
+}
+
 /* ══════════════════════════════════════════════════════════
    BACKDROP
    ══════════════════════════════════════════════════════════ */
