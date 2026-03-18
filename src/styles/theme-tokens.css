@@ -129,6 +129,14 @@
   --cp-lz-rd-bg:        #2E1C18;
   --cp-lz-rd-t:         #FCA5A5;
 
+  /* StatusBadge — Jira-grade pill tokens (dark) */
+  --status-todo-bg:         #2C2926;
+  --status-todo-text:       #B8BCC8;
+  --status-inprogress-bg:   #0747A6;
+  --status-inprogress-text: #B3D4FF;
+  --status-done-bg:         #006644;
+  --status-done-text:       #ABF5D1;
+
   /* Progress */
   --cp-prg-bg:          rgba(248,244,240, 0.05);
 
