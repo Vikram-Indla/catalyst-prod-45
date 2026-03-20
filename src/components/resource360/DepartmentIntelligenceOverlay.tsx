@@ -569,7 +569,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
             <div className="di-empty">
               <Sparkles size={24} />
               <div className="di-empty-t">No AI analysis yet</div>
-              <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate the briefing for {weekLabel}.</div>
+              <div className="di-empty-s">AI briefing for {weekLabel} will generate automatically.</div>
               {(meta?.resourceCount ?? 0) > 0 && (
                 <div className="di-empty-h">{meta?.resourceCount} resources detected — ready for analysis.</div>
               )}
