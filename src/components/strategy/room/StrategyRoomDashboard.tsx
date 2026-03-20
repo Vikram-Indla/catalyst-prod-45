@@ -20,7 +20,7 @@ interface BudgetData {
   footerStats?: FooterStat[]; updatedAt?: string;
 }
 interface WorkforceType { label: string; count: number; color: string }
-interface WorkforceBucket { value: number; label: string; isDanger?: boolean }
+interface WorkforceBucket { value: number; label: string; isDanger?: boolean; isWarning?: boolean }
 interface WorkforceDept { name: string; pct: number; count: number; utilization?: string; utilColor?: string }
 interface WorkforceData {
   total: number; delta?: number; deltaRef?: string;

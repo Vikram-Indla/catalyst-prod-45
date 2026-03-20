@@ -21,7 +21,7 @@ interface WorkforceDept { name: string; pct: number; count: number; utilization?
 interface WorkforceData {
   total: number; delta?: number; deltaRef?: string;
   departmentCount: number; vendorCount: number; avgUtilization: number; thiqahPct: number;
-  types?: WorkforceType[]; buckets?: { value: number; label: string; isDanger?: boolean }[];
+  types?: WorkforceType[]; buckets?: { value: number; label: string; isDanger?: boolean; isWarning?: boolean }[];
   departments?: WorkforceDept[]; updatedAt?: string;
 }
 interface ContractBucket { count: number; label: string; color: string; textColor: string }
