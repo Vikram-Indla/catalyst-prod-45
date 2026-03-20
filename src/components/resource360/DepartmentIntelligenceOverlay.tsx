@@ -272,7 +272,7 @@ function ProjectActivityTab({ projects }: { projects: ProjectActivity[] }) {
     <div className="di-empty">
       <Sparkles size={24} />
       <div className="di-empty-t">No project activity yet</div>
-      <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate.</div>
+      <div className="di-empty-s">Project activity data will appear here when available.</div>
     </div>
   );
 
