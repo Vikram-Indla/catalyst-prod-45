@@ -748,7 +748,7 @@
 .di-foot {
   padding: 12px 28px;
   font: 500 11px var(--di-font-mono);
-  color: var(--di-ink-muted);
+  color: var(--cp-t4);
   border-top: 1px solid var(--di-border);
   background: var(--di-surface-secondary);
   flex-shrink: 0;
