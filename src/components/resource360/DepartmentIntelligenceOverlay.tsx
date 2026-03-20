@@ -92,7 +92,7 @@ function ExecutiveSummaryV5({ data, avatarMap, roleMap }: { data: ExecSummaryV5 
     <div className="di-empty">
       <Sparkles size={24} />
       <div className="di-empty-t">No executive summary yet</div>
-      <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate.</div>
+      <div className="di-empty-s">Executive summary data will appear here when available.</div>
     </div>
   );
 
