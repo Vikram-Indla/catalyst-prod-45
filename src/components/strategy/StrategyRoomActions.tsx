@@ -57,7 +57,7 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
           className="flex items-center rounded-md overflow-hidden"
           role="radiogroup"
           aria-label="Display density"
-          style={{ border: '1px solid var(--catalyst-border-default, hsl(var(--border)))' }}
+          style={{ border: '1px solid var(--cp-bd, hsl(var(--border)))' }}
         >
           {densityOptions.map((opt) => {
             const isActive = density === opt.value;
