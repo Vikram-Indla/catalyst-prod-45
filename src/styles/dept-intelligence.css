@@ -295,6 +295,11 @@
 .day-tue { background: #0F766E; color: #FFFFFF; }
 .day-wed { background: #6D28D9; color: #FFFFFF; }
 .day-thu { background: #92400E; color: #FFFFFF; }
+[data-theme="dark"] .day-sun { background: rgba(30,58,95,0.5); color: #93C5FD; }
+[data-theme="dark"] .day-mon { background: rgba(30,64,175,0.4); color: #93C5FD; }
+[data-theme="dark"] .day-tue { background: rgba(15,118,110,0.4); color: #2DD4BF; }
+[data-theme="dark"] .day-wed { background: rgba(109,40,217,0.3); color: #A78BFA; }
+[data-theme="dark"] .day-thu { background: rgba(146,64,14,0.4); color: #FDE68A; }
 
 .di-day-label { font: 600 13px var(--di-font-heading); color: var(--di-ink); }
 .di-day-date  { font: 400 12px var(--di-font-mono); color: var(--di-ink-muted); }
@@ -336,6 +341,12 @@
 .hub-tst { background: #EDE9FE; color: #5B21B6; }
 .hub-rel { background: #FEF3C7; color: #78350F; }
 .hub-oth { background: #F4F4F5; color: #3F3F46; }
+[data-theme="dark"] .hub-inc { background: #2E1C18; color: #FCA5A5; }
+[data-theme="dark"] .hub-prd { background: #1A2A1E; color: #86EFAC; }
+[data-theme="dark"] .hub-prj { background: #1E2636; color: #93C5FD; }
+[data-theme="dark"] .hub-tst { background: rgba(167,139,250,0.10); color: #A78BFA; }
+[data-theme="dark"] .hub-rel { background: rgba(253,230,138,0.10); color: #FDE68A; }
+[data-theme="dark"] .hub-oth { background: rgba(248,244,240,0.06); color: rgba(248,244,240,0.55); }
 
 .di-ev-content { flex: 1; }
 
@@ -390,6 +401,11 @@
 .sig-action  { background: #DBEAFE; color: #1E3A8A; }
 .sig-gap     { background: #FEF3C7; color: #78350F; }
 .sig-observe { background: #F4F4F5; color: #3F3F46; }
+[data-theme="dark"] .sig-risk    { background: #2E1C18; color: #FCA5A5; }
+[data-theme="dark"] .sig-esc     { background: #2E1C18; color: #FCA5A5; }
+[data-theme="dark"] .sig-action  { background: #1E2636; color: #93C5FD; }
+[data-theme="dark"] .sig-gap     { background: #1A2A1E; color: #86EFAC; }
+[data-theme="dark"] .sig-observe { background: rgba(248,244,240,0.06); color: rgba(248,244,240,0.55); }
 
 /* ══════════════════════════════════════════════════════════
    TAB 1 — EXECUTIVE SUMMARY V5 (Role-Based)
