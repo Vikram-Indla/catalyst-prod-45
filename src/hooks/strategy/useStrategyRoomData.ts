@@ -21,7 +21,7 @@ interface WorkforceDept { name: string; pct: number; count: number; utilization?
 interface WorkforceData {
   total: number; delta?: number; deltaRef?: string;
   departmentCount: number; vendorCount: number; avgUtilization: number; thiqahPct: number;
-  types?: WorkforceType[]; buckets?: { value: number; label: string; isDanger?: boolean }[];
+  types?: WorkforceType[]; buckets?: { value: number; label: string; isDanger?: boolean; isWarning?: boolean }[];
   departments?: WorkforceDept[]; updatedAt?: string;
 }
 interface ContractBucket { count: number; label: string; color: string; textColor: string }
@@ -153,10 +153,10 @@ function useWorkforce() {
         types,
         departments,
         buckets: [
-          { value: active, label: 'Active', isDanger: false },
-          { value: exp30, label: '< 30 days', isDanger: exp30 > 0 },
-          { value: exp90, label: '< 90 days', isDanger: false },
-          { value: expired, label: 'Expired', isDanger: expired > 0 },
+          { value: active, label: 'Active', isDanger: false, isWarning: false },
+          { value: exp30, label: '< 30 days', isDanger: false, isWarning: exp30 > 0 },
+          { value: exp90, label: '< 90 days', isDanger: false, isWarning: false },
+          { value: expired, label: 'Expired', isDanger: expired > 0, isWarning: false },
         ],
         updatedAt: 'Live',
       };
