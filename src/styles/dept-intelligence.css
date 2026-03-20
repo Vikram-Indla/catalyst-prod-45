@@ -215,9 +215,9 @@
   display: flex; align-items: center; justify-content: center;
   background: none; border: 1px solid var(--di-border);
   border-radius: var(--di-r-md);
-  color: var(--di-ink-muted); cursor: pointer;
+  color: var(--cp-t3); cursor: pointer;
 }
-.di-wk-nav:hover { background: var(--di-surface-tertiary); color: var(--di-ink); }
+.di-wk-nav:hover { background: var(--di-surface-tertiary); color: var(--cp-t1); }
 .di-wk-nav:disabled { opacity: 0.3; cursor: default; }
 
 .di-wk-lbl { font: 700 13px var(--di-font-heading); color: var(--di-ink); }
