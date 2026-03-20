@@ -401,6 +401,11 @@
 .sig-action  { background: #DBEAFE; color: #1E3A8A; }
 .sig-gap     { background: #FEF3C7; color: #78350F; }
 .sig-observe { background: #F4F4F5; color: #3F3F46; }
+[data-theme="dark"] .sig-risk    { background: #2E1C18; color: #FCA5A5; }
+[data-theme="dark"] .sig-esc     { background: #2E1C18; color: #FCA5A5; }
+[data-theme="dark"] .sig-action  { background: #1E2636; color: #93C5FD; }
+[data-theme="dark"] .sig-gap     { background: #1A2A1E; color: #86EFAC; }
+[data-theme="dark"] .sig-observe { background: rgba(248,244,240,0.06); color: rgba(248,244,240,0.55); }
 
 /* ══════════════════════════════════════════════════════════
    TAB 1 — EXECUTIVE SUMMARY V5 (Role-Based)
