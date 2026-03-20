@@ -152,6 +152,16 @@
 
   /* Scrollbar */
   --cp-scroll:          rgba(248,244,240, 0.10);
+
+  /* Chart Palette */
+  --cp-chart-1: #60A5FA;
+  --cp-chart-2: #5EEAD4;
+  --cp-chart-3: #FBBF24;
+  --cp-chart-4: #F87171;
+  --cp-chart-5: #4ADE80;
+  --cp-chart-6: #A78BFA;
+  --cp-chart-7: #F472B6;
+  --cp-chart-8: #9CA3AF;
 }
 
 /* ── Scrollbar dark mode ── */
