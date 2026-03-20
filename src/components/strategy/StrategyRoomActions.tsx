@@ -73,8 +73,8 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
                     style={{
                       width: '32px',
                       height: '32px',
-                      background: isActive ? '#2563EB' : 'hsl(var(--card))',
-                      color: isActive ? '#FFFFFF' : 'hsl(var(--muted-foreground))',
+                      background: isActive ? 'var(--cp-blue, #2563EB)' : 'var(--cp-bg, hsl(var(--card)))',
+                      color: isActive ? '#FFFFFF' : 'var(--cp-t3, hsl(var(--muted-foreground)))',
                       border: 'none',
                       cursor: 'pointer',
                       transition: 'all 120ms ease',
