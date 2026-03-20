@@ -57,7 +57,7 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
           className="flex items-center rounded-md overflow-hidden"
           role="radiogroup"
           aria-label="Display density"
-          style={{ border: '1px solid var(--catalyst-border-default, hsl(var(--border)))' }}
+          style={{ border: '1px solid var(--cp-bd, hsl(var(--border)))' }}
         >
           {densityOptions.map((opt) => {
             const isActive = density === opt.value;
@@ -73,8 +73,8 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
                     style={{
                       width: '32px',
                       height: '32px',
-                      background: isActive ? '#2563EB' : 'hsl(var(--card))',
-                      color: isActive ? '#FFFFFF' : 'hsl(var(--muted-foreground))',
+                      background: isActive ? 'var(--cp-blue, #2563EB)' : 'var(--cp-bg, hsl(var(--card)))',
+                      color: isActive ? '#FFFFFF' : 'var(--cp-t3, hsl(var(--muted-foreground)))',
                       border: 'none',
                       cursor: 'pointer',
                       transition: 'all 120ms ease',
@@ -106,9 +106,9 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
           padding: '0 12px',
           fontSize: '13px',
           fontWeight: 500,
-          color: 'hsl(var(--muted-foreground))',
-          background: 'hsl(var(--card))',
-          border: '1px solid hsl(var(--border))',
+          color: 'var(--cp-t3, hsl(var(--muted-foreground)))',
+          background: 'var(--cp-bg, hsl(var(--card)))',
+          border: '1px solid var(--cp-bd, hsl(var(--border)))',
           borderRadius: '6px',
           cursor: 'pointer',
         }}

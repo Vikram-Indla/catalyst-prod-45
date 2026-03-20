@@ -72,6 +72,16 @@
 
   /* Scrollbar */
   --cp-scroll:          rgba(0,0,0,0.12);
+
+  /* Chart Palette */
+  --cp-chart-1: #2563EB;
+  --cp-chart-2: #0D9488;
+  --cp-chart-3: #D97706;
+  --cp-chart-4: #DC2626;
+  --cp-chart-5: #16A34A;
+  --cp-chart-6: #7C3AED;
+  --cp-chart-7: #DB2777;
+  --cp-chart-8: #4B5563;
 }
 
 /* ── DARK MODE — V12 NOCTURNE WARM CHARCOAL ── */
@@ -142,6 +152,16 @@
 
   /* Scrollbar */
   --cp-scroll:          rgba(248,244,240, 0.10);
+
+  /* Chart Palette */
+  --cp-chart-1: #60A5FA;
+  --cp-chart-2: #5EEAD4;
+  --cp-chart-3: #FBBF24;
+  --cp-chart-4: #F87171;
+  --cp-chart-5: #4ADE80;
+  --cp-chart-6: #A78BFA;
+  --cp-chart-7: #F472B6;
+  --cp-chart-8: #9CA3AF;
 }
 
 /* ── Scrollbar dark mode ── */

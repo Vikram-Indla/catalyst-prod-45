@@ -33,6 +33,33 @@ const TOKENS = `
   font-family:'Inter',system-ui,sans-serif; color:var(--sri-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;
 }
+
+/* ── DARK MODE — Nocturne overrides ── */
+[data-theme="dark"] [data-sri] {
+  --sri-ink: rgba(248,244,240,0.92);
+  --sri-ink-2: rgba(248,244,240,0.72);
+  --sri-ink-3: rgba(248,244,240,0.55);
+  --sri-ink-m: rgba(248,244,240,0.30);
+  --sri-bg: #232019;
+  --sri-bg-2: #232019;
+  --sri-bg-3: rgba(248,244,240,0.05);
+  --sri-bdr: rgba(248,244,240,0.10);
+  --sri-bdr-s: rgba(248,244,240,0.18);
+  --sri-ai: #3B82F6;
+  --sri-ai-d: #60A5FA;
+  --sri-ai-bg: rgba(59,130,246,0.08);
+  --sri-ai-bg2: rgba(59,130,246,0.12);
+  --sri-ai-bdr: rgba(59,130,246,0.16);
+  --sri-ai-m: #60A5FA;
+  --sri-green: #4ADE80;
+  --sri-green-t: #4ADE80;
+  --sri-green-bg: rgba(74,222,128,0.08);
+  --sri-teal-t: #5EEAD4;
+  --sri-red: #FCA5A5;
+  --sri-red-t: #FCA5A5;
+  --sri-red-bg: rgba(239,68,68,0.10);
+}
+
 [data-sri] .sri-chain-row:hover { background: var(--sri-bg-2); }
 @media print {
   [data-sri] .sri-actions { display:none !important; }
@@ -183,7 +210,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
   const dataTrust = brief?.dataTrust || null;
 
   return (
-    <div className="sri-root-container" style={{ position: 'relative', background: '#FFFFFF', zIndex: 300, overflowY: 'visible' }}>
+    <div className="sri-root-container" style={{ position: 'relative', background: 'var(--sri-bg)', zIndex: 300, overflowY: 'visible' }}>
       {/* FIX #1 — full width: removed maxWidth and margin:0 auto */}
       <div data-sri style={{ width: '100%', padding: "24px 0 60px" }}>
         <style>{TOKENS}</style>

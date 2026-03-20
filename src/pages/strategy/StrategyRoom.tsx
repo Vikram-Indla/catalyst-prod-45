@@ -21,6 +21,12 @@ const OVERLAY_STYLE: React.CSSProperties = {
   animation: 'sri-fadein .25s ease',
 };
 
+/* Helper: read current theme for overlay print bg */
+const getOverlayBg = () => {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return isDark ? '#232019' : '#FFFFFF';
+};
+
 const OVERLAY_TOKENS = `
 @keyframes sri-fadein {
   from { opacity: 0; }
