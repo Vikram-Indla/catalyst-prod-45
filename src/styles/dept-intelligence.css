@@ -455,6 +455,12 @@
 .role-ux   .di-role-icon { background: #FCE7F3; color: #DB2777; }
 .role-mgmt .di-role-icon { background: #FFFBEB; color: #D97706; }
 .role-devops .di-role-icon { background: #F0FDF4; color: #16A34A; }
+[data-theme="dark"] .role-dev  .di-role-icon { background: rgba(59,130,246,0.10); color: #60A5FA; }
+[data-theme="dark"] .role-qa   .di-role-icon { background: rgba(74,222,128,0.10); color: #4ADE80; }
+[data-theme="dark"] .role-po   .di-role-icon { background: rgba(13,148,136,0.10); color: #2DD4BF; }
+[data-theme="dark"] .role-ux   .di-role-icon { background: rgba(219,39,119,0.10); color: #F472B6; }
+[data-theme="dark"] .role-mgmt .di-role-icon { background: rgba(253,230,138,0.10); color: #FDE68A; }
+[data-theme="dark"] .role-devops .di-role-icon { background: rgba(74,222,128,0.10); color: #4ADE80; }
 .di-role-title { font: 600 14px var(--di-font-heading); color: var(--di-ink); }
 .di-role-count { font: 500 11px var(--di-font-mono); color: var(--di-ink-muted); }
 
