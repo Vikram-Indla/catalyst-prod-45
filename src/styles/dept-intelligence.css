@@ -295,6 +295,11 @@
 .day-tue { background: #0F766E; color: #FFFFFF; }
 .day-wed { background: #6D28D9; color: #FFFFFF; }
 .day-thu { background: #92400E; color: #FFFFFF; }
+[data-theme="dark"] .day-sun { background: rgba(30,58,95,0.5); color: #93C5FD; }
+[data-theme="dark"] .day-mon { background: rgba(30,64,175,0.4); color: #93C5FD; }
+[data-theme="dark"] .day-tue { background: rgba(15,118,110,0.4); color: #2DD4BF; }
+[data-theme="dark"] .day-wed { background: rgba(109,40,217,0.3); color: #A78BFA; }
+[data-theme="dark"] .day-thu { background: rgba(146,64,14,0.4); color: #FDE68A; }
 
 .di-day-label { font: 600 13px var(--di-font-heading); color: var(--di-ink); }
 .di-day-date  { font: 400 12px var(--di-font-mono); color: var(--di-ink-muted); }
