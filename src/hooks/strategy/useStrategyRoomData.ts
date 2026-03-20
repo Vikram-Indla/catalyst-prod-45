@@ -153,10 +153,10 @@ function useWorkforce() {
         types,
         departments,
         buckets: [
-          { value: active, label: 'Active', isDanger: false },
-          { value: exp30, label: '< 30 days', isDanger: exp30 > 0 },
-          { value: exp90, label: '< 90 days', isDanger: false },
-          { value: expired, label: 'Expired', isDanger: expired > 0 },
+          { value: active, label: 'Active', isDanger: false, isWarning: false },
+          { value: exp30, label: '< 30 days', isDanger: false, isWarning: exp30 > 0 },
+          { value: exp90, label: '< 90 days', isDanger: false, isWarning: false },
+          { value: expired, label: 'Expired', isDanger: expired > 0, isWarning: false },
         ],
         updatedAt: 'Live',
       };

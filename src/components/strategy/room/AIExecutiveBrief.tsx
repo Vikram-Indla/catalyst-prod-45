@@ -248,7 +248,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
           <div style={{ margin: "12px 32px 0", padding: "12px 20px", background: "var(--sri-ai-bg)", border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r3)", ...F(12) as React.CSSProperties, justifyContent: "space-between" }}>
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, color: "var(--sri-ai-d)" }}>New draft available</div>
-              <div style={{ fontSize: 11, color: "var(--sri-ink-m)" }}>Generated {new Date(draftBrief.generated_at).toLocaleTimeString()} — review before publishing</div>
+              <div style={{ fontSize: 11, color: "var(--sri-ink-3)" }}>Generated {new Date(draftBrief.generated_at).toLocaleTimeString()} — review before publishing</div>
             </div>
             <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
               <button onClick={() => setPreviewingDraft(!previewingDraft)}
