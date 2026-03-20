@@ -341,6 +341,12 @@
 .hub-tst { background: #EDE9FE; color: #5B21B6; }
 .hub-rel { background: #FEF3C7; color: #78350F; }
 .hub-oth { background: #F4F4F5; color: #3F3F46; }
+[data-theme="dark"] .hub-inc { background: #2E1C18; color: #FCA5A5; }
+[data-theme="dark"] .hub-prd { background: #1A2A1E; color: #86EFAC; }
+[data-theme="dark"] .hub-prj { background: #1E2636; color: #93C5FD; }
+[data-theme="dark"] .hub-tst { background: rgba(167,139,250,0.10); color: #A78BFA; }
+[data-theme="dark"] .hub-rel { background: rgba(253,230,138,0.10); color: #FDE68A; }
+[data-theme="dark"] .hub-oth { background: rgba(248,244,240,0.06); color: rgba(248,244,240,0.55); }
 
 .di-ev-content { flex: 1; }
 
