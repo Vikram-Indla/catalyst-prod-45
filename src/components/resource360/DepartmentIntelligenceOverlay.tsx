@@ -504,11 +504,6 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           </div>
           <div className="di-topbar-r">
             {dataAge && <span className="di-age">{dataAge}</span>}
-            <button className="di-btn-p" onClick={generateAll} disabled={isGenerating}>
-              {isGenerating ? <RefreshCw size={13} className="di-spin" /> : <Sparkles size={13} />}
-              <span>{isGenerating ? 'Generating…' : 'Refresh AI'}</span>
-            </button>
-            <button className="di-btn-g">Export PDF</button>
             <button className="di-close" onClick={onClose}><X size={14} /></button>
           </div>
         </div>
