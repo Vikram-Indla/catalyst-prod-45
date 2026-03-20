@@ -106,9 +106,9 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
           padding: '0 12px',
           fontSize: '13px',
           fontWeight: 500,
-          color: 'hsl(var(--muted-foreground))',
-          background: 'hsl(var(--card))',
-          border: '1px solid hsl(var(--border))',
+          color: 'var(--cp-t3, hsl(var(--muted-foreground)))',
+          background: 'var(--cp-bg, hsl(var(--card)))',
+          border: '1px solid var(--cp-bd, hsl(var(--border)))',
           borderRadius: '6px',
           cursor: 'pointer',
         }}
