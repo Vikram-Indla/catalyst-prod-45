@@ -513,7 +513,6 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           <div className="di-h-top">
             <div className="di-h-title">
               <span className="di-h-t">Department Intelligence</span>
-              <span className="di-ai"><Sparkles size={10} /> AI</span>
             </div>
             <div className="di-wk-sel">
               <button className="di-wk-nav" onClick={prevWeek}><ChevronLeft size={14} /></button>
