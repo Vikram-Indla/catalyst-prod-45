@@ -171,10 +171,10 @@ function Ico({ d, sz = 14 }: { d: string; sz?: number }) {
   return <svg width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>;
 }
 
-const Empty = ({ msg }: { msg?: string }) => (
+const Empty = ({ msg, actionable }: { msg?: string; actionable?: boolean }) => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 80, gap: 6, textAlign: 'center', padding: 20 }}>
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--srd-bdr-s)" strokeWidth="1.5"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-    <span style={{ fontSize: 12, color: 'var(--srd-ink-m)', fontStyle: 'italic' }}>{msg || 'No data available'}</span>
+    <span style={{ fontSize: 12, color: actionable ? 'var(--srd-ink-2)' : 'var(--srd-ink-m)', fontStyle: 'italic' }}>{msg || 'No data available'}</span>
   </div>
 );
 
@@ -247,7 +247,7 @@ export default function StrategyRoomDashboard({
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--srd-green)', flexShrink: 0, animation: 'srd-pulse 2s ease-in-out infinite' }} />
               Live{updatedAgo ? ` · Updated ${updatedAgo}` : ''}
             </span>
-            {fiscal && <span style={{ ...M(11), color: 'var(--srd-ink-m)' }}>FY {fiscal.year} · {fiscal.quarter}</span>}
+            {fiscal && <span style={{ ...M(11), color: 'var(--srd-ink-2)' }}>FY {fiscal.year} · {fiscal.quarter}</span>}
           </div>
         </div>
         <div className="srd-hdr-actions" style={F(8)}>
@@ -259,7 +259,7 @@ export default function StrategyRoomDashboard({
           <button className="srd-btn-p" onClick={onOpenBrief} style={{ height: 32, padding: '0 14px', fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 600, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-blue)', background: 'var(--srd-blue)', color: '#fff', transition: 'all .15s' }}>
             <Ico d="M13 2L3 14h9l-1 8 10-12h-9l1-8" />AI Intelligence
           </button>
-          <button className="srd-btn" style={{ width: 32, height: 32, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid transparent', borderRadius: 'var(--srd-r2)', cursor: 'pointer', background: 'none', color: 'var(--srd-ink-m)' }}>
+          <button className="srd-btn" style={{ width: 32, height: 32, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid transparent', borderRadius: 'var(--srd-r2)', cursor: 'pointer', background: 'none', color: 'var(--srd-ink-2)' }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
           </button>
         </div>
@@ -297,7 +297,7 @@ export default function StrategyRoomDashboard({
           <div className="srd-brief-grade" style={{ ...S(18, 800), width: 42, height: 42, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: 'var(--srd-red-bg)', color: 'var(--srd-red-t)', border: '2px solid var(--srd-red)' }}>{brief.grade}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ ...S(13), color: 'var(--srd-ink)' }}>{brief.headline}</div>
-            <div style={{ fontSize: 11, color: 'var(--srd-ink-m)', marginTop: 1 }}>Published {brief.publishedAt} · Score {brief.score} · Next review: {brief.nextReview}</div>
+            <div style={{ fontSize: 11, color: 'var(--srd-ink-2)', marginTop: 1 }}>Published {brief.publishedAt} · Score {brief.score} · Next review: {brief.nextReview}</div>
           </div>
           {brief.decisionCount > 0 && <span style={Pill('var(--srd-red-bg)', 'var(--srd-red-t)')}>{brief.decisionCount} decision{brief.decisionCount !== 1 ? 's' : ''}</span>}
           {brief.issueCount > 0 && <span style={Pill('var(--srd-ai-bg)', 'var(--srd-ai-d)')}>{brief.issueCount} data issue{brief.issueCount !== 1 ? 's' : ''}</span>}
@@ -334,7 +334,7 @@ export default function StrategyRoomDashboard({
           {/* WORKFORCE */}
           <Widget title="Workforce" link="Details →" delay={0.1} foot={workforce ? (<><span style={F(5)}><span style={Dot('var(--srd-ink-m)', 6)} />Thiqah (gov't staffing): {workforce.thiqahPct}%</span><span style={{ ...M(11), color: 'var(--srd-ink-m)', marginInlineStart: 'auto' }}>{workforce.updatedAt}</span></>) : null}>
             {workforce ? (<>
-              <div style={F(6)}><span style={{ ...S(26, 800) }}>{workforce.total}</span><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--srd-ink-m)' }}>team members</span>{workforce.delta != null && <span style={Delta(deltaDir(workforce.delta))}>{workforce.delta > 0 ? '↑' : '↓'} {Math.abs(workforce.delta)} vs {workforce.deltaRef}</span>}</div>
+              <div style={F(6)}><span style={{ ...S(26, 800) }}>{workforce.total}</span><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--srd-ink-2)' }}>team members</span>{workforce.delta != null && <span style={Delta(deltaDir(workforce.delta))}>{workforce.delta > 0 ? '↑' : '↓'} {Math.abs(workforce.delta)} vs {workforce.deltaRef}</span>}</div>
               <div style={{ fontSize: 12, color: 'var(--srd-ink-2)', marginTop: 2 }}>{workforce.departmentCount} departments · {workforce.vendorCount} vendors · <b style={{ color: 'var(--srd-ink-2)' }}>{workforce.avgUtilization}% avg utilization</b></div>
               {workforce.types && workforce.types.length > 0 && <div style={{ ...F(12), marginTop: 8 }}>{workforce.types.map((x, i) => <span key={i} style={{ ...F(5), fontSize: 12, color: 'var(--srd-ink-2)' }}><span style={Dot(x.color, 6)} /><b style={{ color: 'var(--srd-ink)' }}>{x.count}</b> {x.label}</span>)}</div>}
               {workforce.buckets && workforce.buckets.length > 0 && <div style={{ display: 'flex', gap: 6, marginTop: 12 }}>{workforce.buckets.map((b, i) => {
@@ -387,7 +387,7 @@ export default function StrategyRoomDashboard({
 
           {/* INVESTMENT (genuinely empty) */}
           <Widget title="Investment Allocation" delay={0.3} foot={<span style={{ ...M(11), color: 'var(--srd-ink-m)' }}>Pending setup</span>}>
-            <Empty msg="Investment tracking not configured" />
+            <Empty msg="Investment tracking not configured" actionable />
             <div style={{ textAlign: 'center' }}><span className="srd-link" style={{ fontSize: 12, fontWeight: 600, color: 'var(--srd-blue)', cursor: 'pointer' }}>Set up in Strategy Settings →</span></div>
           </Widget>
         </div>

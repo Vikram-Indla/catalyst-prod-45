@@ -919,7 +919,7 @@ html:has(body[data-scroll-locked]) {
     /* === B) TEXT LADDER (Readable, consistent — no pure white body) === */
     --fg-1: rgba(255,255,255,0.92);      /* Primary text */
     --fg-2: rgba(255,255,255,0.72);      /* Secondary text */
-    --fg-3: rgba(255,255,255,0.55);      /* Muted/hints */
+    --fg-3: rgba(255,255,255,0.60);      /* Muted/hints — bumped from 0.55 per L20 */
     --fg-4: rgba(255,255,255,0.38);      /* Disabled */
     
     --text-1: var(--fg-1);
@@ -931,8 +931,8 @@ html:has(body[data-scroll-locked]) {
     /* HSL versions for Tailwind */
     --text-primary: 0 0% 92%;
     --text-secondary: 0 0% 72%;
-    --text-tertiary: 0 0% 55%;
-    --text-muted: 0 0% 55%;
+    --text-tertiary: 0 0% 60%;
+    --text-muted: 0 0% 60%;
     
     /* ═══════════════════════════════════════════════════════════════
        V9.5 NAVIGATION SHELL — AAA Contrast (Dark Mode)
@@ -4768,7 +4768,7 @@ table .text-gray-500,
    TEXT LADDER:
    - --fg-1 / --text-1: rgba(255,255,255,0.92) (primary text)
    - --fg-2 / --text-2: rgba(255,255,255,0.72) (secondary text)
-   - --fg-3 / --text-3: rgba(255,255,255,0.55) (muted/hints)
+   - --fg-3 / --text-3: rgba(255,255,255,0.60) (muted/hints — L20)
    - --fg-4 / --text-4: rgba(255,255,255,0.38) (disabled)
    
    BORDERS/DIVIDERS:
