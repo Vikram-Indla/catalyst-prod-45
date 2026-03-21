@@ -95,8 +95,8 @@
   /* Text — warm off-white opacity scale */
   --cp-t1:              rgba(248,244,240, 0.92);
   --cp-t2:              rgba(248,244,240, 0.72);
-  --cp-t3:              rgba(248,244,240, 0.55);
-  --cp-t4:              rgba(248,244,240, 0.30);
+  --cp-t3:              rgba(248,244,240, 0.60);
+  --cp-t4:              rgba(248,244,240, 0.35);
 
   /* Borders — warm off-white opacity scale */
   --cp-bd:              rgba(248,244,240, 0.10);
