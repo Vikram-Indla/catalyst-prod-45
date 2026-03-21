@@ -4768,7 +4768,7 @@ table .text-gray-500,
    TEXT LADDER:
    - --fg-1 / --text-1: rgba(255,255,255,0.92) (primary text)
    - --fg-2 / --text-2: rgba(255,255,255,0.72) (secondary text)
-   - --fg-3 / --text-3: rgba(255,255,255,0.55) (muted/hints)
+   - --fg-3 / --text-3: rgba(255,255,255,0.60) (muted/hints — L20)
    - --fg-4 / --text-4: rgba(255,255,255,0.38) (disabled)
    
    BORDERS/DIVIDERS:
