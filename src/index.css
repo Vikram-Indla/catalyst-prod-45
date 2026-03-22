@@ -4680,7 +4680,7 @@ table .text-gray-500,
   color: var(--cp-t1);
 }
 
-/* Sidebar nav items hover — blue tint */
+/* Sidebar nav items hover — blue tint. No !important so inline styles win. */
 .dark aside nav a:hover,
 .dark aside nav button:hover,
 .dark [data-sidebar] nav a:hover,
@@ -4689,8 +4689,8 @@ table .text-gray-500,
 [data-theme="dark"] aside nav button:hover,
 [data-theme="dark"] [data-sidebar] nav a:hover,
 [data-theme="dark"] [data-sidebar] nav button:hover {
-  background-color: rgba(59,130,246,0.06) !important;
-  color: var(--cp-t1) !important;
+  background-color: rgba(59,130,246,0.06);
+  color: var(--cp-t1);
 }
 
 /* Sidebar nav items active — blue tint bg + blue text */
