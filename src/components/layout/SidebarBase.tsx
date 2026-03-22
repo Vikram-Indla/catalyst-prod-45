@@ -112,6 +112,21 @@ export function SidebarBase({
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const { isDark } = useTheme();
 
+  // Dark mode token helpers
+  const t1 = isDark ? 'var(--cp-t1)' : '#0F172A';
+  const t2 = isDark ? 'var(--cp-t2)' : '#94A3B8';
+  const itemText = isDark ? 'var(--cp-t1)' : '#334155';
+  const activeText = isDark ? '#7DB8FC' : '#2563EB';
+  const activeBg = isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF';
+  const hoverBg = isDark ? 'rgba(59,130,246,0.06)' : '#F1F5F9';
+  const hoverText = isDark ? 'var(--cp-t1)' : '#0F172A';
+  const chevronColor = isDark ? 'var(--cp-t2)' : '#94A3B8';
+  const chevronHoverColor = isDark ? 'var(--cp-t1)' : '#334155';
+  const sidebarBg = isDark ? '#1A1714' : '#FFFFFF';
+  const sidebarBorder = isDark ? 'rgba(248,244,240,0.08)' : '#E2E8F0';
+  const dividerColor = isDark ? 'rgba(248,244,240,0.08)' : '#F1F5F9';
+  const sectionLabel = isDark ? 'var(--cp-t2)' : '#94A3B8';
+
   const isActive = (path: string, exact: boolean = false) => {
     // Support paths with query params (e.g., /producthub/ideation?view=board)
     const [pathPart, queryPart] = path.split('?');
@@ -147,14 +162,14 @@ export function SidebarBase({
         )}
         style={{ 
           width: expanded ? '240px' : '64px',
-          background: 'var(--sidebar-bg, #FFFFFF)',
-          borderRight: '1px solid var(--sidebar-border, #E2E8F0)',
-          boxShadow: 'var(--sidebar-shadow, 1px 0 0 rgba(15, 23, 42, 0.06))',
+          background: sidebarBg,
+          borderRight: `1px solid ${sidebarBorder}`,
+          boxShadow: isDark ? 'none' : '1px 0 0 rgba(15, 23, 42, 0.06)',
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
           transition: 'width 220ms cubic-bezier(0.4, 0, 0.2, 1)',
           scrollbarWidth: 'thin' as any,
-          scrollbarColor: '#E2E8F0 transparent',
+          scrollbarColor: isDark ? 'rgba(248,244,240,0.15) transparent' : '#E2E8F0 transparent',
         }}
       >
         {/* V10 Header with collapse toggle */}
