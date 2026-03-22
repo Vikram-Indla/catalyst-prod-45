@@ -1609,7 +1609,6 @@ html:has(body[data-scroll-locked]) {
     color: var(--fg-3);
     font-weight: 500;
     letter-spacing: 0.02em;
-    /* MUST NOT use disabled color */
   }
   
   /* === 3) NAV ITEMS (default state) === */
@@ -1684,15 +1683,18 @@ html:has(body[data-scroll-locked]) {
     /* Minimum contrast = fg-2 */
   }
   
-  /* === DARK MODE SIDEBAR OVERRIDES === */
+  /* === DARK MODE SIDEBAR OVERRIDES — ECLIPSE D8-R3 ===
+     SidebarBase uses inline styles with isDark conditional tokens.
+     These CSS rules must NOT fight inline styles. Use #1A1714 (ECLIPSE surface). */
   .dark aside,
   .dark [data-sidebar],
   .dark .sidebar,
   [data-theme="dark"] aside,
   [data-theme="dark"] [data-sidebar],
   [data-theme="dark"] .sidebar {
-    background-color: var(--bg-1);
-    border-right-color: var(--divider);
+    background-color: #1A1714;
+    border-right-color: rgba(248,244,240,0.08);
+    box-shadow: none;
   }
   
   /* Dark mode contrast utilities for muted elements */
