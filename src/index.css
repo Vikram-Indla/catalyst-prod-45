@@ -4666,7 +4666,9 @@ table .text-gray-500,
   letter-spacing: 0.02em !important;
 }
 
-/* Sidebar nav items default — t1 (0.92) for primary nav labels */
+/* Sidebar nav items default — t1 (0.92) for primary nav labels.
+   NO !important — SidebarBase inline styles must be able to override
+   for active state (blue text) and hover state. */
 .dark aside nav a,
 .dark aside nav button,
 .dark [data-sidebar] nav a,
@@ -4675,7 +4677,7 @@ table .text-gray-500,
 [data-theme="dark"] aside nav button,
 [data-theme="dark"] [data-sidebar] nav a,
 [data-theme="dark"] [data-sidebar] nav button {
-  color: var(--cp-t1) !important;
+  color: var(--cp-t1);
 }
 
 /* Sidebar nav items hover — blue tint */
