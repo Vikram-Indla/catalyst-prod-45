@@ -7,14 +7,7 @@
  * CATALYST V9.5 NAVIGATION SHELL — Research-Driven Design
  * Based on analysis of 27 enterprise apps (Linear, Stripe, Figma, Vercel, etc.)
  * 
- * Key patterns implemented:
- * - Module badges: NEUTRAL color (#3F3F46) not content colors
- * - Active state: LEFT ACCENT BAR (3px) + subtle background (Linear/Notion pattern)
- * - Text contrast: AAA compliant (15:1 primary, 8.5:1 secondary)
- * - Section labels: 10px UPPERCASE with tracking
- * - Collapsed state: Icon rail with tooltips (Grafana/Datadog pattern)
- * - Item height: 44px for proper touch targets
- * - Icons: 18×18 with strokeWidth 1.75
+ * ECLIPSE D8-R3: Full dark mode parity using --cp-t1/t2/t3 tokens.
  */
 
 import React from 'react';
@@ -44,13 +37,10 @@ const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
 const prefetchedRoutes = new Set<string>();
 
 function prefetchRoute(path: string) {
-  // Find the best matching prefix
   const matchKey = Object.keys(ROUTE_PREFETCH_MAP).find(prefix => path.startsWith(prefix));
   if (!matchKey || prefetchedRoutes.has(matchKey)) return;
   prefetchedRoutes.add(matchKey);
-  // Fire-and-forget — Vite caches the module so lazy() resolves instantly
   ROUTE_PREFETCH_MAP[matchKey]().catch(() => {
-    // Remove from set so it can retry
     prefetchedRoutes.delete(matchKey);
   });
 }
@@ -61,13 +51,9 @@ export interface SidebarMenuItem {
   path: string;
   icon?: LucideIcon | React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   exact?: boolean;
-  /** Optional badge count to display */
   badge?: number;
-  /** Badge variant for color styling */
   badgeVariant?: 'info' | 'danger' | 'purple';
-  /** Text badge (e.g., "NEW", "BETA") - takes precedence over numeric badge */
   textBadge?: string;
-  /** Text badge variant for color styling */
   textBadgeVariant?: 'new' | 'beta' | 'info';
 }
 
@@ -77,17 +63,11 @@ export interface SidebarSection {
 }
 
 export interface SidebarConfig {
-  /** Badge text shown in the header (e.g., "PR", "EN", "RL") */
   badge: string;
-  /** Section label shown when expanded (e.g., "Product", "Enterprise") */
   label: string;
-  /** Menu sections to display with headers */
   sections?: SidebarSection[];
-  /** Flat menu items (legacy support) */
   items?: SidebarMenuItem[];
-  /** Footer item (e.g., Settings) - optional */
   footerItem?: SidebarMenuItem;
-  /** Whether to show favorites section */
   showFavorites?: boolean;
 }
 
@@ -96,8 +76,20 @@ interface SidebarBaseProps {
   expanded: boolean;
   onToggle: () => void;
   className?: string;
-  /** Custom icon resolver for menu items */
   iconResolver?: (itemId: string) => React.ComponentType<{ className?: string }> | undefined;
+}
+
+/** Dark mode token set — passed to renderMenuItem */
+interface DarkTokens {
+  isDark: boolean;
+  itemText: string;
+  activeText: string;
+  activeBg: string;
+  hoverBg: string;
+  hoverText: string;
+  iconOpacityInactive: number;
+  badgeBg: string;
+  badgeText: string;
 }
 
 export function SidebarBase({ 
@@ -112,30 +104,33 @@ export function SidebarBase({
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const { isDark } = useTheme();
 
-  // Dark mode token helpers
-  const t1 = isDark ? 'var(--cp-t1)' : '#0F172A';
-  const t2 = isDark ? 'var(--cp-t2)' : '#94A3B8';
-  const itemText = isDark ? 'var(--cp-t1)' : '#334155';
-  const activeText = isDark ? '#7DB8FC' : '#2563EB';
-  const activeBg = isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF';
-  const hoverBg = isDark ? 'rgba(59,130,246,0.06)' : '#F1F5F9';
-  const hoverText = isDark ? 'var(--cp-t1)' : '#0F172A';
+  // Dark mode token helpers — ECLIPSE D8-R3
+  const tokens: DarkTokens = {
+    isDark,
+    itemText: isDark ? 'var(--cp-t1)' : '#334155',
+    activeText: isDark ? '#7DB8FC' : '#2563EB',
+    activeBg: isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF',
+    hoverBg: isDark ? 'rgba(59,130,246,0.06)' : '#F1F5F9',
+    hoverText: isDark ? 'var(--cp-t1)' : '#0F172A',
+    iconOpacityInactive: isDark ? 0.72 : 0.65,
+    badgeBg: isDark ? 'rgba(248,244,240,0.08)' : '#F1F5F9',
+    badgeText: isDark ? 'var(--cp-t2)' : '#94A3B8',
+  };
+
   const chevronColor = isDark ? 'var(--cp-t2)' : '#94A3B8';
   const chevronHoverColor = isDark ? 'var(--cp-t1)' : '#334155';
   const sidebarBg = isDark ? '#1A1714' : '#FFFFFF';
   const sidebarBorder = isDark ? 'rgba(248,244,240,0.08)' : '#E2E8F0';
   const dividerColor = isDark ? 'rgba(248,244,240,0.08)' : '#F1F5F9';
   const sectionLabel = isDark ? 'var(--cp-t2)' : '#94A3B8';
+  const hubLabel = isDark ? 'var(--cp-t1)' : '#0F172A';
 
   const isActive = (path: string, exact: boolean = false) => {
-    // Support paths with query params (e.g., /producthub/ideation?view=board)
     const [pathPart, queryPart] = path.split('?');
     if (queryPart) {
-      // Must match both pathname and search params
       return location.pathname === pathPart && location.search === `?${queryPart}`;
     }
     if (exact) {
-      // For exact match without query params, also match when there's no search string
       return location.pathname === pathPart && !location.search;
     }
     return location.pathname === pathPart || location.pathname.startsWith(pathPart + '/');
@@ -145,12 +140,10 @@ export function SidebarBase({
     navigate(path);
   };
 
-  // Get all items for favorites lookup
   const allItems = config.sections 
     ? config.sections.flatMap(s => s.items)
     : config.items || [];
 
-  // Favorited items
   const favoritedItems = allItems.filter(item => favorites.includes(item.path));
 
   return (
@@ -172,7 +165,7 @@ export function SidebarBase({
           scrollbarColor: isDark ? 'rgba(248,244,240,0.15) transparent' : '#E2E8F0 transparent',
         }}
       >
-        {/* V10 Header with collapse toggle */}
+        {/* Header with collapse toggle */}
         <div 
           className={cn(
             "border-b flex-shrink-0",
@@ -182,14 +175,13 @@ export function SidebarBase({
           )}
           style={{ 
             minHeight: '54px',
-            borderColor: 'var(--sidebar-border, #E2E8F0)',
+            borderColor: sidebarBorder,
             padding: expanded ? '14px 14px 14px 16px' : '14px 0',
             gap: expanded ? undefined : '4px',
             background: 'transparent',
           }}
         >
           {!expanded ? (
-            /* Collapsed: Badge centered + toggle below */
             <>
               <div 
                 className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
@@ -210,15 +202,15 @@ export function SidebarBase({
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
-                  color: '#94A3B8',
+                  color: chevronColor,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--sidebar-item-hover-bg, #F1F5F9)';
-                  e.currentTarget.style.color = '#334155';
+                  e.currentTarget.style.background = tokens.hoverBg;
+                  e.currentTarget.style.color = chevronHoverColor;
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = '#94A3B8';
+                  e.currentTarget.style.color = chevronColor;
                 }}
                 aria-label="Expand sidebar"
               >
@@ -226,10 +218,8 @@ export function SidebarBase({
               </button>
             </>
           ) : (
-            /* Expanded: Badge + Label + Toggle */
             <>
               <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
-                {/* V10: Circular badge (borderRadius 50%) — 28×28 */}
                 <div 
                   className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                   style={{
@@ -242,13 +232,14 @@ export function SidebarBase({
                 >
                   {config.badge}
                 </div>
+                {/* Hub label — t1 in dark mode (NOT blue) per D8-R3 Fix 2 */}
                 <span 
                   className="truncate"
                   style={{ 
                     fontFamily: "'Sora', sans-serif",
                     fontSize: '14px',
                     fontWeight: 700,
-                    color: '#0F172A',
+                    color: hubLabel,
                     letterSpacing: '-0.3px',
                   }}
                 >
@@ -262,15 +253,15 @@ export function SidebarBase({
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
-                  color: '#94A3B8',
+                  color: chevronColor,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--sidebar-item-hover-bg, #F1F5F9)';
-                  e.currentTarget.style.color = '#334155';
+                  e.currentTarget.style.background = tokens.hoverBg;
+                  e.currentTarget.style.color = chevronHoverColor;
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = '#94A3B8';
+                  e.currentTarget.style.color = chevronColor;
                 }}
                 aria-label="Collapse sidebar"
               >
@@ -286,12 +277,11 @@ export function SidebarBase({
           {config.showFavorites !== false && favoritedItems.length > 0 && !expanded && null}
           {config.showFavorites !== false && favoritedItems.length > 0 && expanded && (
             <div className="mb-4">
-              {/* Section Label — 10px UPPERCASE per Linear/Stripe pattern */}
               <div className="px-3 pt-3 pb-1.5">
                 <span 
                   style={{ 
                     fontFamily: "'Sora', sans-serif",
-                    color: 'var(--sidebar-section-label, #94A3B8)',
+                    color: sectionLabel,
                     fontSize: '10px',
                     fontWeight: 600,
                     letterSpacing: '0.8px',
@@ -304,31 +294,23 @@ export function SidebarBase({
               </div>
               <div>
                 {favoritedItems.map((item) => renderMenuItem(
-                  item, 
-                  isActive, 
-                  iconResolver, 
-                  expanded, 
-                  handleNavigation, 
-                  false,
-                  isFavorite,
-                  toggleFavorite
+                  item, isActive, iconResolver, expanded, handleNavigation, 
+                  false, isFavorite, toggleFavorite, tokens
                 ))}
               </div>
             </div>
           )}
 
-          {/* Render sections if provided, otherwise render flat items */}
           {config.sections ? (
             config.sections.map((section, sectionIndex) => {
               if (section.items.length === 0) return null;
               
               return (
                 <div key={section.title}>
-                  {/* Collapsed: section divider between groups */}
                   {!expanded && sectionIndex > 0 && (
-                    <div style={{ borderTop: '1px solid var(--sidebar-divider, #F1F5F9)', marginTop: '4px', paddingTop: '4px' }} />
+                    <div style={{ borderTop: `1px solid ${dividerColor}`, marginTop: '4px', paddingTop: '4px' }} />
                   )}
-                  {/* Section Header — V11: Sora, 10px, uppercase, #94A3B8 */}
+                  {/* Section Header — t2 in dark mode per D8-R3 Fix 5 */}
                   {expanded && section.title && (
                     <div 
                       style={{ 
@@ -340,7 +322,7 @@ export function SidebarBase({
                       <span 
                         style={{ 
                           fontFamily: "'Sora', sans-serif",
-                          color: 'var(--sidebar-section-label, #94A3B8)',
+                          color: sectionLabel,
                           fontSize: '10px',
                           fontWeight: 600,
                           letterSpacing: '0.8px',
@@ -352,50 +334,32 @@ export function SidebarBase({
                     </div>
                   )}
                   {section.items.map((item) => renderMenuItem(
-                    item, 
-                    isActive, 
-                    iconResolver, 
-                    expanded, 
-                    handleNavigation, 
-                    false,
-                    isFavorite,
-                    toggleFavorite
+                    item, isActive, iconResolver, expanded, handleNavigation, 
+                    false, isFavorite, toggleFavorite, tokens
                   ))}
                 </div>
               );
             })
           ) : (
             config.items?.map((item) => renderMenuItem(
-              item, 
-              isActive, 
-              iconResolver, 
-              expanded, 
-              handleNavigation, 
-              false,
-              isFavorite,
-              toggleFavorite
+              item, isActive, iconResolver, expanded, handleNavigation, 
+              false, isFavorite, toggleFavorite, tokens
             ))
           )}
         </nav>
 
-        {/* Footer Item (e.g., Settings) - with separator */}
+        {/* Footer Item (e.g., Settings) — t2 in dark mode per D8-R3 Fix 7 */}
         {config.footerItem && (
           <div 
             className="border-t pt-2 mt-2"
             style={{ 
-              borderColor: 'var(--sidebar-divider, #F1F5F9)', 
+              borderColor: dividerColor, 
               padding: '6px 8px' 
             }}
           >
             {renderMenuItem(
-              config.footerItem, 
-              isActive, 
-              iconResolver, 
-              expanded, 
-              handleNavigation, 
-              true,
-              isFavorite,
-              toggleFavorite
+              config.footerItem, isActive, iconResolver, expanded, handleNavigation, 
+              true, isFavorite, toggleFavorite, tokens
             )}
           </div>
         )}
@@ -404,7 +368,7 @@ export function SidebarBase({
   );
 }
 
-// Helper function to render a menu item
+// Helper function to render a menu item — now receives DarkTokens
 function renderMenuItem(
   item: SidebarMenuItem,
   isActive: (path: string, exact?: boolean) => boolean,
@@ -413,18 +377,12 @@ function renderMenuItem(
   handleNavigation: (path: string) => void,
   isFooter: boolean = false,
   isFavorite: (path: string) => boolean,
-  toggleFavorite: (path: string) => void
+  toggleFavorite: (path: string) => void,
+  tk: DarkTokens
 ) {
   const active = isActive(item.path, item.exact);
   const CustomIcon = iconResolver?.(item.id) || item.icon;
   const starred = isFavorite(item.path);
-
-  // V10: Calculate hover/active states
-  const getBgColor = (isActive: boolean, isHovered: boolean) => {
-    if (isActive) return 'rgba(37, 99, 235, 0.12)'; // ~12% opacity
-    if (isHovered) return 'rgba(37, 99, 235, 0.06)'; // ~6% opacity
-    return 'transparent';
-  };
 
   const menuButton = (
     <button
@@ -437,27 +395,27 @@ function renderMenuItem(
         marginBottom: '2px',
         fontSize: '13px',
         fontWeight: active ? 600 : 500,
-        color: active ? 'var(--sidebar-item-active-text, #2563EB)' : 'var(--sidebar-item-text, #334155)',
+        color: active ? tk.activeText : tk.itemText,
         fontFamily: "'Inter', sans-serif",
         outline: 'none',
         justifyContent: expanded ? 'flex-start' : 'center',
-        background: active ? 'var(--sidebar-item-active-bg, #EFF6FF)' : 'transparent',
+        background: active ? tk.activeBg : 'transparent',
         lineHeight: 1,
         borderRadius: '6px',
       }}
       onMouseEnter={(e) => {
         prefetchRoute(item.path);
         if (!active) {
-          e.currentTarget.style.background = 'var(--sidebar-item-hover-bg, #F1F5F9)';
-          e.currentTarget.style.color = '#0F172A';
+          e.currentTarget.style.background = tk.hoverBg;
+          e.currentTarget.style.color = tk.hoverText;
         }
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = active ? 'var(--sidebar-item-active-bg, #EFF6FF)' : 'transparent';
-        e.currentTarget.style.color = active ? 'var(--sidebar-item-active-text, #2563EB)' : 'var(--sidebar-item-text, #334155)';
+        e.currentTarget.style.background = active ? tk.activeBg : 'transparent';
+        e.currentTarget.style.color = active ? tk.activeText : tk.itemText;
       }}
     >
-      {/* V11: Left Accent Bar — 3px, inset, only when expanded and active */}
+      {/* Left Accent Bar — 3px, only when expanded and active */}
       {active && expanded && (
         <span 
           style={{
@@ -466,18 +424,18 @@ function renderMenuItem(
             top: '5px',
             bottom: '5px',
             width: '3px',
-            background: 'var(--sidebar-accent-bar, #2563EB)',
+            background: '#2563EB',
             borderRadius: '0 3px 3px 0',
           }}
         />
       )}
-      {/* V10: Icon container - 17×17 icons */}
+      {/* Icon container */}
       <span 
         className="flex items-center justify-center flex-shrink-0"
         style={{ 
           width: '17px',
           height: '17px',
-          opacity: active ? 1.0 : 0.65,
+          opacity: active ? 1.0 : tk.iconOpacityInactive,
           transition: 'opacity 150ms ease',
         }}
       >
@@ -485,7 +443,7 @@ function renderMenuItem(
           <CustomIcon 
             className="h-[17px] w-[17px]" 
             style={{ 
-              color: active ? 'var(--sidebar-item-active-text, #2563EB)' : 'var(--sidebar-item-text, #334155)',
+              color: active ? tk.activeText : tk.itemText,
               strokeWidth: 1.4,
             }}
           />
@@ -532,7 +490,7 @@ function renderMenuItem(
           )}
         </>
       )}
-      {/* Text Badge (AI, NEW, BETA, etc.) — V11 AI badge styling */}
+      {/* Text Badge (AI, NEW, BETA, etc.) */}
       {item.textBadge && (
         <span 
           style={{
@@ -567,7 +525,7 @@ function renderMenuItem(
           {item.textBadge}
         </span>
       )}
-      {/* Numeric Badge — V11: JetBrains Mono, contextual colors */}
+      {/* Numeric Badge — dark mode aware per D8-R3 Fix 6 */}
       {!item.textBadge && item.badge !== undefined && item.badge > 0 && (
         <span 
           style={{
@@ -577,19 +535,19 @@ function renderMenuItem(
             padding: '1px 6px',
             borderRadius: '10px',
             background: active 
-              ? '#DBEAFE'
+              ? (tk.isDark ? 'rgba(59,130,246,0.15)' : '#DBEAFE')
               : item.badgeVariant === 'danger' 
               ? 'hsl(var(--destructive))' 
               : item.badgeVariant === 'purple'
-              ? '#F5F3FF'
-              : '#F1F5F9',
+              ? (tk.isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF')
+              : tk.badgeBg,
             color: active 
-              ? '#2563EB'
+              ? (tk.isDark ? '#7DB8FC' : '#2563EB')
               : item.badgeVariant === 'danger'
               ? 'hsl(var(--destructive-foreground))'
               : item.badgeVariant === 'purple'
-              ? '#7C3AED'
-              : '#94A3B8',
+              ? (tk.isDark ? '#C4B5FD' : '#7C3AED')
+              : tk.badgeText,
             minWidth: expanded ? '20px' : '0',
             height: '20px',
             textAlign: 'center',
