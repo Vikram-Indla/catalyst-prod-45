@@ -1609,7 +1609,6 @@ html:has(body[data-scroll-locked]) {
     color: var(--fg-3);
     font-weight: 500;
     letter-spacing: 0.02em;
-    /* MUST NOT use disabled color */
   }
   
   /* === 3) NAV ITEMS (default state) === */
@@ -1684,15 +1683,18 @@ html:has(body[data-scroll-locked]) {
     /* Minimum contrast = fg-2 */
   }
   
-  /* === DARK MODE SIDEBAR OVERRIDES === */
+  /* === DARK MODE SIDEBAR OVERRIDES — ECLIPSE D8-R3 ===
+     SidebarBase uses inline styles with isDark conditional tokens.
+     These CSS rules must NOT fight inline styles. Use #1A1714 (ECLIPSE surface). */
   .dark aside,
   .dark [data-sidebar],
   .dark .sidebar,
   [data-theme="dark"] aside,
   [data-theme="dark"] [data-sidebar],
   [data-theme="dark"] .sidebar {
-    background-color: var(--bg-1);
-    border-right-color: var(--divider);
+    background-color: #1A1714;
+    border-right-color: rgba(248,244,240,0.08);
+    box-shadow: none;
   }
   
   /* Dark mode contrast utilities for muted elements */
@@ -4635,33 +4637,38 @@ table .text-gray-500,
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   CATALYST V5 — SIDEBAR LOCKDOWN (Premium Nav Surface)
+   CATALYST V5 → ECLIPSE D8-R3 — SIDEBAR LOCKDOWN (Premium Nav Surface)
+   Updated to use ECLIPSE dark mode tokens (#1A1714 surface, blue accent).
+   SidebarBase uses inline styles — these CSS rules provide fallback only.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Sidebar container */
+/* Sidebar container — ECLIPSE surface #1A1714 */
 .dark aside,
 .dark [data-sidebar],
 .dark .sidebar,
 [data-theme="dark"] aside,
 [data-theme="dark"] [data-sidebar],
 [data-theme="dark"] .sidebar {
-  background-color: var(--bg-1) !important;
-  border-color: var(--divider) !important;
+  background-color: #1A1714 !important;
+  border-color: rgba(248,244,240,0.08) !important;
+  box-shadow: none !important;
 }
 
-/* Sidebar section headers */
+/* Sidebar section headers — t2 (0.72) */
 .dark aside [class*="SectionHeader"],
 .dark aside .sidebar-section-header,
 .dark [data-sidebar] [class*="group-label"],
 [data-theme="dark"] aside [class*="SectionHeader"],
 [data-theme="dark"] aside .sidebar-section-header,
 [data-theme="dark"] [data-sidebar] [class*="group-label"] {
-  color: var(--fg-3) !important;
+  color: var(--cp-t2) !important;
   font-weight: 500 !important;
   letter-spacing: 0.02em !important;
 }
 
-/* Sidebar nav items default */
+/* Sidebar nav items default — t1 (0.92) for primary nav labels.
+   NO !important — SidebarBase inline styles must be able to override
+   for active state (blue text) and hover state. */
 .dark aside nav a,
 .dark aside nav button,
 .dark [data-sidebar] nav a,
@@ -4670,10 +4677,10 @@ table .text-gray-500,
 [data-theme="dark"] aside nav button,
 [data-theme="dark"] [data-sidebar] nav a,
 [data-theme="dark"] [data-sidebar] nav button {
-  color: var(--fg-2) !important;
+  color: var(--cp-t1);
 }
 
-/* Sidebar nav items hover */
+/* Sidebar nav items hover — blue tint. No !important so inline styles win. */
 .dark aside nav a:hover,
 .dark aside nav button:hover,
 .dark [data-sidebar] nav a:hover,
@@ -4682,11 +4689,11 @@ table .text-gray-500,
 [data-theme="dark"] aside nav button:hover,
 [data-theme="dark"] [data-sidebar] nav a:hover,
 [data-theme="dark"] [data-sidebar] nav button:hover {
-  background-color: rgba(92,124,92,0.08) !important;
-  color: var(--fg-1) !important;
+  background-color: rgba(59,130,246,0.06);
+  color: var(--cp-t1);
 }
 
-/* Sidebar nav items active */
+/* Sidebar nav items active — blue tint bg + blue text */
 .dark aside nav a[data-active="true"],
 .dark aside nav a.active,
 .dark aside nav [aria-current="page"],
@@ -4699,12 +4706,12 @@ table .text-gray-500,
 [data-theme="dark"] [data-sidebar] nav a[data-active="true"],
 [data-theme="dark"] [data-sidebar] nav a.active,
 [data-theme="dark"] [data-sidebar] nav [aria-current="page"] {
-  background-color: rgba(92,124,92,0.12) !important;
-  color: var(--fg-1) !important;
-  border-left: 2px solid var(--brand-gold) !important;
+  background-color: rgba(59,130,246,0.10) !important;
+  color: #7DB8FC !important;
+  border-left: 2px solid #2563EB !important;
 }
 
-/* Sidebar icons follow text */
+/* Sidebar icons — inherit text color */
 .dark aside svg,
 .dark [data-sidebar] svg,
 [data-theme="dark"] aside svg,
