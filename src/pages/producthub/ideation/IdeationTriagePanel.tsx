@@ -272,6 +272,7 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
   primary: { label: string; icon: React.ReactNode; onClick: () => void };
   secondary: { label: string; icon: React.ReactNode; onClick: () => void };
 }) {
+  const { isDark } = useTheme();
   const dotColor = DOT_COLORS[badge] || '#94A3B8';
   return (
     <div style={{ background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0'}`, borderRadius: '10px', padding: '16px', marginBottom: '10px', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
