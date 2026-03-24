@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Search, List, LayoutGrid } from 'lucide-react';
 import { FilterDropdown, FilterChips, FilterState } from './FilterDropdown';
-import { toast } from 'sonner';
 
 interface ProjectToolbarProps {
   view: 'table' | 'card';
@@ -11,6 +10,7 @@ interface ProjectToolbarProps {
   filters: FilterState;
   onFilterChange: (f: FilterState) => void;
   onNewProject?: () => void;
+  isDark?: boolean;
 }
 
 export function ProjectToolbar({
@@ -21,6 +21,7 @@ export function ProjectToolbar({
   filters,
   onFilterChange,
   onNewProject,
+  isDark = false,
 }: ProjectToolbarProps) {
   const [localSearch, setLocalSearch] = useState(search);
 
@@ -28,6 +29,12 @@ export function ProjectToolbar({
     const t = setTimeout(() => onSearchChange(localSearch), 300);
     return () => clearTimeout(t);
   }, [localSearch, onSearchChange]);
+
+  const borderColor = isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0';
+  const surfaceBg = isDark ? 'transparent' : '#FFFFFF';
+  const textColor = isDark ? 'rgba(248,244,240,0.92)' : '#0F172A';
+  const mutedColor = isDark ? 'rgba(248,244,240,0.40)' : '#94A3B8';
+  const subtleColor = isDark ? 'rgba(248,244,240,0.60)' : '#64748B';
 
   return (
     <div>
@@ -67,32 +74,32 @@ export function ProjectToolbar({
           style={{
             height: 34,
             padding: '0 10px',
-            background: '#FFFFFF',
-            border: '1px solid #E2E8F0',
+            background: surfaceBg,
+            border: `1px solid ${borderColor}`,
             borderRadius: 6,
             minWidth: 220,
           }}
         >
-          <Search size={14} color="#94A3B8" strokeWidth={2} />
+          <Search size={14} style={{ color: mutedColor }} strokeWidth={2} />
           <input
             value={localSearch}
             onChange={e => setLocalSearch(e.target.value)}
             placeholder="Search projects..."
             className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: 13, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}
+            style={{ fontSize: 13, color: textColor, fontFamily: "'Inter', sans-serif" }}
           />
         </div>
 
         {/* View toggle */}
-        <div className="flex items-center rounded-md" style={{ border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+        <div className="flex items-center rounded-md" style={{ border: `1px solid ${borderColor}`, overflow: 'hidden' }}>
           <button
             onClick={() => onViewChange('table')}
             className="flex items-center justify-center transition-colors"
             style={{
               width: 34,
               height: 32,
-              background: view === 'table' ? '#EFF6FF' : '#FFFFFF',
-              color: view === 'table' ? '#2563EB' : '#64748B',
+              background: view === 'table' ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : surfaceBg,
+              color: view === 'table' ? (isDark ? '#60A5FA' : '#2563EB') : subtleColor,
               border: 'none',
               cursor: 'pointer',
             }}
@@ -106,10 +113,10 @@ export function ProjectToolbar({
             style={{
               width: 34,
               height: 32,
-              background: view === 'card' ? '#EFF6FF' : '#FFFFFF',
-              color: view === 'card' ? '#2563EB' : '#64748B',
+              background: view === 'card' ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : surfaceBg,
+              color: view === 'card' ? (isDark ? '#60A5FA' : '#2563EB') : subtleColor,
               border: 'none',
-              borderLeft: '1px solid #E2E8F0',
+              borderLeft: `1px solid ${borderColor}`,
               cursor: 'pointer',
             }}
             title="Card view"

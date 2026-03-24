@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { StarButton } from './StarButton';
 import { formatRelativeTime, StatusBadge, HealthBadge, AvatarStack } from './project-list-utils';
+import { DK, LK } from '@/utils/dark-mode-styles';
 
 export interface PHProject {
   id: string;
@@ -22,10 +23,12 @@ interface ProjectTableRowProps {
   isStarred: boolean;
   onToggleStar: (id: string) => void;
   onContextMenu: (e: React.MouseEvent, project: PHProject) => void;
+  isDark?: boolean;
 }
 
-export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMenu }: ProjectTableRowProps) {
+export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMenu, isDark = false }: ProjectTableRowProps) {
   const navigate = useNavigate();
+  const T = isDark ? DK : LK;
 
   return (
     <tr
@@ -33,7 +36,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
       style={{ height: 36 }}
       onClick={() => navigate(`/project-hub/${project.key}/dashboard`)}
       onContextMenu={e => onContextMenu(e, project)}
-      onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+      onMouseEnter={e => (e.currentTarget.style.background = T.hoverBg)}
       onMouseLeave={e => (e.currentTarget.style.background = '')}
     >
       {/* Star */}
@@ -52,7 +55,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
             fontSize: 12,
             fontFamily: "'JetBrains Mono', monospace",
             fontWeight: 500,
-            color: '#2563EB',
+            color: T.blueKey,
           }}
         >
           {project.key}
@@ -77,12 +80,11 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
           >
             {project.key.slice(0, 2)}
           </div>
-          <span className="truncate" style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
+          <span className="truncate" style={{ fontSize: 14, fontWeight: 500, color: T.t1 }}>
             {project.name}
           </span>
         </div>
       </td>
-
 
       {/* Status */}
       <td style={{ padding: '0 8px' }}>
@@ -101,7 +103,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
             fontSize: 12,
             fontFamily: "'JetBrains Mono', monospace",
             fontWeight: 500,
-            color: '#334155',
+            color: T.t2,
           }}
         >
           {project.item_count ?? 0}
@@ -115,7 +117,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
 
       {/* Updated */}
       <td style={{ padding: '0 8px' }}>
-        <span style={{ fontSize: 12, color: '#94A3B8' }}>
+        <span style={{ fontSize: 12, color: T.t3 }}>
           {formatRelativeTime(project.updated_at)}
         </span>
       </td>
