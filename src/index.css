@@ -2700,12 +2700,12 @@ html:has(body[data-scroll-locked]) {
    ═══════════════════════════════════════════════════════════════════════════ */
 .dark,
 [data-theme="dark"] {
-  /* Surface elevation scale (4-8% contrast delta) */
-  --bg-0: #0f0f0f;           /* Deepest - rarely used */
-  --bg-1: #1a1a1a;           /* Page background */
-  --bg-2: #212121;           /* Cards, sections (4% lift) */
-  --bg-3: #292929;           /* Raised surfaces (8% lift) */
-  --bg-4: #333333;           /* Highest elevation */
+  /* Surface elevation scale — Nocturne Warm Charcoal (must match .dark block above) */
+  --bg-0: #1A1714;           /* App background — Nocturne warm charcoal */
+  --bg-1: #1E1B16;           /* Page canvas */
+  --bg-2: #232019;           /* Cards, sections — flush with panels */
+  --bg-3: #232019;           /* Raised surfaces — same as bg-2 for flush */
+  --bg-4: #2A2720;           /* Highest elevation */
   
   /* Text hierarchy - all opaque, never disabled-looking */
   --text-1: #f5f5f5;         /* Primary text */
