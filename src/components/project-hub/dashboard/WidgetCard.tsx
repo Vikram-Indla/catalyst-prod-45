@@ -3,6 +3,7 @@
  * Premium enterprise styling with hover shadow, error state, ARIA
  */
 import type { ReactNode } from 'react';
+import { useTheme } from 'next-themes';
 
 interface Props {
   title: string;
@@ -24,12 +25,22 @@ export function WidgetCard(props: Props) {
 }
 
 function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, headerRight, children, maxHeight, actionLabel, onAction, error, onRetry }: Props) {
-  // Count badge colors based on countColor
+  const { theme } = useTheme();
+  const dark = theme === 'dark';
+
   const getCountBadgeStyle = () => {
-    if (!countColor) return { bg: '#F1F5F9', text: '#475569', border: '#CBD5E1' };
-    if (countColor === '#D97706' || countColor === '#EF4444') return { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' };
-    if (countColor === '#16A34A') return { bg: '#DCFCE7', text: '#166534', border: '#86EFAC' };
-    return { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD' };
+    if (!countColor) return dark
+      ? { bg: 'rgba(255,255,255,0.06)', text: 'rgba(248,244,240,0.72)', border: 'rgba(255,255,255,0.12)' }
+      : { bg: '#F1F5F9', text: '#475569', border: '#CBD5E1' };
+    if (countColor === '#D97706' || countColor === '#EF4444') return dark
+      ? { bg: 'rgba(220,38,38,0.15)', text: '#FCA5A5', border: 'rgba(220,38,38,0.3)' }
+      : { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' };
+    if (countColor === '#16A34A') return dark
+      ? { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC', border: 'rgba(22,163,74,0.3)' }
+      : { bg: '#DCFCE7', text: '#166534', border: '#86EFAC' };
+    return dark
+      ? { bg: 'rgba(37,99,235,0.15)', text: '#93C5FD', border: 'rgba(37,99,235,0.3)' }
+      : { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD' };
   };
   const countStyle = getCountBadgeStyle();
 
@@ -39,12 +50,12 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
       aria-label={title}
       className="ph-widget-card"
       style={{
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        background: dark ? '#1A1714' : '#FFFFFF',
+        border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid #E2E8F0',
         borderRadius: 10,
         borderLeft: leftBorder ? `3px solid ${leftBorder}` : undefined,
         overflow: 'hidden',
-        boxShadow: '0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04)',
+        boxShadow: dark ? 'none' : '0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04)',
         display: 'flex',
         flexDirection: 'column',
         transition: 'box-shadow 150ms ease',
@@ -56,12 +67,12 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: '1px solid #F1F5F9',
+          borderBottom: dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #F1F5F9',
           flexShrink: 0,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: dark ? 'rgba(248,244,240,0.92)' : '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
             {title}
           </span>
           {count !== undefined && (
@@ -82,7 +93,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
               {count}
             </span>
           )}
-          {subtitle && <span style={{ fontSize: 11, color: '#64748B', fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>{subtitle}</span>}
+          {subtitle && <span style={{ fontSize: 11, color: dark ? 'rgba(248,244,240,0.50)' : '#64748B', fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>{subtitle}</span>}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {headerRight}
@@ -90,7 +101,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
             <button
               onClick={onAction}
               className="ph-focus-ring"
-              style={{ fontSize: 12, color: '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 12, color: dark ? '#60A5FA' : '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               {actionLabel}
             </button>
@@ -105,7 +116,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
             <button
               onClick={onRetry}
               className="ph-focus-ring"
-              style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}
+              style={{ fontSize: 11, fontWeight: 600, color: dark ? '#60A5FA' : '#2563EB', background: dark ? 'rgba(37,99,235,0.15)' : '#EFF6FF', border: dark ? '1px solid rgba(37,99,235,0.3)' : '1px solid #BFDBFE', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}
             >
               Retry
             </button>
@@ -118,7 +129,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
       )}
 
       <style>{`
-        .ph-widget-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.1) !important; }
+        .ph-widget-card:hover { box-shadow: ${dark ? 'none' : '0 4px 12px rgba(0,0,0,.1)'} !important; }
         .ph-focus-ring:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; border-radius: 4px; }
       `}</style>
     </div>
