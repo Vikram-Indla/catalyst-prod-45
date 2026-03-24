@@ -86,11 +86,11 @@
 }
 .dark .idp-tab,
 [data-theme="dark"] .idp-tab {
-  color: rgba(248,244,240,0.50);
+  color: #9CA3AF;
 }
 .dark .idp-tab:hover,
 [data-theme="dark"] .idp-tab:hover {
-  color: rgba(248,244,240,0.72);
+  color: #E5E7EB;
 }
 .dark .idp-tab--active,
 [data-theme="dark"] .idp-tab--active {
@@ -99,7 +99,7 @@
 }
 .dark .idp-field-label,
 [data-theme="dark"] .idp-field-label {
-  color: rgba(248,244,240,0.50);
+  color: #9CA3AF;
 }
 .dark .idp-dd-trigger,
 [data-theme="dark"] .idp-dd-trigger {
