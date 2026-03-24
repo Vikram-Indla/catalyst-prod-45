@@ -1,6 +1,7 @@
 /**
  * StrategicThemesPage — Full Strategic Themes module
  * Header: CommandCenterHeader with breadcrumb prefix, no subtitle
+ * ECLIPSE D8-R4: Dark mode parity
  */
 
 import { useState, useMemo, useCallback } from 'react';
@@ -18,9 +19,12 @@ import { ThemeTimelineView } from '@/components/strategy/themes/ThemeTimelineVie
 import { ThemeAlignmentView } from '@/components/strategy/themes/ThemeAlignmentView';
 import { ThemeDetailDrawer } from '@/components/strategy/themes/ThemeDetailDrawer';
 import { ThemeCreateModal } from '@/components/strategy/themes/ThemeCreateModal';
+import { useIsDark } from '@/components/strategy/themes/useIsDark';
+import { DK } from '@/components/strategy/themes/theme-utils';
 
 export default function StrategicThemesPage() {
   const navigate = useNavigate();
+  const isDark = useIsDark();
   const { data: themes = [], isLoading, refetch, isFetching } = useThemes();
   const createTheme = useCreateTheme();
   const updateTheme = useUpdateTheme();
@@ -90,10 +94,8 @@ export default function StrategicThemesPage() {
 
   const handleToggleIntelligence = useCallback(() => {
     if (view === 'alignment') {
-      // Already on alignment map — toggle panel
       setIsIntelligenceOpen(prev => !prev);
     } else {
-      // Switch to alignment map
       setView('alignment');
       setIsIntelligenceOpen(true);
     }
@@ -105,7 +107,7 @@ export default function StrategicThemesPage() {
         <CommandCenterHeader title="Strategic Themes" />
         <div className="p-6 space-y-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="rounded-lg animate-pulse" style={{ height: 48, background: 'hsl(var(--muted))' }} />
+            <div key={i} className="rounded-lg animate-pulse" style={{ height: 48, background: isDark ? 'rgba(248,244,240,0.04)' : 'hsl(var(--muted))' }} />
           ))}
         </div>
       </PageChrome>
@@ -114,7 +116,6 @@ export default function StrategicThemesPage() {
 
   const currentSelected = selectedTheme ? themes.find(t => t.id === selectedTheme.id) || selectedTheme : null;
 
-  // Alignment view is full-screen — render ONLY the alignment component
   if (view === 'alignment') {
     return <ThemeAlignmentView onBack={() => { setView('list'); setIsIntelligenceOpen(false); }} />;
   }
@@ -122,18 +123,18 @@ export default function StrategicThemesPage() {
   return (
     <PageChrome hideHeader>
       <div style={{ padding: '16px 24px 0' }}>
-        <nav style={{ fontSize: 12, color: '#64748B', marginBottom: 4 }}>
-          <span style={{ cursor: 'pointer' }} onClick={() => navigate('/strategyhub')}>StrategyHub</span>
-          <span style={{ margin: '0 4px', color: '#94A3B8' }}>›</span>
-          <span style={{ fontWeight: 600, color: '#0F172A' }}>Strategic Themes</span>
+        <nav style={{ fontSize: 12, color: isDark ? DK.t2 : '#64748B', marginBottom: 4 }}>
+          <span style={{ cursor: 'pointer', color: isDark ? '#7DB8FC' : undefined }} onClick={() => navigate('/strategyhub')}>StrategyHub</span>
+          <span style={{ margin: '0 4px', color: isDark ? DK.t3 : '#94A3B8' }}>›</span>
+          <span style={{ fontWeight: 600, color: isDark ? DK.t1 : '#0F172A' }}>Strategic Themes</span>
         </nav>
         <div className="flex items-center justify-between" style={{ marginBottom: 0 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A' }}>Strategic Themes</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? DK.t1 : '#0F172A' }}>Strategic Themes</h1>
         </div>
       </div>
 
       <div style={{ padding: '16px 24px 24px' }}>
-        <ThemeStatsStrip themes={themes} />
+        <ThemeStatsStrip themes={themes} isDark={isDark} />
 
         <ThemeToolbar
           themes={themes}
@@ -152,9 +153,10 @@ export default function StrategicThemesPage() {
           onNewTheme={() => { setEditingTheme(null); setModalOpen(true); }}
           isIntelligenceOpen={isIntelligenceOpen}
           onToggleIntelligence={handleToggleIntelligence}
+          isDark={isDark}
         />
 
-        {view === 'list' && <ThemeListView themes={filtered} onSelect={handleSelect} />}
+        {view === 'list' && <ThemeListView themes={filtered} onSelect={handleSelect} isDark={isDark} />}
         {view === 'board' && <ThemeBoardView themes={filtered} onSelect={handleSelect} />}
         {view === 'timeline' && <ThemeTimelineView themes={filtered} onSelect={handleSelect} />}
       </div>

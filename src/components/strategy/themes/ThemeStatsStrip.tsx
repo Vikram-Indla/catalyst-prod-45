@@ -1,13 +1,14 @@
 /**
  * ThemeStatsStrip — 5 KPI cards with enterprise visual hierarchy
+ * ECLIPSE D8-R4: Dark mode parity
  */
 import { TrendingUp, TrendingDown, Target, DollarSign, AlertTriangle, Layers } from 'lucide-react';
 import type { StrategicTheme } from '@/types/strategic-themes';
-import { formatBudget, deriveHealthStatus } from './theme-utils';
+import { formatBudget, deriveHealthStatus, DK } from './theme-utils';
 
-interface Props { themes: StrategicTheme[] }
+interface Props { themes: StrategicTheme[]; isDark?: boolean }
 
-export function ThemeStatsStrip({ themes }: Props) {
+export function ThemeStatsStrip({ themes, isDark = false }: Props) {
   const active = themes.filter(t => t.status === 'active');
   const avgProgress = themes.length ? Math.round(themes.reduce((s, t) => s + (t.progress_pct || 0), 0) / themes.length) : 0;
   const totalGoals = themes.reduce((s, t) => s + (t.goal_count || 0), 0);
@@ -29,7 +30,8 @@ export function ThemeStatsStrip({ themes }: Props) {
       sub: `${themes.length} total`,
       icon: Layers,
       iconColor: '#2563EB',
-      iconBg: '#EFF6FF',
+      iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
+      cardBg: isDark ? 'rgba(59,130,246,0.06)' : undefined,
     },
     {
       label: 'AVG. PROGRESS',
@@ -37,8 +39,13 @@ export function ThemeStatsStrip({ themes }: Props) {
       sub: `${progressDelta >= 0 ? '↑' : '↓'} ${Math.abs(progressDelta)}% vs target`,
       icon: progressDelta >= 0 ? TrendingUp : TrendingDown,
       iconColor: progressDelta >= 0 ? '#0D9488' : '#DC2626',
-      iconBg: progressDelta >= 0 ? '#F0FDFA' : '#FEF2F2',
+      iconBg: isDark
+        ? (progressDelta >= 0 ? 'rgba(13,148,136,0.12)' : 'rgba(220,38,38,0.12)')
+        : (progressDelta >= 0 ? '#F0FDFA' : '#FEF2F2'),
       subColor: progressDelta >= 0 ? '#0D9488' : '#DC2626',
+      cardBg: isDark
+        ? (progressDelta >= 0 ? 'rgba(13,148,136,0.06)' : 'rgba(220,38,38,0.06)')
+        : undefined,
     },
     {
       label: 'TOTAL GOALS',
@@ -46,7 +53,8 @@ export function ThemeStatsStrip({ themes }: Props) {
       sub: themes.length ? `~${Math.round(totalGoals / themes.length)} per theme` : '—',
       icon: Target,
       iconColor: '#059669',
-      iconBg: '#ECFDF5',
+      iconBg: isDark ? 'rgba(5,150,105,0.12)' : '#ECFDF5',
+      cardBg: isDark ? 'rgba(5,150,105,0.06)' : undefined,
     },
     {
       label: 'TOTAL BUDGET (SAR)',
@@ -54,7 +62,8 @@ export function ThemeStatsStrip({ themes }: Props) {
       sub: 'FY2026 planned',
       icon: DollarSign,
       iconColor: '#2563EB',
-      iconBg: '#EFF6FF',
+      iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
+      cardBg: isDark ? 'rgba(59,130,246,0.06)' : undefined,
     },
     {
       label: 'OFF TRACK / AT RISK',
@@ -62,8 +71,13 @@ export function ThemeStatsStrip({ themes }: Props) {
       sub: atRiskCount > 0 ? 'Needs attention' : 'All healthy',
       icon: AlertTriangle,
       iconColor: atRiskCount > 0 ? '#DC2626' : '#059669',
-      iconBg: atRiskCount > 0 ? '#FEF2F2' : '#ECFDF5',
+      iconBg: isDark
+        ? (atRiskCount > 0 ? 'rgba(220,38,38,0.12)' : 'rgba(5,150,105,0.12)')
+        : (atRiskCount > 0 ? '#FEF2F2' : '#ECFDF5'),
       valueColor: atRiskCount > 0 ? '#DC2626' : undefined,
+      cardBg: isDark
+        ? (atRiskCount > 0 ? 'rgba(220,38,38,0.06)' : 'rgba(5,150,105,0.06)')
+        : undefined,
     },
   ];
 
@@ -72,16 +86,20 @@ export function ThemeStatsStrip({ themes }: Props) {
       {cards.map(c => (
         <div
           key={c.label}
-          className="rounded-xl border transition-shadow hover:shadow-md"
+          className="rounded-xl border transition-shadow"
           style={{
-            background: '#FFFFFF',
-            borderColor: '#E2E8F0',
+            background: isDark ? ((c as any).cardBg || DK.bg) : '#FFFFFF',
+            borderColor: isDark ? DK.border : '#E2E8F0',
             padding: '16px 18px',
+            ...(isDark ? {} : {}),
           }}
+          onMouseEnter={e => { if (!isDark) e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.1)'; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = ''; }}
         >
           <div className="flex items-start justify-between mb-2">
             <span style={{
-              fontSize: 11, fontWeight: 600, color: '#94A3B8',
+              fontSize: 11, fontWeight: 600,
+              color: isDark ? DK.t2 : '#94A3B8',
               letterSpacing: '0.5px',
             }}>{c.label}</span>
             <div
@@ -92,10 +110,14 @@ export function ThemeStatsStrip({ themes }: Props) {
             </div>
           </div>
           <p style={{
-            fontSize: 26, fontWeight: 800, color: (c as any).valueColor || '#0F172A',
+            fontSize: 26, fontWeight: 800,
+            color: (c as any).valueColor || (isDark ? DK.t1 : '#0F172A'),
             lineHeight: 1.1, marginBottom: 4, letterSpacing: '-0.5px',
           }}>{c.value}</p>
-          <p style={{ fontSize: 11, color: (c as any).subColor || '#94A3B8' }}>{c.sub}</p>
+          <p style={{
+            fontSize: 11,
+            color: (c as any).subColor || (isDark ? DK.t2 : '#94A3B8'),
+          }}>{c.sub}</p>
         </div>
       ))}
     </div>

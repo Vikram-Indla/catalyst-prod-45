@@ -1,10 +1,11 @@
 /**
  * ThemeToolbar — Search, filters (Radix Select), view toggle, actions
+ * ECLIPSE D8-R4: Dark mode parity
  */
 import { Search, List, LayoutGrid, GanttChart, Download, Plus, Zap } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { StrategicTheme, ThemeView } from '@/types/strategic-themes';
-import { BSC_FILTER_OPTIONS } from './theme-utils';
+import { BSC_FILTER_OPTIONS, DK } from './theme-utils';
 
 interface Props {
   themes: StrategicTheme[];
@@ -23,6 +24,7 @@ interface Props {
   onNewTheme: () => void;
   isIntelligenceOpen?: boolean;
   onToggleIntelligence?: () => void;
+  isDark?: boolean;
 }
 
 const viewOptions: { key: ThemeView; icon: typeof List; label: string }[] = [
@@ -32,23 +34,24 @@ const viewOptions: { key: ThemeView; icon: typeof List; label: string }[] = [
 ];
 
 export function ThemeToolbar(props: Props) {
+  const { isDark = false } = props;
   const owners = [...new Set(props.themes.map(t => t.owner_name).filter(Boolean))];
   const fiscalYears = [...new Set(props.themes.map(t => t.fiscal_year))].sort();
 
-  const hasActive = !!(props.statusFilter || props.ownerFilter || props.bscFilter || props.fyFilter);
+  const borderColor = isDark ? DK.border : '#E2E8F0';
 
   return (
     <div
       className="flex items-center gap-2 flex-wrap"
       style={{
         padding: '10px 0',
-        borderBottom: '1px solid #E2E8F0',
+        borderBottom: `1px solid ${borderColor}`,
         marginBottom: 16,
       }}
     >
       {/* Search */}
       <div className="relative" style={{ width: 240 }}>
-        <Search size={14} color="#94A3B8" className="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none" />
+        <Search size={14} color={isDark ? 'var(--cp-t3)' : '#94A3B8'} className="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none" />
         <input
           type="text"
           placeholder="Search themes..."
@@ -57,8 +60,10 @@ export function ThemeToolbar(props: Props) {
           className="w-full"
           style={{
             fontSize: 12, height: 32, borderRadius: 6,
-            border: '1px solid #E2E8F0', background: '#FFFFFF',
-            color: '#334155', paddingLeft: 30, paddingRight: 8, outline: 'none',
+            border: `1px solid ${borderColor}`,
+            background: isDark ? DK.bg : '#FFFFFF',
+            color: isDark ? DK.t1 : '#334155',
+            paddingLeft: 30, paddingRight: 8, outline: 'none',
           }}
         />
       </div>
@@ -69,7 +74,11 @@ export function ThemeToolbar(props: Props) {
           className="h-8 text-xs border-border bg-background"
           style={{
             width: 'auto', minWidth: 110,
-            ...(props.statusFilter ? { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' } : {}),
+            ...(props.statusFilter
+              ? (isDark
+                ? { background: 'rgba(59,130,246,0.12)', borderColor: '#3B82F6', color: '#93C5FD' }
+                : { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' })
+              : {}),
           }}
         >
           <SelectValue placeholder="All Status" />
@@ -89,7 +98,11 @@ export function ThemeToolbar(props: Props) {
           className="h-8 text-xs border-border bg-background"
           style={{
             width: 'auto', minWidth: 120,
-            ...(props.ownerFilter ? { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' } : {}),
+            ...(props.ownerFilter
+              ? (isDark
+                ? { background: 'rgba(59,130,246,0.12)', borderColor: '#3B82F6', color: '#93C5FD' }
+                : { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' })
+              : {}),
           }}
         >
           <SelectValue placeholder="All Owners" />
@@ -106,7 +119,11 @@ export function ThemeToolbar(props: Props) {
           className="h-8 text-xs border-border bg-background"
           style={{
             width: 'auto', minWidth: 110,
-            ...(props.bscFilter ? { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' } : {}),
+            ...(props.bscFilter
+              ? (isDark
+                ? { background: 'rgba(59,130,246,0.12)', borderColor: '#3B82F6', color: '#93C5FD' }
+                : { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' })
+              : {}),
           }}
         >
           <SelectValue placeholder="All BSC" />
@@ -126,7 +143,11 @@ export function ThemeToolbar(props: Props) {
           className="h-8 text-xs border-border bg-background"
           style={{
             width: 'auto', minWidth: 90,
-            ...(props.fyFilter ? { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' } : {}),
+            ...(props.fyFilter
+              ? (isDark
+                ? { background: 'rgba(59,130,246,0.12)', borderColor: '#3B82F6', color: '#93C5FD' }
+                : { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' })
+              : {}),
           }}
         >
           <SelectValue placeholder="All FY" />
@@ -138,10 +159,10 @@ export function ThemeToolbar(props: Props) {
       </Select>
 
       {/* Separator */}
-      <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
+      <div style={{ width: 1, height: 24, background: borderColor, margin: '0 4px' }} />
 
       {/* View toggle */}
-      <div className="flex items-center rounded-md overflow-hidden border" style={{ borderColor: '#E2E8F0' }}>
+      <div className="flex items-center rounded-md overflow-hidden border" style={{ borderColor }}>
         {viewOptions.map(v => (
           <button
             key={v.key}
@@ -150,10 +171,14 @@ export function ThemeToolbar(props: Props) {
             className="relative flex items-center justify-center"
             style={{
               width: 34, height: 30,
-              background: props.view === v.key ? '#EFF6FF' : '#FFFFFF',
-              color: props.view === v.key ? '#2563EB' : '#64748B',
+              background: props.view === v.key
+                ? (isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF')
+                : (isDark ? 'transparent' : '#FFFFFF'),
+              color: props.view === v.key
+                ? (isDark ? '#93C5FD' : '#2563EB')
+                : (isDark ? 'var(--cp-t2)' : '#64748B'),
               border: 'none', cursor: 'pointer',
-              borderRight: '1px solid #E2E8F0',
+              borderRight: `1px solid ${borderColor}`,
             }}
           >
             <v.icon size={15} strokeWidth={1.8} />
@@ -190,8 +215,11 @@ export function ThemeToolbar(props: Props) {
         className="flex items-center gap-1.5 rounded-md"
         style={{
           fontSize: 12, fontWeight: 500, height: 32,
-          padding: '0 12px', border: '1px solid #E2E8F0',
-          background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+          padding: '0 12px',
+          border: `1px solid ${borderColor}`,
+          background: isDark ? 'transparent' : '#FFFFFF',
+          color: isDark ? DK.t1 : '#334155',
+          cursor: 'pointer',
         }}
       >
         <Download size={14} /> Export
