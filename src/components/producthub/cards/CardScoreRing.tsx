@@ -51,7 +51,7 @@ export const CardScoreRing: React.FC<CardScoreRingProps> = ({ score, size = 64 }
         y="50%"
         textAnchor="middle"
         dy="0.35em"
-        className="font-bold fill-zinc-900"
+        className="font-bold fill-zinc-900 dark:fill-white"
         style={{ fontSize: size <= 48 ? 11 : size <= 64 ? 13 : 15 }}
       >
         {score !== null ? score.toFixed(1) : '—'}
