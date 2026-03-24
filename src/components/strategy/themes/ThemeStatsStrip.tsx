@@ -89,7 +89,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
           className="rounded-xl border transition-shadow"
           style={{
             background: isDark ? 'transparent' : '#FFFFFF',
-            borderColor: isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0',
+            borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0',
             padding: '16px 18px',
             boxShadow: isDark ? 'none' : undefined,
           }}
