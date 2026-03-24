@@ -82,13 +82,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       {cards.map(c => (
         <div
           key={c.label}
-          className="rounded-xl border transition-shadow"
-          style={{
-            background: isDark ? 'transparent' : '#FFFFFF',
-            borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0',
-            padding: '16px 18px',
-            boxShadow: isDark ? 'none' : undefined,
-          }}
+          className="rounded-xl border border-border bg-white px-[18px] py-4 transition-shadow dark:border-gray-700/50 dark:bg-[#1A1714] dark:shadow-none"
           onMouseEnter={e => { if (!isDark) e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.1)'; }}
           onMouseLeave={e => { e.currentTarget.style.boxShadow = isDark ? 'none' : ''; }}
         >
