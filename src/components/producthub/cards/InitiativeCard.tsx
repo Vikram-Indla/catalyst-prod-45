@@ -50,8 +50,10 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
     <div
       onClick={onClick}
       className={cn(
-        'group bg-white border border-zinc-200 rounded-xl border-l-4 cursor-pointer transition-all duration-200',
-        'hover:shadow-lg hover:border-zinc-300 hover:-translate-y-0.5',
+        'group border rounded-xl border-l-4 cursor-pointer transition-all duration-200',
+        'bg-white dark:bg-transparent dark:shadow-none',
+        'border-zinc-200 dark:border-gray-700',
+        'hover:shadow-lg hover:border-zinc-300 hover:-translate-y-0.5 dark:hover:shadow-none dark:hover:border-gray-600',
         getScoreBorderClass(initiative.computed_score),
         isCancelled && 'opacity-60'
       )}
@@ -90,7 +92,7 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
       <div className="px-4 pb-2">
         <h3
           className={cn(
-            'text-sm font-semibold text-zinc-900 leading-snug',
+            'text-sm font-semibold text-zinc-900 dark:text-white leading-snug',
             isCancelled && 'line-through',
             gridSize === 'small' ? 'line-clamp-2' : gridSize === 'medium' ? 'line-clamp-3' : ''
           )}
@@ -102,7 +104,7 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
 
       {/* Description (large only) */}
       {gridSize === 'large' && initiative.description && (
-        <p className="px-4 pb-2 text-xs text-zinc-500 leading-relaxed line-clamp-3">
+        <p className="px-4 pb-2 text-xs text-zinc-500 dark:text-gray-400 leading-relaxed line-clamp-3">
           {initiative.description}
         </p>
       )}
@@ -279,7 +281,7 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
       )}
 
       {/* Footer */}
-      <div className="border-t border-zinc-100 px-4 py-2">
+      <div className="border-t border-zinc-100 dark:border-gray-700 px-4 py-2">
         <span className="text-[10px] text-zinc-400">
           {gridSize === 'large'
             ? `Created ${format(new Date(initiative.created_at), 'MMM dd')} · Updated ${relativeTime(initiative.updated_at)}`
