@@ -20,7 +20,7 @@ const SelectTrigger = React.forwardRef<
       "flex h-9 w-full items-center justify-between rounded-md",
       "border border-border/50",
       "bg-background px-3 py-2 text-sm text-foreground",
-      "dark:bg-transparent dark:border-gray-700 dark:text-white",
+      "dark:bg-transparent dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500",
       "placeholder:text-muted-foreground",
       "hover:bg-muted transition-colors",
       "focus:outline-none focus:ring-1 focus:ring-[#3b82f6] dark:focus:ring-[#60a5fa]",

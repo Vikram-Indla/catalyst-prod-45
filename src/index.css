@@ -896,7 +896,7 @@ html:has(body[data-scroll-locked]) {
     --background: 220 10% 7%;            /* #0F1113 */
     --foreground: 0 0% 92%;              /* rgba(255,255,255,0.92) */
     
-    --card: 216 10% 10%;                 /* #1D2126 - bg-3 */
+    --card: 220 10% 7%;                  /* Same as --background — flush cards */
     --card-foreground: 0 0% 92%;
     
     --popover: 216 10% 11%;              /* #232830 - bg-4 */
