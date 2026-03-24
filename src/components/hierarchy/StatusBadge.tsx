@@ -56,8 +56,8 @@ const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
 
 const STATUS_STYLES: Record<StatusCategory, { background: string; color: string }> = {
   grey:  { background: '#DFE1E6', color: '#42526E' },
-  blue:  { background: '#DEEBFF', color: '#0747A6' },
-  green: { background: '#E3FCEF', color: '#006644' },
+  blue:  { background: '#0C66E4', color: '#FFFFFF' },
+  green: { background: '#1B7F37', color: '#FFFFFF' },
 };
 
 const STATUS_DISPLAY_NAMES: Record<string, string> = {

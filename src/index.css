@@ -114,11 +114,11 @@
   --cp-danger-60: #DC2626;
   --cp-teal-60: #0D9488;
   --cp-lozenge-grey-bg: #DFE1E6;
-  --cp-lozenge-grey-text: #253858;
-  --cp-lozenge-blue-bg: #DEEBFF;
-  --cp-lozenge-blue-text: #0747A6;
-  --cp-lozenge-green-bg: #E3FCEF;
-  --cp-lozenge-green-text: #006644;
+  --cp-lozenge-grey-text: #42526E;
+  --cp-lozenge-blue-bg: #0C66E4;
+  --cp-lozenge-blue-text: #FFFFFF;
+  --cp-lozenge-green-bg: #1B7F37;
+  --cp-lozenge-green-text: #FFFFFF;
 
   /* ═══ SHORTHAND TOKENS — For You / shared components ═══ */
   --cp-bg: #FFFFFF;
@@ -144,12 +144,12 @@
   --cp-err-text: #DC2626;
   --cp-prg-bg: rgba(37,99,235,0.08);
   --cp-lz-gy-bg: #DFE1E6;
-  --cp-lz-gy-t: #253858;
-  --cp-lz-bl-bg: #DEEBFF;
-  --cp-lz-bl-t: #0747A6;
-  --cp-lz-gn-bg: #E3FCEF;
-  --cp-lz-gn-t: #006644;
-  --cp-lozenge-green-text: #006644;
+  --cp-lz-gy-t: #42526E;
+  --cp-lz-bl-bg: #0C66E4;
+  --cp-lz-bl-t: #FFFFFF;
+  --cp-lz-gn-bg: #1B7F37;
+  --cp-lz-gn-t: #FFFFFF;
+  --cp-lozenge-green-text: #FFFFFF;
 
   /* ═══ Source Badge Tokens ═══ */
   --src-catalyst-bg: #EFF6FF;
@@ -279,10 +279,10 @@
   --cp-interact-selected: rgba(37,99,235,0.15);
   --cp-lozenge-grey-bg: #3B3D42;
   --cp-lozenge-grey-text: #D4D4D4;
-  --cp-lozenge-blue-bg: #1E3A5F;
-  --cp-lozenge-blue-text: #93C5FD;
-  --cp-lozenge-green-bg: #14532D;
-  --cp-lozenge-green-text: #86EFAC;
+  --cp-lozenge-blue-bg: #0C66E4;
+  --cp-lozenge-blue-text: #FFFFFF;
+  --cp-lozenge-green-bg: #1B7F37;
+  --cp-lozenge-green-text: #FFFFFF;
   --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.3);
   --cp-shadow-overlay: 0px 8px 12px rgba(0,0,0,0.5), 0px 0px 1px rgba(0,0,0,0.6);
 
@@ -311,10 +311,10 @@
   --cp-prg-bg: rgba(59,130,246,0.10);
   --cp-lz-gy-bg: #3B3D42;
   --cp-lz-gy-t: #D4D4D4;
-  --cp-lz-bl-bg: #1E3A5F;
-  --cp-lz-bl-t: #93C5FD;
-  --cp-lz-gn-bg: #14532D;
-  --cp-lz-gn-t: #86EFAC;
+  --cp-lz-bl-bg: #0C66E4;
+  --cp-lz-bl-t: #FFFFFF;
+  --cp-lz-gn-bg: #1B7F37;
+  --cp-lz-gn-t: #FFFFFF;
 }
 
 /* ═══ Wiki Pulse Animation ═══ */

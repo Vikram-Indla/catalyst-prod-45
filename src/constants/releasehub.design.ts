@@ -53,9 +53,9 @@ export const RH = {
 // GREEN: bg=#E3FCEF text=#006644 → IN_PRODUCTION, RELEASED, DONE, APPROVED, PASS
 
 export const LOZENGE = {
-  grey:  { bg: '#DFE1E6', text: '#253858' },
-  blue:  { bg: '#DEEBFF', text: '#0747A6' },
-  green: { bg: '#E3FCEF', text: '#006644' },
+  grey:  { bg: '#DFE1E6', text: '#42526E' },
+  blue:  { bg: '#0C66E4', text: '#FFFFFF' },
+  green: { bg: '#1B7F37', text: '#FFFFFF' },
 } as const;
 
 type LozengeStyle = { bg: string; text: string };
