@@ -167,6 +167,7 @@ export default function StrategicThemesPage() {
         onClose={() => setDrawerOpen(false)}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        isDark={isDark}
       />
 
       <ThemeCreateModal
