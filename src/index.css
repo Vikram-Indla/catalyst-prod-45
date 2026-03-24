@@ -3354,10 +3354,10 @@ html:has(body[data-scroll-locked]) {
   background-color: var(--bg-2) !important;
 }
 
-/* bg-white → bg-1 (cards) */
+/* bg-white → page surface in dark (flush, not elevated) */
 .dark .bg-white,
 [data-theme="dark"] .bg-white {
-  background-color: var(--bg-1) !important;
+  background-color: var(--bg-0) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -3694,12 +3694,7 @@ html:has(body[data-scroll-locked]) {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   BG-WHITE NEUTRALIZATION — Map to appropriate surface in dark mode
-   ═══════════════════════════════════════════════════════════════════════════ */
-.dark .bg-white,
-[data-theme="dark"] .bg-white {
-  background-color: var(--bg-1) !important;
-}
+/* bg-white neutralization — removed duplicate, see line 3357 */
 
 /* BG-BLACK already OK, but ensure it uses surface token */
 .dark .bg-black,
@@ -4757,10 +4752,7 @@ table .text-gray-500,
    CATALYST V5 — BG-WHITE OVERRIDE (catch all patterns)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.dark .bg-white,
-[data-theme="dark"] .bg-white {
-  background-color: var(--bg-2) !important;
-}
+/* bg-white neutralization — removed duplicate, see line 3357 */
 
 /* ═══════════════════════════════════════════════════════════════════════════
    CATALYST V5 TOKEN REFERENCE SUMMARY
