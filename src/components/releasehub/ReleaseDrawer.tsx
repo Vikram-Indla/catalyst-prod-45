@@ -119,8 +119,8 @@ function OverviewTab({ release, changesCount }: { release: any; changesCount: nu
         <h3 className="text-[13px] font-bold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Quality Gates</h3>
         <div className="grid grid-cols-2 gap-2">
           {gates.map(g => (
-            <div key={g.label} className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${g.pass ? 'bg-[#E3FCEF] border-[#86EFAC]' : 'bg-[#FEF2F2] border-[#FCA5A5]'}`}>
-              <span className={`text-[14px] ${g.pass ? 'text-[#006644]' : 'text-[#DC2626]'}`}>{g.pass ? '✓' : '✕'}</span>
+            <div key={g.label} className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${g.pass ? 'bg-[#1B7F37] border-[#86EFAC]' : 'bg-[#FEF2F2] border-[#FCA5A5]'}`}>
+              <span className={`text-[14px] ${g.pass ? 'text-white' : 'text-[#DC2626]'}`}>{g.pass ? '✓' : '✕'}</span>
               <span className="text-[12px] font-medium" style={{ color: RH.ink2 }}>{g.label}</span>
             </div>
           ))}
@@ -232,8 +232,8 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
         return (
           <div key={s.stage} className="flex items-center gap-3 py-3 border-b border-[rgba(15,23,42,0.06)] last:border-0">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
-              status === 'approved' ? 'bg-[#E3FCEF] text-[#006644]' :
-              status === 'pending' ? 'bg-[#DEEBFF] text-[#0747A6]' :
+              status === 'approved' ? 'bg-[#1B7F37] text-white' :
+              status === 'pending' ? 'bg-[#0C66E4] text-white' :
               'bg-[#F1F5F9] text-[#94A3B8]'
             }`}>
               {status === 'approved' ? '✓' : status === 'pending' ? i + 1 : '🔒'}
@@ -252,7 +252,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
             {hasPending && stageSignoffs.filter((so: any) => so.status === 'pending').map((so: any) => (
               <div key={so.id} className="flex items-center gap-2">
                 <button onClick={() => approveSignoff.mutate(so.id, { onSuccess: () => toast.success('Approved') })}
-                  className="h-7 px-3 rounded bg-[#006644] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
+                  className="h-7 px-3 rounded bg-[#1B7F37] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: so.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
                   className="h-7 px-3 rounded border border-[#FCA5A5] text-[#DC2626] text-[11px] font-bold hover:bg-[#FEF2F2]">Reject</button>
               </div>

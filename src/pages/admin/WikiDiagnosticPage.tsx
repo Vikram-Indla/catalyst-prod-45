@@ -34,10 +34,10 @@ function MetricCard({ label, value, subtitle, icon: Icon, status }: {
   icon: React.ElementType; status: 'good' | 'warn' | 'bad' | 'neutral';
 }) {
   const colors = {
-    good: 'text-[#006644] bg-[#E3FCEF]',
+    good: 'text-white bg-[#1B7F37]',
     warn: 'text-[#FF8B00] bg-[#FFF0B3]',
     bad: 'text-[#BF2600] bg-[#FFEBE6]',
-    neutral: 'text-[#0747A6] bg-[#DEEBFF]',
+    neutral: 'text-white bg-[#0C66E4]',
   };
   return (
     <div className="border border-[rgba(15,23,42,0.12)] rounded-md p-4 bg-white">
@@ -97,7 +97,7 @@ function DiagTable({ headers, rows }: { headers: string[]; rows: React.ReactNode
 
 function StatusBadge({ ok }: { ok: boolean }) {
   return ok
-    ? <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#E3FCEF] text-[#006644]"><CheckCircle2 className="w-3 h-3" /> EXISTS</span>
+    ? <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#1B7F37] text-white"><CheckCircle2 className="w-3 h-3" /> EXISTS</span>
     : <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#FFEBE6] text-[#BF2600]"><XCircle className="w-3 h-3" /> MISSING</span>;
 }
 
@@ -310,7 +310,7 @@ export default function WikiDiagnosticPage() {
                 <code className="text-[11px]">{r.slug}</code>,
                 <span className="max-w-[200px] truncate block">{r.title}</span>,
                 <StatusLozenge status={r.status || 'draft'} />,
-                <span className={r.ai_confidence < 0.8 ? 'text-[#BF2600] font-bold' : 'text-[#006644]'}>
+                <span className={r.ai_confidence < 0.8 ? 'text-[#BF2600] font-bold' : 'text-white'}>
                   {(r.ai_confidence * 100).toFixed(0)}%
                 </span>,
                 r.version,
