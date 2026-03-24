@@ -10,16 +10,7 @@ import StrategyRoomDashboard from '@/components/strategy/room/StrategyRoomDashbo
 import { AIExecutiveBrief } from '@/components/strategy/room/AIExecutiveBrief';
 import { useStrategyRoomData } from '@/hooks/strategy/useStrategyRoomData';
 
-const OVERLAY_STYLE: React.CSSProperties = {
-  position: 'fixed',
-  inset: 0,
-  zIndex: 1000,
-  background: 'rgba(9, 9, 11, 0.6)',
-  backdropFilter: 'blur(4px)',
-  WebkitBackdropFilter: 'blur(4px)',
-  overflowY: 'auto',
-  animation: 'sri-fadein .25s ease',
-};
+/* Overlay style removed — Brief now renders inline in content area */
 
 /* Helper: read current theme for overlay print bg */
 const getOverlayBg = () => {
