@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Move } from 'lucide-react';
 import { MILESTONE_CONFIGS } from '@/types/ideasRoadmap';
 import type { RoadmapIdea, RoadmapQuarter } from '@/types/ideasRoadmap';
+import { useTheme } from '@/hooks/useTheme';
+import { DK, LK } from '@/utils/dark-mode-styles';
 
 interface RoadmapCardProps {
   idea: RoadmapIdea;
@@ -22,6 +24,8 @@ const isConverted = (status: string) =>
   status.toLowerCase() === 'converted';
 
 export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQuarter }: RoadmapCardProps) {
+  const { isDark } = useTheme();
+  const dk = isDark ? DK : LK;
   const [moveOpen, setMoveOpen] = useState(false);
   const hasAnyMilestone = MILESTONE_CONFIGS.some(m => idea.milestones[m.key]);
 
@@ -37,50 +41,53 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
       onClick={() => onSelectIdea(idea)}
       title={idea.title.length > 60 ? idea.title : undefined}
       style={{
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
+        background: isDark ? 'transparent' : '#FFFFFF',
+        border: `1px solid ${dk.border}`,
+        borderRadius: 8,
         padding: 12, cursor: 'grab', position: 'relative',
-        boxShadow: '0 1px 3px rgba(0,0,0,.04)',
+        boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,.04)',
         transition: 'box-shadow 150ms, border-color 150ms',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,.08)';
-        e.currentTarget.style.borderColor = '#CBD5E1';
+        if (!isDark) e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,.08)';
+        e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.18)' : '#CBD5E1';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,.04)';
-        e.currentTarget.style.borderColor = '#E2E8F0';
+        if (!isDark) e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,.04)';
+        e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0';
         setMoveOpen(false);
       }}
     >
       {/* Row 1: Key + Move + Toggle */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
         <span style={{
-          fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: '#94A3B8',
+          fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: dk.t3,
           textTransform: 'uppercase', letterSpacing: '0.04em',
         }}>
           {idea.ideaKey}
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          {/* EC-05: Move button for touch/fallback */}
           <div style={{ position: 'relative' }}>
             <button
               onClick={e => { e.stopPropagation(); setMoveOpen(!moveOpen); }}
               title="Move to quarter"
               className="move-btn"
               style={{
-                width: 22, height: 18, borderRadius: 4, border: '1px solid #E2E8F0',
-                background: '#FFFFFF', cursor: 'pointer',
+                width: 22, height: 18, borderRadius: 4, border: `1px solid ${dk.border}`,
+                background: isDark ? 'transparent' : '#FFFFFF', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 opacity: 0, transition: 'opacity 150ms',
               }}
             >
-              <Move size={10} color="#94A3B8" />
+              <Move size={10} color={isDark ? 'rgba(248,244,240,0.50)' : '#94A3B8'} />
             </button>
             {moveOpen && (
               <div style={{
                 position: 'absolute', top: 22, right: 0, zIndex: 20,
-                background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6,
-                boxShadow: '0 4px 12px rgba(0,0,0,.12)', minWidth: 140, padding: 4,
+                background: isDark ? '#232019' : '#FFFFFF',
+                border: `1px solid ${dk.border}`, borderRadius: 6,
+                boxShadow: isDark ? 'none' : '0 4px 12px rgba(0,0,0,.12)',
+                minWidth: 140, padding: 4,
               }}>
                 {MOVE_OPTIONS.map(opt => (
                   <button
@@ -92,12 +99,12 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
                     }}
                     style={{
                       display: 'block', width: '100%', padding: '6px 10px',
-                      fontSize: 12, fontWeight: 500, color: '#334155',
+                      fontSize: 12, fontWeight: 500, color: dk.t2,
                       fontFamily: "'Inter', sans-serif", background: 'transparent',
                       border: 'none', cursor: 'pointer', borderRadius: 4,
                       textAlign: 'left', transition: 'background 100ms',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#F1F5F9')}
+                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     {opt.label}
@@ -111,7 +118,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             title={idea.isCommitted ? 'Uncommit' : 'Commit'}
             style={{
               width: 32, height: 18, borderRadius: 9, border: 'none', cursor: 'pointer',
-              background: idea.isCommitted ? '#0D9488' : '#CBD5E1',
+              background: idea.isCommitted ? '#0D9488' : (isDark ? 'rgba(255,255,255,0.20)' : '#CBD5E1'),
               position: 'relative', transition: 'background 150ms',
             }}
           >
@@ -124,9 +131,9 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
         </div>
       </div>
 
-      {/* Row 2: Title — EC-01: line-clamp 2, tooltip on long titles */}
+      {/* Row 2: Title */}
       <div style={{
-        fontSize: 13, fontWeight: 650, color: '#0F172A', fontFamily: "'Inter', sans-serif",
+        fontSize: 13, fontWeight: 650, color: dk.t1, fontFamily: "'Inter', sans-serif",
         lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
         overflow: 'hidden', marginBottom: 6,
       }}>
@@ -138,30 +145,35 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
         {idea.theme && (
           <span style={{
             fontSize: 10, fontWeight: 600, fontFamily: "'Inter', sans-serif",
-            background: '#F1F5F9', color: '#475569', padding: '2px 6px', borderRadius: 4,
+            background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9',
+            color: dk.t2, padding: '2px 6px', borderRadius: 4,
+            border: isDark ? `1px solid ${dk.border}` : 'none',
           }}>{idea.theme}</span>
         )}
         {idea.team && (
           <span style={{
             fontSize: 10, fontWeight: 600, fontFamily: "'Inter', sans-serif",
-            background: '#F1F5F9', color: '#475569', padding: '2px 6px', borderRadius: 4,
+            background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9',
+            color: dk.t2, padding: '2px 6px', borderRadius: 4,
+            border: isDark ? `1px solid ${dk.border}` : 'none',
           }}>{idea.team}</span>
         )}
       </div>
 
-      {/* Row 4: EC-03 — Always show all 6 milestone chips (greyed if unset) */}
+      {/* Row 4: Milestone chips */}
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
         {MILESTONE_CONFIGS.map(m => {
           const isSet = !!idea.milestones[m.key];
           const CHIP_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-            req:  { bg: '#DBEAFE', text: '#1D4ED8', border: '#93C5FD' },
-            des:  { bg: '#EDE9FE', text: '#5B21B6', border: '#C4B5FD' },
-            dev:  { bg: '#DCFCE7', text: '#15803D', border: '#86EFAC' },
-            uat:  { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' },
-            beta: { bg: '#CCFBF1', text: '#0F766E', border: '#5EEAD4' },
-            prod: { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7' },
+            req:  { bg: isDark ? 'rgba(59,130,246,0.15)' : '#DBEAFE', text: isDark ? '#93C5FD' : '#1D4ED8', border: isDark ? 'rgba(59,130,246,0.25)' : '#93C5FD' },
+            des:  { bg: isDark ? 'rgba(139,92,246,0.15)' : '#EDE9FE', text: isDark ? '#C4B5FD' : '#5B21B6', border: isDark ? 'rgba(139,92,246,0.25)' : '#C4B5FD' },
+            dev:  { bg: isDark ? 'rgba(22,163,74,0.15)' : '#DCFCE7', text: isDark ? '#86EFAC' : '#15803D', border: isDark ? 'rgba(22,163,74,0.25)' : '#86EFAC' },
+            uat:  { bg: isDark ? 'rgba(217,119,6,0.15)' : '#FEF3C7', text: isDark ? '#FCD34D' : '#92400E', border: isDark ? 'rgba(217,119,6,0.25)' : '#FCD34D' },
+            beta: { bg: isDark ? 'rgba(13,148,136,0.15)' : '#CCFBF1', text: isDark ? '#5EEAD4' : '#0F766E', border: isDark ? 'rgba(13,148,136,0.25)' : '#5EEAD4' },
+            prod: { bg: isDark ? 'rgba(22,163,74,0.15)' : '#D1FAE5', text: isDark ? '#86EFAC' : '#065F46', border: isDark ? 'rgba(22,163,74,0.25)' : '#6EE7B7' },
           };
-          const style = isSet ? CHIP_STYLES[m.key] : { bg: '#F1F5F9', text: '#CBD5E1', border: '#E2E8F0' };
+          const unsetStyle = { bg: isDark ? 'rgba(255,255,255,0.04)' : '#F1F5F9', text: isDark ? 'rgba(248,244,240,0.25)' : '#CBD5E1', border: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' };
+          const style = isSet ? CHIP_STYLES[m.key] : unsetStyle;
           return (
             <span key={m.key} style={{
               height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -176,12 +188,15 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
         })}
       </div>
 
-      {/* Row 5: EC-07 — Converted badge or → Init */}
+      {/* Row 5: Converted badge or → Init */}
       {isConverted(idea.status) ? (
         <span style={{
           display: 'inline-flex', alignItems: 'center', height: 24, padding: '0 8px',
-          borderRadius: 4, background: '#E3FCEF', color: '#006644',
-          border: '1px solid #B7EBD1', fontSize: 10, fontWeight: 700,
+          borderRadius: 4,
+          background: isDark ? 'rgba(22,163,74,0.12)' : '#E3FCEF',
+          color: isDark ? '#86EFAC' : '#006644',
+          border: `1px solid ${isDark ? 'rgba(22,163,74,0.25)' : '#B7EBD1'}`,
+          fontSize: 10, fontWeight: 700,
           fontFamily: "'Inter', sans-serif",
         }}>
           ✓ Converted
@@ -191,8 +206,9 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           onClick={e => { e.stopPropagation(); onSelectIdea(idea); }}
           style={{
             height: 24, padding: '0 8px', borderRadius: 4,
-            border: '1px solid #E2E8F0', background: '#FFFFFF',
-            color: '#64748B', fontSize: 10, fontWeight: 600,
+            border: `1px solid ${dk.border}`,
+            background: isDark ? 'transparent' : '#FFFFFF',
+            color: dk.t3, fontSize: 10, fontWeight: 600,
             fontFamily: "'Inter', sans-serif", cursor: 'pointer',
             transition: 'all 120ms',
           }}
@@ -202,16 +218,15 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             e.currentTarget.style.borderColor = '#0D9488';
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background = '#FFFFFF';
-            e.currentTarget.style.color = '#64748B';
-            e.currentTarget.style.borderColor = '#E2E8F0';
+            e.currentTarget.style.background = isDark ? 'transparent' : '#FFFFFF';
+            e.currentTarget.style.color = isDark ? 'rgba(248,244,240,0.60)' : '#64748B';
+            e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0';
           }}
         >
           → Init
         </button>
       ) : null}
 
-      {/* CSS for move button hover reveal */}
       <style>{`
         div:hover > .move-btn,
         div:hover .move-btn { opacity: 1 !important; }
