@@ -883,20 +883,20 @@ html:has(body[data-scroll-locked]) {
     --brand-gold-hover: #0f766e;
     --brand-teal: #0d9488;
     
-    /* === A) SURFACE LADDER (No pure black; subtle elevation steps) === */
-    --bg-0: #0F1113;                     /* App background */
-    --bg-1: #141619;                     /* Page canvas */
-    --bg-2: #181B1F;                     /* Panels */
-    --bg-3: #1D2126;                     /* Cards */
-    --bg-4: #232830;                     /* Raised/hover */
-    --bg-5: #2A313A;                     /* Active/selected surface */
+    /* === A) SURFACE LADDER (Nocturne Warm Charcoal) === */
+    --bg-0: #1A1714;                     /* App background — Nocturne warm charcoal */
+    --bg-1: #1E1B16;                     /* Page canvas */
+    --bg-2: #232019;                     /* Panels / elevated float */
+    --bg-3: #232019;                     /* Cards — same as panels for flush */
+    --bg-4: #2A2720;                     /* Raised/hover */
+    --bg-5: #312E27;                     /* Active/selected surface */
     --bg-app: var(--bg-0);
     
     /* Shadcn surface mappings */
-    --background: 220 10% 7%;            /* #0F1113 */
+    --background: 36 12% 9%;             /* #1A1714 */
     --foreground: 0 0% 92%;              /* rgba(255,255,255,0.92) */
     
-    --card: 220 10% 7%;                  /* Same as --background — flush cards */
+    --card: 36 12% 9%;                   /* Same as --background — flush cards */
     --card-foreground: 0 0% 92%;
     
     --popover: 216 10% 11%;              /* #232830 - bg-4 */
