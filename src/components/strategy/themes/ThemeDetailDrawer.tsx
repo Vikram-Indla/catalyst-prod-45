@@ -210,18 +210,18 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
       {theme.ai_health_score != null && (
         <div className="rounded-lg mb-5 overflow-hidden" style={{
           background: isDark
-            ? 'rgba(109, 40, 217, 0.12)'
-            : 'linear-gradient(135deg, #EDE9FE, #F5F3FF)',
-          border: `1px solid ${isDark ? 'rgba(109, 40, 217, 0.25)' : '#DDD6FE'}`,
+            ? 'rgba(59, 130, 246, 0.12)'
+            : 'linear-gradient(135deg, #DBEAFE, #EFF6FF)',
+          border: `1px solid ${isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
           padding: 16,
         }}>
           <div className="flex items-center gap-2 mb-2">
-            <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', background: '#7C3AED', color: '#FFFFFF', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', background: '#3B82F6', color: '#FFFFFF', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               AI
             </span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? '#C4B5FD' : '#5B21B6' }}>Strategy Health Score</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? '#93C5FD' : '#1D4ED8' }}>Strategy Health Score</span>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: isDark ? '#A78BFA' : '#7C3AED', marginBottom: 8 }}>
+          <div style={{ fontSize: 28, fontWeight: 800, color: isDark ? '#60A5FA' : '#2563EB', marginBottom: 8 }}>
             {theme.ai_health_score}<span style={{ fontSize: 14, fontWeight: 500, color: d.t3 }}>/100</span>
           </div>
           <div className="grid grid-cols-3 gap-1.5">
