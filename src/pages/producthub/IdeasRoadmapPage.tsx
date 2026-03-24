@@ -111,8 +111,8 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
   const isConverted = idea.status === 'Converted to Initiative';
   return (
     <div onClick={onClick} style={{
-      background: isDark ? 'transparent' : '#FFFFFF',
-      border: `1px solid ${dk.border}`,
+      background: isDark ? '#1A1714' : '#FFFFFF',
+      border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : dk.border}`,
       borderLeft: isConverted ? '3px solid #16A34A' : `1px solid ${dk.border}`,
       borderRadius: '6px',
       padding: '12px', marginBottom: '8px', cursor: 'pointer',
