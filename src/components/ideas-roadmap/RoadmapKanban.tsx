@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { RoadmapCard } from './RoadmapCard';
 import type { RoadmapIdea, RoadmapQuarter } from '@/types/ideasRoadmap';
+import { useTheme } from '@/hooks/useTheme';
+import { DK, LK } from '@/utils/dark-mode-styles';
 
 interface Column {
   id: RoadmapQuarter | 'uncommitted';
@@ -26,6 +28,8 @@ interface RoadmapKanbanProps {
 }
 
 export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, mutatingIds }: RoadmapKanbanProps) {
+  const { isDark } = useTheme();
+  const dk = isDark ? DK : LK;
   const [dragOverCol, setDragOverCol] = useState<string | null>(null);
 
   function getColumnIdeas(col: Column): RoadmapIdea[] {
@@ -72,13 +76,15 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
             style={{
               flex: 1, minWidth: 260, maxWidth: 320,
               display: 'flex', flexDirection: 'column', borderRadius: 8,
-              background: col.dashed ? '#F8FAFC' : '#FFFFFF',
+              background: isDark
+                ? 'transparent'
+                : (col.dashed ? '#F8FAFC' : '#FFFFFF'),
               border: col.dashed
-                ? `1.5px dashed ${isOver ? '#2563EB' : '#CBD5E1'}`
-                : `1px solid ${isOver ? '#2563EB' : '#E2E8F0'}`,
+                ? `1.5px dashed ${isOver ? '#2563EB' : dk.border}`
+                : `1px solid ${isOver ? '#2563EB' : dk.border}`,
               borderTop: col.dashed ? undefined : `2px solid ${col.accent}`,
               transition: 'border-color 150ms, background 150ms',
-              ...(isOver && !col.dashed ? { background: 'rgba(37,99,235,0.04)' } : {}),
+              ...(isOver && !col.dashed ? { background: isDark ? 'rgba(37,99,235,0.06)' : 'rgba(37,99,235,0.04)' } : {}),
             }}
           >
             <div style={{
@@ -86,16 +92,17 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
               padding: '10px 12px 6px',
             }}>
               <span style={{
-                fontSize: 12, fontWeight: 700, color: '#1E293B',
+                fontSize: 12, fontWeight: 700, color: dk.t2,
                 fontFamily: "'Inter', sans-serif", textTransform: 'uppercase',
                 letterSpacing: '0.04em',
               }}>
                 {col.label}
               </span>
               <span style={{
-                fontSize: 11, fontWeight: 600, color: '#94A3B8',
+                fontSize: 11, fontWeight: 600, color: dk.t3,
                 fontFamily: "'Inter', sans-serif",
-                background: '#F1F5F9', padding: '1px 7px', borderRadius: 100,
+                background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9',
+                padding: '1px 7px', borderRadius: 100,
               }}>
                 {colIdeas.length}
               </span>
@@ -109,7 +116,7 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
                 <div style={{
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   textAlign: 'center', padding: 16,
-                  fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif",
+                  fontSize: 12, color: dk.t3, fontFamily: "'Inter', sans-serif",
                   lineHeight: 1.4,
                 }}>
                   {isUncommitted

@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, ArrowLeft, Copy, ArrowUpRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTheme } from '@/hooks/useTheme';
 import { useIdeaByKey, useUpdateIdea, useProfiles, type IdeaRow } from '@/hooks/useIdeasHub';
 import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from './ideation-data';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -55,6 +56,7 @@ function getRelativeTime(dateStr: string): string {
 }
 
 export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
+  const { isDark } = useTheme();
   const { data: rawIdea, isLoading } = useIdeaByKey(ideaKey);
   const { data: profiles = [] } = useProfiles();
   const updateIdea = useUpdateIdea();
@@ -192,10 +194,10 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '560px',
-        background: '#FFFFFF', zIndex: 201, boxShadow: '-8px 0 32px rgba(0,0,0,0.12)',
+        background: isDark ? '#232019' : '#FFFFFF', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
         display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
@@ -265,40 +267,40 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
               <FieldBlock label="STATUS">
                 {canEdit ? (
                   <Select value={localStatus} onValueChange={setLocalStatus}>
-                    <SelectTrigger className="h-8 bg-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white">{STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">{STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <StatusLoz status={localStatus} />}
               </FieldBlock>
               <FieldBlock label="PRIORITY">
                 {canEdit ? (
                   <Select value={localPriority} onValueChange={setLocalPriority}>
-                    <SelectTrigger className="h-8 bg-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white">{PRIORITIES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
+                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">{PRIORITIES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <span style={{ fontSize: '13px', fontWeight: 650, color: '#334155' }}>{localPriority}</span>}
               </FieldBlock>
               <FieldBlock label="TYPE">
                 {canEdit ? (
                   <Select value={localType} onValueChange={setLocalType}>
-                    <SelectTrigger className="h-8 bg-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white">{TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">{TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <span style={{ fontSize: '13px', color: '#0F172A' }}>{localType || '—'}</span>}
               </FieldBlock>
               <FieldBlock label="SOURCE">
                 {canEdit ? (
                   <Select value={localSource} onValueChange={setLocalSource}>
-                    <SelectTrigger className="h-8 bg-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white">{SOURCES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">{SOURCES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <span style={{ fontSize: '13px', color: '#0F172A' }}>{localSource || '—'}</span>}
               </FieldBlock>
               <FieldBlock label="IDEAS THEME">
                 {canEdit ? (
                   <Select value={localTheme || '__none__'} onValueChange={(v: string) => setLocalTheme(v === '__none__' ? '' : v)}>
-                    <SelectTrigger className="h-8 bg-white"><SelectValue placeholder="Select theme" /></SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select theme" /></SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— None —</SelectItem>
                       {THEMES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                     </SelectContent>
@@ -308,8 +310,8 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
               <FieldBlock label="ASSIGNED TEAM">
                 {canEdit ? (
                   <Select value={localTeam || '__none__'} onValueChange={(v: string) => setLocalTeam(v === '__none__' ? '' : v)}>
-                    <SelectTrigger className="h-8 bg-white"><SelectValue placeholder="Select team" /></SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select team" /></SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— None —</SelectItem>
                       {TEAMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                     </SelectContent>
@@ -319,8 +321,8 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
               <FieldBlock label="TARGET RELEASE">
                 {canEdit ? (
                   <Select value={localRelease || '__none__'} onValueChange={(v: string) => setLocalRelease(v === '__none__' ? '' : v)}>
-                    <SelectTrigger className="h-8 bg-white"><SelectValue placeholder="Select release" /></SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select release" /></SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— None —</SelectItem>
                       {RELEASES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                     </SelectContent>
@@ -330,8 +332,8 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
               <FieldBlock label="QUARTER">
                 {canEdit ? (
                   <Select value={localQuarter || '__none__'} onValueChange={(v: string) => setLocalQuarter(v === '__none__' ? '' : v)}>
-                    <SelectTrigger className="h-8 bg-white"><SelectValue placeholder="Unassigned" /></SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Unassigned" /></SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— Unassigned —</SelectItem>
                       {QUARTERS.map(q => <SelectItem key={q} value={q}>{q} 2026</SelectItem>)}
                     </SelectContent>
@@ -348,8 +350,8 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
               <FieldBlock label="ASSIGNEE">
                 {canEdit ? (
                   <Select value={localAssigneeId || '__none__'} onValueChange={(v: string) => setLocalAssigneeId(v === '__none__' ? '' : v)}>
-                    <SelectTrigger className="h-8 bg-white"><SelectValue placeholder="Select assignee" /></SelectTrigger>
-                    <SelectContent className="bg-white max-h-[200px]">
+                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select assignee" /></SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white max-h-[200px]">
                       <SelectItem value="__none__">— Unassigned —</SelectItem>
                       {profiles.map((p) => <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>)}
                     </SelectContent>

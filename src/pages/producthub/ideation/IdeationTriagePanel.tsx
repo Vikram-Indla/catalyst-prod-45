@@ -5,6 +5,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { X, Sparkles, Zap, Eye, GitMerge, FileSearch, Clock } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTheme } from '@/hooks/useTheme';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Idea } from './ideation-data';
@@ -89,6 +90,7 @@ function computeTriageItems(ideas: Idea[]) {
 }
 
 export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = [] }: Props) {
+  const { isDark } = useTheme();
   const queryClient = useQueryClient();
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
 
@@ -144,10 +146,10 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 250 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 250 }} />
       <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: '#FFFFFF', zIndex: 251,
-        boxShadow: '-8px 0 32px rgba(0,0,0,0.12)', display: 'flex', flexDirection: 'column',
+        position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: isDark ? '#232019' : '#FFFFFF', zIndex: 251,
+        boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)', display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
@@ -270,9 +272,10 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
   primary: { label: string; icon: React.ReactNode; onClick: () => void };
   secondary: { label: string; icon: React.ReactNode; onClick: () => void };
 }) {
+  const { isDark } = useTheme();
   const dotColor = DOT_COLORS[badge] || '#94A3B8';
   return (
-    <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '16px', marginBottom: '10px', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+    <div style={{ background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0'}`, borderRadius: '10px', padding: '16px', marginBottom: '10px', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#F1F5F9', color: '#475569', padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
           <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: dotColor, flexShrink: 0 }} />

@@ -5,6 +5,8 @@
 import React from 'react';
 import { toast } from 'sonner';
 import { Idea, IdeaStatus, STATUS_CONFIG, PRIORITY_CONFIG, AI_INSIGHTS, getImpactColor } from './ideation-data';
+import { useTheme } from '@/hooks/useTheme';
+import { DK, LK } from '@/utils/dark-mode-styles';
 
 const TOP_AI_KEYS = new Set(['IDH-005', 'IDH-001', 'IDH-013']);
 
@@ -35,6 +37,9 @@ function getInitiativeLink(idea: Idea): string | null {
 }
 
 export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Props) {
+  const { isDark } = useTheme();
+  const dk = isDark ? DK : LK;
+
   return (
     <div style={{
       display: 'flex', gap: '12px', padding: '16px 28px',
@@ -45,18 +50,18 @@ export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Pr
         const colIdeas = ideas.filter(i => i.status === col.status);
         return (
           <div key={col.status} style={{ minWidth: '280px', width: '280px', flexShrink: 0 }}>
-            {/* Column Header — V12: #1E293B, 11px, uppercase */}
+            {/* Column Header */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', padding: '0 4px',
               height: 36,
             }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: sc.bg, flexShrink: 0 }} />
-              <span style={{ fontSize: '11px', fontWeight: 700, color: '#1E293B', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{sc.label}</span>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: dk.t2, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{sc.label}</span>
               <span style={{
                 fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
-                background: '#F1F5F9', borderRadius: '100px',
+                background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', borderRadius: '100px',
                 padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center',
-                color: '#64748B',
+                color: dk.t3,
               }}>
                 {colIdeas.length}
               </span>
@@ -72,6 +77,8 @@ export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Pr
                 columnStatus={col.status}
                 onClick={() => onOpenDetail(idea.key)}
                 onConvert={onConvert}
+                isDark={isDark}
+                dk={dk}
               />
             ))}
           </div>
@@ -81,7 +88,7 @@ export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Pr
   );
 }
 
-function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea; columnStatus: IdeaStatus; onClick: () => void; onConvert?: (key: string) => void }) {
+function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: { idea: Idea; columnStatus: IdeaStatus; onClick: () => void; onConvert?: (key: string) => void; isDark: boolean; dk: typeof DK }) {
   const pc = PRIORITY_CONFIG[idea.priority] || PRIORITY_CONFIG.P4;
   const isAiReady = idea.ai === 'ready';
   const showFullAiStrip = isAiReady && TOP_AI_KEYS.has(idea.key) && AI_INSIGHTS[idea.key];
@@ -98,26 +105,27 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
       onClick={onClick}
       style={{
         position: 'relative',
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        background: isDark ? 'transparent' : '#FFFFFF',
+        border: `1px solid ${dk.border}`,
         borderRadius: '8px', padding: '12px', marginBottom: '8px', cursor: 'grab',
         opacity: isDraft ? 0.7 : isRejected ? 0.55 : 1,
         transition: 'all 0.15s',
+        boxShadow: isDark ? 'none' : undefined,
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.background = 'rgba(15,23,42,0.04)';
-        e.currentTarget.style.transform = 'translateY(-1px)';
+        e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(15,23,42,0.04)';
+        if (!isDark) e.currentTarget.style.transform = 'translateY(-1px)';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.background = '#FFFFFF';
-        e.currentTarget.style.transform = 'none';
+        e.currentTarget.style.background = isDark ? 'transparent' : '#FFFFFF';
+        if (!isDark) e.currentTarget.style.transform = 'none';
       }}
     >
       {/* AI dot */}
       {isAiReady && !showFullAiStrip && (
         <div style={{
           position: 'absolute', top: '10px', right: '10px',
-          width: '6px', height: '6px', borderRadius: '50%', background: '#7C3AED',
+          width: '6px', height: '6px', borderRadius: '50%', background: '#3B82F6',
         }} />
       )}
 
@@ -125,23 +133,24 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
         <span style={{
           fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600,
-          color: '#2563EB',
+          color: dk.blueKey,
         }}>
           {idea.key}
         </span>
         <span style={{
           fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', fontWeight: 800,
-          background: pc.bg, color: pc.text, padding: '1px 5px', borderRadius: '3px',
-          border: `1px solid ${pc.border}`,
+          background: isDark ? 'rgba(255,255,255,0.06)' : pc.bg, color: isDark ? dk.t2 : pc.text,
+          padding: '1px 5px', borderRadius: '3px',
+          border: `1px solid ${isDark ? dk.border : pc.border}`,
         }}>
           {idea.priority}
         </span>
       </div>
 
-      {/* Title — ALWAYS #0F172A, never teal */}
+      {/* Title */}
       <div style={{
         fontSize: '13px', fontWeight: 650,
-        color: '#0F172A',
+        color: dk.t1,
         display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
         marginBottom: '6px', lineHeight: 1.35,
       }}>
@@ -151,14 +160,18 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
       {/* Type badge + Ideas Theme */}
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
         <span style={{
-          background: '#F4F4F5', color: '#71717A', padding: '2px 6px', borderRadius: '4px',
+          background: isDark ? 'rgba(255,255,255,0.06)' : '#F4F4F5', color: dk.t2,
+          padding: '2px 6px', borderRadius: '4px',
           fontSize: '10px', fontWeight: 600,
+          border: isDark ? `1px solid ${dk.border}` : 'none',
         }}>
           {idea.type.charAt(0).toUpperCase() + idea.type.slice(1)}
         </span>
         {idea.theme && (
           <span style={{
-            background: '#EFF6FF', color: '#1E40AF', padding: '2px 6px', borderRadius: '4px',
+            background: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
+            color: isDark ? '#93C5FD' : '#1E40AF',
+            padding: '2px 6px', borderRadius: '4px',
             fontSize: '10px', fontWeight: 600, maxWidth: '160px',
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>
@@ -168,13 +181,13 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
       </div>
 
       {/* Divider + stats */}
-      <div style={{ borderTop: '1px solid #F4F4F5', paddingTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '11px', fontWeight: 700, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
+      <div style={{ borderTop: `1px solid ${dk.divider}`, paddingTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: '11px', fontWeight: 700, color: dk.t2, fontFamily: "'JetBrains Mono', monospace" }}>
           IMPACT {idea.impact.toFixed(2)}
         </span>
         <span style={{
           fontSize: '11px', fontWeight: 600,
-          color: idea.votes > 0 ? '#16A34A' : idea.votes < 0 ? '#EF4444' : '#94A3B8',
+          color: idea.votes > 0 ? '#16A34A' : idea.votes < 0 ? '#EF4444' : dk.t3,
           fontFamily: "'JetBrains Mono', monospace",
         }}>
           ▲ {idea.votes}
@@ -184,8 +197,8 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
       {/* AI insight strip */}
       {showFullAiStrip && (
         <div style={{
-          marginTop: '8px', background: '#F5F3FF', borderRadius: '6px',
-          padding: '5px 8px', fontSize: '10px', color: '#7C3AED', fontWeight: 600,
+          marginTop: '8px', background: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF', borderRadius: '6px',
+          padding: '5px 8px', fontSize: '10px', color: isDark ? '#93C5FD' : '#2563EB', fontWeight: 600,
         }}>
           {aiInsight}
         </div>
@@ -194,8 +207,9 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
       {/* Initiative link (converted) */}
       {isConverted && initLink && (
         <div style={{
-          marginTop: '8px', background: '#E3FCEF', border: '1px solid #B7EBD1',
-          borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: '#006644', fontWeight: 600,
+          marginTop: '8px', background: isDark ? 'rgba(22,163,74,0.12)' : '#E3FCEF',
+          border: `1px solid ${isDark ? 'rgba(22,163,74,0.25)' : '#B7EBD1'}`,
+          borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: isDark ? '#86EFAC' : '#006644', fontWeight: 600,
         }}>
           {initLink}
         </div>
