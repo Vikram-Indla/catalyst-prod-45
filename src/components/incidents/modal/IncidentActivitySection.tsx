@@ -127,7 +127,7 @@ const getAvatarColor = (initials: string) => {
             className={cn(
               "px-3 py-1.5 rounded text-sm transition-colors",
               activeTab === tab.id
-                ? "bg-[#DEEBFF] text-[#0052CC] border border-[#0052CC]"
+                ? "bg-[#0C66E4] text-[#0052CC] border border-[#0052CC]"
                 : "text-[#42526E] hover:bg-[#F4F5F7] border border-transparent"
             )}
             onClick={() => setActiveTab(tab.id)}

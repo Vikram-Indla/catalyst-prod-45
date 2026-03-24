@@ -1,8 +1,8 @@
 /**
- * StatusLozenge — 3-color immutable guardrail
- * Grey (#DFE1E6/#253858): open, triage, on_hold, closed, converted
- * Blue (#DEEBFF/#0747A6): in_progress, in_review, to_committee
- * Green (#E3FCEF/#006644): resolved
+ * StatusLozenge — 3-color Dual-Intensity guardrail
+ * Grey (#DFE1E6/#42526E): open, triage, on_hold, closed, converted
+ * Blue (#0C66E4/#FFFFFF): in_progress, in_review, to_committee
+ * Green (#1B7F37/#FFFFFF): resolved
  */
 
 import { cn } from '@/lib/utils';

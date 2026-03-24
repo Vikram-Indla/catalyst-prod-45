@@ -26,7 +26,7 @@ const STATES = [
   { key: 'funnel', label: 'Funnel', color: 'bg-[#FFF9E6]', textColor: 'text-[#6B778C]' },
   { key: 'analyzing', label: 'Analyzing', color: 'bg-[#FFF4E5]', textColor: 'text-[#6B778C]' },
   { key: 'portfolio_backlog', label: 'Portfolio Backlog', color: 'bg-[#F4F5F7]', textColor: 'text-[#6B778C]' },
-  { key: 'implementing', label: 'Implementing', color: 'bg-[#E3FCEF]', textColor: 'text-[#6B778C]' },
+  { key: 'implementing', label: 'Implementing', color: 'bg-[#1B7F37]', textColor: 'text-[#6B778C]' },
 ];
 
 const STATE_BORDER_COLORS: Record<string, string> = {

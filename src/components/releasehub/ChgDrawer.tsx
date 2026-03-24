@@ -89,7 +89,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
                   <React.Fragment key={s}>
                     {i > 0 && <div className={`flex-1 h-0.5 ${isDone || isCurrent ? 'bg-[#2563EB]' : 'bg-[rgba(15,23,42,0.12)]'}`} />}
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 ${
-                      isDone ? 'bg-[#006644] text-white' : isCurrent ? 'bg-[#2563EB] text-white' : 'bg-[#F1F5F9] text-[#94A3B8] border border-[rgba(15,23,42,0.12)]'
+                      isDone ? 'bg-[#1B7F37] text-white' : isCurrent ? 'bg-[#2563EB] text-white' : 'bg-[#F1F5F9] text-[#94A3B8] border border-[rgba(15,23,42,0.12)]'
                     }`}>
                       {isDone ? '✓' : isCurrent ? '●' : i + 1}
                     </div>
@@ -260,8 +260,8 @@ function SignoffsTab({ changeId }: { changeId: string }) {
         return (
           <div key={s.stage} className="flex items-center gap-3 py-3 border-b border-[rgba(15,23,42,0.06)] last:border-0">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
-              status === 'approved' ? 'bg-[#E3FCEF] text-[#006644]' :
-              status === 'pending' ? 'bg-[#DEEBFF] text-[#0747A6]' :
+              status === 'approved' ? 'bg-[#1B7F37] text-white' :
+              status === 'pending' ? 'bg-[#0C66E4] text-white' :
               status === 'rejected' ? 'bg-[#FEF2F2] text-[#DC2626]' :
               'bg-[#F1F5F9] text-[#94A3B8]'
             }`}>
@@ -280,7 +280,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
               <div className="flex items-center gap-2">
                 <button onClick={() => approveSignoff.mutate({ signoffId: signoff.id }, { onSuccess: () => toast.success('Approved') })}
                   disabled={approveSignoff.isPending}
-                  className="h-7 px-3 rounded bg-[#006644] text-white text-[11px] font-bold hover:bg-[#004D33] disabled:opacity-50">Approve</button>
+                  className="h-7 px-3 rounded bg-[#1B7F37] text-white text-[11px] font-bold hover:bg-[#004D33] disabled:opacity-50">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: signoff.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
                   disabled={rejectSignoff.isPending}
                   className="h-7 px-3 rounded border border-[#FCA5A5] text-[#DC2626] text-[11px] font-bold hover:bg-[#FEF2F2] disabled:opacity-50">Reject</button>
