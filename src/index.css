@@ -14,6 +14,7 @@
 @import './styles/taskhub-responsive.css';
 @import './styles/strategy-tokens.css';
 @import './styles/theme-tokens.css';
+@import './styles/goals-dark.css';
 /* @import './styles/priority-lists.css'; */
 
 @tailwind base;
@@ -3776,7 +3777,7 @@ html:has(body[data-scroll-locked]) {
 
 .dark .text-muted-foreground,
 [data-theme="dark"] .text-muted-foreground {
-  color: var(--text-3) !important;
+  color: var(--text-2) !important;
 }
 
 .dark .text-card-foreground,
