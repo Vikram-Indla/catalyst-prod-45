@@ -1,6 +1,6 @@
 /**
  * GoalsKeyResultsPage — Main page composing stats, toolbar, views, drawer & modals
- * Fix 1: Page background #F8FAFC
+ * ECLIPSE D8: Dark mode parity
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,9 +14,23 @@ import { GoalsHeatmapView } from '@/components/goals/GoalsHeatmapView';
 import { GoalDetailDrawer } from '@/components/goals/GoalDetailDrawer';
 import { CreateGoalModal } from '@/components/goals/CreateGoalModal';
 import { CheckinModal } from '@/components/goals/CheckinModal';
+import { useIsDark } from '@/components/strategy/themes/useIsDark';
+
+// Dark mode tokens
+const DK = {
+  bg: '#1A1714',
+  t1: 'var(--cp-t1)',
+  t2: 'var(--cp-t2)',
+  t3: 'var(--cp-t3)',
+  t4: 'var(--cp-t4)',
+  border: 'rgba(248,244,240,0.10)',
+  borderSubtle: 'rgba(248,244,240,0.08)',
+  hover: 'rgba(248,244,240,0.03)',
+};
 
 export default function GoalsKeyResultsPage() {
   const navigate = useNavigate();
+  const isDark = useIsDark();
   const { data: goals = [], isLoading: goalsLoading } = useGoals();
   const { data: allKRs = [], isLoading: krsLoading } = useAllKeyResults();
   const { data: themes = [] } = useThemes();
@@ -52,25 +66,15 @@ export default function GoalsKeyResultsPage() {
     else { setExpandedThemes(new Set(themes.map(t => t.id))); setExpandedGoals(new Set(goals.map(g => g.id))); setIsAllExpanded(true); }
   }, [isAllExpanded, themes, goals]);
 
-  // Filter goals
   const filteredGoals = useMemo(() => {
     let result = goals;
-    if (activeFilters.status?.length) {
-      result = result.filter(g => activeFilters.status.includes(g.status));
-    }
-    if (activeFilters.theme?.length) {
-      result = result.filter(g => activeFilters.theme.includes(g.theme_id));
-    }
-    if (activeFilters.owner?.length) {
-      result = result.filter(g => g.owner_id && activeFilters.owner.includes(g.owner_id));
-    }
-    if (activeFilters.quarter?.length) {
-      result = result.filter(g => g.fiscal_quarter && activeFilters.quarter.includes(g.fiscal_quarter));
-    }
+    if (activeFilters.status?.length) result = result.filter(g => activeFilters.status.includes(g.status));
+    if (activeFilters.theme?.length) result = result.filter(g => activeFilters.theme.includes(g.theme_id));
+    if (activeFilters.owner?.length) result = result.filter(g => g.owner_id && activeFilters.owner.includes(g.owner_id));
+    if (activeFilters.quarter?.length) result = result.filter(g => g.fiscal_quarter && activeFilters.quarter.includes(g.fiscal_quarter));
     return result;
   }, [goals, activeFilters]);
 
-  // Build filter options
   const filterOptions = useMemo(() => {
     const statuses = [...new Set(goals.map(g => g.status))];
     const ownerMap = new Map<string, string>();
@@ -84,14 +88,12 @@ export default function GoalsKeyResultsPage() {
     };
   }, [goals, themes]);
 
-  // Heatmap cell click → switch to tree with filters
   const handleHeatmapCellClick = useCallback((themeId: string, quarter: string) => {
     setActiveFilters({ theme: [themeId], quarter: [quarter] });
     setCurrentView('tree');
     setExpandedThemes(new Set([themeId]));
   }, []);
 
-  // Export CSV
   const exportCSV = useCallback(() => {
     const headers = ['ID','Title','Theme','Status','Progress','Confidence','KRs','Quarter','Owner'];
     const rows = goals.map(g => {
@@ -113,17 +115,17 @@ export default function GoalsKeyResultsPage() {
   return (
     <div data-goals-page="" style={{ padding: '16px 24px 24px', minHeight: '100%' }}>
       {/* Breadcrumb */}
-      <nav style={{ fontSize: 12, color: '#64748B', marginBottom: 4 }} aria-label="Breadcrumb">
-        <span style={{ cursor: 'pointer' }} onClick={() => navigate('/strategyhub')}>StrategyHub</span>
-        <span style={{ margin: '0 4px', color: '#94A3B8' }}>›</span>
-        <span style={{ fontWeight: 600, color: '#0F172A' }}>Goals &amp; Key Results</span>
+      <nav style={{ fontSize: 12, color: isDark ? DK.t2 : '#64748B', marginBottom: 4 }} aria-label="Breadcrumb">
+        <span style={{ cursor: 'pointer', color: isDark ? '#7DB8FC' : undefined }} onClick={() => navigate('/strategyhub')}>StrategyHub</span>
+        <span style={{ margin: '0 4px', color: isDark ? DK.t3 : '#94A3B8' }}>›</span>
+        <span style={{ fontWeight: 600, color: isDark ? DK.t1 : '#0F172A' }}>Goals &amp; Key Results</span>
       </nav>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8, marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
-        <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', margin: 0 }}>Goals &amp; Key Results</h1>
+        <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? DK.t1 : '#0F172A', margin: 0 }}>Goals &amp; Key Results</h1>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={exportCSV} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: 13, fontWeight: 500, color: '#64748B', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+          <button onClick={exportCSV} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: 13, fontWeight: 500, color: isDark ? DK.t2 : '#64748B', background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`, borderRadius: 6, cursor: 'pointer', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
             <Download size={14} /> Export
           </button>
           <button onClick={() => setShowCreateModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', border: 'none', borderRadius: 6, cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.18)' }}>
@@ -134,14 +136,14 @@ export default function GoalsKeyResultsPage() {
 
       {isLoading ? (
         <>
-          <GoalsStatsStripSkeleton />
-          <GoalsTreeSkeleton />
+          <GoalsStatsStripSkeleton isDark={isDark} />
+          <GoalsTreeSkeleton isDark={isDark} />
         </>
       ) : goals.length === 0 ? (
-        <GoalsEmptyState onCreateGoal={() => setShowCreateModal(true)} />
+        <GoalsEmptyState onCreateGoal={() => setShowCreateModal(true)} isDark={isDark} />
       ) : (
         <>
-          <GoalsStatsStrip goals={filteredGoals} keyResults={allKRs} themes={themes} />
+          <GoalsStatsStrip goals={filteredGoals} keyResults={allKRs} themes={themes} isDark={isDark} />
 
           <GoalsToolbar
             currentView={currentView}
@@ -153,6 +155,7 @@ export default function GoalsKeyResultsPage() {
             activeFilters={activeFilters}
             onFiltersChange={setActiveFilters}
             filterOptions={filterOptions}
+            isDark={isDark}
           />
 
           {currentView === 'tree' && (
@@ -163,15 +166,16 @@ export default function GoalsKeyResultsPage() {
               onToggleTheme={handleToggleTheme} onToggleGoal={handleToggleGoal}
               onGoalClick={setSelectedGoalId} onCheckinClick={setCheckinKrId}
               onClearSearch={() => setSearchQuery('')}
+              isDark={isDark}
             />
           )}
 
           {currentView === 'list' && (
-            <GoalsListView goals={filteredGoals} themes={themes} onGoalClick={setSelectedGoalId} />
+            <GoalsListView goals={filteredGoals} themes={themes} onGoalClick={setSelectedGoalId} isDark={isDark} />
           )}
 
           {currentView === 'heatmap' && (
-            <GoalsHeatmapView goals={filteredGoals} themes={themes} onCellClick={handleHeatmapCellClick} />
+            <GoalsHeatmapView goals={filteredGoals} themes={themes} onCellClick={handleHeatmapCellClick} isDark={isDark} />
           )}
         </>
       )}
