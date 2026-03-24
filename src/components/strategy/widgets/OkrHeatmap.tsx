@@ -15,10 +15,10 @@ const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
 function getCellStyle(status: OkrStatus, isOverall = false): { bg: string; text: string; weight: number; borderLeft?: string } {
   switch (status) {
-    case 'on_track': return { bg: isOverall ? '#BFDBFE' : '#DBEAFE', text: '#1E40AF', weight: 600 };
-    case 'at_risk': return { bg: isOverall ? '#E2E8F0' : '#F1F5F9', text: isOverall ? '#92400E' : '#B45309', weight: 600, borderLeft: '3px solid #D97706' };
-    case 'off_track': return { bg: isOverall ? '#FECACA' : '#FEF2F2', text: isOverall ? '#7F1D1D' : '#991B1B', weight: 700, borderLeft: '3px solid #DC2626' };
-    default: return { bg: 'transparent', text: '#94A3B8', weight: 400 };
+    case 'on_track': return { bg: isOverall ? 'var(--exec-blue-100, #BFDBFE)' : 'var(--exec-blue-50, #DBEAFE)', text: 'var(--exec-blue-700, #1E40AF)', weight: 600 };
+    case 'at_risk': return { bg: isOverall ? 'var(--catalyst-bg-surface-3, #E2E8F0)' : 'var(--catalyst-bg-surface-2, #F1F5F9)', text: isOverall ? 'var(--exec-signal-amber, #92400E)' : 'var(--exec-signal-amber, #B45309)', weight: 600, borderLeft: '3px solid var(--exec-signal-amber, #D97706)' };
+    case 'off_track': return { bg: isOverall ? 'var(--exec-signal-red-bg, #FECACA)' : 'var(--exec-signal-red-bg, #FEF2F2)', text: 'var(--exec-signal-red, #991B1B)', weight: 700, borderLeft: '3px solid var(--exec-signal-red, #DC2626)' };
+    default: return { bg: 'transparent', text: 'var(--exec-text-muted, #94A3B8)', weight: 400 };
   }
 }
 

@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import '@/styles/strategy-intel-dark.css';
 import { X, Sparkles, RefreshCw, Copy } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { ChainMetrics } from "@/utils/computeChainMetrics";
@@ -81,7 +82,7 @@ export function AIStrategyIntelligencePanel({
 
   return (
     <div
-      className="fixed top-[52px] right-0 bottom-0 z-50 flex flex-col bg-white shadow-2xl border-l border-slate-200"
+      className="strategy-intel-panel fixed top-[52px] right-0 bottom-0 z-50 flex flex-col bg-white shadow-2xl border-l border-slate-200"
       style={{
         width: '50vw',
         transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
