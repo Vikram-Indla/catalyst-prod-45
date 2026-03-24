@@ -36,10 +36,10 @@ const TOKENS = `
 
 /* ── DARK MODE — Nocturne overrides ── */
 [data-theme="dark"] [data-sri] {
-  --sri-ink: rgba(248,244,240,0.95);
-  --sri-ink-2: rgba(248,244,240,0.78);
-  --sri-ink-3: rgba(248,244,240,0.72);
-  --sri-ink-m: rgba(248,244,240,0.65);
+  --sri-ink: rgba(248,244,240,0.96);
+  --sri-ink-2: rgba(248,244,240,0.82);
+  --sri-ink-3: rgba(248,244,240,0.75);
+  --sri-ink-m: rgba(248,244,240,0.70);
   --sri-bg: #232019;
   --sri-bg-2: rgba(248,244,240,0.04);
   --sri-bg-3: rgba(248,244,240,0.07);

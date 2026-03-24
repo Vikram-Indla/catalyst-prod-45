@@ -10,16 +10,7 @@ import StrategyRoomDashboard from '@/components/strategy/room/StrategyRoomDashbo
 import { AIExecutiveBrief } from '@/components/strategy/room/AIExecutiveBrief';
 import { useStrategyRoomData } from '@/hooks/strategy/useStrategyRoomData';
 
-const OVERLAY_STYLE: React.CSSProperties = {
-  position: 'fixed',
-  inset: 0,
-  zIndex: 1000,
-  background: 'rgba(9, 9, 11, 0.6)',
-  backdropFilter: 'blur(4px)',
-  WebkitBackdropFilter: 'blur(4px)',
-  overflowY: 'auto',
-  animation: 'sri-fadein .25s ease',
-};
+/* Overlay style removed — Brief now renders inline in content area */
 
 /* Helper: read current theme for overlay print bg */
 const getOverlayBg = () => {
@@ -141,15 +132,6 @@ export default function StrategyRoom() {
     return () => document.removeEventListener('keydown', handler);
   }, [briefOpen, handleCloseBrief]);
 
-  useEffect(() => {
-    if (briefOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
-  }, [briefOpen]);
-
   return (
     <StrategyRoleProvider>
       <style>{OVERLAY_TOKENS}</style>
@@ -162,32 +144,26 @@ export default function StrategyRoom() {
         Skip to dashboard content
       </a>
 
-      <div id="dashboard-main" className="brief-controller-dashboard">
-        <StrategyRoomDashboard
-          onOpenBrief={handleOpenBrief}
-          onDownloadBrief={handleDownloadBrief}
-          themes={themes}
-          budget={budget}
-          workforce={workforce}
-          contracts={contracts}
-          execution={execution}
-          alignment={alignment}
-          brief={brief}
-          fiscal={fiscal}
-          updatedAgo={updatedAgo}
-        />
-      </div>
-
-      {/* Brief Overlay */}
-      {briefOpen && (
-        <div
-          className="brief-controller-overlay"
-          style={OVERLAY_STYLE}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) handleCloseBrief();
-          }}
-        >
+      {briefOpen ? (
+        /* Brief renders INLINE in the content area — nav + sidebar stay visible */
+        <div className="brief-controller-brief" style={{ overflowY: 'auto', flex: 1 }}>
           <AIExecutiveBrief open={briefOpen} onClose={handleCloseBrief} onDownload={printBriefInNewWindow} />
+        </div>
+      ) : (
+        <div id="dashboard-main" className="brief-controller-dashboard">
+          <StrategyRoomDashboard
+            onOpenBrief={handleOpenBrief}
+            onDownloadBrief={handleDownloadBrief}
+            themes={themes}
+            budget={budget}
+            workforce={workforce}
+            contracts={contracts}
+            execution={execution}
+            alignment={alignment}
+            brief={brief}
+            fiscal={fiscal}
+            updatedAgo={updatedAgo}
+          />
         </div>
       )}
     </StrategyRoleProvider>
