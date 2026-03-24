@@ -120,6 +120,37 @@
   --cp-lozenge-green-bg: #E3FCEF;
   --cp-lozenge-green-text: #006644;
 
+  /* ═══ SHORTHAND TOKENS — For You / shared components ═══ */
+  --cp-bg: #FFFFFF;
+  --cp-float: #FFFFFF;
+  --cp-hover: rgba(15,23,42,0.04);
+  --cp-bd: rgba(15,23,42,0.12);
+  --cp-bd-zone: rgba(15,23,42,0.06);
+  --cp-bd-table: rgba(15,23,42,0.06);
+  --cp-t1: #0F172A;
+  --cp-t2: #334155;
+  --cp-t3: #64748B;
+  --cp-t4: #94A3B8;
+  --cp-blue: #2563EB;
+  --cp-blue-wash: rgba(37,99,235,0.08);
+  --cp-blue-text: #2563EB;
+  --cp-blue-link: #2563EB;
+  --cp-ok: #16A34A;
+  --cp-ok-bg: rgba(22,163,74,0.08);
+  --cp-warn: #D97706;
+  --cp-warn-bg: rgba(217,119,6,0.08);
+  --cp-err: #DC2626;
+  --cp-err-bg: rgba(220,38,38,0.08);
+  --cp-err-text: #DC2626;
+  --cp-prg-bg: rgba(37,99,235,0.08);
+  --cp-lz-gy-bg: #DFE1E6;
+  --cp-lz-gy-t: #253858;
+  --cp-lz-bl-bg: #DEEBFF;
+  --cp-lz-bl-t: #0747A6;
+  --cp-lz-gn-bg: #E3FCEF;
+  --cp-lz-gn-t: #006644;
+  --cp-lozenge-green-text: #006644;
+
   /* ═══ Source Badge Tokens ═══ */
   --src-catalyst-bg: #EFF6FF;
   --src-catalyst-text: #2563EB;
@@ -254,6 +285,36 @@
   --cp-lozenge-green-text: #86EFAC;
   --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.3);
   --cp-shadow-overlay: 0px 8px 12px rgba(0,0,0,0.5), 0px 0px 1px rgba(0,0,0,0.6);
+
+  /* ═══ SHORTHAND TOKENS — Dark mode ═══ */
+  --cp-bg: #1A1714;
+  --cp-float: #232019;
+  --cp-hover: rgba(248,244,240,0.05);
+  --cp-bd: rgba(248,244,240,0.10);
+  --cp-bd-zone: rgba(248,244,240,0.08);
+  --cp-bd-table: rgba(248,244,240,0.06);
+  --cp-t1: rgba(248,244,240,0.92);
+  --cp-t2: rgba(248,244,240,0.72);
+  --cp-t3: rgba(248,244,240,0.60);
+  --cp-t4: rgba(248,244,240,0.35);
+  --cp-blue: #3B82F6;
+  --cp-blue-wash: rgba(59,130,246,0.10);
+  --cp-blue-text: #7DB8FC;
+  --cp-blue-link: #7DB8FC;
+  --cp-ok: #4ADE80;
+  --cp-ok-bg: rgba(74,222,128,0.10);
+  --cp-warn: #FBBF24;
+  --cp-warn-bg: rgba(251,191,36,0.10);
+  --cp-err: #F87171;
+  --cp-err-bg: rgba(248,113,113,0.10);
+  --cp-err-text: #F87171;
+  --cp-prg-bg: rgba(59,130,246,0.10);
+  --cp-lz-gy-bg: #3B3D42;
+  --cp-lz-gy-t: #D4D4D4;
+  --cp-lz-bl-bg: #1E3A5F;
+  --cp-lz-bl-t: #93C5FD;
+  --cp-lz-gn-bg: #14532D;
+  --cp-lz-gn-t: #86EFAC;
 }
 
 /* ═══ Wiki Pulse Animation ═══ */
