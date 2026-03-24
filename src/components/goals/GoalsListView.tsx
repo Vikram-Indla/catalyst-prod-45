@@ -1,14 +1,22 @@
 /**
- * GoalsListView — Fix 4: Circular avatars, Fix 12: 44px rows, tighter density
+ * GoalsListView — ECLIPSE D8: Dark mode parity
  */
 import { useState } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import type { Goal } from '@/types/goals';
 
 interface Theme { id: string; title: string; color: string; }
-interface GoalsListViewProps { goals: Goal[]; themes: Theme[]; onGoalClick: (id: string) => void; }
+interface GoalsListViewProps { goals: Goal[]; themes: Theme[]; onGoalClick: (id: string) => void; isDark?: boolean; }
 
-// Fix 4: Avatar colors
+const DK = {
+  t1: 'var(--cp-t1)',
+  t2: 'var(--cp-t2)',
+  t3: 'var(--cp-t3)',
+  t4: 'var(--cp-t4)',
+  border: 'rgba(248,244,240,0.10)',
+  borderSubtle: 'rgba(248,244,240,0.08)',
+};
+
 const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
   'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF' },
   'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3' },
@@ -25,20 +33,20 @@ function getAvatarColors(name: string) {
   return palettes[Math.abs(hash) % palettes.length];
 }
 
-function statusBadge(status: string) {
-  const map: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-    active:      { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'Active' },
-    on_track:    { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'On Track' },
-    completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Completed' },
-    at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
-    off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', label: 'Off Track' },
-    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', label: 'Draft' },
-    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', label: 'Not Started' },
-    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', label: 'Cancelled' },
+function statusBadge(status: string, isDark = false) {
+  const map: Record<string, { dot: string; bg: string; text: string; bgDk: string; txtDk: string; label: string }> = {
+    active:      { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#1A2A1E', txtDk: '#86EFAC', label: 'Active' },
+    on_track:    { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#1A2A1E', txtDk: '#86EFAC', label: 'On Track' },
+    completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDk: '#1E2636', txtDk: '#93C5FD', label: 'Completed' },
+    at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDk: '#2A2418', txtDk: '#FBBF24', label: 'At Risk' },
+    off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', bgDk: '#2E1C18', txtDk: '#FCA5A5', label: 'Off Track' },
+    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#2C2926', txtDk: '#B8BCC8', label: 'Draft' },
+    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#2C2926', txtDk: '#B8BCC8', label: 'Not Started' },
+    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#2C2926', txtDk: '#B8BCC8', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', fontSize: 11, fontWeight: 500, color: s.text, background: s.bg, borderRadius: 99 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', fontSize: 11, fontWeight: 500, color: isDark ? s.txtDk : s.text, background: isDark ? s.bgDk : s.bg, borderRadius: 99 }}>
       <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot }} />
       {s.label}
     </span>
@@ -59,7 +67,7 @@ const COLS: { key: SortKey | 'theme' | 'status' | 'owner'; label: string; width:
   { key: 'fiscal_quarter', label: 'Quarter', width: '90px', sortable: true },
 ];
 
-export function GoalsListView({ goals, themes, onGoalClick }: GoalsListViewProps) {
+export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: GoalsListViewProps) {
   const themeMap = new Map(themes.map(t => [t.id, t]));
   const gridCols = COLS.map(c => c.width).join(' ');
 
@@ -72,10 +80,7 @@ export function GoalsListView({ goals, themes, onGoalClick }: GoalsListViewProps
       if (sortDir === 'asc') setSortDir('desc');
       else if (sortDir === 'desc') { setSortDir(null); setSortKey('goal_key'); }
       else setSortDir('asc');
-    } else {
-      setSortKey(k);
-      setSortDir('asc');
-    }
+    } else { setSortKey(k); setSortDir('asc'); }
   };
 
   const sortedGoals = [...goals].sort((a, b) => {
@@ -87,10 +92,15 @@ export function GoalsListView({ goals, themes, onGoalClick }: GoalsListViewProps
     return String(av).localeCompare(String(bv)) * dir;
   });
 
+  const tableBorder = isDark ? DK.border : '#E2E8F0';
+  const rowBorder = isDark ? DK.borderSubtle : '#F1F5F9';
+  const rowBg = isDark ? 'transparent' : 'transparent';
+  const rowHover = isDark ? 'rgba(248,244,240,0.03)' : '#F8FAFC';
+
   return (
-    <div style={{ border: '1px solid #E2E8F0', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF' }}>
+    <div style={{ border: `1px solid ${tableBorder}`, borderRadius: 10, overflow: 'hidden', background: isDark ? 'transparent' : '#FFFFFF' }}>
       {/* Header */}
-      <div style={{ display: 'grid', gridTemplateColumns: gridCols, height: 36, alignItems: 'center', padding: '0 16px', background: '#FFFFFF', borderBottom: '2px solid #E2E8F0', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: gridCols, height: 36, alignItems: 'center', padding: '0 16px', background: isDark ? 'transparent' : '#FFFFFF', borderBottom: `2px solid ${tableBorder}`, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: isDark ? DK.t3 : '#64748B' }}>
         {COLS.map(c => (
           <span
             key={c.key}
@@ -103,12 +113,10 @@ export function GoalsListView({ goals, themes, onGoalClick }: GoalsListViewProps
           </span>
         ))}
       </div>
-      {/* Fix 12: 44px rows, 8px 12px padding */}
       {sortedGoals.map(goal => {
         const theme = themeMap.get(goal.theme_id);
         const pct = Math.round(goal.progress_pct || 0);
         const barColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
-        // Fix 4: circular avatar 28px + full name
         const initials = goal.owner_name ? goal.owner_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '';
         const ownerColors = goal.owner_name ? getAvatarColors(goal.owner_name) : null;
         return (
@@ -117,37 +125,36 @@ export function GoalsListView({ goals, themes, onGoalClick }: GoalsListViewProps
             role="button" tabIndex={0}
             onClick={() => onGoalClick(goal.id)}
             onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onGoalClick(goal.id); } }}
-            style={{ display: 'grid', gridTemplateColumns: gridCols, height: 44, alignItems: 'center', padding: '0 16px', borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background 150ms' }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            style={{ display: 'grid', gridTemplateColumns: gridCols, height: 44, alignItems: 'center', padding: '0 16px', borderBottom: `1px solid ${rowBorder}`, cursor: 'pointer', transition: 'background 150ms' }}
+            onMouseEnter={e => (e.currentTarget.style.background = rowHover)}
+            onMouseLeave={e => (e.currentTarget.style.background = rowBg)}
           >
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', background: '#F1F5F9', padding: '2px 8px', borderRadius: 4, justifySelf: 'start', fontFamily: 'ui-monospace, monospace' }}>{goal.goal_key}</span>
-            <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.title}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : '#475569', background: isDark ? 'rgba(248,244,240,0.04)' : '#F1F5F9', padding: '2px 8px', borderRadius: 4, justifySelf: 'start', fontFamily: 'ui-monospace, monospace' }}>{goal.goal_key}</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? DK.t1 : '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.title}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              {theme && (<><span style={{ width: 8, height: 8, borderRadius: 2, background: theme.color, flexShrink: 0 }} /><span style={{ fontSize: 12, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{theme.title}</span></>)}
+              {theme && (<><span style={{ width: 8, height: 8, borderRadius: 2, background: theme.color, flexShrink: 0 }} /><span style={{ fontSize: 12, color: isDark ? DK.t2 : '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{theme.title}</span></>)}
             </div>
-            <div>{statusBadge(goal.status)}</div>
-            {/* Fix 4: circular avatar with name */}
+            <div>{statusBadge(goal.status, isDark)}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               {goal.owner_name && ownerColors ? (
                 <>
                   <div style={{ width: 28, height: 28, borderRadius: '50%', background: ownerColors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: ownerColors.text, flexShrink: 0 }}>
                     {initials}
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.owner_name}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? DK.t1 : '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.owner_name}</span>
                 </>
               ) : (
-                <span style={{ fontSize: 11, color: '#CBD5E1' }}>—</span>
+                <span style={{ fontSize: 11, color: isDark ? DK.t4 : '#CBD5E1' }}>—</span>
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
+              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'rgba(248,244,240,0.08)' : '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 3 }} />
               </div>
               <span style={{ fontSize: 13, fontWeight: 600, color: barColor }}>{pct}%</span>
             </div>
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>{goal.kr_count || 0}</span>
-            <span style={{ fontSize: 11, color: '#64748B' }}>{goal.fiscal_quarter || '—'}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : '#475569' }}>{goal.kr_count || 0}</span>
+            <span style={{ fontSize: 11, color: isDark ? DK.t3 : '#64748B' }}>{goal.fiscal_quarter || '—'}</span>
           </div>
         );
       })}

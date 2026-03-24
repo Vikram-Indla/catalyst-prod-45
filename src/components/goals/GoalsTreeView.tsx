@@ -1,8 +1,6 @@
 /**
  * GoalsTreeView — 3-level expandable tree: Theme → Goal → Key Result
- * Fixes: 1 (contrast/depth), 4 (circular avatars), 5 (single progress %),
- *        6 (split CONFIDENCE/KRs), 9 (confidence dots), 11 (connector lines),
- *        15 (footer)
+ * ECLIPSE D8: Dark mode parity
  */
 import { ChevronRight, Sparkles, ClipboardCheck, Target, X } from 'lucide-react';
 import type { Goal, KeyResult } from '@/types/goals';
@@ -21,41 +19,51 @@ interface GoalsTreeViewProps {
   onGoalClick: (goalId: string) => void;
   onCheckinClick: (krId: string) => void;
   onClearSearch?: () => void;
+  isDark?: boolean;
 }
 
-// ── Status badge (Linear-style) ──
-function statusBadge(status: string) {
-  const map: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-    active:      { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'Active' },
-    on_track:    { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'On Track' },
-    completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Completed' },
-    achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Achieved' },
-    at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
-    off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', label: 'Off Track' },
-    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', label: 'Draft' },
-    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', label: 'Not Started' },
-    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', label: 'Cancelled' },
+const DK = {
+  t1: 'var(--cp-t1)',
+  t2: 'var(--cp-t2)',
+  t3: 'var(--cp-t3)',
+  t4: 'var(--cp-t4)',
+  border: 'rgba(248,244,240,0.10)',
+  borderSubtle: 'rgba(248,244,240,0.08)',
+  hover: 'rgba(248,244,240,0.03)',
+};
+
+// ── Status badge ──
+function statusBadge(status: string, isDark = false) {
+  const map: Record<string, { dot: string; bg: string; text: string; bgDark: string; textDark: string; label: string }> = {
+    active:      { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDark: '#1A2A1E', textDark: '#86EFAC', label: 'Active' },
+    on_track:    { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDark: '#1A2A1E', textDark: '#86EFAC', label: 'On Track' },
+    completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDark: '#1E2636', textDark: '#93C5FD', label: 'Completed' },
+    achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDark: '#1E2636', textDark: '#93C5FD', label: 'Achieved' },
+    at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDark: '#2A2418', textDark: '#FBBF24', label: 'At Risk' },
+    off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', bgDark: '#2E1C18', textDark: '#FCA5A5', label: 'Off Track' },
+    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#2C2926', textDark: '#B8BCC8', label: 'Draft' },
+    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#2C2926', textDark: '#B8BCC8', label: 'Not Started' },
+    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDark: '#2C2926', textDark: '#B8BCC8', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', fontSize: 11, fontWeight: 500, color: s.text, background: s.bg, borderRadius: 99, whiteSpace: 'nowrap' }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', fontSize: 11, fontWeight: 500, color: isDark ? s.textDark : s.text, background: isDark ? s.bgDark : s.bg, borderRadius: 99, whiteSpace: 'nowrap' }}>
       <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
       {s.label}
     </span>
   );
 }
 
-function progressBar(pct: number, height = 6) {
+function progressBar(pct: number, height = 6, isDark = false) {
   const color = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
   return (
-    <div style={{ width: 80, height, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
+    <div style={{ width: 80, height, background: isDark ? 'rgba(248,244,240,0.08)' : '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 3, transition: 'width 300ms ease' }} />
     </div>
   );
 }
 
-// Fix 9: Confidence dot indicator
-function ConfidenceDots({ level }: { level: number }) {
+function ConfidenceDots({ level, isDark = false }: { level: number; isDark?: boolean }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
       {[1, 2, 3, 4, 5].map(i => (
@@ -65,7 +73,7 @@ function ConfidenceDots({ level }: { level: number }) {
             width: 5, height: 5, borderRadius: '50%',
             background: i <= level
               ? (level >= 4 ? '#16A34A' : level >= 3 ? '#D97706' : '#EF4444')
-              : '#E2E8F0',
+              : (isDark ? 'rgba(248,244,240,0.08)' : '#E2E8F0'),
           }}
         />
       ))}
@@ -79,7 +87,6 @@ function getConfidenceLevel(val: number | string | undefined): number {
     const map: Record<string, number> = { high: 4, medium: 3, low: 1 };
     return map[val] ?? 0;
   }
-  // Convert 0-1 or 0-100 to 1-5
   const pct = val <= 1 ? val * 100 : val;
   if (pct >= 80) return 5;
   if (pct >= 60) return 4;
@@ -88,14 +95,11 @@ function getConfidenceLevel(val: number | string | undefined): number {
   return 1;
 }
 
-// Theme status from child goals — also check progress thresholds
 function computeThemeStatus(goals: Goal[]): string {
   if (goals.length === 0) return 'draft';
   if (goals.some(g => g.status === 'off_track')) return 'off_track';
-  // Any goal with progress < 40% is effectively off_track
   if (goals.some(g => (g.progress_pct || 0) < 40 && !['draft', 'completed', 'cancelled'].includes(g.status))) return 'off_track';
   if (goals.some(g => g.status === 'at_risk')) return 'at_risk';
-  // Any goal with progress 40-59% is effectively at_risk
   const avgProgress = goals.reduce((s, g) => s + (g.progress_pct || 0), 0) / goals.length;
   if (avgProgress < 60 && goals.some(g => !['draft', 'completed', 'cancelled'].includes(g.status))) return 'at_risk';
   if (goals.every(g => g.status === 'completed')) return 'completed';
@@ -103,7 +107,6 @@ function computeThemeStatus(goals: Goal[]): string {
   return 'active';
 }
 
-// Fix 4: Circular avatar with per-owner colors
 const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
   'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF' },
   'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3' },
@@ -115,7 +118,6 @@ const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
 
 function getAvatarColors(name: string) {
   if (AVATAR_COLORS[name]) return AVATAR_COLORS[name];
-  // Hash fallback
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   const palettes = [
@@ -126,7 +128,7 @@ function getAvatarColors(name: string) {
   return palettes[Math.abs(hash) % palettes.length];
 }
 
-function OwnerAvatar({ name, size = 28, showName = false }: { name?: string; size?: number; showName?: boolean }) {
+function OwnerAvatar({ name, size = 28 }: { name?: string; size?: number }) {
   if (!name) return <span style={{ fontSize: 11, color: '#CBD5E1' }}>—</span>;
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const colors = getAvatarColors(name);
@@ -139,21 +141,18 @@ function OwnerAvatar({ name, size = 28, showName = false }: { name?: string; siz
       }}>
         {initials}
       </div>
-      {showName && <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>}
     </div>
   );
 }
 
-// Columns: GOAL | STATUS | PROGRESS | CONFIDENCE | KRs | OWNER | AI
 const GRID_COLS = 'minmax(340px, 1fr) 96px 150px 90px 50px 100px 60px';
 
-/* Skeleton for loading */
-export function GoalsTreeSkeleton() {
+export function GoalsTreeSkeleton({ isDark = false }: { isDark?: boolean }) {
   return (
-    <div style={{ border: '1px solid #E2E8F0', borderRadius: 10, overflow: 'hidden' }}>
-      <div style={{ height: 36, background: '#FFFFFF', borderBottom: '2px solid #E2E8F0' }} />
+    <div style={{ border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`, borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ height: 36, background: isDark ? 'transparent' : '#FFFFFF', borderBottom: `2px solid ${isDark ? DK.border : '#E2E8F0'}` }} />
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="ph-shimmer" style={{ height: 44, borderBottom: '1px solid #F1F5F9', background: '#F8FAFC' }} />
+        <div key={i} className="ph-shimmer" style={{ height: 44, borderBottom: `1px solid ${isDark ? DK.borderSubtle : '#F1F5F9'}`, background: isDark ? 'rgba(248,244,240,0.02)' : '#F8FAFC' }} />
       ))}
       <style>{`
         @keyframes phShimmer { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
@@ -163,15 +162,14 @@ export function GoalsTreeSkeleton() {
   );
 }
 
-/* Empty state for no goals */
-export function GoalsEmptyState({ onCreateGoal }: { onCreateGoal: () => void }) {
+export function GoalsEmptyState({ onCreateGoal, isDark = false }: { onCreateGoal: () => void; isDark?: boolean }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', border: '1px solid #E2E8F0', borderRadius: 10, background: '#FFFFFF' }}>
-      <div style={{ width: 52, height: 52, borderRadius: 14, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`, borderRadius: 10, background: isDark ? 'transparent' : '#FFFFFF' }}>
+      <div style={{ width: 52, height: 52, borderRadius: 14, background: isDark ? 'rgba(248,244,240,0.04)' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
         <Target size={24} color="#94A3B8" />
       </div>
-      <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No goals yet</div>
-      <div style={{ fontSize: 12.5, color: '#94A3B8', marginBottom: 20, textAlign: 'center', maxWidth: 320 }}>Create your first goal to start tracking progress.</div>
+      <div style={{ fontSize: 15, fontWeight: 600, color: isDark ? DK.t1 : '#334155', marginBottom: 4 }}>No goals yet</div>
+      <div style={{ fontSize: 12.5, color: isDark ? DK.t3 : '#94A3B8', marginBottom: 20, textAlign: 'center', maxWidth: 320 }}>Create your first goal to start tracking progress.</div>
       <button onClick={onCreateGoal} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
         + Create Goal
       </button>
@@ -179,13 +177,12 @@ export function GoalsEmptyState({ onCreateGoal }: { onCreateGoal: () => void }) 
   );
 }
 
-/* Empty state for no search results */
-function GoalsNoSearchResults({ query, onClear }: { query: string; onClear: () => void }) {
+function GoalsNoSearchResults({ query, onClear, isDark = false }: { query: string; onClear: () => void; isDark?: boolean }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', border: '1px solid #E2E8F0', borderRadius: 10, background: '#FFFFFF' }}>
-      <div style={{ fontSize: 14, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No goals matching "{query}"</div>
-      <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 14 }}>Try a different search term.</div>
-      <button onClick={onClear} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 500, color: '#64748B', background: '#F1F5F9', border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`, borderRadius: 10, background: isDark ? 'transparent' : '#FFFFFF' }}>
+      <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : '#334155', marginBottom: 4 }}>No goals matching "{query}"</div>
+      <div style={{ fontSize: 12, color: isDark ? DK.t3 : '#94A3B8', marginBottom: 14 }}>Try a different search term.</div>
+      <button onClick={onClear} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 500, color: isDark ? DK.t2 : '#64748B', background: isDark ? 'rgba(248,244,240,0.04)' : '#F1F5F9', border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`, borderRadius: 6, cursor: 'pointer' }}>
         <X size={12} /> Clear search
       </button>
     </div>
@@ -196,6 +193,7 @@ export function GoalsTreeView({
   goals, keyResults, themes, searchQuery,
   expandedThemes, expandedGoals,
   onToggleTheme, onToggleGoal, onGoalClick, onCheckinClick, onClearSearch,
+  isDark = false,
 }: GoalsTreeViewProps) {
   const query = searchQuery.toLowerCase().trim();
 
@@ -235,7 +233,7 @@ export function GoalsTreeView({
   };
 
   if (query && filteredThemes.length === 0) {
-    return <GoalsNoSearchResults query={searchQuery} onClear={() => onClearSearch?.()} />;
+    return <GoalsNoSearchResults query={searchQuery} onClear={() => onClearSearch?.()} isDark={isDark} />;
   }
 
   const totalFilteredGoals = filteredThemes.reduce((s, t) => s + filterGoals(goalsByTheme.get(t.id) || []).length, 0);
@@ -244,16 +242,31 @@ export function GoalsTreeView({
     return s + fg.reduce((ks, g) => ks + (krsByGoal.get(g.id)?.length || 0), 0);
   }, 0);
 
+  // Colors
+  const tableBorder = isDark ? DK.border : '#E2E8F0';
+  const rowBorder = isDark ? DK.borderSubtle : '#F1F5F9';
+  const headerBg = isDark ? 'transparent' : '#FFFFFF';
+  const headerText = isDark ? DK.t3 : '#64748B';
+  const containerBg = isDark ? 'transparent' : '#FFFFFF';
+  const themeRowBg = isDark ? 'rgba(248,244,240,0.03)' : '#F1F5F9';
+  const themeRowHover = isDark ? 'rgba(248,244,240,0.05)' : '#E2E8F0';
+  const goalRowBg = isDark ? 'transparent' : '#FFFFFF';
+  const goalRowHover = isDark ? 'rgba(248,244,240,0.03)' : '#F8FAFC';
+  const krRowBg = isDark ? 'rgba(248,244,240,0.01)' : '#FAFBFC';
+  const krRowHover = isDark ? 'rgba(248,244,240,0.03)' : '#F1F5F9';
+  const connectorColor = isDark ? 'rgba(248,244,240,0.08)' : '#E2E8F0';
+  const footerBg = isDark ? 'rgba(248,244,240,0.02)' : '#F8FAFC';
+
   return (
-    <div className="goals-tree-container" style={{ border: '1px solid #E2E8F0', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF' }}>
-      {/* Header — Fix 6: separate CONFIDENCE + KRs columns */}
+    <div className="goals-tree-container" style={{ border: `1px solid ${tableBorder}`, borderRadius: 10, overflow: 'hidden', background: containerBg }}>
+      {/* Header */}
       <div style={{
         display: 'grid', gridTemplateColumns: GRID_COLS,
         height: 36, alignItems: 'center',
-        background: '#FFFFFF', borderBottom: '2px solid #E2E8F0',
+        background: headerBg, borderBottom: `2px solid ${tableBorder}`,
         padding: '0 16px',
         fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-        letterSpacing: '0.05em', color: '#64748B',
+        letterSpacing: '0.05em', color: headerText,
       }}>
         <span>Goal / Key Result</span>
         <span>Status</span>
@@ -278,7 +291,7 @@ export function GoalsTreeView({
 
         return (
           <div key={theme.id}>
-            {/* Theme Row — Fix 1: left border + #F1F5F9 bg */}
+            {/* Theme Row */}
             <div
               role="button" tabIndex={0}
               onClick={() => onToggleTheme(theme.id)}
@@ -286,25 +299,25 @@ export function GoalsTreeView({
               style={{
                 display: 'grid', gridTemplateColumns: GRID_COLS,
                 height: 44, alignItems: 'center', padding: '0 16px',
-                background: '#F1F5F9', borderBottom: '1px solid #E2E8F0',
+                background: themeRowBg, borderBottom: `1px solid ${tableBorder}`,
                 borderLeft: `3px solid ${theme.color}`,
                 cursor: 'pointer', userSelect: 'none', transition: 'background 150ms',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#E2E8F0')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#F1F5F9')}
+              onMouseEnter={e => (e.currentTarget.style.background = themeRowHover)}
+              onMouseLeave={e => (e.currentTarget.style.background = themeRowBg)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ChevronRight size={14} color="#64748B" style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{theme.title}</span>
-                <span style={{ fontSize: 11, color: '#64748B' }}>({themeGoals.length} goal{themeGoals.length !== 1 ? 's' : ''})</span>
+                <ChevronRight size={14} color={isDark ? 'rgba(248,244,240,0.35)' : '#64748B'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
+                <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : '#0F172A' }}>{theme.title}</span>
+                <span style={{ fontSize: 11, color: isDark ? DK.t3 : '#64748B' }}>({themeGoals.length} goal{themeGoals.length !== 1 ? 's' : ''})</span>
               </div>
-              <div>{statusBadge(themeStatus)}</div>
+              <div>{statusBadge(themeStatus, isDark)}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {progressBar(avgProgress)}
+                {progressBar(avgProgress, 6, isDark)}
                 <span style={{ fontSize: 13, fontWeight: 600, color: progressColor, minWidth: 32, textAlign: 'right' }}>{avgProgress}%</span>
               </div>
-              <div><ConfidenceDots level={avgConf} /></div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>{themeKRCount}</div>
+              <div><ConfidenceDots level={avgConf} isDark={isDark} /></div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : '#475569' }}>{themeKRCount}</div>
               <div />
               <div />
             </div>
@@ -327,50 +340,46 @@ export function GoalsTreeView({
                     style={{
                       display: 'grid', gridTemplateColumns: GRID_COLS,
                       height: 44, alignItems: 'center', padding: '0 16px 0 36px',
-                      background: '#FFFFFF',
-                      borderBottom: '1px solid #F1F5F9', cursor: 'pointer',
+                      background: goalRowBg,
+                      borderBottom: `1px solid ${rowBorder}`, cursor: 'pointer',
                       transition: 'background 150ms', position: 'relative',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
-                    onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
+                    onMouseEnter={e => (e.currentTarget.style.background = goalRowHover)}
+                    onMouseLeave={e => (e.currentTarget.style.background = goalRowBg)}
                   >
-                    {/* Fix 11: Connector lines */}
-                    <div style={{ position: 'absolute', left: 28, top: 0, bottom: isLastGoal && !goalExpanded ? '50%' : 0, width: 1, background: '#E2E8F0' }} />
-                    <div style={{ position: 'absolute', left: 28, top: '50%', width: 12, height: 1, background: '#E2E8F0' }} />
+                    {/* Connector lines */}
+                    <div style={{ position: 'absolute', left: 28, top: 0, bottom: isLastGoal && !goalExpanded ? '50%' : 0, width: 1, background: connectorColor }} />
+                    <div style={{ position: 'absolute', left: 28, top: '50%', width: 12, height: 1, background: connectorColor }} />
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                       <ChevronRight
-                        size={13} color="#94A3B8"
+                        size={13} color={isDark ? 'rgba(248,244,240,0.35)' : '#94A3B8'}
                         onClick={e => { e.stopPropagation(); onToggleGoal(goal.id); }}
                         style={{ transform: goalExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0, cursor: 'pointer' }}
                       />
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', background: '#F1F5F9', padding: '2px 8px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : '#475569', background: isDark ? 'rgba(248,244,240,0.04)' : '#F1F5F9', padding: '2px 8px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
                         {goal.goal_key}
                       </span>
-                      <span onClick={e => { e.stopPropagation(); onGoalClick(goal.id); }} style={{ fontSize: 14, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span onClick={e => { e.stopPropagation(); onGoalClick(goal.id); }} style={{ fontSize: 14, fontWeight: 500, color: isDark ? DK.t1 : '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {goal.title}
                       </span>
                     </div>
-                    <div onClick={e => e.stopPropagation()}>{statusBadge(goal.status)}</div>
-                    {/* Fix 5: Single progress value */}
+                    <div onClick={e => e.stopPropagation()}>{statusBadge(goal.status, isDark)}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      {progressBar(goalPct)}
+                      {progressBar(goalPct, 6, isDark)}
                       <span style={{ fontSize: 13, fontWeight: 600, color: goalProgressColor, minWidth: 32, textAlign: 'right' }}>{goalPct}%</span>
                     </div>
-                    {/* Fix 6+9: Confidence as dots */}
-                    <div><ConfidenceDots level={confLevel} /></div>
-                    {/* Fix 6: KRs as count */}
-                    <div style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>{goalKRs.length}</div>
-                    {/* Fix 4: Circular avatar, no name in tree */}
+                    <div><ConfidenceDots level={confLevel} isDark={isDark} /></div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : '#475569' }}>{goalKRs.length}</div>
                     <div><OwnerAvatar name={goal.owner_name} size={28} /></div>
                     <div>
                       {goal.ai_health_score != null ? (
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600, color: '#7C3AED', background: '#F5F3FF', padding: '2px 6px', borderRadius: 4 }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600, color: isDark ? '#C4B5FD' : '#7C3AED', background: isDark ? 'rgba(167,139,250,0.12)' : '#F5F3FF', padding: '2px 6px', borderRadius: 4 }}>
                           <Sparkles size={10} />
                           {goal.ai_health_score}
                         </span>
                       ) : (
-                        <span style={{ fontSize: 11, color: '#CBD5E1' }}>—</span>
+                        <span style={{ fontSize: 11, color: isDark ? DK.t4 : '#CBD5E1' }}>—</span>
                       )}
                     </div>
                   </div>
@@ -393,20 +402,20 @@ export function GoalsTreeView({
                         style={{
                           display: 'grid', gridTemplateColumns: GRID_COLS,
                           height: 40, alignItems: 'center', padding: '0 16px 0 58px',
-                          background: '#FAFBFC',
-                          borderBottom: '1px solid #F8FAFC', fontSize: 13, position: 'relative',
+                          background: krRowBg,
+                          borderBottom: `1px solid ${isDark ? DK.borderSubtle : '#F8FAFC'}`, fontSize: 13, position: 'relative',
                           transition: 'background 150ms',
-                          color: '#334155',
+                          color: isDark ? DK.t2 : '#334155',
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.background = '#F1F5F9')}
-                        onMouseLeave={e => (e.currentTarget.style.background = '#FAFBFC')}
+                        onMouseEnter={e => (e.currentTarget.style.background = krRowHover)}
+                        onMouseLeave={e => (e.currentTarget.style.background = krRowBg)}
                       >
-                        {/* Fix 11: KR connector lines */}
-                        <div style={{ position: 'absolute', left: 52, top: 0, bottom: isLastKR ? '50%' : 0, width: 1, background: '#E2E8F0' }} />
-                        <div style={{ position: 'absolute', left: 52, top: '50%', width: 12, height: 1, background: '#E2E8F0' }} />
+                        {/* KR connector lines */}
+                        <div style={{ position: 'absolute', left: 52, top: 0, bottom: isLastKR ? '50%' : 0, width: 1, background: connectorColor }} />
+                        <div style={{ position: 'absolute', left: 52, top: '50%', width: 12, height: 1, background: connectorColor }} />
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                          <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', background: '#F1F5F9', padding: '1px 5px', borderRadius: 3, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? DK.t3 : '#94A3B8', background: isDark ? 'rgba(248,244,240,0.04)' : '#F1F5F9', padding: '1px 5px', borderRadius: 3, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
                             {kr.kr_key}
                           </span>
                           <span style={{ fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -428,13 +437,13 @@ export function GoalsTreeView({
                             Check-in
                           </button>
                         </div>
-                        <div>{statusBadge(kr.status)}</div>
+                        <div>{statusBadge(kr.status, isDark)}</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          {progressBar(krProgress, 5)}
+                          {progressBar(krProgress, 5, isDark)}
                           <span style={{ fontSize: 13, fontWeight: 600, color: krProgressColor, minWidth: 32, textAlign: 'right' }}>{krProgress}%</span>
                         </div>
-                        <div><ConfidenceDots level={getConfidenceLevel(kr.confidence_level)} /></div>
-                        <div style={{ color: '#64748B', fontSize: 11 }}>
+                        <div><ConfidenceDots level={getConfidenceLevel(kr.confidence_level)} isDark={isDark} /></div>
+                        <div style={{ color: isDark ? DK.t3 : '#64748B', fontSize: 11 }}>
                           {kr.current_value}/{kr.target}
                         </div>
                         <div />
@@ -449,12 +458,12 @@ export function GoalsTreeView({
         );
       })}
 
-      {/* Fix 15: Footer */}
+      {/* Footer */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: 36, background: '#F8FAFC', borderTop: '1px solid #E2E8F0',
+        height: 36, background: footerBg, borderTop: `1px solid ${tableBorder}`,
       }}>
-        <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B' }}>
+        <span style={{ fontSize: 12, fontWeight: 500, color: isDark ? DK.t3 : '#64748B' }}>
           Showing {totalFilteredGoals} goals, {totalFilteredKRs} key results across {filteredThemes.length} themes
         </span>
       </div>
