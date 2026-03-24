@@ -1,19 +1,12 @@
 /**
  * Product Roadmap — Left panel initiative list
- * AUDIT #1: JetBrains Mono keys 11px
- * AUDIT #2: Lightbulb icon before name, colored by type
- * AUDIT #3: Avatar ALWAYS blue (#2563EB)
- * AUDIT #10: Group headers with bg, border, chevron, type dot, count pill
- * AUDIT #11: Count badge pill with JetBrains Mono
- * AUDIT #12: Collapsible groups
- * AUDIT #19: Star button on each row
- * AUDIT #22: focus-visible outlines
- * AUDIT #23: 36px row height
+ * Theme-aware: uses INK/SURFACE dark tokens
  */
 import React from 'react';
 import { ArrowUpDown, ChevronDown, ChevronRight, Plus, Lightbulb, Star } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapInitiative, RoadmapGroup } from './types/roadmap.types';
-import { TYPE_COLORS, INK, SURFACE, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT, LIST_PANEL_WIDTH, AVATAR_BG } from './constants/roadmap.constants';
+import { TYPE_COLORS, INK, INK_DARK, SURFACE, SURFACE_DARK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT, LIST_PANEL_WIDTH, AVATAR_BG } from './constants/roadmap.constants';
 
 interface RoadmapInitiativeListProps {
   groups: RoadmapGroup[];
@@ -30,7 +23,6 @@ interface RoadmapInitiativeListProps {
   onToggleGroup: (key: string) => void;
 }
 
-/* AUDIT #3: Avatar ALWAYS blue */
 function OwnerAvatar({ initials, name }: { initials?: string; name?: string }) {
   const isUnassigned = !initials || initials === '?' || initials === 'UN' || !name || name === 'Unassigned';
 
@@ -61,29 +53,36 @@ function OwnerAvatar({ initials, name }: { initials?: string; name?: string }) {
 }
 
 export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect, onHover, onAddClick, onToggleStar, width, scrollRef, onScroll, collapsedGroups, onToggleGroup }: RoadmapInitiativeListProps) {
+  const { isDark } = useTheme();
+  const ink = isDark ? INK_DARK : INK;
+  const surface = isDark ? SURFACE_DARK : SURFACE;
   const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
 
+  const headerBg = isDark ? 'rgba(255,255,255,0.03)' : '#FAFBFC';
+  const selectedBg = isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF';
+  const hoverBg = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(37,99,235,0.04)';
+  const addHoverBg = isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF';
+
   return (
-    <div className="flex-shrink-0 flex flex-col roadmap-scroll" style={{ width: width || LIST_PANEL_WIDTH, borderRight: `1px solid ${SURFACE.border}`, background: SURFACE.card }}>
+    <div className="flex-shrink-0 flex flex-col roadmap-scroll" style={{ width: width || LIST_PANEL_WIDTH, borderRight: `1px solid ${surface.border}`, background: surface.card }}>
       {/* Column Header */}
       <div
         className="flex items-center justify-between px-4"
-        style={{ height: ROW_HEIGHT, borderBottom: `1px solid ${SURFACE.border}`, background: '#FAFBFC' }}
+        style={{ height: ROW_HEIGHT, borderBottom: `1px solid ${surface.border}`, background: headerBg }}
       >
         <div className="flex items-center gap-2">
-          <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: INK[2] }}>
+          <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: ink[2] }}>
             Initiatives
           </span>
-          {/* AUDIT #11: Count badge pill */}
           <span style={{
-            fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: INK[4],
-            background: SURFACE.page, border: `1px solid ${SURFACE.border}`,
+            fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: ink[4],
+            background: isDark ? 'rgba(255,255,255,0.05)' : SURFACE.page, border: `1px solid ${surface.border}`,
             borderRadius: 9999, padding: '0 6px', height: 20, display: 'inline-flex', alignItems: 'center',
           }}>
             {totalCount}
           </span>
         </div>
-        <ArrowUpDown className="w-3.5 h-3.5" style={{ color: INK[3] }} />
+        <ArrowUpDown className="w-3.5 h-3.5" style={{ color: ink[3] }} />
       </div>
 
       <div ref={scrollRef as any} onScroll={onScroll} className="flex-1 overflow-y-auto roadmap-scroll">
@@ -92,7 +91,6 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
           const isCollapsed = collapsedGroups.has(group.key);
           return (
             <div key={group.key}>
-              {/* AUDIT #10: Group header with bg, border, chevron, type dot, count */}
               <div
                 className="flex items-center gap-2 px-4 cursor-pointer select-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-500"
                 tabIndex={0}
@@ -101,31 +99,25 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
                 onKeyDown={e => e.key === 'Enter' && onToggleGroup(group.key)}
                 style={{
                   height: GROUP_HEADER_HEIGHT,
-                  background: SURFACE.page,
-                  borderBottom: `1px solid ${SURFACE.border}`,
-                  borderTop: gi > 0 ? `1px solid ${SURFACE.border}` : 'none',
+                  background: isDark ? 'rgba(255,255,255,0.03)' : SURFACE.page,
+                  borderBottom: `1px solid ${surface.border}`,
+                  borderTop: gi > 0 ? `1px solid ${surface.border}` : 'none',
                 }}
                 onClick={() => onToggleGroup(group.key)}
               >
-                {/* AUDIT #12: Chevron rotates */}
                 <div style={{ transition: 'transform 0.15s ease', transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}>
-                  <ChevronDown className="w-3.5 h-3.5" style={{ color: INK[3] }} />
+                  <ChevronDown className="w-3.5 h-3.5" style={{ color: ink[3] }} />
                 </div>
-                {/* Type dot 10px with rounded corners */}
-                <div style={{
-                  width: 10, height: 10, borderRadius: 3, flexShrink: 0,
-                  background: typeColor,
-                }} />
+                <div style={{ width: 10, height: 10, borderRadius: 3, flexShrink: 0, background: typeColor }} />
                 <span style={{
-                  fontSize: 12, fontWeight: 600, color: INK[2],
+                  fontSize: 12, fontWeight: 600, color: ink[2],
                   textTransform: 'uppercase', letterSpacing: '0.04em',
                 }}>
                   {group.label}
                 </span>
-                {/* AUDIT #11: Count pill */}
                 <span style={{
-                  fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: INK[4],
-                  background: SURFACE.card, border: `1px solid ${SURFACE.border}`,
+                  fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: ink[4],
+                  background: surface.card, border: `1px solid ${surface.border}`,
                   borderRadius: 9999, padding: '0 6px', height: 20,
                   display: 'inline-flex', alignItems: 'center', marginLeft: 'auto',
                 }}>
@@ -142,6 +134,11 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
                   onSelect={() => onSelect(item.id)}
                   onHover={onHover}
                   onToggleStar={() => onToggleStar(item.id, item.starred)}
+                  ink={ink}
+                  surface={surface}
+                  isDark={isDark}
+                  selectedBg={selectedBg}
+                  hoverBg={hoverBg}
                 />
               ))}
             </div>
@@ -151,8 +148,8 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
         <button
           onClick={onAddClick}
           className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-          style={{ color: '#2563EB', borderTop: `1px solid ${SURFACE.borderLight}`, transition: 'background-color 0.15s ease' }}
-          onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#EFF6FF')}
+          style={{ color: isDark ? '#60A5FA' : '#2563EB', borderTop: `1px solid ${surface.borderLight}`, transition: 'background-color 0.15s ease' }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = addHoverBg)}
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
           <Plus className="w-4 h-4" />
@@ -164,7 +161,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
 }
 
 function InitiativeRow({
-  item, isSelected, isHovered, onSelect, onHover, onToggleStar,
+  item, isSelected, isHovered, onSelect, onHover, onToggleStar, ink, surface, isDark, selectedBg, hoverBg,
 }: {
   item: RoadmapInitiative;
   isSelected: boolean;
@@ -172,6 +169,11 @@ function InitiativeRow({
   onSelect: () => void;
   onHover: (id: string | null) => void;
   onToggleStar: () => void;
+  ink: typeof INK;
+  surface: typeof SURFACE;
+  isDark: boolean;
+  selectedBg: string;
+  hoverBg: string;
 }) {
   const typeColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
 
@@ -191,50 +193,45 @@ function InitiativeRow({
         maxHeight: ROW_HEIGHT,
         paddingLeft: 12,
         paddingRight: 12,
-        backgroundColor: isSelected ? '#EFF6FF' : isHovered ? 'rgba(37,99,235,0.04)' : 'transparent',
-        borderBottom: `1px solid ${SURFACE.borderLight}`,
-        borderLeft: isSelected ? '3px solid #2563EB' : '3px solid transparent',
+        backgroundColor: isSelected ? selectedBg : isHovered ? hoverBg : 'transparent',
+        borderBottom: `1px solid ${surface.borderLight}`,
+        borderLeft: isSelected ? `3px solid ${isDark ? '#60A5FA' : '#2563EB'}` : '3px solid transparent',
         transition: 'background-color 0.15s ease',
         overflow: 'hidden',
       }}
     >
-      {/* AUDIT #19: Star button */}
       <button
         className="flex-shrink-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
         style={{
           width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
           border: 'none', background: 'none', padding: 0, cursor: 'pointer',
-          color: item.starred ? '#F59E0B' : INK[4],
+          color: item.starred ? '#F59E0B' : ink[4],
           opacity: item.starred ? 1 : undefined,
           transition: 'color 0.15s ease, opacity 0.15s ease',
         }}
-        
         onClick={e => { e.stopPropagation(); onToggleStar(); }}
         onMouseEnter={e => { e.currentTarget.style.color = '#F59E0B'; }}
-        onMouseLeave={e => { if (!item.starred) e.currentTarget.style.color = INK[4]; }}
+        onMouseLeave={e => { if (!item.starred) e.currentTarget.style.color = ink[4]; }}
       >
         <Star className="w-3.5 h-3.5" fill={item.starred ? '#F59E0B' : 'none'} />
       </button>
 
-      {/* AUDIT #2: Lightbulb icon colored by type */}
       <div className="flex-shrink-0" style={{ width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Lightbulb className="w-3.5 h-3.5" style={{ color: typeColor }} />
       </div>
 
-      {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          {/* AUDIT #1: JetBrains Mono 11px key */}
           <span style={{
             fontFamily: FONT.mono,
-            fontSize: 11, fontWeight: 500, color: INK[4],
+            fontSize: 11, fontWeight: 500, color: ink[4],
             fontVariantNumeric: 'tabular-nums',
             flexShrink: 0,
           }}>
             {item.initiativeKey}
           </span>
           <span className="truncate" style={{
-            fontSize: 13, fontWeight: 500, color: INK[1],
+            fontSize: 13, fontWeight: 500, color: ink[1],
             lineHeight: 1.3,
           }}>
             {item.titleEn}
@@ -242,7 +239,6 @@ function InitiativeRow({
         </div>
       </div>
 
-      {/* AUDIT #3: Avatar ALWAYS blue */}
       <OwnerAvatar initials={item.ownerInitials} name={item.ownerName} />
     </div>
   );
