@@ -1,7 +1,15 @@
 /**
  * Dark mode color tokens for inline-style components
- * Use with: const dk = isDark ? DK : LK;
  */
+export type DarkTokens = {
+  pageBg: string; cardBg: string; headerBg: string; tableHeaderBg: string;
+  hoverBg: string; selectedBg: string; floatBg: string; chipBg: string;
+  progressTrack: string; iconBg: string;
+  t1: string; t2: string; t3: string; t4: string;
+  border: string; borderStrong: string; divider: string;
+  blue: string; blueKey: string; green: string; greenText: string;
+  shadow: string; cardShadow: string;
+};
 
 export const DK = {
   // Backgrounds
