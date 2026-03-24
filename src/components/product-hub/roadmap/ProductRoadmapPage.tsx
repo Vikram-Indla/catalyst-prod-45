@@ -26,6 +26,9 @@ import '@/styles/roadmap-ringfenced.css';
 import '@/styles/product-kanban.css';
 
 export function ProductRoadmapPage() {
+  const { isDark } = useTheme();
+  const ink = isDark ? INK_DARK : INK;
+  const surface = isDark ? SURFACE_DARK : SURFACE;
   const { initiatives, stats, isLoading, error } = useRoadmapData();
   const toggleStar = useToggleRoadmapStar();
   const {
