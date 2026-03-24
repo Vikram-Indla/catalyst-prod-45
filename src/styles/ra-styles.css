@@ -18,8 +18,8 @@
   --ra-hover: rgba(15,23,42,0.04); --ra-press: rgba(15,23,42,0.08); --ra-selected: rgba(37,99,235,0.08);
   --ra-text-pri: #0F172A; --ra-text-sec: #334155; --ra-text-ter: #64748B; --ra-text-muted: #94A3B8;
   --ra-lz-grey-bg: #DFE1E6; --ra-lz-grey-txt: #253858;
-  --ra-lz-blue-bg: #DEEBFF; --ra-lz-blue-txt: #0747A6;
-  --ra-lz-green-bg: #E3FCEF; --ra-lz-green-txt: #006644;
+  --ra-lz-blue-bg: #0C66E4; --ra-lz-blue-txt: #FFFFFF;
+  --ra-lz-green-bg: #1B7F37; --ra-lz-green-txt: #FFFFFF;
   --ra-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.04);
   --ra-shadow-sm: 0 1px 3px rgba(0,0,0,0.06),0 1px 2px -1px rgba(0,0,0,0.04);
   font-family: 'Inter', -apple-system, system-ui, sans-serif;
