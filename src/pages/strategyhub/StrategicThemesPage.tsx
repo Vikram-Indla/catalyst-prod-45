@@ -157,7 +157,7 @@ export default function StrategicThemesPage() {
         />
 
         {view === 'list' && <ThemeListView themes={filtered} onSelect={handleSelect} isDark={isDark} />}
-        {view === 'board' && <ThemeBoardView themes={filtered} onSelect={handleSelect} />}
+        {view === 'board' && <ThemeBoardView themes={filtered} onSelect={handleSelect} isDark={isDark} />}
         {view === 'timeline' && <ThemeTimelineView themes={filtered} onSelect={handleSelect} />}
       </div>
 
