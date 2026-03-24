@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from 'next-themes';
+import { useThemeMode } from '@/providers/ThemeProvider';
 import { StarButton } from './StarButton';
 import { StatusBadge, HealthBadge, AvatarStack, formatRelativeTime } from './project-list-utils';
 import { PHProject } from './ProjectTableRow';
@@ -13,8 +13,8 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardProps) {
   const navigate = useNavigate();
-  const { theme } = useTheme();
-  const dark = theme === 'dark';
+  const { resolvedTheme } = useThemeMode();
+  const dark = resolvedTheme === 'dark';
   const T = dark ? DK : LK;
 
   return (
