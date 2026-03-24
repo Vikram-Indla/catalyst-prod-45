@@ -104,7 +104,7 @@ export function ForYouTable({
     fontSize: 11, fontWeight: 700, color: 'var(--cp-t3)',
     textTransform: 'uppercase', letterSpacing: '0.06em',
     textAlign: 'left', whiteSpace: 'nowrap',
-    position: 'sticky', top: 48, zIndex: 10,
+    verticalAlign: 'middle',
   };
 
   return (
