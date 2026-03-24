@@ -132,7 +132,7 @@ export default function IdeationPage() {
   const pageTitle = VIEW_TITLES[activeView];
 
   return (
-    <div className="flex flex-col h-full" style={{ background: '#FFFFFF' }}>
+    <div className="flex flex-col h-full">
       {/* ─── Page Header (For You pattern) ─── */}
       <ProductHubPageHeader
         title={pageTitle}
