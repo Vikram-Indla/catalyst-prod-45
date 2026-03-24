@@ -31,7 +31,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       icon: Layers,
       iconColor: '#2563EB',
       iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
-      cardBg: isDark ? 'rgba(59,130,246,0.06)' : undefined,
+      cardBg: undefined,
     },
     {
       label: 'AVG. PROGRESS',
@@ -43,9 +43,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
         ? (progressDelta >= 0 ? 'rgba(13,148,136,0.12)' : 'rgba(220,38,38,0.12)')
         : (progressDelta >= 0 ? '#F0FDFA' : '#FEF2F2'),
       subColor: progressDelta >= 0 ? '#0D9488' : '#DC2626',
-      cardBg: isDark
-        ? (progressDelta >= 0 ? 'rgba(13,148,136,0.06)' : 'rgba(220,38,38,0.06)')
-        : undefined,
+      cardBg: undefined,
     },
     {
       label: 'TOTAL GOALS',
@@ -54,7 +52,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       icon: Target,
       iconColor: '#059669',
       iconBg: isDark ? 'rgba(5,150,105,0.12)' : '#ECFDF5',
-      cardBg: isDark ? 'rgba(5,150,105,0.06)' : undefined,
+      cardBg: undefined,
     },
     {
       label: 'TOTAL BUDGET (SAR)',
@@ -63,7 +61,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       icon: DollarSign,
       iconColor: '#2563EB',
       iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
-      cardBg: isDark ? 'rgba(59,130,246,0.06)' : undefined,
+      cardBg: undefined,
     },
     {
       label: 'OFF TRACK / AT RISK',
@@ -75,9 +73,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
         ? (atRiskCount > 0 ? 'rgba(220,38,38,0.12)' : 'rgba(5,150,105,0.12)')
         : (atRiskCount > 0 ? '#FEF2F2' : '#ECFDF5'),
       valueColor: atRiskCount > 0 ? '#DC2626' : undefined,
-      cardBg: isDark
-        ? (atRiskCount > 0 ? 'rgba(220,38,38,0.06)' : 'rgba(5,150,105,0.06)')
-        : undefined,
+      cardBg: undefined,
     },
   ];
 
