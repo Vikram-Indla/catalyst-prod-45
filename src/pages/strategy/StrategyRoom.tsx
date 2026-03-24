@@ -4,7 +4,8 @@
  * Data will be fetched from Supabase and passed as props.
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { StrategyRoleProvider } from '@/contexts/strategy/RoleContext';
 import StrategyRoomDashboard from '@/components/strategy/room/StrategyRoomDashboard';
 import { AIExecutiveBrief } from '@/components/strategy/room/AIExecutiveBrief';
@@ -57,8 +58,11 @@ const OVERLAY_TOKENS = `
 `;
 
 export default function StrategyRoom() {
-  const [briefOpen, setBriefOpen] = useState(false);
-  const [printAfterOpen, setPrintAfterOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const isBriefRoute = location.pathname === '/strategyhub/executive-brief';
+  const shouldAutoPrint = searchParams.get('print') === '1';
 
   /* ─── Live data from database ─── */
   const { themes, budget, workforce, contracts, brief, execution, alignment, fiscal, updatedAgo } = useStrategyRoomData();
@@ -108,31 +112,37 @@ export default function StrategyRoom() {
     }, 350);
   }, []);
 
-  const handleOpenBrief = useCallback(() => setBriefOpen(true), []);
-  const handleCloseBrief = useCallback(() => setBriefOpen(false), []);
+  const handleOpenBrief = useCallback(() => {
+    navigate('/strategyhub/executive-brief');
+  }, [navigate]);
 
   const handleDownloadBrief = useCallback(() => {
-    setBriefOpen(true);
-    setPrintAfterOpen(true);
-  }, []);
+    navigate('/strategyhub/executive-brief?print=1');
+  }, [navigate]);
+
+  const handleCloseBrief = useCallback(() => {
+    navigate('/strategyhub');
+  }, [navigate]);
 
   useEffect(() => {
-    if (briefOpen && printAfterOpen) {
+    if (isBriefRoute && shouldAutoPrint) {
       const timer = setTimeout(() => {
         printBriefInNewWindow();
-        setPrintAfterOpen(false);
+        const nextSearchParams = new URLSearchParams(searchParams);
+        nextSearchParams.delete('print');
+        setSearchParams(nextSearchParams, { replace: true });
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [briefOpen, printAfterOpen, printBriefInNewWindow]);
+  }, [isBriefRoute, printBriefInNewWindow, searchParams, setSearchParams, shouldAutoPrint]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && briefOpen) handleCloseBrief();
+      if (e.key === 'Escape' && isBriefRoute) handleCloseBrief();
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [briefOpen, handleCloseBrief]);
+  }, [handleCloseBrief, isBriefRoute]);
 
   return (
     <StrategyRoleProvider>
@@ -146,15 +156,15 @@ export default function StrategyRoom() {
         Skip to dashboard content
       </a>
 
-      {briefOpen ? (
+      {isBriefRoute ? (
         /* Brief renders INLINE in the content area — nav + sidebar stay visible */
-        <RoomContentShell maxWidthValue="1600px">
+        <RoomContentShell maxWidthValue="1600px" className="bg-background dark:bg-transparent">
           <Breadcrumbs items={[
             { label: 'StrategyHub', path: '/strategyhub' },
             { label: 'Strategy Room', path: '/strategyhub' },
             { label: 'Executive Brief' },
           ]} />
-          <AIExecutiveBrief open={briefOpen} onClose={handleCloseBrief} onDownload={printBriefInNewWindow} />
+          <AIExecutiveBrief open={isBriefRoute} onClose={handleCloseBrief} onDownload={printBriefInNewWindow} />
         </RoomContentShell>
       ) : (
         <div id="dashboard-main" className="brief-controller-dashboard">

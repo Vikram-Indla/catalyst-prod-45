@@ -49,6 +49,7 @@ export interface SidebarMenuItem {
   id: string;
   title: string | React.ReactNode;
   path: string;
+  activeMatchPaths?: string[];
   icon?: LucideIcon | React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   exact?: boolean;
   badge?: number;
@@ -125,7 +126,11 @@ export function SidebarBase({
   const sectionLabel = isDark ? 'var(--cp-t2)' : '#94A3B8';
   const hubLabel = isDark ? 'var(--cp-t1)' : '#0F172A';
 
-  const isActive = (path: string, exact: boolean = false) => {
+  const isActive = (path: string, exact: boolean = false, activeMatchPaths: string[] = []) => {
+    if (activeMatchPaths.some((matchPath) => location.pathname === matchPath || location.pathname.startsWith(matchPath + '/'))) {
+      return true;
+    }
+
     const [pathPart, queryPart] = path.split('?');
     if (queryPart) {
       return location.pathname === pathPart && location.search === `?${queryPart}`;
@@ -371,7 +376,7 @@ export function SidebarBase({
 // Helper function to render a menu item — now receives DarkTokens
 function renderMenuItem(
   item: SidebarMenuItem,
-  isActive: (path: string, exact?: boolean) => boolean,
+  isActive: (path: string, exact?: boolean, activeMatchPaths?: string[]) => boolean,
   iconResolver: ((itemId: string) => React.ComponentType<{ className?: string }> | undefined) | undefined,
   expanded: boolean,
   handleNavigation: (path: string) => void,
@@ -380,7 +385,7 @@ function renderMenuItem(
   toggleFavorite: (path: string) => void,
   tk: DarkTokens
 ) {
-  const active = isActive(item.path, item.exact);
+  const active = isActive(item.path, item.exact, item.activeMatchPaths);
   const CustomIcon = iconResolver?.(item.id) || item.icon;
   const starred = isFavorite(item.path);
 
