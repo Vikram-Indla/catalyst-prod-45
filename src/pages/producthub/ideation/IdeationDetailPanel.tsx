@@ -129,6 +129,7 @@ const formatSource = (source: string): string => {
 
 // ─── Main Component ──────────────────────────────────────────────
 export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Props) {
+  const { isDark } = useTheme();
   const { data: rawIdea, isLoading } = useIdeaRaw(ideaKey);
   const { data: dbFactors } = useImpactFactors(ideaKey);
   const updateIdea = useUpdateIdea();
