@@ -414,19 +414,19 @@
   border-collapse: collapse;
   font-family: var(--cp-font-body);
   font-size: 13px;
-  background-color: #FFFFFF;
+  background-color: var(--cp-bg-page);
 }
 
-/* Force pure white page background for product-backlog */
+/* Force page background for product-backlog */
 [data-module="product-backlog"] {
-  background-color: #FFFFFF !important;
+  background-color: var(--cp-bg-page) !important;
 }
 [data-module="product-backlog"] .flex-1 {
-  background-color: #FFFFFF !important;
+  background-color: var(--cp-bg-page) !important;
 }
 .pb-table thead,
 .pb-table thead tr {
-  background-color: #F1F5F9 !important;
+  background-color: var(--cp-bg-sunken) !important;
 }
 .pb-table thead th {
   position: sticky;
@@ -434,27 +434,27 @@
   z-index: 10;
   height: 32px;
   padding: 10px 12px;
-  background-color: #F1F5F9 !important;
+  background-color: var(--cp-bg-sunken) !important;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #64748B;
+  color: var(--cp-text-muted);
   text-align: start;
   white-space: nowrap;
-  border-bottom: 0.75px solid rgba(15, 23, 42, 0.12);
+  border-bottom: 0.75px solid var(--cp-border-default);
   cursor: pointer;
   user-select: none;
   transition: background var(--cp-duration-instant) var(--cp-easing-standard);
 }
 .pb-table thead th:hover {
-  background-color: rgba(15, 23, 42, 0.06) !important;
+  background-color: var(--cp-interact-hover) !important;
 }
-/* V12: 36px rows, 0.75px dividers, rgba hover — PURE WHITE rows */
+/* V12: 36px rows, 0.75px dividers, rgba hover */
 .pb-table tbody,
 .pb-table tbody tr {
-  background-color: #FFFFFF !important;
-  background: #FFFFFF !important;
+  background-color: var(--cp-bg-page) !important;
+  background: var(--cp-bg-page) !important;
 }
 .pb-table tbody tr {
   height: 36px;
