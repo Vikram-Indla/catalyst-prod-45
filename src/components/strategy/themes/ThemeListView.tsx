@@ -1,22 +1,24 @@
 /**
  * ThemeListView — Enterprise data table with Linear-style badges
+ * ECLIPSE D8-R4: Dark mode parity
  */
 import { useState, useMemo } from 'react';
 import type { StrategicTheme } from '@/types/strategic-themes';
 import {
-  STATUS_CONFIG, BSC_CONFIG, deriveHealthStatus,
-  formatBudget, getInitials, getAvatarColor, formatThemeId, getProgressColor,
+  deriveHealthStatus, getStatusConfig, getBscConfig,
+  formatBudget, getInitials, getAvatarColor, formatThemeId, getProgressColor, DK,
 } from './theme-utils';
 
 interface Props {
   themes: StrategicTheme[];
   onSelect: (theme: StrategicTheme) => void;
+  isDark?: boolean;
 }
 
 type SortField = 'title' | 'progress_pct' | 'goal_count' | 'planned_budget';
 type SortDir = 'asc' | 'desc';
 
-export function ThemeListView({ themes, onSelect }: Props) {
+export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>('asc');
@@ -56,20 +58,28 @@ export function ThemeListView({ themes, onSelect }: Props) {
 
   const sortIndicator = (field: SortField) => sortField === field ? (sortDir === 'asc' ? ' ↑' : ' ↓') : '';
 
+  const borderColor = isDark ? DK.border : '#E2E8F0';
+  const borderSubtle = isDark ? DK.borderSubtle : '#F1F5F9';
+
   const colHeaderStyle: React.CSSProperties = {
-    fontSize: 10.5, fontWeight: 600, color: '#94A3B8',
+    fontSize: 10.5, fontWeight: 600,
+    color: isDark ? DK.t2 : '#94A3B8',
     textTransform: 'uppercase', letterSpacing: '0.6px',
   };
 
   return (
-    <div className="rounded-xl border overflow-hidden" style={{ background: '#FFFFFF', borderColor: '#E2E8F0' }}>
+    <div className="rounded-xl border overflow-hidden" style={{
+      background: isDark ? DK.bg : '#FFFFFF',
+      borderColor,
+    }}>
       {/* Header */}
       <div
         className="grid items-center gap-0"
         style={{
           gridTemplateColumns: '36px 2.4fr 100px 100px 80px 80px 110px 120px 100px',
-          height: 36, background: '#F8FAFC',
-          borderBottom: '1px solid #E2E8F0',
+          height: 36,
+          background: isDark ? DK.hover : '#F8FAFC',
+          borderBottom: `1px solid ${borderColor}`,
           padding: '0 12px',
         }}
       >
@@ -87,8 +97,8 @@ export function ThemeListView({ themes, onSelect }: Props) {
       {/* Rows */}
       {paged.map(theme => {
         const health = deriveHealthStatus(theme);
-        const sc = STATUS_CONFIG[health];
-        const bsc = theme.bsc_perspective ? BSC_CONFIG[theme.bsc_perspective] : null;
+        const sc = getStatusConfig(health, isDark);
+        const bsc = theme.bsc_perspective ? getBscConfig(theme.bsc_perspective, isDark) : null;
         const progressColor = getProgressColor(theme.progress_pct);
 
         return (
@@ -99,10 +109,10 @@ export function ThemeListView({ themes, onSelect }: Props) {
             style={{
               gridTemplateColumns: '36px 2.4fr 100px 100px 80px 80px 110px 120px 100px',
               height: 44,
-              borderBottom: '1px solid #F1F5F9',
+              borderBottom: `1px solid ${borderSubtle}`,
               padding: '0 12px',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+            onMouseEnter={e => (e.currentTarget.style.background = isDark ? DK.hover : '#F8FAFC')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             {/* Checkbox */}
@@ -113,11 +123,11 @@ export function ThemeListView({ themes, onSelect }: Props) {
             {/* Theme */}
             <div className="flex items-center gap-2 min-w-0">
               <div className="shrink-0 rounded-full" style={{ width: 10, height: 10, background: theme.color }} />
-              <span className="truncate" style={{ fontSize: 12.5, fontWeight: 600, color: '#0F172A' }}>{theme.title}</span>
-              <span className="shrink-0" style={{ fontSize: 10.5, color: '#94A3B8', fontFamily: 'monospace' }}>{formatThemeId(theme.sort_order)}</span>
+              <span className="truncate" style={{ fontSize: 12.5, fontWeight: 600, color: isDark ? DK.t1 : '#0F172A' }}>{theme.title}</span>
+              <span className="shrink-0" style={{ fontSize: 10.5, color: isDark ? DK.t3 : '#94A3B8', fontFamily: 'monospace' }}>{formatThemeId(theme.sort_order)}</span>
             </div>
 
-            {/* Status pill — dot + label (Linear style) */}
+            {/* Status pill */}
             <div>
               <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5" style={{ fontSize: 11, fontWeight: 500, background: sc.bg, color: sc.text }}>
                 <span className="rounded-full shrink-0" style={{ width: 6, height: 6, background: sc.dot }} />
@@ -125,22 +135,22 @@ export function ThemeListView({ themes, onSelect }: Props) {
               </span>
             </div>
 
-            {/* Progress — threshold colors */}
+            {/* Progress */}
             <div className="flex items-center gap-2">
-              <div className="flex-1 rounded-full overflow-hidden" style={{ height: 6, background: '#E2E8F0' }}>
+              <div className="flex-1 rounded-full overflow-hidden" style={{ height: 6, background: isDark ? DK.borderSubtle : '#E2E8F0' }}>
                 <div className="rounded-full h-full transition-all" style={{ width: `${Math.min(theme.progress_pct, 100)}%`, background: progressColor }} />
               </div>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#334155', minWidth: 28, textAlign: 'right' }}>{theme.progress_pct}%</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? DK.t1 : '#334155', minWidth: 28, textAlign: 'right' }}>{theme.progress_pct}%</span>
             </div>
 
             {/* Goals */}
-            <div style={{ fontSize: 12, color: '#334155', textAlign: 'center' }}>{theme.goal_count}</div>
+            <div style={{ fontSize: 12, color: isDark ? DK.t1 : '#334155', textAlign: 'center' }}>{theme.goal_count}</div>
 
             {/* KRs */}
-            <div style={{ fontSize: 12, color: '#334155', textAlign: 'center' }}>{theme.kr_count}</div>
+            <div style={{ fontSize: 12, color: isDark ? DK.t1 : '#334155', textAlign: 'center' }}>{theme.kr_count}</div>
 
             {/* Budget */}
-            <div style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{formatBudget(theme.planned_budget)}</div>
+            <div style={{ fontSize: 12, fontWeight: 500, color: isDark ? DK.t1 : '#334155' }}>{formatBudget(theme.planned_budget)}</div>
 
             {/* Owner */}
             <div className="flex items-center gap-1.5">
@@ -152,14 +162,14 @@ export function ThemeListView({ themes, onSelect }: Props) {
                   }}>
                     {getInitials(theme.owner_name)}
                   </div>
-                  <span className="truncate" style={{ fontSize: 12, color: '#334155' }}>{theme.owner_name?.split(' ')[0]}</span>
+                  <span className="truncate" style={{ fontSize: 12, color: isDark ? DK.t1 : '#334155' }}>{theme.owner_name?.split(' ')[0]}</span>
                 </>
               ) : (
-                <span style={{ fontSize: 11, color: '#94A3B8' }}>Unassigned</span>
+                <span style={{ fontSize: 11, color: isDark ? DK.t3 : '#94A3B8' }}>Unassigned</span>
               )}
             </div>
 
-            {/* BSC — outlined ghost style */}
+            {/* BSC */}
             <div>
               {bsc ? (
                 <span className="inline-flex rounded-full px-2 py-0.5" style={{
@@ -170,7 +180,7 @@ export function ThemeListView({ themes, onSelect }: Props) {
                   {bsc.label}
                 </span>
               ) : (
-                <span style={{ fontSize: 11, color: '#94A3B8' }}>—</span>
+                <span style={{ fontSize: 11, color: isDark ? DK.t3 : '#94A3B8' }}>—</span>
               )}
             </div>
           </div>
@@ -178,27 +188,39 @@ export function ThemeListView({ themes, onSelect }: Props) {
       })}
 
       {themes.length === 0 && (
-        <div className="flex items-center justify-center" style={{ height: 120, color: '#94A3B8', fontSize: 13 }}>
+        <div className="flex items-center justify-center" style={{ height: 120, color: isDark ? DK.t3 : '#94A3B8', fontSize: 13 }}>
           No themes match the current filters.
         </div>
       )}
 
       {/* Pagination */}
-      <div className="flex items-center justify-between px-4 py-3 border-t" style={{ borderColor: '#E2E8F0' }}>
-        <span style={{ fontSize: 12, color: '#64748B' }}>
+      <div className="flex items-center justify-between px-4 py-3 border-t" style={{ borderColor }}>
+        <span style={{ fontSize: 12, color: isDark ? DK.t3 : '#64748B' }}>
           Showing {Math.min((page - 1) * perPage + 1, sorted.length)}–{Math.min(page * perPage, sorted.length)} of {sorted.length} themes
         </span>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            style={{ fontSize: 12, padding: '2px 8px', borderRadius: 4, border: '1px solid #E2E8F0', background: '#FFF', color: page === 1 ? '#CBD5E1' : '#334155', cursor: page === 1 ? 'default' : 'pointer' }}
+            style={{
+              fontSize: 12, padding: '2px 8px', borderRadius: 4,
+              border: `1px solid ${borderColor}`,
+              background: isDark ? 'transparent' : '#FFF',
+              color: page === 1 ? (isDark ? DK.t4 : '#CBD5E1') : (isDark ? DK.t2 : '#334155'),
+              cursor: page === 1 ? 'default' : 'pointer',
+            }}
           >←</button>
-          <span style={{ fontSize: 12, color: '#64748B' }}>Page {page} of {totalPages}</span>
+          <span style={{ fontSize: 12, color: isDark ? DK.t3 : '#64748B' }}>Page {page} of {totalPages}</span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            style={{ fontSize: 12, padding: '2px 8px', borderRadius: 4, border: '1px solid #E2E8F0', background: '#FFF', color: page === totalPages ? '#CBD5E1' : '#334155', cursor: page === totalPages ? 'default' : 'pointer' }}
+            style={{
+              fontSize: 12, padding: '2px 8px', borderRadius: 4,
+              border: `1px solid ${borderColor}`,
+              background: isDark ? 'transparent' : '#FFF',
+              color: page === totalPages ? (isDark ? DK.t4 : '#CBD5E1') : (isDark ? DK.t2 : '#334155'),
+              cursor: page === totalPages ? 'default' : 'pointer',
+            }}
           >→</button>
         </div>
       </div>
