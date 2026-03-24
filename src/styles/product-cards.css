@@ -34,6 +34,34 @@
   color: var(--pc-ink);
 }
 
+/* ── DARK MODE ── */
+.dark [data-module="product-cards"],
+[data-theme="dark"] [data-module="product-cards"] {
+  --pc-ink: rgba(248,244,240,0.92);
+  --pc-ink-secondary: rgba(248,244,240,0.85);
+  --pc-ink-tertiary: rgba(248,244,240,0.72);
+  --pc-ink-muted: rgba(248,244,240,0.50);
+  --pc-surface: transparent;
+  --pc-surface-secondary: transparent;
+  --pc-surface-tertiary: rgba(255,255,255,0.03);
+  --pc-border: rgba(255,255,255,0.10);
+  --pc-border-strong: rgba(255,255,255,0.18);
+  --pc-primary-bg: rgba(59,130,246,0.12);
+  --pc-teal-bg: rgba(13,148,136,0.12);
+  --pc-success-bg: rgba(22,163,74,0.12);
+  --pc-warning-bg: rgba(217,119,6,0.12);
+  --pc-danger-bg: rgba(220,38,38,0.12);
+  --pc-purple-bg: rgba(124,58,237,0.12);
+}
+.dark .pc-card:hover,
+[data-theme="dark"] .pc-card:hover {
+  box-shadow: none;
+}
+.dark .pc-card--selected,
+[data-theme="dark"] .pc-card--selected {
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+}
+
 /* ---- Page Header ---- */
 .pc-header {
   padding: 24px 32px 16px;
