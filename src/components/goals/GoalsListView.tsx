@@ -12,6 +12,7 @@ const DK = {
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
+  t4: 'var(--cp-t4)',
   border: 'rgba(248,244,240,0.10)',
   borderSubtle: 'rgba(248,244,240,0.08)',
 };
