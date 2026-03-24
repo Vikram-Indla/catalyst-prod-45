@@ -6,6 +6,8 @@
  */
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTheme } from '@/hooks/useTheme';
+import { DK, LK } from '@/utils/dark-mode-styles';
 import { Search, Plus, Sparkles, ArrowUpRight } from 'lucide-react';
 import { useIdeasHub, useIdeaStats, useUpdateIdea, useCreateIdea, type IdeaRow } from '@/hooks/useIdeasHub';
 import { useQueryClient } from '@tanstack/react-query';
@@ -61,6 +63,8 @@ const THEMES = [
 ];
 
 export default function IdeasBacklogPage() {
+  const { isDark } = useTheme();
+  const dk = isDark ? DK : LK;
   const [searchParams] = useSearchParams();
   const themeFilter = searchParams.get('theme') || undefined;
   const [search, setSearch] = useState('');
@@ -115,16 +119,16 @@ export default function IdeasBacklogPage() {
   };
 
   return (
-    <div className="flex flex-col h-full" style={{ background: '#FFFFFF' }}>
+    <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
       {/* Header */}
-      <div style={{ padding: '20px 28px 16px', borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
+      <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>Ideas Backlog</h1>
-            <p style={{ fontSize: '13px', color: '#64748B', margin: '4px 0 0' }}>Capture, evaluate, and promote ideas into initiatives — powered by IMPACT scoring & AI Intelligence</p>
+            <h1 style={{ fontSize: '24px', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: "'Sora', sans-serif" }}>Ideas Backlog</h1>
+            <p style={{ fontSize: '13px', color: dk.t3, margin: '4px 0 0' }}>Capture, evaluate, and promote ideas into initiatives — powered by IMPACT scoring & AI Intelligence</p>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => setIntelligenceOpen(true)} style={{ background: '#FFFFFF', color: '#2563EB', border: '1px solid #2563EB', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button onClick={() => setIntelligenceOpen(true)} style={{ background: isDark ? 'transparent' : '#FFFFFF', color: '#2563EB', border: '1px solid #2563EB', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Sparkles size={14} /> Intelligence
             </button>
             <button onClick={() => setCreateOpen(true)} style={{ background: '#2563EB', color: '#FFF', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -135,55 +139,55 @@ export default function IdeasBacklogPage() {
       </div>
 
       {/* Stats Bar */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.08)', display: 'flex', alignItems: 'stretch' }}>
-        <div style={{ padding: '14px 24px', borderRight: '1px solid rgba(15,23,42,0.06)' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '4px' }}>TOTAL IDEAS</div>
-          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: '#0F172A' }}>{stats?.total ?? ideas.length}</span>
+      <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, display: 'flex', alignItems: 'stretch' }}>
+        <div style={{ padding: '14px 24px', borderRight: `1px solid ${dk.divider}` }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>TOTAL IDEAS</div>
+          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: dk.t1 }}>{stats?.total ?? ideas.length}</span>
         </div>
-        <div style={{ padding: '14px 16px', borderRight: '1px solid rgba(15,23,42,0.06)' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '4px' }}>BY STATUS</div>
+        <div style={{ padding: '14px 16px', borderRight: `1px solid ${dk.divider}` }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>BY STATUS</div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
             {stats?.byStatus.map(s => (
-              <span key={s.status} style={{ fontSize: '12px', color: s.status === 'Converted to Initiative' ? '#11853D' : '#334155', fontWeight: 500 }}>
+              <span key={s.status} style={{ fontSize: '12px', color: s.status === 'Converted to Initiative' ? dk.greenText : dk.t2, fontWeight: 500 }}>
                 {s.count} {s.status === 'Converted to Initiative' ? 'Converted' : s.status}
               </span>
             ))}
           </div>
         </div>
-        <div style={{ padding: '14px 16px', borderRight: '1px solid rgba(15,23,42,0.06)' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '8px' }}>BY QUARTER</div>
+        <div style={{ padding: '14px 16px', borderRight: `1px solid ${dk.divider}` }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>BY QUARTER</div>
           <div style={{ display: 'flex', gap: '16px' }}>
             {(['Q1', 'Q2', 'Q3', 'Q4'] as const).map(q => (
               <div key={q} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '20px', minWidth: '26px', padding: '0 4px', borderRadius: '3px', fontSize: '11px', fontWeight: 700, background: QUARTER_BADGE[q].bg, color: QUARTER_BADGE[q].text }}>{q}</span>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '16px', fontWeight: 700, color: '#0F172A' }}>{qCounts[q] || 0}</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '16px', fontWeight: 700, color: dk.t1 }}>{qCounts[q] || 0}</span>
               </div>
             ))}
           </div>
         </div>
         <div style={{ flex: 1, padding: '14px 24px' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '4px' }}>CONVERSION RATE</div>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>CONVERSION RATE</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: '#11853D' }}>{conversionRate}%</span>
-            <span style={{ fontSize: '11px', color: '#64748B' }}>{convertedCount} of {stats?.total ?? 0} converted</span>
+            <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: dk.greenText }}>{conversionRate}%</span>
+            <span style={{ fontSize: '11px', color: dk.t3 }}>{convertedCount} of {stats?.total ?? 0} converted</span>
           </div>
         </div>
       </div>
 
       {/* Filter Bar */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.08)', padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
         <div style={{ position: 'relative', width: '220px' }}>
-          <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+          <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: dk.t3 }} />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search ideas..."
-            style={{ width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', fontSize: '13px', color: '#0F172A', outline: 'none' }}
+            style={{ width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px', background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${dk.border}`, borderRadius: '6px', fontSize: '13px', color: dk.t1, outline: 'none' }}
           />
         </div>
         {FILTER_PILLS.map(pill => {
           const isActive = statusFilter === pill.key;
           return (
             <button key={pill.key} onClick={() => setStatusFilter(pill.key)} style={{
-              background: isActive ? '#2563EB' : '#FFFFFF', color: isActive ? '#FFFFFF' : '#334155',
-              border: `1px solid ${isActive ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
+              background: isActive ? '#2563EB' : (isDark ? 'transparent' : '#FFFFFF'), color: isActive ? '#FFFFFF' : dk.t2,
+              border: `1px solid ${isActive ? '#2563EB' : dk.border}`,
               borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', transition: 'all 150ms',
             }}>{pill.label}</button>
           );
@@ -195,20 +199,20 @@ export default function IdeasBacklogPage() {
       </div>
 
       {/* Table */}
-      <div style={{ flex: 1, overflow: 'auto', background: '#FFFFFF', padding: '16px 28px 24px' }}>
+      <div style={{ flex: 1, overflow: 'auto', background: dk.pageBg, padding: '16px 28px 24px' }}>
         {isLoading ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: '#94A3B8' }}>Loading ideas...</div>
+          <div style={{ padding: '40px', textAlign: 'center', color: dk.t3 }}>Loading ideas...</div>
         ) : ideas.length === 0 ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>💡</div>
-            <div style={{ fontSize: '16px', fontWeight: 600, color: '#0F172A', marginBottom: '4px' }}>No ideas yet</div>
-            <div style={{ fontSize: '13px', color: '#94A3B8' }}>Create your first idea to get started.</div>
+            <div style={{ fontSize: '16px', fontWeight: 600, color: dk.t1, marginBottom: '4px' }}>No ideas yet</div>
+            <div style={{ fontSize: '13px', color: dk.t3 }}>Create your first idea to get started.</div>
           </div>
         ) : (
-          <div style={{ background: '#FFFFFF', borderRadius: '6px', border: '1px solid rgba(15,23,42,0.12)', overflow: 'hidden' }}>
+          <div style={{ background: isDark ? 'transparent' : '#FFFFFF', borderRadius: '6px', border: `1px solid ${dk.border}`, overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ height: '36px', background: '#F1F5F9' }}>
+                <tr style={{ height: '36px', background: isDark ? 'rgba(255,255,255,0.03)' : '#F1F5F9' }}>
                   <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
                     <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
                   </th>
@@ -220,8 +224,8 @@ export default function IdeasBacklogPage() {
                   ].map(col => (
                     <th key={col.label} style={{
                       textAlign: 'left', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
-                      letterSpacing: '0.06em', color: '#64748B', padding: '10px 12px',
-                      borderBottom: '0.75px solid rgba(15,23,42,0.08)', whiteSpace: 'nowrap', width: col.width,
+                      letterSpacing: '0.06em', color: isDark ? 'rgba(248,244,240,0.50)' : '#64748B', padding: '10px 12px',
+                      borderBottom: `0.75px solid ${dk.divider}`, whiteSpace: 'nowrap', width: col.width,
                     }}>{col.label}</th>
                   ))}
                 </tr>
@@ -231,21 +235,21 @@ export default function IdeasBacklogPage() {
                   const isConverted = idea.status === 'Converted to Initiative' || idea.status === 'Converted';
                   return (
                     <tr key={idea.idea_key} onClick={() => setDrawerKey(idea.idea_key)}
-                      style={{ height: '36px', maxHeight: '36px', cursor: 'pointer', borderBottom: '0.75px solid rgba(15,23,42,0.06)', background: selectedRows.has(idea.idea_key) ? '#F0F4FF' : '#FFFFFF', transition: 'background 150ms' }}
-                      onMouseEnter={e => { if (!selectedRows.has(idea.idea_key)) e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
-                      onMouseLeave={e => { if (!selectedRows.has(idea.idea_key)) e.currentTarget.style.background = '#FFFFFF'; }}
+                      style={{ height: '36px', maxHeight: '36px', cursor: 'pointer', borderBottom: `0.75px solid ${dk.divider}`, background: selectedRows.has(idea.idea_key) ? dk.selectedBg : 'transparent', transition: 'background 150ms' }}
+                      onMouseEnter={e => { if (!selectedRows.has(idea.idea_key)) e.currentTarget.style.background = dk.hoverBg; }}
+                      onMouseLeave={e => { if (!selectedRows.has(idea.idea_key)) e.currentTarget.style.background = 'transparent'; }}
                     >
                       <td style={{ padding: '0 8px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
                         <input type="checkbox" checked={selectedRows.has(idea.idea_key)} onChange={() => toggleRow(idea.idea_key)} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 600, color: '#2563EB', cursor: 'pointer' }}
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 600, color: dk.blueKey, cursor: 'pointer' }}
                           onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                           onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                         >{idea.idea_key}</span>
                       </td>
                       <td style={{ padding: '8px 12px', maxWidth: '400px' }}>
-                        <div style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.title}</div>
+                        <div style={{ fontSize: '13px', fontWeight: 500, color: dk.t1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.title}</div>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -258,29 +262,29 @@ export default function IdeasBacklogPage() {
                         </div>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: '11px', fontWeight: 500, background: '#F1F5F9', color: '#334155', border: '1px solid #E2E8F0' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: '11px', fontWeight: 500, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, border: `1px solid ${dk.border}` }}>
                           {(idea.idea_type || 'Feature').substring(0, 7)}
                         </span>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, minWidth: 26, padding: '0 4px', borderRadius: 3, fontSize: '11px', fontWeight: 650, background: '#F1F5F9', color: '#334155', border: '1px solid #E2E8F0' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, minWidth: 26, padding: '0 4px', borderRadius: 3, fontSize: '11px', fontWeight: 650, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, border: `1px solid ${dk.border}` }}>
                           {idea.priority || 'P2'}
                         </span>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 500, color: idea.impact_total > 0 ? '#16A34A' : '#94A3B8' }}>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 500, color: idea.impact_total > 0 ? dk.green : dk.t3 }}>
                           {idea.impact_total.toFixed(2)}
                         </span>
                       </td>
                       <td style={{ padding: '8px 12px' }} title={idea.theme || undefined}>
-                        <span style={{ fontSize: '12px', fontWeight: 500, color: idea.theme ? '#334155' : '#94A3B8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', maxWidth: '140px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 500, color: idea.theme ? dk.t2 : dk.t3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', maxWidth: '140px' }}>
                           {idea.theme || '—'}
                         </span>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
                         {idea.roadmap_quarter ? (
                           <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 18, padding: '0 4px', borderRadius: 3, fontSize: '11px', fontWeight: 700, background: QUARTER_BADGE[idea.roadmap_quarter]?.bg || '#E2E8F0', color: QUARTER_BADGE[idea.roadmap_quarter]?.text || '#94A3B8' }}>{idea.roadmap_quarter}</span>
-                        ) : <span style={{ fontSize: '11px', color: '#94A3B8' }}>—</span>}
+                        ) : <span style={{ fontSize: '11px', color: dk.t3 }}>—</span>}
                       </td>
                       <td style={{ padding: '8px 12px' }}>
                         {idea.assigned_to_name ? (
@@ -288,12 +292,12 @@ export default function IdeasBacklogPage() {
                             <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '9px', fontWeight: 700, flexShrink: 0 }}>
                               {idea.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2)}
                             </div>
-                            <span style={{ fontSize: '13px', color: '#334155', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.assigned_to_name}</span>
+                            <span style={{ fontSize: '13px', color: dk.t2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.assigned_to_name}</span>
                           </div>
-                        ) : <span style={{ fontSize: '13px', color: '#94A3B8', fontStyle: 'italic' }}>Unassigned</span>}
+                        ) : <span style={{ fontSize: '13px', color: dk.t3, fontStyle: 'italic' }}>Unassigned</span>}
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ fontSize: '12px', color: '#64748B' }}>
+                        <span style={{ fontSize: '12px', color: dk.t3 }}>
                           {idea.updated_at ? new Date(idea.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
                         </span>
                       </td>
@@ -302,8 +306,8 @@ export default function IdeasBacklogPage() {
                 })}
               </tbody>
             </table>
-            <div style={{ padding: '10px 16px', borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
-              <span style={{ fontSize: '12px', color: '#64748B' }}>Showing 1–{ideas.length} of {ideas.length} ideas</span>
+            <div style={{ padding: '10px 16px', borderTop: `0.75px solid ${dk.divider}` }}>
+              <span style={{ fontSize: '12px', color: dk.t3 }}>Showing 1–{ideas.length} of {ideas.length} ideas</span>
             </div>
           </div>
         )}
@@ -374,7 +378,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
-      <DialogContent className="bg-white sm:max-w-[480px]">
+      <DialogContent className="bg-white dark:bg-[#232019] sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle style={{ fontFamily: "'Sora', sans-serif", fontWeight: 650, fontSize: '18px' }}>New Idea</DialogTitle>
         </DialogHeader>

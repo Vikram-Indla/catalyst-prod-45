@@ -1,12 +1,13 @@
 /**
  * Ideas Roadmap Page — /product/ideas/roadmap
- * Kanban by QUARTER with colored left borders.
- * Committed filter = Approved or Converted ideas.
+ * Kanban by QUARTER with colored left borders + dark mode.
  */
 import React, { useState, useMemo } from 'react';
 import { useIdeasHub, type IdeaRow } from '@/hooks/useIdeasHub';
 import IdeaDrawer from './ideation/IdeaDrawer';
 import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from './ideation/ideation-data';
+import { useTheme } from '@/hooks/useTheme';
+import { DK, LK } from '@/utils/dark-mode-styles';
 
 const TEAMS = ['All Teams', 'Senaie BAU', 'Integration Team', 'Mobile App Team'];
 
@@ -19,6 +20,8 @@ const ROADMAP_COLS = [
 ];
 
 export default function IdeasRoadmapPage() {
+  const { isDark } = useTheme();
+  const dk = isDark ? DK : LK;
   const [teamFilter, setTeamFilter] = useState('All Teams');
   const [committedOnly, setCommittedOnly] = useState(false);
   const [drawerKey, setDrawerKey] = useState<string | null>(null);
@@ -36,20 +39,20 @@ export default function IdeasRoadmapPage() {
   const convertedCount = filtered.filter(i => i.status === 'Converted to Initiative').length;
 
   return (
-    <div className="flex flex-col h-full" style={{ background: '#FFFFFF' }}>
+    <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
       {/* Header */}
-      <div style={{ padding: '20px 28px 16px', borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
+      <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>Ideas Roadmap</h1>
-            <p style={{ fontSize: '13px', color: '#64748B', margin: '4px 0 0' }}>FY 2026 delivery pipeline — quarter assignment drives placement</p>
+            <h1 style={{ fontSize: '24px', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: "'Sora', sans-serif" }}>Ideas Roadmap</h1>
+            <p style={{ fontSize: '13px', color: dk.t3, margin: '4px 0 0' }}>FY 2026 delivery pipeline — quarter assignment drives placement</p>
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <span style={{ fontSize: '13px', color: '#334155', fontWeight: 500 }}>
+            <span style={{ fontSize: '13px', color: dk.t2, fontWeight: 500 }}>
               <strong style={{ fontFamily: "'JetBrains Mono', monospace" }}>{pipelineCount}</strong> in pipeline ·{' '}
-              <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: '#11853D' }}>{convertedCount}</strong> converted
+              <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: dk.greenText }}>{convertedCount}</strong> converted
             </span>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#334155', cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: dk.t2, cursor: 'pointer' }}>
               <input type="checkbox" checked={committedOnly} onChange={e => setCommittedOnly(e.target.checked)} style={{ accentColor: '#2563EB' }} />
               Committed only
             </label>
@@ -58,11 +61,11 @@ export default function IdeasRoadmapPage() {
       </div>
 
       {/* Team Filter */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.08)', padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
         {TEAMS.map(t => (
           <button key={t} onClick={() => setTeamFilter(t)} style={{
-            background: teamFilter === t ? '#2563EB' : '#FFFFFF', color: teamFilter === t ? '#FFFFFF' : '#334155',
-            border: `1px solid ${teamFilter === t ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
+            background: teamFilter === t ? '#2563EB' : (isDark ? 'transparent' : '#FFFFFF'), color: teamFilter === t ? '#FFFFFF' : dk.t2,
+            border: `1px solid ${teamFilter === t ? '#2563EB' : dk.border}`,
             borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer',
           }}>{t}</button>
         ))}
@@ -71,7 +74,7 @@ export default function IdeasRoadmapPage() {
       {/* Kanban */}
       <div style={{ flex: 1, overflow: 'auto', padding: '16px 28px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
         {isLoading ? (
-          <div style={{ padding: '40px', color: '#94A3B8' }}>Loading...</div>
+          <div style={{ padding: '40px', color: dk.t3 }}>Loading...</div>
         ) : (
           ROADMAP_COLS.map(col => {
             const colIdeas = filtered
@@ -84,14 +87,14 @@ export default function IdeasRoadmapPage() {
                 paddingLeft: col.key ? '12px' : undefined,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', height: 36 }}>
-                  <span style={{ fontSize: '11px', fontWeight: 700, color: col.textColor, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{col.label}</span>
-                  <span style={{ fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, background: '#F1F5F9', borderRadius: '100px', padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center', color: '#64748B' }}>{colIdeas.length}</span>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: isDark ? dk.t3 : col.textColor, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{col.label}</span>
+                  <span style={{ fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', borderRadius: '100px', padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center', color: dk.t3 }}>{colIdeas.length}</span>
                 </div>
                 {colIdeas.length === 0 && (
-                  <div style={{ padding: '20px', textAlign: 'center', color: '#94A3B8', fontSize: '12px', border: '1px dashed #E2E8F0', borderRadius: '8px' }}>No ideas</div>
+                  <div style={{ padding: '20px', textAlign: 'center', color: dk.t3, fontSize: '12px', border: `1px dashed ${dk.border}`, borderRadius: '8px' }}>No ideas</div>
                 )}
                 {colIdeas.map(idea => (
-                  <RoadmapCard key={idea.idea_key} idea={idea} onClick={() => setDrawerKey(idea.idea_key)} />
+                  <RoadmapCard key={idea.idea_key} idea={idea} onClick={() => setDrawerKey(idea.idea_key)} isDark={isDark} dk={dk} />
                 ))}
               </div>
             );
@@ -104,42 +107,48 @@ export default function IdeasRoadmapPage() {
   );
 }
 
-function RoadmapCard({ idea, onClick }: { idea: IdeaRow; onClick: () => void }) {
+function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: () => void; isDark: boolean; dk: typeof DK }) {
   const isConverted = idea.status === 'Converted to Initiative';
   return (
     <div onClick={onClick} style={{
-      background: '#FFFFFF',
-      border: '1px solid rgba(15,23,42,0.12)',
-      borderLeft: isConverted ? '3px solid #16A34A' : '1px solid rgba(15,23,42,0.12)',
+      background: isDark ? 'transparent' : '#FFFFFF',
+      border: `1px solid ${dk.border}`,
+      borderLeft: isConverted ? '3px solid #16A34A' : `1px solid ${dk.border}`,
       borderRadius: '6px',
       padding: '12px', marginBottom: '8px', cursor: 'pointer',
       transition: 'box-shadow 150ms ease, transform 150ms ease',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+      boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)',
     }}
       onMouseEnter={e => {
-        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.10)';
-        e.currentTarget.style.transform = 'translateY(-1px)';
+        if (!isDark) {
+          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.10)';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+        }
+        e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(37,99,235,0.3)';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)';
-        e.currentTarget.style.transform = 'none';
+        if (!isDark) {
+          e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)';
+          e.currentTarget.style.transform = 'none';
+        }
+        e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.12)';
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, color: '#2563EB' }}>{idea.idea_key}</span>
-        <span style={{ fontSize: '9px', fontWeight: 800, background: '#F1F5F9', color: '#334155', padding: '1px 5px', borderRadius: '3px', border: '1px solid #E2E8F0', fontFamily: "'JetBrains Mono', monospace" }}>{idea.priority || 'P2'}</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, color: dk.blueKey }}>{idea.idea_key}</span>
+        <span style={{ fontSize: '9px', fontWeight: 800, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 5px', borderRadius: '3px', border: `1px solid ${dk.border}`, fontFamily: "'JetBrains Mono', monospace" }}>{idea.priority || 'P2'}</span>
       </div>
-      <div style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '6px', lineHeight: 1.35 }}>{idea.title}</div>
+      <div style={{ fontSize: '13px', fontWeight: 500, color: dk.t1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '6px', lineHeight: 1.35 }}>{idea.title}</div>
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-        {idea.assigned_team && <span style={{ background: '#F1F5F9', color: '#64748B', padding: '1px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 500 }}>{idea.assigned_team}</span>}
-        {idea.theme && <span style={{ background: '#F1F5F9', color: '#64748B', padding: '1px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.theme}</span>}
+        {idea.assigned_team && <span style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
+        {idea.theme && <span style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.theme}</span>}
       </div>
-      <div style={{ borderTop: '1px solid rgba(15,23,42,0.06)', paddingTop: '8px' }}>
-        <span style={{ fontSize: '11px', fontWeight: 700, color: idea.impact_total > 0 ? '#334155' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>IMPACT {idea.impact_total.toFixed(2)}</span>
-        {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, color: '#006644', background: '#E3FCEF', padding: '1px 6px', borderRadius: '3px' }}>COMMITTED</span>}
+      <div style={{ borderTop: `1px solid ${dk.divider}`, paddingTop: '8px' }}>
+        <span style={{ fontSize: '11px', fontWeight: 700, color: idea.impact_total > 0 ? dk.t2 : dk.t3, fontFamily: "'JetBrains Mono', monospace" }}>IMPACT {idea.impact_total.toFixed(2)}</span>
+        {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, color: '#006644', background: isDark ? 'rgba(22,163,74,0.12)' : '#E3FCEF', padding: '1px 6px', borderRadius: '3px' }}>COMMITTED</span>}
       </div>
       {isConverted && idea.linked_initiative_key && (
-        <div style={{ marginTop: '6px', fontSize: '11px', fontWeight: 600, color: '#11853D', fontFamily: "'JetBrains Mono', monospace" }}>
+        <div style={{ marginTop: '6px', fontSize: '11px', fontWeight: 600, color: dk.greenText, fontFamily: "'JetBrains Mono', monospace" }}>
           → {idea.linked_initiative_key} (Converted)
         </div>
       )}

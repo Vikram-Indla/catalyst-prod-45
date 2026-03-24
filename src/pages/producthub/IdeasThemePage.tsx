@@ -1,38 +1,28 @@
 /**
  * Ideas Theme Page — /product/ideas/themes
- * 4-column card grid derived from SELECT DISTINCT theme FROM ph_ideas.
- * Progress bars use PRIMARY BLUE (#2563EB). GREEN only at 100% conversion.
- * NO dead CTAs — "+ New Theme" replaced with info text.
+ * Dark mode support via useTheme + DK/LK tokens.
  */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, Globe, BarChart3, Lightbulb, Target, Zap, TrendingUp, Settings, Info } from 'lucide-react';
 import { useIdeaThemeSummary, useIdeasHub } from '@/hooks/useIdeasHub';
+import { useTheme } from '@/hooks/useTheme';
+import { DK, LK } from '@/utils/dark-mode-styles';
 
 const MONO = "'JetBrains Mono', monospace";
 
 const THEME_ICONS: Record<string, React.ElementType> = {
-  'Provide Services for SBC': Building2,
-  'Digital Maturity 2026': Target,
-  'Marketplace': Globe,
-  'UX': Zap,
-  'اتاحة خدمات': Building2,
-  'استعلام تحققي': BarChart3,
-  'المسح الصناعي': Settings,
-  'تحسين إجراء قائم': TrendingUp,
-  'تحسين خدمة الشركاء': Building2,
-  'تضمين خدمة قطاعية': Globe,
-  'تقارير ومؤشرات': BarChart3,
-  'رقمنة إجراء جديد': Zap,
-  'كفاءة الموقع': TrendingUp,
-  'مهام داخلية': Settings,
+  'Provide Services for SBC': Building2, 'Digital Maturity 2026': Target, 'Marketplace': Globe, 'UX': Zap,
+  'اتاحة خدمات': Building2, 'استعلام تحققي': BarChart3, 'المسح الصناعي': Settings, 'تحسين إجراء قائم': TrendingUp,
+  'تحسين خدمة الشركاء': Building2, 'تضمين خدمة قطاعية': Globe, 'تقارير ومؤشرات': BarChart3, 'رقمنة إجراء جديد': Zap,
+  'كفاءة الموقع': TrendingUp, 'مهام داخلية': Settings,
 };
 
-function isArabic(text: string): boolean {
-  return /[\u0600-\u06FF]/.test(text);
-}
+function isArabic(text: string): boolean { return /[\u0600-\u06FF]/.test(text); }
 
 export default function IdeasThemePage() {
+  const { isDark } = useTheme();
+  const dk = isDark ? DK : LK;
   const { data: themes = [], isLoading } = useIdeaThemeSummary();
   const { data: allIdeas = [] } = useIdeasHub();
   const navigate = useNavigate();
@@ -40,7 +30,6 @@ export default function IdeasThemePage() {
   const ideasWithTheme = allIdeas.filter(i => i.theme).length;
   const convertedCount = allIdeas.filter(i => (i.status === 'Converted to Initiative' || i.status === 'Converted') && i.theme).length;
 
-  // Compute per-theme converted counts
   const themeConvertedMap: Record<string, number> = {};
   allIdeas.forEach(i => {
     if (i.theme && (i.status === 'Converted to Initiative' || i.status === 'Converted')) {
@@ -49,15 +38,15 @@ export default function IdeasThemePage() {
   });
 
   return (
-    <div className="flex flex-col h-full" style={{ background: '#FFFFFF' }}>
+    <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
       {/* Header */}
-      <div style={{ padding: '20px 28px 16px', borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
+      <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>Ideas Theme</h1>
-            <p style={{ fontSize: '13px', color: '#64748B', margin: '4px 0 0' }}>Strategic themes grouping related ideas — sourced from backlog THEME field</p>
+            <h1 style={{ fontSize: '24px', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: "'Sora', sans-serif" }}>Ideas Theme</h1>
+            <p style={{ fontSize: '13px', color: dk.t3, margin: '4px 0 0' }}>Strategic themes grouping related ideas — sourced from backlog THEME field</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748B', fontSize: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: dk.t3, fontSize: '12px' }}>
             <Info size={14} />
             <span>Themes are auto-discovered from the Ideas Theme field</span>
           </div>
@@ -65,30 +54,30 @@ export default function IdeasThemePage() {
       </div>
 
       {/* Stats */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.08)', display: 'flex', padding: '14px 28px', gap: '32px' }}>
+      <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, display: 'flex', padding: '14px 28px', gap: '32px' }}>
         <div>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '4px' }}>TOTAL THEMES</div>
-          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: '#0F172A' }}>{themes.length}</span>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>TOTAL THEMES</div>
+          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: dk.t1 }}>{themes.length}</span>
         </div>
         <div>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '4px' }}>IDEAS WITH THEME</div>
-          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: '#2563EB' }}>{ideasWithTheme}</span>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>IDEAS WITH THEME</div>
+          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: dk.blue }}>{ideasWithTheme}</span>
         </div>
         <div>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '4px' }}>CONVERTED</div>
-          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: '#11853D' }}>{convertedCount}</span>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>CONVERTED</div>
+          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: dk.greenText }}>{convertedCount}</span>
         </div>
       </div>
 
       {/* Grid */}
       <div style={{ flex: 1, overflow: 'auto', padding: '24px 28px' }}>
         {isLoading ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: '#94A3B8' }}>Loading themes...</div>
+          <div style={{ padding: '40px', textAlign: 'center', color: dk.t3 }}>Loading themes...</div>
         ) : themes.length === 0 ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
-            <Lightbulb size={48} style={{ color: '#94A3B8', margin: '0 auto 16px' }} />
-            <div style={{ fontSize: '16px', fontWeight: 600, color: '#0F172A' }}>No themes found</div>
-            <div style={{ fontSize: '13px', color: '#94A3B8' }}>Add themes to ideas in the backlog</div>
+            <Lightbulb size={48} style={{ color: dk.t3, margin: '0 auto 16px' }} />
+            <div style={{ fontSize: '16px', fontWeight: 600, color: dk.t1 }}>No themes found</div>
+            <div style={{ fontSize: '13px', color: dk.t3 }}>Add themes to ideas in the backlog</div>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
@@ -97,34 +86,32 @@ export default function IdeasThemePage() {
               const arabic = isArabic(theme.theme);
               const converted = themeConvertedMap[theme.theme] || 0;
               const convRate = theme.idea_count > 0 ? Math.round((converted / theme.idea_count) * 100) : 0;
-              // Progress = converted / total for that theme
               const progressPct = theme.idea_count > 0 ? (converted / theme.idea_count) * 100 : 0;
-              // BLUE for progress, GREEN only at 100%
               const barColor = convRate >= 100 ? '#16A34A' : '#2563EB';
               return (
                 <div key={theme.theme} onClick={() => navigate(`/product/ideas/backlog?theme=${encodeURIComponent(theme.theme)}`)}
                   style={{
-                    background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.08)', borderRadius: '8px',
+                    background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${dk.border}`, borderRadius: '8px',
                     padding: '16px', cursor: 'pointer', transition: 'all 0.15s', minHeight: '180px',
                     display: 'flex', flexDirection: 'column',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.08)'; e.currentTarget.style.transform = 'none'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(15,23,42,0.08)'; e.currentTarget.style.transform = 'none'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                    <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: '#64748B' }}>
+                    <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: dk.t3 }}>
                       {theme.idea_count} {theme.idea_count === 1 ? 'idea' : 'ideas'}
                     </span>
                     <div style={{
-                      width: 36, height: 36, borderRadius: 8, background: '#F1F5F9', border: '1px solid #E2E8F0',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569',
+                      width: 36, height: 36, borderRadius: 8, background: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9', border: `1px solid ${dk.border}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', color: dk.t3,
                     }}>
                       <IconComp size={18} strokeWidth={2} />
                     </div>
                   </div>
 
                   <div style={{
-                    fontSize: '14px', fontWeight: 650, color: '#0F172A', marginBottom: '4px',
+                    fontSize: '14px', fontWeight: 650, color: dk.t1, marginBottom: '4px',
                     lineHeight: 1.4, fontFamily: "'Sora', sans-serif",
                     direction: arabic ? 'rtl' : 'ltr', textAlign: arabic ? 'right' : 'left',
                     display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
@@ -132,16 +119,16 @@ export default function IdeasThemePage() {
 
                   <div style={{ flex: 1 }} />
 
-                  <div style={{ borderTop: '1px solid rgba(15,23,42,0.06)', paddingTop: '12px' }}>
+                  <div style={{ borderTop: `1px solid ${dk.divider}`, paddingTop: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                      <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: converted > 0 ? '#11853D' : '#64748B' }}>
+                      <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: converted > 0 ? dk.greenText : dk.t3 }}>
                         {converted}/{theme.idea_count} converted
                       </span>
-                      <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: '#64748B' }}>
+                      <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: dk.t3 }}>
                         {convRate}%
                       </span>
                     </div>
-                    <div style={{ height: 6, borderRadius: 3, background: '#F1F5F9', overflow: 'hidden', border: '1px solid #E2E8F0' }}>
+                    <div style={{ height: 6, borderRadius: 3, background: isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9', overflow: 'hidden', border: `1px solid ${dk.border}` }}>
                       <div style={{
                         width: `${Math.min(progressPct, 100)}%`, height: '100%',
                         background: barColor, borderRadius: 3, transition: 'width 0.3s',
