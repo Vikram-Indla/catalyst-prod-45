@@ -11,7 +11,7 @@ export type DarkTokens = {
   shadow: string; cardShadow: string;
 };
 
-export const DK = {
+export const DK: DarkTokens = {
   // Backgrounds
   pageBg: '#1A1714',
   cardBg: 'transparent',
@@ -46,7 +46,7 @@ export const DK = {
   cardShadow: 'none',
 } as const;
 
-export const LK = {
+export const LK: DarkTokens = {
   pageBg: '#FFFFFF',
   cardBg: '#FFFFFF',
   headerBg: '#FFFFFF',
