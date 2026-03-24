@@ -2,9 +2,11 @@
  * ProductHubPageHeader — Shared header matching "For You" pattern
  * Layout: Title + subtitle (left) | Action buttons (right)
  * Typography: Sora 22px 700 title, Inter 13px subtitle
+ * Theme-aware: supports dark mode via useTheme
  */
 
 import React from 'react';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ProductHubPageHeaderProps {
   title: string;
@@ -13,6 +15,8 @@ interface ProductHubPageHeaderProps {
 }
 
 export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPageHeaderProps) {
+  const { isDark } = useTheme();
+
   return (
     <header
       style={{
@@ -20,8 +24,8 @@ export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPag
         alignItems: 'flex-start',
         justifyContent: 'space-between',
         padding: '24px 28px 16px',
-        borderBottom: '0.75px solid rgba(15,23,42,0.06)',
-        background: '#FFFFFF',
+        borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.06)'}`,
+        background: isDark ? 'transparent' : '#FFFFFF',
       }}
     >
       <div>
@@ -30,7 +34,7 @@ export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPag
             fontFamily: "'Sora', system-ui",
             fontSize: 22,
             fontWeight: 700,
-            color: '#09090B',
+            color: isDark ? 'rgba(248,244,240,0.92)' : '#09090B',
             letterSpacing: '-0.025em',
             margin: 0,
             lineHeight: 1.3,
@@ -41,7 +45,7 @@ export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPag
         <p
           style={{
             fontSize: 13,
-            color: '#71717A',
+            color: isDark ? 'rgba(248,244,240,0.50)' : '#71717A',
             marginTop: 2,
             margin: 0,
             marginBlockStart: 2,
