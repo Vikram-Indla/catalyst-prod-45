@@ -90,6 +90,7 @@ function computeTriageItems(ideas: Idea[]) {
 }
 
 export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = [] }: Props) {
+  const { isDark } = useTheme();
   const queryClient = useQueryClient();
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
 

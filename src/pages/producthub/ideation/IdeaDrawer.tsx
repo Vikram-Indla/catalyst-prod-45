@@ -56,6 +56,7 @@ function getRelativeTime(dateStr: string): string {
 }
 
 export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
+  const { isDark } = useTheme();
   const { data: rawIdea, isLoading } = useIdeaByKey(ideaKey);
   const { data: profiles = [] } = useProfiles();
   const updateIdea = useUpdateIdea();
