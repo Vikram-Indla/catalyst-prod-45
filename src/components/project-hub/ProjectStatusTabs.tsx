@@ -21,9 +21,10 @@ interface ProjectStatusTabsProps {
   activeTab: ProjectTab;
   onTabChange: (tab: ProjectTab) => void;
   counts: Record<ProjectTab, number>;
+  isDark?: boolean;
 }
 
-export function ProjectStatusTabs({ activeTab, onTabChange, counts }: ProjectStatusTabsProps) {
+export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = false }: ProjectStatusTabsProps) {
   return (
     <div className="flex items-center gap-1 flex-wrap">
       {TABS.map(tab => {
@@ -39,9 +40,9 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts }: ProjectSta
               padding: '0 12px',
               fontSize: 13,
               fontWeight: isActive ? 600 : 500,
-              color: isActive ? '#2563EB' : '#64748B',
-              background: isActive ? '#EFF6FF' : 'transparent',
-              border: isActive ? '1px solid #BFDBFE' : '1px solid transparent',
+              color: isActive ? (isDark ? '#60A5FA' : '#2563EB') : (isDark ? 'rgba(248,244,240,0.60)' : '#64748B'),
+              background: isActive ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : 'transparent',
+              border: isActive ? `1px solid ${isDark ? 'rgba(59,130,246,0.25)' : '#BFDBFE'}` : '1px solid transparent',
               cursor: 'pointer',
               fontFamily: "'Inter', sans-serif",
             }}
@@ -51,7 +52,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts }: ProjectSta
                 size={13}
                 strokeWidth={2}
                 fill={isActive ? '#EAB308' : 'none'}
-                color={isActive ? '#EAB308' : '#94A3B8'}
+                color={isActive ? '#EAB308' : (isDark ? 'rgba(248,244,240,0.40)' : '#94A3B8')}
               />
             )}
             {tab.label}
@@ -63,8 +64,8 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts }: ProjectSta
                 padding: '0 5px',
                 fontSize: 11,
                 fontWeight: 600,
-                background: isActive ? '#2563EB' : '#E2E8F0',
-                color: isActive ? '#FFFFFF' : '#64748B',
+                background: isActive ? '#2563EB' : (isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'),
+                color: isActive ? '#FFFFFF' : (isDark ? 'rgba(248,244,240,0.60)' : '#64748B'),
                 fontFamily: "'Inter', sans-serif",
               }}
             >

@@ -12,10 +12,14 @@ import { FilterState } from '@/components/project-hub/FilterDropdown';
 import { SkeletonTable } from '@/components/project-hub/shared/SkeletonPulse';
 import { CreateProjectModal } from '@/components/project-hub/CreateProjectModal';
 import { ProjectStatusTabs, ProjectTab } from '@/components/project-hub/ProjectStatusTabs';
+import { useTheme } from '@/hooks/useTheme';
+import { DK, LK } from '@/utils/dark-mode-styles';
 import '@/components/project-hub/shared/phStyles.css';
 
 export default function ProjectListPage() {
   const navigate = useNavigate();
+  const { isDark } = useTheme();
+  const T = isDark ? DK : LK;
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const onNewProject = useCallback(() => setCreateModalOpen(true), []);
   const queryClient = useQueryClient();
@@ -37,7 +41,6 @@ export default function ProjectListPage() {
     const escHandler = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
     const clickHandler = () => close();
     const scrollHandler = () => close();
-    // Use rAF to avoid instant close from trigger event
     requestAnimationFrame(() => {
       document.addEventListener('click', clickHandler);
       document.addEventListener('keydown', escHandler);
@@ -153,10 +156,8 @@ export default function ProjectListPage() {
 
   const filtered = useMemo(() => {
     let list = projectsWithMembers;
-    // Tab filter
     if (activeTab === 'starred') list = list.filter(p => starredIds.has(p.id));
     else if (activeTab !== 'all') list = list.filter(p => p.status === activeTab);
-    // Search
     if (search) {
       const q = search.toLowerCase();
       list = list.filter(p => p.name.toLowerCase().includes(q) || p.key.toLowerCase().includes(q));
@@ -171,7 +172,6 @@ export default function ProjectListPage() {
 
   const handleContextMenu = useCallback((e: React.MouseEvent, project: PHProject) => {
     e.preventDefault();
-    // Adjust position if near viewport edge
     const x = Math.min(e.clientX, window.innerWidth - 200);
     const y = Math.min(e.clientY, window.innerHeight - 250);
     setCtxMenu({ x, y, project });
@@ -184,12 +184,12 @@ export default function ProjectListPage() {
       <div className="ph-inner-content">
         {/* Breadcrumb */}
         <div className="flex items-center gap-1 mb-1">
-          <span style={{ fontSize: 13, color: '#64748B', fontWeight: 500 }}>ProjectHub</span>
-          <ChevronRight size={14} color="#94A3B8" />
-          <span style={{ fontSize: 13, color: '#0F172A', fontWeight: 500 }}>All Projects</span>
+          <span style={{ fontSize: 13, color: T.t3, fontWeight: 500 }}>ProjectHub</span>
+          <ChevronRight size={14} style={{ color: T.t3 }} />
+          <span style={{ fontSize: 13, color: T.t1, fontWeight: 500 }}>All Projects</span>
         </div>
 
-        <h1 className="mb-5" style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>
+        <h1 className="mb-5" style={{ fontSize: 20, fontWeight: 700, color: T.t1, fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>
           All Projects
         </h1>
 
@@ -199,6 +199,7 @@ export default function ProjectListPage() {
             activeTab={activeTab}
             onTabChange={t => { setActiveTab(t); setPage(0); }}
             counts={tabCounts}
+            isDark={isDark}
           />
           <div className="flex items-center gap-2">
             <ProjectToolbar
@@ -206,6 +207,7 @@ export default function ProjectListPage() {
               search={search} onSearchChange={s => { setSearch(s); setPage(0); }}
               filters={filters} onFilterChange={f => { setFilters(f); setPage(0); }}
               onNewProject={onNewProject}
+              isDark={isDark}
             />
           </div>
         </div>
@@ -214,12 +216,12 @@ export default function ProjectListPage() {
         {isLoading ? (
           <SkeletonTable rows={8} />
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center ph-card" style={{ padding: '80px 40px' }}>
-            <FolderKanban size={48} color="#CBD5E1" strokeWidth={1.25} />
-            <h3 style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', marginTop: 16, fontFamily: "'Sora', sans-serif" }}>
+          <div className="flex flex-col items-center justify-center" style={{ padding: '80px 40px', background: T.cardBg, border: `1px solid ${T.border}`, borderRadius: 8 }}>
+            <FolderKanban size={48} style={{ color: T.t4 }} strokeWidth={1.25} />
+            <h3 style={{ fontSize: 18, fontWeight: 600, color: T.t1, marginTop: 16, fontFamily: "'Sora', sans-serif" }}>
               {hasFilters ? 'No projects match your filters' : 'No projects yet'}
             </h3>
-            <p style={{ fontSize: 14, color: '#64748B', marginTop: 4, textAlign: 'center', maxWidth: 360 }}>
+            <p style={{ fontSize: 14, color: T.t2, marginTop: 4, textAlign: 'center', maxWidth: 360 }}>
               {hasFilters
                 ? 'Try adjusting your search or filter criteria.'
                 : 'Projects help you organize and track work across your team.'}
@@ -238,35 +240,35 @@ export default function ProjectListPage() {
             )}
           </div>
         ) : view === 'table' ? (
-          <ProjectTable projects={paginated} starredIds={starredIds} onToggleStar={toggleStar} onContextMenu={handleContextMenu} />
+          <ProjectTable projects={paginated} starredIds={starredIds} onToggleStar={toggleStar} onContextMenu={handleContextMenu} isDark={isDark} />
         ) : (
           <ProjectCardGrid projects={paginated} starredIds={starredIds} onToggleStar={toggleStar} />
         )}
 
         {/* Pagination */}
         {filtered.length > 0 && (
-          <div className="flex items-center justify-between mt-4" style={{ fontSize: 12, color: '#64748B' }}>
+          <div className="flex items-center justify-between mt-4" style={{ fontSize: 12, color: T.t3 }}>
             <span>
               Showing {page * perPage + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length} projects
             </span>
             <div className="flex items-center gap-1">
-              <button disabled={page === 0} onClick={() => setPage(p => p - 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', cursor: 'pointer' }}>
-                <ChevronLeft size={14} color="#334155" />
+              <button disabled={page === 0} onClick={() => setPage(p => p - 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: `1px solid ${T.border}`, background: isDark ? 'transparent' : '#FFF', cursor: 'pointer' }}>
+                <ChevronLeft size={14} style={{ color: T.t2 }} />
               </button>
               {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
                 const pageNum = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
                 return (
                   <button key={pageNum} onClick={() => setPage(pageNum)} className="flex items-center justify-center rounded transition-colors"
-                    style={{ width: 28, height: 28, border: pageNum === page ? 'none' : '1px solid #E2E8F0', background: pageNum === page ? '#2563EB' : '#FFF', color: pageNum === page ? '#FFF' : '#334155', fontSize: 12, fontWeight: pageNum === page ? 600 : 400, cursor: 'pointer' }}
+                    style={{ width: 28, height: 28, border: pageNum === page ? 'none' : `1px solid ${T.border}`, background: pageNum === page ? '#2563EB' : (isDark ? 'transparent' : '#FFF'), color: pageNum === page ? '#FFF' : T.t2, fontSize: 12, fontWeight: pageNum === page ? 600 : 400, cursor: 'pointer' }}
                   >
                     {pageNum + 1}
                   </button>
                 );
               })}
-              <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', cursor: 'pointer' }}>
-                <ChevronRightIcon size={14} color="#334155" />
+              <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: `1px solid ${T.border}`, background: isDark ? 'transparent' : '#FFF', cursor: 'pointer' }}>
+                <ChevronRightIcon size={14} style={{ color: T.t2 }} />
               </button>
-              <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} className="ml-3 rounded" style={{ height: 28, padding: '0 6px', border: '1px solid #E2E8F0', fontSize: 12, color: '#334155', background: '#FFF', cursor: 'pointer' }}>
+              <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} className="ml-3 rounded" style={{ height: 28, padding: '0 6px', border: `1px solid ${T.border}`, fontSize: 12, color: T.t2, background: isDark ? 'transparent' : '#FFF', cursor: 'pointer' }}>
                 <option value={25}>25 / page</option>
                 <option value={50}>50 / page</option>
                 <option value={100}>100 / page</option>
@@ -275,7 +277,7 @@ export default function ProjectListPage() {
           </div>
         )}
 
-        {/* Context Menu — with icons */}
+        {/* Context Menu */}
         {ctxMenu && (
           <div
             className="fixed z-[99999]"
@@ -283,52 +285,55 @@ export default function ProjectListPage() {
               top: ctxMenu.y,
               left: ctxMenu.x,
               width: 180,
-              background: '#FFFFFF',
-              border: '1px solid #E2E8F0',
+              background: T.floatBg,
+              border: `1px solid ${T.border}`,
               borderRadius: 8,
-              boxShadow: '0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1)',
+              boxShadow: isDark ? 'none' : '0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1)',
               fontFamily: "'Inter', sans-serif",
               padding: '4px 0',
             }}
             onClick={e => e.stopPropagation()}
           >
-            {/* Open */}
             <button onClick={() => { navigate(`/project-hub/${ctxMenu.project.key}/dashboard`); setCtxMenu(null); }}
-              className="w-full flex items-center gap-2.5 px-3 transition-colors hover:bg-[#F8FAFC]"
-              style={{ height: 36, fontSize: 13, color: '#334155', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              className="w-full flex items-center gap-2.5 px-3 transition-colors"
+              style={{ height: 36, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <ExternalLink size={16} color="#64748B" /> Open
+              <ExternalLink size={16} style={{ color: T.t3 }} /> Open
             </button>
-            {/* Open in New Tab */}
             <button onClick={() => { window.open(`/project-hub/${ctxMenu.project.key}/dashboard`, '_blank'); setCtxMenu(null); }}
-              className="w-full flex items-center gap-2.5 px-3 transition-colors hover:bg-[#F8FAFC]"
-              style={{ height: 36, fontSize: 13, color: '#334155', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              className="w-full flex items-center gap-2.5 px-3 transition-colors"
+              style={{ height: 36, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <ExternalLink size={16} color="#64748B" /> Open in New Tab
+              <ExternalLink size={16} style={{ color: T.t3 }} /> Open in New Tab
             </button>
-            {/* Copy Key */}
             <button onClick={() => { navigator.clipboard.writeText(ctxMenu.project.key); toast.success('Copied'); setCtxMenu(null); }}
-              className="w-full flex items-center gap-2.5 px-3 transition-colors hover:bg-[#F8FAFC]"
-              style={{ height: 36, fontSize: 13, color: '#334155', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              className="w-full flex items-center gap-2.5 px-3 transition-colors"
+              style={{ height: 36, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <Copy size={16} color="#64748B" /> Copy Key
+              <Copy size={16} style={{ color: T.t3 }} /> Copy Key
             </button>
-            {/* Divider */}
-            <div style={{ height: 1, background: '#E2E8F0', margin: '4px 0' }} />
-            {/* Star / Unstar */}
+            <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
             <button onClick={() => { toggleStar(ctxMenu.project.id); setCtxMenu(null); }}
-              className="w-full flex items-center gap-2.5 px-3 transition-colors hover:bg-[#F8FAFC]"
-              style={{ height: 36, fontSize: 13, color: '#334155', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              className="w-full flex items-center gap-2.5 px-3 transition-colors"
+              style={{ height: 36, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <Star size={16} color="#64748B" fill={starredIds.has(ctxMenu.project.id) ? '#EAB308' : 'none'} />
+              <Star size={16} style={{ color: T.t3 }} fill={starredIds.has(ctxMenu.project.id) ? '#EAB308' : 'none'} />
               {starredIds.has(ctxMenu.project.id) ? 'Unstar' : 'Star'}
             </button>
-            {/* Divider */}
-            <div style={{ height: 1, background: '#E2E8F0', margin: '4px 0' }} />
-            {/* Archive */}
+            <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
             <button onClick={() => { archiveProject(ctxMenu.project.id, ctxMenu.project.name); setCtxMenu(null); }}
-              className="w-full flex items-center gap-2.5 px-3 transition-colors hover:bg-[#FEF2F2]"
+              className="w-full flex items-center gap-2.5 px-3 transition-colors"
               style={{ height: 36, fontSize: 13, color: '#DC2626', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(220,38,38,0.1)' : '#FEF2F2'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
               <Archive size={16} color="#DC2626" /> Archive
             </button>
