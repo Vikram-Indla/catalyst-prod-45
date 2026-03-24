@@ -22,6 +22,76 @@
   --pk-r-full: 9999px;
 }
 
+/* ═══ DARK MODE — Nocturne One Surface Model ═══ */
+.dark [data-module="product-kanban"],
+[data-theme="dark"] [data-module="product-kanban"] {
+  --pk-ink: rgba(248,244,240,0.92);
+  --pk-ink-secondary: rgba(248,244,240,0.85);
+  --pk-ink-tertiary: rgba(248,244,240,0.72);
+  --pk-ink-muted: rgba(248,244,240,0.50);
+  --pk-surface: #1A1714;
+  --pk-surface-column: rgba(255,255,255,0.03);
+  --pk-surface-tertiary: rgba(255,255,255,0.05);
+  --pk-border: rgba(255,255,255,0.10);
+  --pk-border-strong: rgba(255,255,255,0.18);
+  --pk-primary-bg: rgba(59,130,246,0.12);
+}
+.dark .pk-card,
+[data-theme="dark"] .pk-card {
+  background: transparent;
+  border-color: rgba(255,255,255,0.10);
+}
+.dark .pk-card:hover,
+[data-theme="dark"] .pk-card:hover {
+  border-color: rgba(255,255,255,0.18);
+  box-shadow: none;
+}
+.dark .pk-card-title,
+[data-theme="dark"] .pk-card-title {
+  color: rgba(248,244,240,0.92);
+}
+.dark .pk-chip,
+[data-theme="dark"] .pk-chip {
+  color: rgba(248,244,240,0.72) !important;
+  background: transparent !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+.dark .pk-chip:hover,
+[data-theme="dark"] .pk-chip:hover {
+  background: rgba(255,255,255,0.05) !important;
+  border-color: rgba(255,255,255,0.18) !important;
+}
+.dark .pk-chip.pk-chip--active,
+[data-theme="dark"] .pk-chip.pk-chip--active {
+  color: #60A5FA !important;
+  background: rgba(59,130,246,0.12) !important;
+  border-color: rgba(59,130,246,0.30) !important;
+}
+.dark .pk-dropdown,
+[data-theme="dark"] .pk-dropdown {
+  background: #232019;
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.dark .pk-dropdown-item:hover,
+[data-theme="dark"] .pk-dropdown-item:hover {
+  background: rgba(255,255,255,0.06);
+}
+.dark .pk-context-menu,
+[data-theme="dark"] .pk-context-menu {
+  background: #232019;
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.dark .pk-column-collapsed:hover,
+[data-theme="dark"] .pk-column-collapsed:hover {
+  background: rgba(255,255,255,0.05);
+}
+.dark .pk-card--overlay,
+[data-theme="dark"] .pk-card--overlay {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
 /* ---- PAGE ---- */
 .pk-page {
   display: flex;
