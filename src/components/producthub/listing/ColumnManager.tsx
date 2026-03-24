@@ -94,21 +94,19 @@ export function ColumnManager({ columns, onChange, anchorRef, isOpen, onClose }:
   return createPortal(
     <div
       ref={panelRef}
-      className="fixed rounded-lg overflow-hidden"
+      className="fixed rounded-lg overflow-hidden bg-white dark:bg-[#232019] border border-border dark:border-gray-700"
       style={{
         top: anchorRect.bottom + 4,
         left: anchorRect.left,
         width: 240,
         maxHeight: 400,
-        border: '1px solid #e4e4e7',
         boxShadow: '0 10px 40px rgba(0,0,0,0.18)',
         zIndex: 500,
-        background: '#ffffff',
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2.5" style={{ borderBottom: '1px solid #f4f4f5' }}>
-        <span className="text-[13px] font-semibold" style={{ color: '#18181b' }}>Manage Columns</span>
+      <div className="flex items-center justify-between px-3 py-2.5 border-b border-border dark:border-gray-700">
+        <span className="text-[13px] font-semibold text-foreground">Manage Columns</span>
         <button
           type="button"
           onClick={handleReset}
@@ -128,23 +126,19 @@ export function ColumnManager({ columns, onChange, anchorRef, isOpen, onClose }:
             onDragStart={() => handleDragStart(idx)}
             onDragOver={(e) => handleDragOver(e, idx)}
             onDragEnd={handleDragEnd}
-            className="flex items-center gap-2 px-3 py-1.5 transition-colors cursor-grab"
+            className="flex items-center gap-2 px-3 py-1.5 transition-colors cursor-grab border-b border-border dark:border-gray-700/50 bg-white dark:bg-[#232019] hover:bg-muted/50 dark:hover:bg-white/5"
             style={{
               opacity: dragIdx === idx ? 0.5 : 1,
-              borderBottom: '1px solid #f4f4f5',
-              background: '#ffffff',
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = '#fafafa'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = '#ffffff'; }}
           >
-            <GripVertical size={12} className="text-zinc-300 shrink-0" />
+            <GripVertical size={12} className="text-zinc-300 dark:text-gray-600 shrink-0" />
             <button
               type="button"
               onClick={() => !col.locked && toggleColumn(col.id)}
               disabled={col.locked}
               className="w-4 h-4 rounded flex items-center justify-center shrink-0 transition-all"
               style={{
-                border: col.visible ? '1.5px solid #2563eb' : '1.5px solid #d4d4d8',
+                border: col.visible ? '1.5px solid #2563eb' : '1.5px solid var(--tw-prose-counters, #d4d4d8)',
                 background: col.visible ? '#2563eb' : 'transparent',
                 cursor: col.locked ? 'not-allowed' : 'pointer',
                 opacity: col.locked ? 0.5 : 1,
@@ -152,9 +146,9 @@ export function ColumnManager({ columns, onChange, anchorRef, isOpen, onClose }:
             >
               {col.visible && <Check size={10} className="text-white" strokeWidth={3} />}
             </button>
-            <span className="text-[13px] flex-1" style={{ color: '#3f3f46' }}>{col.label}</span>
+            <span className="text-[13px] flex-1 text-foreground">{col.label}</span>
             {col.locked && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: '#f4f4f5', color: '#a1a1aa' }}>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted dark:bg-gray-800 text-muted-foreground dark:text-gray-400">
                 Required
               </span>
             )}
