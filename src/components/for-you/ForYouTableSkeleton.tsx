@@ -10,21 +10,45 @@ interface ForYouTableSkeletonProps {
 }
 
 export function ForYouTableSkeleton({ rowCount = 5 }: ForYouTableSkeletonProps) {
+  const skeletonBlockStyle: React.CSSProperties = {
+    background: 'var(--cp-hover)',
+  };
+
   return (
-    <div className="border border-[hsl(214,32%,91%)] rounded-lg overflow-hidden">
+    <div
+      className="rounded-lg overflow-hidden"
+      style={{
+        border: '1px solid var(--cp-bd)',
+        background: 'var(--cp-bg)',
+      }}
+    >
       {/* Table Header Skeleton */}
-      <div className="grid grid-cols-[40px_120px_1fr_80px_80px_160px] gap-4 px-4 py-3 bg-[hsl(210,40%,98%)] border-b border-[hsl(214,32%,91%)]">
-        <div className="w-4 h-4 bg-[hsl(210,40%,93%)] rounded animate-pulse" />
-        <div className="h-3 w-12 bg-[hsl(210,40%,93%)] rounded animate-pulse" />
-        <div className="h-3 w-16 bg-[hsl(210,40%,93%)] rounded animate-pulse" />
-        <div className="h-3 w-10 bg-[hsl(210,40%,93%)] rounded animate-pulse" />
-        <div className="h-3 w-10 bg-[hsl(210,40%,93%)] rounded animate-pulse" />
-        <div className="h-3 w-16 bg-[hsl(210,40%,93%)] rounded animate-pulse" />
+      <div
+        className="grid grid-cols-[40px_120px_1fr_80px_80px_160px] gap-4 px-4 py-3"
+        style={{
+          background: 'var(--cp-bg)',
+          borderBottom: '1px solid var(--cp-bd)',
+        }}
+      >
+        <div className="w-4 h-4 rounded animate-pulse" style={skeletonBlockStyle} />
+        <div className="h-3 w-12 rounded animate-pulse" style={skeletonBlockStyle} />
+        <div className="h-3 w-16 rounded animate-pulse" style={skeletonBlockStyle} />
+        <div className="h-3 w-10 rounded animate-pulse" style={skeletonBlockStyle} />
+        <div className="h-3 w-10 rounded animate-pulse" style={skeletonBlockStyle} />
+        <div className="h-3 w-16 rounded animate-pulse" style={skeletonBlockStyle} />
       </div>
 
       {/* Group Header Skeleton */}
-      <div className="px-4 py-2 bg-[hsl(210,40%,98%)] border-l-[3px] border-[hsl(210,40%,93%)]">
-        <div className="h-3 w-20 bg-[hsl(210,40%,93%)] rounded animate-pulse" />
+      <div
+        className="px-4 py-2 border-l-[3px]"
+        style={{
+          background: 'var(--cp-bg)',
+          borderLeftColor: 'var(--cp-bd-zone)',
+          borderTop: '1px solid var(--cp-bd-zone)',
+          borderBottom: '1px solid var(--cp-bd-zone)',
+        }}
+      >
+        <div className="h-3 w-20 rounded animate-pulse" style={skeletonBlockStyle} />
       </div>
 
       {/* Rows Skeleton */}
@@ -33,28 +57,31 @@ export function ForYouTableSkeleton({ rowCount = 5 }: ForYouTableSkeletonProps) 
           key={index}
           className={cn(
             "grid grid-cols-[40px_120px_1fr_80px_80px_160px] gap-4 px-4 py-3",
-            "border-b border-[hsl(210,40%,96%)]",
             index === rowCount - 1 && "border-b-0"
           )}
+          style={{
+            borderBottom: index === rowCount - 1 ? 'none' : '1px solid var(--cp-bd-table)',
+            background: 'var(--cp-bg)',
+          }}
         >
           <div className="flex items-center">
-            <div className="w-[15px] h-[15px] bg-[hsl(210,40%,93%)] rounded animate-pulse" />
+            <div className="w-[15px] h-[15px] rounded animate-pulse" style={skeletonBlockStyle} />
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-4 w-14 bg-[hsl(210,40%,93%)] rounded animate-pulse" />
+            <div className="h-4 w-14 rounded animate-pulse" style={skeletonBlockStyle} />
           </div>
           <div className="flex items-center">
-            <div className="h-4 w-3/4 bg-[hsl(210,40%,93%)] rounded animate-pulse" />
+            <div className="h-4 w-3/4 rounded animate-pulse" style={skeletonBlockStyle} />
           </div>
           <div className="flex items-center">
-            <div className="h-5 w-10 bg-[hsl(210,40%,93%)] rounded-[5px] animate-pulse" />
+            <div className="h-5 w-10 rounded-[5px] animate-pulse" style={skeletonBlockStyle} />
           </div>
           <div className="flex items-center">
-            <div className="h-4 w-8 bg-[hsl(210,40%,93%)] rounded animate-pulse" />
+            <div className="h-4 w-8 rounded animate-pulse" style={skeletonBlockStyle} />
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-[hsl(210,40%,93%)] rounded-full animate-pulse" />
-            <div className="h-4 w-20 bg-[hsl(210,40%,93%)] rounded animate-pulse" />
+            <div className="w-6 h-6 rounded-full animate-pulse" style={skeletonBlockStyle} />
+            <div className="h-4 w-20 rounded animate-pulse" style={skeletonBlockStyle} />
           </div>
         </div>
       ))}
