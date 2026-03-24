@@ -79,12 +79,12 @@ export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProp
   const overflow = memberCount - shown.length;
 
   if (memberCount === 0) {
-    return <span style={{ fontSize: 10, color: '#94A3B8' }}>—</span>;
+    return <span className="text-[10px] text-gray-400 dark:text-gray-500">—</span>;
   }
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div className="flex items-center">
         {shown.map((id, i) => {
           const profile = profileCache.get(id);
           const name = profile?.full_name || '';
@@ -94,13 +94,11 @@ export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProp
             <Tooltip key={id}>
               <TooltipTrigger asChild>
                 <div
+                  className="w-[22px] h-[22px] rounded-full border-2 border-white dark:border-[#1A1714] text-[8px] font-bold text-white flex items-center justify-center shrink-0 cursor-default"
                   style={{
-                    width: 22, height: 22, borderRadius: 99, border: '2px solid #FFF',
                     background: `linear-gradient(135deg, ${from}, ${to})`,
                     marginLeft: i > 0 ? -6 : 0,
-                    fontSize: 8, fontWeight: 700, color: '#FFF',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    zIndex: max - i, flexShrink: 0, cursor: 'default',
+                    zIndex: max - i,
                   }}
                 >
                   {initials}
@@ -113,7 +111,7 @@ export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProp
           );
         })}
         {overflow > 0 && (
-          <span style={{ fontSize: 10, color: '#64748B', marginLeft: 4 }}>
+          <span className="text-[10px] text-gray-500 dark:text-gray-400 ml-1">
             {overflow}
           </span>
         )}

@@ -25,6 +25,18 @@ function getGradient(key: string): string {
   return `linear-gradient(135deg, ${f}, ${t})`;
 }
 
+function getAccentColor(grad: string): string {
+  if (grad.includes('#2563EB')) return '#2563EB';
+  if (grad.includes('#7C3AED')) return '#7C3AED';
+  if (grad.includes('#0D9488')) return '#0D9488';
+  if (grad.includes('#D97706')) return '#D97706';
+  if (grad.includes('#DC2626')) return '#DC2626';
+  if (grad.includes('#16A34A')) return '#16A34A';
+  if (grad.includes('#0284C7')) return '#0284C7';
+  if (grad.includes('#1D4ED8')) return '#1D4ED8';
+  return '#2563EB';
+}
+
 interface Props {
   projects: ProjectListItem[];
   favoriteIds: Set<string>;
@@ -35,61 +47,69 @@ interface Props {
 export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSelectProject }: Props) {
   const navigate = useNavigate();
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 10 }}>
+    <div className="grid gap-2.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}>
       {projects.map(p => {
         const isFav = favoriteIds.has(p.id);
         const grad = getGradient(p.project_key);
+        const accent = getAccentColor(grad);
         return (
           <div
             key={p.id}
             onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
-            style={{
-              background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 8,
-              overflow: 'hidden', cursor: 'pointer', transition: 'all 120ms',
-              borderLeft: `3px solid ${grad.includes('#2563EB') ? '#2563EB' : grad.includes('#7C3AED') ? '#7C3AED' : grad.includes('#0D9488') ? '#0D9488' : '#2563EB'}`,
-            }}
-            onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-            onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = ''; }}
+            className="rounded-lg overflow-hidden cursor-pointer transition-all duration-[120ms] bg-[#FFFFFF] dark:!bg-[#1A1714] border border-[#E2E8F0] dark:border-gray-700 hover:-translate-y-px hover:shadow-md dark:hover:shadow-none dark:shadow-none"
+            style={{ borderLeft: `3px solid ${accent}` }}
           >
-            <div style={{ padding: '10px 12px' }}>
+            <div className="p-[10px_12px]">
               {/* Header row */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                  <div style={{
-                    width: 26, height: 26, borderRadius: 6, background: grad,
-                    color: '#FFF', fontSize: 9, fontWeight: 700,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                  }}>
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div
+                    className="w-[26px] h-[26px] rounded-[6px] text-white text-[9px] font-bold flex items-center justify-center shrink-0"
+                    style={{ background: grad }}
+                  >
                     {p.project_key.substring(0, 3)}
                   </div>
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
-                    <div style={{ fontSize: 10, color: '#94A3B8' }}>{p.department || '—'}</div>
+                  <div className="min-w-0">
+                    <div className="text-[13px] font-semibold leading-tight whitespace-nowrap overflow-hidden text-ellipsis text-gray-900 dark:text-white">
+                      {p.name}
+                    </div>
+                    <div className="text-[10px] text-gray-400 dark:text-gray-500">
+                      {p.department || '—'}
+                    </div>
                   </div>
                 </div>
-                <button onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, flexShrink: 0 }}>
-                  <Star size={14} fill={isFav ? '#F59E0B' : 'none'} color={isFav ? '#F59E0B' : '#CBD5E1'} />
+                <button
+                  onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }}
+                  className="bg-transparent border-none cursor-pointer p-0.5 shrink-0"
+                >
+                  <Star size={14} fill={isFav ? '#F59E0B' : 'none'} color={isFav ? '#F59E0B' : undefined} className={isFav ? '' : 'text-gray-300 dark:text-gray-600'} />
                 </button>
               </div>
 
               {/* Compact stats row — Epics and Stories only */}
-              <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
+              <div className="flex gap-1 mb-2">
                 {[
                   { label: 'E', val: p.total_epics, tip: 'Epics' },
                   { label: 'S', val: p.total_stories, tip: 'Stories' },
                 ].map(i => (
-                  <div key={i.label} title={i.tip} style={{
-                    flex: 1, textAlign: 'center', padding: '4px 0', background: '#F8FAFC', borderRadius: 4,
-                  }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.2 }}>{i.val}</div>
-                    <div style={{ fontSize: 9, color: '#94A3B8', fontWeight: 600, letterSpacing: '0.05em' }}>{i.label}</div>
+                  <div
+                    key={i.label}
+                    title={i.tip}
+                    className="flex-1 text-center py-1 rounded bg-[#F8FAFC] dark:bg-gray-800"
+                  >
+                    <div className="text-sm font-bold font-['JetBrains_Mono',monospace] leading-tight text-gray-900 dark:text-white">
+                      {i.val}
+                    </div>
+                    <div className="text-[9px] font-semibold tracking-wider text-gray-400 dark:text-gray-500">
+                      {i.label}
+                    </div>
                   </div>
                 ))}
               </div>
 
               {/* Footer — Last Sync + Members */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: 10, color: '#94A3B8' }}>
+              <div className="flex justify-between items-center">
+                <div className="text-[10px] text-gray-400 dark:text-gray-500">
                   {p.last_synced_at
                     ? `Synced ${formatDistanceToNowStrict(new Date(p.last_synced_at), { addSuffix: true })}`
                     : 'Not synced'}
