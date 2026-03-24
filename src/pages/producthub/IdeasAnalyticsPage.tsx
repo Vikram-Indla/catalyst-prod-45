@@ -84,7 +84,9 @@ export default function IdeasAnalyticsPage() {
   const convByQuarter = ['Q1', 'Q2', 'Q3', 'Q4'].map(q => ({ quarter: q, total: qConvMap[q]?.total || 0, converted: qConvMap[q]?.converted || 0 }));
   const maxConvQ = Math.max(...convByQuarter.map(q => q.total), 1);
 
-  const barTrack = isDark ? 'rgba(255,255,255,0.06)' : '#F4F4F5';
+  const barTrack = isDark ? 'rgba(255,255,255,0.08)' : '#F4F4F5';
+  const containerBg = isDark ? '#1A1714' : '#FFFFFF';
+  const containerBorder = `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : dk.border}`;
 
   return (
     <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
@@ -106,7 +108,7 @@ export default function IdeasAnalyticsPage() {
 
         {/* Row 1 */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
-          <div style={{ background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '20px' }}>
+          <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
             <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: "'Sora', sans-serif" }}>Conversion Funnel</div>
             {funnelData.map(s => {
               const label = s.status === 'Converted to Initiative' ? 'Converted' : s.status;
@@ -128,7 +130,7 @@ export default function IdeasAnalyticsPage() {
             })}
           </div>
 
-          <div style={{ background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '20px' }}>
+          <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
             <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: "'Sora', sans-serif" }}>Quarter Distribution</div>
             {stats.byQuarter.length === 0 ? (
               <div style={{ color: dk.t3, fontSize: '13px' }}>No ideas assigned to quarters</div>
@@ -145,7 +147,7 @@ export default function IdeasAnalyticsPage() {
 
         {/* Row 2 */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-          <div style={{ background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '20px' }}>
+          <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
             <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: "'Sora', sans-serif" }}>Conversion by Theme</div>
             {convByTheme.length === 0 ? (
               <div style={{ color: dk.t3, fontSize: '13px' }}>No conversion data</div>
@@ -161,7 +163,7 @@ export default function IdeasAnalyticsPage() {
             ))}
           </div>
 
-          <div style={{ background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '20px' }}>
+          <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
             <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: "'Sora', sans-serif" }}>Conversion by Quarter</div>
             {convByQuarter.map(q => (
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
@@ -180,7 +182,7 @@ export default function IdeasAnalyticsPage() {
 
 function StatCard({ label, value, subtitle, color, isDark, dk }: { label: string; value: string; subtitle: string; color: string; isDark: boolean; dk: typeof DK }) {
   return (
-    <div style={{ background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '20px' }}>
+    <div style={{ background: isDark ? '#1A1714' : '#FFFFFF', border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : dk.border}`, borderRadius: '6px', padding: '20px' }}>
       <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>{label}</div>
       <span style={{ fontSize: '32px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", color, letterSpacing: '-0.5px' }}>{value}</span>
       <div style={{ fontSize: '12px', color: dk.t3, marginTop: '4px' }}>{subtitle}</div>
