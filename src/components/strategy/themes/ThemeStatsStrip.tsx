@@ -88,13 +88,13 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
           key={c.label}
           className="rounded-xl border transition-shadow"
           style={{
-            background: isDark ? ((c as any).cardBg || DK.bg) : '#FFFFFF',
-            borderColor: isDark ? DK.border : '#E2E8F0',
+            background: isDark ? 'transparent' : '#FFFFFF',
+            borderColor: isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0',
             padding: '16px 18px',
-            ...(isDark ? {} : {}),
+            boxShadow: isDark ? 'none' : undefined,
           }}
           onMouseEnter={e => { if (!isDark) e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.1)'; }}
-          onMouseLeave={e => { e.currentTarget.style.boxShadow = ''; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = isDark ? 'none' : ''; }}
         >
           <div className="flex items-start justify-between mb-2">
             <span style={{

@@ -18,11 +18,11 @@ const SelectTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       "flex h-9 w-full items-center justify-between rounded-md",
-      "border border-border/50 dark:border-border/30",
+      "border border-border/50",
       "bg-background px-3 py-2 text-sm text-foreground",
+      "dark:bg-transparent dark:border-gray-700 dark:text-white",
       "placeholder:text-muted-foreground",
       "hover:bg-muted transition-colors",
-      // Focus ring uses BLUE per design spec v2
       "focus:outline-none focus:ring-1 focus:ring-[#3b82f6] dark:focus:ring-[#60a5fa]",
       "disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       className,

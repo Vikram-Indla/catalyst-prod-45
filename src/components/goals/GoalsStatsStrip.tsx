@@ -69,13 +69,13 @@ export function GoalsStatsStrip({ goals, keyResults, themes, isDark = false }: G
           key={card.label}
           style={{
             background: isDark ? 'transparent' : '#FFFFFF',
-            border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`,
+            border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'}`,
             borderRadius: 12,
             padding: '20px 24px',
             display: 'flex',
             alignItems: 'flex-start',
             gap: 14,
-            boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+            boxShadow: 'none',
           }}
         >
           <div style={{ width: 40, height: 40, borderRadius: 10, background: card.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

@@ -138,7 +138,7 @@ export function GoalsToolbar({
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         {/* View Switcher */}
-        <div style={{ display: 'inline-flex', background: isDark ? 'rgba(248,244,240,0.04)' : '#F1F5F9', borderRadius: 8, padding: 3, gap: 2 }}>
+        <div style={{ display: 'inline-flex', background: isDark ? 'rgba(255,255,255,0.04)' : '#F1F5F9', borderRadius: 8, padding: 3, gap: 2 }}>
           {viewButtons.map(vb => {
             const active = currentView === vb.key;
             return (
@@ -146,8 +146,8 @@ export function GoalsToolbar({
                 display: 'inline-flex', alignItems: 'center', gap: 5,
                 padding: '5px 12px', fontSize: 12,
                 fontWeight: active ? 600 : 500,
-                color: active ? (isDark ? DK.t1 : '#0F172A') : (isDark ? DK.t2 : '#64748B'),
-                background: active ? (isDark ? 'rgba(248,244,240,0.08)' : '#FFFFFF') : 'transparent',
+                color: active ? (isDark ? '#FFFFFF' : '#0F172A') : (isDark ? '#9CA3AF' : '#64748B'),
+                background: active ? (isDark ? 'rgba(255,255,255,0.08)' : '#FFFFFF') : 'transparent',
                 border: 'none', borderRadius: 6, cursor: 'pointer',
                 boxShadow: active && !isDark ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                 transition: 'all 150ms',
