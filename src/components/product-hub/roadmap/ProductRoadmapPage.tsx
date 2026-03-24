@@ -7,6 +7,7 @@ import { Download, Maximize2, Minimize2, AlertCircle, RefreshCw, Plus } from 'lu
 import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
 import { addMonths, subMonths } from 'date-fns';
 import { useCatalystContext } from '@/contexts/CatalystContext';
+import { useTheme } from '@/hooks/useTheme';
 
 import { RoadmapKPIStrip } from './RoadmapKPIStrip';
 import { RoadmapToolbar } from './RoadmapToolbar';
@@ -20,11 +21,14 @@ import { AddInitiativeModal } from './AddInitiativeModal';
 import { useRoadmapData, useToggleRoadmapStar } from './hooks/useRoadmapData';
 import { useRoadmapFilters } from './hooks/useRoadmapFilters';
 
-import { INK, SURFACE, FONT, SCROLLBAR_CSS } from './constants/roadmap.constants';
+import { INK, INK_DARK, SURFACE, SURFACE_DARK, FONT, SCROLLBAR_CSS } from './constants/roadmap.constants';
 import '@/styles/roadmap-ringfenced.css';
 import '@/styles/product-kanban.css';
 
 export function ProductRoadmapPage() {
+  const { isDark } = useTheme();
+  const ink = isDark ? INK_DARK : INK;
+  const surface = isDark ? SURFACE_DARK : SURFACE;
   const { initiatives, stats, isLoading, error } = useRoadmapData();
   const toggleStar = useToggleRoadmapStar();
   const {
@@ -152,20 +156,20 @@ export function ProductRoadmapPage() {
   if (isLoading) {
     return (
       <div className="flex flex-col h-full" style={{ fontFamily: FONT.body }}>
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${SURFACE.border}`, background: SURFACE.card }}>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${surface.border}`, background: surface.card }}>
           <div>
-            <div className="h-6 w-48 rounded animate-pulse" style={{ background: SURFACE.borderLight }} />
-            <div className="h-4 w-64 rounded mt-2 animate-pulse" style={{ background: SURFACE.borderLight }} />
+            <div className="h-6 w-48 rounded animate-pulse" style={{ background: surface.borderLight }} />
+            <div className="h-4 w-64 rounded mt-2 animate-pulse" style={{ background: surface.borderLight }} />
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-3 px-6 py-3" style={{ background: SURFACE.page }}>
+        <div className="grid grid-cols-4 gap-3 px-6 py-3" style={{ background: surface.page }}>
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-20 rounded-lg animate-pulse" style={{ background: SURFACE.borderLight }} />
+            <div key={i} className="h-20 rounded-lg animate-pulse" style={{ background: surface.borderLight }} />
           ))}
         </div>
         <div className="flex-1 px-6 py-4">
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="h-11 mb-1 rounded animate-pulse" style={{ background: SURFACE.borderLight }} />
+            <div key={i} className="h-11 mb-1 rounded animate-pulse" style={{ background: surface.borderLight }} />
           ))}
         </div>
       </div>
@@ -176,21 +180,21 @@ export function ProductRoadmapPage() {
   if (error) {
     return (
       <div className="flex flex-col h-full" style={{ fontFamily: FONT.body }}>
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${SURFACE.border}`, background: SURFACE.card }}>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: INK[1], margin: 0 }}>Product Roadmap</h1>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${surface.border}`, background: surface.card }}>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: ink[1], margin: 0 }}>Product Roadmap</h1>
         </div>
         <div className="flex flex-col items-center justify-center flex-1 gap-3">
-          <div className="flex items-center gap-2 px-4 py-3 rounded-lg" style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
+          <div className="flex items-center gap-2 px-4 py-3 rounded-lg" style={{ background: isDark ? 'rgba(220,38,38,0.12)' : '#FEF2F2', border: `1px solid ${isDark ? 'rgba(220,38,38,0.25)' : '#FECACA'}` }}>
             <AlertCircle size={18} style={{ color: '#EF4444' }} />
-            <span style={{ fontSize: 14, color: '#991B1B', fontWeight: 500 }}>
+            <span style={{ fontSize: 14, color: isDark ? '#FCA5A5' : '#991B1B', fontWeight: 500 }}>
               Failed to load roadmap data: {(error as Error).message}
             </span>
           </div>
           <button
             onClick={() => window.location.reload()}
             className="inline-flex items-center gap-1.5 h-9 px-4 text-sm font-medium rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-            style={{ border: `1px solid ${SURFACE.border}`, color: INK[2], transition: 'background-color 0.15s ease' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
+            style={{ border: `1px solid ${surface.border}`, color: ink[2], transition: 'background-color 0.15s ease' }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.05)' : surface.page)}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
           >
             <RefreshCw className="w-4 h-4" /> Retry
@@ -213,8 +217,8 @@ export function ProductRoadmapPage() {
             <>
               <button
                 className="inline-flex items-center gap-1.5 h-9 px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-                style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, color: INK[2], transition: 'background-color 0.15s ease', fontFamily: "'Inter', system-ui, sans-serif" }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
+                style={{ border: `1px solid ${surface.border}`, borderRadius: 6, color: ink[2], transition: 'background-color 0.15s ease', fontFamily: "'Inter', system-ui, sans-serif" }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.05)' : surface.page)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
                 <Download className="w-4 h-4" /> Export
@@ -222,8 +226,8 @@ export function ProductRoadmapPage() {
               <button
                 onClick={toggleFullscreen}
                 className="inline-flex items-center gap-1.5 h-9 px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-                style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, color: INK[2], transition: 'background-color 0.15s ease', fontFamily: "'Inter', system-ui, sans-serif" }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
+                style={{ border: `1px solid ${surface.border}`, borderRadius: 6, color: ink[2], transition: 'background-color 0.15s ease', fontFamily: "'Inter', system-ui, sans-serif" }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.05)' : surface.page)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
                 <Maximize2 className="w-4 h-4" /> Fullscreen
@@ -234,13 +238,13 @@ export function ProductRoadmapPage() {
       )}
 
       {isFullscreen && (
-        <div className="flex items-center justify-between px-4 py-1.5" style={{ background: SURFACE.page, borderBottom: `1px solid ${SURFACE.border}` }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: INK[1] }}>Product Roadmap</span>
+        <div className="flex items-center justify-between px-4 py-1.5" style={{ background: surface.page, borderBottom: `1px solid ${surface.border}` }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: ink[1] }}>Product Roadmap</span>
           <button
             onClick={toggleFullscreen}
             className="inline-flex items-center gap-1.5 h-7 px-2.5 text-xs font-medium rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-            style={{ border: `1px solid ${SURFACE.border}`, color: INK[2], transition: 'background-color 0.15s ease' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.borderLight)}
+            style={{ border: `1px solid ${surface.border}`, color: ink[2], transition: 'background-color 0.15s ease' }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.05)' : surface.borderLight)}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
           >
             <Minimize2 className="w-3.5 h-3.5" /> Exit
@@ -253,8 +257,8 @@ export function ProductRoadmapPage() {
       {isEmpty ? (
         <div className="flex flex-col items-center justify-center flex-1 gap-4">
           <div style={{ fontSize: 48 }}>📋</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: INK[2] }}>No initiatives on the roadmap yet</div>
-          <p style={{ fontSize: 13, fontWeight: 500, color: INK[3], maxWidth: 360, textAlign: 'center' }}>
+          <div style={{ fontSize: 16, fontWeight: 600, color: ink[2] }}>No initiatives on the roadmap yet</div>
+          <p style={{ fontSize: 13, fontWeight: 500, color: ink[3], maxWidth: 360, textAlign: 'center' }}>
             Add your first initiative from the product backlog to get started.
           </p>
           <button

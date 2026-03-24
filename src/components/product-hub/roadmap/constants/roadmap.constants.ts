@@ -65,6 +65,21 @@ export const SURFACE = {
   borderLight: '#F1F5F9',
 };
 
+// ── Dark Mode Variants (Nocturne One Surface Model) ──
+export const INK_DARK = {
+  1: 'rgba(248,244,240,0.92)',
+  2: 'rgba(248,244,240,0.72)',
+  3: 'rgba(248,244,240,0.60)',
+  4: 'rgba(248,244,240,0.50)',
+};
+
+export const SURFACE_DARK = {
+  page: '#1A1714',
+  card: 'transparent',
+  border: 'rgba(255,255,255,0.10)',
+  borderLight: 'rgba(255,255,255,0.06)',
+};
+
 // ── Typography — Catalyst spec: Sora (headings) + Inter (body) + JetBrains Mono (data) ──
 export const FONT = {
   heading: "'Sora', 'Plus Jakarta Sans', sans-serif",

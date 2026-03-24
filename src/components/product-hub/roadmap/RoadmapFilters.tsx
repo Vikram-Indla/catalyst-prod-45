@@ -1,14 +1,11 @@
 /**
  * Product Roadmap — Search, Filter Pills, Type Tabs, Legend
- * AUDIT #18: Entity Integration tab added
- * AUDIT #20: Search input styled
- * AUDIT #21: Legend matches bar gradients
- * AUDIT #17: Fixed washed-out tokens
  */
 import React, { useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import type { InitiativeType, QuickFilter } from './types/roadmap.types';
-import { TYPE_COLORS, INK, SURFACE } from './constants/roadmap.constants';
+import { TYPE_COLORS, INK, INK_DARK, SURFACE, SURFACE_DARK } from './constants/roadmap.constants';
+import { useTheme } from '@/hooks/useTheme';
 
 interface RoadmapFiltersProps {
   search: string;
@@ -29,7 +26,6 @@ const QUICK_FILTERS: { key: QuickFilter; label: string }[] = [
   { key: 'starred', label: '★ Starred' },
 ];
 
-// AUDIT #18: Entity Integration tab with amber dot
 const TYPE_TABS: { key: InitiativeType | 'all'; label: string; dot: string | null }[] = [
   { key: 'all', label: 'All Types', dot: null },
   { key: 'project', label: 'Projects', dot: TYPE_COLORS.project.solid },
@@ -38,7 +34,6 @@ const TYPE_TABS: { key: InitiativeType | 'all'; label: string; dot: string | nul
   { key: 'improvement', label: 'Improvements', dot: TYPE_COLORS.improvement.solid },
 ];
 
-// AUDIT #21: Legend uses exact bar gradients
 const LEGEND = [
   { label: 'Project', gradient: TYPE_COLORS.project.gradient },
   { label: 'Enhancement', gradient: TYPE_COLORS.enhancement.gradient },
@@ -49,6 +44,9 @@ const LEGEND = [
 export function RoadmapFilters({
   search, onSearchChange, quickFilter, onQuickFilterChange, typeFilter, onTypeFilterChange,
 }: RoadmapFiltersProps) {
+  const { isDark } = useTheme();
+  const ink = isDark ? INK_DARK : INK;
+  const surface = isDark ? SURFACE_DARK : SURFACE;
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -59,10 +57,9 @@ export function RoadmapFilters({
   return (
     <>
       {/* Search + Quick Filter Pills */}
-      <div className="flex items-center gap-3 px-4 py-2" style={{ borderBottom: `1px solid ${SURFACE.border}`, background: SURFACE.card }}>
-        {/* AUDIT #20: Proper search input */}
+      <div className="flex items-center gap-3 px-4 py-2" style={{ borderBottom: `1px solid ${surface.border}`, background: surface.card }}>
         <div className="relative" style={{ width: 224 }}>
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: INK[3] }} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: ink[3] }} />
           <input
             ref={searchRef}
             type="text"
@@ -71,10 +68,10 @@ export function RoadmapFilters({
             onChange={e => onSearchChange(e.target.value)}
             className="w-full h-8 pl-9 pr-3 text-xs"
             style={{
-              border: `1.5px solid ${SURFACE.border}`,
+              border: `1.5px solid ${surface.border}`,
               borderRadius: 6,
-              background: SURFACE.page,
-              color: INK[1],
+              background: isDark ? 'transparent' : surface.page,
+              color: ink[1],
               outline: 'none',
               transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
             }}
@@ -83,13 +80,12 @@ export function RoadmapFilters({
               e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)';
             }}
             onBlur={e => {
-              e.currentTarget.style.borderColor = SURFACE.border;
+              e.currentTarget.style.borderColor = surface.border;
               e.currentTarget.style.boxShadow = 'none';
             }}
           />
         </div>
 
-        {/* AUDIT #17: Fixed washed-out filter pills */}
         <div className="flex items-center gap-1.5">
           {QUICK_FILTERS.map(f => {
             const isActive = quickFilter === f.key;
@@ -103,12 +99,12 @@ export function RoadmapFilters({
                   fontSize: 12,
                   fontWeight: isActive ? 600 : 500,
                   background: isActive ? '#2563EB' : 'transparent',
-                  color: isActive ? '#FFFFFF' : INK[2],
+                  color: isActive ? '#FFFFFF' : ink[2],
                   border: isActive ? '1px solid #2563EB' : '1px solid transparent',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = SURFACE.page; }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.05)' : surface.page; }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
               >
                 {f.label}
@@ -119,7 +115,7 @@ export function RoadmapFilters({
       </div>
 
       {/* Type Tabs + Legend */}
-      <div className="flex items-center justify-between px-4 py-2" style={{ borderBottom: `1px solid ${SURFACE.border}`, background: SURFACE.card }}>
+      <div className="flex items-center justify-between px-4 py-2" style={{ borderBottom: `1px solid ${surface.border}`, background: surface.card }}>
         <div className="flex items-center gap-1">
           {TYPE_TABS.map(t => {
             const isActive = typeFilter === t.key;
@@ -130,12 +126,12 @@ export function RoadmapFilters({
                 className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
                 style={{
                   borderRadius: 6,
-                  background: isActive ? '#F8FAFC' : 'transparent',
-                  color: isActive ? INK[1] : INK[2],
+                  background: isActive ? (isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC') : 'transparent',
+                  color: isActive ? ink[1] : ink[2],
                   borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                   transition: 'all 0.15s ease',
                 }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = SURFACE.page; }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.05)' : surface.page; }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
               >
                 {t.dot && (
@@ -150,13 +146,12 @@ export function RoadmapFilters({
           })}
         </div>
 
-        {/* AUDIT #21: Legend with matching gradients */}
         <div className="flex items-center gap-3">
-          <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: INK[4] }}>Legend</span>
+          <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: ink[4] }}>Legend</span>
           {LEGEND.map(l => (
             <div key={l.label} className="flex items-center gap-1.5">
               <div style={{ width: 16, height: 6, borderRadius: 2, background: l.gradient }} />
-              <span style={{ fontSize: 11, fontWeight: 500, color: INK[2] }}>{l.label}</span>
+              <span style={{ fontSize: 11, fontWeight: 500, color: ink[2] }}>{l.label}</span>
             </div>
           ))}
         </div>

@@ -131,6 +131,7 @@
    SECTION 2: DARK MODE OVERRIDES
    ═══════════════════════════════════════════════════════════════════ */
 
+.dark [data-theme="dark"],
 [data-theme="dark"] {
   --roadmap-type-enhancement:       var(--cp-teal-40);
   --roadmap-type-enhancement-bg:    rgba(13, 148, 136, 0.15);
@@ -148,15 +149,26 @@
   --roadmap-type-improvement-bg:    rgba(22, 163, 74, 0.15);
   --roadmap-type-improvement-bar:   linear-gradient(135deg, #4ADE80, #22C55E);
 
-  --roadmap-timeline-header-bg:     var(--cp-bg-secondary);
-  --roadmap-timeline-quarter-text:  var(--cp-text-secondary);
-  --roadmap-timeline-month-text:    var(--cp-text-primary);
-  --roadmap-timeline-grid:          var(--cp-border-subtle);
+  --roadmap-timeline-header-bg:     rgba(255,255,255,0.03);
+  --roadmap-timeline-quarter-text:  rgba(248,244,240,0.72);
+  --roadmap-timeline-month-text:    rgba(248,244,240,0.92);
+  --roadmap-timeline-grid:          rgba(255,255,255,0.06);
 
-  --roadmap-group-bg:               var(--cp-bg-tertiary);
-  --roadmap-group-text:             var(--cp-text-secondary);
+  --roadmap-group-bg:               rgba(255,255,255,0.03);
+  --roadmap-group-text:             rgba(248,244,240,0.72);
+  --roadmap-group-border:           rgba(255,255,255,0.08);
+  --roadmap-group-count-bg:         rgba(255,255,255,0.05);
+  --roadmap-group-count-border:     rgba(255,255,255,0.10);
   
-  --roadmap-kpi-bg:                 var(--cp-bg-elevated);
+  --roadmap-kpi-bg:                 transparent;
+  --roadmap-kpi-border:             rgba(255,255,255,0.08);
+  
+  --roadmap-bar-shadow:             none;
+  --roadmap-bar-shadow-hover:       0 4px 12px rgba(0,0,0,0.3);
+}
+.dark .roadmap-group-header:hover,
+[data-theme="dark"] .roadmap-group-header:hover {
+  background: rgba(255,255,255,0.05);
 }
 
 

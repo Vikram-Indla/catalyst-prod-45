@@ -111,6 +111,84 @@
   --pb-row-h: var(--cp-size-table-row);
 }
 
+/* ═══ DARK MODE — Nocturne One Surface Model ═══ */
+.dark [data-module="product-backlog"],
+[data-theme="dark"] [data-module="product-backlog"] {
+  --cp-bg-page: #1A1714;
+  --cp-bg-surface: transparent;
+  --cp-bg-sunken: rgba(255,255,255,0.03);
+  --cp-bg-elevated: transparent;
+
+  --cp-text-primary: rgba(248,244,240,0.92);
+  --cp-text-secondary: rgba(248,244,240,0.85);
+  --cp-text-tertiary: rgba(248,244,240,0.72);
+  --cp-text-muted: rgba(248,244,240,0.50);
+  --cp-text-link: #60A5FA;
+
+  --cp-border-subtle: rgba(255,255,255,0.06);
+  --cp-border-default: rgba(255,255,255,0.10);
+  --cp-border-strong: rgba(255,255,255,0.18);
+
+  --cp-interact-hover: rgba(255,255,255,0.04);
+  --cp-interact-press: rgba(255,255,255,0.08);
+  --cp-interact-selected: rgba(59,130,246,0.10);
+  --cp-interact-selected-hover: rgba(59,130,246,0.15);
+
+  --cp-toolbar-bg: rgba(255,255,255,0.05);
+  --cp-toolbar-bg-hover: rgba(255,255,255,0.08);
+  --cp-toolbar-bg-press: rgba(255,255,255,0.12);
+  --cp-toolbar-bg-active: rgba(59,130,246,0.12);
+
+  --cp-input-bg: transparent;
+  --cp-input-border: rgba(255,255,255,0.12);
+  --cp-input-border-hover: rgba(255,255,255,0.20);
+
+  --cp-shadow-xs: none;
+  --cp-shadow-focus: 0 0 0 2px rgba(59,130,246,0.25);
+
+  --cp-lozenge-grey-bg: rgba(255,255,255,0.08);
+  --cp-lozenge-grey-text: rgba(248,244,240,0.72);
+  --cp-lozenge-blue-bg: rgba(59,130,246,0.15);
+  --cp-lozenge-blue-text: #60A5FA;
+  --cp-lozenge-green-bg: rgba(22,163,74,0.15);
+  --cp-lozenge-green-text: #86EFAC;
+
+  background-color: #1A1714 !important;
+}
+.dark [data-module="product-backlog"] .flex-1,
+[data-theme="dark"] [data-module="product-backlog"] .flex-1 {
+  background-color: #1A1714 !important;
+}
+.dark .pb-table,
+[data-theme="dark"] .pb-table {
+  background-color: transparent !important;
+}
+.dark .pb-table thead,
+.dark .pb-table thead tr,
+.dark .pb-table thead th,
+[data-theme="dark"] .pb-table thead,
+[data-theme="dark"] .pb-table thead tr,
+[data-theme="dark"] .pb-table thead th {
+  background-color: rgba(255,255,255,0.03) !important;
+  color: rgba(248,244,240,0.50);
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+.dark .pb-table thead th:hover,
+[data-theme="dark"] .pb-table thead th:hover {
+  background-color: rgba(255,255,255,0.06) !important;
+}
+.dark .pb-table tbody,
+.dark .pb-table tbody tr,
+[data-theme="dark"] .pb-table tbody,
+[data-theme="dark"] .pb-table tbody tr {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+.dark .pb-table tbody tr:hover,
+[data-theme="dark"] .pb-table tbody tr:hover {
+  background: rgba(255,255,255,0.04) !important;
+}
+
 /* ═══ Page Header ═══ */
 .pb-page-header {
   padding: 24px 28px 16px;
