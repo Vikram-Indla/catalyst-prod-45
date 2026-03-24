@@ -341,7 +341,19 @@ export default function IdeasBacklogPage() {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const s = STATUS_LOZENGE_COLORS[status] ?? { bg: '#DFE1E6', text: '#253858' };
+  const { isDark } = useTheme();
+  const darkColors: Record<string, { bg: string; text: string }> = {
+    'Draft':                    { bg: 'rgba(255,255,255,0.08)', text: 'rgba(248,244,240,0.72)' },
+    'Submitted':                { bg: 'rgba(255,255,255,0.08)', text: 'rgba(248,244,240,0.72)' },
+    'Under Review':             { bg: 'rgba(59,130,246,0.15)', text: '#93C5FD' },
+    'Approved':                 { bg: 'rgba(59,130,246,0.15)', text: '#93C5FD' },
+    'Rejected':                 { bg: 'rgba(255,255,255,0.08)', text: 'rgba(248,244,240,0.72)' },
+    'Converted':                { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
+    'Converted to Initiative':  { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
+  };
+  const s = isDark
+    ? (darkColors[status] ?? { bg: 'rgba(255,255,255,0.08)', text: 'rgba(248,244,240,0.72)' })
+    : (STATUS_LOZENGE_COLORS[status] ?? { bg: '#DFE1E6', text: '#253858' });
   const label = status === 'Converted to Initiative' ? 'CONVERTED' : status.toUpperCase();
   return (
     <span style={{
