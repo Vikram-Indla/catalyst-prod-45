@@ -19,7 +19,7 @@ export const RH = {
   primaryLt: '#EFF6FF',
   teal: '#0D9488',
   success: '#16A34A',
-  successBg: '#E3FCEF',
+  successBg: '#1B7F37',
   warning: '#D97706',
   danger: '#DC2626',
   dangerBg: '#FEF2F2',
@@ -95,25 +95,25 @@ export const CHG_STATUS_ORDER: string[] = ['new', 'in_uat', 'in_beta', 'in_produ
 
 // Risk badges
 export const RISK_BADGE: Record<string, { bg: string; text: string }> = {
-  standard: { bg: '#DFE1E6', text: '#253858' },
-  low: { bg: '#DFE1E6', text: '#253858' },
+  standard: { bg: '#DFE1E6', text: '#42526E' },
+  low: { bg: '#DFE1E6', text: '#42526E' },
   high: { bg: '#FEF2F2', text: '#DC2626' },
   emergency: { bg: '#FEF2F2', text: '#991B1B' },
   critical: { bg: '#FEF2F2', text: '#991B1B' },
-  medium: { bg: '#DFE1E6', text: '#253858' },
+  medium: { bg: '#DFE1E6', text: '#42526E' },
 };
 
 // Source badges
 export const SOURCE_BADGE: Record<string, { bg: string; text: string }> = {
-  jira: { bg: '#DFE1E6', text: '#253858' },
-  catalyst: { bg: '#DEEBFF', text: '#0747A6' },
+  jira: { bg: '#DFE1E6', text: '#42526E' },
+  catalyst: { bg: '#0C66E4', text: '#FFFFFF' },
 };
 
 // Deployment result badges (only shown when status=IN_PRODUCTION)
 export const DEPLOY_RESULT_BADGE: Record<string, { bg: string; text: string }> = {
-  success: { bg: '#E3FCEF', text: '#006644' },
+  success: { bg: '#1B7F37', text: '#FFFFFF' },
   rolled_back: { bg: '#FEF2F2', text: '#991B1B' },
-  monitoring: { bg: '#DEEBFF', text: '#0747A6' },
+  monitoring: { bg: '#0C66E4', text: '#FFFFFF' },
 };
 
 // Sign-off decision lozenges

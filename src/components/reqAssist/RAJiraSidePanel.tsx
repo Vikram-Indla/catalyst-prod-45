@@ -268,10 +268,10 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
   ];
 
   const getStageLozenge = () => {
-    if (!stage) return { bg: '#DFE1E6', color: '#253858', label: 'PENDING' };
-    if (stage === 'complete') return { bg: '#E3FCEF', color: '#006644', label: 'COMPLETE' };
-    if (stage === 'failed') return { bg: '#DFE1E6', color: '#253858', label: 'FAILED' };
-    return { bg: '#DEEBFF', color: '#0747A6', label: stage.toUpperCase() };
+    if (!stage) return { bg: '#DFE1E6', color: '#42526E', label: 'PENDING' };
+    if (stage === 'complete') return { bg: '#1B7F37', color: '#FFFFFF', label: 'COMPLETE' };
+    if (stage === 'failed') return { bg: '#DFE1E6', color: '#42526E', label: 'FAILED' };
+    return { bg: '#0C66E4', color: '#FFFFFF', label: stage.toUpperCase() };
   };
   const lozenge = getStageLozenge();
 
@@ -824,10 +824,10 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   ) : (
                     uatScenarios.map((s, i) => {
                       const uatStatusStyle = s.status === 'pass'
-                        ? { bg: '#E3FCEF', color: '#006644' }
+                        ? { bg: '#1B7F37', color: '#FFFFFF' }
                         : s.status === 'fail'
                           ? { bg: '#FFEBE6', color: '#BF2600' }
-                          : { bg: '#DFE1E6', color: '#253858' };
+                          : { bg: '#DFE1E6', color: '#42526E' };
                       return (
                         <div key={s.id || i} style={{
                           display: 'flex', alignItems: 'center', gap: 8, height: 36,

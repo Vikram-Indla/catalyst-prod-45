@@ -27,9 +27,9 @@ interface Props {
 function StatusLozenge({ status }: { status: string | null }) {
   const s = status || 'draft';
   const map: Record<string, { bg: string; color: string; label: string }> = {
-    draft:     { bg: '#DFE1E6', color: '#253858', label: 'DRAFT' },
-    reviewed:  { bg: '#DEEBFF', color: '#0747A6', label: 'REVIEWED' },
-    published: { bg: '#E3FCEF', color: '#006644', label: 'PUBLISHED' },
+    draft:     { bg: '#DFE1E6', color: '#42526E', label: 'DRAFT' },
+    reviewed:  { bg: '#0C66E4', color: '#FFFFFF', label: 'REVIEWED' },
+    published: { bg: '#1B7F37', color: '#FFFFFF', label: 'PUBLISHED' },
   };
   const m = map[s] ?? map.draft;
   return (
@@ -186,8 +186,8 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
         {/* Staleness banner */}
         {isStale && (
           <div style={{
-            margin: '12px 20px 0', background: '#DEEBFF', border: '1px solid #B3D4FF',
-            color: '#0747A6', borderRadius: 6, padding: '8px 12px',
+            margin: '12px 20px 0', background: '#0C66E4', border: '1px solid #B3D4FF',
+            color: '#FFFFFF', borderRadius: 6, padding: '8px 12px',
             display: 'flex', alignItems: 'center', gap: 8, fontSize: 12,
             fontFamily: "'Inter', sans-serif",
           }}>

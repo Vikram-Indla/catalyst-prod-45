@@ -184,7 +184,7 @@ export default function IdeationPage() {
             CONVERTED
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: '#006644' }}>
+            <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: '#FFFFFF' }}>
               {stats.converted}
             </span>
             <span style={{ fontSize: '11px', color: '#64748B' }}>→ Initiatives</span>

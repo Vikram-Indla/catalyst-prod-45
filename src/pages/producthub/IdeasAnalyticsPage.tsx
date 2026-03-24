@@ -12,10 +12,10 @@ const MONO = "'JetBrains Mono', monospace";
 const LIFECYCLE_ORDER = ['Draft', 'Submitted', 'Under Review', 'Approved', 'Converted to Initiative'];
 
 const STATUS_BAR_COLORS: Record<string, string> = {
-  'Draft': '#DFE1E6', 'Submitted': '#DFE1E6', 'Under Review': '#DEEBFF', 'Approved': '#DEEBFF', 'Converted to Initiative': '#E3FCEF',
+  'Draft': '#DFE1E6', 'Submitted': '#DFE1E6', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Initiative': '#1B7F37',
 };
 const STATUS_TEXT_COLORS: Record<string, string> = {
-  'Draft': '#253858', 'Submitted': '#253858', 'Under Review': '#0747A6', 'Approved': '#0747A6', 'Converted to Initiative': '#006644',
+  'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': '#FFFFFF', 'Approved': '#FFFFFF', 'Converted to Initiative': '#FFFFFF',
 };
 const STATUS_BAR_COLORS_DARK: Record<string, string> = {
   'Draft': 'rgba(255,255,255,0.08)', 'Submitted': 'rgba(255,255,255,0.08)', 'Under Review': 'rgba(59,130,246,0.15)',
@@ -121,7 +121,7 @@ export default function IdeasAnalyticsPage() {
                       width: `${Math.max((s.count / maxFunnel) * 100, s.count > 0 ? 8 : 0)}%`, height: '100%',
                       background: isDark ? (STATUS_BAR_COLORS_DARK[s.status] || 'rgba(255,255,255,0.08)') : (STATUS_BAR_COLORS[s.status] || '#DFE1E6'),
                       borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px',
-                      color: isDark ? (STATUS_TEXT_COLORS_DARK[s.status] || dk.t2) : (STATUS_TEXT_COLORS[s.status] || '#253858'),
+                      color: isDark ? (STATUS_TEXT_COLORS_DARK[s.status] || dk.t2) : (STATUS_TEXT_COLORS[s.status] || '#42526E'),
                       fontSize: '12px', fontWeight: 700, minWidth: s.count > 0 ? '32px' : undefined,
                     }}>{s.count}</div>
                   </div>
@@ -155,8 +155,8 @@ export default function IdeasAnalyticsPage() {
               <div key={t.theme} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                 <span style={{ width: '140px', fontSize: '12px', fontWeight: 600, color: dk.t2, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.theme}</span>
                 <div style={{ flex: 1, height: '20px', background: barTrack, borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
-                  <div style={{ width: `${(t.total / maxConvTheme) * 100}%`, height: '100%', background: isDark ? 'rgba(59,130,246,0.15)' : '#DEEBFF', borderRadius: '4px' }} />
-                  <div style={{ position: 'absolute', top: 0, left: 0, width: `${(t.converted / maxConvTheme) * 100}%`, height: '100%', background: isDark ? 'rgba(22,163,74,0.15)' : '#E3FCEF', borderRadius: '4px' }} />
+                  <div style={{ width: `${(t.total / maxConvTheme) * 100}%`, height: '100%', background: isDark ? 'rgba(59,130,246,0.15)' : '#0C66E4', borderRadius: '4px' }} />
+                  <div style={{ position: 'absolute', top: 0, left: 0, width: `${(t.converted / maxConvTheme) * 100}%`, height: '100%', background: isDark ? 'rgba(22,163,74,0.15)' : '#1B7F37', borderRadius: '4px' }} />
                 </div>
                 <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 700, color: dk.greenText, minWidth: '40px', textAlign: 'right' }}>{t.converted}/{t.total}</span>
               </div>

@@ -772,10 +772,10 @@ function StatusLozenge({ status, statusCategory }: { status: string; statusCateg
   // 1. Prioritise Jira's native status_category (always present)
   const cat = (statusCategory || '').toLowerCase().replace(/[_ ]/g, '');
   if (cat === 'done' || cat === 'completed') {
-    return <LozengeSpan bg="#E3FCEF" color="#006644" label="DONE" />;
+    return <LozengeSpan bg="#1B7F37" color="#FFFFFF" label="DONE" />;
   }
   if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started') {
-    return <LozengeSpan bg="#DEEBFF" color="#0747A6" label="IN PROGRESS" />;
+    return <LozengeSpan bg="#0C66E4" color="#FFFFFF" label="IN PROGRESS" />;
   }
   // cat === 'new' | 'todo' | '' → fall through to string matching for refined label
 
@@ -783,7 +783,7 @@ function StatusLozenge({ status, statusCategory }: { status: string; statusCateg
   const s = (status || '').toLowerCase();
   // Green — done
   if (['done','approved','completed','resolved','closed','released','verified','ready for production','beta ready','production ready','monitor'].some(k => s === k)) {
-    return <LozengeSpan bg="#E3FCEF" color="#006644" label="DONE" />;
+    return <LozengeSpan bg="#1B7F37" color="#FFFFFF" label="DONE" />;
   }
   // Blue — in progress
   if (['in progress','in review','active','analysis','in development','under implementation','implementation review',
@@ -793,9 +793,9 @@ function StatusLozenge({ status, statusCategory }: { status: string; statusCateg
        'awaiting info','ready for production'].some(k => s === k)) {
     // Refine label for review-type statuses
     if (['in review','code review','implementation review','ready for qa','in qa','retest','technical validation','end to end testing'].includes(s)) {
-      return <LozengeSpan bg="#DEEBFF" color="#0747A6" label="IN REVIEW" />;
+      return <LozengeSpan bg="#0C66E4" color="#FFFFFF" label="IN REVIEW" />;
     }
-    return <LozengeSpan bg="#DEEBFF" color="#0747A6" label="IN PROGRESS" />;
+    return <LozengeSpan bg="#0C66E4" color="#FFFFFF" label="IN PROGRESS" />;
   }
   // Grey — to do / waiting (default)
   let label = 'TO DO';
@@ -803,7 +803,7 @@ function StatusLozenge({ status, statusCategory }: { status: string; statusCateg
   else if (s === 'backlog') label = 'BACKLOG';
   else if (s === 'blocked') label = 'BLOCKED';
   else if (s === 'rejected') label = 'REJECTED';
-  return <LozengeSpan bg="#DFE1E6" color="#253858" label={label} />;
+  return <LozengeSpan bg="#DFE1E6" color="#42526E" label={label} />;
 }
 
 function LozengeSpan({ bg, color, label }: { bg: string; color: string; label: string }) {
@@ -991,13 +991,13 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
           <div style={{ padding: '12px 16px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{
-                width: '22px', height: '22px', borderRadius: '50%', background: '#E3FCEF',
+                width: '22px', height: '22px', borderRadius: '50%', background: '#1B7F37',
                 border: '1.5px solid #16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               }}>
                 <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
               <span style={{ fontSize: '14px', fontWeight: 650, color: '#0F172A' }}>Completed This Week</span>
-              <span style={{ fontSize: '11px', fontWeight: 700, color: '#006644', background: '#E3FCEF', padding: '2px 8px', borderRadius: '10px' }}>{doneCount}</span>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#FFFFFF', background: '#1B7F37', padding: '2px 8px', borderRadius: '10px' }}>{doneCount}</span>
             </div>
             <button onClick={(e) => { e.stopPropagation(); setShowDone(false); }}
               style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', color: '#64748B', fontSize: '14px' }}
@@ -1081,7 +1081,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
             <span style={{ color: '#94A3B8' }}>·</span>
             <span style={{ fontWeight: 650, color: staleItems.length > 0 ? '#DC2626' : '#334155' }}>{staleItems.length} stale</span>
             <span style={{ color: '#94A3B8' }}>·</span>
-            <span style={{ fontWeight: 650, color: doneCount > 0 ? '#006644' : '#334155' }}>{doneCount} done</span>
+            <span style={{ fontWeight: 650, color: doneCount > 0 ? '#FFFFFF' : '#334155' }}>{doneCount} done</span>
           </div>
 
           {/* Divider */}
@@ -1140,13 +1140,13 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, overview, 
           {/* Completed Section */}
           {doneItems.length > 0 && (
             <div style={{ textAlign: 'left' as const, borderInlineStart: '3px solid #16A34A', paddingInlineStart: '12px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#006644', textTransform: 'uppercase' as const, letterSpacing: '0.05em', marginBottom: '10px' }}>Completed</div>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase' as const, letterSpacing: '0.05em', marginBottom: '10px' }}>Completed</div>
               {doneItems.map(item => {
                 const closedDate = item.resolved_at || item.updated_at;
                 const resolvedLabel = closedDate ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
                 return (
                   <div key={item.id} onClick={() => onSelect(item)} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-                    <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#E3FCEF', border: '1px solid #16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                    <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#1B7F37', border: '1px solid #16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
                       <svg width="8" height="8" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     </div>
                     <div style={{ flex: 1 }}>
@@ -1341,7 +1341,7 @@ function CompletedSummaryBar({ items, testId, onViewClick }: { items: R360WorkIt
   const resolvedLabel = resolvedDate ? new Date(resolvedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
   return (
     <div data-testid={testId} style={{
-      width: '100%', background: '#E3FCEF', borderRadius: '6px',
+      width: '100%', background: '#1B7F37', borderRadius: '6px',
       padding: '8px 14px', margin: '12px 0 8px',
       display: 'flex', alignItems: 'center', gap: '8px',
       cursor: 'pointer', transition: 'all 0.15s',
@@ -1350,14 +1350,14 @@ function CompletedSummaryBar({ items, testId, onViewClick }: { items: R360WorkIt
     onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; }}
     tabIndex={0}
     role="button">
-      <span style={{ fontSize: '14px', color: '#006644', fontWeight: 700 }}>✓</span>
-      <span style={{ fontSize: '12px', fontWeight: 650, color: '#006644' }}>{completedItems.length} completed this week</span>
+      <span style={{ fontSize: '14px', color: '#FFFFFF', fontWeight: 700 }}>✓</span>
+      <span style={{ fontSize: '12px', fontWeight: 650, color: '#FFFFFF' }}>{completedItems.length} completed this week</span>
       <span style={{ color: '#047857' }}>·</span>
       <span style={{ fontSize: '12px', color: '#047857' }}>{firstDone?.item_key} Done {resolvedLabel}</span>
       <button
         onClick={onViewClick}
         style={{
-          marginLeft: 'auto', fontSize: '11px', fontWeight: 650, color: '#006644',
+          marginLeft: 'auto', fontSize: '11px', fontWeight: 650, color: '#FFFFFF',
           border: '1px solid rgba(0,100,68,0.2)', borderRadius: '4px',
           padding: '2px 8px', cursor: 'pointer', background: 'transparent',
           transition: 'background 80ms',
@@ -1420,9 +1420,9 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
   const getChronologyStatusLozengeColors = (status: string, statusCategory?: string): { background: string; color: string } => {
     // 1. Prioritise status_category
     const cat = (statusCategory || '').toLowerCase().replace(/[_ ]/g, '');
-    if (cat === 'done' || cat === 'completed') return { background: '#E3FCEF', color: '#006644' };
-    if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started') return { background: '#DEEBFF', color: '#0747A6' };
-    if (cat === 'new' || cat === 'todo') return { background: '#DFE1E6', color: '#253858' };
+    if (cat === 'done' || cat === 'completed') return { background: '#1B7F37', color: '#FFFFFF' };
+    if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started') return { background: '#0C66E4', color: '#FFFFFF' };
+    if (cat === 'new' || cat === 'todo') return { background: '#DFE1E6', color: '#42526E' };
 
     // 2. Fallback: string match
     const s = (status || '').toUpperCase().trim();
@@ -1430,7 +1430,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
     // GREEN: work is finished
     const greenStatuses = ['DONE', 'COMPLETED', 'APPROVED', 'RESOLVED', 'CLOSED', 'RELEASED', 'VERIFIED',
       'READY FOR PRODUCTION', 'BETA READY', 'PRODUCTION READY', 'MONITOR'];
-    if (greenStatuses.includes(s)) return { background: '#E3FCEF', color: '#006644' };
+    if (greenStatuses.includes(s)) return { background: '#1B7F37', color: '#FFFFFF' };
 
     // BLUE: work is actively happening
     const blueStatuses = [
@@ -1442,10 +1442,10 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
       'READY FOR DEVELOPMENT', 'IN ENTITY INTEGRATION', 'TECHNICAL VALIDATION',
       'END TO END TESTING', 'DEFERRED FOR INT', 'AWAITING INFO',
     ];
-    if (blueStatuses.includes(s)) return { background: '#DEEBFF', color: '#0747A6' };
+    if (blueStatuses.includes(s)) return { background: '#0C66E4', color: '#FFFFFF' };
 
     // GREY (default — never "Unknown")
-    return { background: '#DFE1E6', color: '#253858' };
+    return { background: '#DFE1E6', color: '#42526E' };
   };
 
   // Render a single chronology card

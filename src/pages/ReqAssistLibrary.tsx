@@ -793,18 +793,18 @@ function StatusBadge({ status, epicCount, pipelineStage }: { status: string; epi
   const ps = pipelineStage ?? status;
 
   if (ps === 'failed') {
-    bg = '#DFE1E6'; color = '#253858'; label = 'FAILED';
+    bg = '#DFE1E6'; color = '#42526E'; label = 'FAILED';
   } else if (epicCount > 0) {
     // Having epics = document is usable regardless of pipeline_stage
-    bg = '#E3FCEF'; color = '#006644'; label = 'READY';
+    bg = '#1B7F37'; color = '#FFFFFF'; label = 'READY';
   } else if (ps === 'complete') {
     // pipeline complete but no epics yet → still READY
-    bg = '#E3FCEF'; color = '#006644'; label = 'READY';
+    bg = '#1B7F37'; color = '#FFFFFF'; label = 'READY';
   } else if (['extract', 'process', 'validate', 'distribute', 'processing'].includes(ps)) {
-    bg = '#DEEBFF'; color = '#0747A6'; label = 'PROCESSING';
+    bg = '#0C66E4'; color = '#FFFFFF'; label = 'PROCESSING';
   } else {
     // intake, pending, or unknown
-    bg = '#DFE1E6'; color = '#253858'; label = 'PENDING';
+    bg = '#DFE1E6'; color = '#42526E'; label = 'PENDING';
   }
 
   return (
@@ -873,7 +873,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           padding: '0 6px', height: 20, borderRadius: 3,
           fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
           letterSpacing: '0.03em', whiteSpace: 'nowrap',
-          background: '#E3FCEF', color: '#006644',
+          background: '#1B7F37', color: '#FFFFFF',
           fontFamily: "'Inter', sans-serif",
         }}>AI INDEXED</span>
         <button

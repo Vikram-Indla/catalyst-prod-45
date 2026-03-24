@@ -15,9 +15,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 const COLUMNS = [
   { key: 'triage', label: 'TRIAGE', dotColor: '#DFE1E6' },
   { key: 'open', label: 'OPEN', dotColor: '#DFE1E6' },
-  { key: 'in_progress', label: 'IN PROGRESS', dotColor: '#DEEBFF' },
-  { key: 'to_committee', label: 'COMMITTEE', dotColor: '#DEEBFF' },
-  { key: 'resolved', label: 'RESOLVED', dotColor: '#E3FCEF' },
+  { key: 'in_progress', label: 'IN PROGRESS', dotColor: '#0C66E4' },
+  { key: 'to_committee', label: 'COMMITTEE', dotColor: '#0C66E4' },
+  { key: 'resolved', label: 'RESOLVED', dotColor: '#1B7F37' },
 ];
 
 export default function IncidentKanbanPage() {

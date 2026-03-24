@@ -37,18 +37,18 @@ const PRIORITY_STYLES: Record<string, { bg: string; color: string }> = {
 };
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  'Open':        { bg: '#DFE1E6', color: '#253858' },
-  'To Do':       { bg: '#DFE1E6', color: '#253858' },
-  'Backlog':     { bg: '#DFE1E6', color: '#253858' },
-  'In Progress': { bg: '#DEEBFF', color: '#0747A6' },
-  'In Review':   { bg: '#DEEBFF', color: '#0747A6' },
-  'Done':        { bg: '#E3FCEF', color: '#006644' },
-  'Resolved':    { bg: '#E3FCEF', color: '#006644' },
-  'Closed':      { bg: '#E3FCEF', color: '#006644' },
+  'Open':        { bg: '#DFE1E6', color: '#42526E' },
+  'To Do':       { bg: '#DFE1E6', color: '#42526E' },
+  'Backlog':     { bg: '#DFE1E6', color: '#42526E' },
+  'In Progress': { bg: '#0C66E4', color: '#FFFFFF' },
+  'In Review':   { bg: '#0C66E4', color: '#FFFFFF' },
+  'Done':        { bg: '#1B7F37', color: '#FFFFFF' },
+  'Resolved':    { bg: '#1B7F37', color: '#FFFFFF' },
+  'Closed':      { bg: '#1B7F37', color: '#FFFFFF' },
 };
 
 function Lozenge({ label, styles }: { label: string; styles: Record<string, { bg: string; color: string }> }) {
-  const s = styles[label] || { bg: '#DFE1E6', color: '#253858' };
+  const s = styles[label] || { bg: '#DFE1E6', color: '#42526E' };
   return (
     <span title={label} style={{
       display: 'inline-block', padding: '2px 6px', borderRadius: 3,
@@ -533,8 +533,8 @@ function Step2({
           style={{
             height: 36, borderRadius: 6, padding: '0 12px', fontSize: 13, fontWeight: 600,
             cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-            background: pdfOnly ? '#DEEBFF' : '#F3F4F6',
-            color: pdfOnly ? '#0747A6' : '#374151',
+            background: pdfOnly ? '#0C66E4' : '#F3F4F6',
+            color: pdfOnly ? '#FFFFFF' : '#374151',
             border: `0.75px solid ${pdfOnly ? '#BFDBFE' : '#E5E7EB'}`,
           }}
         >PDF Only</button>
@@ -640,7 +640,7 @@ function Step2({
                 </div>
                 <div style={{ width: 100, padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                   {reActivated ? (
-                    <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 3, background: '#DEEBFF', color: '#0747A6', fontFamily: "'Inter', sans-serif" }}>Re-import</span>
+                    <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 3, background: '#0C66E4', color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>Re-import</span>
                   ) : imported ? (
                     <>
                       <span className="group-hover:hidden" style={{ fontSize: 11, padding: '2px 6px', borderRadius: 3, background: '#F3F4F6', color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Imported</span>

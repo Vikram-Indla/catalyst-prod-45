@@ -26,10 +26,10 @@ function getTypeIcon(typeName: string): string | null {
 // StatusLozenge — GUARDRAIL: 3-color only
 function getStatusStyle(category: string): { bg: string; color: string } {
   switch (category) {
-    case 'in_progress': return { bg: '#DEEBFF', color: '#0747A6' };
-    case 'done': return { bg: '#E3FCEF', color: '#006644' };
-    case 'terminal': return { bg: '#DFE1E6', color: '#253858' };
-    default: return { bg: '#DFE1E6', color: '#253858' };
+    case 'in_progress': return { bg: '#0C66E4', color: '#FFFFFF' };
+    case 'done': return { bg: '#1B7F37', color: '#FFFFFF' };
+    case 'terminal': return { bg: '#DFE1E6', color: '#42526E' };
+    default: return { bg: '#DFE1E6', color: '#42526E' };
   }
 }
 

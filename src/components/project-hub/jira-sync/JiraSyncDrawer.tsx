@@ -53,10 +53,10 @@ function formatDate(iso: string): string {
 function StatusLozenge({ status }: { status: string }) {
   let bg: string, text: string;
   switch (status) {
-    case 'completed': bg = '#E3FCEF'; text = '#006644'; break;
-    case 'running': bg = '#DEEBFF'; text = '#0747A6'; break;
+    case 'completed': bg = '#1B7F37'; text = '#FFFFFF'; break;
+    case 'running': bg = '#0C66E4'; text = '#FFFFFF'; break;
     case 'failed': bg = '#FFEBE6'; text = '#BF2600'; break;
-    default: bg = '#DFE1E6'; text = '#253858';
+    default: bg = '#DFE1E6'; text = '#42526E';
   }
   return (
     <span style={{
@@ -224,7 +224,7 @@ export function JiraSyncDrawer({
                     style={{
                       height: 24, padding: '0 8px', borderRadius: 3,
                       border: '0.75px solid #E2E8F0', background: 'none',
-                      fontSize: 10, fontWeight: 600, color: '#253858',
+                      fontSize: 10, fontWeight: 600, color: '#42526E',
                       fontFamily: 'Inter, sans-serif', cursor: 'pointer',
                     }}
                   >

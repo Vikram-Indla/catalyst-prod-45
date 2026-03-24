@@ -57,18 +57,18 @@ function useUpdateIdea() {
 
 // ─── Status Lozenge — 3-color guardrail, NO DOTS ─────────────────
 const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
-  'Draft':        { bg: '#DFE1E6', text: '#253858' },
-  'New':          { bg: '#DFE1E6', text: '#253858' },
-  'Submitted':    { bg: '#DEEBFF', text: '#0747A6' },
-  'Under Review': { bg: '#DEEBFF', text: '#0747A6' },
-  'In Progress':  { bg: '#DEEBFF', text: '#0747A6' },
-  'Approved':     { bg: '#E3FCEF', text: '#006644' },
-  'Converted':    { bg: '#E3FCEF', text: '#006644' },
-  'Done':         { bg: '#E3FCEF', text: '#006644' },
+  'Draft':        { bg: '#DFE1E6', text: '#42526E' },
+  'New':          { bg: '#DFE1E6', text: '#42526E' },
+  'Submitted':    { bg: '#0C66E4', text: '#FFFFFF' },
+  'Under Review': { bg: '#0C66E4', text: '#FFFFFF' },
+  'In Progress':  { bg: '#0C66E4', text: '#FFFFFF' },
+  'Approved':     { bg: '#1B7F37', text: '#FFFFFF' },
+  'Converted':    { bg: '#1B7F37', text: '#FFFFFF' },
+  'Done':         { bg: '#1B7F37', text: '#FFFFFF' },
 };
 
 function StatusLozenge({ status }: { status: string }) {
-  const s = STATUS_LOZENGE[status] ?? { bg: '#DFE1E6', text: '#253858' };
+  const s = STATUS_LOZENGE[status] ?? { bg: '#DFE1E6', text: '#42526E' };
   return (
     <span style={{
       display: 'inline-block', padding: '2px 8px', borderRadius: '3px',
@@ -499,10 +499,10 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px',
                 borderRadius: '3px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
                 ...(impactScore >= 3.5
-                  ? { backgroundColor: '#E3FCEF', color: '#006644' }
+                  ? { backgroundColor: '#1B7F37', color: '#FFFFFF' }
                   : impactScore >= 2.0
-                    ? { backgroundColor: '#DEEBFF', color: '#0747A6' }
-                    : { backgroundColor: '#DFE1E6', color: '#253858' }),
+                    ? { backgroundColor: '#0C66E4', color: '#FFFFFF' }
+                    : { backgroundColor: '#DFE1E6', color: '#42526E' }),
               }}>
                 {impactScore >= 3.5 ? 'HIGH' : impactScore >= 2.0 ? 'MEDIUM' : 'LOW'}
               </span>

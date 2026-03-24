@@ -338,8 +338,8 @@ function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {[
               { count: todoTasks.length, label: 'To Do', bg: '#DFE1E6', color: '#44546F' },
-              { count: progressTasks.length, label: 'In Progress', bg: '#DEEBFF', color: '#0747A6' },
-              { count: doneTasks.length, label: 'Done', bg: '#E3FCEF', color: '#006644' },
+              { count: progressTasks.length, label: 'In Progress', bg: '#0C66E4', color: '#FFFFFF' },
+              { count: doneTasks.length, label: 'Done', bg: '#1B7F37', color: '#FFFFFF' },
             ].map(s => (
               <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ display: 'inline-block', padding: '1px 6px', borderRadius: 3, backgroundColor: s.bg, color: s.color, fontSize: 11, fontWeight: 700 }}>{s.count}</span>

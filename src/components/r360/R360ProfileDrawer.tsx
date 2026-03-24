@@ -14,11 +14,11 @@ import { getWeekNumber } from '@/constants/r360WeekConfig';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const STATUS_MAP: Record<string, { bg: string; color: string; label: string }> = {
-  TO_DO:       { bg: '#DFE1E6', color: '#253858', label: 'TO DO' },
-  IN_PROGRESS: { bg: '#DEEBFF', color: '#0747A6', label: 'IN PROGRESS' },
-  IN_REVIEW:   { bg: '#DEEBFF', color: '#0747A6', label: 'IN REVIEW' },
-  DONE:        { bg: '#E3FCEF', color: '#006644', label: 'DONE' },
-  BACKLOG:     { bg: '#DFE1E6', color: '#253858', label: 'BACKLOG' },
+  TO_DO:       { bg: '#DFE1E6', color: '#42526E', label: 'TO DO' },
+  IN_PROGRESS: { bg: '#0C66E4', color: '#FFFFFF', label: 'IN PROGRESS' },
+  IN_REVIEW:   { bg: '#0C66E4', color: '#FFFFFF', label: 'IN REVIEW' },
+  DONE:        { bg: '#1B7F37', color: '#FFFFFF', label: 'DONE' },
+  BACKLOG:     { bg: '#DFE1E6', color: '#42526E', label: 'BACKLOG' },
 };
 
 const TYPE_COLORS: Record<string, { color: string; opacity: number }> = {
@@ -192,11 +192,11 @@ function computeLoadColour(openCount: number, roleAvg: number): string {
 function R360StatusLozenge({ status }: { status: string }) {
   const s = (status ?? '').toLowerCase().replace(/[\s_-]/g, '');
   let bg = '#DFE1E6';
-  let color = '#253858';
+  let color = '#42526E';
   if (['done', 'closed', 'completed', 'approved', 'resolved'].includes(s)) {
-    bg = '#E3FCEF'; color = '#006644';
+    bg = '#1B7F37'; color = '#FFFFFF';
   } else if (['inprogress', 'inreview', 'active', 'started'].includes(s)) {
-    bg = '#DEEBFF'; color = '#0747A6';
+    bg = '#0C66E4'; color = '#FFFFFF';
   }
   return (
     <span style={{
@@ -276,7 +276,7 @@ function FilteredListPanel({
           <span style={{ fontSize: 13, fontWeight: 600, color: INK1 }}>{label}</span>
           <span style={{
             display: 'inline-flex', alignItems: 'center',
-            backgroundColor: '#DFE1E6', color: '#253858',
+            backgroundColor: '#DFE1E6', color: '#42526E',
             fontSize: '11px', fontWeight: 700, padding: '0 6px', height: '20px', borderRadius: '3px',
           }}>{items.length} item{items.length !== 1 ? 's' : ''}</span>
         </div>

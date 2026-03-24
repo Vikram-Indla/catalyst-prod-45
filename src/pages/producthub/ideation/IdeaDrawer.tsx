@@ -27,7 +27,7 @@ const RELEASES = ['Mar 2026', 'Jun 2026', 'Sep 2026', 'Dec 2026'];
 const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
 function StatusLoz({ status }: { status: string }) {
-  const s = STATUS_LOZENGE_COLORS[status] ?? { bg: '#DFE1E6', text: '#253858' };
+  const s = STATUS_LOZENGE_COLORS[status] ?? { bg: '#DFE1E6', text: '#42526E' };
   const label = status === 'Converted to Initiative' ? 'CONVERTED' : status.toUpperCase();
   return (
     <span style={{
@@ -180,8 +180,8 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
 
   const impactLevel = composite >= 3.51 ? 'CRITICAL' : composite >= 2.51 ? 'HIGH' : composite >= 0.01 ? 'MEDIUM' : 'LOW';
   const levelColors = composite >= 3.51
-    ? { bg: '#E3FCEF', text: '#006644' }
-    : composite >= 0.01 ? { bg: '#DEEBFF', text: '#0747A6' } : { bg: '#DFE1E6', text: '#253858' };
+    ? { bg: '#1B7F37', text: '#FFFFFF' }
+    : composite >= 0.01 ? { bg: '#0C66E4', text: '#FFFFFF' } : { bg: '#DFE1E6', text: '#42526E' };
 
   const dimensions = [
     { letter: 'I', name: 'Investor Fit', weight: '25%', value: investorFit, set: setInvestorFit },

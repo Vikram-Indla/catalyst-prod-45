@@ -13,12 +13,12 @@ interface CheckResult {
 }
 
 const statusColors: Record<string, { bg: string; fg: string; label: string }> = {
-  pass: { bg: "#E3FCEF", fg: "#006644", label: "PASS" },
+  pass: { bg: "#1B7F37", fg: "#FFFFFF", label: "PASS" },
   fail: { bg: "#FFEBE6", fg: "#BF2600", label: "FAIL" },
   warn: { bg: "#FFFAE6", fg: "#974F0C", label: "WARN" },
-  info: { bg: "#DEEBFF", fg: "#0747A6", label: "INFO" },
+  info: { bg: "#0C66E4", fg: "#FFFFFF", label: "INFO" },
   pending: { bg: "#F4F5F7", fg: "#6B778C", label: "PENDING" },
-  running: { bg: "#DEEBFF", fg: "#0747A6", label: "RUNNING" },
+  running: { bg: "#0C66E4", fg: "#FFFFFF", label: "RUNNING" },
 };
 
 const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
@@ -262,7 +262,7 @@ export default function RAGAuditPage() {
   const passCount = (layer: number) => results.filter((r) => r.layer === layer && r.status === "pass").length;
   const totalForLayer = (layer: number) => checks.filter((c) => c.layer === layer).length;
   const totalPass = results.filter((r) => r.status === "pass").length;
-  const summaryBg = totalPass >= 22 ? "#E3FCEF" : totalPass >= 15 ? "#FFFAE6" : "#FFEBE6";
+  const summaryBg = totalPass >= 22 ? "#1B7F37" : totalPass >= 15 ? "#FFFAE6" : "#FFEBE6";
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px", fontFamily: "Sora, system-ui, sans-serif" }}>

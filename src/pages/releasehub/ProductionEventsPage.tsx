@@ -7,15 +7,15 @@ import { EmptyState } from '@/components/releasehub/EmptyState';
 import { format } from 'date-fns';
 
 const EVENT_TYPE_LOZENGE: Record<string, { bg: string; color: string; label: string }> = {
-  DEPLOYMENT: { bg: '#E3FCEF', color: '#006644', label: 'DEPLOYMENT' },
-  HOTFIX: { bg: '#DFE1E6', color: '#253858', label: 'HOTFIX' },
+  DEPLOYMENT: { bg: '#1B7F37', color: '#FFFFFF', label: 'DEPLOYMENT' },
+  HOTFIX: { bg: '#DFE1E6', color: '#42526E', label: 'HOTFIX' },
   ROLLBACK: { bg: '#FEF2F2', color: '#991B1B', label: 'ROLLBACK' },
 };
 
 const RESULT_BADGE: Record<string, { bg: string; color: string; label: string; icon?: boolean }> = {
-  SUCCESS: { bg: '#E3FCEF', color: '#006644', label: 'SUCCESS', icon: true },
+  SUCCESS: { bg: '#1B7F37', color: '#FFFFFF', label: 'SUCCESS', icon: true },
   ROLLED_BACK: { bg: '#FEF2F2', color: '#991B1B', label: 'ROLLED BACK' },
-  MONITORING: { bg: '#DEEBFF', color: '#0747A6', label: 'MONITORING' },
+  MONITORING: { bg: '#0C66E4', color: '#FFFFFF', label: 'MONITORING' },
 };
 
 function Lozenge({ bg, color, label, icon }: { bg: string; color: string; label: string; icon?: boolean }) {

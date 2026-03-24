@@ -193,8 +193,8 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
         <span style={{
           display: 'inline-flex', alignItems: 'center', height: 24, padding: '0 8px',
           borderRadius: 4,
-          background: isDark ? 'rgba(22,163,74,0.12)' : '#E3FCEF',
-          color: isDark ? '#86EFAC' : '#006644',
+          background: isDark ? 'rgba(22,163,74,0.12)' : '#1B7F37',
+          color: isDark ? '#86EFAC' : '#FFFFFF',
           border: `1px solid ${isDark ? 'rgba(22,163,74,0.25)' : '#B7EBD1'}`,
           fontSize: 10, fontWeight: 700,
           fontFamily: "'Inter', sans-serif",

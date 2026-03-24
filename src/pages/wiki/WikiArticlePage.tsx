@@ -29,12 +29,12 @@ function formatDate(d: string) {
 function StatusLozenge({ status }: { status: string }) {
   const s = (status || '').toLowerCase();
   const map: Record<string, { bg: string; color: string; label: string }> = {
-    published: { bg: '#E3FCEF', color: '#006644', label: 'PUBLISHED' },
-    done: { bg: '#E3FCEF', color: '#006644', label: 'DONE' },
-    verified: { bg: '#E3FCEF', color: '#006644', label: 'VERIFIED' },
-    'in progress': { bg: '#DEEBFF', color: '#0747A6', label: 'IN PROGRESS' },
-    review: { bg: '#DEEBFF', color: '#0747A6', label: 'IN REVIEW' },
-    needs_review: { bg: '#DEEBFF', color: '#0747A6', label: 'NEEDS REVIEW' },
+    published: { bg: '#1B7F37', color: '#FFFFFF', label: 'PUBLISHED' },
+    done: { bg: '#1B7F37', color: '#FFFFFF', label: 'DONE' },
+    verified: { bg: '#1B7F37', color: '#FFFFFF', label: 'VERIFIED' },
+    'in progress': { bg: '#0C66E4', color: '#FFFFFF', label: 'IN PROGRESS' },
+    review: { bg: '#0C66E4', color: '#FFFFFF', label: 'IN REVIEW' },
+    needs_review: { bg: '#0C66E4', color: '#FFFFFF', label: 'NEEDS REVIEW' },
     draft: { bg: '#DFE1E6', color: '#44546F', label: 'DRAFT' },
     archived: { bg: '#DFE1E6', color: '#44546F', label: 'ARCHIVED' },
   };
@@ -353,12 +353,12 @@ export default function WikiArticlePage() {
   const refs = page.references || [];
   const title = page.title || pageSlug?.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Article';
   const conf = Math.round((page.ai_confidence ?? 0) * 100);
-  const confColor = conf >= 90 ? '#006644' : conf >= 70 ? '#0747A6' : '#9A5402';
+  const confColor = conf >= 90 ? '#FFFFFF' : conf >= 70 ? '#FFFFFF' : '#9A5402';
   const verStatus = (page as any).verification_status || 'unverified';
   const verBadge = verStatus === 'verified'
-    ? { bg: '#E3FCEF', color: '#006644', label: 'Verified', icon: <ShieldCheck size={10} /> }
+    ? { bg: '#1B7F37', color: '#FFFFFF', label: 'Verified', icon: <ShieldCheck size={10} /> }
     : verStatus === 'needs_review'
-    ? { bg: '#DEEBFF', color: '#0747A6', label: 'Needs Review', icon: null }
+    ? { bg: '#0C66E4', color: '#FFFFFF', label: 'Needs Review', icon: null }
     : { bg: '#DFE1E6', color: '#44546F', label: 'Unverified', icon: null };
   const tags = ((page as any).tags ?? []) as string[];
   const tldr = (page as any).tldr as string | null;
@@ -392,7 +392,7 @@ export default function WikiArticlePage() {
       </div>
     ) : null, show: !!info.totalStories },
     { label: 'Done %', value: info.donePercent != null ? (
-      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: info.donePercent >= 80 ? '#006644' : '#0747A6' }}>{info.donePercent}%</span>
+      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: info.donePercent >= 80 ? '#FFFFFF' : '#FFFFFF' }}>{info.donePercent}%</span>
     ) : null, show: info.donePercent != null },
     { label: 'Open Defects', value: info.openDefects != null ? (
       <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: info.openDefects > 0 ? '#DC2626' : '#64748B' }}>{info.openDefects}</span>

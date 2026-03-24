@@ -91,8 +91,8 @@ export default function WikiSearchPage() {
   const aiAnswer = aiResults?.answer;
   const aiSources = aiResults?.sources ?? [];
 
-  const confColor = (c: number) => c >= 90 ? '#006644' : c >= 70 ? '#0747A6' : '#9A5402';
-  const confBg = (c: number) => c >= 90 ? '#E3FCEF' : c >= 70 ? '#DEEBFF' : '#FEF3C7';
+  const confColor = (c: number) => c >= 90 ? '#FFFFFF' : c >= 70 ? '#FFFFFF' : '#9A5402';
+  const confBg = (c: number) => c >= 90 ? '#1B7F37' : c >= 70 ? '#0C66E4' : '#FEF3C7';
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif', color: '#0F172A', background: '#F8FAFC', minHeight: '100%' }}>
@@ -288,9 +288,9 @@ export default function WikiSearchPage() {
                     ? <Video size={14} style={{ color: '#7C3AED', flexShrink: 0 }} />
                     : <FileText size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />;
                   const verBadge = r.verification_status === 'verified'
-                    ? { bg: '#E3FCEF', color: '#006644', label: 'Verified' }
+                    ? { bg: '#1B7F37', color: '#FFFFFF', label: 'Verified' }
                     : r.verification_status === 'needs_review'
-                    ? { bg: '#DEEBFF', color: '#0747A6', label: 'Review' }
+                    ? { bg: '#0C66E4', color: '#FFFFFF', label: 'Review' }
                     : null;
 
                   return (
@@ -316,7 +316,7 @@ export default function WikiSearchPage() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
                         <span style={{
                           fontSize: 10, fontWeight: 650, padding: '1px 6px', borderRadius: 3,
-                          background: '#DEEBFF', color: '#0747A6',
+                          background: '#0C66E4', color: '#FFFFFF',
                         }}>{r.domain_code || '—'}</span>
                         {r.read_time_minutes && (
                           <span style={{ fontSize: 11, color: '#64748B', display: 'inline-flex', alignItems: 'center', gap: 3 }}>

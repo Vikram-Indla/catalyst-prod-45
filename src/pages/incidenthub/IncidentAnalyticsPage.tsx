@@ -41,8 +41,8 @@ export default function IncidentAnalyticsPage() {
   };
 
   const STATUS_BAR_COLORS: Record<string, string> = {
-    open: '#DFE1E6', triage: '#DFE1E6', in_progress: '#DEEBFF', to_committee: '#DEEBFF',
-    in_review: '#DEEBFF', resolved: '#E3FCEF', closed: '#DFE1E6', converted: '#E3FCEF',
+    open: '#DFE1E6', triage: '#DFE1E6', in_progress: '#0C66E4', to_committee: '#0C66E4',
+    in_review: '#0C66E4', resolved: '#1B7F37', closed: '#DFE1E6', converted: '#1B7F37',
   };
 
   if (isLoading) {

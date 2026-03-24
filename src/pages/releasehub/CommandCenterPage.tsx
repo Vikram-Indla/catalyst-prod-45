@@ -77,10 +77,10 @@ export default function CommandCenterPage() {
 
   // Pipeline columns
   const pipelineCols = [
-    { key: 'new', label: 'NEW', loz: { bg: '#DFE1E6', text: '#253858' } },
-    { key: 'in_uat', label: 'IN UAT', loz: { bg: '#DEEBFF', text: '#0747A6' } },
-    { key: 'in_beta', label: 'IN BETA', loz: { bg: '#DEEBFF', text: '#0747A6' } },
-    { key: 'in_production', label: 'IN PROD', loz: { bg: '#E3FCEF', text: '#006644' } },
+    { key: 'new', label: 'NEW', loz: { bg: '#DFE1E6', text: '#42526E' } },
+    { key: 'in_uat', label: 'IN UAT', loz: { bg: '#0C66E4', text: '#FFFFFF' } },
+    { key: 'in_beta', label: 'IN BETA', loz: { bg: '#0C66E4', text: '#FFFFFF' } },
+    { key: 'in_production', label: 'IN PROD', loz: { bg: '#1B7F37', text: '#FFFFFF' } },
   ];
 
   return (

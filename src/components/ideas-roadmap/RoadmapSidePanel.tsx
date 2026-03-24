@@ -183,8 +183,8 @@ export function RoadmapSidePanel({
           {idea.isCommitted && (
             isConverted(idea.status) ? (
               <div style={{
-                padding: '10px 16px', borderRadius: 6, background: '#E3FCEF',
-                color: '#006644', fontSize: 13, fontWeight: 650, textAlign: 'center',
+                padding: '10px 16px', borderRadius: 6, background: '#1B7F37',
+                color: '#FFFFFF', fontSize: 13, fontWeight: 650, textAlign: 'center',
                 border: '1px solid #B7EBD1',
               }}>
                 ✓ Already converted to Initiative

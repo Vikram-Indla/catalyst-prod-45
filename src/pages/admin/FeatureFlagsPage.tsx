@@ -39,17 +39,17 @@ const ICON_MAP: Record<string, React.ElementType> = {
 const resolveIcon = (name: string): React.ElementType => ICON_MAP[name] || Box;
 
 const ICON_COLOR_MAP: Record<string, { bg: string; text: string }> = {
-  blue:    { bg: '#DEEBFF', text: '#0747A6' },
-  teal:    { bg: '#E3FCEF', text: '#006644' },
+  blue:    { bg: '#0C66E4', text: '#FFFFFF' },
+  teal:    { bg: '#1B7F37', text: '#FFFFFF' },
   red:     { bg: '#FFEBE6', text: '#BF2600' },
-  neutral: { bg: '#DFE1E6', text: '#253858' },
+  neutral: { bg: '#DFE1E6', text: '#42526E' },
 };
 
 // V12 StatusLozenge: LIVE=Green, DRAFT=Grey, BETA=Blue
 const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
-  live:  { bg: '#E3FCEF', text: '#006644' },
-  draft: { bg: '#DFE1E6', text: '#253858' },
-  beta:  { bg: '#DEEBFF', text: '#0747A6' },
+  live:  { bg: '#1B7F37', text: '#FFFFFF' },
+  draft: { bg: '#DFE1E6', text: '#42526E' },
+  beta:  { bg: '#0C66E4', text: '#FFFFFF' },
 };
 
 // D03: Category badges with distinct colors per MARAM V3.1.1
