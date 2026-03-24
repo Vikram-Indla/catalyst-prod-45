@@ -1,8 +1,8 @@
 /**
- * StatusBadge — 3-color Jira/Atlassian lozenge system
- * GREY (#DFE1E6) = not started / waiting
- * BLUE (#DEEBFF) = in progress / active
- * GREEN (#E3FCEF) = done / resolved
+ * StatusBadge — 3-color Jira/Atlassian Dual-Intensity lozenge system
+ * GREY (#DFE1E6 bg, #42526E text) = not started / waiting (subtle)
+ * BLUE (#0C66E4 bg, #FFFFFF text) = in progress / active (strong)
+ * GREEN (#1B7F37 bg, #FFFFFF text) = done / resolved (strong)
  */
 
 import React from 'react';
