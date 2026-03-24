@@ -285,6 +285,36 @@
   --cp-lozenge-green-text: #86EFAC;
   --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.3);
   --cp-shadow-overlay: 0px 8px 12px rgba(0,0,0,0.5), 0px 0px 1px rgba(0,0,0,0.6);
+
+  /* ═══ SHORTHAND TOKENS — Dark mode ═══ */
+  --cp-bg: #1A1714;
+  --cp-float: #232019;
+  --cp-hover: rgba(248,244,240,0.05);
+  --cp-bd: rgba(248,244,240,0.10);
+  --cp-bd-zone: rgba(248,244,240,0.08);
+  --cp-bd-table: rgba(248,244,240,0.06);
+  --cp-t1: rgba(248,244,240,0.92);
+  --cp-t2: rgba(248,244,240,0.72);
+  --cp-t3: rgba(248,244,240,0.60);
+  --cp-t4: rgba(248,244,240,0.35);
+  --cp-blue: #3B82F6;
+  --cp-blue-wash: rgba(59,130,246,0.10);
+  --cp-blue-text: #7DB8FC;
+  --cp-blue-link: #7DB8FC;
+  --cp-ok: #4ADE80;
+  --cp-ok-bg: rgba(74,222,128,0.10);
+  --cp-warn: #FBBF24;
+  --cp-warn-bg: rgba(251,191,36,0.10);
+  --cp-err: #F87171;
+  --cp-err-bg: rgba(248,113,113,0.10);
+  --cp-err-text: #F87171;
+  --cp-prg-bg: rgba(59,130,246,0.10);
+  --cp-lz-gy-bg: #3B3D42;
+  --cp-lz-gy-t: #D4D4D4;
+  --cp-lz-bl-bg: #1E3A5F;
+  --cp-lz-bl-t: #93C5FD;
+  --cp-lz-gn-bg: #14532D;
+  --cp-lz-gn-t: #86EFAC;
 }
 
 /* ═══ Wiki Pulse Animation ═══ */
