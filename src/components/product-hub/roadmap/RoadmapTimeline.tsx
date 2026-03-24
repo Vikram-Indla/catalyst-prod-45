@@ -5,6 +5,8 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { RoadmapInitiativeList } from './RoadmapInitiativeList';
 import { RoadmapGanttChart } from './RoadmapGanttChart';
+import { useTheme } from '@/hooks/useTheme';
+import { SURFACE, SURFACE_DARK } from './constants/roadmap.constants';
 import type { RoadmapGroup, ZoomLevel } from './types/roadmap.types';
 
 interface RoadmapTimelineProps {
@@ -24,6 +26,8 @@ interface RoadmapTimelineProps {
 export function RoadmapTimeline({
   groups, zoom, zoomScale = 1, timelineStart, timelineEnd, selectedId, hoveredId, onSelect, onHover, onAddClick, onToggleStar,
 }: RoadmapTimelineProps) {
+  const { isDark } = useTheme();
+  const surface = isDark ? SURFACE_DARK : SURFACE;
   const [listWidth, setListWidth] = useState(380);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const isDragging = useRef(false);
@@ -86,7 +90,7 @@ export function RoadmapTimeline({
   }, [listWidth]);
 
   return (
-    <div className="flex flex-1 overflow-hidden" style={{ background: '#FFFFFF' }}>
+    <div className="flex flex-1 overflow-hidden" style={{ background: surface.page }}>
       {/* Left panel — resizable */}
       <RoadmapInitiativeList
         groups={groups}
@@ -111,7 +115,7 @@ export function RoadmapTimeline({
       >
         <div
           className="group-hover:bg-blue-400 transition-colors"
-          style={{ width: 2, height: 32, borderRadius: 1, background: '#E2E8F0' }}
+          style={{ width: 2, height: 32, borderRadius: 1, background: surface.border }}
         />
       </div>
 

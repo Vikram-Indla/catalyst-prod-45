@@ -1,18 +1,13 @@
 /**
  * Product Roadmap — Gantt chart (right panel)
- * AUDIT #7: Quarter/month label contrast fixed
- * AUDIT #8: Today marker with red pill label
- * AUDIT #9: Subtle grid lines
- * AUDIT #10: Group headers matching list panel
- * AUDIT #12: Collapsible groups
- * AUDIT #22: focus-visible
- * AUDIT #23: 36px rows
+ * Theme-aware: uses INK/SURFACE dark tokens
  */
 import React, { useMemo } from 'react';
 import { RoadmapTimelineBar } from './RoadmapTimelineBar';
 import { ChevronDown } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapGroup, ZoomLevel, TimelinePeriod } from './types/roadmap.types';
-import { TYPE_COLORS, SURFACE, INK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT } from './constants/roadmap.constants';
+import { TYPE_COLORS, SURFACE, SURFACE_DARK, INK, INK_DARK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT } from './constants/roadmap.constants';
 import {
   startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfWeek, endOfWeek,
   addMonths, addQuarters, addWeeks, format, isWithinInterval,
@@ -101,6 +96,10 @@ function calcBarPosition(startDate: string, endDate: string, tlStart: Date, tlEn
 }
 
 export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zoomScale = 1, selectedId, hoveredId, onSelect, onHover, scrollRef, onScroll, collapsedGroups, onToggleGroup }: RoadmapGanttChartProps) {
+  const { isDark } = useTheme();
+  const ink = isDark ? INK_DARK : INK;
+  const surface = isDark ? SURFACE_DARK : SURFACE;
+
   const periods = useMemo(() => generatePeriods(timelineStart, timelineEnd, zoom), [timelineStart, timelineEnd, zoom]);
 
   const todayPct = useMemo(() => {
@@ -113,14 +112,20 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
   const periodMinWidth = Math.round(baseWidth * zoomScale);
   const totalMinWidth = periods.length * periodMinWidth;
 
+  const headerBg = isDark ? 'rgba(255,255,255,0.03)' : '#FAFBFC';
+  const hoverRowBg = isDark ? 'rgba(255,255,255,0.04)' : '#FAFBFC';
+  const selectedRowBg = isDark ? 'rgba(59,130,246,0.10)' : 'rgba(37,99,235,0.06)';
+  const currentPeriodBg = isDark ? 'rgba(59,130,246,0.06)' : 'rgba(37,99,235,0.04)';
+  const currentPeriodGridBg = isDark ? 'rgba(59,130,246,0.04)' : 'rgba(37,99,235,0.03)';
+
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-hidden roadmap-scroll" style={{ background: SURFACE.card }}>
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden roadmap-scroll" style={{ background: surface.card }}>
       <div ref={scrollRef as any} onScroll={onScroll} className="flex-1 overflow-auto roadmap-scroll">
         <div style={{ minWidth: totalMinWidth }}>
-          {/* Sticky header — AUDIT #7: proper contrast */}
+          {/* Sticky header */}
           <div
             className="flex sticky top-0"
-            style={{ height: ROW_HEIGHT, borderBottom: `1px solid ${SURFACE.border}`, background: '#FAFBFC', zIndex: 15 }}
+            style={{ height: ROW_HEIGHT, borderBottom: `1px solid ${surface.border}`, background: headerBg, zIndex: 15 }}
           >
             {periods.map(p => {
               const isCurrentQ = (p as any).isCurrentQuarter;
@@ -131,24 +136,22 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                   style={{
                     minWidth: periodMinWidth,
                     width: `${100 / periods.length}%`,
-                    borderRight: `1px solid ${p.isQuarterStart ? SURFACE.border : SURFACE.borderLight}`,
-                    background: p.isCurrent ? 'rgba(37,99,235,0.04)' : 'transparent',
+                    borderRight: `1px solid ${p.isQuarterStart ? surface.border : surface.borderLight}`,
+                    background: p.isCurrent ? currentPeriodBg : 'transparent',
                   }}
                 >
-                  {/* AUDIT #7: Quarter label — secondary text, weight 700 */}
                   {p.sublabel && (
                     <span style={{
                       fontSize: 9, fontWeight: 700,
-                      color: isCurrentQ ? '#2563EB' : INK[2],
+                      color: isCurrentQ ? (isDark ? '#60A5FA' : '#2563EB') : ink[2],
                       textTransform: 'uppercase', letterSpacing: '0.05em',
                     }}>
                       {p.sublabel}
                     </span>
                   )}
-                  {/* AUDIT #7: Month label — primary text, current=blue */}
                   <span style={{
                     fontSize: 12, fontWeight: p.isCurrent ? 700 : 600,
-                    color: p.isCurrent ? '#2563EB' : INK[1],
+                    color: p.isCurrent ? (isDark ? '#60A5FA' : '#2563EB') : ink[1],
                     letterSpacing: '0.02em',
                   }}>
                     {p.label}
@@ -160,7 +163,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
 
           {/* Body */}
           <div className="relative">
-            {/* AUDIT #9: Subtle grid lines */}
+            {/* Grid lines */}
             <div className="absolute inset-0 pointer-events-none flex">
               {periods.map(p => (
                 <div
@@ -169,14 +172,14 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                   style={{
                     minWidth: periodMinWidth,
                     width: `${100 / periods.length}%`,
-                    borderRight: `1px solid ${p.isQuarterStart ? SURFACE.border : SURFACE.borderLight}`,
-                    background: p.isCurrent ? 'rgba(37,99,235,0.03)' : 'transparent',
+                    borderRight: `1px solid ${p.isQuarterStart ? surface.border : surface.borderLight}`,
+                    background: p.isCurrent ? currentPeriodGridBg : 'transparent',
                   }}
                 />
               ))}
             </div>
 
-            {/* AUDIT #8: Today marker — red dashed line + pill label */}
+            {/* Today marker */}
             {todayPct !== null && (
               <div className="absolute pointer-events-none" style={{ left: `${todayPct}%`, top: 0, bottom: 0, zIndex: 20 }}>
                 <div style={{
@@ -200,31 +203,31 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
               const isCollapsed = collapsedGroups.has(group.key);
               return (
                 <div key={group.key}>
-                  {/* Group header matching list panel */}
+                  {/* Group header */}
                   <div
                     className="flex items-center gap-2 px-3 relative cursor-pointer select-none"
                     style={{
                       height: GROUP_HEADER_HEIGHT,
-                      background: SURFACE.page,
-                      borderBottom: `1px solid ${SURFACE.border}`,
-                      borderTop: gi > 0 ? `1px solid ${SURFACE.border}` : 'none',
+                      background: isDark ? 'rgba(255,255,255,0.03)' : SURFACE.page,
+                      borderBottom: `1px solid ${surface.border}`,
+                      borderTop: gi > 0 ? `1px solid ${surface.border}` : 'none',
                       zIndex: 10,
                     }}
                     onClick={() => onToggleGroup(group.key)}
                   >
                     <div style={{ transition: 'transform 0.15s ease', transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}>
-                      <ChevronDown className="w-3.5 h-3.5" style={{ color: INK[3] }} />
+                      <ChevronDown className="w-3.5 h-3.5" style={{ color: ink[3] }} />
                     </div>
                     <div style={{ width: 10, height: 10, borderRadius: 3, flexShrink: 0, background: typeColor }} />
                     <span style={{
-                      fontSize: 12, fontWeight: 600, color: INK[2],
+                      fontSize: 12, fontWeight: 600, color: ink[2],
                       textTransform: 'uppercase', letterSpacing: '0.04em',
                     }}>
                       {group.label}
                     </span>
                     <span style={{
-                      fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: INK[4],
-                      background: SURFACE.card, border: `1px solid ${SURFACE.border}`,
+                      fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: ink[4],
+                      background: surface.card, border: `1px solid ${surface.border}`,
                       borderRadius: 9999, padding: '0 6px', height: 20,
                       display: 'inline-flex', alignItems: 'center', marginLeft: 'auto',
                     }}>
@@ -244,8 +247,8 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                           height: ROW_HEIGHT,
                           minHeight: ROW_HEIGHT,
                           maxHeight: ROW_HEIGHT,
-                          backgroundColor: selectedId === item.id ? 'rgba(37,99,235,0.06)' : hoveredId === item.id ? '#FAFBFC' : 'transparent',
-                          borderBottom: `1px solid ${SURFACE.borderLight}`,
+                          backgroundColor: selectedId === item.id ? selectedRowBg : hoveredId === item.id ? hoverRowBg : 'transparent',
+                          borderBottom: `1px solid ${surface.borderLight}`,
                           transition: 'background-color 0.15s ease',
                         }}
                         onClick={() => onSelect(item.id)}

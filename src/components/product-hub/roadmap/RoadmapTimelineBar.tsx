@@ -1,16 +1,14 @@
 /**
  * Product Roadmap — Individual initiative timeline bar
- * AUDIT #4: Distinct gradient per type
- * AUDIT #5: Date labels on bars
- * AUDIT #6: Box shadow + hover lift
- * AUDIT #22: focus-visible
+ * Theme-aware tooltip
  */
 import React, { useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Calendar } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapInitiative } from './types/roadmap.types';
-import { TYPE_COLORS, FONT, INK, SURFACE } from './constants/roadmap.constants';
+import { TYPE_COLORS, FONT, INK, INK_DARK, SURFACE, SURFACE_DARK } from './constants/roadmap.constants';
 
 interface RoadmapTimelineBarProps {
   item: RoadmapInitiative;
@@ -22,6 +20,10 @@ interface RoadmapTimelineBarProps {
 }
 
 export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, onClick }: RoadmapTimelineBarProps) {
+  const { isDark } = useTheme();
+  const ink = isDark ? INK_DARK : INK;
+  const surface = isDark ? SURFACE_DARK : SURFACE;
+
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -32,7 +34,6 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
   const isOverdue = item.status !== 'Completed' && item.progress < 100 && item.hasRealEndDate && new Date(item.endDate) < new Date();
   const isFallbackEnd = !item.hasRealEndDate;
 
-  // AUDIT #5: Format dates for bar label
   const fmtShort = (d: string) => {
     try { return format(parseISO(d), 'd MMM'); } catch { return ''; }
   };
@@ -59,6 +60,10 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
     if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
   }, []);
 
+  const tooltipBg = isDark ? '#232019' : '#FFFFFF';
+  const tooltipShadow = isDark ? '0 20px 60px rgba(0,0,0,0.4)' : '0 20px 60px rgba(0,0,0,0.12)';
+  const progressTrackBg = isDark ? 'rgba(255,255,255,0.10)' : surface.borderLight;
+
   return (
     <>
       <div
@@ -78,16 +83,15 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           alignItems: 'center',
           overflow: 'hidden',
           borderRadius: 5,
-          // AUDIT #4: Distinct gradient per type; overdue = red
           background: isOverdue ? '#EF4444' : barGradient,
           border: 'none',
           opacity: 1,
-          // AUDIT #6: Hover lift
           transform: isHovered ? 'translateY(calc(-50% - 1px))' : 'translateY(-50%)',
-          // AUDIT #6: Box shadow
-          boxShadow: isHovered || isSelected
-            ? `0 4px 8px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.08)`
-            : '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.06)',
+          boxShadow: isDark
+            ? 'none'
+            : (isHovered || isSelected
+              ? '0 4px 8px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.08)'
+              : '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.06)'),
           filter: isHovered ? 'brightness(1.05)' : 'none',
           zIndex: isSelected ? 10 : isHovered ? 5 : 1,
           transition: 'transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease',
@@ -124,7 +128,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           </span>
         )}
 
-        {/* AUDIT #5: Date label on bar */}
+        {/* Date label on bar */}
         {width > 18 && (
           <span
             className="relative flex-shrink-0"
@@ -184,31 +188,31 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           className="animate-scale-in"
           style={{
             position: 'fixed', left: tooltipPos.x, top: tooltipPos.y, zIndex: 9999,
-            background: '#FFFFFF', border: `1px solid ${SURFACE.border}`, borderRadius: 10,
-            boxShadow: '0 20px 60px rgba(0,0,0,0.12)', pointerEvents: 'none',
+            background: tooltipBg, border: `1px solid ${surface.border}`, borderRadius: 10,
+            boxShadow: tooltipShadow, pointerEvents: 'none',
             maxWidth: 320, minWidth: 260, padding: 12,
             fontFamily: FONT.body,
           }}
         >
-          <div style={{ fontWeight: 600, fontSize: 13, color: INK[1], marginBottom: 6 }}>
+          <div style={{ fontWeight: 600, fontSize: 13, color: ink[1], marginBottom: 6 }}>
             {item.initiativeKey}: {item.titleEn}
           </div>
-          <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: INK[3], marginBottom: 4 }}>
+          <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: ink[3], marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
             {fmtDate(item.startDate)} → {fmtDate(item.endDate)}
-            {isFallbackEnd && <span style={{ fontSize: 10, color: INK[4], fontStyle: 'italic' }}>(est.)</span>}
+            {isFallbackEnd && <span style={{ fontSize: 10, color: ink[4], fontStyle: 'italic' }}>(est.)</span>}
           </div>
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: barColor }} />
-            <span style={{ fontSize: 11, fontWeight: 500, color: INK[2] }}>
+            <span style={{ fontSize: 11, fontWeight: 500, color: ink[2] }}>
               {typeConfig?.label || item.type}
             </span>
             {item.progress > 0 && (
               <div className="flex items-center gap-1 ml-auto">
-                <div style={{ width: 60, height: 4, background: SURFACE.borderLight, borderRadius: 999, overflow: 'hidden' }}>
+                <div style={{ width: 60, height: 4, background: progressTrackBg, borderRadius: 999, overflow: 'hidden' }}>
                   <div style={{ width: `${item.progress}%`, height: '100%', background: barColor, borderRadius: 999 }} />
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: INK[1] }}>{item.progress}%</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: ink[1] }}>{item.progress}%</span>
               </div>
             )}
           </div>
