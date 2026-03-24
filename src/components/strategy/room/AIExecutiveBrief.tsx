@@ -38,8 +38,8 @@ const TOKENS = `
 [data-theme="dark"] [data-sri] {
   --sri-ink: rgba(248,244,240,0.92);
   --sri-ink-2: rgba(248,244,240,0.72);
-  --sri-ink-3: rgba(248,244,240,0.55);
-  --sri-ink-m: rgba(248,244,240,0.30);
+  --sri-ink-3: rgba(248,244,240,0.60);
+  --sri-ink-m: rgba(248,244,240,0.48);
   --sri-bg: #232019;
   --sri-bg-2: #232019;
   --sri-bg-3: rgba(248,244,240,0.05);
