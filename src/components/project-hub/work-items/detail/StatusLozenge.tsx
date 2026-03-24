@@ -7,10 +7,10 @@ interface StatusLozengeProps {
 }
 
 /**
- * V12 StatusLozenge — IMMUTABLE 3-COLOR GUARDRAIL
- * Grey:  bg:#DFE1E6  text:#253858  → Backlog, To Do, On Hold, New, Waiting, Blocked
- * Blue:  bg:#DEEBFF  text:#0747A6  → In Progress, In Dev, In Review, In QA, Active, In Beta
- * Green: bg:#E3FCEF  text:#006644  → Done, Completed, Production, Prod Ready, Approved, Resolved
+ * V12 StatusLozenge — DUAL-INTENSITY 3-COLOR GUARDRAIL
+ * Grey:  bg:#DFE1E6  text:#42526E  → Backlog, To Do, On Hold, New, Waiting, Blocked
+ * Blue:  bg:#0C66E4  text:#FFFFFF  → In Progress, In Dev, In Review, In QA, Active, In Beta
+ * Green: bg:#1B7F37  text:#FFFFFF  → Done, Completed, Production, Prod Ready, Approved, Resolved
  */
 function getStatusStyle(category: string): { bg: string; color: string } {
   switch (category) {
