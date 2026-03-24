@@ -67,16 +67,7 @@ export function GoalsStatsStrip({ goals, keyResults, themes, isDark = false }: G
       {cards.map(card => (
         <div
           key={card.label}
-          style={{
-            background: isDark ? 'transparent' : '#FFFFFF',
-            border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
-            borderRadius: 12,
-            padding: '20px 24px',
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 14,
-            boxShadow: 'none',
-          }}
+          className="flex items-start gap-[14px] rounded-xl border border-border bg-white px-6 py-5 shadow-none dark:border-gray-700/50 dark:bg-[#1A1714] dark:shadow-none"
         >
           <div style={{ width: 40, height: 40, borderRadius: 10, background: card.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <card.icon size={18} color={card.iconColor} />
