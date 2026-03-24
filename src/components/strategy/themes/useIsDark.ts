@@ -1,6 +1,5 @@
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/hooks/useTheme';
 
 export function useIsDark(): boolean {
-  const { theme, resolvedTheme } = useTheme();
-  return (resolvedTheme ?? theme) === 'dark';
+  return useTheme().isDark;
 }
