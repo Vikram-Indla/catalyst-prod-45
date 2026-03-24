@@ -9,6 +9,8 @@ import { StrategyRoleProvider } from '@/contexts/strategy/RoleContext';
 import StrategyRoomDashboard from '@/components/strategy/room/StrategyRoomDashboard';
 import { AIExecutiveBrief } from '@/components/strategy/room/AIExecutiveBrief';
 import { useStrategyRoomData } from '@/hooks/strategy/useStrategyRoomData';
+import { Breadcrumbs } from '@/components/strategy/Breadcrumbs';
+import { RoomContentShell } from '@/components/layout/RoomContentShell';
 
 /* Overlay style removed — Brief now renders inline in content area */
 
