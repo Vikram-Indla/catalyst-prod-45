@@ -5,6 +5,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { X, Sparkles, Zap, Eye, GitMerge, FileSearch, Clock } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTheme } from '@/hooks/useTheme';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Idea } from './ideation-data';
@@ -144,10 +145,10 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 250 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 250 }} />
       <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: '#FFFFFF', zIndex: 251,
-        boxShadow: '-8px 0 32px rgba(0,0,0,0.12)', display: 'flex', flexDirection: 'column',
+        position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: isDark ? '#232019' : '#FFFFFF', zIndex: 251,
+        boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)', display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
