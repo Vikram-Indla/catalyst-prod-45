@@ -47,12 +47,12 @@ export const ideas: Idea[] = [];
 // ─── V12 STATUS LOZENGE — 3-COLOR GUARDRAIL — NO DOTS ──────────
 // UPDATED: Approved = BLUE (active/in-progress), Submitted = GREY
 export const STATUS_CONFIG: Record<IdeaStatus, { bg: string; text: string; label: string }> = {
-  draft:        { bg: '#DFE1E6', text: '#253858', label: 'Draft' },
-  submitted:    { bg: '#DFE1E6', text: '#253858', label: 'Submitted' },
-  under_review: { bg: '#DEEBFF', text: '#0747A6', label: 'Under Review' },
-  approved:     { bg: '#DEEBFF', text: '#0747A6', label: 'Approved' },
-  rejected:     { bg: '#DFE1E6', text: '#253858', label: 'Rejected' },
-  converted:    { bg: '#E3FCEF', text: '#006644', label: 'Converted' },
+  draft:        { bg: '#DFE1E6', text: '#42526E', label: 'Draft' },
+  submitted:    { bg: '#DFE1E6', text: '#42526E', label: 'Submitted' },
+  under_review: { bg: '#0C66E4', text: '#FFFFFF', label: 'Under Review' },
+  approved:     { bg: '#0C66E4', text: '#FFFFFF', label: 'Approved' },
+  rejected:     { bg: '#DFE1E6', text: '#42526E', label: 'Rejected' },
+  converted:    { bg: '#1B7F37', text: '#FFFFFF', label: 'Converted' },
 };
 
 // ─── TYPE CONFIG — ALL NEUTRAL GREY ─────────────────────────────
@@ -122,11 +122,11 @@ export const STATUS_DB_TO_UI: Record<string, IdeaStatus> = {
 };
 
 export const STATUS_LOZENGE_COLORS: Record<string, { bg: string; text: string }> = {
-  'Draft':                    { bg: '#DFE1E6', text: '#253858' },
-  'Submitted':                { bg: '#DFE1E6', text: '#253858' },
-  'Under Review':             { bg: '#DEEBFF', text: '#0747A6' },
-  'Approved':                 { bg: '#DEEBFF', text: '#0747A6' },
-  'Rejected':                 { bg: '#DFE1E6', text: '#253858' },
-  'Converted':                { bg: '#E3FCEF', text: '#006644' },
-  'Converted to Initiative':  { bg: '#E3FCEF', text: '#006644' },
+  'Draft':                    { bg: '#DFE1E6', text: '#42526E' },
+  'Submitted':                { bg: '#DFE1E6', text: '#42526E' },
+  'Under Review':             { bg: '#0C66E4', text: '#FFFFFF' },
+  'Approved':                 { bg: '#0C66E4', text: '#FFFFFF' },
+  'Rejected':                 { bg: '#DFE1E6', text: '#42526E' },
+  'Converted':                { bg: '#1B7F37', text: '#FFFFFF' },
+  'Converted to Initiative':  { bg: '#1B7F37', text: '#FFFFFF' },
 };

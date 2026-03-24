@@ -311,7 +311,7 @@ function HandoffConnector({ from, to, isRework }: { from: PersonInfo; to: Person
 
 function StepCard({ step, index }: { step: TransitionStep; index: number }) {
   const category = getStatusCategory(step.status);
-  const nodeColor = category === 'done' ? '#E3FCEF' : category === 'inprogress' ? '#DEEBFF' : '#DFE1E6';
+  const nodeColor = category === 'done' ? '#1B7F37' : category === 'inprogress' ? '#0C66E4' : '#DFE1E6';
   const nodeBorder = category === 'done' ? '#00875A' : category === 'inprogress' ? '#0065FF' : '#A5ADBA';
   const [showComments, setShowComments] = useState(step.comments.length <= 2);
 

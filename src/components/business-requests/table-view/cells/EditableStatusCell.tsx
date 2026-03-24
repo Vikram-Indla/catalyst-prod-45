@@ -18,9 +18,9 @@ import { cn } from '@/lib/utils';
 type LozengeVariant = 'grey' | 'blue' | 'green';
 
 const LOZENGE_STYLES: Record<LozengeVariant, { bg: string; color: string }> = {
-  grey:  { bg: '#DFE1E6', color: '#253858' },
-  blue:  { bg: '#DEEBFF', color: '#0747A6' },
-  green: { bg: '#E3FCEF', color: '#006644' },
+  grey:  { bg: '#DFE1E6', color: '#42526E' },
+  blue:  { bg: '#0C66E4', color: '#FFFFFF' },
+  green: { bg: '#1B7F37', color: '#FFFFFF' },
 };
 
 const STATUS_VARIANT_MAP: Record<string, LozengeVariant> = {

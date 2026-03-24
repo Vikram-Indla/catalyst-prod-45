@@ -19,8 +19,8 @@ interface Props {
 const COLUMNS: { status: IdeaStatus; extra?: React.ReactNode }[] = [
   { status: 'submitted' },
   { status: 'under_review' },
-  { status: 'approved', extra: <span style={{ fontSize: '10px', color: '#006644', fontWeight: 600 }}>Ready to convert</span> },
-  { status: 'converted', extra: <span style={{ fontSize: '10px', color: '#006644', fontWeight: 600 }}>→ Initiatives</span> },
+  { status: 'approved', extra: <span style={{ fontSize: '10px', color: '#FFFFFF', fontWeight: 600 }}>Ready to convert</span> },
+  { status: 'converted', extra: <span style={{ fontSize: '10px', color: '#FFFFFF', fontWeight: 600 }}>→ Initiatives</span> },
   { status: 'draft' },
   { status: 'rejected' },
 ];
@@ -207,9 +207,9 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {/* Initiative link (converted) */}
       {isConverted && initLink && (
         <div style={{
-          marginTop: '8px', background: isDark ? 'rgba(22,163,74,0.12)' : '#E3FCEF',
+          marginTop: '8px', background: isDark ? 'rgba(22,163,74,0.12)' : '#1B7F37',
           border: `1px solid ${isDark ? 'rgba(22,163,74,0.25)' : '#B7EBD1'}`,
-          borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: isDark ? '#86EFAC' : '#006644', fontWeight: 600,
+          borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: isDark ? '#86EFAC' : '#FFFFFF', fontWeight: 600,
         }}>
           {initLink}
         </div>

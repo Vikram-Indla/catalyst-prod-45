@@ -24,10 +24,10 @@ interface LogEntry {
 // StatusLozenge per V12 spec
 function StatusLozenge({ status }: { status: 'passed' | 'failed' | 'running' | 'not_tested' }) {
   const styles: Record<string, { bg: string; color: string; label: string }> = {
-    passed:     { bg: '#E3FCEF', color: '#006644', label: 'PASSED' },
+    passed:     { bg: '#1B7F37', color: '#FFFFFF', label: 'PASSED' },
     failed:     { bg: '#FFEBE6', color: '#BF2600', label: 'FAILED' },
-    running:    { bg: '#DEEBFF', color: '#0747A6', label: 'RUNNING' },
-    not_tested: { bg: '#DFE1E6', color: '#253858', label: 'NOT TESTED' },
+    running:    { bg: '#0C66E4', color: '#FFFFFF', label: 'RUNNING' },
+    not_tested: { bg: '#DFE1E6', color: '#42526E', label: 'NOT TESTED' },
   };
   const s = styles[status];
   return (
@@ -235,9 +235,9 @@ export default function AdminDiagnosticPage() {
               <div style={{
                 marginTop: 10, padding: '10px 12px', borderRadius: 6, fontSize: 12,
                 fontFamily: 'JetBrains Mono, monospace', wordBreak: 'break-all',
-                background: lastResult.ok ? '#E3FCEF' : '#FEF2F2',
+                background: lastResult.ok ? '#1B7F37' : '#FEF2F2',
                 border: lastResult.ok ? '1px solid #16A34A' : '1.5px solid #DC2626',
-                color: lastResult.ok ? '#006644' : '#991B1B',
+                color: lastResult.ok ? '#FFFFFF' : '#991B1B',
                 maxHeight: 120, overflowY: 'auto',
               }}>
                 {lastResult.ok

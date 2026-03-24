@@ -8,15 +8,15 @@
 import { cn } from '@/lib/utils';
 
 const LOZENGE_MAP: Record<string, { bg: string; text: string }> = {
-  open:         { bg: '#DFE1E6', text: '#253858' },
-  triage:       { bg: '#DFE1E6', text: '#253858' },
-  on_hold:      { bg: '#DFE1E6', text: '#253858' },
-  closed:       { bg: '#DFE1E6', text: '#253858' },
-  converted:    { bg: '#DFE1E6', text: '#253858' },
-  in_progress:  { bg: '#DEEBFF', text: '#0747A6' },
-  in_review:    { bg: '#DEEBFF', text: '#0747A6' },
-  to_committee: { bg: '#DEEBFF', text: '#0747A6' },
-  resolved:     { bg: '#E3FCEF', text: '#006644' },
+  open:         { bg: '#DFE1E6', text: '#42526E' },
+  triage:       { bg: '#DFE1E6', text: '#42526E' },
+  on_hold:      { bg: '#DFE1E6', text: '#42526E' },
+  closed:       { bg: '#DFE1E6', text: '#42526E' },
+  converted:    { bg: '#DFE1E6', text: '#42526E' },
+  in_progress:  { bg: '#0C66E4', text: '#FFFFFF' },
+  in_review:    { bg: '#0C66E4', text: '#FFFFFF' },
+  to_committee: { bg: '#0C66E4', text: '#FFFFFF' },
+  resolved:     { bg: '#1B7F37', text: '#FFFFFF' },
 };
 
 const LABELS: Record<string, string> = {

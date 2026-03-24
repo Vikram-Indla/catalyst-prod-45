@@ -201,9 +201,9 @@ function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: (
 
 function PageStatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    published: { bg: '#E3FCEF', color: '#0D7331' },
+    published: { bg: '#1B7F37', color: '#0D7331' },
     draft: { bg: '#DFE1E6', color: '#44546F' },
-    review: { bg: '#DEEBFF', color: '#0747A6' },
+    review: { bg: '#0C66E4', color: '#FFFFFF' },
     archived: { bg: '#DFE1E6', color: '#44546F' },
   };
   const s = map[status] ?? map.draft;

@@ -20,14 +20,14 @@ const STATUS_MAP: Record<string, { bg: string; color: string }> = {
   'backlog': { bg: '#DFE1E6', color: '#44546F' },
   'blocked': { bg: '#DFE1E6', color: '#44546F' },
   'on hold': { bg: '#DFE1E6', color: '#44546F' },
-  'in progress': { bg: '#DEEBFF', color: '#0747A6' },
-  're-open': { bg: '#DEEBFF', color: '#0747A6' },
-  're-opened': { bg: '#DEEBFF', color: '#0747A6' },
-  'code review': { bg: '#DEEBFF', color: '#0747A6' },
-  'ready for qa': { bg: '#DEEBFF', color: '#0747A6' },
-  'done': { bg: '#E3FCEF', color: '#006644' },
-  'closed': { bg: '#E3FCEF', color: '#006644' },
-  'resolved': { bg: '#E3FCEF', color: '#006644' },
+  'in progress': { bg: '#0C66E4', color: '#FFFFFF' },
+  're-open': { bg: '#0C66E4', color: '#FFFFFF' },
+  're-opened': { bg: '#0C66E4', color: '#FFFFFF' },
+  'code review': { bg: '#0C66E4', color: '#FFFFFF' },
+  'ready for qa': { bg: '#0C66E4', color: '#FFFFFF' },
+  'done': { bg: '#1B7F37', color: '#FFFFFF' },
+  'closed': { bg: '#1B7F37', color: '#FFFFFF' },
+  'resolved': { bg: '#1B7F37', color: '#FFFFFF' },
 };
 
 function StatusLoz({ status }: { status: string }) {
@@ -166,8 +166,8 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
                   <span style={{
                     marginLeft: 'auto', fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
                     padding: '2px 8px', borderRadius: 3,
-                    background: r.health === 'on-track' ? '#E3FCEF' : '#FFF7E6',
-                    color: r.health === 'on-track' ? '#006644' : '#AD6800',
+                    background: r.health === 'on-track' ? '#1B7F37' : '#FFF7E6',
+                    color: r.health === 'on-track' ? '#FFFFFF' : '#AD6800',
                   }}>
                     {r.health === 'on-track' ? 'ON TRACK' : 'AT RISK'}
                   </span>

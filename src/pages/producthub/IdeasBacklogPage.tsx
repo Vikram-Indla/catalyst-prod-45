@@ -353,7 +353,7 @@ function StatusBadge({ status }: { status: string }) {
   };
   const s = isDark
     ? (darkColors[status] ?? { bg: 'rgba(255,255,255,0.08)', text: 'rgba(248,244,240,0.72)' })
-    : (STATUS_LOZENGE_COLORS[status] ?? { bg: '#DFE1E6', text: '#253858' });
+    : (STATUS_LOZENGE_COLORS[status] ?? { bg: '#DFE1E6', text: '#42526E' });
   const label = status === 'Converted to Initiative' ? 'CONVERTED' : status.toUpperCase();
   return (
     <span style={{

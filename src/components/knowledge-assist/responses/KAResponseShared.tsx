@@ -25,18 +25,18 @@ const STATUS_MAP: Record<string, { bg: string; color: string }> = {
   'p3': { bg: '#DFE1E6', color: '#44546F' },
   'at capacity': { bg: '#DFE1E6', color: '#44546F' },
   // Blue
-  'in progress': { bg: '#DEEBFF', color: '#0747A6' },
-  're-open': { bg: '#DEEBFF', color: '#0747A6' },
-  're-opened': { bg: '#DEEBFF', color: '#0747A6' },
-  'code review': { bg: '#DEEBFF', color: '#0747A6' },
-  'in review': { bg: '#DEEBFF', color: '#0747A6' },
-  'ready for qa': { bg: '#DEEBFF', color: '#0747A6' },
-  'uat': { bg: '#DEEBFF', color: '#0747A6' },
+  'in progress': { bg: '#0C66E4', color: '#FFFFFF' },
+  're-open': { bg: '#0C66E4', color: '#FFFFFF' },
+  're-opened': { bg: '#0C66E4', color: '#FFFFFF' },
+  'code review': { bg: '#0C66E4', color: '#FFFFFF' },
+  'in review': { bg: '#0C66E4', color: '#FFFFFF' },
+  'ready for qa': { bg: '#0C66E4', color: '#FFFFFF' },
+  'uat': { bg: '#0C66E4', color: '#FFFFFF' },
   // Green
-  'done': { bg: '#E3FCEF', color: '#006644' },
-  'closed': { bg: '#E3FCEF', color: '#006644' },
-  'resolved': { bg: '#E3FCEF', color: '#006644' },
-  'available': { bg: '#E3FCEF', color: '#006644' },
+  'done': { bg: '#1B7F37', color: '#FFFFFF' },
+  'closed': { bg: '#1B7F37', color: '#FFFFFF' },
+  'resolved': { bg: '#1B7F37', color: '#FFFFFF' },
+  'available': { bg: '#1B7F37', color: '#FFFFFF' },
 };
 
 export function Loz({ status }: { status: string }) {

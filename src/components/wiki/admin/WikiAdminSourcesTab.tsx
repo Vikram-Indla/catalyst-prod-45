@@ -178,12 +178,12 @@ function SmBtn({ icon, title, onClick }: { icon: React.ReactElement; title: stri
 
 function DocStatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    complete: { bg: '#E3FCEF', color: '#0D7331' },
-    uploaded: { bg: '#DEEBFF', color: '#0747A6' },
-    processing: { bg: '#DEEBFF', color: '#0747A6' },
-    parsing: { bg: '#DEEBFF', color: '#0747A6' },
-    chunking: { bg: '#DEEBFF', color: '#0747A6' },
-    embedding: { bg: '#DEEBFF', color: '#0747A6' },
+    complete: { bg: '#1B7F37', color: '#0D7331' },
+    uploaded: { bg: '#0C66E4', color: '#FFFFFF' },
+    processing: { bg: '#0C66E4', color: '#FFFFFF' },
+    parsing: { bg: '#0C66E4', color: '#FFFFFF' },
+    chunking: { bg: '#0C66E4', color: '#FFFFFF' },
+    embedding: { bg: '#0C66E4', color: '#FFFFFF' },
     failed: { bg: '#DFE1E6', color: '#44546F' },
     deleted: { bg: '#DFE1E6', color: '#44546F' },
   };

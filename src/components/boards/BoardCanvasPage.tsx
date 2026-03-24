@@ -30,16 +30,16 @@ const BOARD_ACCENT: Record<string, string> = {
 /* ── StatusLozenge V12 3-color guardrail ── */
 function StatusLozenge({ status }: { status: string }) {
   const s = status.toLowerCase().replace(/[\s_-]+/g, '');
-  let bg = '#DFE1E6', color = '#253858', label = status.toUpperCase();
+  let bg = '#DFE1E6', color = '#42526E', label = status.toUpperCase();
   let leftBorder: string | undefined;
 
   // Blue: in-progress family
   if (['inprogress','indev','inreview','inqa','active','inbeta','processing','testing','review'].includes(s)) {
-    bg = '#DEEBFF'; color = '#0747A6';
+    bg = '#0C66E4'; color = '#FFFFFF';
   }
   // Green: done family
   else if (['done','completed','production','prodready','approved','resolved','passed','closed'].includes(s)) {
-    bg = '#E3FCEF'; color = '#006644';
+    bg = '#1B7F37'; color = '#FFFFFF';
   }
   // Grey: everything else (backlog, todo, onhold, new, waiting, blocked)
   // Blocked gets a red left border accent on grey lozenge

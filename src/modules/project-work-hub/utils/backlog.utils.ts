@@ -9,9 +9,9 @@ export interface LozengeConfig {
 }
 
 const LOZENGE_STYLES: Record<LozengeColor, { bg: string; text: string }> = {
-  grey:  { bg: '#DFE1E6', text: '#253858' },
-  blue:  { bg: '#DEEBFF', text: '#0747A6' },
-  green: { bg: '#E3FCEF', text: '#006644' },
+  grey:  { bg: '#DFE1E6', text: '#42526E' },
+  blue:  { bg: '#0C66E4', text: '#FFFFFF' },
+  green: { bg: '#1B7F37', text: '#FFFFFF' },
 };
 
 export function getLozengeStyle(color: LozengeColor) {
@@ -134,8 +134,8 @@ const EPIC_CHIP_PALETTE = [
   { bg: '#FFF0B3', text: '#7A4F00', border: '#FFD700' },
   { bg: '#FFBDAD', text: '#BF2600', border: '#FF7452' },
   { bg: '#FFE2FE', text: '#6B0089', border: '#D084FF' },
-  { bg: '#DEEBFF', text: '#0747A6', border: '#4C9AFF' },
-  { bg: '#E3FCEF', text: '#006644', border: '#57D9A3' },
+  { bg: '#0C66E4', text: '#FFFFFF', border: '#4C9AFF' },
+  { bg: '#1B7F37', text: '#FFFFFF', border: '#57D9A3' },
   { bg: '#E6FCFF', text: '#006884', border: '#00C7E6' },
   { bg: '#EAE6FF', text: '#403294', border: '#8777D9' },
   { bg: '#F1F5F9', text: '#334155', border: '#CBD5E1' },

@@ -259,8 +259,8 @@ export function WikiAdminSyncTab() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0, fontSize: 11, fontWeight: 700,
                   fontFamily: 'JetBrains Mono, monospace',
-                  background: isDone ? '#E3FCEF' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#DEEBFF' : 'var(--cp-bg-sunken, #F1F5F9)',
-                  color: isDone ? '#0D7331' : isStepFailed ? '#DC2626' : isActive ? '#0747A6' : 'var(--cp-text-tertiary, #64748B)',
+                  background: isDone ? '#1B7F37' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#0C66E4' : 'var(--cp-bg-sunken, #F1F5F9)',
+                  color: isDone ? '#0D7331' : isStepFailed ? '#DC2626' : isActive ? '#FFFFFF' : 'var(--cp-text-tertiary, #64748B)',
                   ...(isActive ? { boxShadow: '0 0 0 3px rgba(37,99,235,0.2)' } : {}),
                 }}>
                   {isDone
@@ -291,7 +291,7 @@ export function WikiAdminSyncTab() {
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
                       padding: '2px 8px', borderRadius: 3,
-                      background: '#DEEBFF', color: '#0747A6',
+                      background: '#0C66E4', color: '#FFFFFF',
                       fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                     }}>
                       <Loader2 style={{ width: 10, height: 10, animation: 'spin 1s linear infinite' }} />
@@ -301,7 +301,7 @@ export function WikiAdminSyncTab() {
                   {isDone && (
                     <span style={{
                       padding: '2px 8px', borderRadius: 3,
-                      background: '#E3FCEF', color: '#0D7331',
+                      background: '#1B7F37', color: '#0D7331',
                       fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em',
                     }}>Complete</span>
                   )}
@@ -334,7 +334,7 @@ export function WikiAdminSyncTab() {
       {latestRun?.status === 'complete' && (
         <div style={{
           padding: '10px 16px', borderRadius: 6,
-          background: '#E3FCEF', border: '1px solid rgba(13,115,49,0.15)',
+          background: '#1B7F37', border: '1px solid rgba(13,115,49,0.15)',
           fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
           color: '#0D7331',
         }}>
@@ -397,8 +397,8 @@ export function EmptyState({ icon, message, sub }: { icon: React.ReactNode; mess
 
 export function StatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    complete: { bg: '#E3FCEF', color: '#0D7331' },
-    running: { bg: '#DEEBFF', color: '#0747A6' },
+    complete: { bg: '#1B7F37', color: '#0D7331' },
+    running: { bg: '#0C66E4', color: '#FFFFFF' },
     failed: { bg: 'rgba(220,38,38,0.08)', color: '#DC2626' },
     partial: { bg: '#DFE1E6', color: '#44546F' },
   };

@@ -95,7 +95,7 @@ export function AIInsightsDrawer({ isOpen, onClose, insights, onActionClick }: A
               </span>
             )}
             {warningCount > 0 && (
-              <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full" style={{ background: '#DBEAFE', color: '#0747A6' }}>
+              <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full" style={{ background: '#DBEAFE', color: '#FFFFFF' }}>
                 {warningCount} warnings
               </span>
             )}

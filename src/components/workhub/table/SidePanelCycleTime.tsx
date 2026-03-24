@@ -17,9 +17,9 @@ function formatDuration(seconds: number): string {
 }
 
 const PHASES = [
-  { key: 'to_do', label: 'TO DO', labelColor: '#253858', barColor: '#DFE1E6' },
-  { key: 'in_progress', label: 'IN PROGRESS', labelColor: '#0747A6', barColor: '#DEEBFF' },
-  { key: 'done', label: 'DONE', labelColor: '#006644', barColor: '#E3FCEF' },
+  { key: 'to_do', label: 'TO DO', labelColor: '#42526E', barColor: '#DFE1E6' },
+  { key: 'in_progress', label: 'IN PROGRESS', labelColor: '#FFFFFF', barColor: '#0C66E4' },
+  { key: 'done', label: 'DONE', labelColor: '#FFFFFF', barColor: '#1B7F37' },
 ] as const;
 
 export default function SidePanelCycleTime({ workItemId }: Props) {
@@ -115,7 +115,7 @@ export default function SidePanelCycleTime({ workItemId }: Props) {
         {currentStatus && (
           <div>
             <span style={{ fontSize: 12, color: '#64748B' }}>Currently in: </span>
-            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', padding: '1px 6px', borderRadius: 3, background: '#DEEBFF', color: '#0747A6' }}>{currentStatus}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', padding: '1px 6px', borderRadius: 3, background: '#0C66E4', color: '#FFFFFF' }}>{currentStatus}</span>
           </div>
         )}
         {timeInCurrentSec > 0 && (

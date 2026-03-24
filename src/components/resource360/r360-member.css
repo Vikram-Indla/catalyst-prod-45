@@ -75,8 +75,8 @@
   letter-spacing: 0.03em !important;
 }
 #r360-root .r3-mode-badge.live {
-  background: #DEEBFF !important;
-  color: #0747A6 !important;
+  background: #0C66E4 !important;
+  color: #FFFFFF !important;
 }
 #r360-root .r3-mode-badge.snapshot {
   background: #DFE1E6 !important;
@@ -860,8 +860,8 @@
   width: 32px !important;
   height: 32px !important;
   border-radius: 50% !important;
-  background: #E3FCEF !important;
-  color: #006644 !important;
+  background: #1B7F37 !important;
+  color: #FFFFFF !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -881,7 +881,7 @@
   font-weight: 700 !important;
   letter-spacing: 0.05em !important;
   text-transform: uppercase !important;
-  color: #006644 !important;
+  color: #FFFFFF !important;
 }
 #r360-root .r3-completed-text.empty {
   color: #94A3B8 !important;

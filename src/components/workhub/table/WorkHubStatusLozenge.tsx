@@ -10,11 +10,11 @@ interface WorkHubStatusLozengeProps {
 }
 
 function getCategoryColors(statusCategory: string | undefined): { bg: string; text: string } {
-  if (!statusCategory) return { bg: '#DFE1E6', text: '#253858' };
+  if (!statusCategory) return { bg: '#DFE1E6', text: '#42526E' };
   const cat = statusCategory.toLowerCase().replace(/\s+/g, '_');
-  if (cat === 'done' || cat === 'complete') return { bg: '#E3FCEF', text: '#006644' };
-  if (cat === 'in_progress') return { bg: '#DEEBFF', text: '#0747A6' };
-  return { bg: '#DFE1E6', text: '#253858' };
+  if (cat === 'done' || cat === 'complete') return { bg: '#1B7F37', text: '#FFFFFF' };
+  if (cat === 'in_progress') return { bg: '#0C66E4', text: '#FFFFFF' };
+  return { bg: '#DFE1E6', text: '#42526E' };
 }
 
 const DISPLAY_NAMES: Record<string, string> = {

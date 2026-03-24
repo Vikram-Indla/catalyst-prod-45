@@ -29,16 +29,16 @@ function durationColor(seconds: number): string {
 function nodeColor(cat: string | null): { bg: string; border: string } {
   if (!cat) return { bg: '#DFE1E6', border: '#DFE1E6' };
   const c = cat.toLowerCase().replace(/\s+/g, '_');
-  if (c === 'done' || c === 'complete') return { bg: '#E3FCEF', border: '#006644' };
-  if (c === 'in_progress') return { bg: '#DEEBFF', border: '#0747A6' };
+  if (c === 'done' || c === 'complete') return { bg: '#1B7F37', border: '#FFFFFF' };
+  if (c === 'in_progress') return { bg: '#0C66E4', border: '#FFFFFF' };
   return { bg: '#DFE1E6', border: '#DFE1E6' };
 }
 
 function barColor(cat: string | null): string {
   if (!cat) return '#DFE1E6';
   const c = cat.toLowerCase().replace(/\s+/g, '_');
-  if (c === 'done') return '#E3FCEF';
-  if (c === 'in_progress') return '#DEEBFF';
+  if (c === 'done') return '#1B7F37';
+  if (c === 'in_progress') return '#0C66E4';
   return '#DFE1E6';
 }
 

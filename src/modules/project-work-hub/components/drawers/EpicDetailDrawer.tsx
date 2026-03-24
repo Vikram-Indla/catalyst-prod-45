@@ -39,7 +39,7 @@ function getEpicStatusColors(status: string): { bg: string; text: string; label:
     const style = getLozengeStyle(cfg.color);
     return { ...style, label: cfg.label };
   }
-  return { bg: '#DFE1E6', text: '#253858', label: status.replace(/_/g, ' ').toUpperCase() };
+  return { bg: '#DFE1E6', text: '#42526E', label: status.replace(/_/g, ' ').toUpperCase() };
 }
 
 type TabId = 'details' | 'comments' | 'history';
