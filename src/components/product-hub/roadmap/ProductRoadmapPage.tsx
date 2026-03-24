@@ -7,6 +7,7 @@ import { Download, Maximize2, Minimize2, AlertCircle, RefreshCw, Plus } from 'lu
 import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
 import { addMonths, subMonths } from 'date-fns';
 import { useCatalystContext } from '@/contexts/CatalystContext';
+import { useTheme } from '@/hooks/useTheme';
 
 import { RoadmapKPIStrip } from './RoadmapKPIStrip';
 import { RoadmapToolbar } from './RoadmapToolbar';
@@ -20,7 +21,7 @@ import { AddInitiativeModal } from './AddInitiativeModal';
 import { useRoadmapData, useToggleRoadmapStar } from './hooks/useRoadmapData';
 import { useRoadmapFilters } from './hooks/useRoadmapFilters';
 
-import { INK, SURFACE, FONT, SCROLLBAR_CSS } from './constants/roadmap.constants';
+import { INK, INK_DARK, SURFACE, SURFACE_DARK, FONT, SCROLLBAR_CSS } from './constants/roadmap.constants';
 import '@/styles/roadmap-ringfenced.css';
 import '@/styles/product-kanban.css';
 
