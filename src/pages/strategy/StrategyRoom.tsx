@@ -132,15 +132,6 @@ export default function StrategyRoom() {
     return () => document.removeEventListener('keydown', handler);
   }, [briefOpen, handleCloseBrief]);
 
-  useEffect(() => {
-    if (briefOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
-  }, [briefOpen]);
-
   return (
     <StrategyRoleProvider>
       <style>{OVERLAY_TOKENS}</style>
@@ -153,32 +144,26 @@ export default function StrategyRoom() {
         Skip to dashboard content
       </a>
 
-      <div id="dashboard-main" className="brief-controller-dashboard">
-        <StrategyRoomDashboard
-          onOpenBrief={handleOpenBrief}
-          onDownloadBrief={handleDownloadBrief}
-          themes={themes}
-          budget={budget}
-          workforce={workforce}
-          contracts={contracts}
-          execution={execution}
-          alignment={alignment}
-          brief={brief}
-          fiscal={fiscal}
-          updatedAgo={updatedAgo}
-        />
-      </div>
-
-      {/* Brief Overlay */}
-      {briefOpen && (
-        <div
-          className="brief-controller-overlay"
-          style={OVERLAY_STYLE}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) handleCloseBrief();
-          }}
-        >
+      {briefOpen ? (
+        /* Brief renders INLINE in the content area — nav + sidebar stay visible */
+        <div className="brief-controller-brief" style={{ overflowY: 'auto', flex: 1 }}>
           <AIExecutiveBrief open={briefOpen} onClose={handleCloseBrief} onDownload={printBriefInNewWindow} />
+        </div>
+      ) : (
+        <div id="dashboard-main" className="brief-controller-dashboard">
+          <StrategyRoomDashboard
+            onOpenBrief={handleOpenBrief}
+            onDownloadBrief={handleDownloadBrief}
+            themes={themes}
+            budget={budget}
+            workforce={workforce}
+            contracts={contracts}
+            execution={execution}
+            alignment={alignment}
+            brief={brief}
+            fiscal={fiscal}
+            updatedAgo={updatedAgo}
+          />
         </div>
       )}
     </StrategyRoleProvider>
