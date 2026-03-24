@@ -3776,7 +3776,7 @@ html:has(body[data-scroll-locked]) {
 
 .dark .text-muted-foreground,
 [data-theme="dark"] .text-muted-foreground {
-  color: var(--text-3) !important;
+  color: var(--text-2) !important;
 }
 
 .dark .text-card-foreground,

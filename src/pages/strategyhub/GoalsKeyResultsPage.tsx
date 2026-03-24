@@ -111,7 +111,7 @@ export default function GoalsKeyResultsPage() {
   const isLoading = goalsLoading || krsLoading;
 
   return (
-    <div style={{ padding: '16px 24px 24px', backgroundColor: '#F8FAFC', minHeight: '100%' }}>
+    <div data-goals-page="" style={{ padding: '16px 24px 24px', minHeight: '100%' }}>
       {/* Breadcrumb */}
       <nav style={{ fontSize: 12, color: '#64748B', marginBottom: 4 }} aria-label="Breadcrumb">
         <span style={{ cursor: 'pointer' }} onClick={() => navigate('/strategyhub')}>StrategyHub</span>
