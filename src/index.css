@@ -120,6 +120,37 @@
   --cp-lozenge-green-bg: #E3FCEF;
   --cp-lozenge-green-text: #006644;
 
+  /* ═══ SHORTHAND TOKENS — For You / shared components ═══ */
+  --cp-bg: #FFFFFF;
+  --cp-float: #FFFFFF;
+  --cp-hover: rgba(15,23,42,0.04);
+  --cp-bd: rgba(15,23,42,0.12);
+  --cp-bd-zone: rgba(15,23,42,0.06);
+  --cp-bd-table: rgba(15,23,42,0.06);
+  --cp-t1: #0F172A;
+  --cp-t2: #334155;
+  --cp-t3: #64748B;
+  --cp-t4: #94A3B8;
+  --cp-blue: #2563EB;
+  --cp-blue-wash: rgba(37,99,235,0.08);
+  --cp-blue-text: #2563EB;
+  --cp-blue-link: #2563EB;
+  --cp-ok: #16A34A;
+  --cp-ok-bg: rgba(22,163,74,0.08);
+  --cp-warn: #D97706;
+  --cp-warn-bg: rgba(217,119,6,0.08);
+  --cp-err: #DC2626;
+  --cp-err-bg: rgba(220,38,38,0.08);
+  --cp-err-text: #DC2626;
+  --cp-prg-bg: rgba(37,99,235,0.08);
+  --cp-lz-gy-bg: #DFE1E6;
+  --cp-lz-gy-t: #253858;
+  --cp-lz-bl-bg: #DEEBFF;
+  --cp-lz-bl-t: #0747A6;
+  --cp-lz-gn-bg: #E3FCEF;
+  --cp-lz-gn-t: #006644;
+  --cp-lozenge-green-text: #006644;
+
   /* ═══ Source Badge Tokens ═══ */
   --src-catalyst-bg: #EFF6FF;
   --src-catalyst-text: #2563EB;
