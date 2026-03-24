@@ -130,7 +130,7 @@ export default function AllProjectsPage() {
         }
       />
 
-      <div style={{ flex: 1, overflow: 'auto', padding: '12px 24px' }}>
+      <div className="flex-1 overflow-auto px-6 py-3 bg-background text-foreground">
 
       {/* Toolbar */}
       <div style={{ marginBottom: 10, flexShrink: 0 }}>
@@ -146,50 +146,40 @@ export default function AllProjectsPage() {
 
       {/* Content */}
       {isLoading ? (
-        <div style={{ flex: 1, background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: 40 }}>
+        <div className="flex-1 rounded-lg border border-border bg-card p-10 dark:bg-background dark:shadow-none">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="animate-pulse" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 4, background: '#E2E8F0' }} />
+                <div className="h-7 w-7 rounded bg-muted" />
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <div style={{ height: 12, background: '#E2E8F0', borderRadius: 4, width: '30%' }} />
-                  <div style={{ height: 10, background: '#F1F5F9', borderRadius: 4, width: '20%' }} />
+                  <div className="h-3 w-[30%] rounded bg-muted" />
+                  <div className="h-2.5 w-[20%] rounded bg-muted/70" />
                 </div>
-                <div style={{ height: 12, background: '#F1F5F9', borderRadius: 4, width: 60 }} />
+                <div className="h-3 w-[60px] rounded bg-muted/70" />
               </div>
             ))}
           </div>
         </div>
       ) : filtered.length === 0 ? (
-        <div style={{
-          flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: '80px 40px',
-        }}>
-          <FolderKanban size={48} color="#CBD5E1" strokeWidth={1.25} />
-          <h3 style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', marginTop: 16, fontFamily: "'Sora', sans-serif" }}>
+        <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-border bg-card px-10 py-20 text-center dark:bg-background dark:shadow-none">
+          <FolderKanban size={48} className="text-muted-foreground/50" strokeWidth={1.25} />
+          <h3 className="mt-4 font-['Sora',sans-serif] text-lg font-semibold text-foreground">
             {filters.search || filters.statusChip !== 'All' ? 'No projects match your filters' : 'No projects yet'}
           </h3>
-          <p style={{ fontSize: 13, color: '#64748B', marginTop: 4, textAlign: 'center', maxWidth: 360 }}>
+          <p className="mt-1 max-w-[360px] text-[13px] text-muted-foreground">
             {filters.search || filters.statusChip !== 'All' ? 'Try adjusting your search or filter criteria.' : 'Create your first project to get started.'}
           </p>
           {filters.search === '' && filters.statusChip === 'All' && (
             <button
               onClick={() => setShowCreateModal(true)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6, height: 36, padding: '0 16px', marginTop: 24,
-                background: '#2563EB', color: '#FFF', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer',
-              }}
+              className="mt-6 flex h-9 items-center gap-1.5 rounded-md bg-primary px-4 text-[13px] font-semibold text-primary-foreground"
             >
               <Plus size={16} /> New Project
             </button>
           )}
         </div>
       ) : view === 'list' ? (
-        <div style={{
-          flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column',
-          background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-        }}>
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm dark:bg-background dark:shadow-none">
           <div style={{ flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'auto' }}>
             <AllProjectsTable
               projects={pageData}
@@ -205,11 +195,7 @@ export default function AllProjectsPage() {
             />
           </div>
           {/* Footer */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: '6px 16px', borderTop: '1px solid #F1F5F9', background: '#FAFBFC',
-            fontSize: 12, color: '#64748B', flexShrink: 0,
-          }}>
+          <div className="flex shrink-0 items-center justify-center border-t border-border bg-muted/40 px-4 py-1.5 text-xs text-muted-foreground dark:bg-background">
             <span>Showing {filtered.length} projects</span>
           </div>
         </div>

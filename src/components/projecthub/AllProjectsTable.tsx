@@ -52,12 +52,12 @@ function SortHeader({ label, col, currentCol, dir, onSort, center }: {
   return (
     <th
       onClick={() => onSort(col)}
-      style={{
-        padding: '0 16px', height: 36, textAlign: center ? 'center' : 'left',
-        fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em',
-        color: '#64748B', whiteSpace: 'nowrap', borderBottom: '2px solid #E2E8F0',
-        background: active ? '#EFF6FF' : '#F8FAFC', cursor: 'pointer', userSelect: 'none',
-      }}
+      className={[
+        'h-9 select-none whitespace-nowrap border-b-2 border-border px-4 text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground',
+        center ? 'text-center' : 'text-left',
+        active ? 'bg-primary/10 text-foreground' : 'bg-muted/50 dark:bg-muted/20',
+        'cursor-pointer',
+      ].join(' ')}
     >
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
         {label}
@@ -73,19 +73,19 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
   const allChecked = projects.length > 0 && projects.every(p => selectedRows.has(p.id));
 
   return (
-    <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
+    <table className="w-full border-collapse font-['Inter',sans-serif] bg-card text-foreground dark:bg-background">
       <thead>
         <tr>
-          <th style={{ width: 40, padding: '0 8px', height: 36, textAlign: 'center', borderBottom: '2px solid #E2E8F0', background: '#F8FAFC' }}>
+          <th className="h-9 w-10 border-b-2 border-border bg-muted/50 px-2 text-center dark:bg-muted/20">
             <input type="checkbox" checked={allChecked} onChange={onToggleAll} style={{ width: 14, height: 14, accentColor: '#2563EB', cursor: 'pointer' }} />
           </th>
-          <th style={{ width: 36, padding: '0 4px', height: 36, borderBottom: '2px solid #E2E8F0', background: '#F8FAFC' }} />
+          <th className="h-9 w-9 border-b-2 border-border bg-muted/50 px-1 dark:bg-muted/20" />
           <SortHeader label="Key" col="name" currentCol={sortCol} dir={sortDir} onSort={onSort} />
           <SortHeader label="Project Name" col="name" currentCol={sortCol} dir={sortDir} onSort={onSort} />
           <SortHeader label="Status" col="status" currentCol={sortCol} dir={sortDir} onSort={onSort} />
           
-          <th style={{ padding: '0 12px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #E2E8F0', background: '#F8FAFC' }}>Members</th>
-          <th style={{ padding: '0 16px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #E2E8F0', background: '#F8FAFC', textAlign: 'right' }}>Updated</th>
+          <th className="h-9 border-b-2 border-border bg-muted/50 px-3 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground dark:bg-muted/20">Members</th>
+          <th className="h-9 border-b-2 border-border bg-muted/50 px-4 text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground dark:bg-muted/20">Updated</th>
         </tr>
       </thead>
       <tbody>
@@ -98,36 +98,32 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
               key={p.id}
               onClick={() => onSelectProject(p.id)}
               onDoubleClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
-              className="group"
-              style={{
-                height: 36, cursor: 'pointer', transition: 'background 100ms',
-                borderBottom: '1px solid #F1F5F9',
-                background: checked ? '#EFF6FF' : undefined,
-              }}
-              onMouseEnter={e => { if (!checked) e.currentTarget.style.background = '#FAFBFC'; }}
-              onMouseLeave={e => { if (!checked) e.currentTarget.style.background = ''; }}
+              className={[
+                'group h-9 cursor-pointer border-b border-border transition-colors',
+                checked ? 'bg-primary/10' : 'bg-transparent hover:bg-muted/40 dark:hover:bg-white/5',
+              ].join(' ')}
             >
-              <td style={{ padding: '0 8px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+              <td className="px-2 text-center" onClick={e => e.stopPropagation()}>
                 <input
                   type="checkbox" checked={checked} onChange={() => onToggleRow(p.id)}
                   className="opacity-0 group-hover:opacity-100"
                   style={{ width: 14, height: 14, accentColor: '#2563EB', cursor: 'pointer', ...(checked ? { opacity: 1 } : {}) }}
                 />
               </td>
-              <td style={{ padding: '0 4px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+              <td className="px-1 text-center" onClick={e => e.stopPropagation()}>
                 <button onClick={() => onToggleFav(p.id, isFav)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, fontSize: 14 }}>
                   <Star size={14} fill={isFav ? '#F59E0B' : 'none'} color={isFav ? '#F59E0B' : '#CBD5E1'} />
                 </button>
               </td>
               <td
-                style={{ padding: '0 16px', fontSize: 12, fontFamily: "'JetBrains Mono', monospace" }}
+                className="px-4 text-xs font-['JetBrains_Mono',monospace]"
                 onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/dashboard`); }}
               >
-                <span style={{ color: '#2563EB', cursor: 'pointer', fontWeight: 600 }} className="hover:underline">
+                <span className="cursor-pointer font-semibold text-primary hover:underline">
                   {p.project_key}
                 </span>
               </td>
-              <td style={{ padding: '0 16px' }} onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/dashboard`); }}>
+              <td className="px-4" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/dashboard`); }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{
                     width: 24, height: 24, borderRadius: 4, flexShrink: 0,
@@ -137,19 +133,19 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
                   }}>
                     {p.project_key.substring(0, 2)}
                   </div>
-                  <span style={{ fontWeight: 500, fontSize: 14, color: '#0F172A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <span className="overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium text-foreground">
                     {p.name}
                   </span>
                 </div>
               </td>
-              <td style={{ padding: '0 16px' }}>
+              <td className="px-4">
                 <ProjectStatusBadge status={p.status} />
               </td>
               
-              <td style={{ padding: '0 12px' }}>
+              <td className="px-3">
                 <MemberStack memberIds={p.member_ids} memberCount={p.member_count} />
               </td>
-              <td style={{ padding: '0 16px', fontSize: 12, color: '#94A3B8', whiteSpace: 'nowrap', textAlign: 'right' }}>
+              <td className="whitespace-nowrap px-4 text-right text-xs text-muted-foreground">
                 {p.updated_at ? formatDistanceToNowStrict(new Date(p.updated_at), { addSuffix: true }) : '—'}
               </td>
             </tr>
