@@ -20,6 +20,20 @@
 .ph-table-row:hover {
   background: #EFF6FF !important;
 }
+.dark .ph-table-row:hover {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+/* Dark mode scrollbar */
+.dark .ph-tis-scroll::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+}
+.dark .ph-tis-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+}
+.dark .ph-tis-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.25);
+}
 
 /* Focus ring for accessibility */
 .ph-focus-ring:focus-visible {
