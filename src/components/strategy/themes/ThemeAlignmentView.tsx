@@ -806,19 +806,19 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       </div>
 
       {/* ═══ CHAIN EXPLANATION BANNER ═══ */}
-      <div className="flex items-center justify-center shrink-0 px-6 border-b border-border bg-muted/50" style={{ height: 40 }}>
-        <div className="flex items-center gap-2 text-muted-foreground" style={{ fontSize: 12 }}>
+      <div className="flex items-center justify-center shrink-0 px-6 border-b border-border bg-muted/50 dark:bg-transparent" style={{ height: 40 }}>
+        <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300" style={{ fontSize: 12 }}>
           <span className="font-semibold text-foreground">Reading this map:</span>
           <span>Each</span>
-          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5" style={{ color: '#1E40AF', background: '#EFF6FF', borderColor: '#BFDBFE' }}>● Theme</Badge>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#1E40AF', background: '#EFF6FF', borderColor: '#BFDBFE' }}>● Theme</Badge>
           <span>breaks down into</span>
-          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5" style={{ color: '#115E59', background: '#F0FDFA', borderColor: '#99F6E4' }}>● Goals</Badge>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#115E59', background: '#F0FDFA', borderColor: '#99F6E4' }}>● Goals</Badge>
           <span>measured by</span>
-          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5" style={{ color: '#1E40AF', background: '#DBEAFE', borderColor: '#93C5FD' }}>● Key Results</Badge>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#1E40AF', background: '#DBEAFE', borderColor: '#93C5FD' }}>● Key Results</Badge>
           <span>delivered through</span>
-          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5" style={{ color: '#92400E', background: '#FFFBEB', borderColor: '#FDE68A' }}>● Initiatives</Badge>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#92400E', background: '#FFFBEB', borderColor: '#FDE68A' }}>● Initiatives</Badge>
           <span>executed as</span>
-          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5" style={{ color: '#3730A3', background: '#EEF2FF', borderColor: '#C7D2FE' }}>● Epics</Badge>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5 dark:bg-gray-800 dark:border-gray-700" style={{ color: '#3730A3', background: '#EEF2FF', borderColor: '#C7D2FE' }}>● Epics</Badge>
         </div>
       </div>
 
@@ -1083,7 +1083,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       />
 
       {/* ═══ LEGEND BAR ═══ */}
-      <div className="flex items-center justify-center gap-6 shrink-0 border-t border-border bg-card" style={{ height: 36 }}>
+      <div className="flex items-center justify-center gap-6 shrink-0 border-t border-border bg-card dark:bg-transparent" style={{ height: 36 }}>
         {[
           { label: 'Strategic Theme', color: LAYER.theme.color },
           { label: 'Goal', color: LAYER.goal.color },

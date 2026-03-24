@@ -195,7 +195,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
 
       {/* Pagination */}
       <div className="flex items-center justify-between px-4 py-3 border-t" style={{ borderColor }}>
-        <span style={{ fontSize: 12, color: isDark ? DK.t3 : '#64748B' }}>
+        <span style={{ fontSize: 12, color: isDark ? '#9CA3AF' : '#64748B' }}>
           Showing {Math.min((page - 1) * perPage + 1, sorted.length)}–{Math.min(page * perPage, sorted.length)} of {sorted.length} themes
         </span>
         <div className="flex items-center gap-2">
@@ -210,7 +210,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
               cursor: page === 1 ? 'default' : 'pointer',
             }}
           >←</button>
-          <span style={{ fontSize: 12, color: isDark ? DK.t3 : '#64748B' }}>Page {page} of {totalPages}</span>
+          <span style={{ fontSize: 12, color: isDark ? '#9CA3AF' : '#64748B' }}>Page {page} of {totalPages}</span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
