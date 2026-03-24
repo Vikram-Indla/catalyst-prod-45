@@ -1,0 +1,105 @@
+/* ═══════════════════════════════════════════════════════════
+   Strategy Intelligence Panel — Dark Mode Nuclear Override
+   Targets .dark ancestor + hardcoded Tailwind classes
+   ═══════════════════════════════════════════════════════════ */
+
+/* Panel container */
+.dark .strategy-intel-panel {
+  background: #232019 !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  color: rgba(248,244,240,0.92) !important;
+}
+
+/* Text overrides */
+.dark .strategy-intel-panel .text-slate-900,
+.dark .strategy-intel-panel .text-slate-800,
+.dark .strategy-intel-panel .text-\[15px\].font-\[700\] {
+  color: rgba(248,244,240,0.92) !important;
+}
+.dark .strategy-intel-panel .text-slate-700,
+.dark .strategy-intel-panel .text-slate-600 {
+  color: rgba(248,244,240,0.72) !important;
+}
+.dark .strategy-intel-panel .text-slate-500,
+.dark .strategy-intel-panel .text-slate-400 {
+  color: rgba(248,244,240,0.50) !important;
+}
+
+/* Backgrounds */
+.dark .strategy-intel-panel .bg-white {
+  background: #232019 !important;
+}
+.dark .strategy-intel-panel .bg-slate-100,
+.dark .strategy-intel-panel .bg-slate-50 {
+  background: rgba(255,255,255,0.06) !important;
+}
+
+/* Borders */
+.dark .strategy-intel-panel .border-slate-200,
+.dark .strategy-intel-panel .border-slate-100 {
+  border-color: rgba(255,255,255,0.10) !important;
+}
+.dark .strategy-intel-panel .border-l {
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+/* Hover states */
+.dark .strategy-intel-panel .hover\:bg-slate-100:hover,
+.dark .strategy-intel-panel .hover\:bg-slate-50:hover {
+  background: rgba(255,255,255,0.06) !important;
+}
+
+/* Tab bar */
+.dark .strategy-intel-panel .border-b {
+  border-color: rgba(255,255,255,0.10) !important;
+}
+.dark .strategy-intel-panel .border-t {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Footer */
+.dark .strategy-intel-panel .shrink-0.border-t {
+  background: #232019 !important;
+}
+
+/* Metric cards in Executive Brief tab */
+.dark .strategy-intel-panel .border.border-slate-200.rounded-lg {
+  background: rgba(255,255,255,0.03) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+/* Close button */
+.dark .strategy-intel-panel button.p-1\.5:hover {
+  background: rgba(255,255,255,0.06) !important;
+}
+
+/* Shadow kill */
+.dark .strategy-intel-panel.shadow-2xl {
+  box-shadow: none !important;
+}
+
+/* Markdown content */
+.dark .strategy-intel-panel h2.border-b {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Status banner left border cards */
+.dark .strategy-intel-panel .p-4.bg-white.border.border-slate-200 {
+  background: rgba(255,255,255,0.03) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+/* Chain breadcrumb badges — keep colored backgrounds */
+
+/* Scrollbar */
+.dark .strategy-intel-panel ::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.03);
+}
+.dark .strategy-intel-panel ::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+}
+
+/* Health bars */
+.dark .strategy-intel-panel .bg-slate-100.rounded-full {
+  background: rgba(255,255,255,0.08) !important;
+}
