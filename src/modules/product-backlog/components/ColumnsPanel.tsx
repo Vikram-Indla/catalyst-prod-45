@@ -82,31 +82,31 @@ export function ColumnsPanel({
   return (
     <div
       ref={panelRef}
-      className="absolute top-full right-0 mt-2 w-64 rounded-lg shadow-lg z-[500] overflow-hidden dark:!bg-[#232019] dark:!border-gray-700"
+      className="absolute top-full right-0 mt-2 w-64 rounded-lg shadow-lg z-[500] overflow-hidden"
       style={{
-        backgroundColor: 'var(--surface-1)',
-        border: '1px solid var(--border-color)',
+        backgroundColor: isDark ? '#232019' : 'var(--surface-1)',
+        border: isDark ? '1px solid rgba(248,244,240,0.10)' : '1px solid var(--border-color)',
       }}
     >
       <div 
-        className="px-4 py-3 border-b flex items-center justify-between dark:border-gray-700"
-        style={{ borderColor: 'var(--divider)' }}
+        className="px-4 py-3 border-b flex items-center justify-between"
+        style={{ borderColor: isDark ? 'rgba(248,244,240,0.10)' : 'var(--divider)' }}
       >
         <span 
-          className="text-sm font-semibold dark:text-white"
-          style={{ color: 'var(--text-1)' }}
+          className="text-sm font-semibold"
+          style={{ color: isDark ? 'rgba(248,244,240,0.92)' : 'var(--text-1)' }}
         >
           Columns
         </span>
         <span 
-          className="text-xs dark:text-gray-400"
-          style={{ color: 'var(--text-3)' }}
+          className="text-xs"
+          style={{ color: isDark ? 'rgba(248,244,240,0.60)' : 'var(--text-3)' }}
         >
           {visibleColumns.length} of {columns.length}
         </span>
       </div>
 
-      <div className="max-h-[320px] overflow-y-auto py-2 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 dark:[&::-webkit-scrollbar-track]:bg-transparent">
+      <div className="max-h-[320px] overflow-y-auto py-2">
         {columns.map(col => {
           const isVisible = visibleColumns.includes(col.id);
           const isOnlyOne = visibleColumns.length === 1 && isVisible;
@@ -123,11 +123,14 @@ export function ColumnsPanel({
                 checked={isVisible}
                 onCheckedChange={() => handleToggle(col.id)}
                 disabled={isOnlyOne}
-                className="border-border dark:border-gray-600 data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary"
+                className={cn(
+                  "data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary",
+                  isDark ? "border-gray-600" : "border-border"
+                )}
               />
               <span 
-                className="text-sm dark:text-white"
-                style={{ color: 'var(--text-1)' }}
+                className="text-sm"
+                style={{ color: isDark ? 'rgba(248,244,240,0.92)' : 'var(--text-1)' }}
               >
                 {col.header}
               </span>
@@ -137,10 +140,10 @@ export function ColumnsPanel({
       </div>
 
       <div 
-        className="px-4 py-3 border-t flex gap-2 dark:border-gray-700 dark:bg-[#1e1c17]"
+        className="px-4 py-3 border-t flex gap-2"
         style={{ 
-          borderColor: 'var(--divider)',
-          backgroundColor: 'var(--surface-2)',
+          borderColor: isDark ? 'rgba(248,244,240,0.10)' : 'var(--divider)',
+          backgroundColor: isDark ? '#1e1c17' : 'var(--surface-2)',
         }}
       >
         <Button
