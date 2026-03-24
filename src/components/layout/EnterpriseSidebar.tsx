@@ -31,7 +31,7 @@ const enterpriseSidebarConfig: SidebarConfig = {
     {
       title: 'Strategy Hub',
       items: [
-        { id: 'strategy-room', title: 'Strategy Room', path: '/strategyhub', icon: LayoutDashboard, exact: true },
+        { id: 'strategy-room', title: 'Strategy Room', path: '/strategyhub', icon: LayoutDashboard, exact: true, activeMatchPaths: ['/strategyhub/executive-brief'] },
         { id: 'themes', title: 'Strategic Themes', path: '/strategyhub/themes', icon: Layers, exact: false },
         { id: 'goals', title: 'Goals & Key Results', path: '/strategyhub/goals', icon: Target, exact: false, badge: 12, badgeVariant: 'info' },
         { id: 'investment', title: 'Investment Allocation', path: '/strategyhub/investment', icon: PieChart, exact: false },
