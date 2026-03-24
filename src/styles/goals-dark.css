@@ -17,49 +17,30 @@
   box-shadow: none !important;
 }
 
-/* ── Stats: label (TOTAL GOALS etc.) ── */
-[data-theme="dark"] .goals-stats-grid > div > div:last-child > div:first-child {
-  color: rgba(248,244,240,0.72) !important;
-}
-
-/* ── Stats: hero number ── */
-[data-theme="dark"] .goals-stats-grid > div > div:last-child > div:nth-child(2) {
-  color: rgba(248,244,240,0.92) !important;
-}
-
-/* ── Stats: sub text ── */
-[data-theme="dark"] .goals-stats-grid > div > div:last-child > div:nth-child(3) {
-  color: rgba(248,244,240,0.55) !important;
-}
-
-/* ── Stats: icon container dark tints ── */
-[data-theme="dark"] .goals-stats-grid > div > div:first-child {
-  opacity: 0.85;
-}
-
-/* ── Tree/List Container ── */
+/* ── Tree/List/Heatmap Container ── */
 [data-theme="dark"] .goals-tree-container,
-[data-theme="dark"] [data-goals-page] > div[style*="border: 1px solid"] {
+[data-theme="dark"] [data-goals-page] > div > div[style*="border: 1px solid"][style*="borderRadius"],
+[data-theme="dark"] .heatmap-scroll {
   background: #1A1714 !important;
   border-color: rgba(248,244,240,0.10) !important;
 }
 
-/* ── Table Header Row ── */
-[data-theme="dark"] .goals-tree-container > div:first-child,
-[data-theme="dark"] [data-goals-page] div[style*="borderBottom: 2px"] {
+/* ── Table Header Rows ── */
+[data-theme="dark"] .goals-tree-container > div:first-child {
   background: rgba(248,244,240,0.03) !important;
   border-bottom-color: rgba(248,244,240,0.10) !important;
   color: rgba(248,244,240,0.60) !important;
 }
 
-/* ── Theme Row (F1F5F9 bg rows) ── */
+/* ── Theme Row (sunken #F1F5F9 bg) ── */
 [data-theme="dark"] .goals-tree-container div[style*="background: rgb(241, 245, 249)"],
-[data-theme="dark"] .goals-tree-container div[style*="background: #F1F5F9"] {
+[data-theme="dark"] .goals-tree-container div[style*="background: #F1F5F9"],
+[data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"][style*="borderLeft"] {
   background: rgba(248,244,240,0.04) !important;
   border-bottom-color: rgba(248,244,240,0.08) !important;
 }
 
-/* ── Goal Row (white bg) ── */
+/* ── Goal Row ── */
 [data-theme="dark"] .goal-tree-row {
   background: transparent !important;
   border-bottom-color: rgba(248,244,240,0.06) !important;
@@ -84,58 +65,49 @@
   border-top-color: rgba(248,244,240,0.10) !important;
 }
 
-/* ── All text inside goals components: override hardcoded colors ── */
+/* ══════════════════════════════════════════════════════════════════════════
+   TEXT COLOR OVERRIDES — match inline style hex values to dark tokens
+   ══════════════════════════════════════════════════════════════════════════ */
 
 /* Primary text (#0F172A, #1E293B) → t1 */
-[data-theme="dark"] [data-goals-page] span[style*="color: rgb(15, 23, 42)"],
-[data-theme="dark"] [data-goals-page] span[style*="color: #0F172A"],
-[data-theme="dark"] [data-goals-page] h1[style*="color: rgb(15, 23, 42)"],
-[data-theme="dark"] [data-goals-page] h1[style*="color: #0F172A"],
-[data-theme="dark"] [data-goals-page] span[style*="color: rgb(30, 41, 59)"],
-[data-theme="dark"] [data-goals-page] span[style*="color: #1E293B"] {
+[data-theme="dark"] [data-goals-page] [style*="color: rgb(15, 23, 42)"],
+[data-theme="dark"] [data-goals-page] [style*="color: #0F172A"],
+[data-theme="dark"] [data-goals-page] [style*="color: rgb(30, 41, 59)"],
+[data-theme="dark"] [data-goals-page] [style*="color: #1E293B"] {
   color: rgba(248,244,240,0.92) !important;
 }
 
 /* Secondary text (#334155, #475569) → t2 */
-[data-theme="dark"] [data-goals-page] span[style*="color: rgb(51, 65, 85)"],
-[data-theme="dark"] [data-goals-page] span[style*="color: #334155"],
-[data-theme="dark"] [data-goals-page] span[style*="color: rgb(71, 85, 105)"],
-[data-theme="dark"] [data-goals-page] span[style*="color: #475569"],
-[data-theme="dark"] [data-goals-page] div[style*="color: rgb(71, 85, 105)"] {
+[data-theme="dark"] [data-goals-page] [style*="color: rgb(51, 65, 85)"],
+[data-theme="dark"] [data-goals-page] [style*="color: #334155"],
+[data-theme="dark"] [data-goals-page] [style*="color: rgb(71, 85, 105)"],
+[data-theme="dark"] [data-goals-page] [style*="color: #475569"] {
   color: rgba(248,244,240,0.72) !important;
 }
 
-/* Tertiary text (#64748B) → t2 */
-[data-theme="dark"] [data-goals-page] span[style*="color: rgb(100, 116, 139)"],
-[data-theme="dark"] [data-goals-page] span[style*="color: #64748B"],
-[data-theme="dark"] [data-goals-page] div[style*="color: rgb(100, 116, 139)"],
-[data-theme="dark"] [data-goals-page] div[style*="color: #64748B"] {
+/* Tertiary text (#64748B) → t3 */
+[data-theme="dark"] [data-goals-page] [style*="color: rgb(100, 116, 139)"],
+[data-theme="dark"] [data-goals-page] [style*="color: #64748B"] {
   color: rgba(248,244,240,0.60) !important;
 }
 
-/* Muted text (#94A3B8, #CBD5E1) → t3/t4 */
-[data-theme="dark"] [data-goals-page] span[style*="color: rgb(148, 163, 184)"],
-[data-theme="dark"] [data-goals-page] span[style*="color: #94A3B8"],
-[data-theme="dark"] [data-goals-page] div[style*="color: rgb(148, 163, 184)"],
-[data-theme="dark"] [data-goals-page] div[style*="color: #94A3B8"] {
+/* Muted text (#94A3B8) → t3 */
+[data-theme="dark"] [data-goals-page] [style*="color: rgb(148, 163, 184)"],
+[data-theme="dark"] [data-goals-page] [style*="color: #94A3B8"] {
   color: rgba(248,244,240,0.55) !important;
 }
 
-[data-theme="dark"] [data-goals-page] span[style*="color: rgb(203, 213, 225)"],
-[data-theme="dark"] [data-goals-page] span[style*="color: #CBD5E1"] {
+/* Very muted text (#CBD5E1) → t4 */
+[data-theme="dark"] [data-goals-page] [style*="color: rgb(203, 213, 225)"],
+[data-theme="dark"] [data-goals-page] [style*="color: #CBD5E1"] {
   color: rgba(248,244,240,0.35) !important;
 }
 
-/* ── Breadcrumb ── */
-[data-theme="dark"] [data-goals-page] nav[aria-label="Breadcrumb"] span[style*="color: rgb(100, 116, 139)"],
-[data-theme="dark"] [data-goals-page] nav[aria-label="Breadcrumb"] span[style*="color: #64748B"] {
-  color: rgba(248,244,240,0.55) !important;
-}
-[data-theme="dark"] [data-goals-page] nav[aria-label="Breadcrumb"] span[style*="fontWeight: 600"] {
-  color: rgba(248,244,240,0.92) !important;
-}
+/* ══════════════════════════════════════════════════════════════════════════
+   BACKGROUND OVERRIDES — white/light surfaces → dark
+   ══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Buttons ── */
+/* White backgrounds on buttons/inputs/containers → transparent */
 [data-theme="dark"] [data-goals-page] button[style*="background: rgb(255, 255, 255)"],
 [data-theme="dark"] [data-goals-page] button[style*="background: #FFFFFF"] {
   background: transparent !important;
@@ -144,49 +116,49 @@
   box-shadow: none !important;
 }
 
-/* ── Filter dropdown triggers ── */
-[data-theme="dark"] [data-goals-page] button[style*="background: rgb(255, 255, 255)"][style*="border: 1px solid"] {
+/* White bg containers (search, list-view, empty state) → transparent */
+[data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="borderRadius: 10"],
+[data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="borderRadius: 8"] {
   background: transparent !important;
   border-color: rgba(248,244,240,0.10) !important;
 }
 
-/* ── Filter dropdown panels ── */
-[data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="boxShadow"] {
+/* Search/input container */
+[data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="padding: 5px 10px"] {
+  background: transparent !important;
+  border-color: rgba(248,244,240,0.10) !important;
+}
+[data-theme="dark"] [data-goals-page] input {
+  color: rgba(248,244,240,0.92) !important;
+}
+
+/* Filter dropdown panels (float layer) */
+[data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="boxShadow"][style*="position: absolute"] {
   background: #232019 !important;
   border-color: rgba(248,244,240,0.10) !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
 }
-[data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="boxShadow"] label {
+[data-theme="dark"] [data-goals-page] div[style*="position: absolute"] label {
   color: rgba(248,244,240,0.92) !important;
 }
-[data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="boxShadow"] label:hover {
+[data-theme="dark"] [data-goals-page] div[style*="position: absolute"] label:hover {
   background: rgba(248,244,240,0.06) !important;
 }
 
-/* ── View Switcher ── */
-[data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"][style*="borderRadius: 8"] {
+/* View Switcher pill bar */
+[data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"][style*="borderRadius: 8"][style*="padding: 3"] {
   background: rgba(248,244,240,0.06) !important;
 }
-[data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"][style*="borderRadius: 8"] button[style*="background: rgb(255, 255, 255)"] {
+[data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"] button[style*="background: rgb(255, 255, 255)"] {
   background: rgba(248,244,240,0.12) !important;
   box-shadow: none !important;
   color: rgba(248,244,240,0.92) !important;
 }
-[data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"][style*="borderRadius: 8"] button[style*="background: transparent"] {
-  color: rgba(248,244,240,0.55) !important;
-}
-
-/* ── Search Input ── */
-[data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="border: 1px solid"][style*="borderRadius: 8"][style*="padding: 5px 10px"] {
-  background: transparent !important;
-  border-color: rgba(248,244,240,0.10) !important;
-}
-[data-theme="dark"] [data-goals-page] input[style*="color: rgb(15, 23, 42)"] {
-  color: rgba(248,244,240,0.92) !important;
-}
 
 /* ── Progress bar tracks ── */
-[data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="borderRadius: 3"] {
+[data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="borderRadius: 3"],
+[data-theme="dark"] [data-goals-page] div[style*="background: #E2E8F0"][style*="borderRadius: 3"],
+[data-theme="dark"] [data-goals-page] div[role="progressbar"][style*="background: rgb(226, 232, 240)"] {
   background: rgba(248,244,240,0.08) !important;
 }
 
@@ -198,32 +170,38 @@
   background: rgba(248,244,240,0.08) !important;
 }
 
-/* ── Goal Key badges (#F1F5F9 bg) ── */
-[data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"],
-[data-theme="dark"] [data-goals-page] span[style*="background: #F1F5F9"] {
+/* ── Goal Key / KR Key badges (F1F5F9 bg) ── */
+[data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"][style*="fontFamily"],
+[data-theme="dark"] [data-goals-page] span[style*="background: #F1F5F9"][style*="fontFamily"] {
   background: rgba(248,244,240,0.08) !important;
   color: rgba(248,244,240,0.55) !important;
 }
 
-/* ── Empty state ── */
-[data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="borderRadius: 10"][style*="padding: 60px"] {
-  background: transparent !important;
-  border-color: rgba(248,244,240,0.10) !important;
+/* ── Confidence dots empty ── */
+[data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="borderRadius: 50%"] {
+  background: rgba(248,244,240,0.12) !important;
 }
 
-/* ── Status badges — dark palette ── */
+/* ══════════════════════════════════════════════════════════════════════════
+   STATUS BADGES — Dark palette overrides
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Active/On Track — green */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgba(22, 163, 74"] {
   background: rgba(74,222,128,0.10) !important;
   color: #86EFAC !important;
 }
+/* At Risk — amber */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgba(217, 119, 6"] {
   background: rgba(251,191,36,0.10) !important;
   color: #FBBF24 !important;
 }
+/* Off Track — red */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgba(239, 68, 68"] {
   background: rgba(248,113,113,0.10) !important;
   color: #FCA5A5 !important;
 }
+/* Completed — purple */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgba(79, 70, 229"] {
   background: rgba(167,139,250,0.10) !important;
   color: #C4B5FD !important;
@@ -234,25 +212,87 @@
   background: #2C2926 !important;
   color: #B8BCC8 !important;
 }
-/* Status dots keep their colors — no override needed */
 
 /* ── AI badge ── */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgb(245, 243, 255)"] {
   background: rgba(167,139,250,0.10) !important;
 }
 
-/* ── Confidence dots empty ── */
-[data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="borderRadius"] {
-  background: rgba(248,244,240,0.12) !important;
+/* ══════════════════════════════════════════════════════════════════════════
+   HEATMAP VIEW — Dark overrides
+   ══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .heatmap-scroll {
+  background: #1A1714 !important;
+  border-color: rgba(248,244,240,0.10) !important;
 }
 
-/* ── List view rows hover ── */
-[data-theme="dark"] [data-goals-page] div[role="button"][style*="borderBottom: 1px solid"]:hover {
+/* Heatmap header */
+[data-theme="dark"] .heatmap-scroll > div:first-child {
+  background: rgba(248,244,240,0.03) !important;
+  border-bottom-color: rgba(248,244,240,0.10) !important;
+  color: rgba(248,244,240,0.60) !important;
+}
+
+/* Heatmap row borders */
+[data-theme="dark"] .heatmap-row {
+  border-bottom-color: rgba(248,244,240,0.06) !important;
+}
+[data-theme="dark"] .heatmap-row:hover {
+  background: rgba(248,244,240,0.02) !important;
+}
+
+/* Heatmap theme label cell */
+[data-theme="dark"] .heatmap-row > div:first-child {
+  background: transparent !important;
+  border-right-color: rgba(248,244,240,0.06) !important;
+}
+
+/* Heatmap empty cells */
+[data-theme="dark"] .heatmap-row div[style*="background: rgb(255, 255, 255)"] {
+  background: transparent !important;
+  border-right-color: rgba(248,244,240,0.06) !important;
+}
+
+/* Heatmap cell borders */
+[data-theme="dark"] .heatmap-cell {
+  border-right-color: rgba(248,244,240,0.06) !important;
+}
+
+/* ── List view row hover ── */
+[data-theme="dark"] [data-goals-page] div[role="button"][style*="borderBottom"]:hover {
+  background: rgba(248,244,240,0.03) !important;
+}
+/* List view rows: override #F8FAFC hover target */
+[data-theme="dark"] [data-goals-page] div[role="button"]:hover {
   background: rgba(248,244,240,0.03) !important;
 }
 
-/* ── Heatmap ── */
-[data-theme="dark"] [data-goals-page] [data-goals-heatmap] {
-  background: #1A1714 !important;
+/* ══════════════════════════════════════════════════════════════════════════
+   GOAL DETAIL DRAWER — Dark overrides
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Drawer overlay background handled by radix/shadcn */
+[data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="width: 520px"],
+[data-theme="dark"] [data-goals-page] div[style*="background: #FFFFFF"][style*="width: 520px"],
+[data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="position: fixed"] {
+  background: #232019 !important;
   border-color: rgba(248,244,240,0.10) !important;
+}
+
+/* ── Border color overrides ── */
+[data-theme="dark"] [data-goals-page] [style*="border: 1px solid rgb(226, 232, 240)"],
+[data-theme="dark"] [data-goals-page] [style*="border: 1px solid #E2E8F0"],
+[data-theme="dark"] [data-goals-page] [style*="borderBottom: 1px solid rgb(241, 245, 249)"],
+[data-theme="dark"] [data-goals-page] [style*="borderBottom: 1px solid #F1F5F9"],
+[data-theme="dark"] [data-goals-page] [style*="borderBottom: 2px solid rgb(226, 232, 240)"],
+[data-theme="dark"] [data-goals-page] [style*="borderBottom: 2px solid #E2E8F0"],
+[data-theme="dark"] [data-goals-page] [style*="borderTop: 1px solid rgb(226, 232, 240)"] {
+  border-color: rgba(248,244,240,0.10) !important;
+}
+
+/* Shadow removal */
+[data-theme="dark"] [data-goals-page] [style*="boxShadow: 0 1px 3px"],
+[data-theme="dark"] [data-goals-page] [style*="boxShadow: 0 2px 8px"] {
+  box-shadow: none !important;
 }
