@@ -1,31 +1,29 @@
-import { useEffect, useCallback } from 'react';
-
-export type Theme = 'light';
-
 /**
- * Theme hook - locked to light mode
- * Dark mode has been removed from the application
+ * useTheme — Convenience wrapper around ThemeProvider
+ * 
+ * Returns isDark, theme, setTheme, toggleTheme for components
+ * that need dark mode awareness (e.g. SidebarBase).
  */
-export function useTheme() {
-  // Apply light theme on mount
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', 'light');
-    document.documentElement.classList.remove('dark');
-  }, []);
 
-  const setTheme = useCallback(() => {
-    // No-op - always light mode
-  }, []);
+import { useCallback } from 'react';
+import { useThemeMode, type ThemeMode } from '@/providers/ThemeProvider';
+
+export type Theme = ThemeMode;
+
+export function useTheme() {
+  const { theme, resolvedTheme, setTheme } = useThemeMode();
+
+  const isDark = resolvedTheme === 'dark';
 
   const toggleTheme = useCallback(() => {
-    // No-op - always light mode
-  }, []);
+    setTheme(isDark ? 'light' : 'dark');
+  }, [isDark, setTheme]);
 
   return {
-    theme: 'light' as const,
+    theme,
     setTheme,
     toggleTheme,
-    isDark: false,
+    isDark,
     isAdminRoute: false,
     isAuthRoute: false,
   };

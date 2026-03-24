@@ -1629,8 +1629,8 @@ html:has(body[data-scroll-locked]) {
   aside [data-sidebar="menu-button"]:hover,
   [data-sidebar] [data-sidebar="menu-button"]:hover,
   .sidebar-nav-item:hover {
-    background-color: rgba(92,124,92,0.08) !important;
-    color: var(--fg-1) !important;
+    background-color: rgba(92,124,92,0.08);
+    color: var(--fg-1);
   }
   aside [data-sidebar="menu-button"]:hover svg,
   [data-sidebar] [data-sidebar="menu-button"]:hover svg,
@@ -1647,8 +1647,8 @@ html:has(body[data-scroll-locked]) {
   [data-sidebar="menu-button"][data-state="active"],
   .sidebar-nav-item--active,
   [class*="SidebarMenuButton"][data-active="true"] {
-    background-color: rgba(92,124,92,0.12) !important;
-    color: var(--fg-1) !important;
+    background-color: rgba(92,124,92,0.12);
+    color: var(--fg-1);
     position: relative;
   }
   /* Left indicator bar for active item */
