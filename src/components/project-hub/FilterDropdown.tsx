@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Filter, X } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 export interface FilterState {
   statuses: string[];
@@ -17,6 +18,8 @@ interface FilterDropdownProps {
 export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
+  const dark = theme === 'dark';
 
   useEffect(() => {
     if (!open) return;
@@ -41,13 +44,13 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-md transition-colors hover:bg-[#F1F5F9]"
+        className="flex items-center gap-1.5 rounded-md transition-colors"
         style={{
           height: 34,
           padding: '0 12px',
-          border: hasFilters ? '1px solid #2563EB' : '1px solid #E2E8F0',
-          background: hasFilters ? '#EFF6FF' : '#FFFFFF',
-          color: hasFilters ? '#2563EB' : '#334155',
+          border: hasFilters ? '1px solid #2563EB' : `1px solid ${dark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'}`,
+          background: hasFilters ? (dark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (dark ? 'transparent' : '#FFFFFF'),
+          color: hasFilters ? (dark ? '#60A5FA' : '#2563EB') : (dark ? 'rgba(248,244,240,0.72)' : '#334155'),
           fontSize: 13,
           fontWeight: 500,
           cursor: 'pointer',
@@ -71,37 +74,36 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
           className="absolute top-full left-0 mt-1 z-50"
           style={{
             width: 280,
-            background: '#FFFFFF',
-            border: '1px solid #E2E8F0',
+            background: dark ? '#232019' : '#FFFFFF',
+            border: `1px solid ${dark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'}`,
             borderRadius: 8,
-            boxShadow: '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
+            boxShadow: dark ? 'none' : '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
             fontFamily: "'Inter', sans-serif",
           }}
         >
           <div className="max-h-[400px] overflow-y-auto">
-            {/* Status */}
             <FilterSection
               title="Status"
               options={STATUS_OPTIONS}
               selected={filters.statuses}
               onToggle={v => onChange({ ...filters, statuses: toggle(filters.statuses, v) })}
               formatLabel={formatStatusLabel}
+              dark={dark}
             />
-            {/* Health */}
             <FilterSection
               title="Health"
               options={HEALTH_OPTIONS}
               selected={filters.healths}
               onToggle={v => onChange({ ...filters, healths: toggle(filters.healths, v) })}
               formatLabel={formatHealthLabel}
+              dark={dark}
             />
           </div>
 
-          {/* Footer */}
-          <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: '1px solid #E2E8F0' }}>
+          <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
             <button
               onClick={() => onChange({ statuses: [], healths: [] })}
-              style={{ fontSize: 12, color: '#64748B', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 12, color: dark ? 'rgba(248,244,240,0.50)' : '#64748B', background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               Clear all
             </button>
@@ -135,20 +137,22 @@ function FilterSection({
   selected,
   onToggle,
   formatLabel,
+  dark,
 }: {
   title: string;
   options: string[];
   selected: string[];
   onToggle: (v: string) => void;
   formatLabel?: (v: string) => string;
+  dark: boolean;
 }) {
   return (
-    <div className="px-3 py-2" style={{ borderBottom: '1px solid #F1F5F9' }}>
+    <div className="px-3 py-2" style={{ borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : '#F1F5F9'}` }}>
       <div
         style={{
           fontSize: 10,
           fontWeight: 600,
-          color: '#64748B',
+          color: dark ? 'rgba(248,244,240,0.50)' : '#64748B',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
           marginBottom: 6,
@@ -159,8 +163,10 @@ function FilterSection({
       {options.map(opt => (
         <label
           key={opt}
-          className="flex items-center gap-2 py-1 cursor-pointer hover:bg-[#F8FAFC] rounded px-1"
-          style={{ fontSize: 12, color: '#334155' }}
+          className="flex items-center gap-2 py-1 cursor-pointer rounded px-1"
+          style={{ fontSize: 12, color: dark ? 'rgba(248,244,240,0.85)' : '#334155' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = dark ? 'rgba(255,255,255,0.04)' : '#F8FAFC'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; }}
         >
           <input
             type="checkbox"
@@ -191,6 +197,8 @@ export function FilterChips({
   filters: FilterState;
   onChange: (f: FilterState) => void;
 }) {
+  const { theme } = useTheme();
+  const dark = theme === 'dark';
   const chips: { label: string; remove: () => void }[] = [];
   filters.statuses.forEach(s =>
     chips.push({
@@ -217,8 +225,8 @@ export function FilterChips({
             fontSize: 11,
             fontWeight: 500,
             padding: '2px 8px 2px 10px',
-            background: '#EFF6FF',
-            color: '#2563EB',
+            background: dark ? 'rgba(37,99,235,0.15)' : '#EFF6FF',
+            color: dark ? '#60A5FA' : '#2563EB',
           }}
         >
           {c.label}
@@ -226,13 +234,13 @@ export function FilterChips({
             onClick={c.remove}
             style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex' }}
           >
-            <X size={12} color="#2563EB" />
+            <X size={12} color={dark ? '#60A5FA' : '#2563EB'} />
           </button>
         </span>
       ))}
       <button
         onClick={() => onChange({ statuses: [], healths: [] })}
-        style={{ fontSize: 11, color: '#64748B', background: 'transparent', border: 'none', cursor: 'pointer' }}
+        style={{ fontSize: 11, color: dark ? 'rgba(248,244,240,0.50)' : '#64748B', background: 'transparent', border: 'none', cursor: 'pointer' }}
       >
         Clear all
       </button>
