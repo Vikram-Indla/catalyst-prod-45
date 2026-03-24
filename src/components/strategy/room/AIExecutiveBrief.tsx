@@ -210,7 +210,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
   const dataTrust = brief?.dataTrust || null;
 
   return (
-    <div className="sri-root-container" style={{ position: 'relative', background: 'var(--sri-bg)', zIndex: 300, overflowY: 'visible' }}>
+    <div className="sri-root-container" style={{ position: 'relative', background: 'var(--sri-bg)', overflowY: 'visible' }}>
       {/* FIX #1 — full width: removed maxWidth and margin:0 auto */}
       <div data-sri style={{ width: '100%', padding: "24px 0 60px", background: 'var(--sri-bg)' }}>
         <style>{TOKENS}</style>

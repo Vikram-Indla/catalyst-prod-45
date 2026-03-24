@@ -9,6 +9,8 @@ import { StrategyRoleProvider } from '@/contexts/strategy/RoleContext';
 import StrategyRoomDashboard from '@/components/strategy/room/StrategyRoomDashboard';
 import { AIExecutiveBrief } from '@/components/strategy/room/AIExecutiveBrief';
 import { useStrategyRoomData } from '@/hooks/strategy/useStrategyRoomData';
+import { Breadcrumbs } from '@/components/strategy/Breadcrumbs';
+import { RoomContentShell } from '@/components/layout/RoomContentShell';
 
 /* Overlay style removed — Brief now renders inline in content area */
 
@@ -146,9 +148,14 @@ export default function StrategyRoom() {
 
       {briefOpen ? (
         /* Brief renders INLINE in the content area — nav + sidebar stay visible */
-        <div className="brief-controller-brief" style={{ overflowY: 'auto', flex: 1 }}>
+        <RoomContentShell maxWidthValue="1600px">
+          <Breadcrumbs items={[
+            { label: 'StrategyHub', path: '/strategyhub' },
+            { label: 'Strategy Room', path: '/strategyhub' },
+            { label: 'Executive Brief' },
+          ]} />
           <AIExecutiveBrief open={briefOpen} onClose={handleCloseBrief} onDownload={printBriefInNewWindow} />
-        </div>
+        </RoomContentShell>
       ) : (
         <div id="dashboard-main" className="brief-controller-dashboard">
           <StrategyRoomDashboard
