@@ -94,7 +94,7 @@ export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProp
             <Tooltip key={id}>
               <TooltipTrigger asChild>
                 <div
-                  className="w-[22px] h-[22px] rounded-full border-2 border-white dark:border-[#1A1714] text-[8px] font-bold text-white flex items-center justify-center shrink-0 cursor-default"
+                  className="flex h-[22px] w-[22px] shrink-0 cursor-default items-center justify-center rounded-full border-2 border-background text-[8px] font-bold text-white"
                   style={{
                     background: `linear-gradient(135deg, ${from}, ${to})`,
                     marginLeft: i > 0 ? -6 : 0,
