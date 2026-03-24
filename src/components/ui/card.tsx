@@ -17,10 +17,8 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
     ref={ref} 
     className={cn(
       "rounded-lg bg-card text-card-foreground",
-      // Light mode: subtle shadow and border
       "shadow-sm border border-border/60",
-      // Dark mode: token-driven, shadow depth, minimal border
-      "dark:bg-[var(--bg-3)] dark:shadow-[var(--shadow-1)] dark:border-[var(--divider)]",
+      "dark:bg-transparent dark:shadow-none dark:border-gray-700/50",
       "focus:outline-none focus-visible:outline-none",
       className
     )} 
