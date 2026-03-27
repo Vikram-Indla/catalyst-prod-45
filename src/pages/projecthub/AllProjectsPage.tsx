@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Download, ChevronLeft, ChevronRight as ChevronRightIcon, FolderKanban, RefreshCw } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight as ChevronRightIcon, FolderKanban } from 'lucide-react';
 import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
 import {
@@ -18,8 +18,6 @@ import { AllProjectsTable } from '@/components/projecthub/AllProjectsTable';
 import { AllProjectsCardGrid } from '@/components/projecthub/AllProjectsCardGrid';
 import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateProjectDialog } from '@/components/projecthub/CreateProjectDialog';
-import { ExportDialog } from '@/components/projecthub/ExportDialog';
-import { JiraSyncDialog } from '@/components/projecthub/JiraSyncDialog';
 import { toast } from 'sonner';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 
@@ -34,8 +32,6 @@ export default function AllProjectsPage() {
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [showAdvFilters, setShowAdvFilters] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showExportModal, setShowExportModal] = useState(false);
-  const [showJiraSync, setShowJiraSync] = useState(false);
 
   const { data: projects = [], isLoading, error } = useProjects();
   const { data: favorites = new Set<string>() } = useProjectFavorites();
@@ -84,34 +80,6 @@ export default function AllProjectsPage() {
         subtitle="Track and manage all projects across your portfolio"
         actions={
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowJiraSync(true)}
-              className="flex items-center gap-1.5 rounded-md"
-              style={{
-                height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
-                color: '#2563EB',
-                background: '#EFF6FF',
-                border: '1px solid #BFDBFE',
-                borderRadius: 'var(--catalyst-radius-md, 6px)',
-                cursor: 'pointer',
-              }}
-            >
-              <RefreshCw size={14} /> Jira Sync
-            </button>
-            <button
-              onClick={() => setShowExportModal(true)}
-              className="flex items-center gap-1.5 rounded-md"
-              style={{
-                height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
-                color: 'var(--catalyst-text-secondary, #334155)',
-                background: 'var(--catalyst-bg-surface-0, #FFF)',
-                border: '1px solid var(--catalyst-border-default, #E2E8F0)',
-                borderRadius: 'var(--catalyst-radius-md, 6px)',
-                cursor: 'pointer',
-              }}
-            >
-              <Download size={14} /> Export
-            </button>
             <button
               onClick={() => setShowCreateModal(true)}
               className="flex items-center gap-1.5 rounded-md"
@@ -221,8 +189,6 @@ export default function AllProjectsPage() {
 
       {/* Modals */}
       <CreateProjectDialog open={showCreateModal} onClose={() => setShowCreateModal(false)} />
-      <ExportDialog open={showExportModal} onClose={() => setShowExportModal(false)} projects={filtered} />
-      <JiraSyncDialog open={showJiraSync} onClose={() => setShowJiraSync(false)} />
       </div>
     </div>
   );
