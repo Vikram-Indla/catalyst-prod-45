@@ -85,34 +85,6 @@ export default function AllProjectsPage() {
         actions={
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setShowJiraSync(true)}
-              className="flex items-center gap-1.5 rounded-md"
-              style={{
-                height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
-                color: '#2563EB',
-                background: '#EFF6FF',
-                border: '1px solid #BFDBFE',
-                borderRadius: 'var(--catalyst-radius-md, 6px)',
-                cursor: 'pointer',
-              }}
-            >
-              <RefreshCw size={14} /> Jira Sync
-            </button>
-            <button
-              onClick={() => setShowExportModal(true)}
-              className="flex items-center gap-1.5 rounded-md"
-              style={{
-                height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
-                color: 'var(--catalyst-text-secondary, #334155)',
-                background: 'var(--catalyst-bg-surface-0, #FFF)',
-                border: '1px solid var(--catalyst-border-default, #E2E8F0)',
-                borderRadius: 'var(--catalyst-radius-md, 6px)',
-                cursor: 'pointer',
-              }}
-            >
-              <Download size={14} /> Export
-            </button>
-            <button
               onClick={() => setShowCreateModal(true)}
               className="flex items-center gap-1.5 rounded-md"
               style={{
@@ -221,8 +193,6 @@ export default function AllProjectsPage() {
 
       {/* Modals */}
       <CreateProjectDialog open={showCreateModal} onClose={() => setShowCreateModal(false)} />
-      <ExportDialog open={showExportModal} onClose={() => setShowExportModal(false)} projects={filtered} />
-      <JiraSyncDialog open={showJiraSync} onClose={() => setShowJiraSync(false)} />
       </div>
     </div>
   );
