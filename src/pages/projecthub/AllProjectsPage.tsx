@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Download, ChevronLeft, ChevronRight as ChevronRightIcon, FolderKanban, RefreshCw } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight as ChevronRightIcon, FolderKanban } from 'lucide-react';
 import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
 import {
@@ -18,8 +18,6 @@ import { AllProjectsTable } from '@/components/projecthub/AllProjectsTable';
 import { AllProjectsCardGrid } from '@/components/projecthub/AllProjectsCardGrid';
 import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateProjectDialog } from '@/components/projecthub/CreateProjectDialog';
-import { ExportDialog } from '@/components/projecthub/ExportDialog';
-import { JiraSyncDialog } from '@/components/projecthub/JiraSyncDialog';
 import { toast } from 'sonner';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 
@@ -34,8 +32,6 @@ export default function AllProjectsPage() {
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [showAdvFilters, setShowAdvFilters] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showExportModal, setShowExportModal] = useState(false);
-  const [showJiraSync, setShowJiraSync] = useState(false);
 
   const { data: projects = [], isLoading, error } = useProjects();
   const { data: favorites = new Set<string>() } = useProjectFavorites();
