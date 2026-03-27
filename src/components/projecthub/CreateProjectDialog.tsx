@@ -15,26 +15,9 @@ function deriveKeyFromName(name: string): string {
   return letters.slice(0, 3);
 }
 
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  height: 36,
-  padding: '0 12px',
-  border: '1.5px solid #E2E8F0',
-  borderRadius: 6,
-  fontSize: 14,
-  fontFamily: "'Inter', sans-serif",
-  color: '#0F172A',
-  outline: 'none',
-  background: '#FFFFFF',
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: 13,
-  fontWeight: 500,
-  color: '#0F172A',
-  display: 'block',
-  marginBottom: 6,
-};
+function useIsDark() {
+  return typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+}
 
 export function CreateProjectDialog({ open, onClose }: Props) {
   const [name, setName] = useState('');
@@ -47,6 +30,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
   const createProject = useCreateProject();
   const { data: projects } = useProjects();
   const overlayRef = useRef<HTMLDivElement>(null);
+  const dk = useIsDark();
 
   const existingKeys = new Set((projects ?? []).map(p => p.project_key?.toUpperCase()).filter(Boolean));
   const isDuplicate = key.length >= 3 && existingKeys.has(key);
@@ -56,14 +40,12 @@ export function CreateProjectDialog({ open, onClose }: Props) {
     return Array.from(depts).sort() as string[];
   }, [projects]);
 
-  // Auto-generate key when name changes (only if user hasn't manually edited)
   useEffect(() => {
     if (!keyManuallyEdited) {
       setKey(deriveKeyFromName(name));
     }
   }, [name, keyManuallyEdited]);
 
-  // Reset on close
   useEffect(() => {
     if (!open) {
       setName(''); setKey(''); setKeyManuallyEdited(false);
@@ -101,7 +83,6 @@ export function CreateProjectDialog({ open, onClose }: Props) {
     }
   };
 
-  /** Only close if the click target is the overlay itself (not a portal) */
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === overlayRef.current) {
       onClose();
@@ -109,6 +90,41 @@ export function CreateProjectDialog({ open, onClose }: Props) {
   };
 
   if (!open) return null;
+
+  // Dark / Light tokens
+  const surface = dk ? '#232019' : '#FFFFFF';
+  const textPrimary = dk ? 'rgba(248,244,240,0.92)' : '#0F172A';
+  const textSecondary = dk ? 'rgba(248,244,240,0.72)' : '#334155';
+  const textMuted = dk ? 'rgba(248,244,240,0.55)' : '#94A3B8';
+  const textPlaceholder = dk ? 'rgba(248,244,240,0.40)' : undefined;
+  const border = dk ? 'rgba(248,244,240,0.10)' : '#E2E8F0';
+  const divider = dk ? 'rgba(248,244,240,0.08)' : '#E2E8F0';
+  const inputBg = dk ? 'transparent' : '#FFFFFF';
+  const closeHoverBg = dk ? 'rgba(248,244,240,0.06)' : '#F1F5F9';
+  const cancelBg = dk ? 'transparent' : '#FFFFFF';
+  const cancelHoverBg = dk ? 'rgba(248,244,240,0.06)' : '#F8FAFC';
+  const dropdownBg = dk ? '#232019' : '#FFFFFF';
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    height: 36,
+    padding: '0 12px',
+    border: `1.5px solid ${border}`,
+    borderRadius: 6,
+    fontSize: 14,
+    fontFamily: "'Inter', sans-serif",
+    color: textPrimary,
+    outline: 'none',
+    background: inputBg,
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 13,
+    fontWeight: 500,
+    color: textPrimary,
+    display: 'block',
+    marginBottom: 6,
+  };
 
   return (
     <div
@@ -122,27 +138,27 @@ export function CreateProjectDialog({ open, onClose }: Props) {
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: '#FFFFFF', borderRadius: 12, width: 520, maxHeight: '80vh',
+          background: surface, borderRadius: 12, width: 520, maxHeight: '80vh',
           display: 'flex', flexDirection: 'column',
-          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+          boxShadow: dk ? '0 25px 50px -12px rgba(0,0,0,0.5)' : '0 25px 50px -12px rgba(0,0,0,0.25)',
           animation: 'slideUp 250ms ease-out',
         }}
       >
         {/* Header */}
         <div style={{
-          padding: '20px 24px', borderBottom: '1px solid #E2E8F0',
+          padding: '20px 24px', borderBottom: `1px solid ${divider}`,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 600, color: '#0F172A' }}>
+          <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 600, color: textPrimary }}>
             Create New Project
           </span>
           <button
             onClick={onClose}
             style={{
               width: 32, height: 32, borderRadius: 6, border: 'none', background: 'transparent',
-              color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+              color: textSecondary, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#F1F5F9')}
+            onMouseEnter={e => (e.currentTarget.style.background = closeHoverBg)}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <X size={16} strokeWidth={2} />
@@ -158,9 +174,9 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Enter project name"
-              style={inputStyle}
+              style={{ ...inputStyle, ...(textPlaceholder ? { ['--placeholder-color' as string]: textPlaceholder } : {}) }}
               onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.18)'; }}
-              onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+              onBlur={e => { e.currentTarget.style.borderColor = border; e.currentTarget.style.boxShadow = 'none'; }}
             />
             {errors.name && <p style={{ fontSize: 12, color: '#DC2626', marginTop: 4 }}>{errors.name}</p>}
           </div>
@@ -181,7 +197,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
                 textTransform: 'uppercase',
                 fontFamily: "'JetBrains Mono', monospace",
                 letterSpacing: '0.05em',
-                borderColor: (errors.key || isDuplicate) ? '#DC2626' : '#E2E8F0',
+                borderColor: (errors.key || isDuplicate) ? '#DC2626' : border,
               }}
               onFocus={e => {
                 if (!errors.key && !isDuplicate) {
@@ -191,14 +207,14 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               }}
               onBlur={e => {
                 if (!errors.key && !isDuplicate) {
-                  e.currentTarget.style.borderColor = '#E2E8F0';
+                  e.currentTarget.style.borderColor = border;
                   e.currentTarget.style.boxShadow = 'none';
                 }
               }}
             />
             {errors.key && <p style={{ fontSize: 12, color: '#DC2626', marginTop: 4 }}>{errors.key}</p>}
             {!errors.key && (
-              <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 4 }}>Auto-generated from project name · 3–4 letters</p>
+              <p style={{ fontSize: 11, color: textMuted, marginTop: 4 }}>Auto-generated from project name · 3–4 letters</p>
             )}
           </div>
 
@@ -209,12 +225,12 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               <Select value={department} onValueChange={setDepartment}>
                 <SelectTrigger
                   className="h-9 text-sm"
-                  style={{ border: '1.5px solid #E2E8F0', borderRadius: 6 }}
+                  style={{ border: `1.5px solid ${border}`, borderRadius: 6, background: inputBg, color: textPrimary }}
                 >
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
                 <SelectContent
-                  style={{ zIndex: 9999, background: '#FFFFFF' }}
+                  style={{ zIndex: 9999, background: dropdownBg }}
                   onPointerDownOutside={e => e.preventDefault()}
                 >
                   {uniqueDepartments.map(dept => (
@@ -228,12 +244,12 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               <Select value={status} onValueChange={setStatus}>
                 <SelectTrigger
                   className="h-9 text-sm"
-                  style={{ border: '1.5px solid #E2E8F0', borderRadius: 6 }}
+                  style={{ border: `1.5px solid ${border}`, borderRadius: 6, background: inputBg, color: textPrimary }}
                 >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent
-                  style={{ zIndex: 9999, background: '#FFFFFF' }}
+                  style={{ zIndex: 9999, background: dropdownBg }}
                   onPointerDownOutside={e => e.preventDefault()}
                 >
                   <SelectItem value="todo">To Do</SelectItem>
@@ -254,30 +270,30 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               rows={3}
               style={{
                 width: '100%', minHeight: 80, padding: 12,
-                border: '1.5px solid #E2E8F0', borderRadius: 6,
-                fontSize: 14, fontFamily: "'Inter', sans-serif", color: '#0F172A',
-                resize: 'vertical', outline: 'none',
+                border: `1.5px solid ${border}`, borderRadius: 6,
+                fontSize: 14, fontFamily: "'Inter', sans-serif", color: textPrimary,
+                resize: 'vertical', outline: 'none', background: inputBg,
               }}
               onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.18)'; }}
-              onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+              onBlur={e => { e.currentTarget.style.borderColor = border; e.currentTarget.style.boxShadow = 'none'; }}
             />
           </div>
         </div>
 
         {/* Footer */}
         <div style={{
-          padding: '16px 24px', borderTop: '1px solid #E2E8F0',
+          padding: '16px 24px', borderTop: `1px solid ${divider}`,
           display: 'flex', gap: 12, justifyContent: 'flex-end',
         }}>
           <button
             onClick={onClose}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px',
-              background: '#FFFFFF', color: '#334155', border: '1px solid #E2E8F0', borderRadius: 6,
+              background: cancelBg, color: textSecondary, border: `1px solid ${border}`, borderRadius: 6,
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.borderColor = '#CBD5E1'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.borderColor = '#E2E8F0'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = cancelHoverBg; }}
+            onMouseLeave={e => { e.currentTarget.style.background = cancelBg; }}
           >
             Cancel
           </button>
@@ -288,11 +304,11 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 14px',
               background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', color: '#FFFFFF',
               border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(37,99,235,0.15)',
+              boxShadow: dk ? 'none' : '0 1px 3px rgba(37,99,235,0.15)',
               opacity: createProject.isPending ? 0.6 : 1,
             }}
-            onMouseEnter={e => { if (!createProject.isPending) e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.3)'; }}
-            onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 3px rgba(37,99,235,0.15)'; }}
+            onMouseEnter={e => { if (!createProject.isPending) e.currentTarget.style.boxShadow = dk ? '0 2px 8px rgba(37,99,235,0.4)' : '0 2px 8px rgba(37,99,235,0.3)'; }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = dk ? 'none' : '0 1px 3px rgba(37,99,235,0.15)'; }}
           >
             {createProject.isPending ? 'Creating...' : 'Create Project'}
           </button>
