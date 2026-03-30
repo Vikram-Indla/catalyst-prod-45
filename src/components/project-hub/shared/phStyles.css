@@ -25,8 +25,23 @@
 
 .dark .ph-card {
   background: transparent;
-  border-color: rgba(255,255,255,0.10);
+  border-color: rgba(248,244,240,0.12);
   box-shadow: none;
+}
+
+/* ProjectHub dark scrollbar */
+.dark .ph-content-wrapper ::-webkit-scrollbar-track,
+.dark .ph-inner-content ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dark .ph-content-wrapper ::-webkit-scrollbar-thumb,
+.dark .ph-inner-content ::-webkit-scrollbar-thumb {
+  background: rgba(248,244,240,0.10);
+  border-radius: 3px;
+}
+.dark .ph-content-wrapper ::-webkit-scrollbar-thumb:hover,
+.dark .ph-inner-content ::-webkit-scrollbar-thumb:hover {
+  background: rgba(248,244,240,0.18);
 }
 
 .ph-card-title {
