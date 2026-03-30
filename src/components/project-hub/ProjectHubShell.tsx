@@ -17,24 +17,18 @@ export function ProjectHubShell() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [createWorkItemOpen, setCreateWorkItemOpen] = useState(false);
 
-  // Determine if we're inside a project context (has :key param and a project route)
   const isInProjectContext = !!params.key && /\/(list|board|backlog|epic-backlog|feature-backlog|story-backlog|timeline|releases|reports|sprint-predictor|risk-scanner|dashboard)/.test(location.pathname);
 
-  // Auto-collapse only on mobile (< 768px); always expanded on desktop
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setCollapsed(true);
-      } else {
-        setCollapsed(false);
-      }
+      if (window.innerWidth < 768) setCollapsed(true);
+      else setCollapsed(false);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Fetch all projects the user has access to
   const { data: projects = [] } = useQuery({
     queryKey: ['ph-projects-list'],
     queryFn: async () => {
@@ -45,15 +39,11 @@ export function ProjectHubShell() {
         .order('name');
       if (error) { console.warn('ph_projects shell query error:', error.message); return []; }
       return (data || []).map(p => ({
-        key: p.key,
-        name: p.name,
-        color: p.color || '#2563EB',
-        icon: p.icon || 'rocket',
+        key: p.key, name: p.name, color: p.color || '#2563EB', icon: p.icon || 'rocket',
       })) as ProjectEntry[];
     },
   });
 
-  // Fetch current project if :key is in URL
   const { data: currentProject } = useQuery({
     queryKey: ['ph-project', params.key],
     queryFn: async () => {
@@ -70,59 +60,32 @@ export function ProjectHubShell() {
   });
 
   const handleTopCreateClick = () => {
-    if (isInProjectContext && currentProject) {
-      setCreateWorkItemOpen(true);
-    } else {
-      setCreateModalOpen(true);
-    }
+    if (isInProjectContext && currentProject) setCreateWorkItemOpen(true);
+    else setCreateModalOpen(true);
   };
 
-  // Fetch full project (with id) for work item modal
   const { data: fullProject } = useQuery({
     queryKey: ['ph-project-full', params.key],
     queryFn: async () => {
       if (!params.key) return null;
-      const { data } = await supabase
-        .from('ph_projects')
-        .select('id, key, name')
-        .eq('key', params.key.toUpperCase())
-        .maybeSingle();
+      const { data } = await supabase.from('ph_projects').select('id, key, name').eq('key', params.key.toUpperCase()).maybeSingle();
       return data;
     },
     enabled: !!params.key && isInProjectContext,
   });
 
   return (
-    <div className="flex flex-col h-screen" style={{ background: '#F8FAFC' }}>
-      {/* Top Nav */}
+    <div className="flex flex-col h-screen bg-[#F8FAFC] dark:bg-[#1A1714]">
       <TopNav onCreateClick={handleTopCreateClick} />
-
-      {/* Body: sidebar + content */}
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar
-          collapsed={collapsed}
-          onToggle={() => setCollapsed(c => !c)}
-          projects={projects}
-          currentProject={currentProject}
-        />
-
-        {/* Content area */}
-        <main className="flex-1 min-w-0 overflow-y-auto" style={{ background: '#F8FAFC' }}>
+        <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} projects={projects} currentProject={currentProject} />
+        <main className="flex-1 min-w-0 overflow-y-auto bg-[#F8FAFC] dark:bg-[#1A1714]">
           <Outlet context={{ onNewProject: () => setCreateModalOpen(true) }} />
         </main>
       </div>
-
-      {/* Create Project Modal */}
       <CreateProjectModal open={createModalOpen} onClose={() => setCreateModalOpen(false)} />
-
-      {/* Create Work Item Modal (from TopNav) */}
       {fullProject && (
-        <CreateWorkItemModal
-          open={createWorkItemOpen}
-          onClose={() => setCreateWorkItemOpen(false)}
-          projectId={fullProject.id}
-          projectKey={fullProject.key}
-        />
+        <CreateWorkItemModal open={createWorkItemOpen} onClose={() => setCreateWorkItemOpen(false)} projectId={fullProject.id} projectKey={fullProject.key} />
       )}
     </div>
   );

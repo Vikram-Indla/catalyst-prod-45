@@ -29,41 +29,41 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
 
   if (!open) return null;
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%', height: 40, padding: '0 12px', fontSize: 13,
-    color: '#0F172A', background: '#FFFFFF', border: '1px solid #E2E8F0',
-    borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
-  };
-
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center"
       style={{ background: 'rgba(0,0,0,0.5)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div style={{ width: 440, background: '#FFFFFF', borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: "'Inter', sans-serif" }}>
+      <div className="bg-white dark:bg-[#232019]" style={{ width: 440, borderRadius: 12, padding: 24, fontFamily: "'Inter', sans-serif" }}>
         <div className="flex items-center justify-between mb-5">
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>Add Status</h3>
-          <button onClick={onClose} className="flex items-center justify-center rounded-md hover:bg-[#F1F5F9] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
-            <X size={16} color="#64748B" />
+          <h3 className="text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]" style={{ fontSize: 16, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>Add Status</h3>
+          <button onClick={onClose} className="flex items-center justify-center rounded-md hover:bg-[#F1F5F9] dark:hover:bg-[rgba(248,244,240,0.03)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
+            <X size={16} className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" />
           </button>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label style={{ fontSize: 12, fontWeight: 500, color: '#334155', display: 'block', marginBottom: 4 }}>Status Name <span style={{ color: '#EF4444' }}>*</span></label>
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. In Review" style={inputStyle} />
+            <label className="text-[#334155] dark:text-[rgba(248,244,240,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Status Name <span style={{ color: '#EF4444' }}>*</span></label>
+            <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. In Review"
+              className="w-full bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)] text-[#0F172A] dark:text-[rgba(248,244,240,0.92)] placeholder:text-[#94A3B8] dark:placeholder:text-[rgba(248,244,240,0.40)]"
+              style={{ height: 40, padding: '0 12px', fontSize: 13, borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif" }}
+            />
           </div>
 
           <div>
-            <label style={{ fontSize: 12, fontWeight: 500, color: '#334155', display: 'block', marginBottom: 4 }}>Category <span style={{ color: '#EF4444' }}>*</span></label>
-            <select value={category} onChange={e => setCategory(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
+            <label className="text-[#334155] dark:text-[rgba(248,244,240,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Category <span style={{ color: '#EF4444' }}>*</span></label>
+            <select value={category} onChange={e => setCategory(e.target.value)}
+              className="w-full bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)] text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]"
+              style={{ height: 40, padding: '0 12px', fontSize: 13, borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}
+            >
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
 
           <div>
-            <label style={{ fontSize: 12, fontWeight: 500, color: '#334155', display: 'block', marginBottom: 6 }}>Color</label>
+            <label className="text-[#334155] dark:text-[rgba(248,244,240,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 6 }}>Color</label>
             <div className="flex gap-2">
               {COLORS.map(c => (
                 <button
@@ -72,8 +72,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
                   className="rounded-full transition-all"
                   style={{
                     width: 28, height: 28, background: c, border: 'none', cursor: 'pointer',
-                    outline: color === c ? `2px solid ${c}` : 'none',
-                    outlineOffset: 2,
+                    outline: color === c ? `2px solid ${c}` : 'none', outlineOffset: 2,
                   }}
                 />
               ))}
@@ -82,7 +81,10 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
         </div>
 
         <div className="flex justify-end gap-2 mt-6">
-          <button onClick={onClose} style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, color: '#334155', border: '1px solid #E2E8F0', borderRadius: 6, background: '#FFFFFF', cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose}
+            className="bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)] text-[#334155] dark:text-[rgba(248,244,240,0.72)]"
+            style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, borderRadius: 6, cursor: 'pointer' }}
+          >Cancel</button>
           <button
             onClick={() => name.trim() && onSubmit({ name: name.trim(), category, color })}
             disabled={!name.trim() || loading}
