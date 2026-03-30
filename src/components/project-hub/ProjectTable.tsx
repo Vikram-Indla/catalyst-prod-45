@@ -24,13 +24,19 @@ export function ProjectTable({ projects, starredIds, onToggleStar, onContextMenu
   const T = isDark ? DK : LK;
 
   return (
-    <div className="overflow-x-auto" style={{ background: isDark ? 'transparent' : '#FFFFFF', borderRadius: 8, border: `1px solid ${T.border}` }}>
+    <div
+      className={`overflow-x-auto rounded-lg border ${isDark ? 'bg-transparent border-[rgba(248,244,240,0.12)]' : 'bg-white border-[#E2E8F0]'}`}
+    >
       <table className="w-full" style={{ borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
         <thead>
-          <tr style={{ height: 36, background: T.tableHeaderBg, position: 'sticky', top: 0, zIndex: 1 }}>
+          <tr
+            className={isDark ? 'bg-[rgba(248,244,240,0.04)]' : 'bg-[#F8FAFC]'}
+            style={{ height: 36, position: 'sticky', top: 0, zIndex: 1 }}
+          >
             {COLUMNS.map(col => (
               <th
                 key={col.key}
+                className={`border-b ${isDark ? 'border-[rgba(248,244,240,0.08)]' : 'border-[#E2E8F0]'}`}
                 style={{
                   width: col.width,
                   padding: '0 8px',
@@ -40,7 +46,6 @@ export function ProjectTable({ projects, starredIds, onToggleStar, onContextMenu
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                   textAlign: col.key === 'items' ? 'right' : 'left',
-                  borderBottom: `1px solid ${T.border}`,
                   whiteSpace: 'nowrap',
                 }}
               >

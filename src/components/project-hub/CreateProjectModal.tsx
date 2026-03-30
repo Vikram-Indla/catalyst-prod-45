@@ -21,7 +21,6 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const [submitting, setSubmitting] = useState(false);
   const [step1Valid, setStep1Valid] = useState(false);
 
-  // Step data
   const [details, setDetails] = useState<StepDetailsData>({
     name: '', key: '', department: '', description: '', icon: 'rocket', color: '#2563EB',
   });
@@ -30,7 +29,6 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   });
   const [members, setMembers] = useState<MemberEntry[]>([]);
 
-  // Reset on open
   useEffect(() => {
     if (open) {
       setStep(0);
@@ -42,7 +40,6 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     }
   }, [open]);
 
-  // Escape to close
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -55,37 +52,21 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { toast.error('Please sign in first'); setSubmitting(false); return; }
-
-      // Call RPC
       const { data: projectId, error } = await supabase.rpc('ph_create_project', {
-        p_name: details.name.trim(),
-        p_key: details.key.trim().toUpperCase(),
-        p_department: details.department,
-        p_description: details.description.trim() || null,
-        p_icon: details.icon,
-        p_color: details.color,
-        p_feature_layer: workflow.featureLayer,
-        p_user_id: user.id,
+        p_name: details.name.trim(), p_key: details.key.trim().toUpperCase(),
+        p_department: details.department, p_description: details.description.trim() || null,
+        p_icon: details.icon, p_color: details.color,
+        p_feature_layer: workflow.featureLayer, p_user_id: user.id,
       });
-
       if (error) throw new Error(error.message);
-
-      // Add additional members
       if (members.length > 0 && projectId) {
-        const rows = members.map(m => ({
-          project_id: projectId,
-          user_id: m.userId,
-          role: m.role,
-        }));
+        const rows = members.map(m => ({ project_id: projectId, user_id: m.userId, role: m.role }));
         const { error: memErr } = await supabase.from('ph_project_members').insert(rows);
         if (memErr) console.warn('Failed to add some members:', memErr.message);
       }
-
-      // Invalidate queries
       queryClient.invalidateQueries({ queryKey: ['ph-projects'] });
       queryClient.invalidateQueries({ queryKey: ['ph-projects-list'] });
       queryClient.invalidateQueries({ queryKey: ['ph-projects-full-list'] });
-
       toast.success('Project created successfully');
       onClose();
       navigate(`/project-hub/${details.key.toUpperCase()}/dashboard`);
@@ -107,64 +88,44 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="relative flex flex-col animate-scale-in"
+        className="relative flex flex-col animate-scale-in bg-white dark:bg-[#232019]"
         style={{
           width: 640,
           maxHeight: '90vh',
-          background: '#FFFFFF',
           borderRadius: 12,
-          boxShadow: '0 20px 25px -5px rgba(0,0,0,.1), 0 8px 10px -6px rgba(0,0,0,.1)',
           fontFamily: "'Inter', sans-serif",
         }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-0">
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>
+          <h2 className="text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]" style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>
             Create New Project
           </h2>
           <button
             onClick={onClose}
-            className="flex items-center justify-center rounded-md transition-colors hover:bg-[#F1F5F9]"
+            className="flex items-center justify-center rounded-md transition-colors hover:bg-[#F1F5F9] dark:hover:bg-[rgba(248,244,240,0.03)]"
             style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
-            <X size={18} color="#64748B" />
+            <X size={18} className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" />
           </button>
         </div>
 
-        {/* Step indicator */}
         <StepIndicator current={step} />
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto px-6 pb-4" style={{ minHeight: 300 }}>
-          {step === 0 && (
-            <StepDetails data={details} onChange={setDetails} isValid={step1Valid} onValidChange={setStep1Valid} />
-          )}
-          {step === 1 && (
-            <StepWorkflow data={workflow} onChange={setWorkflow} />
-          )}
-          {step === 2 && (
-            <StepMembers members={members} onChange={setMembers} />
-          )}
+          {step === 0 && <StepDetails data={details} onChange={setDetails} isValid={step1Valid} onValidChange={setStep1Valid} />}
+          {step === 1 && <StepWorkflow data={workflow} onChange={setWorkflow} />}
+          {step === 2 && <StepMembers members={members} onChange={setMembers} />}
         </div>
 
         {/* Footer */}
-        <div
-          className="flex items-center justify-between px-6 py-4"
-          style={{ borderTop: '1px solid #E2E8F0' }}
-        >
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[#E2E8F0] dark:border-[rgba(248,244,240,0.08)]">
           <button
             onClick={step === 0 ? onClose : () => setStep(s => s - 1)}
-            className="rounded-md transition-colors hover:bg-[#F8FAFC]"
+            className="rounded-md transition-colors hover:bg-[#F8FAFC] dark:hover:bg-[rgba(248,244,240,0.03)] bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)] text-[#334155] dark:text-[rgba(248,244,240,0.72)]"
             style={{
-              height: 36,
-              padding: '0 16px',
-              fontSize: 13,
-              fontWeight: 500,
-              color: '#334155',
-              border: '1px solid #E2E8F0',
-              borderRadius: 6,
-              background: '#FFFFFF',
-              cursor: 'pointer',
+              height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500,
+              borderRadius: 6, cursor: 'pointer',
             }}
           >
             {step === 0 ? 'Cancel' : '← Back'}
@@ -175,15 +136,9 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
             disabled={!canNext || submitting}
             className="rounded-md transition-opacity hover:opacity-90 disabled:opacity-40"
             style={{
-              height: 36,
-              padding: '0 20px',
-              fontSize: 13,
-              fontWeight: 600,
-              color: '#FFFFFF',
-              background: '#2563EB',
-              border: 'none',
-              borderRadius: 6,
-              cursor: canNext && !submitting ? 'pointer' : 'default',
+              height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
+              color: '#FFFFFF', background: '#2563EB', border: 'none',
+              borderRadius: 6, cursor: canNext && !submitting ? 'pointer' : 'default',
             }}
           >
             {submitting ? 'Creating...' : step < 2 ? 'Next →' : 'Create Project'}

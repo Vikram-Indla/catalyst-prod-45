@@ -13,11 +13,9 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
 
   return (
     <div
-      className="flex flex-col h-full flex-shrink-0"
+      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#1A1714] border-r border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)]"
       style={{
         width: collapsed ? 56 : 192,
-        background: '#FFFFFF',
-        borderRight: '1px solid #E2E8F0',
         transition: 'width 200ms ease',
         fontFamily: "'Inter', sans-serif",
         overflow: 'hidden',
@@ -25,8 +23,8 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
     >
       {/* Header */}
       <div
-        className="flex items-center gap-2 flex-shrink-0"
-        style={{ padding: collapsed ? '12px 10px' : '12px 10px', borderBottom: '1px solid #E2E8F0' }}
+        className="flex items-center gap-2 flex-shrink-0 border-b border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)]"
+        style={{ padding: collapsed ? '12px 10px' : '12px 10px' }}
       >
         <div
           className="flex items-center justify-center rounded-full flex-shrink-0"
@@ -36,121 +34,52 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         </div>
         {!collapsed && (
           <span
-            className="flex-1 truncate"
-            style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}
+            className="flex-1 truncate text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]"
+            style={{ fontSize: 13, fontWeight: 600, fontFamily: "'Sora', sans-serif" }}
           >
             ProjectHub
           </span>
         )}
         <button
           onClick={onToggle}
-          className="flex items-center justify-center rounded hover:bg-[#F1F5F9] transition-colors flex-shrink-0"
+          className="flex items-center justify-center rounded hover:bg-[#F1F5F9] dark:hover:bg-[rgba(248,244,240,0.03)] transition-colors flex-shrink-0"
           style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? (
-            <ChevronsRight size={16} color="#64748B" />
+            <ChevronsRight size={16} className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" />
           ) : (
-            <ChevronsLeft size={16} color="#64748B" />
+            <ChevronsLeft size={16} className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" />
           )}
         </button>
       </div>
 
       {/* Nav */}
       <div className="flex-1 py-2 px-1.5 space-y-0.5 overflow-y-auto">
-        <NavItem
-          icon={LayoutGrid}
-          label="All Projects"
-          isActive={location.pathname === '/project-hub/projects' || location.pathname === '/project-hub'}
-          onClick={() => navigate('/project-hub/projects')}
-          collapsed={collapsed}
-        />
-        <NavItem
-          icon={FolderKanban}
-          label="All Projects v2"
-          isActive={location.pathname === '/project/all-projects'}
-          onClick={() => navigate('/project/all-projects')}
-          collapsed={collapsed}
-        />
+        <NavItem icon={LayoutGrid} label="All Projects" isActive={location.pathname === '/project-hub/projects' || location.pathname === '/project-hub'} onClick={() => navigate('/project-hub/projects')} collapsed={collapsed} />
+        <NavItem icon={FolderKanban} label="All Projects v2" isActive={location.pathname === '/project/all-projects'} onClick={() => navigate('/project/all-projects')} collapsed={collapsed} />
         {/* Resource 360° Section */}
         {!collapsed && (
           <div className="pt-3 pb-1">
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#64748B',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase' as const,
-                padding: '0 10px 4px',
-              }}
-            >
+            <div className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
               Resource 360°
             </div>
           </div>
         )}
-        <NavItem
-          icon={LayoutGrid}
-          label="Dashboard"
-          isActive={location.pathname === '/resource360' || location.pathname === '/project-hub/resource360'}
-          onClick={() => navigate('/project-hub/resource360')}
-          collapsed={collapsed}
-        />
-        <NavItem
-          icon={Users}
-          label="Resource 360™"
-          isActive={location.pathname.startsWith('/project-hub/resources')}
-          onClick={() => navigate('/project-hub/resources')}
-          collapsed={collapsed}
-        />
-        <NavItem
-          icon={BarChart3}
-          label="Workload"
-          isActive={location.pathname.startsWith('/resource360/workload')}
-          onClick={() => navigate('/resource360/workload')}
-          collapsed={collapsed}
-        />
-        <NavItem
-          icon={Calendar}
-          label="Capacity"
-          isActive={location.pathname.startsWith('/resource360/capacity')}
-          onClick={() => navigate('/resource360/capacity')}
-          collapsed={collapsed}
-        />
-        <NavItem
-          icon={FileText}
-          label="Reports"
-          isActive={location.pathname.startsWith('/resource360/reports')}
-          onClick={() => navigate('/resource360/reports')}
-          collapsed={collapsed}
-        />
-        <NavItem
-          icon={Clock}
-          label="Timesheet"
-          isActive={location.pathname.startsWith('/resource360/timesheet')}
-          onClick={() => navigate('/resource360/timesheet')}
-          collapsed={collapsed}
-        />
+        <NavItem icon={LayoutGrid} label="Dashboard" isActive={location.pathname === '/resource360' || location.pathname === '/project-hub/resource360'} onClick={() => navigate('/project-hub/resource360')} collapsed={collapsed} />
+        <NavItem icon={Users} label="Resource 360™" isActive={location.pathname.startsWith('/project-hub/resources')} onClick={() => navigate('/project-hub/resources')} collapsed={collapsed} />
+        <NavItem icon={BarChart3} label="Workload" isActive={location.pathname.startsWith('/resource360/workload')} onClick={() => navigate('/resource360/workload')} collapsed={collapsed} />
+        <NavItem icon={Calendar} label="Capacity" isActive={location.pathname.startsWith('/resource360/capacity')} onClick={() => navigate('/resource360/capacity')} collapsed={collapsed} />
+        <NavItem icon={FileText} label="Reports" isActive={location.pathname.startsWith('/resource360/reports')} onClick={() => navigate('/resource360/reports')} collapsed={collapsed} />
+        <NavItem icon={Clock} label="Timesheet" isActive={location.pathname.startsWith('/resource360/timesheet')} onClick={() => navigate('/resource360/timesheet')} collapsed={collapsed} />
 
         {/* Favorites section */}
         {!collapsed && (
           <div className="pt-3">
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#64748B',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase' as const,
-                padding: '0 10px 4px',
-              }}
-            >
+            <div className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
               Favorites
             </div>
-            <div
-              className="flex items-center gap-2 px-[10px] py-2"
-              style={{ fontSize: 12, color: '#94A3B8' }}
-            >
+            <div className="flex items-center gap-2 px-[10px] py-2 text-[#94A3B8] dark:text-[rgba(248,244,240,0.40)]" style={{ fontSize: 12 }}>
               <Star size={14} />
               <span>No starred projects</span>
             </div>

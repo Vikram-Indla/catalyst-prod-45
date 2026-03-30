@@ -11,6 +11,8 @@ export interface NavItemProps {
 }
 
 export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge, count }: NavItemProps) {
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+
   return (
     <button
       onClick={onClick}
@@ -25,15 +27,19 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         margin: collapsed ? '0 auto' : undefined,
         fontSize: 13,
         fontWeight: isActive ? 600 : 500,
-        color: isActive ? '#2563EB' : '#334155',
-        background: isActive ? '#EFF6FF' : 'transparent',
+        color: isActive
+          ? '#2563EB'
+          : isDark ? 'rgba(248,244,240,0.72)' : '#334155',
+        background: isActive
+          ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF')
+          : 'transparent',
         borderLeft: isActive && !collapsed ? '3px solid #2563EB' : '3px solid transparent',
         fontFamily: "'Inter', sans-serif",
         border: 'none',
         cursor: 'pointer',
       }}
       onMouseEnter={(e) => {
-        if (!isActive) e.currentTarget.style.background = '#F1F5F9';
+        if (!isActive) e.currentTarget.style.background = isDark ? 'rgba(248,244,240,0.03)' : '#F1F5F9';
       }}
       onMouseLeave={(e) => {
         if (!isActive) e.currentTarget.style.background = 'transparent';
@@ -66,10 +72,10 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: '#94A3B8',
+                color: isDark ? 'rgba(248,244,240,0.55)' : '#94A3B8',
                 fontFamily: "'JetBrains Mono', monospace",
                 borderRadius: 10,
-                background: '#F1F5F9',
+                background: isDark ? 'rgba(248,244,240,0.06)' : '#F1F5F9',
                 padding: '1px 6px',
               }}
             >
