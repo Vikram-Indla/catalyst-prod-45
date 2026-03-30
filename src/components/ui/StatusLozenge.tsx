@@ -62,7 +62,7 @@ function getDisplayName(status: string): string {
 
 export function StatusLozenge({ status }: { status: string }) {
   const category = getStatusCategory(status);
-  const tokens = LOZENGE_TOKENS[category];
+  const tokens = getLozengeTokens(category);
   const displayName = getDisplayName(status);
 
   return (
