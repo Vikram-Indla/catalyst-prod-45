@@ -954,10 +954,10 @@ html:has(body[data-scroll-locked]) {
     --bg-app: var(--bg-0);
     
     /* Shadcn surface mappings */
-    --background: 36 12% 9%;             /* #1A1714 */
+    --background: 30 13% 9%;             /* #1A1714 */
     --foreground: 0 0% 92%;              /* rgba(255,255,255,0.92) */
     
-    --card: 36 12% 9%;                   /* Same as --background — flush cards */
+    --card: 30 13% 9%;                   /* Same as --background — flush cards */
     --card-foreground: 0 0% 92%;
     
     --popover: 36 12% 11%;               /* #232019 - NOCTURNE float */
