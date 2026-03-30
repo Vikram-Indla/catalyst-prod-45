@@ -11,17 +11,17 @@ function getStatusCategory(status: string): StatusCategory {
   const donePatterns = [
     "done", "closed", "resolved", "complete", "completed",
     "inproduction", "inprod", "released", "shipped", "deployed",
-    "verified", "accepted", "approved", "productionready", "betaready",
+    "verified", "accepted", "approved", "productionready", "betaready", "active",
   ];
   if (donePatterns.some((p) => normalized.includes(p))) return "done";
   const progressPatterns = [
     "inprogress", "indevelopment", "indev", "inreview", "endtoendtesting",
     "e2etesting", "testing", "readyfordevelopment", "readyfordev",
     "readyforqa", "readyforreview", "readyfortest", "development",
-    "review", "implementing", "active", "started", "reopened",
+    "review", "implementing", "started", "reopened",
     "codereview", "uat", "staging", "regression", "qavalidation",
-    "inbeta", "technicalvalidation", "ready", "triaging", "triage",
-    "open", "inqa", "inuat", "inentityintegration", "fixed",
+    "inbeta", "technicalvalidation", "triaging", "triage",
+    "inqa", "inuat", "inentityintegration", "fixed",
     "committee", "tocommittee", "converted", "onhold",
   ];
   if (progressPatterns.some((p) => normalized.includes(p))) return "inprogress";
