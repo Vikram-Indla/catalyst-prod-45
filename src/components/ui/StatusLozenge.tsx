@@ -11,14 +11,14 @@ function getStatusCategory(status: string): StatusCategory {
   const donePatterns = [
     "done", "closed", "resolved", "complete", "completed",
     "inproduction", "inprod", "released", "shipped", "deployed",
-    "verified", "accepted", "approved", "productionready", "betaready", "active",
+    "verified", "accepted", "approved", "productionready", "betaready",
   ];
   if (donePatterns.some((p) => normalized.includes(p))) return "done";
   const progressPatterns = [
     "inprogress", "indevelopment", "indev", "inreview", "endtoendtesting",
     "e2etesting", "testing", "readyfordevelopment", "readyfordev",
     "readyforqa", "readyforreview", "readyfortest", "development",
-    "review", "implementing", "started", "reopened",
+    "review", "implementing", "active", "started", "reopened",
     "codereview", "uat", "staging", "regression", "qavalidation",
     "inbeta", "technicalvalidation", "triaging", "triage",
     "inqa", "inuat", "inentityintegration", "fixed",
@@ -28,11 +28,16 @@ function getStatusCategory(status: string): StatusCategory {
   return "todo";
 }
 
-const LOZENGE_TOKENS: Record<StatusCategory, { bg: string; text: string }> = {
-  todo:       { bg: 'var(--cp-lz-gy-bg)', text: 'var(--cp-lz-gy-t)' },
-  inprogress: { bg: 'var(--cp-lz-bl-bg)', text: 'var(--cp-lz-bl-t)' },
-  done:       { bg: 'var(--cp-lz-gn-bg)', text: 'var(--cp-lz-gn-t)' },
-};
+function getLozengeTokens(category: StatusCategory): { bg: string; text: string } {
+  const isDark = document.documentElement.classList.contains('dark');
+  const map: Record<StatusCategory, { bg: [string, string]; text: [string, string] }> = {
+    todo:       { bg: ['#DFE1E6', '#2C2926'], text: ['#42526E', '#B8BCC8'] },
+    inprogress: { bg: ['#0C66E4', '#1E2636'], text: ['#FFFFFF', '#93C5FD'] },
+    done:       { bg: ['#1B7F37', '#1A2A1E'], text: ['#FFFFFF', '#86EFAC'] },
+  };
+  const entry = map[category];
+  return { bg: isDark ? entry.bg[1] : entry.bg[0], text: isDark ? entry.text[1] : entry.text[0] };
+}
 
 function getDisplayName(status: string): string {
   const shortNames: Record<string, string> = {
@@ -57,7 +62,7 @@ function getDisplayName(status: string): string {
 
 export function StatusLozenge({ status }: { status: string }) {
   const category = getStatusCategory(status);
-  const tokens = LOZENGE_TOKENS[category];
+  const tokens = getLozengeTokens(category);
   const displayName = getDisplayName(status);
 
   return (
