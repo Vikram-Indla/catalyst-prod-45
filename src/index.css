@@ -960,7 +960,7 @@ html:has(body[data-scroll-locked]) {
     --card: 36 12% 9%;                   /* Same as --background — flush cards */
     --card-foreground: 0 0% 92%;
     
-    --popover: 216 10% 11%;              /* #232830 - bg-4 */
+    --popover: 36 12% 11%;               /* #232019 - NOCTURNE float */
     --popover-foreground: 0 0% 92%;
     
     --primary: 217 91% 60%;              /* #3b82f6 blue */
