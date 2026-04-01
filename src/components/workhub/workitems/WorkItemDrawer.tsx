@@ -254,12 +254,12 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
 
             {/* Comments */}
             <div>
-              <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+              <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: 'var(--fg-4)' }}>
                 <MessageSquare className="w-3.5 h-3.5" />
                 Comments ({comments.length})
               </h3>
               {comments.length === 0 ? (
-                <p className="text-[12px] italic" style={{ color: '#94a3b8' }}>No comments synced yet.</p>
+                <p className="text-[12px] italic" style={{ color: 'var(--fg-4)' }}>No comments synced yet.</p>
               ) : (
                 <div className="space-y-2.5 max-h-[400px] overflow-y-auto">
                   {comments.map((c, i) => (

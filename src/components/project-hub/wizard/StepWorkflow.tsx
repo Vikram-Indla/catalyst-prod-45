@@ -81,18 +81,18 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
       <label
         className="flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors"
         style={{
-          border: !data.useDefault ? '2px solid #2563EB' : '1px solid #E2E8F0',
-          background: !data.useDefault ? '#F8FAFC' : '#FFFFFF',
+          border: !data.useDefault ? '2px solid var(--cp-blue)' : '1px solid var(--divider)',
+          background: !data.useDefault ? 'var(--bg-1)' : 'var(--bg-app)',
         }}
       >
         <input
           type="radio"
           checked={!data.useDefault}
           onChange={() => onChange({ ...data, useDefault: false })}
-          style={{ accentColor: '#2563EB', marginTop: 2 }}
+          style={{ accentColor: 'var(--cp-blue)', marginTop: 2 }}
         />
         <div className="flex-1">
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Copy from existing project</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Copy from existing project</div>
           {!data.useDefault && projects.length > 0 && (
             <select
               value={data.copyFromProject || ''}
@@ -103,10 +103,10 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
                 height: 36,
                 padding: '0 10px',
                 fontSize: 13,
-                border: '1px solid #E2E8F0',
+                border: '1px solid var(--divider)',
                 borderRadius: 6,
-                background: '#FFFFFF',
-                color: '#0F172A',
+                background: 'var(--bg-app)',
+                color: 'var(--fg-1)',
                 fontFamily: "'Inter', sans-serif",
               }}
             >
@@ -117,15 +117,15 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
             </select>
           )}
           {!data.useDefault && projects.length === 0 && (
-            <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 4 }}>No other projects available</div>
+            <div style={{ fontSize: 12, color: 'var(--fg-4)', marginTop: 4 }}>No other projects available</div>
           )}
         </div>
       </label>
 
       {/* Workflow preview */}
       {workflowToShow.length > 0 && (
-        <div className="p-3 rounded-lg" style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
-          <div style={{ fontSize: 10, fontWeight: 600, color: '#64748B', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 8 }}>
+        <div className="p-3 rounded-lg" style={{ background: 'var(--bg-1)', border: '1px solid var(--divider)' }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 8 }}>
             Workflow Preview
           </div>
           <div className="flex items-center gap-1 flex-wrap">

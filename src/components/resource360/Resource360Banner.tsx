@@ -46,11 +46,11 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
   const staleCount = ages.filter(a => a > 14).length;
 
   const kpis = [
-    { label: 'TOTAL', value: String(totalCount), color: '#0F172A', bg: '#FFFFFF' },
-    { label: 'CLOSURE', value: `${closurePct}%`, color: '#16A34A', bg: '#F0FDF4' },
-    { label: 'PENDING', value: String(pendingCount), color: '#EF4444', bg: '#FEF2F2' },
-    { label: 'AVG AGE', value: `${avgAge}d`, color: '#0F172A', bg: '#FFFFFF' },
-    { label: 'STALE', value: String(staleCount), color: '#0F172A', bg: '#FFFFFF' },
+    { label: 'TOTAL', value: String(totalCount), color: 'var(--fg-1)', bg: 'var(--bg-app)' },
+    { label: 'CLOSURE', value: `${closurePct}%`, color: 'var(--sem-success)', bg: '#F0FDF4' },
+    { label: 'PENDING', value: String(pendingCount), color: 'var(--sem-danger)', bg: '#FEF2F2' },
+    { label: 'AVG AGE', value: `${avgAge}d`, color: 'var(--fg-1)', bg: 'var(--bg-app)' },
+    { label: 'STALE', value: String(staleCount), color: 'var(--fg-1)', bg: 'var(--bg-app)' },
   ];
 
   return (

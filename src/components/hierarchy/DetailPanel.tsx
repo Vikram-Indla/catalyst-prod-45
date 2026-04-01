@@ -214,11 +214,11 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
               </>
             )}
             {item.issueType && <JiraIssueTypeIcon type={item.issueType} size={14} />}
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)' }}>{item.key}</span>
           </div>
           {onClose && (
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}>
-              <X size={16} color="#64748B" />
+              <X size={16} color="var(--fg-3)" />
             </button>
           )}
         </div>
