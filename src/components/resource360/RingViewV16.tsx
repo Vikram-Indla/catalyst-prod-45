@@ -584,11 +584,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   left: `${midLeft}px`, top: `${midTop}px`,
                   transform: 'translate(-50%, -50%)',
                   zIndex: 2, pointerEvents: 'none',
-                  background: isSelected ? T.accent : '#FFFFFF',
-                  border: `1px solid ${isSelected ? '#1D4ED8' : '#CBD5E1'}`,
+                  background: isSelected ? T.accent : 'var(--bg-app)',
+                  border: `1px solid ${isSelected ? '#1D4ED8' : 'var(--divider)'}`,
                   borderRadius: 10, padding: '2px 8px',
                   fontSize: 9.5, fontWeight: 600, fontFamily: T.mono,
-                  color: isSelected ? '#FFFFFF' : '#334155',
+                  color: isSelected ? '#FFFFFF' : 'var(--fg-2)',
                   opacity: hasSel && !isSelected ? 0.3 : 1,
                   whiteSpace: 'nowrap',
                 }}>
@@ -605,9 +605,9 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
             }}>
               <div ref={centerRef} style={{
                 width: 76, height: 76, borderRadius: '50%', margin: '0 auto',
-                background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
+                background: 'linear-gradient(135deg, var(--cp-blue), #1D4ED8)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 0 0 4px #fff, 0 0 0 6px #2563EB, 0 0 20px rgba(37,99,235,.2)',
+                boxShadow: '0 0 0 4px #fff, 0 0 0 6px var(--cp-blue), 0 0 20px rgba(37,99,235,.2)',
               }}>
                 <span style={{ fontFamily: T.sora, fontSize: 24, fontWeight: 800, color: '#FFFFFF' }}>{initials}</span>
               </div>
