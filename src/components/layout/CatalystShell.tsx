@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense, ComponentType } from 'react';
+import { GlobalSearch } from '@/components/global-search';
 
 import { useLocation, useParams, Outlet, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
