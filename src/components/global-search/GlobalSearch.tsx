@@ -367,7 +367,7 @@ export function GlobalSearch() {
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 50);
-      setQuery(""); setDebouncedQuery(""); setSelectedIdx(0);
+      setQuery(""); setDebouncedQuery(""); setSelectedIdx(0); setVisibleCount(8);
       setFilters({ hub: null, project: null, assignee: null, type: null });
     }
   }, [isOpen]);
