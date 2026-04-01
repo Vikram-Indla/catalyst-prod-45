@@ -922,5 +922,6 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
         @keyframes fy-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </>
+    </TokenCtx.Provider>
   );
 }
