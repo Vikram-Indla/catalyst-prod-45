@@ -154,15 +154,15 @@ export default function WikiKnowledgeGraphPage() {
   }, [articles, relations, navigate]);
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: 'var(--fg-1, #0F172A)', background: 'var(--surface-subtle, #F8FAFC)', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ fontFamily: 'Inter, sans-serif', color: '#0F172A', background: '#F8FAFC', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: '20px 40px 0' }}>
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
           <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-          <ChevronRight size={12} style={{ color: 'var(--fg-4, #94A3B8)' }} />
-          <span style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', fontWeight: 600 }}>Knowledge Graph</span>
+          <ChevronRight size={12} style={{ color: '#94A3B8' }} />
+          <span style={{ fontSize: 13, color: '#64748B', fontWeight: 600 }}>Knowledge Graph</span>
         </nav>
         <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, margin: '0 0 8px' }}>Knowledge Graph</h1>
-        <p style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', marginBottom: 12 }}>
+        <p style={{ fontSize: 12, color: '#64748B', marginBottom: 12 }}>
           Visualize article relationships. Node size = view count. Click to open article.
         </p>
         {/* Legend */}
@@ -170,23 +170,23 @@ export default function WikiKnowledgeGraphPage() {
           {Object.entries(DOMAIN_COLORS).map(([code, color]) => (
             <div key={code} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
-              <span style={{ fontSize: 10, color: 'var(--fg-3, #64748B)', fontWeight: 500 }}>{code}</span>
+              <span style={{ fontSize: 10, color: '#64748B', fontWeight: 500 }}>{code}</span>
             </div>
           ))}
         </div>
       </div>
 
       <div style={{ flex: 1, position: 'relative', borderTop: '0.75px solid rgba(0,0,0,0.06)' }}>
-        <svg ref={svgRef} style={{ width: '100%', height: '100%', background: 'var(--bg-app, #FFFFFF)' }} />
+        <svg ref={svgRef} style={{ width: '100%', height: '100%', background: '#FFFFFF' }} />
         {tooltip && (
           <div style={{
             position: 'absolute', left: tooltip.x + 12, top: tooltip.y - 8,
-            background: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 6,
+            background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6,
             padding: '8px 12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
             pointerEvents: 'none', zIndex: 10, fontSize: 12, maxWidth: 200,
           }}>
             <div style={{ fontWeight: 600, marginBottom: 2 }}>{tooltip.title}</div>
-            <div style={{ fontSize: 10, color: 'var(--fg-3, #64748B)' }}>{tooltip.domain} · {tooltip.views} views</div>
+            <div style={{ fontSize: 10, color: '#64748B' }}>{tooltip.domain} · {tooltip.views} views</div>
           </div>
         )}
       </div>

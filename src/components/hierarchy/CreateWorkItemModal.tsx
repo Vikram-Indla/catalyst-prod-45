@@ -195,7 +195,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, parentItem }: Cr
               {parentItem && (
                 <div>
                   <label style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em', display: 'block', marginBottom: 6 }}>Parent</label>
-                  <div style={{ height: 36, padding: '0 12px', background: 'var(--surface-subtle, #FAFAFA)', border: '1.5px solid var(--divider)', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--fg-1)' }}>
+                  <div style={{ height: 36, padding: '0 12px', background: '#FAFAFA', border: '1.5px solid var(--divider)', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--fg-1)' }}>
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: parentItem.hierarchyColor }} />
                     <span style={{ fontWeight: 500, color: 'var(--cp-blue)', fontSize: 12 }}>{parentItem.key}</span>
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parentItem.title}</span>
@@ -232,7 +232,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, parentItem }: Cr
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', background: 'var(--surface-subtle, #FAFAFA)', borderTop: '1px solid var(--divider)', borderRadius: '0 0 8px 8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', background: '#FAFAFA', borderTop: '1px solid var(--divider)', borderRadius: '0 0 8px 8px' }}>
               {!parentItem && (
                 <button onClick={() => setStep(1)} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, color: 'var(--fg-2)', background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
                   Back

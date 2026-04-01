@@ -92,18 +92,18 @@ export function CreateProjectDialog({ open, onClose }: Props) {
   if (!open) return null;
 
   // Dark / Light tokens
-  const surface = dk ? '#1F2128' : 'var(--bg-app)';
-  const textPrimary = dk ? 'rgba(235,238,245,0.92)' : 'var(--fg-1)';
-  const textSecondary = dk ? 'rgba(235,238,245,0.72)' : 'var(--fg-2)';
-  const textMuted = dk ? 'rgba(235,238,245,0.55)' : 'var(--fg-4)';
-  const textPlaceholder = dk ? 'rgba(235,238,245,0.40)' : undefined;
-  const border = dk ? 'rgba(235,238,245,0.10)' : 'var(--divider)';
-  const divider = dk ? 'rgba(235,238,245,0.08)' : 'var(--divider)';
+  const surface = dk ? '#232019' : 'var(--bg-app)';
+  const textPrimary = dk ? 'rgba(248,244,240,0.92)' : 'var(--fg-1)';
+  const textSecondary = dk ? 'rgba(248,244,240,0.72)' : 'var(--fg-2)';
+  const textMuted = dk ? 'rgba(248,244,240,0.55)' : 'var(--fg-4)';
+  const textPlaceholder = dk ? 'rgba(248,244,240,0.40)' : undefined;
+  const border = dk ? 'rgba(248,244,240,0.10)' : 'var(--divider)';
+  const divider = dk ? 'rgba(248,244,240,0.08)' : 'var(--divider)';
   const inputBg = dk ? 'transparent' : 'var(--bg-app)';
-  const closeHoverBg = dk ? 'rgba(235,238,245,0.06)' : 'var(--cp-bd-zone)';
+  const closeHoverBg = dk ? 'rgba(248,244,240,0.06)' : 'var(--cp-bd-zone)';
   const cancelBg = dk ? 'transparent' : 'var(--bg-app)';
-  const cancelHoverBg = dk ? 'rgba(235,238,245,0.06)' : 'var(--bg-1)';
-  const dropdownBg = dk ? '#1F2128' : 'var(--cp-float)';
+  const cancelHoverBg = dk ? 'rgba(248,244,240,0.06)' : 'var(--bg-1)';
+  const dropdownBg = dk ? '#232019' : 'var(--cp-float)';
 
   const inputStyle: React.CSSProperties = {
     width: '100%',

@@ -224,7 +224,7 @@ function useContracts() {
         { count: active, label: 'Active', color: '#16A34A', textColor: '#11853D' },
         { count: exp30, label: '< 30 Days', color: '#DC2626', textColor: '#D92525' },
         { count: exp90, label: '< 90 Days', color: '#F59E0B', textColor: '#B45309' },
-        { count: expired, label: 'Expired', color: 'var(--fg-3, #71717A)', textColor: '#3F3F46' },
+        { count: expired, label: 'Expired', color: '#71717A', textColor: '#3F3F46' },
       ];
 
       const barSegments = total > 0
@@ -232,7 +232,7 @@ function useContracts() {
             { pct: Math.round((active / total) * 100), color: '#16A34A' },
             { pct: Math.round((exp90 / total) * 100), color: '#F59E0B' },
             { pct: Math.round((exp30 / total) * 100), color: '#DC2626' },
-            { pct: Math.round((expired / total) * 100), color: 'var(--fg-3, #71717A)' },
+            { pct: Math.round((expired / total) * 100), color: '#71717A' },
           ]
         : [];
 

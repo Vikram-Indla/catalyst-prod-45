@@ -23,7 +23,7 @@ const STATUS_GROUPS = [
     group: 'Execution',
     items: [
       { value: 'under_implementation', label: 'Under Implementation', color: '#0D9488' },
-      { value: 'on_hold', label: 'On Hold', color: 'var(--fg-3, #71717A)' },
+      { value: 'on_hold', label: 'On Hold', color: '#71717A' },
       { value: 'implementation_review', label: 'Implementation Review', color: '#0D9488' },
     ],
   },
@@ -81,7 +81,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
           />
           {selected?.label || 'Select status'}
         </span>
-        <ChevronDown className="w-4 h-4 shrink-0" style={{ color: 'var(--fg-3, #71717A)' }} />
+        <ChevronDown className="w-4 h-4 shrink-0" style={{ color: '#71717A' }} />
       </button>
 
       {open && (

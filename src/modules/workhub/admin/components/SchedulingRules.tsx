@@ -38,7 +38,7 @@ export function SchedulingRules() {
   }
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: 'var(--fg-3, #64748B)', fontFamily: 'Inter, sans-serif' }}>Loading...</div>
+    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>Loading...</div>
   }
 
   const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
@@ -59,7 +59,7 @@ export function SchedulingRules() {
   )
 
   const cardStyle: React.CSSProperties = {
-    background: '#fff', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 8,
+    background: '#fff', border: '1px solid #E2E8F0', borderRadius: 8,
     padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
   }
 
@@ -72,10 +72,10 @@ export function SchedulingRules() {
   return (
     <div style={{ maxWidth: 900, fontFamily: 'Inter, sans-serif' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
           Scheduling Rules
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
           Configure how effective due dates are calculated for the hierarchy.
         </p>
       </div>
@@ -83,7 +83,7 @@ export function SchedulingRules() {
       {/* Card 1: Date Precedence */}
       <div style={cardStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>
             Date Precedence
           </h2>
           <span style={{
@@ -95,7 +95,7 @@ export function SchedulingRules() {
         {priorities.map((p, i) => (
           <div key={i} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0',
-            borderBottom: i < 2 ? '1px solid var(--wh-bdr, #F1F5F9)' : 'none',
+            borderBottom: i < 2 ? '1px solid #F1F5F9' : 'none',
           }}>
             <Toggle checked={priorityToggles[i]} onChange={(v) => {
               const copy = [...priorityToggles]
@@ -103,8 +103,8 @@ export function SchedulingRules() {
               setPriorityToggles(copy)
             }} />
             <div>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{p.label}</span>
-              <span style={{ fontSize: 12, color: 'var(--fg-3, #64748B)' }}> — {p.desc}</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{p.label}</span>
+              <span style={{ fontSize: 12, color: '#64748B' }}> — {p.desc}</span>
             </div>
           </div>
         ))}
@@ -122,7 +122,7 @@ export function SchedulingRules() {
 
       {/* Card 2: Multi-FixVersion Strategy */}
       <div style={cardStyle}>
-        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: '#0F172A', margin: '0 0 14px' }}>
           Multi-FixVersion Strategy
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -133,7 +133,7 @@ export function SchedulingRules() {
             value={multiVersionStrategy}
             onChange={(e) => setMultiVersionStrategy(e.target.value)}
             style={{
-              width: 200, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--divider, #E2E8F0)',
+              width: 200, padding: '7px 10px', borderRadius: 6, border: '1px solid #E2E8F0',
               fontSize: 12, color: '#334155', background: '#fff',
             }}
           >
@@ -147,7 +147,7 @@ export function SchedulingRules() {
       {/* Card 3: Version Name Parser */}
       <div style={cardStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>
             Version Name Parser
           </h2>
           <span style={{
@@ -170,11 +170,11 @@ export function SchedulingRules() {
                 When a FixVersion has no releaseDate, Catalyst attempts to extract a date from the version name:
               </p>
               <div style={{ marginTop: 8, fontSize: 11, color: '#92400E', lineHeight: 2 }}>
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: 'var(--surface-muted, #F1F5F9)', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
                 {' → 2026-02-28  '}
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: 'var(--surface-muted, #F1F5F9)', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
                 {' → 2026-03-31  '}
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: 'var(--surface-muted, #F1F5F9)', padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
                 {' → '}
                 <span style={{ color: '#EF4444', fontWeight: 600 }}>Cannot parse</span>
               </div>
@@ -205,7 +205,7 @@ export function SchedulingRules() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: 'var(--surface-subtle, #F8FAFC)', color: '#334155', border: '1px solid var(--divider, #E2E8F0)', cursor: 'pointer',
+              background: '#F8FAFC', color: '#334155', border: '1px solid #E2E8F0', cursor: 'pointer',
             }}
           >
             Reset to Default

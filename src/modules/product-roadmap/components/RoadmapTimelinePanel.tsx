@@ -100,7 +100,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
           // Fallback: bar is entirely outside visible timeline range — show indicator
           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
             <div className="w-2 h-2 rounded-full" style={{ background: '#2563EB' }} />
-            <span style={{ fontSize: 12, color: 'var(--fg-3, #64748B)' }}>Outside timeline range</span>
+            <span style={{ fontSize: 12, color: '#64748B' }}>Outside timeline range</span>
           </div>
         )}
       </div>
@@ -130,7 +130,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
   // Grouped view
   if (groups && groups.length > 0) {
     return (
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'var(--bg-app, #FFFFFF)' }}>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: '#FFFFFF' }}>
         <ScrollArea className="flex-1 w-full">
           <div style={{ minWidth: totalMinWidth }}>
             <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
@@ -139,8 +139,8 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
               {todayPosition !== null && config.showToday && <RoadmapTodayMarker position={todayPosition} />}
               {groups.map(group => (
                 <div key={group.key}>
-                  <div style={{ height: 36, background: 'var(--surface-subtle, #FAFBFC)', borderBottom: '1px solid var(--divider, #E2E8F0)' }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3, #64748B)', paddingLeft: 16, lineHeight: '36px' }}>
+                  <div style={{ height: 36, background: '#FAFBFC', borderBottom: '1px solid #E2E8F0' }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', paddingLeft: 16, lineHeight: '36px' }}>
                       {group.label}
                     </span>
                   </div>
@@ -157,7 +157,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
 
   // Flat view
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: 'var(--bg-app, #FFFFFF)' }}>
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: '#FFFFFF' }}>
       <ScrollArea className="flex-1 w-full">
         <div style={{ minWidth: totalMinWidth }}>
           <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />

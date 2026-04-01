@@ -157,7 +157,7 @@ function LabelsPills({ labels }: { labels: string[] }) {
       {show.map(l => (
         <span key={l} style={{
           fontSize: 10, padding: '2px 8px', borderRadius: 9999,
-          background: 'var(--surface-muted, #F1F5F9)', color: 'var(--fg-2)', whiteSpace: 'nowrap',
+          background: '#F1F5F9', color: 'var(--fg-2)', whiteSpace: 'nowrap',
         }}>{l}</span>
       ))}
       {rest > 0 && <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>+{rest}</span>}
@@ -522,7 +522,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
         return (
           <div style={{ padding: '0 8px', minWidth: 0 }}>
             {item.fixVersion ? (
-              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 3, background: 'var(--surface-muted, #F1F5F9)', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 3, background: '#F1F5F9', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.fixVersion.name}
               </span>
             ) : <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>}
@@ -616,7 +616,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             alignItems: 'center',
             height: 36,
             minWidth: 1100,
-            background: 'var(--surface-muted, #F1F5F9)',
+            background: '#F1F5F9',
             borderBottom: '2px solid var(--divider)',
           }}
         >

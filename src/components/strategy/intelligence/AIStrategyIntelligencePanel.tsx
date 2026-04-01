@@ -184,7 +184,7 @@ export function AIStrategyIntelligencePanel({
           <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)' }}>
             Regenerate
           </button>
-          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold text-white bg-slate-800 dark:bg-[#181A1E] dark:border dark:border-[rgba(255,255,255,0.08)]">
+          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold text-white bg-slate-800 dark:bg-[#2C2823] dark:border dark:border-[rgba(255,255,255,0.08)]">
             Close
           </button>
         </div>
@@ -231,7 +231,7 @@ function StatusDot({ status }: { status: 'on_track' | 'at_risk' | 'critical' }) 
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <div className="mb-2.5 mt-1" style={{ fontSize: 12, fontWeight: 700, color: 'var(--fg-1, #1E293B)', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
+    <div className="mb-2.5 mt-1" style={{ fontSize: 12, fontWeight: 700, color: '#1E293B', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
       {children}
     </div>
   );

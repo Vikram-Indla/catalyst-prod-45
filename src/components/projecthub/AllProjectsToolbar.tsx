@@ -50,18 +50,18 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
                 display: 'flex', alignItems: 'center', gap: 4,
                 height: 28, padding: '0 10px', fontSize: 12,
                 fontWeight: active ? 600 : 500,
-                color: active ? '#2563EB' : (isDark ? 'rgba(235,238,245,0.72)' : 'var(--fg-2)'),
+                color: active ? '#2563EB' : (isDark ? 'rgba(248,244,240,0.72)' : 'var(--fg-2)'),
                 background: active ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : (isDark ? 'transparent' : 'var(--bg-app)'),
-                border: `1px solid ${active ? '#2563EB' : (isDark ? 'rgba(235,238,245,0.10)' : 'var(--divider)')}`,
+                border: `1px solid ${active ? '#2563EB' : (isDark ? 'rgba(248,244,240,0.10)' : 'var(--divider)')}`,
                 borderRadius: 99, cursor: 'pointer',
               }}
             >
               {c.label}
               <span style={{
                 padding: '1px 6px', fontSize: 10, fontWeight: 700,
-                background: active ? (isDark ? 'rgba(59,130,246,0.20)' : 'var(--cp-primary-20)') : (isDark ? 'rgba(235,238,245,0.06)' : 'var(--cp-bd-zone)'),
+                background: active ? (isDark ? 'rgba(59,130,246,0.20)' : 'var(--cp-primary-20)') : (isDark ? 'rgba(248,244,240,0.06)' : 'var(--cp-bd-zone)'),
                 borderRadius: 99, fontFamily: "'JetBrains Mono', monospace",
-                color: active ? (isDark ? '#60A5FA' : undefined) : (isDark ? 'rgba(235,238,245,0.55)' : undefined),
+                color: active ? (isDark ? '#60A5FA' : undefined) : (isDark ? 'rgba(248,244,240,0.55)' : undefined),
               }}>
                 {count}
               </span>
@@ -76,36 +76,36 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
       <div style={{
         display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 10px',
         background: isDark ? 'transparent' : 'var(--bg-app)',
-        border: `1px solid ${isDark ? 'rgba(235,238,245,0.10)' : 'var(--divider)'}`,
+        border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : 'var(--divider)'}`,
         borderRadius: 6, minWidth: 200,
       }}>
-        <Search size={14} color={isDark ? 'rgba(235,238,245,0.40)' : 'var(--fg-4)'} />
+        <Search size={14} color={isDark ? 'rgba(248,244,240,0.40)' : 'var(--fg-4)'} />
         <input
           value={localSearch}
           onChange={e => setLocalSearch(e.target.value)}
           placeholder="Search projects..."
           style={{
             border: 'none', outline: 'none', background: 'transparent',
-            fontSize: 13, color: isDark ? 'rgba(235,238,245,0.92)' : 'var(--fg-1)', flex: 1,
+            fontSize: 13, color: isDark ? 'rgba(248,244,240,0.92)' : 'var(--fg-1)', flex: 1,
             fontFamily: "'Inter', sans-serif",
           }}
         />
         {localSearch && (
           <button onClick={() => setLocalSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-            <X size={12} color={isDark ? 'rgba(235,238,245,0.40)' : 'var(--fg-4)'} />
+            <X size={12} color={isDark ? 'rgba(248,244,240,0.40)' : 'var(--fg-4)'} />
           </button>
         )}
       </div>
 
       {/* View toggle */}
-      <div style={{ display: 'flex', border: `1px solid ${isDark ? 'rgba(235,238,245,0.10)' : 'var(--divider)'}`, borderRadius: 6, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : 'var(--divider)'}`, borderRadius: 6, overflow: 'hidden' }}>
         <button
           onClick={() => onViewChange('list')}
           style={{
             width: 32, height: 30, border: 'none',
-            borderRight: `1px solid ${isDark ? 'rgba(235,238,245,0.10)' : 'var(--divider)'}`,
+            borderRight: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : 'var(--divider)'}`,
             background: view === 'list' ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : (isDark ? 'transparent' : 'var(--bg-app)'),
-            color: view === 'list' ? (isDark ? '#60A5FA' : 'var(--cp-blue)') : (isDark ? 'rgba(235,238,245,0.55)' : 'var(--fg-4)'),
+            color: view === 'list' ? (isDark ? '#60A5FA' : 'var(--cp-blue)') : (isDark ? 'rgba(248,244,240,0.55)' : 'var(--fg-4)'),
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
@@ -116,7 +116,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
           style={{
             width: 32, height: 30, border: 'none',
             background: view === 'cards' || view === 'card' ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : (isDark ? 'transparent' : 'var(--bg-app)'),
-            color: view === 'cards' || view === 'card' ? (isDark ? '#60A5FA' : 'var(--cp-blue)') : (isDark ? 'rgba(235,238,245,0.55)' : 'var(--fg-4)'),
+            color: view === 'cards' || view === 'card' ? (isDark ? '#60A5FA' : 'var(--cp-blue)') : (isDark ? 'rgba(248,244,240,0.55)' : 'var(--fg-4)'),
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >

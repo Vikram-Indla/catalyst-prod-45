@@ -147,25 +147,28 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
   const staleHours = hoursAgo(lastSyncTime);
   const isStale = staleHours !== null && staleHours > 24;
   const isFresh = staleHours !== null && staleHours <= 24;
+  const statusBackground = isStale ? 'var(--wh-warn-bg)' : isFresh ? 'var(--wh-suc-bg)' : 'var(--wh-sf2)';
+  const statusBorder = isStale ? 'var(--wh-warn)' : isFresh ? 'var(--wh-suc)' : 'var(--wh-bdr)';
+  const statusText = isStale ? 'var(--wh-warn)' : isFresh ? 'var(--wh-suc)' : 'var(--wh-tx2)';
 
   if (isLoading) return null;
 
   return (
     <div style={{
-      background: 'var(--wh-sf, #fff)',
-      borderRadius: 'var(--wh-rad, 8px)',
-      border: '1px solid var(--wh-bdr, var(--divider))',
+      background: 'var(--wh-bg)',
+      borderRadius: 'var(--wh-rad2, 8px)',
+      border: '1px solid var(--wh-bdr)',
       padding: 20,
     }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Timer size={15} style={{ color: 'var(--wh-tx3, var(--fg-3))' }} />
+          <Timer size={15} style={{ color: 'var(--wh-tx3)' }} />
           <span style={{
             fontFamily: "var(--wh-fh, 'Inter')",
             fontSize: 14,
             fontWeight: 700,
-            color: 'var(--wh-tx, #1E293B)',
+            color: 'var(--wh-tx)',
           }}>
             {title}
           </span>
@@ -177,7 +180,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 5,
               padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-              background: 'var(--cp-blue)', color: '#fff', border: 'none', cursor: 'pointer',
+              background: 'var(--wh-pri)', color: '#FFFFFF', border: 'none', cursor: 'pointer',
             }}
           >
             <Save size={12} />
@@ -191,20 +194,20 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
           borderRadius: 8, marginBottom: 16,
-          background: isStale ? '#FFFBEB' : isFresh ? '#F0FDF4' : 'var(--bg-1)',
-          border: `1px solid ${isStale ? '#FDE68A' : isFresh ? '#BBF7D0' : 'var(--divider)'}`,
+          background: statusBackground,
+          border: `1px solid ${statusBorder}`,
         }}>
           {isStale ? (
-            <AlertTriangle size={14} style={{ color: 'var(--sem-warning)', flexShrink: 0 }} />
+            <AlertTriangle size={14} style={{ color: 'var(--wh-warn)', flexShrink: 0 }} />
           ) : isFresh ? (
-            <CheckCircle2 size={14} style={{ color: 'var(--sem-success)', flexShrink: 0 }} />
+            <CheckCircle2 size={14} style={{ color: 'var(--wh-suc)', flexShrink: 0 }} />
           ) : (
-            <Clock size={14} style={{ color: 'var(--fg-3)', flexShrink: 0 }} />
+            <Clock size={14} style={{ color: 'var(--wh-tx3)', flexShrink: 0 }} />
           )}
           <div style={{ flex: 1 }}>
             <span style={{
               fontSize: 12, fontWeight: 600,
-              color: isStale ? '#92400E' : isFresh ? '#166534' : 'var(--fg-2)',
+              color: statusText,
             }}>
               {lastSyncTime
                 ? `Last synced: ${new Date(lastSyncTime).toLocaleDateString('en-US', {
@@ -217,7 +220,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
             {staleHours !== null && (
               <span style={{
                 fontSize: 11, marginLeft: 8,
-                color: isStale ? '#B45309' : 'var(--fg-3)',
+                color: isStale ? 'var(--wh-warn)' : 'var(--wh-tx3)',
               }}>
                 ({Math.round(staleHours)}h ago)
               </span>
@@ -225,8 +228,8 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
           </div>
           {isStale && (
             <span style={{
-              fontSize: 10, fontWeight: 700, color: 'var(--sem-warning)',
-              background: '#FEF3C7', padding: '2px 8px', borderRadius: 10,
+              fontSize: 10, fontWeight: 700, color: 'var(--wh-warn)',
+              background: 'var(--wh-bg)', padding: '2px 8px', borderRadius: 10,
               textTransform: 'uppercase', letterSpacing: '.4px',
             }}>
               ⚠️ May be stale
@@ -234,8 +237,8 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
           )}
           {isFresh && (
             <span style={{
-              fontSize: 10, fontWeight: 700, color: 'var(--sem-success)',
-              background: '#DCFCE7', padding: '2px 8px', borderRadius: 10,
+              fontSize: 10, fontWeight: 700, color: 'var(--wh-suc)',
+              background: 'var(--wh-bg)', padding: '2px 8px', borderRadius: 10,
               textTransform: 'uppercase', letterSpacing: '.4px',
             }}>
               Up to date
@@ -254,8 +257,8 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
             <div key={s.schedule_key} style={{
               display: 'flex', alignItems: 'center', gap: 12,
               padding: '12px 14px', borderRadius: 8,
-              background: edit.enabled ? '#F0F9FF' : 'var(--bg-1)',
-              border: `1px solid ${edit.enabled ? '#BAE6FD' : 'var(--divider)'}`,
+              background: edit.enabled ? 'var(--wh-pri-bg)' : 'var(--wh-sf2)',
+              border: `1px solid ${edit.enabled ? 'var(--wh-pri-bdr)' : 'var(--wh-bdr)'}`,
               transition: 'all 0.2s',
             }}>
               {/* Toggle */}
@@ -264,9 +267,9 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
                 style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0, lineHeight: 0 }}
               >
                 {edit.enabled ? (
-                  <ToggleRight size={24} style={{ color: 'var(--cp-blue)' }} />
+                  <ToggleRight size={24} style={{ color: 'var(--wh-pri)' }} />
                 ) : (
-                  <ToggleLeft size={24} style={{ color: 'var(--fg-4)' }} />
+                  <ToggleLeft size={24} style={{ color: 'var(--wh-tx4)' }} />
                 )}
               </button>
 
@@ -274,12 +277,12 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
               <div style={{ flex: 1 }}>
                 <div style={{
                   fontSize: 13, fontWeight: 600,
-                  color: edit.enabled ? 'var(--wh-tx, #1E293B)' : 'var(--fg-4)',
+                  color: edit.enabled ? 'var(--wh-tx)' : 'var(--wh-tx4)',
                   fontFamily: "var(--wh-fh, 'Inter')",
                 }}>
                   {s.schedule_label}
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--fg-4)', fontFamily: "var(--wh-fn, 'Inter')", marginTop: 1 }}>
+                <div style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: "var(--wh-fn, 'Inter')", marginTop: 1 }}>
                   {s.timezone_label}
                   {s.last_triggered_at && ` · Last run: ${formatTimeAgo(s.last_triggered_at)}`}
                 </div>
@@ -293,8 +296,8 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
                   disabled={!edit.enabled}
                   style={{
                     width: 56, padding: '4px 4px', borderRadius: 6, fontSize: 12,
-                    border: '1px solid var(--divider)', fontFamily: "var(--wh-mo, monospace)",
-                    fontWeight: 600, background: '#fff', color: edit.enabled ? '#1E293B' : 'var(--fg-4)',
+                    border: '1px solid var(--wh-bdr)', fontFamily: "var(--wh-mo, monospace)",
+                    fontWeight: 600, background: 'var(--wh-bg)', color: edit.enabled ? 'var(--wh-tx)' : 'var(--wh-tx4)',
                     cursor: edit.enabled ? 'pointer' : 'default',
                   }}
                 >
@@ -302,15 +305,15 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
                     <option key={i} value={i}>{String(i).padStart(2, '0')}</option>
                   ))}
                 </select>
-                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--fg-4)' }}>:</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--wh-tx4)' }}>:</span>
                 <select
                   value={edit.minute}
                   onChange={(e) => handleTimeChange(s.schedule_key, 'minute', parseInt(e.target.value))}
                   disabled={!edit.enabled}
                   style={{
                     width: 56, padding: '4px 4px', borderRadius: 6, fontSize: 12,
-                    border: '1px solid var(--divider)', fontFamily: "var(--wh-mo, monospace)",
-                    fontWeight: 600, background: '#fff', color: edit.enabled ? '#1E293B' : 'var(--fg-4)',
+                    border: '1px solid var(--wh-bdr)', fontFamily: "var(--wh-mo, monospace)",
+                    fontWeight: 600, background: 'var(--wh-bg)', color: edit.enabled ? 'var(--wh-tx)' : 'var(--wh-tx4)',
                     cursor: edit.enabled ? 'pointer' : 'default',
                   }}
                 >
@@ -318,7 +321,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
                     <option key={m} value={m}>{String(m).padStart(2, '0')}</option>
                   ))}
                 </select>
-                <span style={{ fontSize: 10, color: 'var(--fg-4)', fontFamily: "var(--wh-fn, 'Inter')", marginLeft: 4 }}>
+                <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: "var(--wh-fn, 'Inter')", marginLeft: 4 }}>
                   UTC
                 </span>
               </div>
@@ -329,7 +332,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
 
       {/* Help text */}
       <div style={{
-        marginTop: 14, fontSize: 10, color: 'var(--fg-4)',
+        marginTop: 14, fontSize: 10, color: 'var(--wh-tx4)',
         fontFamily: "var(--wh-fn, 'Inter')", lineHeight: 1.5,
       }}>
         Enable a schedule and set the time (UTC). Saudi Arabia is UTC+3.

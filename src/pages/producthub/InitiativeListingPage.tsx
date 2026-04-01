@@ -69,7 +69,7 @@ const TYPE_LEGEND = [
   { key: 'project', label: 'Project', color: '#2563EB' },
   { key: 'enhancement', label: 'Enhancement', color: '#0EA5E9' },
   { key: 'improvement', label: 'Improvement', color: '#D97706' },
-  { key: 'entity_integration', label: 'Entity Integration', color: 'var(--fg-3, #64748B)' },
+  { key: 'entity_integration', label: 'Entity Integration', color: '#64748B' },
 ];
 
 function loadColumns(): ColumnConfig[] {

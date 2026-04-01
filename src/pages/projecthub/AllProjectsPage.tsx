@@ -98,7 +98,7 @@ export default function AllProjectsPage() {
         }
       />
 
-      <div className="flex-1 overflow-auto px-6 py-3 bg-[#F8FAFC] dark:!bg-[#181A1E] text-foreground">
+      <div className="flex-1 overflow-auto px-6 py-3 bg-[#F8FAFC] dark:!bg-[#1A1714] text-foreground">
 
       {/* Toolbar */}
       <div style={{ marginBottom: 10, flexShrink: 0 }}>

@@ -48,18 +48,18 @@ interface CycleTestCase {
 }
 
 const statusConfig = {
-  draft: { label: 'Draft', color: 'var(--fg-3, #64748B)', bg: '#F1F5F9' },
+  draft: { label: 'Draft', color: '#64748B', bg: '#F1F5F9' },
   active: { label: 'Active', color: '#059669', bg: '#ECFDF5' },
   completed: { label: 'Completed', color: '#2563EB', bg: '#EFF6FF' },
-  archived: { label: 'Archived', color: 'var(--fg-4, #94A3B8)', bg: '#F8FAFC' },
+  archived: { label: 'Archived', color: '#94A3B8', bg: '#F8FAFC' },
 };
 
 const executionStatusConfig: Record<string, { label: string; color: string; bg: string; Icon: any }> = {
-  not_run: { label: 'Not Run', color: 'var(--fg-3, #64748B)', bg: '#F1F5F9', Icon: Clock },
+  not_run: { label: 'Not Run', color: '#64748B', bg: '#F1F5F9', Icon: Clock },
   passed: { label: 'Passed', color: '#059669', bg: '#ECFDF5', Icon: CheckCircle2 },
   failed: { label: 'Failed', color: '#DC2626', bg: '#FEF2F2', Icon: XCircle },
   blocked: { label: 'Blocked', color: '#D97706', bg: '#FFFBEB', Icon: AlertTriangle },
-  skipped: { label: 'Skipped', color: 'var(--fg-4, #94A3B8)', bg: '#F8FAFC', Icon: Clock },
+  skipped: { label: 'Skipped', color: '#94A3B8', bg: '#F8FAFC', Icon: Clock },
 };
 
 const priorityConfig: Record<string, { color: string; bg: string }> = {
@@ -204,9 +204,9 @@ export default function TestCycleDetailPage() {
 
   if (isLoading || !cycle) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', backgroundColor: 'var(--surface-subtle, #F8FAFC)' }}>
-        <div style={{ textAlign: 'center', color: 'var(--fg-3, #64748B)' }}>
-          <div style={{ width: 32, height: 32, border: '3px solid var(--divider, #E2E8F0)', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', backgroundColor: '#F8FAFC' }}>
+        <div style={{ textAlign: 'center', color: '#64748B' }}>
+          <div style={{ width: 32, height: 32, border: '3px solid #E2E8F0', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
           Loading cycle...
         </div>
       </div>
@@ -217,10 +217,10 @@ export default function TestCycleDetailPage() {
   const canEdit = cycle.status === 'draft' || cycle.status === 'active';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--surface-subtle, #F8FAFC)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
       {/* Header */}
-      <div style={{ padding: '20px 32px', backgroundColor: 'var(--bg-app, #FFFFFF)', borderBottom: '1px solid var(--divider, #E2E8F0)' }}>
-        <button onClick={() => navigate('/testhub/cycles')} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-3, #64748B)', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}>
+      <div style={{ padding: '20px 32px', backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
+        <button onClick={() => navigate('/testhub/cycles')} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: '#64748B', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}>
           <ArrowLeft size={16} /> Back to Cycles
         </button>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -231,9 +231,9 @@ export default function TestCycleDetailPage() {
                 <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: status.color }} />{status.label}
               </span>
             </div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: '0 0 8px' }}>{cycle.name}</h1>
-            {cycle.description && <p style={{ fontSize: 14, color: 'var(--fg-3, #64748B)', margin: '0 0 8px', maxWidth: 600 }}>{cycle.description}</p>}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: 'var(--fg-3, #64748B)' }}>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: '#0F172A', margin: '0 0 8px' }}>{cycle.name}</h1>
+            {cycle.description && <p style={{ fontSize: 14, color: '#64748B', margin: '0 0 8px', maxWidth: 600 }}>{cycle.description}</p>}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: '#64748B' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={14} />{formatDate(cycle.start_date)} — {formatDate(cycle.end_date)}</span>
               {cycle.owner && <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><User size={14} />{cycle.owner.full_name}</span>}
               {cycle.environment && (
@@ -251,20 +251,20 @@ export default function TestCycleDetailPage() {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => navigate(`/testhub/cycles/${cycleId}/report`)}
-              style={{ height: 40, padding: '0 16px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, backgroundColor: 'var(--bg-app, #FFFFFF)', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              style={{ height: 40, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
               <BarChart3 size={16} /> Report
             </button>
             <button onClick={handleExportCSV} title="Export CSV" disabled={testCases.length === 0}
-              style={{ width: 40, height: 40, padding: 0, border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, backgroundColor: 'var(--bg-app, #FFFFFF)', color: testCases.length > 0 ? '#64748B' : '#CBD5E1', cursor: testCases.length > 0 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              style={{ width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: testCases.length > 0 ? '#64748B' : '#CBD5E1', cursor: testCases.length > 0 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Download size={18} />
             </button>
             <button onClick={() => { setIsLoading(true); fetchCycle(); fetchTestCases(); catalystToast.success('Refreshed'); }} title="Refresh"
-              style={{ width: 40, height: 40, padding: 0, border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, backgroundColor: 'var(--bg-app, #FFFFFF)', color: 'var(--fg-3, #64748B)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              style={{ width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <RefreshCw size={18} />
             </button>
             {canEdit && (
               <button onClick={() => setIsEditModalOpen(true)}
-                style={{ height: 40, padding: '0 16px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, backgroundColor: 'var(--bg-app, #FFFFFF)', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                style={{ height: 40, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Pencil size={16} /> Edit
               </button>
             )}
@@ -288,8 +288,8 @@ export default function TestCycleDetailPage() {
       {/* Stats Cards - 3-panel layout per spec */}
       <div style={{ padding: '24px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
         {/* Progress Panel */}
-        <div style={{ backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 12, padding: 24, textAlign: 'center' }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Progress</p>
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24, textAlign: 'center' }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Progress</p>
           <div style={{ width: 100, height: 100, margin: '0 auto 16px', position: 'relative' }}>
             <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
               <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#E2E8F0" strokeWidth="3" />
@@ -303,8 +303,8 @@ export default function TestCycleDetailPage() {
         </div>
 
         {/* By Status Panel */}
-        <div style={{ backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 12, padding: 24 }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>By Status</p>
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>By Status</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <button onClick={() => setStatusFilter('passed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'passed' ? '#ECFDF5' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <CheckCircle2 size={18} style={{ color: '#059669' }} />
@@ -322,9 +322,9 @@ export default function TestCycleDetailPage() {
               <span style={{ fontSize: 16, fontWeight: 700, color: '#D97706' }}>{cycle.blocked_count}</span>
             </button>
             <button onClick={() => setStatusFilter('not_run')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'not_run' ? '#F8FAFC' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
-              <Clock size={18} style={{ color: 'var(--fg-3, #64748B)' }} />
+              <Clock size={18} style={{ color: '#64748B' }} />
               <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Not Run</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-3, #64748B)' }}>{cycle.not_run_count}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#64748B' }}>{cycle.not_run_count}</span>
             </button>
             {statusFilter !== 'all' && (
               <button onClick={() => setStatusFilter('all')} style={{ padding: '6px 12px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 12, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>
@@ -335,12 +335,12 @@ export default function TestCycleDetailPage() {
         </div>
 
         {/* By Tester Panel */}
-        <div style={{ backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 12, padding: 24 }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
             <Users size={14} /> By Tester
           </p>
           {testerStats.length === 0 ? (
-            <p style={{ fontSize: 13, color: 'var(--fg-4, #94A3B8)', textAlign: 'center', padding: 20, margin: 0 }}>No test cases assigned</p>
+            <p style={{ fontSize: 13, color: '#94A3B8', textAlign: 'center', padding: 20, margin: 0 }}>No test cases assigned</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {testerStats.map((ts, i) => {
@@ -349,7 +349,7 @@ export default function TestCycleDetailPage() {
                   <div key={i}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                       <span style={{ fontSize: 13, fontWeight: 500, color: '#334155' }}>{ts.name}</span>
-                      <span style={{ fontSize: 12, color: 'var(--fg-3, #64748B)' }}>{ts.executed}/{ts.total}</span>
+                      <span style={{ fontSize: 12, color: '#64748B' }}>{ts.executed}/{ts.total}</span>
                     </div>
                     <div style={{ height: 6, backgroundColor: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${pct}%`, backgroundColor: pct === 100 ? '#059669' : '#2563EB', borderRadius: 3, transition: 'width 0.3s' }} />
@@ -370,7 +370,7 @@ export default function TestCycleDetailPage() {
             <span style={{ fontSize: 14, fontWeight: 500, color: '#92400E' }}>
               {blockedTestCases.length} blocked test case{blockedTestCases.length !== 1 ? 's' : ''} require attention
             </span>
-            <button onClick={() => setStatusFilter('blocked')} style={{ marginLeft: 'auto', padding: '4px 12px', border: '1px solid #FDE68A', borderRadius: 6, backgroundColor: 'var(--bg-app, #FFFFFF)', color: '#D97706', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={() => setStatusFilter('blocked')} style={{ marginLeft: 'auto', padding: '4px 12px', border: '1px solid #FDE68A', borderRadius: 6, backgroundColor: '#FFFFFF', color: '#D97706', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
               View Blocked
             </button>
           </div>
@@ -382,7 +382,7 @@ export default function TestCycleDetailPage() {
         {/* Section Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', margin: 0 }}>
               Test Cases ({testCases.length})
             </h2>
             {/* Selection Actions */}
@@ -393,12 +393,12 @@ export default function TestCycleDetailPage() {
                     <span style={{ fontSize: 13, color: '#2563EB', fontWeight: 500 }}>
                       {selectedTestCaseIds.size} selected
                     </span>
-                    <button onClick={deselectAllTestCases} style={{ padding: '4px 8px', border: 'none', backgroundColor: 'transparent', color: 'var(--fg-3, #64748B)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                    <button onClick={deselectAllTestCases} style={{ padding: '4px 8px', border: 'none', backgroundColor: 'transparent', color: '#64748B', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
                       Clear
                     </button>
                   </>
                 ) : (
-                  <button onClick={selectAllTestCases} style={{ padding: '4px 8px', border: 'none', backgroundColor: 'transparent', color: 'var(--fg-3, #64748B)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                  <button onClick={selectAllTestCases} style={{ padding: '4px 8px', border: 'none', backgroundColor: 'transparent', color: '#64748B', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
                     Select all
                   </button>
                 )}
@@ -436,7 +436,7 @@ export default function TestCycleDetailPage() {
             )}
             {/* Status Filter */}
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-              style={{ height: 36, padding: '0 12px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, fontSize: 13, color: '#334155', backgroundColor: 'var(--bg-app, #FFFFFF)' }}>
+              style={{ height: 36, padding: '0 12px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 13, color: '#334155', backgroundColor: '#FFFFFF' }}>
               <option value="all">All Statuses</option>
               <option value="not_run">Not Run</option>
               <option value="passed">Passed</option>
@@ -452,11 +452,11 @@ export default function TestCycleDetailPage() {
           </div>
         </div>
 
-        <div style={{ flex: 1, backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 12, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ flex: 1, backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           {testCases.length === 0 ? (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--fg-4, #94A3B8)', padding: 40 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#94A3B8', padding: 40 }}>
               <Clock size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
-              <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', color: 'var(--fg-3, #64748B)' }}>No test cases added yet</p>
+              <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', color: '#64748B' }}>No test cases added yet</p>
               <p style={{ fontSize: 14, margin: '0 0 16px' }}>Add test cases from the Test Repository to start planning</p>
               {canEdit && (
                 <button onClick={() => setIsAddModalOpen(true)} style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -468,10 +468,10 @@ export default function TestCycleDetailPage() {
             <div style={{ flex: 1, overflowY: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr style={{ backgroundColor: 'var(--surface-subtle, #F8FAFC)' }}>
+                  <tr style={{ backgroundColor: '#F8FAFC' }}>
                     {/* Checkbox Header */}
                     {canEdit && (
-                      <th style={{ padding: '14px 16px', textAlign: 'center', borderBottom: '1px solid var(--divider, #E2E8F0)', width: 50 }}>
+                      <th style={{ padding: '14px 16px', textAlign: 'center', borderBottom: '1px solid #E2E8F0', width: 50 }}>
                         <input
                           type="checkbox"
                           checked={filteredTestCases.length > 0 && filteredTestCases.every(tc => selectedTestCaseIds.has(tc.id))}
@@ -480,11 +480,11 @@ export default function TestCycleDetailPage() {
                         />
                       </th>
                     )}
-                    <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--divider, #E2E8F0)' }}>Test Case</th>
-                    <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--divider, #E2E8F0)', width: 100 }}>Priority</th>
-                    <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--divider, #E2E8F0)', width: 140 }}>Assigned To</th>
-                    <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--divider, #E2E8F0)', width: 120 }}>Status</th>
-                    <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--divider, #E2E8F0)', width: 100 }}>Actions</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #E2E8F0' }}>Test Case</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #E2E8F0', width: 100 }}>Priority</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #E2E8F0', width: 140 }}>Assigned To</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #E2E8F0', width: 120 }}>Status</th>
+                    <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #E2E8F0', width: 100 }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -607,11 +607,11 @@ export default function TestCycleDetailPage() {
           justifyContent: 'center', zIndex: 1000,
         }}>
           <div style={{
-            width: 420, backgroundColor: 'var(--bg-app, #FFFFFF)', borderRadius: 12,
+            width: 420, backgroundColor: '#FFFFFF', borderRadius: 12,
             boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
           }}>
             <div style={{
-              padding: '20px 24px', borderBottom: '1px solid var(--divider, #E2E8F0)',
+              padding: '20px 24px', borderBottom: '1px solid #E2E8F0',
               display: 'flex', alignItems: 'center', gap: 12,
             }}>
               <div style={{
@@ -620,7 +620,7 @@ export default function TestCycleDetailPage() {
               }}>
                 <Trash2 size={20} style={{ color: '#DC2626' }} />
               </div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
                 Remove Test Cases
               </h2>
             </div>
@@ -628,17 +628,17 @@ export default function TestCycleDetailPage() {
               <p style={{ fontSize: 14, color: '#334155', margin: 0 }}>
                 Are you sure you want to remove <strong>{selectedTestCaseIds.size}</strong> test case{selectedTestCaseIds.size !== 1 ? 's' : ''} from this cycle?
               </p>
-              <p style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', margin: '12px 0 0' }}>
+              <p style={{ fontSize: 13, color: '#64748B', margin: '12px 0 0' }}>
                 The test cases will remain in the Test Repository. Any execution data for these test cases in this cycle will be lost.
               </p>
             </div>
             <div style={{
-              padding: '16px 24px', borderTop: '1px solid var(--divider, #E2E8F0)',
+              padding: '16px 24px', borderTop: '1px solid #E2E8F0',
               display: 'flex', justifyContent: 'flex-end', gap: 12,
             }}>
               <button
                 onClick={() => setIsRemoveConfirmOpen(false)}
-                style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer' }}
+                style={{ height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer' }}
               >
                 Cancel
               </button>

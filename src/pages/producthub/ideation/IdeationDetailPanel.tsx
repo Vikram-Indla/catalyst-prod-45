@@ -98,11 +98,11 @@ function PriorityLozenge({ priority }: { priority: string }) {
 // ─── Shared styles ───────────────────────────────────────────────
 const selectStyle: React.CSSProperties = {
   height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
-  padding: '0 8px', fontSize: '13px', color: 'var(--fg-1, #0F172A)', width: '100%', outline: 'none',
+  padding: '0 8px', fontSize: '13px', color: '#0F172A', width: '100%', outline: 'none',
 };
 const inputStyle: React.CSSProperties = {
   height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
-  padding: '0 8px', fontSize: '13px', color: 'var(--fg-1, #0F172A)', width: '100%', outline: 'none',
+  padding: '0 8px', fontSize: '13px', color: '#0F172A', width: '100%', outline: 'none',
 };
 
 function FieldPair({ label, value }: { label: string; value: React.ReactNode }) {
@@ -110,7 +110,7 @@ function FieldPair({ label, value }: { label: string; value: React.ReactNode }) 
     <div>
       <div style={{
         fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
-        letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', marginBottom: '6px',
+        letterSpacing: '0.06em', color: '#64748B', marginBottom: '6px',
       }}>
         {label}
       </div>
@@ -225,8 +225,8 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
   if (isLoading) return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: 'var(--bg-app, #FFFFFF)', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ color: 'var(--fg-4, #94A3B8)', fontSize: '14px' }}>Loading...</span>
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: '#FFFFFF', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ color: '#94A3B8', fontSize: '14px' }}>Loading...</span>
       </div>
     </>
   );
@@ -243,7 +243,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px',
-        background: isDark ? '#181A1E' : '#FFFFFF', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
+        background: isDark ? '#232019' : '#FFFFFF', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
         display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
@@ -265,11 +265,11 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
             border: '1px solid rgba(15,23,42,0.12)',
             background: isEditing ? '#EFF6FF' : '#FFFFFF',
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'var(--fg-3, #64748B)',
+            color: '#64748B',
           }}>
             <Edit2 size={14} />
           </button>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--fg-4, #94A3B8)' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#94A3B8' }}>
             <X size={18} />
           </button>
         </div>
@@ -278,7 +278,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {/* Title */}
           <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0, lineHeight: 1.3 }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0F172A', margin: 0, lineHeight: 1.3 }}>
               {rawIdea.title}
             </h2>
           </div>
@@ -291,8 +291,8 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               display: 'flex', alignItems: 'center', gap: '12px',
             }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>Ready for promotion</div>
-                <div style={{ fontSize: '11px', color: 'var(--fg-3, #64748B)', marginTop: '2px' }}>Convert to an initiative to begin planning.</div>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>Ready for promotion</div>
+                <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>Convert to an initiative to begin planning.</div>
               </div>
               <button onClick={() => onConvert?.(rawIdea.idea_key)} style={{
                 background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '6px',
@@ -336,7 +336,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     ))}
                   </select>
                 ) : (
-                  <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--fg-1, #0F172A)' }}>{rawIdea.idea_type || 'Feature'}</span>
+                  <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{rawIdea.idea_type || 'Feature'}</span>
                 )
               } />
 
@@ -349,7 +349,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     ))}
                   </select>
                 ) : (
-                  <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--fg-1, #0F172A)' }}>{formatSource(rawIdea.source)}</span>
+                  <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{formatSource(rawIdea.source)}</span>
                 )
               } />
 
@@ -394,7 +394,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                       background: QUARTER_BADGE[quarter]?.bg || '#E2E8F0',
                       color: QUARTER_BADGE[quarter]?.text || '#94A3B8',
                     }}>{quarter} 2026</span>
-                  ) : <span style={{ fontSize: '13px', color: 'var(--fg-4, #94A3B8)' }}>—</span>
+                  ) : <span style={{ fontSize: '13px', color: '#94A3B8' }}>—</span>
                 )
               } />
 
@@ -418,7 +418,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
 
               {/* CREATED — always read-only */}
               <FieldPair label="Created" value={
-                <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--fg-1, #0F172A)' }}>
+                <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>
                   {rawIdea.created_at ? new Date(rawIdea.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                 </span>
               } />
@@ -430,10 +430,10 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
             <div style={{ padding: '16px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B' }}>
                     COMMITTED TO ROADMAP
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--fg-4, #94A3B8)', marginTop: '2px' }}>
+                  <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '2px' }}>
                     Mark as committed to include in roadmap view
                   </div>
                 </div>
@@ -447,7 +447,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   }}
                 >
                   <div style={{
-                    width: '18px', height: '18px', borderRadius: '50%', background: 'var(--bg-app, #FFFFFF)',
+                    width: '18px', height: '18px', borderRadius: '50%', background: '#FFFFFF',
                     position: 'absolute', top: '3px',
                     left: localIsCommitted ? '23px' : '3px',
                     transition: 'left 200ms ease',
@@ -460,7 +460,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
 
           {/* Description */}
           <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', marginBottom: '8px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '8px' }}>
               DESCRIPTION
             </div>
             {isEditing ? (
@@ -471,7 +471,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 placeholder="Add a description..."
                 style={{
                   width: '100%', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
-                  padding: '8px 12px', fontSize: '13px', color: 'var(--fg-1, #0F172A)', resize: 'vertical',
+                  padding: '8px 12px', fontSize: '13px', color: '#0F172A', resize: 'vertical',
                   fontFamily: "'Inter', sans-serif", outline: 'none',
                 }}
               />
@@ -484,7 +484,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
 
           {/* IMPACT Score */}
           <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', marginBottom: '12px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '12px' }}>
               IMPACT SCORE
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px' }}>
@@ -494,7 +494,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               }}>
                 {impactScore.toFixed(2)}
               </span>
-              <span style={{ fontSize: '13px', color: 'var(--fg-3, #64748B)' }}>out of 5.00</span>
+              <span style={{ fontSize: '13px', color: '#64748B' }}>out of 5.00</span>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px',
                 borderRadius: '3px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
@@ -520,7 +520,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <div style={{
                   width: '32px', height: '32px', borderRadius: '50%',
-                  backgroundColor: '#E2E8F0', color: 'var(--fg-2, #475569)',
+                  backgroundColor: '#E2E8F0', color: '#475569',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '13px', fontWeight: 700, flexShrink: 0,
                 }}>
@@ -528,8 +528,8 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--fg-1, #0F172A)' }}>{dim.name}</span>
-                    <span style={{ fontSize: '12px', color: 'var(--fg-3, #64748B)' }}>{dim.weight}</span>
+                    <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{dim.name}</span>
+                    <span style={{ fontSize: '12px', color: '#64748B' }}>{dim.weight}</span>
                   </div>
                   <div style={{ height: '4px', borderRadius: '2px', backgroundColor: '#E2E8F0', overflow: 'hidden' }}>
                     <div style={{
@@ -552,7 +552,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
 
           {/* Comments */}
           <div style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', marginBottom: '12px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '12px' }}>
               COMMENTS
             </div>
             <CommentsSection ideaId={rawIdea.id} />
@@ -563,12 +563,12 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         {isEditing && (
           <div style={{
             padding: '12px 24px', borderTop: '1px solid rgba(15,23,42,0.08)',
-            backgroundColor: 'var(--bg-app, #FFFFFF)', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
+            backgroundColor: '#FFFFFF', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
           }}>
             <button onClick={() => { resetLocalState(); setIsEditing(false); }} style={{
               height: '36px', padding: '0 16px', borderRadius: '6px',
               border: '1px solid rgba(15,23,42,0.12)',
-              background: 'var(--bg-app, #FFFFFF)', color: '#334155',
+              background: '#FFFFFF', color: '#334155',
               fontSize: '13px', fontWeight: 600, cursor: 'pointer',
             }}>
               Cancel
@@ -619,12 +619,12 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
     }
   };
 
-  if (isLoading) return <div style={{ fontSize: '13px', color: 'var(--fg-4, #94A3B8)' }}>Loading comments...</div>;
+  if (isLoading) return <div style={{ fontSize: '13px', color: '#94A3B8' }}>Loading comments...</div>;
 
   return (
     <div>
       {comments.length === 0 ? (
-        <p style={{ fontSize: '13px', color: 'var(--fg-4, #94A3B8)', margin: 0 }}>No comments yet</p>
+        <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>No comments yet</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
           {comments.map((c: any) => {
@@ -633,7 +633,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
             const timeAgo = c.created_at ? getRelativeTime(c.created_at) : '';
             return (
               <div key={c.id} style={{
-                background: 'var(--bg-app, #FFFFFF)', border: '1px solid rgba(15,23,42,0.06)',
+                background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.06)',
                 borderRadius: '6px', padding: '12px 16px',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -643,9 +643,9 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       color: '#FFF', fontSize: '10px', fontWeight: 700,
                     }}>{initials}</div>
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{name}</span>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>{name}</span>
                   </div>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: 'var(--fg-4, #94A3B8)' }}>{timeAgo}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: '#94A3B8' }}>{timeAgo}</span>
                 </div>
                 <div style={{ fontSize: '14px', color: '#334155', lineHeight: 1.5 }}>
                   {c.body || c.comment_text || ''}
@@ -665,7 +665,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
           style={{
             flex: 1, minHeight: '36px', maxHeight: '120px', resize: 'vertical',
             border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '8px 12px',
-            fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', color: 'var(--fg-1, #0F172A)',
+            fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', color: '#0F172A',
           }}
         />
         {newComment.trim() && (

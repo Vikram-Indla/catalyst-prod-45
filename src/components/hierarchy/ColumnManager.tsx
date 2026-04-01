@@ -114,7 +114,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
               >
                 <div style={{
                   width: 16, height: 16, borderRadius: 3,
-                  border: isVisible ? '1px solid var(--cp-blue)' : '1px solid var(--divider, #CBD5E1)',
+                  border: isVisible ? '1px solid var(--cp-blue)' : '1px solid #CBD5E1',
                   background: isVisible ? 'var(--cp-blue)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>

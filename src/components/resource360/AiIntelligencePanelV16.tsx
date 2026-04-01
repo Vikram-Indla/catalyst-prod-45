@@ -30,7 +30,7 @@ const MOCK = {
   trend: '+12%',
   types: [
     { type: 'Bug', pct: 62, color: '#0D9488' },
-    { type: 'Task', pct: 38, color: 'var(--fg-1, #1E293B)' },
+    { type: 'Task', pct: 38, color: '#1E293B' },
   ],
 };
 

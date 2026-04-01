@@ -15,7 +15,7 @@ interface Props {
 
 // Funnel status order & colors
 const FUNNEL_ORDER: { key: string; label: string; color: string }[] = [
-  { key: 'draft', label: 'Draft', color: 'var(--fg-4, #94A3B8)' },
+  { key: 'draft', label: 'Draft', color: '#94A3B8' },
   { key: 'submitted', label: 'Submitted', color: '#2563EB' },
   { key: 'under_review', label: 'Under Review', color: '#D97706' },
   { key: 'approved', label: 'Approved', color: '#16A34A' },

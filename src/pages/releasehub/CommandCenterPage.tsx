@@ -84,7 +84,7 @@ export default function CommandCenterPage() {
   ];
 
   return (
-    <div className="p-6" style={{ background: 'var(--bg-app, #FFFFFF)' }}>
+    <div className="p-6" style={{ background: '#FFFFFF' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -143,7 +143,7 @@ export default function CommandCenterPage() {
           ) : (
             <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
               <thead>
-                <tr style={{ background: 'var(--surface-muted, #F1F5F9)' }}>
+                <tr style={{ background: '#F1F5F9' }}>
                   {['RELEASE', 'STATUS', 'CHANGES', 'TARGET', 'PROGRESS'].map(h => (
                     <th key={h} className="px-3 text-left text-[11px] uppercase tracking-[0.06em] text-[#64748B]" style={{ fontWeight: 600, height: 36, padding: '0 12px' }}>{h}</th>
                   ))}
@@ -262,7 +262,7 @@ export default function CommandCenterPage() {
           ) : (
             <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
               <thead>
-                <tr style={{ background: 'var(--surface-muted, #F1F5F9)' }}>
+                <tr style={{ background: '#F1F5F9' }}>
                   {['CHANGE', 'GATE', 'APPROVER', 'STATUS'].map(h => (
                     <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em] text-[#64748B]" style={{ fontWeight: 600, height: 36, padding: '0 12px' }}>{h}</th>
                   ))}
@@ -295,7 +295,7 @@ export default function CommandCenterPage() {
                 <div key={ev.id} className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{
                     border: `2px solid ${ev.deployment_result === 'SUCCESS' ? '#16A34A' : ev.deployment_result === 'ROLLED_BACK' ? '#DC2626' : '#94A3B8'}`,
-                    background: 'var(--bg-app, white)',
+                    background: 'white',
                   }} />
                   <div className="flex-1 min-w-0">
                     <p className="text-[12px] truncate" style={{ fontWeight: 650, color: RH.ink1 }}>{ev.title}</p>

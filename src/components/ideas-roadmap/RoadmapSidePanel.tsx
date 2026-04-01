@@ -81,13 +81,13 @@ export function RoadmapSidePanel({
   }
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 10, fontWeight: 700, color: 'var(--fg-4, #94A3B8)', textTransform: 'uppercase',
+    fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase',
     letterSpacing: '0.05em', fontFamily: "'Inter', sans-serif",
   };
 
   const fieldRowStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    height: 32, fontSize: 13, color: 'var(--fg-1, #0F172A)', fontFamily: "'Inter', sans-serif",
+    height: 32, fontSize: 13, color: '#0F172A', fontFamily: "'Inter', sans-serif",
   };
 
   return (

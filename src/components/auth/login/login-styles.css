@@ -681,13 +681,3 @@
   white-space: nowrap;
   border-width: 0;
 }
-
-/* ═══ COOL STEEL v3 — DARK MODE ═══ */
-.dark, [data-theme="dark"] {
-  --login-text-dark: rgba(235,238,245,0.92);
-  --login-text-secondary: rgba(235,238,245,0.55);
-  --login-text-muted: rgba(235,238,245,0.30);
-  --login-text-faint: rgba(235,238,245,0.20);
-  --login-form-surface: #181A1E;
-  --login-form-border: rgba(235,238,245,0.10);
-}

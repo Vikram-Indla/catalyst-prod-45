@@ -252,7 +252,7 @@ function RadioCircle({ selected }: { selected: boolean }) {
       background: selected ? 'var(--cp-blue)' : 'var(--bg-app)',
       transition: 'all 100ms',
     }}>
-      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--bg-app, #FFFFFF)' }} />}
+      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFFFFF' }} />}
     </div>
   );
 }

@@ -37,11 +37,11 @@ export default function IncidentKanbanPage() {
   }, [incidents]);
 
   if (isLoading) {
-    return <div className="flex-1 p-6" style={{ backgroundColor: 'var(--bg-app, #FFFFFF)' }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-96 w-full" /></div>;
+    return <div className="flex-1 p-6" style={{ backgroundColor: '#FFFFFF' }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-96 w-full" /></div>;
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--bg-app, #FFFFFF)' }}>
+    <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: '#FFFFFF' }}>
       {/* Header */}
       <div className="px-6 pt-6 pb-4 shrink-0">
         <div className="flex items-center justify-between mb-4">
@@ -49,7 +49,7 @@ export default function IncidentKanbanPage() {
             <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#EFF6FF' }}>
               <LayoutGrid size={18} style={{ color: '#2563EB' }} />
             </div>
-            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>Kanban Board</h1>
+            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A' }}>Kanban Board</h1>
           </div>
           <Button size="sm" className="gap-1.5" style={{ backgroundColor: '#2563EB', borderRadius: 6 }} onClick={() => setShowCreate(true)}>
             <Plus size={14} /> New Incident
@@ -65,18 +65,18 @@ export default function IncidentKanbanPage() {
               {/* Column Header */}
               <div className="flex items-center gap-2 px-3 py-2 mb-2">
                 <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: col.dotColor, display: 'inline-block', border: col.dotColor === '#DFE1E6' ? '1px solid #94A3B8' : 'none' }} />
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)' }}>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B' }}>
                   {col.label}
                 </span>
-                <span className="ml-auto px-1.5" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700, color: 'var(--fg-3, #64748B)', backgroundColor: 'var(--surface-muted, #F1F5F9)', borderRadius: 3 }}>
+                <span className="ml-auto px-1.5" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700, color: '#64748B', backgroundColor: '#F1F5F9', borderRadius: 3 }}>
                   {grouped[col.key]?.length || 0}
                 </span>
               </div>
 
               {/* Cards */}
-              <div className="flex-1 space-y-2 overflow-y-auto" style={{ backgroundColor: 'var(--surface-muted, #F1F5F9)', borderRadius: 6, padding: 8, minHeight: 200 }}>
+              <div className="flex-1 space-y-2 overflow-y-auto" style={{ backgroundColor: '#F1F5F9', borderRadius: 6, padding: 8, minHeight: 200 }}>
                 {grouped[col.key]?.length === 0 && (
-                  <p className="text-center py-8" style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--fg-4, #94A3B8)' }}>No incidents</p>
+                  <p className="text-center py-8" style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#94A3B8' }}>No incidents</p>
                 )}
                 {grouped[col.key]?.map((item: any) => {
                   const isBreached = item.resolution_breached;
@@ -85,7 +85,7 @@ export default function IncidentKanbanPage() {
                       key={item.id}
                       className="cursor-pointer transition-all"
                       style={{
-                        backgroundColor: 'var(--bg-app, #FFFFFF)',
+                        backgroundColor: '#FFFFFF',
                         border: `1px solid ${isBreached ? '#FECACA' : 'rgba(15,23,42,0.12)'}`,
                         borderRadius: 6,
                         padding: 10,
@@ -108,14 +108,14 @@ export default function IncidentKanbanPage() {
                         </span>
                         <SeverityChip severity={item.severity || 'SEV4'} />
                       </div>
-                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: 'var(--fg-1, #0F172A)', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: '#0F172A', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                         {item.title}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 20, height: 20, backgroundColor: '#E2E8F0', fontSize: 9, fontWeight: 650, color: 'var(--fg-2, #475569)' }}>
+                        <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 20, height: 20, backgroundColor: '#E2E8F0', fontSize: 9, fontWeight: 650, color: '#475569' }}>
                           {(item.assignee_name || 'U').charAt(0).toUpperCase()}
                         </div>
-                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--fg-3, #64748B)' }}>{item.assignee_name || 'Unassigned'}</span>
+                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B' }}>{item.assignee_name || 'Unassigned'}</span>
                       </div>
                     </div>
                   );

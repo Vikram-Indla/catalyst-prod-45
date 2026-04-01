@@ -259,7 +259,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                   display: 'flex', alignItems: 'center', gap: 4, height: 36, padding: '0 10px',
                   border: '0.75px dashed rgba(15,23,42,0.12)',
                   borderRadius: 6, background: 'transparent', cursor: newColName.trim() ? 'pointer' : 'not-allowed',
-                  fontSize: 11.5, color: 'var(--fg-4, #94A3B8)', fontFamily: "'Inter', sans-serif",
+                  fontSize: 11.5, color: '#94A3B8', fontFamily: "'Inter', sans-serif",
                 }}>
                   <Plus size={13} /> Add
                 </button>
@@ -370,7 +370,7 @@ function RadioCircle({ selected }: { selected: boolean }) {
       background: selected ? 'var(--cp-blue)' : 'var(--bg-app)',
       transition: 'all 100ms',
     }}>
-      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--bg-app, #FFFFFF)' }} />}
+      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFFFFF' }} />}
     </div>
   );
 }

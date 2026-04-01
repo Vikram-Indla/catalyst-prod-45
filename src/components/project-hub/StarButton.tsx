@@ -10,7 +10,7 @@ export function StarButton({ isStarred, onClick, size = 16 }: StarButtonProps) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center justify-center rounded transition-colors hover:bg-[#F1F5F9] dark:hover:bg-[rgba(235,238,245,0.03)]"
+      className="flex items-center justify-center rounded transition-colors hover:bg-[#F1F5F9] dark:hover:bg-[rgba(248,244,240,0.03)]"
       style={{
         width: 28,
         height: 28,

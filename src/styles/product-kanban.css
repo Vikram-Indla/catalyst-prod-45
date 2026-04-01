@@ -25,11 +25,11 @@
 /* ═══ DARK MODE — Nocturne One Surface Model ═══ */
 .dark [data-module="product-kanban"],
 [data-theme="dark"] [data-module="product-kanban"] {
-  --pk-ink: rgba(235,238,245,0.92);
-  --pk-ink-secondary: rgba(235,238,245,0.85);
-  --pk-ink-tertiary: rgba(235,238,245,0.72);
-  --pk-ink-muted: rgba(235,238,245,0.50);
-  --pk-surface: #181A1E;
+  --pk-ink: rgba(248,244,240,0.92);
+  --pk-ink-secondary: rgba(248,244,240,0.85);
+  --pk-ink-tertiary: rgba(248,244,240,0.72);
+  --pk-ink-muted: rgba(248,244,240,0.50);
+  --pk-surface: #1A1714;
   --pk-surface-column: rgba(255,255,255,0.03);
   --pk-surface-tertiary: rgba(255,255,255,0.05);
   --pk-border: rgba(255,255,255,0.10);
@@ -48,11 +48,11 @@
 }
 .dark .pk-card-title,
 [data-theme="dark"] .pk-card-title {
-  color: rgba(235,238,245,0.92);
+  color: rgba(248,244,240,0.92);
 }
 .dark .pk-chip,
 [data-theme="dark"] .pk-chip {
-  color: rgba(235,238,245,0.72) !important;
+  color: rgba(248,244,240,0.72) !important;
   background: transparent !important;
   border-color: rgba(255,255,255,0.10) !important;
 }
@@ -69,7 +69,7 @@
 }
 .dark .pk-dropdown,
 [data-theme="dark"] .pk-dropdown {
-  background: #1F2128;
+  background: #232019;
   border-color: rgba(255,255,255,0.12);
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
@@ -79,7 +79,7 @@
 }
 .dark .pk-context-menu,
 [data-theme="dark"] .pk-context-menu {
-  background: #1F2128;
+  background: #232019;
   border-color: rgba(255,255,255,0.12);
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }

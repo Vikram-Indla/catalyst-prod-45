@@ -17,10 +17,10 @@ const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
 };
 
 const headerStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 700, color: 'var(--fg-3, #64748B)', fontFamily: "'Inter', sans-serif",
+  fontSize: 11, fontWeight: 700, color: '#64748B', fontFamily: "'Inter', sans-serif",
   textTransform: 'uppercase', letterSpacing: '0.07em',
-  background: 'var(--surface-subtle, #F8FAFC)', height: 36, padding: '0 12px',
-  borderBottom: '2px solid var(--divider, #E2E8F0)', position: 'sticky', top: 0, zIndex: 2,
+  background: '#F8FAFC', height: 36, padding: '0 12px',
+  borderBottom: '2px solid #E2E8F0', position: 'sticky', top: 0, zIndex: 2,
   textAlign: 'left', whiteSpace: 'nowrap',
 };
 
@@ -86,7 +86,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                 <td style={cellStyle}>
                   {idea.team ? (
                     <span style={{
-                      fontSize: 10, fontWeight: 600, background: 'var(--surface-muted, #F1F5F9)',
+                      fontSize: 10, fontWeight: 600, background: '#F1F5F9',
                       color: 'var(--fg-2)', padding: '2px 6px', borderRadius: 4,
                     }}>{idea.team}</span>
                   ) : <span style={{ color: '#CBD5E1' }}>—</span>}

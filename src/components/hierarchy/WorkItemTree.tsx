@@ -25,17 +25,17 @@ interface WorkItemTreeProps {
 export function TreeSkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)' }}>
-      <div style={{ height: 32, background: 'var(--surface-subtle, #FAFAFA)', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', padding: '0 12px' }}>
+      <div style={{ height: 32, background: '#FAFAFA', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', padding: '0 12px' }}>
         <div style={{ width: 100, height: 10, background: 'var(--divider)', borderRadius: 4 }} />
       </div>
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} style={{ height: 44, maxHeight: 44, display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 12 + (i % 3) * 20, paddingRight: 12, borderBottom: '1px solid var(--divider)' }}>
-          <div style={{ width: 20, height: 20, borderRadius: 4, background: 'var(--surface-muted, #F1F5F9)' }} className="hi-shimmer" />
+          <div style={{ width: 20, height: 20, borderRadius: 4, background: '#F1F5F9' }} className="hi-shimmer" />
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--divider)' }} className="hi-shimmer" />
           <div style={{ width: 48, height: 12, borderRadius: 4, background: 'var(--divider)' }} className="hi-shimmer" />
-          <div style={{ flex: 1, height: 12, borderRadius: 4, background: 'var(--surface-muted, #F1F5F9)', maxWidth: 200 }} className="hi-shimmer" />
-          <div style={{ width: 60, height: 22, borderRadius: 9999, background: 'var(--surface-muted, #F1F5F9)' }} className="hi-shimmer" />
-          <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--surface-muted, #F1F5F9)' }} className="hi-shimmer" />
+          <div style={{ flex: 1, height: 12, borderRadius: 4, background: '#F1F5F9', maxWidth: 200 }} className="hi-shimmer" />
+          <div style={{ width: 60, height: 22, borderRadius: 9999, background: '#F1F5F9' }} className="hi-shimmer" />
+          <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#F1F5F9' }} className="hi-shimmer" />
         </div>
       ))}
       <style>{`
@@ -80,7 +80,7 @@ function getAvatarColor(name: string): string {
 
 function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
   if (!assignee) {
-    return <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--surface-muted, #F1F5F9)', border: '1px solid var(--divider)', flexShrink: 0 }} />;
+    return <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#F1F5F9', border: '1px solid var(--divider)', flexShrink: 0 }} />;
   }
   const avatarUrl = (assignee as any).avatar;
   if (avatarUrl) {
@@ -104,7 +104,7 @@ function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
   const textColor = isComplete ? '#15803D' : 'var(--cp-blue)';
   return (
     <div style={{ width: 64, display: 'flex', flexDirection: 'column', gap: 2, justifyContent: 'center' }}>
-      <div style={{ height: 4, background: 'var(--surface-muted, #F1F5F9)', borderRadius: 2, overflow: 'hidden' }}>
+      <div style={{ height: 4, background: '#F1F5F9', borderRadius: 2, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: fillColor, borderRadius: 2, transition: 'width 300ms ease' }} />
       </div>
       <span style={{ fontSize: 11, fontWeight: 500, color: textColor, fontFamily: "'Inter', sans-serif", fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
@@ -509,7 +509,7 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
     <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)' }}>
       {/* Column header row */}
       <div style={{
-        height: 36, background: 'var(--surface-subtle, #FAFAFA)', borderBottom: '1px solid var(--divider)',
+        height: 36, background: '#FAFAFA', borderBottom: '1px solid var(--divider)',
         display: 'flex', alignItems: 'center', padding: '0 12px',
         fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600,
         textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em',

@@ -25,7 +25,7 @@
 
 .dark .ph-card {
   background: transparent;
-  border-color: rgba(235,238,245,0.12);
+  border-color: rgba(248,244,240,0.12);
   box-shadow: none;
 }
 
@@ -36,12 +36,12 @@
 }
 .dark .ph-content-wrapper ::-webkit-scrollbar-thumb,
 .dark .ph-inner-content ::-webkit-scrollbar-thumb {
-  background: rgba(235,238,245,0.10);
+  background: rgba(248,244,240,0.10);
   border-radius: 3px;
 }
 .dark .ph-content-wrapper ::-webkit-scrollbar-thumb:hover,
 .dark .ph-inner-content ::-webkit-scrollbar-thumb:hover {
-  background: rgba(235,238,245,0.18);
+  background: rgba(248,244,240,0.18);
 }
 
 .ph-card-title {
@@ -55,7 +55,7 @@
 }
 
 .dark .ph-card-title {
-  color: rgba(235,238,245,0.92);
+  color: rgba(248,244,240,0.92);
   border-bottom-color: rgba(255,255,255,0.06);
 }
 

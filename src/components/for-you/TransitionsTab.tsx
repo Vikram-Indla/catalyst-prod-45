@@ -8,10 +8,9 @@ import { Loader2, MessageSquare, Clock, ArrowRight, RotateCcw, CheckCircle2, Cir
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
-import { useTheme } from '@/hooks/useTheme';
 
-// Design tokens — light mode
-const T_LIGHT = {
+// Design tokens (same as ForYouDetailPanel)
+const T = {
   ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
   surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
@@ -22,21 +21,6 @@ const T_LIGHT = {
   warning: '#D97706', warningBg: '#FFFBEB',
   danger: '#DC2626', dangerBg: '#FEF2F2',
 };
-
-// Design tokens — Cool Steel v3 dark mode
-const T_DARK = {
-  ink: 'rgba(235,238,245,0.92)', inkSecondary: 'rgba(235,238,245,0.72)', inkTertiary: 'rgba(235,238,245,0.55)',
-  inkMuted: 'rgba(235,238,245,0.30)', inkMutedStrong: 'rgba(235,238,245,0.35)',
-  surface: '#181A1E', surfaceSecondary: 'rgba(235,238,245,0.03)', surfaceTertiary: 'rgba(235,238,245,0.06)',
-  border: 'rgba(235,238,245,0.10)', borderStrong: 'rgba(235,238,245,0.18)',
-  primary: '#3B82F6', primaryHover: '#60A5FA', primaryBg: 'rgba(59,130,246,0.10)',
-  teal: '#5EEAD4', tealBg: 'rgba(13,148,136,0.10)',
-  success: '#4ADE80', successBg: 'rgba(74,222,128,0.10)',
-  warning: '#FDE68A', warningBg: 'rgba(253,230,138,0.10)',
-  danger: '#F87171', dangerBg: 'rgba(239,68,68,0.10)',
-};
-
-let T: typeof T_LIGHT = T_LIGHT;
 
 // --- Types ---
 interface TransitionStep {
@@ -486,9 +470,6 @@ interface TransitionsTabProps {
 }
 
 export function TransitionsTab({ issueKey }: TransitionsTabProps) {
-  const { isDark } = useTheme();
-  T = isDark ? T_DARK : T_LIGHT;
-
   const [steps, setSteps] = useState<TransitionStep[]>([]);
   const [loading, setLoading] = useState(true);
 

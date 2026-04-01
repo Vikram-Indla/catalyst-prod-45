@@ -44,7 +44,7 @@ export function InitiativeTypeSelect({ value, onChange, disabled }: InitiativeTy
         }}
       >
         <span>{selected?.label || 'Select type'}</span>
-        <ChevronDown className="w-4 h-4 shrink-0" style={{ color: 'var(--fg-3, #71717A)' }} />
+        <ChevronDown className="w-4 h-4 shrink-0" style={{ color: '#71717A' }} />
       </button>
 
       {open && (

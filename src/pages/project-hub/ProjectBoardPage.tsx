@@ -126,7 +126,7 @@ export default function ProjectBoardPage() {
           <div className="flex items-center gap-2">
             <h1
               style={{
-                fontSize: 24, fontWeight: 700, color: 'var(--fg-1, #0F172A)',
+                fontSize: 24, fontWeight: 700, color: '#0F172A',
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 letterSpacing: '-0.4px', margin: 0,
               }}
@@ -142,7 +142,7 @@ export default function ProjectBoardPage() {
               ON TRACK
             </span>
           </div>
-          <p style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', margin: '2px 0 0', fontWeight: 500 }}>
+          <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0', fontWeight: 500 }}>
             Sprint 14 · Mar 10 – Mar 24, 2026 · 8 days remaining
           </p>
         </div>
@@ -158,9 +158,9 @@ export default function ProjectBoardPage() {
             key={s.label}
             className="flex items-center gap-3"
             style={{
-              background: 'var(--bg-app, #FFFFFF)', borderRadius: 12, padding: '12px 16px',
-              border: '1px solid var(--divider, #E2E8F0)',
-              borderLeft: s.accent ? `3px solid ${s.accent}` : '1px solid var(--divider, #E2E8F0)',
+              background: '#FFFFFF', borderRadius: 12, padding: '12px 16px',
+              border: '1px solid #E2E8F0',
+              borderLeft: s.accent ? `3px solid ${s.accent}` : '1px solid #E2E8F0',
             }}
           >
             <div
@@ -172,13 +172,13 @@ export default function ProjectBoardPage() {
             <div>
               <div
                 style={{
-                  fontSize: 22, fontWeight: 700, color: 'var(--fg-1, #0F172A)',
+                  fontSize: 22, fontWeight: 700, color: '#0F172A',
                   fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.1,
                 }}
               >
                 {s.value}
               </div>
-              <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3, #64748B)', marginTop: 1 }}>
+              <div style={{ fontSize: 11, fontWeight: 500, color: '#64748B', marginTop: 1 }}>
                 {s.label}
               </div>
             </div>
@@ -191,7 +191,7 @@ export default function ProjectBoardPage() {
         {/* View Switcher */}
         <div
           className="flex items-center gap-0.5 p-1 rounded-lg"
-          style={{ background: 'var(--surface-muted, #F1F5F9)' }}
+          style={{ background: '#F1F5F9' }}
         >
           {views.map(v => {
             const isActive = activeView === v.key;
@@ -230,8 +230,8 @@ export default function ProjectBoardPage() {
               paddingLeft: 30, paddingRight: 10,
               height: 32, width: 200,
               fontSize: 12, fontWeight: 500,
-              border: '1px solid var(--divider, #E2E8F0)',
-              background: '#fff', color: 'var(--fg-1, #0F172A)',
+              border: '1px solid #E2E8F0',
+              background: '#fff', color: '#0F172A',
               fontFamily: "'Inter', sans-serif",
             }}
           />
@@ -245,7 +245,7 @@ export default function ProjectBoardPage() {
             padding: '6px 12px', height: 32,
             fontSize: 12, fontWeight: 500,
             borderRadius: 6, cursor: 'pointer',
-            border: hasActiveFilters ? '1px solid #BFDBFE' : '1px solid var(--divider, #E2E8F0)',
+            border: hasActiveFilters ? '1px solid #BFDBFE' : '1px solid #E2E8F0',
             background: hasActiveFilters ? '#EFF6FF' : '#fff',
             color: hasActiveFilters ? '#2563EB' : '#64748B',
             fontFamily: "'Inter', sans-serif",
@@ -275,8 +275,8 @@ export default function ProjectBoardPage() {
               padding: '6px 12px', height: 32,
               fontSize: 12, fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',
-              border: '1px solid var(--divider, #E2E8F0)',
-              background: '#fff', color: 'var(--fg-3, #64748B)',
+              border: '1px solid #E2E8F0',
+              background: '#fff', color: '#64748B',
               fontFamily: "'Inter', sans-serif",
             }}
           >
@@ -290,7 +290,7 @@ export default function ProjectBoardPage() {
       {showFilters && (
         <div
           className="flex items-center gap-3 mb-3 p-3 rounded-lg"
-          style={{ background: 'var(--surface-subtle, #F8FAFC)', border: '1px solid var(--divider, #E2E8F0)' }}
+          style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }}
         >
           <FilterDropdown
             label="Type"
@@ -383,13 +383,13 @@ export default function ProjectBoardPage() {
       {activeView === 'timeline' && (
         <div
           className="flex flex-col items-center justify-center rounded-xl border"
-          style={{ padding: '80px 40px', background: 'var(--bg-app, #FFFFFF)', borderColor: 'var(--divider, #E2E8F0)' }}
+          style={{ padding: '80px 40px', background: '#FFFFFF', borderColor: '#E2E8F0' }}
         >
           <GanttChart size={36} color="#94A3B8" strokeWidth={1.5} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', marginTop: 12, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginTop: 12, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Timeline View
           </span>
-          <span style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', marginTop: 4 }}>
+          <span style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
             Coming in Phase 2
           </span>
         </div>
@@ -434,7 +434,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
 
   return (
     <div className="flex flex-col gap-1 relative" data-filter-dropdown>
-      <label style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4, #94A3B8)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <label style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         {label}
       </label>
       <button
@@ -442,7 +442,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
         className="flex items-center justify-between gap-2 rounded-md transition-colors"
         style={{
           fontSize: 12, fontWeight: 500, padding: '4px 8px',
-          border: '1px solid var(--divider, #E2E8F0)', background: '#fff', color: 'var(--fg-1, #0F172A)',
+          border: '1px solid #E2E8F0', background: '#fff', color: '#0F172A',
           cursor: 'pointer', minWidth: 130, textAlign: 'left',
         }}
       >
@@ -452,7 +452,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
       {isOpen && (
         <div
           className="absolute top-full left-0 mt-1 rounded-lg shadow-lg border z-50"
-          style={{ background: '#fff', borderColor: 'var(--divider, #E2E8F0)', minWidth: 160, padding: 4 }}
+          style={{ background: '#fff', borderColor: '#E2E8F0', minWidth: 160, padding: 4 }}
         >
           {options.map(o => (
             <button

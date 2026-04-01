@@ -240,17 +240,3 @@
 /* ═══ DETAIL HEADER META ═══ */
 .ra-meta { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ra-text-ter); margin-top: 6px; }
 .ra-meta-sep { color: var(--ra-neutral-30); }
-
-/* ═══ COOL STEEL v3 — DARK MODE ═══ */
-.dark .ra-root,
-[data-theme="dark"] .ra-root {
-  --ra-surface: #181A1E;
-  --ra-sunken: rgba(235,238,245,0.03);
-  --ra-border-sub: rgba(235,238,245,0.06);
-  --ra-border-def: rgba(235,238,245,0.10);
-  --ra-border-str: rgba(235,238,245,0.18);
-  --ra-text-pri: rgba(235,238,245,0.92);
-  --ra-text-sec: rgba(235,238,245,0.55);
-  --ra-text-ter: rgba(235,238,245,0.30);
-  --ra-text-muted: rgba(235,238,245,0.20);
-}

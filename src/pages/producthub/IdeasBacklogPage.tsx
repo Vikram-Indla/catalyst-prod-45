@@ -224,7 +224,7 @@ export default function IdeasBacklogPage() {
                   ].map(col => (
                     <th key={col.label} style={{
                       textAlign: 'left', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
-                      letterSpacing: '0.06em', color: isDark ? 'rgba(235,238,245,0.50)' : '#64748B', padding: '10px 12px',
+                      letterSpacing: '0.06em', color: isDark ? 'rgba(248,244,240,0.50)' : '#64748B', padding: '10px 12px',
                       borderBottom: `0.75px solid ${dk.divider}`, whiteSpace: 'nowrap', width: col.width,
                     }}>{col.label}</th>
                   ))}
@@ -343,16 +343,16 @@ export default function IdeasBacklogPage() {
 function StatusBadge({ status }: { status: string }) {
   const { isDark } = useTheme();
   const darkColors: Record<string, { bg: string; text: string }> = {
-    'Draft':                    { bg: 'rgba(255,255,255,0.08)', text: 'rgba(235,238,245,0.72)' },
-    'Submitted':                { bg: 'rgba(255,255,255,0.08)', text: 'rgba(235,238,245,0.72)' },
+    'Draft':                    { bg: 'rgba(255,255,255,0.08)', text: 'rgba(248,244,240,0.72)' },
+    'Submitted':                { bg: 'rgba(255,255,255,0.08)', text: 'rgba(248,244,240,0.72)' },
     'Under Review':             { bg: 'rgba(59,130,246,0.15)', text: '#93C5FD' },
     'Approved':                 { bg: 'rgba(59,130,246,0.15)', text: '#93C5FD' },
-    'Rejected':                 { bg: 'rgba(255,255,255,0.08)', text: 'rgba(235,238,245,0.72)' },
+    'Rejected':                 { bg: 'rgba(255,255,255,0.08)', text: 'rgba(248,244,240,0.72)' },
     'Converted':                { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
     'Converted to Initiative':  { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
   };
   const s = isDark
-    ? (darkColors[status] ?? { bg: 'rgba(255,255,255,0.08)', text: 'rgba(235,238,245,0.72)' })
+    ? (darkColors[status] ?? { bg: 'rgba(255,255,255,0.08)', text: 'rgba(248,244,240,0.72)' })
     : (STATUS_LOZENGE_COLORS[status] ?? { bg: '#DFE1E6', text: '#42526E' });
   const label = status === 'Converted to Initiative' ? 'CONVERTED' : status.toUpperCase();
   return (
@@ -390,20 +390,20 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
-      <DialogContent className="bg-white dark:bg-[#1F2128] sm:max-w-[480px]">
+      <DialogContent className="bg-white dark:bg-[#232019] sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle style={{ fontFamily: "'Sora', sans-serif", fontWeight: 650, fontSize: '18px' }}>New Idea</DialogTitle>
         </DialogHeader>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '8px' }}>
           <div>
-            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', display: 'block', marginBottom: '6px' }}>TITLE *</label>
+            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>TITLE *</label>
             <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter idea title..."
               style={{ width: '100%', height: '36px', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '0 12px', fontSize: '13px', outline: 'none' }}
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
-              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', display: 'block', marginBottom: '6px' }}>PRIORITY</label>
+              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>PRIORITY</label>
               <Select value={priority} onValueChange={setPriority}>
                 <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
                 <SelectContent className="bg-white">
@@ -412,7 +412,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
               </Select>
             </div>
             <div>
-              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', display: 'block', marginBottom: '6px' }}>TYPE</label>
+              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>TYPE</label>
               <Select value={type} onValueChange={setType}>
                 <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
                 <SelectContent className="bg-white">
@@ -422,7 +422,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
             </div>
           </div>
           <div>
-            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', display: 'block', marginBottom: '6px' }}>IDEAS THEME</label>
+            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>IDEAS THEME</label>
             <Select value={theme || '__none__'} onValueChange={v => setTheme(v === '__none__' ? '' : v)}>
               <SelectTrigger className="h-9 bg-white"><SelectValue placeholder="Select theme" /></SelectTrigger>
               <SelectContent className="bg-white">
@@ -432,13 +432,13 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
             </Select>
           </div>
           <div>
-            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', display: 'block', marginBottom: '6px' }}>DESCRIPTION</label>
+            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '6px' }}>DESCRIPTION</label>
             <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} placeholder="Optional description..."
               style={{ width: '100%', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', resize: 'vertical', outline: 'none', fontFamily: "'Inter', sans-serif" }}
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
-            <button onClick={onClose} style={{ height: '36px', padding: '0 16px', borderRadius: '6px', border: '1px solid rgba(15,23,42,0.12)', background: 'var(--bg-app, #FFFFFF)', color: '#334155', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+            <button onClick={onClose} style={{ height: '36px', padding: '0 16px', borderRadius: '6px', border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', color: '#334155', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
             <button onClick={handleCreate} disabled={createIdea.isPending} style={{ height: '36px', padding: '0 16px', borderRadius: '6px', border: 'none', background: '#2563EB', color: '#FFFFFF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', opacity: createIdea.isPending ? 0.7 : 1 }}>
               {createIdea.isPending ? 'Creating...' : 'Create Idea'}
             </button>

@@ -11,7 +11,7 @@ export default function IncidentInsightsPage() {
   const breachedCount = incidents?.filter(i => i.resolution_breached).length || 0;
 
   return (
-    <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--bg-app, #FFFFFF)' }}>
+    <div className="flex-1 overflow-auto" style={{ backgroundColor: '#FFFFFF' }}>
       <div className="px-6 pt-6 pb-4">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
@@ -19,14 +19,14 @@ export default function IncidentInsightsPage() {
             <Sparkles size={18} style={{ color: '#7C3AED' }} />
           </div>
           <div className="flex items-center gap-2">
-            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>Insights</h1>
+            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A' }}>Insights</h1>
             <span className="px-1.5 py-0.5" style={{ fontSize: 10, fontWeight: 700, backgroundColor: '#F3E8FF', color: '#7C3AED', borderRadius: 3 }}>AI</span>
           </div>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--fg-3, #64748B)', marginLeft: 'auto' }}>Pattern analysis and recommendations</p>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B', marginLeft: 'auto' }}>Pattern analysis and recommendations</p>
         </div>
 
         {/* Featured AI Card */}
-        <div className="p-4 mb-6" style={{ border: '1px solid #E9D5FF', borderRadius: 6, backgroundColor: 'var(--bg-app, #FFFFFF)' }}>
+        <div className="p-4 mb-6" style={{ border: '1px solid #E9D5FF', borderRadius: 6, backgroundColor: '#FFFFFF' }}>
           <div className="flex items-start gap-3">
             <div className="shrink-0 rounded-full flex items-center justify-center" style={{
               width: 36, height: 36,
@@ -35,7 +35,7 @@ export default function IncidentInsightsPage() {
               <Sparkles size={18} style={{ color: '#FFFFFF' }} />
             </div>
             <div>
-              <h3 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 650, color: 'var(--fg-1, #0F172A)', marginBottom: 4 }}>
+              <h3 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 650, color: '#0F172A', marginBottom: 4 }}>
                 Pattern Analysis
               </h3>
               <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#334155', lineHeight: 1.6 }}>
@@ -51,7 +51,7 @@ export default function IncidentInsightsPage() {
         <div className="grid grid-cols-2 gap-4">
           {/* Risk Signals */}
           <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>
+            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#0F172A' }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#DC2626', display: 'inline-block' }} />
               Risk Signals
             </h3>
@@ -70,7 +70,7 @@ export default function IncidentInsightsPage() {
 
           {/* Improvements */}
           <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>
+            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: '#0F172A' }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#16A34A', display: 'inline-block' }} />
               Improvements
             </h3>

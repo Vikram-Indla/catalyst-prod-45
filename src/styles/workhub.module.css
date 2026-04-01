@@ -158,23 +158,3 @@
     print-color-adjust: exact;
   }
 }
-
-/* ═══ COOL STEEL v3 — DARK MODE ═══ */
-.dark, [data-theme="dark"] {
-  --wh-bg: #181A1E;
-  --wh-surface: #181A1E;
-  --wh-surface-elevated: #1F2128;
-  --wh-border: rgba(235,238,245,0.10);
-  --wh-border-light: rgba(235,238,245,0.06);
-  --wh-text-primary: rgba(235,238,245,0.92);
-  --wh-text-secondary: rgba(235,238,245,0.55);
-  --wh-text-tertiary: rgba(235,238,245,0.30);
-  --wh-primary-light: rgba(59,130,246,0.10);
-  --wh-primary-50: rgba(59,130,246,0.08);
-  --wh-success-light: rgba(16,185,129,0.10);
-  --wh-warning-light: rgba(245,158,11,0.10);
-  --wh-danger-light: rgba(239,68,68,0.10);
-  --wh-info-light: rgba(59,130,246,0.10);
-  --wh-shadow-sm: none;
-  --wh-shadow-md: none;
-}

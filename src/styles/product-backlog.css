@@ -114,15 +114,15 @@
 /* ═══ DARK MODE — Nocturne One Surface Model ═══ */
 .dark [data-module="product-backlog"],
 [data-theme="dark"] [data-module="product-backlog"] {
-  --cp-bg-page: #181A1E;
+  --cp-bg-page: #1A1714;
   --cp-bg-surface: transparent;
   --cp-bg-sunken: rgba(255,255,255,0.03);
   --cp-bg-elevated: transparent;
 
-  --cp-text-primary: rgba(235,238,245,0.92);
-  --cp-text-secondary: rgba(235,238,245,0.85);
-  --cp-text-tertiary: rgba(235,238,245,0.72);
-  --cp-text-muted: rgba(235,238,245,0.50);
+  --cp-text-primary: rgba(248,244,240,0.92);
+  --cp-text-secondary: rgba(248,244,240,0.85);
+  --cp-text-tertiary: rgba(248,244,240,0.72);
+  --cp-text-muted: rgba(248,244,240,0.50);
   --cp-text-link: #60A5FA;
 
   --cp-border-subtle: rgba(255,255,255,0.06);
@@ -153,11 +153,11 @@
   --cp-lozenge-green-bg: #1B7F37;
   --cp-lozenge-green-text: #FFFFFF;
 
-  background-color: #181A1E !important;
+  background-color: #1A1714 !important;
 }
 .dark [data-module="product-backlog"] .flex-1,
 [data-theme="dark"] [data-module="product-backlog"] .flex-1 {
-  background-color: #181A1E !important;
+  background-color: #1A1714 !important;
 }
 .dark .pb-table,
 [data-theme="dark"] .pb-table {
@@ -170,7 +170,7 @@
 [data-theme="dark"] .pb-table thead tr,
 [data-theme="dark"] .pb-table thead th {
   background-color: rgba(255,255,255,0.03) !important;
-  color: rgba(235,238,245,0.50);
+  color: rgba(248,244,240,0.50);
   border-bottom-color: rgba(255,255,255,0.08);
 }
 .dark .pb-table thead th:hover,

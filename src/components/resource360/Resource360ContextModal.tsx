@@ -313,7 +313,7 @@ const PRI_MAP: Record<string, { icon: string; color: string; label: string }> = 
   High:     { icon: '⬆', color: '#EA580C', label: 'High' },
   Medium:   { icon: '●', color: '#CA8A04', label: 'Medium' },
   Low:      { icon: '⬇', color: '#57534E', label: 'Low' },
-  Lowest:   { icon: '⬇⬇', color: 'var(--fg-4, #94A3B8)', label: 'Lowest' },
+  Lowest:   { icon: '⬇⬇', color: '#94A3B8', label: 'Lowest' },
   Critical: { icon: '🔥', color: '#BE123C', label: 'Critical' },
 };
 

@@ -49,12 +49,12 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  draft: { label: 'Draft', color: 'var(--fg-3, #64748B)', bg: '#F1F5F9' },
+  draft: { label: 'Draft', color: '#64748B', bg: '#F1F5F9' },
   approved: { label: 'Approved', color: '#2563EB', bg: '#EFF6FF' },
   in_progress: { label: 'In Progress', color: '#D97706', bg: '#FFFBEB' },
   implemented: { label: 'Implemented', color: '#7C3AED', bg: '#F5F3FF' },
   verified: { label: 'Verified', color: '#059669', bg: '#ECFDF5' },
-  deprecated: { label: 'Deprecated', color: 'var(--fg-4, #94A3B8)', bg: '#F8FAFC' },
+  deprecated: { label: 'Deprecated', color: '#94A3B8', bg: '#F8FAFC' },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
@@ -145,7 +145,7 @@ export default function RequirementsListPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--surface-subtle, #F8FAFC)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
       <TestHubPageHeader title="Requirements" subtitle="Track test coverage for requirements and user stories">
         <button
           onClick={() => setShowCreateModal(true)}
@@ -165,9 +165,9 @@ export default function RequirementsListPage() {
       {/* Coverage Summary Cards */}
       {summary && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid var(--divider, #E2E8F0)' }}>
-            <p style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', margin: 0, textTransform: 'uppercase' }}>Total Requirements</p>
-            <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: '8px 0 0' }}>{summary.total_requirements}</p>
+          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+            <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'uppercase' }}>Total Requirements</p>
+            <p style={{ fontSize: 28, fontWeight: 700, color: '#0F172A', margin: '8px 0 0' }}>{summary.total_requirements}</p>
           </div>
           <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
             <p style={{ fontSize: 12, color: '#059669', margin: 0, textTransform: 'uppercase' }}>Fully Covered</p>
@@ -187,7 +187,7 @@ export default function RequirementsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4, #94A3B8)' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input
             type="text"
             placeholder="Search requirements..."
@@ -195,12 +195,12 @@ export default function RequirementsListPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%', height: 44, padding: '0 14px 0 44px',
-              border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 10, fontSize: 14, backgroundColor: 'var(--bg-app, #FFFFFF)',
+              border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFFFFF',
             }}
           />
         </div>
         <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}
-          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
+          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
           <option value="all">All Types</option>
           <option value="functional">Functional</option>
           <option value="non_functional">Non-Functional</option>
@@ -210,7 +210,7 @@ export default function RequirementsListPage() {
           <option value="bug_fix">Bug Fix</option>
         </select>
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
+          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
           <option value="all">All Status</option>
           <option value="draft">Draft</option>
           <option value="approved">Approved</option>
@@ -220,7 +220,7 @@ export default function RequirementsListPage() {
           <option value="deprecated">Deprecated</option>
         </select>
         <select value={coverageFilter} onChange={(e) => setCoverageFilter(e.target.value)}
-          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
+          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
           <option value="all">All Coverage</option>
           <option value="covered">Fully Covered (100%)</option>
           <option value="partial">Partially Covered</option>
@@ -228,13 +228,13 @@ export default function RequirementsListPage() {
         </select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 10, backgroundColor: '#FFF', color: 'var(--fg-3, #64748B)', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 10, backgroundColor: '#FFF', color: '#64748B', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
       </div>
 
-      <p style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', marginBottom: 16 }}>
+      <p style={{ fontSize: 13, color: '#64748B', marginBottom: 16 }}>
         Showing {filteredRequirements.length} requirement{filteredRequirements.length !== 1 ? 's' : ''}
       </p>
 
@@ -244,10 +244,10 @@ export default function RequirementsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#0891B2' }} />
         </div>
       ) : filteredRequirements.length === 0 ? (
-        <div style={{ backgroundColor: 'var(--bg-app, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: '1px solid var(--divider, #E2E8F0)' }}>
+        <div style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: '1px solid #E2E8F0' }}>
           <FileCheck size={48} style={{ color: '#CBD5E1', marginBottom: 16 }} />
-          <p style={{ fontSize: 16, color: 'var(--fg-3, #64748B)', margin: 0 }}>No requirements found</p>
-          <p style={{ fontSize: 14, color: 'var(--fg-4, #94A3B8)', margin: '8px 0 0' }}>Add requirements to track test coverage</p>
+          <p style={{ fontSize: 16, color: '#64748B', margin: 0 }}>No requirements found</p>
+          <p style={{ fontSize: 14, color: '#94A3B8', margin: '8px 0 0' }}>Add requirements to track test coverage</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -259,7 +259,7 @@ export default function RequirementsListPage() {
 
             return (
               <div key={req.id} onClick={() => navigate(`/testhub/requirements/${req.id}`)}
-                style={{ backgroundColor: 'var(--bg-app, #FFFFFF)', borderRadius: 12, padding: 20, border: '1px solid var(--divider, #E2E8F0)', cursor: 'pointer', transition: 'all 0.15s' }}
+                style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.15s' }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#CBD5E1'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -273,9 +273,9 @@ export default function RequirementsListPage() {
                         {priority.label}
                       </span>
                     </div>
-                    <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>{req.title}</h3>
+                    <h3 style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', margin: 0 }}>{req.title}</h3>
                     {req.description && (
-                      <p style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', margin: '8px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 500 }}>{req.description}</p>
+                      <p style={{ fontSize: 13, color: '#64748B', margin: '8px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 500 }}>{req.description}</p>
                     )}
                   </div>
                   <div style={{ textAlign: 'right', marginLeft: 24 }}>
@@ -285,7 +285,7 @@ export default function RequirementsListPage() {
                       </div>
                       <span style={{ fontSize: 14, fontWeight: 700, color: coverageColor, minWidth: 45 }}>{req.coverage_percent}%</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: 'var(--fg-3, #64748B)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: '#64748B' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Link2 size={14} /> {req.total_linked_tests} tests</span>
                       <span style={{ color: '#059669' }}>{req.passed_tests} passed</span>
                       <span style={{ color: '#DC2626' }}>{req.failed_tests} failed</span>

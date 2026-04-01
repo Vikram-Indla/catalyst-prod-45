@@ -94,7 +94,7 @@ export function ColumnManager({ columns, onChange, anchorRef, isOpen, onClose }:
   return createPortal(
     <div
       ref={panelRef}
-      className="fixed rounded-lg overflow-hidden bg-white dark:bg-[#1F2128] border border-border dark:border-gray-700"
+      className="fixed rounded-lg overflow-hidden bg-white dark:bg-[#232019] border border-border dark:border-gray-700"
       style={{
         top: anchorRect.bottom + 4,
         left: anchorRect.left,
@@ -126,7 +126,7 @@ export function ColumnManager({ columns, onChange, anchorRef, isOpen, onClose }:
             onDragStart={() => handleDragStart(idx)}
             onDragOver={(e) => handleDragOver(e, idx)}
             onDragEnd={handleDragEnd}
-            className="flex items-center gap-2 px-3 py-1.5 transition-colors cursor-grab border-b border-border dark:border-gray-700/50 bg-white dark:bg-[#1F2128] hover:bg-muted/50 dark:hover:bg-white/5"
+            className="flex items-center gap-2 px-3 py-1.5 transition-colors cursor-grab border-b border-border dark:border-gray-700/50 bg-white dark:bg-[#232019] hover:bg-muted/50 dark:hover:bg-white/5"
             style={{
               opacity: dragIdx === idx ? 0.5 : 1,
             }}

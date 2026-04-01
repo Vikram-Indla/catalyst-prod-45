@@ -21,7 +21,7 @@ function getScoreBorderClass(score: number | null): string {
 }
 
 function getPriorityLabel(score: number | null): { label: string; color: string } {
-  if (score === null) return { label: 'Unscored', color: 'var(--fg-3, #6B7280)' };
+  if (score === null) return { label: 'Unscored', color: '#6B7280' };
   if (score >= 4.0) return { label: 'High', color: '#059669' };
   if (score >= 3.0) return { label: 'Medium', color: '#2563EB' };
   if (score >= 2.0) return { label: 'Low', color: '#D97706' };

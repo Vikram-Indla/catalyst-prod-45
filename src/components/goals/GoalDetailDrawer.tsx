@@ -9,7 +9,6 @@ import { goalsService } from '@/services/goalsService';
 import { useQuery } from '@tanstack/react-query';
 import type { Goal, KeyResult, KRCheckin, GoalStatus, Priority, BSCPerspective } from '@/types/goals';
 import { toast } from 'sonner';
-import { useTheme } from '@/hooks/useTheme';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -99,7 +98,6 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
   const { data: krs = [], isLoading: krsLoading } = useKeyResults(goalId || '');
   const deleteGoal = useDeleteGoal();
   const updateGoal = useUpdateGoal();
-  const { isDark } = useTheme();
   const closeRef = useRef<HTMLButtonElement>(null);
 
   const krIds = krs.map(kr => kr.id);
@@ -159,7 +157,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
           position: 'fixed', top: 0, right: 0, bottom: 0,
           width: 520, maxWidth: '100vw', zIndex: 999,
           background: 'var(--cp-float)', borderLeft: '1px solid var(--divider)',
-          boxShadow: isDark ? 'none' : '-8px 0 24px rgba(0,0,0,0.08), -2px 0 8px rgba(0,0,0,0.04)',
+          boxShadow: '-8px 0 24px rgba(0,0,0,0.08), -2px 0 8px rgba(0,0,0,0.04)',
           display: 'flex', flexDirection: 'column',
           animation: 'gddSlideIn 300ms cubic-bezier(.4,0,.2,1)', overflow: 'hidden',
         }}
@@ -167,7 +165,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
         {/* Fix 2: Sticky Header — 56px */}
         <div style={{
           position: 'sticky', top: 0, zIndex: 10,
-          background: 'var(--bg-app, #FFFFFF)', borderBottom: '1px solid var(--divider)',
+          background: '#FFFFFF', borderBottom: '1px solid var(--divider)',
           padding: '0 20px', height: 56,
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
@@ -198,7 +196,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: 'var(--sem-danger)', transition: 'background 150ms',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(239,68,68,0.12)' : '#FEE2E2')}
+          onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <Trash2 size={14} />
@@ -219,7 +217,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
         {/* Fix 2: Sticky Tab bar */}
         <div style={{
           position: 'sticky', top: 56, zIndex: 10,
-          background: 'var(--bg-app, #FFFFFF)', borderBottom: '1px solid var(--divider)',
+          background: '#FFFFFF', borderBottom: '1px solid var(--divider)',
           padding: '0 20px', display: 'flex', gap: 0,
         }}>
           {TABS.map(tab => (
@@ -253,12 +251,12 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
                 } catch (err: any) { toast.error(err?.message || 'Update failed'); }
               }} onCancel={() => setIsEditing(false)} isPending={updateGoal.isPending} />
             ) : (
-              <OverviewTab goal={goal} theme={theme} krs={krs} confPct={confPct} confColor={confColor} daysToDeadline={daysToDeadline} isDark={isDark} />
+              <OverviewTab goal={goal} theme={theme} krs={krs} confPct={confPct} confColor={confColor} daysToDeadline={daysToDeadline} />
             )
           ) : activeTab === 'Key Results' ? (
-            <KeyResultsTab krs={krs} loading={krsLoading} onCheckinClick={onCheckinClick} isDark={isDark} />
+            <KeyResultsTab krs={krs} loading={krsLoading} onCheckinClick={onCheckinClick} />
           ) : activeTab === 'Initiatives' ? (
-            <InitiativesTab goalId={goalId!} isDark={isDark} />
+            <InitiativesTab goalId={goalId!} />
           ) : activeTab === 'Check-ins' ? (
             <CheckinsTab checkins={allCheckins} krs={krs} />
           ) : (
@@ -372,9 +370,9 @@ function EditOverviewTab({ goal, themes, onSave, onCancel, isPending }: {
 }
 
 // ── Tab: Overview ──
-function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline, isDark }: {
+function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
   goal: Goal; theme?: { id: string; title: string; color: string }; krs: KeyResult[];
-  confPct: number; confColor: string; daysToDeadline: number | null; isDark: boolean;
+  confPct: number; confColor: string; daysToDeadline: number | null;
 }) {
   // Fix 4: Circular avatar 32px
   const ownerDisplay = goal.owner_name ? (() => {
@@ -443,7 +441,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline, isD
       )}
 
       {/* AI Health Score — purple branded */}
-      <div style={{ background: isDark ? 'rgba(37,99,235,0.10)' : '#DBEAFE', border: isDark ? '1px solid rgba(37,99,235,0.20)' : '1px solid rgba(37,99,235,0.15)', borderRadius: 10, padding: 16 }}>
+      <div style={{ background: '#DBEAFE', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 10, padding: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
           <Sparkles size={14} color="#2563EB" />
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Health Score</span>
@@ -457,7 +455,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline, isD
             { label: 'Confidence Trend', value: confPct >= 60 ? '↑ Improving' : confPct >= 40 ? '→ Stable' : '↓ Declining' },
             { label: 'Days to Deadline', value: daysToDeadline != null ? (daysToDeadline > 0 ? `${daysToDeadline}d` : 'Overdue') : '—' },
           ].map(f => (
-            <div key={f.label} style={{ background: isDark ? 'rgba(37,99,235,0.12)' : 'rgba(37,99,235,0.06)', borderRadius: 6, padding: '8px 10px' }}>
+            <div key={f.label} style={{ background: 'rgba(37,99,235,0.06)', borderRadius: 6, padding: '8px 10px' }}>
               <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--cp-blue)', opacity: 0.7, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.label}</div>
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-blue)' }}>{f.value}</div>
             </div>
@@ -469,7 +467,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline, isD
 }
 
 // ── Tab: Key Results — Fix 2: modern card layout ──
-function KeyResultsTab({ krs, loading, onCheckinClick, isDark }: { krs: KeyResult[]; loading: boolean; onCheckinClick?: (id: string) => void; isDark: boolean }) {
+function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loading: boolean; onCheckinClick?: (id: string) => void }) {
   if (loading) return <div style={{ textAlign: 'center', color: 'var(--fg-4)', padding: 40 }}>Loading key results...</div>;
   if (krs.length === 0) {
     return (
@@ -490,7 +488,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick, isDark }: { krs: KeyResul
         const pctColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : 'var(--sem-danger)';
         return (
           <div key={kr.id} className="kr-detail-card" style={{
-            background: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider)', borderRadius: 8,
+            background: '#FFFFFF', border: '1px solid var(--divider)', borderRadius: 8,
             padding: '14px 16px', transition: 'all 150ms',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -516,14 +514,14 @@ function KeyResultsTab({ krs, loading, onCheckinClick, isDark }: { krs: KeyResul
         <Plus size={13} /> Add Key Result
       </button>
       <style>{`
-        .kr-detail-card:hover { border-color: ${isDark ? 'rgba(235,238,245,0.15)' : '#CBD5E1'}; box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
+        .kr-detail-card:hover { border-color: #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
       `}</style>
     </div>
   );
 }
 
 // ── Tab: Initiatives ──
-function InitiativesTab({ goalId, isDark }: { goalId: string; isDark: boolean }) {
+function InitiativesTab({ goalId }: { goalId: string }) {
   const { data: links = [], isLoading } = useGoalInitiatives(goalId);
   const linkMutation = useLinkInitiative();
   const unlinkMutation = useUnlinkInitiative();
@@ -614,7 +612,7 @@ function InitiativesTab({ goalId, isDark }: { goalId: string; isDark: boolean })
                   key={init.id}
                   onClick={() => { linkMutation.mutate({ goalId, initiativeId: init.id }); setShowSearch(false); setSearchQuery(''); }}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', transition: 'background 100ms' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF')}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#EFF6FF')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', fontFamily: 'ui-monospace, monospace' }}>{init.initiative_key}</span>
@@ -632,9 +630,9 @@ function InitiativesTab({ goalId, isDark }: { goalId: string; isDark: boolean })
       )}
 
       <style>{`
-        .init-card:hover { border-color: ${isDark ? 'rgba(235,238,245,0.15)' : '#CBD5E1'}; box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
+        .init-card:hover { border-color: #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
         .unlink-btn:hover { color: #EF4444 !important; }
-        .link-init-btn:hover { border-color: ${isDark ? 'rgba(235,238,245,0.15)' : '#94A3B8'}; background: ${isDark ? 'rgba(235,238,245,0.03)' : '#F8FAFC'}; }
+        .link-init-btn:hover { border-color: #94A3B8; background: #F8FAFC; }
       `}</style>
     </div>
   );

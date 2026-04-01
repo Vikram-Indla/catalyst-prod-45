@@ -18,14 +18,14 @@ import { useIsDark } from '@/components/strategy/themes/useIsDark';
 
 // Dark mode tokens
 const DK = {
-  bg: '#181A1E',
+  bg: '#1A1714',
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'rgba(235,238,245,0.10)',
-  borderSubtle: 'rgba(235,238,245,0.08)',
-  hover: 'rgba(235,238,245,0.03)',
+  border: 'rgba(248,244,240,0.10)',
+  borderSubtle: 'rgba(248,244,240,0.08)',
+  hover: 'rgba(248,244,240,0.03)',
 };
 
 export default function GoalsKeyResultsPage() {

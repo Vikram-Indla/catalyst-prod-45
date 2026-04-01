@@ -32,7 +32,7 @@ const FILE_TYPE_MAP: Record<string, { label: string; color: string; bg: string }
   webp: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
   svg: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
 };
-const DEFAULT_TYPE = { label: 'FILE', color: 'var(--fg-3, #71717A)', bg: '#71717A12' };
+const DEFAULT_TYPE = { label: 'FILE', color: '#71717A', bg: '#71717A12' };
 
 function getFileType(name: string) {
   const ext = name.split('.').pop()?.toLowerCase() || '';

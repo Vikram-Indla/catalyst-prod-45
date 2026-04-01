@@ -72,7 +72,7 @@ export default function IncidentListPage() {
   ];
 
   return (
-    <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--bg-app, #FFFFFF)' }}>
+    <div className="flex-1 overflow-auto" style={{ backgroundColor: '#FFFFFF' }}>
       {/* Page Header */}
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-center justify-between mb-4">
@@ -81,8 +81,8 @@ export default function IncidentListPage() {
               <AlertTriangle size={18} style={{ color: '#DC2626' }} />
             </div>
             <div>
-              <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>Incident List</h1>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--fg-3, #64748B)' }}>
+              <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A' }}>Incident List</h1>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>
                 Ministry of Industry &middot; {stats.active} open incidents
               </p>
             </div>
@@ -106,8 +106,8 @@ export default function IncidentListPage() {
             { label: 'Committee Pending', value: stats.committeePending, accent: '#64748B' },
             { label: 'Resolved (7d)', value: stats.resolvedWeek, accent: '#16A34A' },
           ].map(s => (
-            <div key={s.label} className="p-3" style={{ backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--fg-3, #64748B)', marginBottom: 4 }}>{s.label}</div>
+            <div key={s.label} className="p-3" style={{ backgroundColor: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
+              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', marginBottom: 4 }}>{s.label}</div>
               <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: s.accent }}>{s.value}</div>
             </div>
           ))}
@@ -116,7 +116,7 @@ export default function IncidentListPage() {
         {/* Filter Bar */}
         <div className="flex items-center gap-3 mb-3">
           <div className="relative" style={{ minWidth: 240 }}>
-            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--fg-4, #94A3B8)' }} />
+            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: '#94A3B8' }} />
             <Input
               placeholder="Search incidents, keys..."
               value={search}
@@ -153,7 +153,7 @@ export default function IncidentListPage() {
           {/* Table Header */}
           <div className="grid items-center" style={{
             gridTemplateColumns: GRID_COLS,
-            backgroundColor: 'var(--surface-muted, #F1F5F9)',
+            backgroundColor: '#F1F5F9',
             height: 36,
             borderBottom: '0.75px solid rgba(15,23,42,0.06)',
           }}>
@@ -161,7 +161,7 @@ export default function IncidentListPage() {
             {['KEY', 'TITLE', 'SEV', 'PRI', 'STATUS', 'PROJECT', 'ASSIGNEE', 'REPORTER', 'UPDATED', 'PARENT', 'REPORTED'].map(h => (
               <div key={h} className="px-2" style={{
                 fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700,
-                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)',
+                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: '#64748B',
               }}>{h}</div>
             ))}
           </div>
@@ -182,7 +182,7 @@ export default function IncidentListPage() {
           {!isLoading && paginated.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12">
               <AlertTriangle size={32} style={{ color: '#CBD5E1' }} />
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--fg-4, #94A3B8)', marginTop: 8 }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#94A3B8', marginTop: 8 }}>
                 {search ? 'No incidents match your search' : 'No incidents found. Create your first incident.'}
               </p>
               {!search && (
@@ -202,7 +202,7 @@ export default function IncidentListPage() {
                 gridTemplateColumns: GRID_COLS,
                 height: 36, maxHeight: 36,
                 borderBottom: '0.75px solid rgba(15,23,42,0.06)',
-                backgroundColor: 'var(--bg-app, #FFFFFF)',
+                backgroundColor: '#FFFFFF',
               }}
               onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(15,23,42,0.04)')}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
@@ -228,14 +228,14 @@ export default function IncidentListPage() {
                 </span>
               </div>
               {/* Title */}
-              <div className="px-2 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 650, color: 'var(--fg-1, #0F172A)' }}>
+              <div className="px-2 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 650, color: '#0F172A' }}>
                 {item.title || '\u2014'}
               </div>
               <div className="px-2"><SeverityChip severity={item.severity || 'SEV4'} /></div>
               <div className="px-2"><PriorityChip priority={item.priority || 'P4'} /></div>
               <div className="px-2"><StatusLozenge status={item.status || 'open'} /></div>
               {/* Project */}
-              <div className="px-2 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--fg-3, #64748B)' }}>
+              <div className="px-2 truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>
                 {item.project_name || '\u2014'}
               </div>
               {/* Assignee with Avatar */}
@@ -250,7 +250,7 @@ export default function IncidentListPage() {
                     </span>
                   </>
                 ) : (
-                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--fg-4, #94A3B8)' }}>Unassigned</span>
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>Unassigned</span>
                 )}
               </div>
               {/* Reporter with Avatar */}
@@ -265,11 +265,11 @@ export default function IncidentListPage() {
                     </span>
                   </>
                 ) : (
-                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--fg-4, #94A3B8)' }}>&mdash;</span>
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>&mdash;</span>
                 )}
               </div>
               {/* Updated */}
-              <div className="px-2" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'var(--fg-3, #64748B)' }}>
+              <div className="px-2" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#64748B' }}>
                 {formatDate(item.updated_at)}
               </div>
               {/* Parent */}
@@ -277,7 +277,7 @@ export default function IncidentListPage() {
                 {item.parent_key ? <span style={{ color: '#2563EB' }}>{item.parent_key}</span> : '\u2014'}
               </div>
               {/* Reported */}
-              <div className="px-2" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'var(--fg-3, #64748B)' }}>
+              <div className="px-2" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#64748B' }}>
                 {formatDate(item.created_at)}
               </div>
             </div>
@@ -287,7 +287,7 @@ export default function IncidentListPage() {
         {/* Pagination */}
         {filtered.length > 0 && (
           <div className="flex items-center justify-between mt-3">
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--fg-3, #64748B)' }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>
               Showing {(page - 1) * perPage + 1}&ndash;{Math.min(page * perPage, filtered.length)} of {filtered.length} incidents
             </span>
             <div className="flex items-center gap-1">

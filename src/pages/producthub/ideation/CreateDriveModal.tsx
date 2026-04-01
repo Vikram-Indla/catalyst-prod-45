@@ -110,14 +110,14 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
   if (!open) return null;
 
   const labelStyle: React.CSSProperties = {
-    fontSize: '11px', fontWeight: 600, color: 'var(--fg-2, #475569)',
+    fontSize: '11px', fontWeight: 600, color: '#475569',
     textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'block',
     fontFamily: 'Inter, sans-serif',
   };
   const inputStyle: React.CSSProperties = {
-    width: '100%', border: '1.5px solid var(--divider, #CBD5E1)', borderRadius: '8px',
-    padding: '10px 12px', fontSize: '14px', color: 'var(--fg-1, #0F172A)', outline: 'none',
-    fontFamily: 'Inter, sans-serif', background: 'var(--bg-app, #FFFFFF)',
+    width: '100%', border: '1.5px solid #CBD5E1', borderRadius: '8px',
+    padding: '10px 12px', fontSize: '14px', color: '#0F172A', outline: 'none',
+    fontFamily: 'Inter, sans-serif', background: '#FFFFFF',
   };
   const errorStyle: React.CSSProperties = {
     fontSize: '12px', color: '#EF4444', marginTop: '4px',
@@ -133,20 +133,20 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div style={{
-        width: '640px', maxHeight: '90vh', background: 'var(--bg-app, #FFFFFF)',
+        width: '640px', maxHeight: '90vh', background: '#FFFFFF',
         borderRadius: '16px', display: 'flex', flexDirection: 'column',
         boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
         padding: '28px',
       }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0, fontFamily: 'Inter, sans-serif' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#0F172A', margin: 0, fontFamily: 'Inter, sans-serif' }}>
             Create Innovation Drive
           </h3>
           <button
             onClick={onClose}
             style={{
-              background: 'none', border: 'none', cursor: 'pointer', color: 'var(--fg-3, #64748B)',
+              background: 'none', border: 'none', cursor: 'pointer', color: '#64748B',
               padding: '4px', borderRadius: '6px', display: 'flex',
             }}
           >
@@ -204,7 +204,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     style={{
                       width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       borderRadius: '8px', cursor: 'pointer',
-                      border: isSelected ? '1.5px solid #2563EB' : '1.5px solid var(--divider, #E2E8F0)',
+                      border: isSelected ? '1.5px solid #2563EB' : '1.5px solid #E2E8F0',
                       background: isSelected ? '#EFF6FF' : '#FFFFFF',
                       transition: 'all 150ms ease',
                     }}
@@ -235,8 +235,8 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                       padding: '6px 16px', borderRadius: '20px', cursor: 'pointer',
                       fontSize: '13px', fontWeight: isSelected ? 600 : 500,
                       border: isSelected
-                        ? (isActive ? '1.5px solid #16A34A' : '1.5px solid var(--divider, #CBD5E1)')
-                        : '1.5px solid var(--divider, #E2E8F0)',
+                        ? (isActive ? '1.5px solid #16A34A' : '1.5px solid #CBD5E1')
+                        : '1.5px solid #E2E8F0',
                       background: isSelected
                         ? (isActive ? '#F0FDF4' : '#F8FAFC')
                         : '#FFFFFF',
@@ -274,8 +274,8 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     ...(touched.deadline && errors.deadline ? { borderColor: '#EF4444' } : {}),
                   }}
                 >
-                  <CalendarIcon size={16} style={{ color: 'var(--fg-3, #64748B)', flexShrink: 0 }} />
-                  <span style={{ fontWeight: 500, color: 'var(--fg-1, #0F172A)' }}>{format(deadline, 'MMM d, yyyy')}</span>
+                  <CalendarIcon size={16} style={{ color: '#64748B', flexShrink: 0 }} />
+                  <span style={{ fontWeight: 500, color: '#0F172A' }}>{format(deadline, 'MMM d, yyyy')}</span>
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 400 }}>
@@ -297,14 +297,14 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             <label style={labelStyle}>Target Ideas</label>
             <div style={{
               display: 'inline-flex', alignItems: 'center',
-              border: '1.5px solid var(--divider, #CBD5E1)', borderRadius: '8px', overflow: 'hidden',
+              border: '1.5px solid #CBD5E1', borderRadius: '8px', overflow: 'hidden',
             }}>
               <button
                 type="button"
                 onClick={() => setTargetCount(Math.max(1, targetCount - 1))}
                 style={{
                   width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  border: 'none', background: 'var(--bg-app, #FFFFFF)',
+                  border: 'none', background: '#FFFFFF',
                   cursor: targetCount <= 1 ? 'not-allowed' : 'pointer',
                   color: targetCount <= 1 ? '#CBD5E1' : '#334155',
                   fontSize: '18px', fontWeight: 500,
@@ -325,10 +325,10 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                 onBlur={() => handleBlur('target_count')}
                 style={{
                   width: '48px', height: '36px',
-                  borderLeft: '1.5px solid var(--divider, #CBD5E1)', borderRight: '1.5px solid var(--divider, #CBD5E1)',
+                  borderLeft: '1.5px solid #CBD5E1', borderRight: '1.5px solid #CBD5E1',
                   borderTop: 'none', borderBottom: 'none',
-                  textAlign: 'center', fontSize: '16px', fontWeight: 600, color: 'var(--fg-1, #0F172A)', outline: 'none',
-                  fontFamily: 'Inter, sans-serif', background: 'var(--bg-app, #FFFFFF)',
+                  textAlign: 'center', fontSize: '16px', fontWeight: 600, color: '#0F172A', outline: 'none',
+                  fontFamily: 'Inter, sans-serif', background: '#FFFFFF',
                 }}
               />
               <button
@@ -336,7 +336,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                 onClick={() => setTargetCount(Math.min(50, targetCount + 1))}
                 style={{
                   width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  border: 'none', background: 'var(--bg-app, #FFFFFF)',
+                  border: 'none', background: '#FFFFFF',
                   cursor: targetCount >= 50 ? 'not-allowed' : 'pointer',
                   color: targetCount >= 50 ? '#CBD5E1' : '#334155',
                   fontSize: '18px', fontWeight: 500,
@@ -352,7 +352,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
 
         {/* Footer */}
         <div style={{
-          paddingTop: '20px', borderTop: '1px solid var(--divider, #E2E8F0)', marginTop: '24px',
+          paddingTop: '20px', borderTop: '1px solid #E2E8F0', marginTop: '24px',
           display: 'flex', justifyContent: 'flex-end', gap: '10px',
         }}>
           <button
@@ -360,7 +360,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             onClick={onClose}
             style={{
               padding: '10px 20px', fontSize: '14px', fontWeight: 500,
-              color: 'var(--fg-2, #475569)', background: 'transparent', border: 'none',
+              color: '#475569', background: 'transparent', border: 'none',
               borderRadius: '8px', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.color = '#0F172A'; }}

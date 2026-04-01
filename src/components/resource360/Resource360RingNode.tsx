@@ -23,8 +23,8 @@ export function Resource360RingNode({ item, x, y, onClick }: Props) {
         left: x, top: y,
         transform: 'translate(-50%, -50%)',
         width: 160, minHeight: 72,
-        background: 'var(--bg-app, #FFFFFF)',
-        border: '1px solid var(--divider, #E2E8F0)',
+        background: '#FFFFFF',
+        border: '1px solid #E2E8F0',
         borderRadius: 10,
         padding: '8px 10px 8px 13px',
         boxShadow: '0 1px 3px rgba(0,0,0,.04)',
@@ -51,7 +51,7 @@ export function Resource360RingNode({ item, x, y, onClick }: Props) {
 
       {/* Row 1: Key + Hub badge */}
       <div className="flex items-center gap-1.5 mb-1">
-        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', fontFamily: "'Inter', monospace" }}>
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B', fontFamily: "'Inter', monospace" }}>
           {item.item_key}
         </span>
         <span style={{
@@ -65,7 +65,7 @@ export function Resource360RingNode({ item, x, y, onClick }: Props) {
 
       {/* Row 2: Title (2-line clamp) */}
       <div style={{
-        fontSize: 12, fontWeight: 600, color: 'var(--fg-1, #0F172A)',
+        fontSize: 12, fontWeight: 600, color: '#0F172A',
         lineHeight: 1.35,
         display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
         overflow: 'hidden', marginBottom: 4,
@@ -84,7 +84,7 @@ export function Resource360RingNode({ item, x, y, onClick }: Props) {
           <span style={{ width: 5, height: 5, borderRadius: '50%', background: sc.dot }} />
           {item.status}
         </span>
-        <span style={{ fontSize: 9, color: 'var(--fg-4, #94A3B8)' }}>
+        <span style={{ fontSize: 9, color: '#94A3B8' }}>
           {item.assigned_at?.slice(0, 10)}
         </span>
       </div>

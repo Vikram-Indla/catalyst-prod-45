@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Search, ChevronDown, LogOut, Settings, Bell, User } from "lucide-react";
+import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -45,6 +46,8 @@ import catalystLogoMark2 from "@/assets/catalyst-logo-mark-2.svg";
 export function CatalystHeader() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
@@ -547,28 +550,28 @@ export function CatalystHeader() {
                 minWidth: '200px',
                 height: '32px',
                 padding: '0 10px',
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
+                background: isDark ? '#232019' : '#F8FAFC',
+                border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`,
                 borderRadius: '6px',
                 cursor: 'pointer',
                 gap: '8px',
                 alignItems: 'center',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#CBD5E1'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(248,244,240,0.14)' : '#CBD5E1'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'; }}
             >
-              <Search style={{ width: '14px', height: '14px', color: '#94A3B8', flexShrink: 0 }} />
-              <span style={{ flex: 1, fontSize: '12px', fontFamily: "'Inter', sans-serif", color: '#94A3B8', textAlign: 'left' }}>
+              <Search style={{ width: '14px', height: '14px', color: isDark ? 'rgba(248,244,240,0.30)' : '#94A3B8', flexShrink: 0 }} />
+              <span style={{ flex: 1, fontSize: '12px', fontFamily: "'Inter', sans-serif", color: isDark ? 'rgba(248,244,240,0.30)' : '#94A3B8', textAlign: 'left' }}>
                 Search...
               </span>
-              <kbd style={{ fontSize: '10px', background: '#F1F5F9', border: '1px solid #E2E8F0', borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: '#64748B' }}>⌘</kbd>
-              <kbd style={{ fontSize: '10px', background: '#F1F5F9', border: '1px solid #E2E8F0', borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: '#64748B' }}>K</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#1A1714' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>⌘</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#1A1714' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>K</kbd>
             </button>
             {/* Mobile search icon */}
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
               className="sm:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none"
-              style={{ width: '36px', height: '36px', color: '#94A3B8', background: 'transparent', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
+              style={{ width: '36px', height: '36px', color: isDark ? 'rgba(248,244,240,0.55)' : '#94A3B8', background: 'transparent', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
             >
               <Search style={{ width: '18px', height: '18px' }} />
             </button>

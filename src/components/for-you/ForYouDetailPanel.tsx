@@ -4,18 +4,18 @@
  * Navigation stack for nested drill-down with breadcrumb
  */
 
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, createContext, useContext } from 'react';
 import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft, Paperclip, FileText, Image, Download, File, ListTree, Loader2, GitPullRequest } from 'lucide-react';
 import { TransitionsTab } from './TransitionsTab';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
-import { useTheme } from '@/hooks/useTheme';
 import { supabase } from '@/integrations/supabase/client';
+import { useIsDark } from '@/components/strategy/themes/useIsDark';
 import type { WorkItem } from '@/hooks/useForYouData';
 
-// Design tokens (ring-fenced) — light mode
-const T_LIGHT = {
+// Design tokens — light mode
+const TL = {
   ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
   surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
@@ -27,26 +27,25 @@ const T_LIGHT = {
   danger: '#DC2626', dangerText: '#D92525', dangerBg: '#FEF2F2',
 };
 
-// Design tokens — Cool Steel v3 dark mode
-const T_DARK = {
-  ink: 'rgba(235,238,245,0.92)', inkSecondary: 'rgba(235,238,245,0.72)', inkTertiary: 'rgba(235,238,245,0.55)',
-  inkMuted: 'rgba(235,238,245,0.30)', inkMutedStrong: 'rgba(235,238,245,0.35)',
-  surface: '#181A1E', surfaceSecondary: 'rgba(235,238,245,0.03)', surfaceTertiary: 'rgba(235,238,245,0.06)',
-  border: 'rgba(235,238,245,0.10)', borderStrong: 'rgba(235,238,245,0.18)',
-  primary: '#3B82F6', primaryHover: '#60A5FA', primaryBg: 'rgba(59,130,246,0.10)',
-  teal: '#5EEAD4', tealText: '#5EEAD4', tealBg: 'rgba(13,148,136,0.10)',
-  success: '#4ADE80', successText: '#86EFAC', successBg: 'rgba(74,222,128,0.10)',
-  warning: '#FDE68A', warningText: '#FDE68A', warningBg: 'rgba(253,230,138,0.10)',
-  danger: '#F87171', dangerText: '#FCA5A5', dangerBg: 'rgba(239,68,68,0.10)',
+// Design tokens — dark mode (NOCTURNE)
+const TD = {
+  ink: '#F5F3F0', inkSecondary: 'rgba(248,244,240,0.82)', inkTertiary: 'rgba(248,244,240,0.60)',
+  inkMuted: 'rgba(248,244,240,0.45)', inkMutedStrong: 'rgba(248,244,240,0.50)',
+  surface: '#232019', surfaceSecondary: '#1A1714', surfaceTertiary: 'rgba(255,255,255,0.04)',
+  border: 'rgba(255,255,255,0.10)', borderStrong: 'rgba(255,255,255,0.18)',
+  primary: '#60A5FA', primaryHover: '#93C5FD', primaryBg: 'rgba(59,130,246,0.12)',
+  teal: '#5EEAD4', tealText: '#5EEAD4', tealBg: 'rgba(13,148,136,0.15)',
+  success: '#86EFAC', successText: '#86EFAC', successBg: 'rgba(22,163,74,0.15)',
+  warning: '#FCD34D', warningText: '#FCD34D', warningBg: 'rgba(217,119,6,0.15)',
+  danger: '#FCA5A5', dangerText: '#FCA5A5', dangerBg: 'rgba(220,38,38,0.15)',
 };
 
-type TTokens = typeof T_LIGHT;
+type Tokens = typeof TL;
+const TokenCtx = createContext<Tokens>(TL);
+const useT = () => useContext(TokenCtx);
 
-// Default to light for static references outside component tree
-let T: TTokens = T_LIGHT;
 
-
-function getHubCfg(): Record<string, { bg: string; color: string; border: string }> {
+function getHubCfg(T: Tokens): Record<string, { bg: string; color: string; border: string }> {
   return {
     Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
     Product:  { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
@@ -57,7 +56,7 @@ function getHubCfg(): Record<string, { bg: string; color: string; border: string
   };
 }
 
-function getPri(): Record<number, { label: string; color: string }> {
+function getPri(T: Tokens): Record<number, { label: string; color: string }> {
   return {
     1: { label: 'Lowest', color: T.inkMuted },
     2: { label: 'Low', color: T.inkMuted },
@@ -69,6 +68,7 @@ function getPri(): Record<number, { label: string; color: string }> {
 
 // --- Linkify utility: detect URLs, special-case Figma ---
 function Linkify({ text }: { text: string }) {
+  const T = useT();
   if (!text) return null;
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const parts = text.split(urlRegex);
@@ -111,12 +111,13 @@ function Linkify({ text }: { text: string }) {
 }
 
 function StatusPill({ status }: { status: string }) {
+  const T = useT();
   return <StatusLozenge status={status} />;
 }
 
 function HubBadge({ hub }: { hub: string }) {
-  const cfg = getHubCfg();
-  const h = cfg[hub] || cfg.Task;
+  const T = useT();
+  const HUB_CFG = getHubCfg(T); const h = HUB_CFG[hub] || HUB_CFG.Task;
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: h.bg, color: h.color, borderLeft: `3px solid ${h.border}` }}>
       {hub}
@@ -125,20 +126,21 @@ function HubBadge({ hub }: { hub: string }) {
 }
 
 function PriorityBars({ level = 3, showLabel = false }: { level?: number; showLabel?: boolean }) {
-  const pri = getPri();
+  const T = useT();
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: showLabel ? 8 : 2 }}>
       <div style={{ display: 'flex', gap: 2 }}>
         {[1,2,3,4].map(i => (
-          <div key={i} style={{ width: showLabel ? 5 : 4, height: showLabel ? 16 : 14, borderRadius: 1, background: i <= level ? (showLabel ? (pri[level]?.color || T.inkMuted) : T.inkMuted) : T.border }} />
+          <div key={i} style={{ width: showLabel ? 5 : 4, height: showLabel ? 16 : 14, borderRadius: 1, background: i <= level ? (showLabel ? (getPri(T)[level]?.color || T.inkMuted) : T.inkMuted) : T.border }} />
         ))}
       </div>
-      {showLabel && <span style={{ fontSize: 13, fontWeight: 500, color: T.ink }}>{pri[level]?.label || 'Medium'}</span>}
+      {showLabel && <span style={{ fontSize: 13, fontWeight: 500, color: T.ink }}>{getPri(T)[level]?.label || 'Medium'}</span>}
     </div>
   );
 }
 
 function Avatar({ name, size = 24 }: { name: string; size?: number }) {
+  const T = useT();
   const nameAvatarMap = useProfileAvatarsByName();
   const avatarUrl = nameAvatarMap.get(name.toLowerCase());
   const ini = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -151,6 +153,7 @@ function Avatar({ name, size = 24 }: { name: string; size?: number }) {
 }
 
 function FieldRow({ icon, label, children, last }: { icon: React.ReactNode; label: string; children: React.ReactNode; last?: boolean }) {
+  const T = useT();
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '152px 1fr', borderBottom: last ? 'none' : `1px solid ${T.border}`, minHeight: 38 }}>
       <div style={{ padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 7, fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.06em', background: T.surfaceSecondary, borderRight: `1px solid ${T.border}` }}>
@@ -287,6 +290,7 @@ function getStatusCategory(status: string): 'todo' | 'inprogress' | 'done' {
 }
 
 function SubTaskCard({ item, onClick }: { item: SubTaskItem; onClick: () => void }) {
+  const T = useT();
   const bars = PRI_MAP[item.priority] || 2;
   return (
     <button
@@ -329,6 +333,7 @@ function SubTaskCard({ item, onClick }: { item: SubTaskItem; onClick: () => void
 }
 
 function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; onSubTaskClick: (st: SubTaskItem) => void }) {
+  const T = useT();
   const { subTasks, isLoading } = useSubTasksForPanel(parentKey);
 
   if (isLoading) {
@@ -387,7 +392,7 @@ function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; 
 }
 
 // Convert SubTaskItem to a WorkItem-like shape for the panel to render
-function subTaskToWorkItem(st: SubTaskItem): WorkItem {
+function subTaskToWorkItem(st: SubTaskItem, T: Tokens): WorkItem {
   return {
     id: st.key,
     key: st.key,
@@ -423,10 +428,9 @@ interface ForYouDetailPanelProps {
 }
 
 export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
-  const { isDark } = useTheme();
-  // Swap token palette for entire component tree
-  T = isDark ? T_DARK : T_LIGHT;
-
+  const isDark = useIsDark();
+  const tokens = isDark ? TD : TL;
+  const T = tokens;
   const [tab, setTab] = useState('details');
   const [attachments, setAttachments] = useState<any[]>([]);
   const [attachmentsLoading, setAttachmentsLoading] = useState(false);
@@ -524,7 +528,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
 
   // Navigation handlers
   const handleSubTaskClick = (st: SubTaskItem) => {
-    const workItem = subTaskToWorkItem(st);
+    const workItem = subTaskToWorkItem(st, T);
     setPanelStack(prev => {
       if (prev.length === 0) return [item, workItem];
       return [...prev, workItem];
@@ -581,12 +585,13 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
       ];
 
   return (
+    <TokenCtx.Provider value={tokens}>
     <>
       {/* Overlay */}
-      <div onClick={onClose} className="fy-overlay" style={{ position: 'fixed', inset: 0, background: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(9,9,11,0.4)', zIndex: 200, animation: 'fy-fadeIn .15s ease' }} />
+      <div onClick={onClose} className="fy-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(9,9,11,0.4)', zIndex: 200, animation: 'fy-fadeIn .15s ease' }} />
 
       {/* Panel */}
-      <div className="fy-detail-panel" style={{ position: 'fixed', top: 0, right: 0, width: 'min(58%, 880px)', minWidth: 520, height: '100vh', background: T.surface, borderLeft: `1px solid ${T.border}`, boxShadow: isDark ? 'none' : '-12px 0 48px rgba(0,0,0,0.12)', zIndex: 201, display: 'flex', flexDirection: 'column', animation: 'fy-slideIn .2s ease' }}>
+      <div className="fy-detail-panel" style={{ position: 'fixed', top: 0, right: 0, width: 'min(58%, 880px)', minWidth: 520, height: '100vh', background: T.surface, borderLeft: `1px solid ${T.border}`, boxShadow: '-12px 0 48px rgba(0,0,0,0.12)', zIndex: 201, display: 'flex', flexDirection: 'column', animation: 'fy-slideIn .2s ease' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', borderBottom: `1px solid ${T.border}`, background: T.surfaceSecondary, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -917,5 +922,6 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
         @keyframes fy-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </>
+    </TokenCtx.Provider>
   );
 }

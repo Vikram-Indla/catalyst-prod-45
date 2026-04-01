@@ -1356,16 +1356,3 @@
 .planhub-module .ph-text-xs { font-size: var(--ph-text-xs); }
 .planhub-module .ph-text-gray-500 { color: var(--ph-gray-500); }
 .planhub-module .ph-font-semibold { font-weight: var(--ph-font-semibold); }
-
-/* ═══ COOL STEEL v3 — DARK MODE ═══ */
-.dark .planhub-module,
-[data-theme="dark"] .planhub-module {
-  --ph-bg: #181A1E;
-  --ph-surface: #181A1E;
-  --ph-surface-hover: rgba(235,238,245,0.03);
-  --ph-border: rgba(235,238,245,0.10);
-  --ph-border-dark: rgba(235,238,245,0.18);
-  --ph-gray-800: rgba(235,238,245,0.92);
-  --ph-shadow-sm: none;
-  --ph-shadow-md: none;
-}

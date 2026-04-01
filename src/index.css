@@ -889,23 +889,23 @@ html:has(body[data-scroll-locked]) {
     --brand-gold-hover: #0f766e;
     --brand-teal: #0d9488;
     
-    /* === A) SURFACE LADDER (Nocturne Cool Steel v3) === */
-    --bg-0: #181A1E;                     /* App background — Cool Steel */
-    --bg-1: #181A1E;                     /* Page canvas — unified surface */
-    --bg-2: #181A1E;                     /* Panels — unified with page */
-    --bg-3: #181A1E;                     /* Cards — flush with page */
-    --bg-4: #262830;                     /* Raised/hover */
-    --bg-5: #2C2E36;                     /* Active/selected surface */
+    /* === A) SURFACE LADDER (Nocturne Warm Charcoal) === */
+    --bg-0: #1A1714;                     /* App background — Nocturne warm charcoal */
+    --bg-1: #1E1B16;                     /* Page canvas */
+    --bg-2: #232019;                     /* Panels / elevated float */
+    --bg-3: #232019;                     /* Cards — same as panels for flush */
+    --bg-4: #2A2720;                     /* Raised/hover */
+    --bg-5: #312E27;                     /* Active/selected surface */
     --bg-app: var(--bg-0);
     
     /* Shadcn surface mappings */
-    --background: 225 10% 7%;             /* #181A1E Cool Steel */
+    --background: 30 13% 9%;             /* #1A1714 */
     --foreground: 0 0% 92%;              /* rgba(255,255,255,0.92) */
     
-    --card: 225 10% 7%;                   /* Same as --background — flush cards */
+    --card: 30 13% 9%;                   /* Same as --background — flush cards */
     --card-foreground: 0 0% 92%;
     
-    --popover: 228 14% 14%;              /* #1F2128 - Cool Steel float */
+    --popover: 36 12% 11%;               /* #232019 - NOCTURNE float */
     --popover-foreground: 0 0% 92%;
     
     --primary: 217 91% 60%;              /* #3b82f6 blue */
@@ -1668,15 +1668,15 @@ html:has(body[data-scroll-locked]) {
   
   /* === DARK MODE SIDEBAR OVERRIDES — ECLIPSE D8-R3 ===
      SidebarBase uses inline styles with isDark conditional tokens.
-     These CSS rules must NOT fight inline styles. Use #181A1E (ECLIPSE surface). */
+     These CSS rules must NOT fight inline styles. Use #1A1714 (ECLIPSE surface). */
   .dark aside,
   .dark [data-sidebar],
   .dark .sidebar,
   [data-theme="dark"] aside,
   [data-theme="dark"] [data-sidebar],
   [data-theme="dark"] .sidebar {
-    background-color: #181A1E;
-    border-right-color: rgba(235,238,245,0.08);
+    background-color: #1A1714;
+    border-right-color: rgba(248,244,240,0.08);
     box-shadow: none;
   }
   
@@ -2832,10 +2832,10 @@ input[type="range"]::-moz-range-thumb {
 
 
 /* ═══════════════════════════════════════════════════
-   ECLIPSE — NOCTURNE COOL STEEL v3.0
+   ECLIPSE — NOCTURNE DARK MODE OVERRIDES v2.0
    Consolidated: April 2026
    DO NOT ADD BLOCKS BELOW THIS — CONSOLIDATE ONLY
-   COOL STEEL: #181A1E page / #1F2128 float (modals only)
+   NOCTURNE: #1A1714 page / #232019 surface / #2C2823 elevated
    ═══════════════════════════════════════════════════ */
 
 .dark .c-section,
@@ -2874,20 +2874,20 @@ input[type="range"]::-moz-range-thumb {
 }
 
 [data-theme="dark"] {
-  --bg-0: #181A1E;
-  --bg-1: #181A1E;
-  --bg-2: #181A1E;
-  --bg-3: #181A1E;
-  --bg-4: #262830;
+  --bg-0: #1A1714;
+  --bg-1: #1E1B16;
+  --bg-2: #232019;
+  --bg-3: #232019;
+  --bg-4: #2A2720;
   --border: rgba(255,255,255,0.04);
-  --cp-bd: rgba(235,238,245,0.10);
-  --cp-bd-table: rgba(235,238,245,0.06);
-  --cp-bd-zone: rgba(235,238,245,0.08);
-  --cp-bg: #181A1E;
-  --cp-bg-elevated: #181A1E;
-  --cp-bg-page: #181A1E;
-  --cp-bg-sunken: #181A1E;
-  --cp-bg-surface: #181A1E;
+  --cp-bd: rgba(248,244,240,0.10);
+  --cp-bd-table: rgba(248,244,240,0.06);
+  --cp-bd-zone: rgba(248,244,240,0.08);
+  --cp-bg: #1A1714;
+  --cp-bg-elevated: #1A1A1A;
+  --cp-bg-page: #0A0A0A;
+  --cp-bg-sunken: #0A0A0A;
+  --cp-bg-surface: #141414;
   --cp-blue: #3B82F6;
   --cp-blue-link: #7DB8FC;
   --cp-blue-text: #7DB8FC;
@@ -2898,8 +2898,8 @@ input[type="range"]::-moz-range-thumb {
   --cp-err: #F87171;
   --cp-err-bg: rgba(248,113,113,0.10);
   --cp-err-text: #F87171;
-  --cp-float: #1F2128;
-  --cp-hover: rgba(235,238,245,0.05);
+  --cp-float: #232019;
+  --cp-hover: rgba(248,244,240,0.05);
   --cp-interact-hover: rgba(255,255,255,0.04);
   --cp-interact-press: rgba(255,255,255,0.08);
   --cp-interact-selected: rgba(37,99,235,0.15);
@@ -2909,21 +2909,21 @@ input[type="range"]::-moz-range-thumb {
   --cp-lozenge-green-text: #FFFFFF;
   --cp-lozenge-grey-bg: #3B3D42;
   --cp-lozenge-grey-text: #D4D4D4;
-  --cp-lz-bl-bg: #1A2030;
+  --cp-lz-bl-bg: #1E2636;
   --cp-lz-bl-t: #93C5FD;
-  --cp-lz-gn-bg: #182820;
+  --cp-lz-gn-bg: #1A2A1E;
   --cp-lz-gn-t: #86EFAC;
-  --cp-lz-gy-bg: #262830;
+  --cp-lz-gy-bg: #2C2926;
   --cp-lz-gy-t: #B8BCC8;
   --cp-ok: #4ADE80;
   --cp-ok-bg: rgba(74,222,128,0.10);
   --cp-prg-bg: rgba(59,130,246,0.10);
   --cp-shadow-overlay: 0px 8px 12px rgba(0,0,0,0.5), 0px 0px 1px rgba(0,0,0,0.6);
   --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.3);
-  --cp-t1: rgba(235,238,245,0.92);
-  --cp-t2: rgba(235,238,245,0.72);
-  --cp-t3: rgba(235,238,245,0.60);
-  --cp-t4: rgba(235,238,245,0.35);
+  --cp-t1: rgba(248,244,240,0.92);
+  --cp-t2: rgba(248,244,240,0.72);
+  --cp-t3: rgba(248,244,240,0.60);
+  --cp-t4: rgba(248,244,240,0.35);
   --cp-text-link: #60A5FA;
   --cp-text-muted: #737373;
   --cp-text-primary: #FAFAFA;
@@ -3337,11 +3337,11 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .dark {
-  --bg-0: #181A1E;
-  --bg-1: #181A1E;
-  --bg-2: #181A1E;
-  --bg-3: #181A1E;
-  --bg-4: #262830;
+  --bg-0: #1A1714;
+  --bg-1: #1E1B16;
+  --bg-2: #232019;
+  --bg-3: #232019;
+  --bg-4: #2A2720;
   --border: rgba(255,255,255,0.04);
   --divider: rgba(255,255,255,0.04);
   --ring: rgba(59,130,246,0.7);
@@ -4629,8 +4629,8 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .sidebar,
 [data-theme="dark"] [data-sidebar],
 [data-theme="dark"] aside {
-  background-color: #181A1E !important;
-  border-color: rgba(235,238,245,0.08) !important;
+  background-color: #1A1714 !important;
+  border-color: rgba(248,244,240,0.08) !important;
   box-shadow: none !important;
 }
 

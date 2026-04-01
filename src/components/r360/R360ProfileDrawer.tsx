@@ -759,7 +759,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
                   {(resource.skills as string[]).map((skill: string) => (
                     <span key={skill} style={{
                       fontSize: 11, fontWeight: 500,
-                      background: 'var(--surface-muted, #F1F5F9)', color: 'var(--fg-2)',
+                      background: '#F1F5F9', color: 'var(--fg-2)',
                       border: '0.75px solid var(--divider)',
                       borderRadius: 4, padding: '2px 6px',
                     }}>
@@ -1179,7 +1179,7 @@ function OverviewTab({
         <SectionTitle>WORK MIX</SectionTitle>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {workMix.map(row => {
-            const tc = TYPE_COLORS[row.type] || { color: 'var(--fg-4, #94A3B8)', opacity: 0.6 };
+            const tc = TYPE_COLORS[row.type] || { color: '#94A3B8', opacity: 0.6 };
             return (
               <div
                 key={row.type}
@@ -1500,7 +1500,7 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
       {/* §4 Hub Breakdown */}
       <div style={{ padding: 16 }}>
         <SectionTitle>HUB BREAKDOWN</SectionTitle>
-        <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', background: 'var(--surface-muted, #F1F5F9)' }}>
+        <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', background: '#F1F5F9' }}>
           {hubSegments.map((s, i) => (
             <div key={i} style={{ width: `${s.pct}%`, height: 8, borderRadius: 4, backgroundColor: s.color, transition: 'width 300ms' }} />
           ))}

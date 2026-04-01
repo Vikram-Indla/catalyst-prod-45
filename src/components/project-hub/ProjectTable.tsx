@@ -25,18 +25,18 @@ export function ProjectTable({ projects, starredIds, onToggleStar, onContextMenu
 
   return (
     <div
-      className={`overflow-x-auto rounded-lg border ${isDark ? 'bg-transparent border-[rgba(235,238,245,0.12)]' : 'bg-white border-[#E2E8F0]'}`}
+      className={`overflow-x-auto rounded-lg border ${isDark ? 'bg-transparent border-[rgba(248,244,240,0.12)]' : 'bg-white border-[#E2E8F0]'}`}
     >
       <table className="w-full" style={{ borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
         <thead>
           <tr
-            className={isDark ? 'bg-[rgba(235,238,245,0.04)]' : 'bg-[#F8FAFC]'}
+            className={isDark ? 'bg-[rgba(248,244,240,0.04)]' : 'bg-[#F8FAFC]'}
             style={{ height: 36, position: 'sticky', top: 0, zIndex: 1 }}
           >
             {COLUMNS.map(col => (
               <th
                 key={col.key}
-                className={`border-b ${isDark ? 'border-[rgba(235,238,245,0.08)]' : 'border-[#E2E8F0]'}`}
+                className={`border-b ${isDark ? 'border-[rgba(248,244,240,0.08)]' : 'border-[#E2E8F0]'}`}
                 style={{
                   width: col.width,
                   padding: '0 8px',

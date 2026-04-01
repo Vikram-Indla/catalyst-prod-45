@@ -171,23 +171,3 @@
 .r360-root .r360-age-warn { color: var(--r360-pri-high); }
 .r360-root .r360-age-danger { color: var(--r360-pri-critical); }
 .r360-root .r360-age-normal { color: var(--r360-text-4); }
-/* ═══ COOL STEEL v3 — DARK MODE ═══ */
-.dark .r360-root,
-[data-theme="dark"] .r360-root {
-  --r360-bg: #181A1E;
-  --r360-bg-alt: rgba(235,238,245,0.03);
-  --r360-bg-warm: rgba(235,238,245,0.03);
-  --r360-surface: #181A1E;
-  --r360-surface-hover: rgba(235,238,245,0.03);
-  --r360-surface-active: rgba(235,238,245,0.06);
-  --r360-text-1: rgba(235,238,245,0.92);
-  --r360-text-2: rgba(235,238,245,0.72);
-  --r360-text-3: rgba(235,238,245,0.55);
-  --r360-text-4: rgba(235,238,245,0.30);
-  --r360-border: rgba(235,238,245,0.10);
-  --r360-border-light: rgba(235,238,245,0.06);
-  --r360-border-strong: rgba(235,238,245,0.18);
-  --r360-shadow-card: none;
-  --r360-shadow-hover: none;
-  --r360-shadow-modal: 0 12px 40px rgba(0,0,0,0.5);
-}

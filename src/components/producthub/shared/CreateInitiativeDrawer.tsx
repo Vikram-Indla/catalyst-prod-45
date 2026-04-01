@@ -6,7 +6,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Loader2, FileText, Tag, Users, Calendar, RefreshCw, GitMerge } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useTheme } from '@/hooks/useTheme';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
@@ -19,23 +18,13 @@ import { DepartmentSelect } from './DepartmentSelect';
 import { InitiativeTypeSelect } from './InitiativeTypeSelect';
 
 /* ── Token constants ── */
-const T_LIGHT = {
+const T = {
   ink: '#09090B', inkSec: '#18181B', inkMuted: '#71717A',
   surface: '#FFFFFF', surfSec: '#F8FAFC',
   border: '#E2E8F0', borderStrong: '#CBD5E1',
   primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
   danger: '#DC2626',
 };
-
-const T_DARK = {
-  ink: 'rgba(235,238,245,0.92)', inkSec: 'rgba(235,238,245,0.72)', inkMuted: 'rgba(235,238,245,0.30)',
-  surface: '#181A1E', surfSec: 'rgba(235,238,245,0.03)',
-  border: 'rgba(235,238,245,0.10)', borderStrong: 'rgba(235,238,245,0.18)',
-  primary: '#3B82F6', primaryHover: '#60A5FA', primaryBg: 'rgba(59,130,246,0.10)',
-  danger: '#F87171',
-};
-
-let T = T_LIGHT;
 
 export interface ConversionSource {
   type: 'single' | 'merge';
@@ -149,9 +138,6 @@ const INPUT_CLS = "w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:
 
 /* ── Main Component ── */
 export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCreated }: CreateInitiativeDrawerProps) {
-  const { isDark } = useTheme();
-  T = isDark ? T_DARK : T_LIGHT;
-
   const { data: nextKey } = useNextInitiativeKey();
   const createMutation = useCreateInitiative();
   const { data: departmentOptions } = useDepartmentOptions();

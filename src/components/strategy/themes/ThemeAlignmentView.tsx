@@ -89,8 +89,8 @@ function GhostNode({ label }: { label: string }) {
   return (
     <div className="flex items-center justify-center gap-1.5 border border-dashed rounded-lg"
       style={{ width: 180, padding: 12, borderColor: '#CBD5E1', background: 'rgba(248,250,252,0.5)' }}>
-      <Unlink size={12} style={{ color: 'var(--fg-4, #94A3B8)' }} />
-      <span style={{ fontSize: 11, color: 'var(--fg-4, #94A3B8)' }}>No linked {label}</span>
+      <Unlink size={12} style={{ color: '#94A3B8' }} />
+      <span style={{ fontSize: 11, color: '#94A3B8' }}>No linked {label}</span>
     </div>
   );
 }
@@ -829,7 +829,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           ref={canvasRef}
           className="overflow-auto select-none transition-all duration-[400ms] ease-out"
           style={{
-            background: 'var(--surface-subtle, #F8FAFC)',
+            background: '#F8FAFC',
             cursor: isPanning ? 'grabbing' : 'grab',
             width: isIntelOpen ? '50vw' : '100%',
             flexShrink: 0,

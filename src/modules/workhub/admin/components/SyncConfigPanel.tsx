@@ -336,7 +336,7 @@ export function SyncConfigPanel() {
           {selectedProjects.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <label style={{
-                fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase' as const,
+                fontSize: 11, fontWeight: 600, color: 'var(--wh-tx3)', textTransform: 'uppercase' as const,
                 letterSpacing: '.4px', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 6,
               }}>
                 <Settings2 size={12} />
@@ -355,7 +355,7 @@ export function SyncConfigPanel() {
                     style={{
                       border: '1px solid var(--wh-bdr)',
                       borderRadius: 8,
-                      background: isExpanded ? '#FAFBFC' : 'var(--wh-sf)',
+                      background: isExpanded ? 'var(--wh-sf2)' : 'var(--wh-sf)',
                       overflow: 'visible',
                     }}
                   >
@@ -369,12 +369,12 @@ export function SyncConfigPanel() {
                       }}
                     >
                       {isExpanded
-                        ? <ChevronDown size={14} style={{ color: '#2563EB', flexShrink: 0 }} />
-                        : <ChevronRight size={14} style={{ color: 'var(--fg-4, #94A3B8)', flexShrink: 0 }} />
+                        ? <ChevronDown size={14} style={{ color: 'var(--wh-pri)', flexShrink: 0 }} />
+                        : <ChevronRight size={14} style={{ color: 'var(--wh-tx4)', flexShrink: 0 }} />
                       }
                       <span style={{
                         fontFamily: 'var(--wh-mo)', fontSize: 12, fontWeight: 700,
-                        color: '#2563EB', minWidth: 50,
+                        color: 'var(--wh-pri)', minWidth: 50,
                       }}>
                         {pk}
                       </span>
@@ -397,7 +397,7 @@ export function SyncConfigPanel() {
                         {/* Timeline Lookback */}
                         <div>
                           <label style={{
-                            fontSize: 10, fontWeight: 600, color: 'var(--fg-3, #64748B)',
+                            fontSize: 10, fontWeight: 600, color: 'var(--wh-tx3)',
                             textTransform: 'uppercase' as const, letterSpacing: '.4px',
                             fontFamily: 'Inter, sans-serif', display: 'block', marginBottom: 6,
                           }}>
@@ -412,9 +412,9 @@ export function SyncConfigPanel() {
                                   onClick={() => updateProjectConfig(pk, { lookback_months: opt.value })}
                                   style={{
                                     padding: '5px 10px', borderRadius: 5,
-                                    border: isActive ? '2px solid #2563EB' : '1px solid var(--wh-bdr)',
-                                    background: isActive ? '#EFF6FF' : '#fff',
-                                    color: isActive ? '#2563EB' : 'var(--wh-tx2)',
+                                    border: isActive ? '2px solid var(--wh-pri)' : '1px solid var(--wh-bdr)',
+                                    background: isActive ? 'var(--wh-pri-bg)' : 'var(--wh-bg)',
+                                    color: isActive ? 'var(--wh-pri)' : 'var(--wh-tx2)',
                                     fontSize: 11, fontWeight: isActive ? 600 : 400,
                                     fontFamily: 'var(--wh-fn)', cursor: 'pointer', transition: 'all .15s',
                                   }}
@@ -518,7 +518,7 @@ export function SyncConfigPanel() {
             )}
 
             {selectedProjects.length === 0 && (
-              <span style={{ fontSize: 11, color: '#D97706', fontFamily: 'var(--wh-fn)' }}>
+              <span style={{ fontSize: 11, color: 'var(--wh-warn)', fontFamily: 'var(--wh-fn)' }}>
                 Select at least one project to enable sync
               </span>
             )}
@@ -554,14 +554,14 @@ function SyncProgressPanel({
 
   return (
     <div style={{
-      background: 'var(--wh-sf)', borderRadius: 'var(--wh-rad)',
+      background: 'var(--wh-bg)', borderRadius: 'var(--wh-rad)',
       border: '1px solid var(--wh-bdr)', padding: 16,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {phase === 'syncing' && <Loader2 size={14} style={{ color: '#2563EB', animation: 'spin 1s linear infinite' }} />}
-          {phase === 'done' && <CheckCircle2 size={14} style={{ color: '#10B981' }} />}
-          {phase === 'error' && <AlertCircle size={14} style={{ color: '#EF4444' }} />}
+          {phase === 'syncing' && <Loader2 size={14} style={{ color: 'var(--wh-pri)', animation: 'spin 1s linear infinite' }} />}
+          {phase === 'done' && <CheckCircle2 size={14} style={{ color: 'var(--wh-suc)' }} />}
+          {phase === 'error' && <AlertCircle size={14} style={{ color: 'var(--wh-dng)' }} />}
           <span style={{ fontFamily: 'var(--wh-fh)', fontSize: 13, fontWeight: 600, color: 'var(--wh-tx)' }}>
             {phase === 'syncing' && currentProject
               ? `Syncing ${currentProject.name}...`
@@ -573,29 +573,29 @@ function SyncProgressPanel({
         </span>
       </div>
       {/* Overall progress bar */}
-      <div style={{ height: 8, borderRadius: 4, background: 'var(--wh-bdr, #E2E8F0)', overflow: 'hidden', marginBottom: 14 }}>
+      <div style={{ height: 8, borderRadius: 4, background: 'var(--wh-sf3)', overflow: 'hidden', marginBottom: 14 }}>
         <div style={{
           height: '100%', borderRadius: 4, transition: 'width 0.5s ease',
           width: `${progressPct}%`,
-          background: errorCount > 0 && phase !== 'syncing' ? '#EF4444' : phase === 'done' ? '#10B981' : '#2563EB',
+          background: errorCount > 0 && phase !== 'syncing' ? 'var(--wh-dng)' : phase === 'done' ? 'var(--wh-suc)' : 'var(--wh-pri)',
         }} />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {projects.map(p => (
           <div key={p.key} style={{
             display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', borderRadius: 6,
-            background: p.status === 'syncing' ? '#EFF6FF' : p.status === 'done' ? '#F0FDF4' : p.status === 'error' ? '#FEF2F2' : 'transparent',
+            background: p.status === 'syncing' ? 'var(--wh-pri-bg)' : p.status === 'done' ? 'var(--wh-suc-bg)' : p.status === 'error' ? 'var(--wh-dng-bg)' : 'transparent',
             transition: 'background 0.2s',
           }}>
             <div style={{ width: 16, display: 'flex', justifyContent: 'center' }}>
-              {p.status === 'pending' && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#CBD5E1' }} />}
-              {p.status === 'syncing' && <Loader2 size={12} style={{ color: '#2563EB', animation: 'spin 1s linear infinite' }} />}
-              {p.status === 'done' && <CheckCircle2 size={12} style={{ color: '#10B981' }} />}
-              {p.status === 'error' && <AlertCircle size={12} style={{ color: '#EF4444' }} />}
+              {p.status === 'pending' && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--wh-tx4)' }} />}
+              {p.status === 'syncing' && <Loader2 size={12} style={{ color: 'var(--wh-pri)', animation: 'spin 1s linear infinite' }} />}
+              {p.status === 'done' && <CheckCircle2 size={12} style={{ color: 'var(--wh-suc)' }} />}
+              {p.status === 'error' && <AlertCircle size={12} style={{ color: 'var(--wh-dng)' }} />}
             </div>
             <span style={{
               fontFamily: 'var(--wh-mo)', fontSize: 11, fontWeight: 700,
-              color: p.status === 'syncing' ? '#2563EB' : p.status === 'done' ? '#059669' : p.status === 'error' ? '#DC2626' : 'var(--wh-tx3)',
+              color: p.status === 'syncing' ? 'var(--wh-pri)' : p.status === 'done' ? 'var(--wh-suc)' : p.status === 'error' ? 'var(--wh-dng)' : 'var(--wh-tx3)',
               minWidth: 50,
             }}>
               {p.key}
@@ -603,11 +603,11 @@ function SyncProgressPanel({
             <span style={{ fontSize: 11, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)', flex: 1 }}>
               {p.name !== p.key ? p.name : ''}
             </span>
-            <div style={{ flex: 1, maxWidth: 120, height: 4, borderRadius: 2, background: 'var(--wh-bdr, #E2E8F0)', overflow: 'hidden' }}>
+            <div style={{ flex: 1, maxWidth: 120, height: 4, borderRadius: 2, background: 'var(--wh-sf3)', overflow: 'hidden' }}>
               <div style={{
                 height: '100%', borderRadius: 2, transition: 'width 0.4s ease',
                 width: p.status === 'done' || p.status === 'error' ? '100%' : p.status === 'syncing' ? '50%' : '0%',
-                background: p.status === 'done' ? '#10B981' : p.status === 'syncing' ? '#2563EB' : p.status === 'error' ? '#EF4444' : '#CBD5E1',
+                background: p.status === 'done' ? 'var(--wh-suc)' : p.status === 'syncing' ? 'var(--wh-pri)' : p.status === 'error' ? 'var(--wh-dng)' : 'var(--wh-tx4)',
               }} />
             </div>
             <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', minWidth: 70, textAlign: 'right' as const }}>
@@ -636,9 +636,13 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
     return `${Math.floor(hrs / 24)}d ago`;
   };
 
-  const statusColor = syncEntry.status === 'success' ? '#10B981'
-    : syncEntry.status === 'warning' ? '#F59E0B'
-    : syncEntry.status === 'error' ? '#EF4444' : '#2563EB';
+  const statusColor = syncEntry.status === 'success' ? 'var(--wh-suc)'
+    : syncEntry.status === 'warning' ? 'var(--wh-warn)'
+    : syncEntry.status === 'error' ? 'var(--wh-dng)' : 'var(--wh-pri)';
+
+  const statusBackground = syncEntry.status === 'success' ? 'var(--wh-suc-bg)'
+    : syncEntry.status === 'warning' ? 'var(--wh-warn-bg)'
+    : syncEntry.status === 'error' ? 'var(--wh-dng-bg)' : 'var(--wh-pri-bg)';
 
   const statusLabel = syncEntry.status === 'success' ? 'Completed'
     : syncEntry.status === 'warning' ? 'Completed with warnings'
@@ -653,7 +657,7 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
 
   return (
     <div style={{
-      background: 'var(--wh-sf)', borderRadius: 'var(--wh-rad)',
+      background: 'var(--wh-bg)', borderRadius: 'var(--wh-rad)',
       border: '1px solid var(--wh-bdr)', padding: 16,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -667,7 +671,7 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             fontSize: 11, fontWeight: 600, color: statusColor,
-            background: `${statusColor}14`, padding: '2px 8px', borderRadius: 10,
+            background: statusBackground, padding: '2px 8px', borderRadius: 10,
           }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: statusColor }} />
             {statusLabel}
@@ -681,7 +685,7 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 12 }}>
         {stats.map(s => (
           <div key={s.label} style={{
-            background: '#fff', borderRadius: 6, padding: '10px 12px',
+            background: 'var(--wh-sf2)', borderRadius: 6, padding: '10px 12px',
             border: '1px solid var(--wh-bdr)', textAlign: 'center' as const,
           }}>
             <div style={{ fontFamily: 'var(--wh-fh)', fontSize: 20, fontWeight: 700, color: 'var(--wh-tx)', marginBottom: 2 }}>
@@ -709,7 +713,7 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
               {syncEntry.projects_synced.map(pk => (
                 <span key={pk} style={{
                   padding: '1px 6px', borderRadius: 4, fontSize: 10, fontWeight: 600,
-                  background: '#EFF6FF', color: '#2563EB', fontFamily: 'var(--wh-mo)',
+                  background: 'var(--wh-pri-bg)', color: 'var(--wh-pri)', fontFamily: 'var(--wh-mo)',
                 }}>{pk}</span>
               ))}
             </span>
@@ -718,20 +722,20 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
       </div>
 
       {syncEntry.warnings && syncEntry.warnings.length > 0 && (
-        <div style={{ marginTop: 10, padding: '8px 10px', background: '#FFFBEB', borderRadius: 6, border: '1px solid #FDE68A' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: '#D97706', marginBottom: 4 }}>
+        <div style={{ marginTop: 10, padding: '8px 10px', background: 'var(--wh-warn-bg)', borderRadius: 6, border: '1px solid var(--wh-warn)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--wh-warn)', marginBottom: 4 }}>
             {syncEntry.warnings.length} warning{syncEntry.warnings.length !== 1 ? 's' : ''}
           </div>
           {syncEntry.warnings.slice(0, 3).map((w, i) => (
-            <div key={i} style={{ fontSize: 10, color: '#92400E', lineHeight: 1.4 }}>• {w}</div>
+            <div key={i} style={{ fontSize: 10, color: 'var(--wh-tx2)', lineHeight: 1.4 }}>• {w}</div>
           ))}
         </div>
       )}
 
       {syncEntry.error_message && (
-        <div style={{ marginTop: 10, padding: '8px 10px', background: '#FEF2F2', borderRadius: 6, border: '1px solid #FECACA' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: '#DC2626', marginBottom: 2 }}>Error</div>
-          <div style={{ fontSize: 10, color: '#991B1B', lineHeight: 1.4 }}>{syncEntry.error_message}</div>
+        <div style={{ marginTop: 10, padding: '8px 10px', background: 'var(--wh-dng-bg)', borderRadius: 6, border: '1px solid var(--wh-dng)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--wh-dng)', marginBottom: 2 }}>Error</div>
+          <div style={{ fontSize: 10, color: 'var(--wh-tx2)', lineHeight: 1.4 }}>{syncEntry.error_message}</div>
         </div>
       )}
     </div>
