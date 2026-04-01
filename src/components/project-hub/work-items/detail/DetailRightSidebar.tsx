@@ -202,38 +202,38 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
               {item.due_date ? new Date(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : <span style={{ color: 'var(--fg-4)' }}>None</span>}
             </span>
             {item.due_date && new Date(item.due_date) < new Date() && (
-              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ background: '#FEF2F2', color: '#DC2626' }}>Overdue</span>
+              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ background: 'var(--sem-danger-bg)', color: 'var(--sem-danger)' }}>Overdue</span>
             )}
           </div>
         </SidebarField>
       </div>
 
       {/* CONTEXT FIELDS */}
-      <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: 12 }}>
-        <span className="text-[10px] font-bold uppercase tracking-wider block mb-3" style={{ color: '#64748B', letterSpacing: '0.06em' }}>Context</span>
+      <div style={{ borderTop: '1px solid var(--divider)', paddingTop: 12 }}>
+        <span className="text-[10px] font-bold uppercase tracking-wider block mb-3" style={{ color: 'var(--fg-3)', letterSpacing: '0.06em' }}>Context</span>
         <div className="flex flex-col gap-3">
           <SidebarField label="Components">
             {itemComponents.length > 0 ? (
-              <div className="flex flex-wrap gap-1">{itemComponents.map((c: any) => (<span key={c.id} className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: '#CCFBF1', color: '#0D9488' }}>{c.name}</span>))}</div>
-            ) : <span className="text-[12px]" style={{ color: '#94A3B8' }}>None</span>}
+              <div className="flex flex-wrap gap-1">{itemComponents.map((c: any) => (<span key={c.id} className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: '#CCFBF1', color: 'var(--sem-success)' }}>{c.name}</span>))}</div>
+            ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
           <SidebarField label="Labels">
             {itemLabels.length > 0 ? (
-              <div className="flex flex-wrap gap-1">{itemLabels.map((l: any) => (<span key={l.id} className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: '#DBEAFE', color: '#2563EB' }}>{l.name}</span>))}</div>
-            ) : <span className="text-[12px]" style={{ color: '#94A3B8' }}>None</span>}
+              <div className="flex flex-wrap gap-1">{itemLabels.map((l: any) => (<span key={l.id} className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: 'var(--cp-primary-20)', color: 'var(--cp-blue)' }}>{l.name}</span>))}</div>
+            ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
           <SidebarField label="Release">
             {release ? (
-              <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold" style={{ background: '#CCFBF1', color: '#0D9488' }}>{release.name || release.title}</span>
-            ) : <span className="text-[12px]" style={{ color: '#94A3B8' }}>None</span>}
+              <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold" style={{ background: '#CCFBF1', color: 'var(--sem-success)' }}>{release.name || release.title}</span>
+            ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
           <SidebarField label="Environment">
             {item.environment ? (
-              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase" style={{ background: '#F1F5F9', color: '#64748B' }}>{item.environment}</span>
-            ) : <span className="text-[12px]" style={{ color: '#94A3B8' }}>None</span>}
+              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase" style={{ background: 'var(--cp-bd-zone)', color: 'var(--fg-3)' }}>{item.environment}</span>
+            ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
           <SidebarField label="Department">

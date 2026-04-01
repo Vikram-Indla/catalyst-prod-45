@@ -243,10 +243,10 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 {/* Current */}
                 <div style={{
                   display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 8px',
-                  borderRadius: '6px', border: '1.5px solid #2563EB', background: '#EFF6FF',
+                  borderRadius: '6px', border: '1.5px solid var(--cp-blue)', background: '#EFF6FF',
                 }}>
                   {getJiraIcon(item.item_type)}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#2563EB', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--cp-blue)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
                   <span style={{
                     fontSize: '13px', fontWeight: 500, color: '#020617',
                     overflow: 'hidden', display: '-webkit-box',
@@ -255,7 +255,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 </div>
               </div>
             ) : (
-              <div style={{ fontSize: '12px', color: '#94A3B8' }}>—</div>
+              <div style={{ fontSize: '12px', color: 'var(--fg-4)' }}>—</div>
             )}
           </div>
 

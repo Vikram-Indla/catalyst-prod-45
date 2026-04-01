@@ -278,8 +278,8 @@ export function WorkItemsPage() {
                   onClick={() => goToPage(pageNum)}
                   className="w-7 h-7 rounded-md text-xs font-medium transition-colors"
                   style={{
-                    backgroundColor: pageNum === currentPage ? 'var(--wh-primary, #2563eb)' : 'transparent',
-                    color: pageNum === currentPage ? 'white' : 'var(--wh-text-secondary, #64748b)',
+                    backgroundColor: pageNum === currentPage ? 'var(--cp-blue)' : 'transparent',
+                    color: pageNum === currentPage ? 'white' : 'var(--fg-3)',
                   }}
                 >
                   {pageNum + 1}

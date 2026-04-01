@@ -53,13 +53,13 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
     <div
       className="flex items-center gap-2 py-2 overflow-x-auto"
       style={{
-        borderBottom: '1px solid var(--wh-border-light, #f1f5f9)',
+        borderBottom: '1px solid var(--bg-1)',
         fontFamily: 'Inter, system-ui, sans-serif',
         scrollbarWidth: 'none',
       }}
     >
-      <Bookmark className="w-4 h-4 shrink-0" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }} />
-      <span className="text-xs font-medium shrink-0" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+      <Bookmark className="w-4 h-4 shrink-0" style={{ color: 'var(--fg-4)' }} />
+      <span className="text-xs font-medium shrink-0" style={{ color: 'var(--fg-4)' }}>
         Saved:
       </span>
 
