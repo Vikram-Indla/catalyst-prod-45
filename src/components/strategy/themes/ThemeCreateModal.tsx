@@ -154,8 +154,8 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
 
             {/* Description */}
             <div>
-              <label style={labelStyle}>Description</label>
-              <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+              <label className={labelCls}>Description</label>
+              <textarea className={`${inputCls} min-h-[60px] resize-y`} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
             </div>
 
             {/* Color */}
@@ -163,9 +163,8 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
               <label style={labelStyle}>Theme Color <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
               <div className="flex gap-2">
                 {THEME_COLORS.map(c => (
-                  <button key={c} onClick={() => setForm(f => ({ ...f, color: c }))} className="rounded-full" style={{
-                    width: 28, height: 28, background: c, border: form.color === c ? '3px solid #0F172A' : '2px solid transparent',
-                    cursor: 'pointer', transition: 'border 150ms',
+                  <button key={c} onClick={() => setForm(f => ({ ...f, color: c }))} className="rounded-full w-7 h-7 cursor-pointer transition-[border] duration-150" style={{
+                    background: c, border: form.color === c ? '3px solid var(--cp-text-primary, #0F172A)' : '2px solid transparent',
                   }} />
                 ))}
               </div>
@@ -198,12 +197,12 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             {/* Dates */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={labelStyle}>Start Date</label>
-                <input type="date" style={inputStyle} value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} />
+                <label className={labelCls}>Start Date</label>
+                <input type="date" className={inputCls} value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} />
               </div>
               <div>
-                <label style={labelStyle}>Target Completion</label>
-                <input type="date" style={inputStyle} value={form.target_completion} onChange={e => setForm(f => ({ ...f, target_completion: e.target.value }))} />
+                <label className={labelCls}>Target Completion</label>
+                <input type="date" className={inputCls} value={form.target_completion} onChange={e => setForm(f => ({ ...f, target_completion: e.target.value }))} />
               </div>
             </div>
 
@@ -232,7 +231,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             {/* BSC + Budget */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={labelStyle}>BSC Perspective</label>
+                <label className={labelCls}>BSC Perspective</label>
                 <Select value={form.bsc_perspective || '_none'} onValueChange={v => setForm(f => ({ ...f, bsc_perspective: v === '_none' ? '' : v }))}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
                   <SelectContent className="z-[9999]">
@@ -242,14 +241,14 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
                 </Select>
               </div>
               <div>
-                <label style={labelStyle}>Planned Budget (SAR)</label>
-                <input type="number" style={inputStyle} value={form.planned_budget} onChange={e => setForm(f => ({ ...f, planned_budget: e.target.value }))} placeholder="e.g. 25,000,000" />
+                <label className={labelCls}>Planned Budget (SAR)</label>
+                <input type="number" className={inputCls} value={form.planned_budget} onChange={e => setForm(f => ({ ...f, planned_budget: e.target.value }))} placeholder="e.g. 25,000,000" />
               </div>
             </div>
 
             {/* Theme Group */}
             <div>
-              <label style={labelStyle}>Theme Group</label>
+              <label className={labelCls}>Theme Group</label>
               {!showNewGroup ? (
                 <Select value={form.theme_group_id || '_none'} onValueChange={v => {
                   if (v === '__new__') { setShowNewGroup(true); return; }
@@ -273,13 +272,13 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
 
             {/* Success Metrics */}
             <div>
-              <label style={labelStyle}>Success Metrics</label>
+              <label className={labelCls}>Success Metrics</label>
               {form.success_metrics.map((m, i) => (
                 <div key={i} className="grid grid-cols-2 gap-2 mb-2">
-                  <input style={inputStyle} value={m.name} placeholder="Metric name" onChange={e => {
+                  <input className={inputCls} value={m.name} placeholder="Metric name" onChange={e => {
                     const next = [...form.success_metrics]; next[i] = { ...next[i], name: e.target.value }; setForm(f => ({ ...f, success_metrics: next }));
                   }} />
-                  <input style={inputStyle} value={m.target} placeholder="Target value" onChange={e => {
+                  <input className={inputCls} value={m.target} placeholder="Target value" onChange={e => {
                     const next = [...form.success_metrics]; next[i] = { ...next[i], target: e.target.value }; setForm(f => ({ ...f, success_metrics: next }));
                   }} />
                 </div>

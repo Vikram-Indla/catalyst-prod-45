@@ -30,17 +30,16 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
   const noDates = themes.filter(t => !t.start_date || !t.target_completion);
 
   return (
-    <div className="rounded-xl border overflow-hidden" style={{ background: '#FFFFFF', borderColor: '#E2E8F0' }}>
+    <div className="rounded-xl border overflow-hidden bg-white dark:bg-[#1A1714] border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
       {/* Header */}
-      <div className="flex" style={{ borderBottom: '1px solid #E2E8F0' }}>
-        <div className="shrink-0 flex items-center" style={{ width: 220, height: 36, padding: '0 12px', background: '#F8FAFC' }}>
-          <span style={{ fontSize: 10.5, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Theme</span>
+      <div className="flex border-b border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
+        <div className="shrink-0 flex items-center bg-slate-50 dark:bg-[rgba(255,255,255,0.03)]" style={{ width: 220, height: 36, padding: '0 12px' }}>
+          <span className="text-[10.5px] font-semibold text-slate-400 dark:text-[#6B6560] uppercase tracking-wide">Theme</span>
         </div>
-        <div className="flex-1 grid" style={{ gridTemplateColumns: `repeat(12, 1fr)`, background: '#F8FAFC' }}>
+        <div className="flex-1 grid bg-slate-50 dark:bg-[rgba(255,255,255,0.03)]" style={{ gridTemplateColumns: `repeat(12, 1fr)` }}>
           {MONTHS.map((m, i) => (
-            <div key={m} className="flex items-center justify-center" style={{
-              height: 36, fontSize: 10.5, fontWeight: 500, color: '#94A3B8',
-              borderLeft: '1px solid #F1F5F9',
+            <div key={m} className="flex items-center justify-center text-[10.5px] font-medium text-slate-400 dark:text-[#6B6560] border-l border-slate-100 dark:border-[rgba(255,255,255,0.04)]" style={{
+              height: 36,
               background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
             }}>
               {m}
@@ -62,15 +61,13 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
           <div
             key={theme.id}
             onClick={() => onSelect(theme)}
-            className="flex cursor-pointer transition-colors"
-            style={{ borderBottom: '1px solid #F1F5F9', height: 48 }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            className="flex cursor-pointer transition-colors border-b border-slate-100 dark:border-[rgba(255,255,255,0.04)] hover:bg-slate-50 dark:hover:bg-[rgba(255,255,255,0.03)]"
+            style={{ height: 48 }}
           >
             {/* Label */}
             <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '0 12px' }}>
               <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
-              <span className="truncate" style={{ fontSize: 12, fontWeight: 500, color: '#0F172A' }} title={theme.title}>{theme.title}</span>
+              <span className="truncate text-xs font-medium text-slate-900 dark:text-[#F5F3F0]" title={theme.title}>{theme.title}</span>
               <span className="shrink-0 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: sc.bg, color: sc.text }}>
                 <span className="rounded-full" style={{ width: 4, height: 4, background: sc.dot }} />
                 {sc.label}
@@ -78,13 +75,12 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
             </div>
 
             {/* Timeline area */}
-            <div className="flex-1 relative" style={{ borderLeft: '1px solid #E2E8F0' }}>
+            <div className="flex-1 relative border-l border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
               {/* Month gridlines + alternating shading */}
               {MONTHS.map((_, i) => (
-                <div key={i} className="absolute top-0 bottom-0" style={{
+                <div key={i} className="absolute top-0 bottom-0 border-l border-dashed border-slate-100 dark:border-[rgba(255,255,255,0.04)]" style={{
                   left: `${(i / 12) * 100}%`,
                   width: `${100 / 12}%`,
-                  borderLeft: '1px dashed #F1F5F9',
                   background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
                 }} />
               ))}
@@ -110,9 +106,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
                     background: progressColor,
                     opacity: 0.75,
                   }} />
-                  <span className="absolute inset-0 flex items-center justify-center" style={{
-                    fontSize: 10, fontWeight: 600, color: '#0F172A',
-                  }}>{theme.progress_pct}%</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-slate-900 dark:text-[#F5F3F0]">{theme.progress_pct}%</span>
                 </div>
               )}
             </div>
@@ -125,23 +119,21 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
         <div
           key={theme.id}
           onClick={() => onSelect(theme)}
-          className="flex cursor-pointer transition-colors"
-          style={{ borderBottom: '1px solid #F1F5F9', height: 48 }}
-          onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          className="flex cursor-pointer transition-colors border-b border-slate-100 dark:border-[rgba(255,255,255,0.04)] hover:bg-slate-50 dark:hover:bg-[rgba(255,255,255,0.03)]"
+          style={{ height: 48 }}
         >
           <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '0 12px' }}>
             <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
-            <span className="truncate" style={{ fontSize: 12, fontWeight: 500, color: '#0F172A' }}>{theme.title}</span>
+            <span className="truncate text-xs font-medium text-slate-900 dark:text-[#F5F3F0]">{theme.title}</span>
           </div>
-          <div className="flex-1 flex items-center justify-center" style={{ borderLeft: '1px solid #E2E8F0' }}>
-            <span style={{ fontSize: 11, color: '#94A3B8' }}>No dates set</span>
+          <div className="flex-1 flex items-center justify-center border-l border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
+            <span className="text-[11px] text-slate-400 dark:text-[#6B6560]">No dates set</span>
           </div>
         </div>
       ))}
 
       {themes.length === 0 && (
-        <div className="flex items-center justify-center" style={{ height: 120, color: '#94A3B8', fontSize: 13 }}>
+        <div className="flex items-center justify-center text-[13px] text-slate-400 dark:text-[#6B6560]" style={{ height: 120 }}>
           No themes to display on timeline.
         </div>
       )}

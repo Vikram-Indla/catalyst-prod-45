@@ -176,7 +176,7 @@ export function AIStrategyIntelligencePanel({
         {activeTab === 'operations' && <OperationsTab metrics={metrics} defects={defects} aiResult={aiResult} isAILoading={isAILoading} />}
       </div>
 
-      <div className="shrink-0 border-t px-7 py-2.5 flex items-center justify-between" style={{ borderColor: '#F1F5F9' }}>
+      <div className="shrink-0 border-t px-7 py-2.5 flex items-center justify-between" style={{ borderColor: 'var(--divider)' }}>
         <div className="flex items-center gap-1.5 text-[10px]" style={{ color: 'var(--fg-4)' }}>
           <span style={{ color: '#60A5FA' }}>✦</span> AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
@@ -184,7 +184,7 @@ export function AIStrategyIntelligencePanel({
           <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)' }}>
             Regenerate
           </button>
-          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors" style={{ fontSize: 11, fontWeight: 600, color: '#FFFFFF', background: '#1E293B' }}>
+          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold text-white bg-slate-800 dark:bg-[#2C2823] dark:border dark:border-[rgba(255,255,255,0.08)]">
             Close
           </button>
         </div>
@@ -631,7 +631,7 @@ function EpicsStoriesTab({ metrics, stories, aiResult, isAILoading }: { metrics:
                   {(m.storiesDone - m.storiesInProd) > 0 && <div style={{ width: `${(m.storiesDone - m.storiesInProd) / m.storiesTotal * 100}%`, background: '#86EFAC' }} />}
                   {m.storiesInProgress > 0 && <div style={{ width: `${m.storiesInProgress / m.storiesTotal * 100}%`, background: '#2563EB' }} />}
                   {m.storiesBlocked > 0 && <div style={{ width: `${m.storiesBlocked / m.storiesTotal * 100}%`, background: 'var(--sem-danger)' }} />}
-                  {m.storiesBacklog > 0 && <div style={{ width: `${m.storiesBacklog / m.storiesTotal * 100}%`, background: '#E2E8F0' }} />}
+                  {m.storiesBacklog > 0 && <div style={{ width: `${m.storiesBacklog / m.storiesTotal * 100}%`, background: 'var(--divider)' }} />}
                 </div>
                 <p className="text-[12px] text-slate-700">
                   <strong>{m.storiesInProd}</strong> in production · <strong>{m.storiesInProgress}</strong> in progress
