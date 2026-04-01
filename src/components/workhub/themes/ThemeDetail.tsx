@@ -191,8 +191,8 @@ export function ThemeDetail() {
             onClick={() => setLinkerOpen(o => !o)}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
-              padding: '6px 14px', borderRadius: 8, border: '1px solid #e2e8f0',
-              background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', color: '#2563eb',
+              padding: '6px 14px', borderRadius: 8, border: '1px solid var(--divider)',
+              background: 'var(--cp-float)', fontSize: 12, fontWeight: 500, cursor: 'pointer', color: 'var(--cp-blue)',
             }}
           >
             <Plus size={14} /> Link Items

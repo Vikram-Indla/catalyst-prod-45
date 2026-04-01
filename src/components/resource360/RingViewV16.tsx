@@ -464,8 +464,8 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
               <button key={f.key} onClick={() => setStatusFilter(f.key)} style={{
                 height: 26, padding: '0 10px', borderRadius: 9999, fontSize: 11, fontWeight: 600,
                 background: active ? 'transparent' : 'transparent',
-                color: active ? '#2563EB' : '#334155',
-                border: `1px solid ${active ? '#2563EB' : T.border}`, cursor: 'pointer',
+                color: active ? 'var(--cp-blue)' : 'var(--fg-2)',
+                border: `1px solid ${active ? 'var(--cp-blue)' : T.border}`, cursor: 'pointer',
                 fontFamily: T.inter,
               }}>{f.label}</button>
             );
@@ -790,7 +790,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   color: T.ink3, transition: 'background 120ms',
                 }}
                   onMouseOver={e => (e.currentTarget.style.background = 'var(--bg-3)')}
-                  onMouseOut={e => (e.currentTarget.style.background = '#FFFFFF')}
+                  onMouseOut={e => (e.currentTarget.style.background = 'var(--bg-app)')}
                 >
                   <X size={14} />
                 </button>
@@ -882,7 +882,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                     <div key={ri} style={{
                       display: 'flex',
                       borderBottom: ri < 2 ? `1px solid ${T.border}` : 'none',
-                      background: ri % 2 === 1 ? '#F8FAFC' : '#FFFFFF',
+                      background: ri % 2 === 1 ? 'var(--bg-1)' : 'var(--bg-app)',
                     }}>
                       {row.map((cell: any, ci: number) => {
                         const age = cell.isAge ? selectedItem.ageDays : 0;
@@ -898,7 +898,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                             <div style={{
                               fontSize: cell.isAge ? 18 : 13,
                               fontWeight: cell.isAge ? 800 : 500,
-                              color: cell.isAge ? ageHeatColor(age) : cell.isInherited ? '#2563EB' : '#0F172A',
+                              color: cell.isAge ? ageHeatColor(age) : cell.isInherited ? 'var(--cp-blue)' : 'var(--fg-1)',
                               fontFamily: cell.isAge ? T.mono : T.inter,
                               cursor: cell.isInherited ? 'pointer' : 'default',
                             }}>
@@ -987,7 +987,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                             cursor: 'pointer', transition: 'background 80ms',
                           }}
                             onClick={() => selectCard(s.key)}
-                            onMouseOver={e => (e.currentTarget.style.background = '#F8FAFC')}
+                            onMouseOver={e => (e.currentTarget.style.background = 'var(--bg-1)')}
                             onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                           >
                             <span style={{ flexShrink: 0 }}>{getJiraIconForType(s.type)}</span>
