@@ -43,7 +43,7 @@ export function ReleaseDetail() {
   if (!release) {
     return (
       <div style={{ padding: 32, textAlign: 'center' }}>
-        <p style={{ color: '#ef4444', fontSize: 14 }}>Release not found: {versionName}</p>
+        <p style={{ color: 'var(--sem-danger)', fontSize: 14 }}>Release not found: {versionName}</p>
         <button onClick={() => navigate('/projecthub/releases')} style={{
           marginTop: 12, padding: '8px 16px', borderRadius: 6,
           border: '1px solid var(--wh-border)', background: 'var(--wh-surface)',
@@ -88,7 +88,7 @@ export function ReleaseDetail() {
       <button onClick={() => navigate('/projecthub/releases')} style={{
         display: 'inline-flex', alignItems: 'center', gap: 6,
         background: 'none', border: 'none', cursor: 'pointer',
-        fontSize: 13, fontWeight: 500, color: 'var(--wh-primary, #2563eb)',
+        fontSize: 13, fontWeight: 500, color: 'var(--cp-blue)',
         marginBottom: 16, padding: 0,
       }}>
         <ArrowLeft size={16} /> Back to Releases
@@ -98,15 +98,15 @@ export function ReleaseDetail() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <div style={{
-            width: 40, height: 40, borderRadius: 10, background: '#dbeafe',
+            width: 40, height: 40, borderRadius: 10, background: 'var(--cp-primary-20)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
           }}>
-            <Rocket size={20} color="#2563eb" />
+            <Rocket size={20} color="var(--cp-blue)" />
           </div>
           <h1 style={{
             fontSize: 24, fontWeight: 700, margin: 0,
             fontFamily: 'var(--wh-font-display, Sora, sans-serif)',
-            color: 'var(--wh-text-primary, #0f172a)',
+            color: 'var(--fg-1)',
           }}>
             {release.versionName}
           </h1>
@@ -125,12 +125,12 @@ export function ReleaseDetail() {
           {statusLabel}
         </span>
         {release.releaseDate && (
-          <span style={{ fontSize: 13, color: 'var(--wh-text-secondary, #64748b)' }}>
+          <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>
             Due: {formatDate(release.releaseDate)}
           </span>
         )}
         {isOverdue && (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 600, color: '#ef4444' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 600, color: 'var(--sem-danger)' }}>
             <AlertTriangle size={14} /> Overdue
           </span>
         )}
@@ -139,7 +139,7 @@ export function ReleaseDetail() {
       {/* Projects */}
       {release.projects.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 52, marginBottom: 16, flexWrap: 'wrap' }}>
-          <FolderGit2 size={14} style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }} />
+          <FolderGit2 size={14} style={{ color: 'var(--fg-4)' }} />
           {release.projects.map((proj, i) => {
             const colors = ['#2563eb', '#7c3aed', '#0d9488', '#d97706', '#ef4444', '#0891b2', '#16a34a', '#6366f1'];
             const c = colors[i % colors.length];
@@ -164,12 +164,12 @@ export function ReleaseDetail() {
           const Icon = kpi.icon;
           return (
             <div key={kpi.label} style={{
-              border: '1px solid var(--wh-border, #e2e8f0)', borderRadius: 'var(--wh-radius-lg, 8px)',
-              padding: '12px 16px', background: 'var(--wh-surface, #fff)', minWidth: 100,
+              border: '1px solid var(--divider)', borderRadius: 'var(--wh-radius-lg, 8px)',
+              padding: '12px 16px', background: 'var(--cp-float)', minWidth: 100,
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                 <Icon size={14} color={kpi.color} />
-                <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--wh-text-tertiary, #94a3b8)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   {kpi.label}
                 </span>
               </div>
@@ -186,7 +186,7 @@ export function ReleaseDetail() {
 
       {/* Progress Bar */}
       <div style={{
-        background: 'var(--wh-surface, #fff)', border: '1px solid var(--wh-border, #e2e8f0)',
+        background: 'var(--cp-float)', border: '1px solid var(--divider)',
         borderRadius: 'var(--wh-radius-lg, 8px)', padding: 20, marginBottom: 24,
       }}>
         <StackedProgressBar
@@ -202,7 +202,7 @@ export function ReleaseDetail() {
       {/* Assignee Avatars */}
       {release.assignees.length > 0 && (
         <div style={{
-          background: 'var(--wh-surface, #fff)', border: '1px solid var(--wh-border, #e2e8f0)',
+          background: 'var(--cp-float)', border: '1px solid var(--divider)',
           borderRadius: 'var(--wh-radius-lg, 8px)', padding: '16px 20px', marginBottom: 24,
         }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--wh-text-primary)', marginBottom: 10 }}>
@@ -219,7 +219,7 @@ export function ReleaseDetail() {
       {/* Work Items Table */}
       <div>
         <h2 style={{
-          fontSize: 16, fontWeight: 600, color: 'var(--wh-text-primary, #0f172a)',
+          fontSize: 16, fontWeight: 600, color: 'var(--fg-1)',
           marginBottom: 12,
         }}>
           Work Items ({workItemsData?.totalCount ?? 0})
@@ -227,18 +227,18 @@ export function ReleaseDetail() {
 
         {items.length === 0 && !loadingItems ? (
           <div style={{
-            background: 'var(--wh-surface, #fff)', border: '1px solid var(--wh-border, #e2e8f0)',
+            background: 'var(--cp-float)', border: '1px solid var(--divider)',
             borderRadius: 'var(--wh-radius-lg, 8px)', padding: '40px 20px',
             textAlign: 'center',
           }}>
-            <FileStack size={32} color="#94a3b8" style={{ marginBottom: 8 }} />
+            <FileStack size={32} color="var(--fg-4)" style={{ marginBottom: 8 }} />
             <p style={{ fontSize: 14, color: 'var(--wh-text-secondary)', margin: 0 }}>
               No work items in this fix version.
             </p>
           </div>
         ) : (
           <div style={{
-            background: 'var(--wh-surface, #fff)', border: '1px solid var(--wh-border, #e2e8f0)',
+            background: 'var(--cp-float)', border: '1px solid var(--divider)',
             borderRadius: 'var(--wh-radius-lg, 8px)', overflow: 'hidden',
           }}>
             <WorkItemsTable
@@ -267,8 +267,8 @@ function AssigneeChip({ assignee }: { assignee: { displayName: string; avatarUrl
     <div style={{
       display: 'inline-flex', alignItems: 'center', gap: 6,
       padding: '4px 10px 4px 4px', borderRadius: 9999,
-      border: '1px solid var(--wh-border, #e2e8f0)',
-      background: '#f8fafc',
+      border: '1px solid var(--divider)',
+      background: 'var(--bg-1)',
     }}>
       {assignee.avatarUrl && !imgError ? (
         <img
@@ -280,7 +280,7 @@ function AssigneeChip({ assignee }: { assignee: { displayName: string; avatarUrl
       ) : (
         <div style={{
           width: 24, height: 24, borderRadius: '50%',
-          background: '#6366f1', color: '#fff',
+          background: '#6366f1', color: 'var(--bg-app)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 9, fontWeight: 700,
         }}>
@@ -288,11 +288,11 @@ function AssigneeChip({ assignee }: { assignee: { displayName: string; avatarUrl
         </div>
       )}
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--wh-text-primary, #0f172a)', lineHeight: 1.2 }}>
+        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', lineHeight: 1.2 }}>
           {assignee.displayName}
         </span>
         {assignee.roleName && (
-          <span style={{ fontSize: 10, fontWeight: 400, color: 'var(--wh-text-tertiary, #94a3b8)', lineHeight: 1.2 }}>
+          <span style={{ fontSize: 10, fontWeight: 400, color: 'var(--fg-4)', lineHeight: 1.2 }}>
             {assignee.roleName}
           </span>
         )}

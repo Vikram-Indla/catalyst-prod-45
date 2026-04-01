@@ -28,7 +28,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
     <div className="flex flex-col gap-3">
       {/* Board Switcher */}
       {boards.length > 1 && (
-        <div className="flex items-center gap-0.5 p-1 rounded-lg w-fit" style={{ background: '#F1F5F9' }}>
+        <div className="flex items-center gap-0.5 p-1 rounded-lg w-fit" style={{ background: 'var(--cp-bd-zone)' }}>
           {boards.map((b, i) => {
             const isActive = activeBoardIdx === i;
             return (
@@ -42,9 +42,9 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                   fontWeight: isActive ? 600 : 500,
                   fontFamily: "'Inter', sans-serif",
                   borderRadius: 6,
-                  border: isActive ? '1px solid #BFDBFE' : '1px solid transparent',
-                  background: isActive ? '#EFF6FF' : 'transparent',
-                  color: isActive ? '#2563EB' : '#64748B',
+                  border: isActive ? '1px solid var(--cp-primary-20)' : '1px solid transparent',
+                  background: isActive ? 'var(--cp-blue-wash)' : 'transparent',
+                  color: isActive ? 'var(--cp-blue)' : 'var(--fg-3)',
                   cursor: 'pointer',
                 }}
               >
@@ -73,10 +73,10 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                 minWidth: 280,
                 maxWidth: 320,
                 flex: '1 1 280px',
-                background: '#F1F5F9',
+                background: 'var(--cp-bd-zone)',
                 borderRadius: 12,
                 padding: '10px 10px 12px',
-                border: isOnHold ? '1.5px dashed #D97706' : '1px solid #E2E8F0',
+                border: isOnHold ? '1.5px dashed var(--sem-warning)' : '1px solid var(--divider)',
               }}
             >
               {/* Column Header */}
@@ -85,7 +85,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                   className="rounded-full flex-shrink-0"
                   style={{
                     width: 8, height: 8,
-                    background: isOnHold ? '#D97706' : col.color,
+                    background: isOnHold ? 'var(--sem-warning)' : col.color,
                   }}
                 />
                 <span
@@ -93,7 +93,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                   style={{
                     fontSize: 11,
                     fontWeight: 700,
-                    color: isOnHold ? '#D97706' : '#64748B',
+                    color: isOnHold ? 'var(--sem-warning)' : 'var(--fg-3)',
                     fontFamily: "'Inter', sans-serif",
                     letterSpacing: '0.06em',
                   }}
@@ -107,8 +107,8 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                     fontSize: 10,
                     fontWeight: 700,
                     fontFamily: "'JetBrains Mono', monospace",
-                    background: '#fff',
-                    color: wipExceeded ? '#EF4444' : '#64748B',
+                    background: 'var(--bg-app)',
+                    color: wipExceeded ? 'var(--sem-danger)' : 'var(--fg-3)',
                     boxShadow: '0 1px 2px rgba(0,0,0,.06)',
                   }}
                 >
@@ -119,7 +119,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                     style={{
                       fontSize: 9,
                       fontWeight: 600,
-                      color: wipExceeded ? '#EF4444' : '#94A3B8',
+                      color: wipExceeded ? 'var(--sem-danger)' : 'var(--fg-4)',
                     }}
                   >
                     {wipExceeded ? `⚠ max ${col.wip_limit}` : `max ${col.wip_limit}`}
@@ -139,8 +139,8 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                     className="flex items-center justify-center rounded-lg"
                     style={{
                       padding: '32px 16px',
-                      border: '2px dashed #E2E8F0',
-                      color: '#94A3B8',
+                      border: '2px dashed var(--divider)',
+                      color: 'var(--fg-4)',
                       fontSize: 12,
                       fontWeight: 500,
                     }}
@@ -167,14 +167,14 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                   padding: '6px 10px',
                   fontSize: 12,
                   fontWeight: 500,
-                  color: '#94A3B8',
+                  color: 'var(--fg-4)',
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
                   fontFamily: "'Inter', sans-serif",
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#E2E8F0'; e.currentTarget.style.color = '#64748B'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94A3B8'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-3)'; e.currentTarget.style.color = 'var(--fg-3)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--fg-4)'; }}
               >
                 <Plus size={14} /> Add issue
               </button>
@@ -206,9 +206,9 @@ function BoardCard({
     <div
       className="relative cursor-pointer"
       style={{
-        background: '#FFFFFF',
+        background: 'var(--bg-app)',
         borderRadius: 12,
-        border: isOnHold ? '1px dashed #D9770640' : '1px solid #E2E8F0',
+        border: isOnHold ? '1px dashed #D9770640' : '1px solid var(--divider)',
         boxShadow: hovered
           ? '0 4px 12px rgba(15,23,42,.1), 0 1px 3px rgba(15,23,42,.06)'
           : '0 1px 2px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.1)',
@@ -230,7 +230,7 @@ function BoardCard({
       <div
         className="absolute top-1 right-1 flex items-center gap-0.5 rounded-md z-10"
         style={{
-          background: '#fff',
+          background: 'var(--bg-app)',
           boxShadow: '0 2px 8px rgba(15,23,42,.12)',
           padding: '2px 4px',
           opacity: hovered ? 1 : 0,
@@ -257,7 +257,7 @@ function BoardCard({
             onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <a.icon size={12} color="#64748B" />
+            <a.icon size={12} color="var(--fg-3)" />
           </button>
         ))}
       </div>
@@ -270,7 +270,7 @@ function BoardCard({
             style={{
               fontSize: 11,
               fontWeight: 600,
-              color: '#64748B',
+              color: 'var(--fg-3)',
               fontFamily: "'JetBrains Mono', monospace",
             }}
           >
@@ -283,7 +283,7 @@ function BoardCard({
         {(issue.overdue_days ?? 0) > 0 && (
           <div
             className="flex items-center gap-1 mb-1"
-            style={{ fontSize: 10, fontWeight: 600, color: '#D97706' }}
+            style={{ fontSize: 10, fontWeight: 600, color: 'var(--sem-warning)' }}
           >
             <AlertTriangle size={10} />
             <span>{issue.overdue_days}d overdue</span>
@@ -295,7 +295,7 @@ function BoardCard({
           style={{
             fontSize: 13,
             fontWeight: 500,
-            color: '#0F172A',
+            color: 'var(--fg-1)',
             lineHeight: 1.35,
             marginBottom: 6,
             display: '-webkit-box',
@@ -313,7 +313,7 @@ function BoardCard({
           <PHPriorityIcon priority={issue.priority} />
           <div className="flex items-center gap-2">
             {issue.due_date ? (
-              <span className="flex items-center gap-1" style={{ fontSize: 10, color: '#94A3B8' }}>
+              <span className="flex items-center gap-1" style={{ fontSize: 10, color: 'var(--fg-4)' }}>
                 <Calendar size={10} />
                 {new Date(issue.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
@@ -323,11 +323,11 @@ function BoardCard({
               className="rounded-full flex items-center justify-center flex-shrink-0"
               style={{
                 width: 20, height: 20,
-                background: issue.assignee_id ? '#E2E8F0' : 'transparent',
+                background: issue.assignee_id ? 'var(--bg-3)' : 'transparent',
                 border: issue.assignee_id ? 'none' : '1.5px dashed #CBD5E1',
                 fontSize: 8,
                 fontWeight: 700,
-                color: '#64748B',
+                color: 'var(--fg-3)',
               }}
             >
               {issue.assignee_id ? '👤' : ''}

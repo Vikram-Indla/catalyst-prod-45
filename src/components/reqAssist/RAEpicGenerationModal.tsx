@@ -229,8 +229,8 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
       {/* Modal */}
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-        width: 480, background: '#FFFFFF', borderRadius: 8, zIndex: 70,
-        padding: 28, border: '0.75px solid #E2E8F0',
+        width: 480, background: 'var(--cp-float)', borderRadius: 8, zIndex: 70,
+        padding: 28, border: '0.75px solid var(--divider)',
         fontFamily: "'Inter', sans-serif",
       }}>
 
@@ -242,12 +242,12 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 width: 64, height: 64, borderRadius: '50%', background: '#F0FDF4',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <CheckCircle2 size={40} color="#16A34A" />
+                <CheckCircle2 size={40} color="var(--sem-success)" />
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 650, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+              <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: "'Sora', sans-serif" }}>
                 Epics Generated Successfully
               </h3>
-              <p style={{ fontSize: 14, color: '#6B7280', margin: 0, textAlign: 'center' }}>
+              <p style={{ fontSize: 14, color: 'var(--fg-3)', margin: 0, textAlign: 'center' }}>
                 {epicCount} epic statement{epicCount !== 1 ? 's' : ''} created for {doc.title}
               </p>
             </div>
@@ -260,25 +260,25 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                     width: 28, height: 28, borderRadius: '50%', background: '#DCFCE7',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                   }}>
-                    <Check size={14} color="#16A34A" strokeWidth={2.5} />
+                    <Check size={14} color="var(--sem-success)" strokeWidth={2.5} />
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: '#374151' }}>{s}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-2)' }}>{s}</span>
                 </div>
               ))}
             </div>
 
             {/* Progress full green */}
             <div style={{ width: '100%', height: 6, borderRadius: 999, background: '#F3F4F6', marginBottom: 20, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: '100%', borderRadius: 999, background: '#16A34A', transition: 'width 0.4s ease' }} />
+              <div style={{ height: '100%', width: '100%', borderRadius: 999, background: 'var(--sem-success)', transition: 'width 0.4s ease' }} />
             </div>
 
             {/* Footer */}
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '0.75px solid #E2E8F0', paddingTop: 16 }}>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '0.75px solid var(--divider)', paddingTop: 16 }}>
               <button
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+                  border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Close
@@ -294,7 +294,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 }}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-                  border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
+                  border: 'none', background: 'var(--cp-blue)', color: '#FFFFFF', cursor: 'pointer',
                 }}
               >
                 View Epics →
@@ -311,9 +311,9 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 width: 56, height: 56, borderRadius: '50%', background: '#FEF2F2',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <XCircle size={32} color="#DC2626" />
+                <XCircle size={32} color="var(--sem-danger)" />
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 650, color: '#111827', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+              <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: "'Sora', sans-serif" }}>
                 Generation Failed
               </h3>
             </div>
@@ -330,21 +330,21 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               </code>
             </div>
 
-            <p style={{ fontSize: 13, color: '#6B7280', margin: '0 0 20px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '0 0 20px', lineHeight: 1.5 }}>
               Generation failed. Please try again or contact your administrator.
             </p>
 
             {/* Progress bar red */}
             <div style={{ width: '100%', height: 6, borderRadius: 999, background: '#F3F4F6', marginBottom: 20, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${Math.max(progress, 10)}%`, borderRadius: 999, background: '#DC2626', transition: 'width 0.4s ease' }} />
+              <div style={{ height: '100%', width: `${Math.max(progress, 10)}%`, borderRadius: 999, background: 'var(--sem-danger)', transition: 'width 0.4s ease' }} />
             </div>
 
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '0.75px solid #E2E8F0', paddingTop: 16 }}>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '0.75px solid var(--divider)', paddingTop: 16 }}>
               <button
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+                  border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Close
@@ -353,7 +353,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={handleRetry}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-                  border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
+                  border: 'none', background: 'var(--cp-blue)', color: '#FFFFFF', cursor: 'pointer',
                 }}
               >
                 Retry
@@ -368,33 +368,33 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
               <div style={{
-                width: 48, height: 48, borderRadius: 8, background: '#EFF6FF',
+                width: 48, height: 48, borderRadius: 8, background: 'var(--cp-primary-5)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <div className="ra-epic-spinner-lg" />
               </div>
               <div>
-                <h3 style={{ fontSize: 18, fontWeight: 650, color: '#0F172A', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+                <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: "'Sora', sans-serif" }}>
                   Generating Epic Statements
                 </h3>
-                <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0' }}>
+                <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '2px 0 0' }}>
                   From: {doc.title}
                 </p>
               </div>
             </div>
 
-            <p style={{ fontSize: 12, color: '#94A3B8', margin: '8px 0 16px', paddingLeft: 42 }}>
+            <p style={{ fontSize: 12, color: 'var(--fg-4)', margin: '8px 0 16px', paddingLeft: 42 }}>
               This typically takes ~2 minutes. You can leave this screen.
             </p>
 
             {/* Progress bar */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <span style={{ fontSize: 12, color: '#2563EB', fontWeight: 600 }}>{STEPS[Math.min(step, 4)]}</span>
-              <span style={{ fontSize: 12, color: '#2563EB', fontWeight: 600 }}>{progress}%</span>
+              <span style={{ fontSize: 12, color: 'var(--cp-blue)', fontWeight: 600 }}>{STEPS[Math.min(step, 4)]}</span>
+              <span style={{ fontSize: 12, color: 'var(--cp-blue)', fontWeight: 600 }}>{progress}%</span>
             </div>
             <div style={{ width: '100%', height: 6, borderRadius: 999, background: '#F3F4F6', marginBottom: 20, overflow: 'hidden' }}>
               <div style={{
-                height: '100%', borderRadius: 999, background: '#2563EB',
+                height: '100%', borderRadius: 999, background: 'var(--cp-blue)',
                 width: `${Math.max(progress, 8)}%`,
                 transition: 'width 0.5s ease',
               }} />
@@ -413,11 +413,11 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                         background: state === 'done' ? '#DCFCE7' : state === 'active' ? '#EFF6FF' : '#F3F4F6',
                       }}>
                         {state === 'done' ? (
-                          <Check size={14} color="#16A34A" strokeWidth={2.5} />
+                          <Check size={14} color="var(--sem-success)" strokeWidth={2.5} />
                         ) : state === 'active' ? (
                           <div className="ra-epic-spinner" />
                         ) : (
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#9CA3AF' }}>{i + 1}</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-4)' }}>{i + 1}</span>
                         )}
                       </div>
                       <span style={{
@@ -441,7 +441,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
 
             {/* Info strip */}
             <div style={{
-              background: '#EFF6FF', borderRadius: 6, padding: '8px 12px', marginBottom: 20,
+              background: 'var(--cp-primary-5)', borderRadius: 6, padding: '8px 12px', marginBottom: 20,
             }}>
               <span style={{ fontSize: 12, color: '#1D4ED8' }}>
                 ⏱ Estimated: ~2 minutes · You'll be notified when done
@@ -449,12 +449,12 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </div>
 
             {/* Footer */}
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '0.75px solid #E2E8F0', paddingTop: 16 }}>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '0.75px solid var(--divider)', paddingTop: 16 }}>
               <button
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#374151', cursor: 'pointer',
+                  border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Stay on this page
@@ -463,7 +463,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#374151', cursor: 'pointer',
+                  border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Leave & Notify Me When Done

@@ -185,7 +185,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
           <button
             onClick={() => setPickerOpen(!pickerOpen)}
             className="p-1 rounded hover:bg-[#F1F5F9] transition-colors"
-            style={{ color: '#94A3B8' }}
+            style={{ color: 'var(--fg-4)' }}
           >
             <SmilePlus size={14} />
           </button>

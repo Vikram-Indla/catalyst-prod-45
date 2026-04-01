@@ -97,7 +97,7 @@ export function AIStrategyIntelligencePanel({
             <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #7C3AED, #6D28D9)' }}>
               <Sparkles size={16} className="text-white" />
             </div>
-            <h2 className="text-[15px] font-[700]" style={{ color: '#0F172A' }}>Strategy Intelligence</h2>
+            <h2 className="text-[15px] font-[700]" style={{ color: 'var(--fg-1)' }}>Strategy Intelligence</h2>
           </div>
           <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-md transition-colors">
             <X size={18} className="text-slate-400" />
@@ -111,7 +111,7 @@ export function AIStrategyIntelligencePanel({
             const c = LEVEL_COLORS[seg.level];
             return (
               <React.Fragment key={i}>
-                {i > 0 && <span className="text-[10px] font-medium" style={{ color: '#94A3B8' }}>›</span>}
+                {i > 0 && <span className="text-[10px] font-medium" style={{ color: 'var(--fg-4)' }}>›</span>}
                 <span
                   className="text-[10px] font-mono font-semibold px-2 py-[3px] rounded-md"
                   style={{ color: c.text, background: c.bg, border: `1px solid ${c.border}` }}
@@ -123,27 +123,27 @@ export function AIStrategyIntelligencePanel({
           })}
           {!metrics.initiativeKey && (
             <>
-              <span className="text-[10px] font-medium" style={{ color: '#94A3B8' }}>›</span>
+              <span className="text-[10px] font-medium" style={{ color: 'var(--fg-4)' }}>›</span>
               <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: '#D97706', background: '#FFFBEB', border: '1px solid #FDE68A' }}>⚠ No Initiative</span>
             </>
           )}
           {!metrics.epicKey && (
             <>
-              <span className="text-[10px] font-medium" style={{ color: '#94A3B8' }}>›</span>
+              <span className="text-[10px] font-medium" style={{ color: 'var(--fg-4)' }}>›</span>
               <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: '#5B21B6', background: '#EDE9FE', border: '1px solid #C4B5FD' }}>⚠ No Epic</span>
             </>
           )}
         </div>
 
         {/* Tab bar */}
-        <div className="flex border-b" style={{ borderColor: '#E2E8F0' }}>
+        <div className="flex border-b" style={{ borderColor: 'var(--divider)' }}>
           {TABS.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className="px-3 py-2 transition-colors relative"
               style={{
-                color: activeTab === tab.id ? '#0F172A' : '#64748B',
+                color: activeTab === tab.id ? 'var(--fg-1)' : 'var(--fg-3)',
                 fontWeight: activeTab === tab.id ? 700 : 500,
                 fontSize: 12,
                 letterSpacing: '0.03em',
@@ -152,7 +152,7 @@ export function AIStrategyIntelligencePanel({
             >
               {tab.label}
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: '#2563EB' }} />
+                <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: 'var(--cp-blue)' }} />
               )}
             </button>
           ))}
@@ -177,11 +177,11 @@ export function AIStrategyIntelligencePanel({
       </div>
 
       <div className="shrink-0 border-t px-7 py-2.5 flex items-center justify-between" style={{ borderColor: '#F1F5F9' }}>
-        <div className="flex items-center gap-1.5 text-[10px]" style={{ color: '#94A3B8' }}>
+        <div className="flex items-center gap-1.5 text-[10px]" style={{ color: 'var(--fg-4)' }}>
           <span style={{ color: '#A78BFA' }}>✦</span> AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500, color: '#64748B' }}>
+          <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)' }}>
             Regenerate
           </button>
           <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors" style={{ fontSize: 11, fontWeight: 600, color: '#FFFFFF', background: '#1E293B' }}>
@@ -330,7 +330,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
       <div className="grid grid-cols-3 gap-3 mb-6">
         <div className="border border-slate-200 rounded-lg p-3.5">
           <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>Goal Progress</p>
-          <p className="font-bold leading-none" style={{ fontSize: 20, color: goalProgress >= 60 ? '#16A34A' : goalProgress >= 40 ? '#D97706' : '#EF4444' }}>
+          <p className="font-bold leading-none" style={{ fontSize: 20, color: goalProgress >= 60 ? 'var(--sem-success)' : goalProgress >= 40 ? 'var(--sem-warning)' : 'var(--sem-danger)' }}>
             {goalProgress}%
           </p>
         </div>
@@ -627,10 +627,10 @@ function EpicsStoriesTab({ metrics, stories, aiResult, isAILoading }: { metrics:
             {m.storiesTotal > 0 ? (
               <>
                 <div className="flex h-3 rounded-full overflow-hidden mb-2">
-                  {m.storiesInProd > 0 && <div style={{ width: `${m.storiesInProd / m.storiesTotal * 100}%`, background: '#16A34A' }} />}
+                  {m.storiesInProd > 0 && <div style={{ width: `${m.storiesInProd / m.storiesTotal * 100}%`, background: 'var(--sem-success)' }} />}
                   {(m.storiesDone - m.storiesInProd) > 0 && <div style={{ width: `${(m.storiesDone - m.storiesInProd) / m.storiesTotal * 100}%`, background: '#86EFAC' }} />}
                   {m.storiesInProgress > 0 && <div style={{ width: `${m.storiesInProgress / m.storiesTotal * 100}%`, background: '#2563EB' }} />}
-                  {m.storiesBlocked > 0 && <div style={{ width: `${m.storiesBlocked / m.storiesTotal * 100}%`, background: '#EF4444' }} />}
+                  {m.storiesBlocked > 0 && <div style={{ width: `${m.storiesBlocked / m.storiesTotal * 100}%`, background: 'var(--sem-danger)' }} />}
                   {m.storiesBacklog > 0 && <div style={{ width: `${m.storiesBacklog / m.storiesTotal * 100}%`, background: '#E2E8F0' }} />}
                 </div>
                 <p className="text-[12px] text-slate-700">

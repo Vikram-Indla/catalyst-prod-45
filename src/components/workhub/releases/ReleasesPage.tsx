@@ -51,16 +51,16 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
           display: 'inline-flex', alignItems: 'center', gap: 6,
           padding: '6px 12px', borderRadius: 8,
           border: '1px solid var(--divider)',
-          background: selected.length > 0 ? '#eff6ff' : 'var(--cp-float)',
+          background: selected.length > 0 ? 'var(--cp-primary-5)' : 'var(--cp-float)',
           fontSize: 13, fontWeight: 500, cursor: 'pointer',
-          color: selected.length > 0 ? '#2563eb' : 'var(--fg-3)',
+          color: selected.length > 0 ? 'var(--cp-blue)' : 'var(--fg-3)',
         }}
       >
         {icon}
         {label}
         {selected.length > 0 && (
           <span style={{
-            background: '#2563eb', color: '#fff', borderRadius: 9999,
+            background: 'var(--cp-blue)', color: 'var(--bg-app)', borderRadius: 9999,
             fontSize: 10, fontWeight: 700, padding: '1px 6px', minWidth: 18, textAlign: 'center',
           }}>{selected.length}</span>
         )}
@@ -70,18 +70,18 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
       {open && (
         <div style={{
           position: 'absolute', top: '100%', left: 0, marginTop: 4,
-          background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10,
+          background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 10,
           boxShadow: '0 8px 24px rgba(0,0,0,.12)', zIndex: 9999,
           minWidth: 240, maxHeight: 320, overflow: 'hidden',
           display: 'flex', flexDirection: 'column',
         }}>
           {/* Search */}
-          <div style={{ padding: '8px 10px', borderBottom: '1px solid #f1f5f9' }}>
+          <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--bg-1)' }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              background: '#f8fafc', borderRadius: 6, padding: '4px 8px',
+              background: 'var(--bg-1)', borderRadius: 6, padding: '4px 8px',
             }}>
-              <Search size={13} color="#94a3b8" />
+              <Search size={13} color="var(--fg-4)" />
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -89,7 +89,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
                 autoFocus
                 style={{
                   border: 'none', outline: 'none', background: 'transparent',
-                  fontSize: 12, width: '100%', color: '#0f172a',
+                  fontSize: 12, width: '100%', color: 'var(--fg-1)',
                 }}
               />
             </div>
@@ -98,14 +98,14 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
           {/* Select All / Clear */}
           <div style={{
             display: 'flex', justifyContent: 'space-between', padding: '6px 12px',
-            borderBottom: '1px solid #f1f5f9', fontSize: 11, fontWeight: 600,
+            borderBottom: '1px solid var(--bg-1)', fontSize: 11, fontWeight: 600,
           }}>
             <button onClick={() => onChange([...options])}
-              style={{ border: 'none', background: 'none', color: '#2563eb', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
+              style={{ border: 'none', background: 'none', color: 'var(--cp-blue)', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
               Select All
             </button>
             <button onClick={() => onChange([])}
-              style={{ border: 'none', background: 'none', color: '#64748b', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
+              style={{ border: 'none', background: 'none', color: 'var(--fg-3)', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
               Clear
             </button>
           </div>
@@ -117,7 +117,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
               return (
                 <label key={opt} style={{
                   display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
-                  cursor: 'pointer', fontSize: 12, color: '#0f172a',
+                  cursor: 'pointer', fontSize: 12, color: 'var(--fg-1)',
                   background: checked ? '#f0f9ff' : 'transparent',
                 }}>
                   <input
@@ -126,14 +126,14 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
                     onChange={() => {
                       onChange(checked ? selected.filter(s => s !== opt) : [...selected, opt]);
                     }}
-                    style={{ accentColor: '#2563eb' }}
+                    style={{ accentColor: 'var(--cp-blue)' }}
                   />
                   {opt}
                 </label>
               );
             })}
             {filtered.length === 0 && (
-              <div style={{ padding: '12px', fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>
+              <div style={{ padding: '12px', fontSize: 12, color: 'var(--fg-4)', textAlign: 'center' }}>
                 No matches
               </div>
             )}
@@ -206,7 +206,7 @@ export function ReleasesPage() {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         height: '100%', gap: 12,
       }}>
-        <p style={{ color: '#ef4444', fontSize: 14 }}>Failed to load releases</p>
+        <p style={{ color: 'var(--sem-danger)', fontSize: 14 }}>Failed to load releases</p>
         <button onClick={() => refetch()} style={{
           padding: '8px 16px', borderRadius: 6, border: '1px solid var(--wh-border)',
           background: 'var(--wh-surface)', fontSize: 13, cursor: 'pointer',
@@ -237,8 +237,8 @@ export function ReleasesPage() {
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
               padding: '6px 16px', borderRadius: 9999, border: 'none',
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
-              background: isActive ? 'var(--wh-primary, #2563eb)' : 'var(--wh-border-light, #f1f5f9)',
-              color: isActive ? '#fff' : 'var(--fg-3)',
+              background: isActive ? 'var(--cp-blue)' : 'var(--bg-1)',
+              color: isActive ? 'var(--bg-app)' : 'var(--fg-3)',
               transition: 'background 150ms, color 150ms',
             }}>
               {tab} ({tabCounts[tab] ?? 0})
@@ -246,7 +246,7 @@ export function ReleasesPage() {
           );
         })}
 
-        <div style={{ width: 1, height: 24, background: '#e2e8f0', margin: '0 4px' }} />
+        <div style={{ width: 1, height: 24, background: 'var(--divider)', margin: '0 4px' }} />
 
         <MultiSelectFilter
           label="Project"
@@ -272,9 +272,9 @@ export function ReleasesPage() {
               display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '3px 10px', borderRadius: 9999,
               fontSize: 11, fontWeight: 600,
-              background: chip.type === 'project' ? '#f0fdf4' : '#eff6ff',
+              background: chip.type === 'project' ? '#f0fdf4' : 'var(--cp-primary-5)',
               color: chip.type === 'project' ? '#15803d' : '#1d4ed8',
-              border: `1px solid ${chip.type === 'project' ? '#bbf7d0' : '#bfdbfe'}`,
+              border: `1px solid ${chip.type === 'project' ? '#bbf7d0' : 'var(--cp-primary-20)'}`,
             }}>
               {chip.type === 'project' ? <FolderGit2 size={11} /> : <Milestone size={11} />}
               {chip.label}
@@ -285,7 +285,7 @@ export function ReleasesPage() {
             </span>
           ))}
           <button onClick={() => { setSelectedProjects([]); setSelectedReleases([]); }}
-            style={{ border: 'none', background: 'none', fontSize: 11, color: '#64748b', cursor: 'pointer', fontWeight: 600 }}>
+            style={{ border: 'none', background: 'none', fontSize: 11, color: 'var(--fg-3)', cursor: 'pointer', fontWeight: 600 }}>
             Clear all
           </button>
         </div>

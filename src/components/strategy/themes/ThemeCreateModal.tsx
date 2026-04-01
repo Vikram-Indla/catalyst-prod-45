@@ -17,12 +17,12 @@ interface Props {
 
 const inputStyle: React.CSSProperties = {
   width: '100%', fontSize: 13, padding: '8px 10px',
-  border: '1px solid #E2E8F0', borderRadius: 6,
-  color: '#0F172A', outline: 'none', background: '#FFFFFF',
+  border: '1px solid var(--divider)', borderRadius: 6,
+  color: 'var(--fg-1)', outline: 'none', background: 'var(--cp-float)',
 };
 
 const labelStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 600, color: '#334155',
+  fontSize: 11, fontWeight: 600, color: 'var(--fg-2)',
   display: 'block', marginBottom: 4,
 };
 
@@ -32,7 +32,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
 
   const [form, setForm] = useState({
     title: '', vision_statement: '', description: '',
-    color: '#2563EB', status: 'active' as 'active' | 'draft' | 'archived',
+    color: 'var(--cp-blue)', status: 'active' as 'active' | 'draft' | 'archived',
     priority: 'medium' as string,
     start_date: '', target_completion: '',
     fiscal_year: 2026, bsc_perspective: '' as string,
@@ -66,7 +66,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
     } else if (open) {
       setForm({
         title: '', vision_statement: '', description: '',
-        color: '#2563EB', status: 'active', priority: 'medium',
+        color: 'var(--cp-blue)', status: 'active', priority: 'medium',
         start_date: '', target_completion: '',
         fiscal_year: 2026, bsc_perspective: '',
         planned_budget: '', owner_id: '', theme_group_id: '',
@@ -124,21 +124,21 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
         position: 'fixed', top: '50%', left: '50%',
         transform: 'translate(-50%, -50%)',
         zIndex: 70, width: 640, maxHeight: '85vh',
-        background: '#FFFFFF', borderRadius: 12,
+        background: 'var(--cp-float)', borderRadius: 12,
         boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)',
         display: 'flex', flexDirection: 'column',
         animation: 'modalIn 200ms ease',
       }}>
         {/* Header — sticky */}
         <div className="flex items-center justify-between shrink-0" style={{
-          padding: '16px 24px', borderBottom: '1px solid #E2E8F0',
-          background: '#FFFFFF', borderRadius: '12px 12px 0 0', zIndex: 1,
+          padding: '16px 24px', borderBottom: '1px solid var(--divider)',
+          background: 'var(--cp-float)', borderRadius: '12px 12px 0 0', zIndex: 1,
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 600, color: '#0F172A' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1)' }}>
             {initialData ? 'Edit Strategic Theme' : 'Create Strategic Theme'}
           </h2>
           <button onClick={onClose} className="rounded-md p-1 hover:bg-gray-100" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-            <X size={18} color="#64748B" />
+            <X size={18} color="var(--fg-3)" />
           </button>
         </div>
 
@@ -147,7 +147,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
           <div className="space-y-4">
             {/* Theme Name */}
             <div>
-              <label style={labelStyle}>Theme Name <span style={{ color: '#EF4444' }}>*</span></label>
+              <label style={labelStyle}>Theme Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
               <input style={inputStyle} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Digital Transformation" />
             </div>
 
@@ -160,7 +160,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
 
             {/* Color */}
             <div>
-              <label style={labelStyle}>Theme Color <span style={{ color: '#EF4444' }}>*</span></label>
+              <label style={labelStyle}>Theme Color <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
               <div className="flex gap-2">
                 {THEME_COLORS.map(c => (
                   <button key={c} onClick={() => setForm(f => ({ ...f, color: c }))} className="rounded-full" style={{
@@ -174,7 +174,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             {/* Status + Priority */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={labelStyle}>Status <span style={{ color: '#EF4444' }}>*</span></label>
+                <label style={labelStyle}>Status <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
                 <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v as any }))}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent className="z-[9999]">
@@ -185,7 +185,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
                 </Select>
               </div>
               <div>
-                <label style={labelStyle}>Priority <span style={{ color: '#EF4444' }}>*</span></label>
+                <label style={labelStyle}>Priority <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
                 <Select value={form.priority} onValueChange={v => setForm(f => ({ ...f, priority: v }))}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent className="z-[9999]">
@@ -210,7 +210,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             {/* Owner + Fiscal Year */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={labelStyle}>Owner <span style={{ color: '#EF4444' }}>*</span></label>
+                <label style={labelStyle}>Owner <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
                 <Select value={form.owner_id || '_none'} onValueChange={v => setForm(f => ({ ...f, owner_id: v === '_none' ? '' : v }))}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select owner..." /></SelectTrigger>
                   <SelectContent className="z-[9999]">
@@ -219,7 +219,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
                 </Select>
               </div>
               <div>
-                <label style={labelStyle}>Fiscal Year <span style={{ color: '#EF4444' }}>*</span></label>
+                <label style={labelStyle}>Fiscal Year <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
                 <Select value={String(form.fiscal_year)} onValueChange={v => setForm(f => ({ ...f, fiscal_year: parseInt(v) }))}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent className="z-[9999]">
@@ -265,8 +265,8 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
               ) : (
                 <div className="flex gap-2">
                   <input style={{ ...inputStyle, flex: 1 }} placeholder="Group name" value={newGroupName} onChange={e => setNewGroupName(e.target.value)} autoFocus />
-                  <button onClick={handleCreateGroup} disabled={!newGroupName.trim()} style={{ fontSize: 11, fontWeight: 600, padding: '0 10px', borderRadius: 4, border: 'none', background: newGroupName.trim() ? '#2563EB' : '#94A3B8', color: '#FFF', cursor: newGroupName.trim() ? 'pointer' : 'default' }}>Create</button>
-                  <button onClick={() => { setShowNewGroup(false); setNewGroupName(''); }} style={{ fontSize: 11, padding: '0 10px', borderRadius: 4, border: '1px solid #E2E8F0', background: '#FFF', color: '#334155', cursor: 'pointer' }}>Cancel</button>
+                  <button onClick={handleCreateGroup} disabled={!newGroupName.trim()} style={{ fontSize: 11, fontWeight: 600, padding: '0 10px', borderRadius: 4, border: 'none', background: newGroupName.trim() ? 'var(--cp-blue)' : 'var(--fg-4)', color: '#FFF', cursor: newGroupName.trim() ? 'pointer' : 'default' }}>Create</button>
+                  <button onClick={() => { setShowNewGroup(false); setNewGroupName(''); }} style={{ fontSize: 11, padding: '0 10px', borderRadius: 4, border: '1px solid var(--divider)', background: '#FFF', color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
                 </div>
               )}
             </div>
@@ -287,7 +287,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
               <button
                 onClick={() => setForm(f => ({ ...f, success_metrics: [...f.success_metrics, { name: '', target: '' }] }))}
                 className="flex items-center gap-1"
-                style={{ fontSize: 12, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500, marginTop: 4 }}
+                style={{ fontSize: 12, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500, marginTop: 4 }}
               >
                 <Plus size={13} /> Add Another Metric
               </button>
@@ -297,17 +297,17 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
 
         {/* Footer — sticky */}
         <div className="flex items-center justify-end gap-2 shrink-0" style={{
-          padding: '14px 24px', borderTop: '1px solid #E2E8F0',
-          background: '#FFFFFF', borderRadius: '0 0 12px 12px',
+          padding: '14px 24px', borderTop: '1px solid var(--divider)',
+          background: 'var(--cp-float)', borderRadius: '0 0 12px 12px',
         }}>
-          <button onClick={onClose} style={{ fontSize: 12, fontWeight: 500, height: 34, padding: '0 14px', border: '1px solid #E2E8F0', borderRadius: 6, background: '#FFFFFF', color: '#334155', cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose} style={{ fontSize: 12, fontWeight: 500, height: 34, padding: '0 14px', border: '1px solid var(--divider)', borderRadius: 6, background: 'var(--cp-float)', color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
           {!initialData && (
-            <button onClick={() => handleSubmit('draft')} style={{ fontSize: 12, fontWeight: 500, height: 34, padding: '0 14px', border: '1px solid #E2E8F0', borderRadius: 6, background: '#FFFFFF', color: '#334155', cursor: 'pointer' }}>Save as Draft</button>
+            <button onClick={() => handleSubmit('draft')} style={{ fontSize: 12, fontWeight: 500, height: 34, padding: '0 14px', border: '1px solid var(--divider)', borderRadius: 6, background: 'var(--cp-float)', color: 'var(--fg-2)', cursor: 'pointer' }}>Save as Draft</button>
           )}
           <button onClick={() => handleSubmit()} disabled={!form.title.trim()} style={{
             fontSize: 12, fontWeight: 600, height: 34, padding: '0 16px',
             border: 'none', borderRadius: 6,
-            background: form.title.trim() ? '#2563EB' : '#94A3B8',
+            background: form.title.trim() ? 'var(--cp-blue)' : 'var(--fg-4)',
             color: '#FFFFFF', cursor: form.title.trim() ? 'pointer' : 'default',
           }}>{initialData ? 'Update Theme' : 'Create Theme'}</button>
         </div>

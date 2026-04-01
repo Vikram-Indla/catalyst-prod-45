@@ -258,7 +258,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
           <button
             onClick={handleClose}
             className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-[#F1F5F9] transition-colors"
-            style={{ color: '#94A3B8' }}
+            style={{ color: 'var(--fg-4)' }}
           >
             <X size={16} />
           </button>
@@ -373,7 +373,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                   <div className="overflow-y-auto flex-1">
                     <button
                       className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] hover:bg-[#F1F5F9]"
-                      style={{ color: '#94A3B8' }}
+                      style={{ color: 'var(--fg-4)' }}
                       onClick={() => { setAssigneeId(null); setAssigneeOpen(false); setAssigneeSearch(''); }}
                     >
                       Unassigned
@@ -382,7 +382,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                       <button
                         key={p.id}
                         className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[#F1F5F9] text-left"
-                        style={{ color: '#334155' }}
+                        style={{ color: 'var(--fg-2)' }}
                         onClick={() => { setAssigneeId(p.id); setAssigneeOpen(false); setAssigneeSearch(''); }}
                       >
                         <ProfileAvatar name={p.full_name} url={p.avatar_url} size={18} />
@@ -485,7 +485,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                 <FixedDropdown maxHeight={200} onClick={e => e.stopPropagation()}>
                   <button
                     className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[#F1F5F9]"
-                    style={{ color: '#94A3B8' }}
+                    style={{ color: 'var(--fg-4)' }}
                     onClick={() => { setReleaseId(null); setReleaseOpen(false); }}
                   >
                     None
@@ -494,7 +494,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                     <button
                       key={r.id}
                       className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[#F1F5F9] text-left"
-                      style={{ color: '#334155' }}
+                      style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setReleaseId(r.id); setReleaseOpen(false); }}
                     >
                       <span className="px-1.5 py-0.5 rounded text-[9px] font-bold" style={{ background: '#F0FDFA', color: 'var(--sem-success)' }}>
@@ -539,7 +539,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                 <div className="overflow-y-auto flex-1">
                   <button
                     className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[#F1F5F9]"
-                    style={{ color: '#94A3B8' }}
+                    style={{ color: 'var(--fg-4)' }}
                     onClick={() => { setParentId(null); setParentOpen(false); setParentSearch(''); }}
                   >
                     None
@@ -548,7 +548,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                     <button
                       key={p.id}
                       className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[#F1F5F9] text-left"
-                      style={{ color: '#334155' }}
+                      style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setParentId(p.id); setParentOpen(false); setParentSearch(''); }}
                     >
                       <span style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)', fontSize: 10 }}>

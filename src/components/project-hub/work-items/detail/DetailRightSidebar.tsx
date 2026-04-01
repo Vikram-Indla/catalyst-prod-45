@@ -62,7 +62,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
     queryFn: async () => {
       const { data, error } = await supabase.from('ph_work_item_labels').select('label_id, ph_labels(id, name, color)').eq('work_item_id', item.id);
       if (error) throw error;
-      return (data || []).map((d: any) => ({ id: d.ph_labels?.id, name: d.ph_labels?.name ?? '', color: d.ph_labels?.color ?? '#2563EB' }));
+      return (data || []).map((d: any) => ({ id: d.ph_labels?.id, name: d.ph_labels?.name ?? '', color: d.ph_labels?.color ?? 'var(--cp-blue)' }));
     },
   });
 

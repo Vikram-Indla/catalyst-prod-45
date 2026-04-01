@@ -52,8 +52,8 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
     <div
       onClick={onClick}
       style={{
-        background: 'var(--wh-surface, #fff)',
-        border: '1px solid var(--wh-border, #e2e8f0)',
+        background: 'var(--cp-float)',
+        border: '1px solid var(--divider)',
         borderRadius: 'var(--wh-radius-xl, 12px)',
         padding: '20px 20px 20px 24px',
         boxShadow: 'var(--wh-shadow-sm)',
@@ -78,7 +78,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
           <div style={{
             fontFamily: 'var(--wh-font-display, Sora, sans-serif)',
             fontSize: 18, fontWeight: 700,
-            color: 'var(--wh-text-primary, #0f172a)',
+            color: 'var(--fg-1)',
           }}>
             {release.versionName}
           </div>
@@ -98,14 +98,14 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
       {/* Date + Overdue */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
         {release.releaseDate && (
-          <span style={{ fontSize: 13, color: 'var(--wh-text-secondary, #64748b)' }}>
+          <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>
             Due: {formatDate(release.releaseDate)}
           </span>
         )}
         {isOverdue && (
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            fontSize: 12, fontWeight: 600, color: '#ef4444',
+            fontSize: 12, fontWeight: 600, color: 'var(--sem-danger)',
           }}>
             <AlertTriangle size={14} />
             Overdue
@@ -126,7 +126,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
       {/* Projects */}
       {release.projects.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 12, flexWrap: 'wrap' }}>
-          <FolderGit2 size={13} style={{ color: 'var(--wh-text-tertiary, #94a3b8)', flexShrink: 0 }} />
+          <FolderGit2 size={13} style={{ color: 'var(--fg-4)', flexShrink: 0 }} />
           {release.projects.map((proj, i) => (
             <span key={proj} style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
@@ -158,7 +158,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
               {extraCount > 0 && (
                 <span style={{
                   width: 28, height: 28, borderRadius: '50%',
-                  background: '#e2e8f0', color: '#475569',
+                  background: 'var(--divider)', color: 'var(--fg-2)',
                   fontSize: 10, fontWeight: 700,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   marginLeft: -6, border: '2px solid white',
@@ -169,7 +169,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
               )}
             </div>
           )}
-          <span style={{ fontSize: 12, color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+          <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>
             {release.totalItems} items · {release.assignees.length} assignees · {release.projects.length} projects
           </span>
         </div>
@@ -178,7 +178,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
           onClick={(e) => { e.stopPropagation(); onClick(); }}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            fontSize: 13, fontWeight: 500, color: 'var(--wh-primary, #2563eb)',
+            fontSize: 13, fontWeight: 500, color: 'var(--cp-blue)',
             cursor: 'pointer',
           }}
           className="wh-view-detail"
@@ -219,7 +219,7 @@ function AvatarChip({ assignee, index }: { assignee: { displayName: string; avat
       ) : (
         <div style={{
           width: '100%', height: '100%',
-          background: bg, color: '#fff',
+          background: bg, color: 'var(--bg-app)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 9, fontWeight: 700,
         }}>

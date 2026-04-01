@@ -91,8 +91,8 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
 
   if (items.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748B' }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No work items found</div>
+      <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--fg-3)' }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items found</div>
         <div style={{ fontSize: 13 }}>Items assigned to {memberName || 'this member'} will appear here.</div>
       </div>
     );
@@ -101,7 +101,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
   return (
     <div style={{ position: 'relative', paddingLeft: 32 }}>
       {/* Vertical timeline line */}
-      <div style={{ position: 'absolute', left: '15px', top: '28px', bottom: '20px', width: '2px', background: '#E2E8F0', borderRadius: '1px' }} />
+      <div style={{ position: 'absolute', left: '15px', top: '28px', bottom: '20px', width: '2px', background: 'var(--divider)', borderRadius: '1px' }} />
 
       {Array.from(groups.entries()).map(([dateLabel, groupItems]) => {
         const isCollapsed = collapsed.has(dateLabel);
@@ -111,8 +111,8 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
 
         const dotStyle: React.CSSProperties = {
           width: '10px', height: '10px', borderRadius: '50%', flexShrink: 0, zIndex: 3,
-          background: isToday ? '#2563EB' : isYesterday ? '#334155' : '#FFFFFF',
-          border: isToday ? '2px solid #2563EB' : isYesterday ? '2px solid #334155' : '2px solid #64748B',
+          background: isToday ? 'var(--cp-blue)' : isYesterday ? 'var(--fg-2)' : 'var(--bg-app)',
+          border: isToday ? '2px solid var(--cp-blue)' : isYesterday ? '2px solid var(--fg-2)' : '2px solid var(--fg-3)',
         };
 
         // Mini progress bar
@@ -130,9 +130,9 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
             }}>
               <div style={dotStyle} />
               <span style={{ fontSize: 14, fontWeight: 600, color: '#020617' }}>{dateLabel}</span>
-              <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#334155', background: '#F1F5F9', padding: '2px 8px', borderRadius: '10px' }}>{total} items</span>
+              <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '10px' }}>{total} items</span>
               {/* Mini bar */}
-              <div style={{ display: 'flex', height: '4px', borderRadius: '2px', overflow: 'hidden', width: '80px', background: '#F1F5F9', flexShrink: 0 }}>
+              <div style={{ display: 'flex', height: '4px', borderRadius: '2px', overflow: 'hidden', width: '80px', background: 'var(--bg-3)', flexShrink: 0 }}>
                 {doneC > 0 && <div style={{ width: `${(doneC/total)*100}%`, background: '#16A34A' }} />}
                 {ipC > 0 && <div style={{ width: `${(ipC/total)*100}%`, background: '#2563EB' }} />}
                 {todoC > 0 && <div style={{ width: `${(todoC/total)*100}%`, background: '#D97706' }} />}
@@ -140,7 +140,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
               </div>
               {/* Chevron */}
               <svg style={{
-                width: '16px', height: '16px', color: '#64748B', flexShrink: 0, marginLeft: 'auto',
+                width: '16px', height: '16px', color: 'var(--fg-3)', flexShrink: 0, marginLeft: 'auto',
                 transition: 'transform .2s', transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
               }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m6 9 6 6 6-6" />
@@ -157,8 +157,8 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                   return (
                     <div key={item.id} onClick={() => onItemClick(item)} style={{
                       display: 'flex', alignItems: 'flex-start', gap: '10px',
-                      padding: '10px 14px 10px 17px', background: '#FFFFFF',
-                      border: '1px solid #E2E8F0', borderRadius: '8px', cursor: 'pointer', position: 'relative',
+                      padding: '10px 14px 10px 17px', background: 'var(--bg-app)',
+                      border: '1px solid var(--divider)', borderRadius: '8px', cursor: 'pointer', position: 'relative',
                       transition: 'border-color .15s, box-shadow .15s',
                     }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = '#94A3B8'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(15,23,42,.06)'; }}

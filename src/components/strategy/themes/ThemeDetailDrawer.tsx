@@ -51,7 +51,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
   const pri = theme.priority ? PRIORITY_CONFIG[theme.priority] : null;
 
   // Dark palette shortcuts
-  const bg = isDark ? '#232019' : '#FFFFFF';
+  const bg = isDark ? '#232019' : 'var(--bg-app)';
   const t1 = isDark ? DK.t1 : '#0F172A';
   const t2 = isDark ? DK.t2 : '#64748B';
   const t3 = isDark ? DK.t3 : '#94A3B8';
@@ -90,7 +90,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
           <div className="shrink-0 rounded-full" style={{ width: 12, height: 12, background: theme.color }} />
           <h2 className="truncate flex-1" style={{ fontSize: 16, fontWeight: 700, color: t1 }}>{theme.title}</h2>
           <button onClick={() => onEdit(theme)} style={{ fontSize: 12, color: linkBlue, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Edit</button>
-          <button onClick={() => setConfirmDelete(true)} style={{ fontSize: 12, color: isDark ? '#F87171' : '#EF4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
+          <button onClick={() => setConfirmDelete(true)} style={{ fontSize: 12, color: isDark ? '#F87171' : 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
           <button onClick={onClose} className="flex items-center justify-center rounded" style={{ width: 28, height: 28, border: 'none', background: 'none', cursor: 'pointer' }}
             onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -104,7 +104,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
           <div style={{ padding: '12px 20px', background: isDark ? 'rgba(220,38,38,0.12)' : '#FEF2F2', borderBottom: `1px solid ${isDark ? 'rgba(220,38,38,0.25)' : '#FECACA'}` }}>
             <p style={{ fontSize: 12, color: isDark ? '#FCA5A5' : '#991B1B', marginBottom: 8 }}>Delete "<strong>{theme.title}</strong>"? This will also remove all milestones and links.</p>
             <div className="flex gap-2">
-              <button onClick={() => { onDelete(theme); setConfirmDelete(false); }} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: '#DC2626', color: '#FFF', cursor: 'pointer' }}>Delete</button>
+              <button onClick={() => { onDelete(theme); setConfirmDelete(false); }} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: 'var(--sem-danger)', color: '#FFF', cursor: 'pointer' }}>Delete</button>
               <button onClick={() => setConfirmDelete(false)} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, border: `1px solid ${border}`, background: isDark ? 'transparent' : '#FFF', color: isDark ? DK.t1 : '#334155', cursor: 'pointer' }}>Cancel</button>
             </div>
           </div>
@@ -118,9 +118,9 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
               onClick={() => setTab(t)}
               style={{
                 fontSize: 12, fontWeight: tab === t ? 600 : 500,
-                color: tab === t ? '#2563EB' : (isDark ? DK.t3 : '#64748B'),
+                color: tab === t ? 'var(--cp-blue)' : (isDark ? DK.t3 : 'var(--fg-3)'),
                 padding: '10px 12px', border: 'none', background: 'none',
-                borderBottom: tab === t ? '2px solid #2563EB' : '2px solid transparent',
+                borderBottom: tab === t ? '2px solid var(--cp-blue)' : '2px solid transparent',
                 cursor: 'pointer', whiteSpace: 'nowrap',
               }}
             >{t}</button>
@@ -144,14 +144,14 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
 // ═══ DARK HELPERS ═══
 function dk(isDark: boolean) {
   return {
-    t1: isDark ? DK.t1 : '#0F172A',
-    t2: isDark ? DK.t2 : '#64748B',
-    t3: isDark ? DK.t3 : '#94A3B8',
-    border: isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0',
-    borderSubtle: isDark ? 'rgba(255,255,255,0.06)' : '#F8FAFC',
-    cardBg: isDark ? 'rgba(255,255,255,0.04)' : '#F8FAFC',
-    hoverBg: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC',
-    linkBlue: isDark ? '#60A5FA' : '#2563EB',
+    t1: isDark ? DK.t1 : 'var(--fg-1)',
+    t2: isDark ? DK.t2 : 'var(--fg-3)',
+    t3: isDark ? DK.t3 : 'var(--fg-4)',
+    border: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)',
+    borderSubtle: isDark ? 'rgba(255,255,255,0.06)' : 'var(--bg-1)',
+    cardBg: isDark ? 'rgba(255,255,255,0.04)' : 'var(--bg-1)',
+    hoverBg: isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-1)',
+    linkBlue: isDark ? '#60A5FA' : 'var(--cp-blue)',
   };
 }
 
@@ -443,7 +443,7 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
               <input type="date" style={inputStyle} value={formData.due_date} onChange={e => setFormData(f => ({ ...f, due_date: e.target.value }))} />
             </div>
             <div className="flex gap-2">
-              <button onClick={handleSave} disabled={!formData.name.trim()} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: formData.name.trim() ? '#2563EB' : d.t3, color: '#FFF', cursor: formData.name.trim() ? 'pointer' : 'default' }}>{editingId ? 'Update' : 'Add'}</button>
+              <button onClick={handleSave} disabled={!formData.name.trim()} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: formData.name.trim() ? 'var(--cp-blue)' : d.t3, color: '#FFF', cursor: formData.name.trim() ? 'pointer' : 'default' }}>{editingId ? 'Update' : 'Add'}</button>
               <button onClick={resetForm} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, border: `1px solid ${d.border}`, background: isDark ? 'transparent' : '#FFF', color: d.t1, cursor: 'pointer' }}>Cancel</button>
             </div>
           </div>

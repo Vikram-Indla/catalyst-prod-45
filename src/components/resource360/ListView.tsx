@@ -15,10 +15,10 @@ const formatAge = (days: number | null | undefined): string => {
 };
 
 const ageColor = (days: number | null | undefined): string => {
-  if (days == null) return '#64748B';
-  if (days > 365) return '#DC2626';
-  if (days > 14) return '#DC2626';
-  if (days > 7) return '#D97706';
+  if (days == null) return 'var(--fg-3)';
+  if (days > 365) return 'var(--sem-danger)';
+  if (days > 14) return 'var(--sem-danger)';
+  if (days > 7) return 'var(--sem-warning)';
   return '#059669';
 };
 
@@ -41,9 +41,9 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
 
   const headerStyle: React.CSSProperties = {
     fontSize: 10.5, fontWeight: 800, textTransform: 'uppercase',
-    letterSpacing: '0.08em', color: '#64748B',
-    padding: '8px 10px', background: '#F1F5F9',
-    borderBottom: '2px solid #E2E8F0', whiteSpace: 'nowrap',
+    letterSpacing: '0.08em', color: 'var(--fg-3)',
+    padding: '8px 10px', background: 'var(--bg-3)',
+    borderBottom: '2px solid var(--divider)', whiteSpace: 'nowrap',
   };
 
   const groupLabel: Record<string, string> = { todo: 'To Do', progress: 'In Progress', done: 'Done' };
@@ -53,10 +53,10 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
     return (
       <div style={{ padding: '48px 20px', textAlign: 'center', fontFamily: "'Inter', sans-serif" }}>
         <div style={{ fontSize: 32, marginBottom: 8 }}>📋</div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 4 }}>
           {roleFilter !== 'all' ? 'No items match role filter' : 'No work items'}
         </div>
-        <div style={{ fontSize: 12, color: '#64748B' }}>
+        <div style={{ fontSize: 12, color: 'var(--fg-3)' }}>
           {roleFilter !== 'all' ? 'Try switching to "All" to see all items' : 'Work items will appear here as they are assigned'}
         </div>
       </div>
@@ -65,7 +65,7 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
 
   return (
     <div style={{ padding: '0 20px 20px', fontFamily: "'Inter', sans-serif" }}>
-      <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
@@ -88,8 +88,8 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                     </td>
                   </tr>
                   {catItems.map(it => {
-                    const witStyle = WIT_STYLES[it.work_item_type] || { bg: '#F1F5F9', color: '#334155' };
-                    const hubColor = HUB_COLORS[it.source_hub] || '#64748B';
+                    const witStyle = WIT_STYLES[it.work_item_type] || { bg: 'var(--bg-3)', color: 'var(--fg-2)' };
+                    const hubColor = HUB_COLORS[it.source_hub] || 'var(--fg-3)';
                     const isReported = it.resource_role === 'reported';
                     return (
                       <tr
@@ -101,15 +101,15 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                         onKeyDown={e => { if (e.key === 'Enter') onItemClick(it); }}
                         style={{
                           height: 44, maxHeight: 44, cursor: 'pointer',
-                          borderBottom: '1px solid #F1F5F9',
+                          borderBottom: '1px solid var(--bg-3)',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = ''; }}
                       >
-                        <td style={{ padding: '0 10px', fontSize: 11, fontWeight: 800, fontFamily: 'monospace', color: '#0F172A' }}>
+                        <td style={{ padding: '0 10px', fontSize: 11, fontWeight: 800, fontFamily: 'monospace', color: 'var(--fg-1)' }}>
                           {it.item_key}
                         </td>
-                        <td style={{ padding: '0 10px', fontSize: 12, color: '#0F172A', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '0 10px', fontSize: 12, color: 'var(--fg-1)', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {it.title}
                         </td>
                         <td style={{ padding: '0 10px' }}>
@@ -135,7 +135,7 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                         <td style={{ padding: '0 10px', fontSize: 11 }}>
                           {PRIORITY_ICONS[it.priority] || ''} {it.priority}
                         </td>
-                        <td style={{ padding: '0 10px', fontSize: 11, color: '#475569' }}>
+                        <td style={{ padding: '0 10px', fontSize: 11, color: 'var(--fg-2)' }}>
                           {it.project_name || '—'}
                         </td>
                         <td style={{
