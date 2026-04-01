@@ -102,7 +102,7 @@ export function StoriesKanbanView({ stories, onStorySelect, onRefetch }: Stories
 
                                 {story.iterations?.name && (
                                   <div className="text-xs text-muted-foreground truncate">
-                                    Sprint: {story.iterations.name}
+                                    Release: {story.iterations.name}
                                   </div>
                                 )}
 

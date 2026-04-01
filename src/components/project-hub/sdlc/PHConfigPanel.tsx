@@ -85,7 +85,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
         className="fixed top-0 right-0 bottom-0 z-50 flex flex-col"
         style={{
           width: 460,
-          background: '#fff',
+          background: 'var(--cp-float)',
           borderLeft: '1px solid var(--divider)',
           boxShadow: '-8px 0 30px rgba(15,23,42,.1)',
           animation: 'phSlideInRight 200ms ease',
@@ -284,7 +284,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
               <div className="flex gap-2">
                 <button
                   className="px-4 py-2 rounded-md transition-colors"
-                  style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', background: '#fff', color: 'var(--fg-2)', cursor: 'pointer' }}
+                  style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', background: 'var(--cp-float)', color: 'var(--fg-2)', cursor: 'pointer' }}
                 >
                   Duplicate Board
                 </button>
@@ -307,7 +307,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
           <button
             onClick={() => { setDirty(false); onClose(); }}
             className="px-4 py-1.5 rounded-md transition-colors"
-            style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', background: '#fff', color: 'var(--fg-3)', cursor: 'pointer', borderRadius: 6 }}
+            style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', background: 'var(--cp-float)', color: 'var(--fg-3)', cursor: 'pointer', borderRadius: 6 }}
           >
             Cancel
           </button>

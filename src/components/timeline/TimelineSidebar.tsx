@@ -72,7 +72,7 @@ export function TimelineSidebar({
               >
                 <div
                   className="w-1 h-6 rounded mr-3"
-                  style={{ background: priorityConfig?.color || '#c8ccd0' }}
+                  style={{ background: priorityConfig?.color || 'var(--fg-4)' }}
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">

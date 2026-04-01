@@ -35,7 +35,7 @@ export function NotificationsTab() {
               <span
                 className="rounded-full"
                 style={{
-                  width: 16, height: 16, background: '#FFFFFF', borderRadius: '50%',
+                  width: 16, height: 16, background: 'var(--cp-float)', borderRadius: '50%',
                   position: 'absolute', top: 3, left: 3,
                   boxShadow: '0 1px 2px rgba(0,0,0,0.15)',
                 }}

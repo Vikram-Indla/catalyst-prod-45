@@ -62,7 +62,7 @@ export function ProjectHeaderCard({
             className="flex items-center justify-center rounded-md hover:bg-[#F8FAFC] transition-colors"
             style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
-            <Star size={16} color={starred ? '#EAB308' : 'var(--fg-4)'} fill={starred ? '#EAB308' : 'none'} strokeWidth={1.75} />
+            <Star size={16} color={starred ? 'var(--sem-star)' : 'var(--fg-4)'} fill={starred ? 'var(--sem-star)' : 'none'} strokeWidth={1.75} />
           </button>
           <button
             onClick={onSettings}

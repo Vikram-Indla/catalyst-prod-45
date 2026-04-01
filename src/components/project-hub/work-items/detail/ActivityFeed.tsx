@@ -192,7 +192,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
           {pickerOpen && (
             <div
               className="absolute left-0 bottom-full mb-1 flex gap-0.5 rounded-md p-1"
-              style={{ background: '#FFF', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }}
+              style={{ background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }}
             >
               {EMOJI_OPTIONS.map(e => (
                 <button

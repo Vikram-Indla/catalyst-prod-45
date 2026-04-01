@@ -1196,7 +1196,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                           backgroundColor: 'hsl(var(--roadmap-charcoal))',
                           color: 'white',
                           border: '1px solid rgba(184,148,79,0.3)',
-                          boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px hsla(35, 46%, 60%, 0.15)'
+                          boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(184,148,79,0.15)'
                         }}
                       >
                         <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: '#C5A86E' }}>

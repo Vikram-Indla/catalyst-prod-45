@@ -234,7 +234,7 @@ export function WorkItemsTable({
       />
 
       <div className="border rounded-t-md overflow-hidden" style={{
-        borderColor: 'var(--divider)', background: '#FFFFFF',
+        borderColor: 'var(--divider)', background: 'var(--cp-float)',
         borderTopLeftRadius: selectedIds.size > 0 ? 0 : undefined,
         borderTopRightRadius: selectedIds.size > 0 ? 0 : undefined,
       }}>

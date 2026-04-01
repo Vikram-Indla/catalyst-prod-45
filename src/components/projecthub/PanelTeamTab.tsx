@@ -160,7 +160,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
         <button
           onClick={() => setShowAddDialog(true)}
           className="flex items-center gap-1.5 rounded-lg transition-colors hover:opacity-90"
-          style={{ height: 38, padding: '0 14px', background: '#2563EB', border: 'none', fontSize: 12, fontWeight: 600, color: '#FFF', cursor: 'pointer', whiteSpace: 'nowrap' }}
+          style={{ height: 38, padding: '0 14px', background: 'var(--cp-blue)', border: 'none', fontSize: 12, fontWeight: 600, color: '#FFF', cursor: 'pointer', whiteSpace: 'nowrap' }}
         >
           <UserPlus size={14} /> Add
         </button>
@@ -195,7 +195,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
               </div>
               <button
                 className="flex items-center gap-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                style={{ height: 26, padding: '0 10px', background: '#2563EB', border: 'none', fontSize: 11, fontWeight: 600, color: '#FFF', cursor: 'pointer' }}
+                style={{ height: 26, padding: '0 10px', background: 'var(--cp-blue)', border: 'none', fontSize: 11, fontWeight: 600, color: '#FFF', cursor: 'pointer' }}
                 onClick={e => { e.stopPropagation(); addMember.mutate({ userId: u.id, profileId: u.profile_id, roleName: u.role_name }); }}
               >
                 <UserPlus size={11} /> Add
@@ -211,7 +211,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
           {search ? `No team members match "${search}"` : 'No team members assigned'}
           {!search && (
             <div className="mt-3">
-              <button onClick={() => setShowAddDialog(true)} className="inline-flex items-center gap-1.5 rounded-lg" style={{ height: 36, padding: '0 16px', background: '#2563EB', border: 'none', fontSize: 12, fontWeight: 600, color: '#FFF', cursor: 'pointer' }}>
+              <button onClick={() => setShowAddDialog(true)} className="inline-flex items-center gap-1.5 rounded-lg" style={{ height: 36, padding: '0 16px', background: 'var(--cp-blue)', border: 'none', fontSize: 12, fontWeight: 600, color: '#FFF', cursor: 'pointer' }}>
                 <UserPlus size={14} /> Add Member
               </button>
             </div>

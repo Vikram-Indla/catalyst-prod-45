@@ -27,7 +27,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
     >
       <div
         style={{
-          width: 440, background: '#FFFFFF', borderRadius: 12, padding: '24px',
+          width: 440, background: 'var(--cp-float)', borderRadius: 12, padding: '24px',
           boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)',
           fontFamily: "'Inter', sans-serif",
         }}
@@ -58,7 +58,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
             style={{
               height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500,
               color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
-              background: '#FFFFFF', cursor: 'pointer',
+              background: 'var(--cp-float)', cursor: 'pointer',
             }}
           >
             Cancel

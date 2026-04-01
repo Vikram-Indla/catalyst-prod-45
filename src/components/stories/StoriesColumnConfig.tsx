@@ -27,7 +27,7 @@ interface StoriesColumnConfigProps {
 const DEFAULT_COLUMNS: Column[] = [
   { id: 'name', label: 'Story Name', enabled: true },
   { id: 'feature', label: 'Feature', enabled: true },
-  { id: 'sprint', label: 'Sprint', enabled: true },
+  { id: 'sprint', label: 'Release', enabled: true },
   { id: 'team', label: 'Team', enabled: true },
   { id: 'points', label: 'Story Points', enabled: true },
   { id: 'assignee', label: 'Assignee', enabled: true },

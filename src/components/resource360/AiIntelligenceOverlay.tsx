@@ -221,7 +221,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
               <br />This may take 15-30 seconds.
             </div>
             <div style={{ marginTop: 20 }}>
-              <div style={{ width: 200, height: 4, background: '#EDE9FE', borderRadius: 2, margin: '0 auto', overflow: 'hidden' }}>
+              <div style={{ width: 200, height: 4, background: '#DBEAFE', borderRadius: 2, margin: '0 auto', overflow: 'hidden' }}>
                 <div style={{ width: '60%', height: '100%', background: '#3B82F6', borderRadius: 2, animation: 'indeterminate 1.5s ease-in-out infinite' }} />
               </div>
             </div>
@@ -521,7 +521,7 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
     }}>
       <span style={{ fontSize: 10, fontWeight: 800 }}>✦</span>
       {title}
-      <div style={{ flex: 1, height: 1, background: '#EDE9FE' }} />
+      <div style={{ flex: 1, height: 1, background: '#DBEAFE' }} />
     </div>
     {children}
   </div>

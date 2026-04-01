@@ -37,8 +37,8 @@ export function DefectStatsWidget({ stats }: Props) {
   return (
     <div
       style={{
-        backgroundColor: 'hsl(var(--card))',
-        border: '1px solid hsl(var(--border))',
+        backgroundColor: 'var(--bg-app)',
+        border: '1px solid var(--divider)',
         borderRadius: 12,
         padding: 24,
         cursor: 'pointer',
@@ -46,7 +46,7 @@ export function DefectStatsWidget({ stats }: Props) {
       }}
       onClick={() => navigate('/testhub/defects')}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 4px 12px hsla(0 0% 0% / .08)';
+        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = 'none';
@@ -63,10 +63,10 @@ export function DefectStatsWidget({ stats }: Props) {
             <Bug size={18} color="#FFFFFF" />
           </div>
           <div>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
               Defect Tracker
             </h3>
-            <p style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', margin: 0 }}>
+            <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>
               {total} total defects
             </p>
           </div>
@@ -94,7 +94,7 @@ export function DefectStatsWidget({ stats }: Props) {
           return (
             <div key={item.label} style={{
               textAlign: 'center', padding: '10px 4px',
-              backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 8,
+              backgroundColor: 'color-mix(in srgb, var(--bg-2) 30%, transparent)', borderRadius: 8,
             }}>
               <Icon size={14} color={item.color} style={{ marginBottom: 4 }} />
               <p style={{
@@ -103,7 +103,7 @@ export function DefectStatsWidget({ stats }: Props) {
               }}>
                 {item.value}
               </p>
-              <p style={{ fontSize: 10, color: 'hsl(var(--muted-foreground))', margin: 0, fontWeight: 500 }}>
+              <p style={{ fontSize: 10, color: 'var(--fg-3)', margin: 0, fontWeight: 500 }}>
                 {item.label}
               </p>
             </div>
@@ -114,7 +114,7 @@ export function DefectStatsWidget({ stats }: Props) {
       {/* Severity Breakdown */}
       <div>
         <p style={{
-          fontSize: 11, fontWeight: 600, color: 'hsl(var(--muted-foreground))',
+          fontSize: 11, fontWeight: 600, color: 'var(--fg-3)',
           margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '.04em',
         }}>
           By Severity
@@ -126,14 +126,14 @@ export function DefectStatsWidget({ stats }: Props) {
             return (
               <div key={bar.key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
-                  fontSize: 11, fontWeight: 500, color: 'hsl(var(--muted-foreground))',
+                  fontSize: 11, fontWeight: 500, color: 'var(--fg-3)',
                   width: 52, flexShrink: 0,
                 }}>
                   {bar.label}
                 </span>
                 <div style={{
                   flex: 1, height: 6, borderRadius: 3,
-                  backgroundColor: 'hsl(var(--muted) / 0.4)',
+                  backgroundColor: 'color-mix(in srgb, var(--bg-2) 40%, transparent)',
                   overflow: 'hidden',
                 }}>
                   <div style={{
@@ -144,7 +144,7 @@ export function DefectStatsWidget({ stats }: Props) {
                   }} />
                 </div>
                 <span style={{
-                  fontSize: 11, fontWeight: 600, color: 'hsl(var(--foreground))',
+                  fontSize: 11, fontWeight: 600, color: 'var(--fg-1)',
                   width: 24, textAlign: 'right', fontVariantNumeric: 'tabular-nums',
                 }}>
                   {count}

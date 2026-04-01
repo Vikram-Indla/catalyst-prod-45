@@ -187,13 +187,13 @@ export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: Sto
 
           {/* Sprint */}
           <div className="space-y-2">
-            <Label>Sprint</Label>
+            <Label>Release</Label>
             <Select
               value={filters.sprintId || undefined}
               onValueChange={(value) => setFilters({ ...filters, sprintId: value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="All Sprints" />
+                <SelectValue placeholder="All Releases" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="backlog">Backlog</SelectItem>

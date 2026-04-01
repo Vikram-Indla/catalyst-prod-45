@@ -33,15 +33,15 @@ export function TopFailingTests({ tests }: Props) {
   if (tests.length === 0) return null;
 
   return (
-    <div style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 12, padding: 24 }}>
+    <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 12, padding: 24 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
         <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <TrendingDown size={18} color="var(--sem-danger)" />
         </div>
         <div>
-          <p style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))', margin: 0 }}>Top Failing Tests</p>
-          <p style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', margin: 0 }}>Tests that fail most frequently across all cycles</p>
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>Top Failing Tests</p>
+          <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>Tests that fail most frequently across all cycles</p>
         </div>
       </div>
 
@@ -73,7 +73,7 @@ export function TopFailingTests({ tests }: Props) {
                     <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--sem-danger)', backgroundColor: '#FEE2E2', padding: '1px 8px', borderRadius: 6 }}>{test.case_key}</span>
                     <span style={{ fontSize: 11, fontWeight: 600, color: pri.color, backgroundColor: pri.bg, padding: '1px 8px', borderRadius: 6, textTransform: 'capitalize' }}>{test.priority || 'medium'}</span>
                   </div>
-                  <p style={{ fontSize: 13, color: 'hsl(var(--foreground))', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{test.title}</p>
+                  <p style={{ fontSize: 13, color: 'var(--fg-1)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{test.title}</p>
                 </div>
               </div>
 
@@ -87,12 +87,12 @@ export function TopFailingTests({ tests }: Props) {
                   <p style={{ fontSize: 11, color: '#92400E', margin: 0 }}>{test.failure_count === 1 ? 'failure' : 'failures'}</p>
                 </div>
                 <div style={{ textAlign: 'center' }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--foreground))', margin: 0 }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>
                     {test.last_failed ? formatTimeAbbreviated(test.last_failed) : '—'}
                   </p>
-                  <p style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', margin: 0 }}>last failed</p>
+                  <p style={{ fontSize: 11, color: 'var(--fg-3)', margin: 0 }}>last failed</p>
                 </div>
-                <Eye size={16} color="hsl(var(--muted-foreground))" />
+                <Eye size={16} color="var(--fg-3)" />
               </div>
             </div>
           );

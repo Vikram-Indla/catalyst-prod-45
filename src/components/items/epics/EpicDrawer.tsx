@@ -362,8 +362,8 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
           hideClose 
           className={cn("p-0 flex flex-col", drawerWidthClass)}
           style={{ 
-            background: 'var(--surface-bg, hsl(var(--background)))',
-            borderLeft: '1px solid var(--border-default, hsl(var(--border)))'
+            background: 'var(--surface-bg, var(--bg-app))',
+            borderLeft: '1px solid var(--border-default, var(--divider))'
           }}
         >
           <SheetHeader className="flex-col space-y-0 shrink-0 p-0">
@@ -373,15 +373,15 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                 ═══════════════════════════════════════════════════════════ */}
             <div 
               className="px-5 pt-2.5 pb-1.5 flex items-center gap-1.5"
-              style={{ borderBottom: '1px solid var(--border-subtle, hsl(var(--border)/0.5))' }}
+              style={{ borderBottom: '1px solid var(--border-subtle, color-mix(in srgb, var(--divider) 50%, transparent))' }}
             >
               <span 
                 className="text-[10px] font-medium uppercase tracking-[0.5px]"
-                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                style={{ color: 'var(--text-muted, var(--fg-3))' }}
               >
                 Epic Backlog
               </span>
-              <span className="text-[10px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>/</span>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted, var(--fg-3))' }}>/</span>
               <span 
                 className="text-[11px] font-semibold font-mono text-primary"
               >
@@ -389,8 +389,8 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
               </span>
               <button
                 onClick={handleCopyLink}
-                className="p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-smooth press-scale"
-                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                className="p-1 rounded hover:bg-[var(--surface-hover,var(--bg-2))] transition-smooth press-scale"
+                style={{ color: 'var(--text-muted, var(--fg-3))' }}
                 title="Copy link"
               >
                 <LinkIcon className="h-3 w-3" />
@@ -416,22 +416,22 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                       onKeyDown={handleNameKeyDown}
                       className="text-[22px] font-semibold h-auto py-1.5 px-2 max-w-[480px] border-[#2563eb] focus-visible:ring-[#2563eb]/20 transition-smooth"
                       style={{ 
-                        background: 'var(--surface-subtle, hsl(var(--muted)))',
-                        color: 'var(--text-primary, hsl(var(--foreground)))'
+                        background: 'var(--surface-subtle, var(--bg-2))',
+                        color: 'var(--text-primary, var(--fg-1))'
                       }}
                     />
                   ) : (
                     <>
                       <SheetTitle 
                         className="text-[22px] font-semibold tracking-[-0.3px] truncate max-w-[520px] leading-tight"
-                        style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
+                        style={{ color: 'var(--text-primary, var(--fg-1))' }}
                       >
                         {epic?.name || 'Loading...'}
                       </SheetTitle>
                       <button
                         onClick={handleStartEditName}
-                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-smooth press-scale"
-                        style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--surface-hover,var(--bg-2))] transition-smooth press-scale"
+                        style={{ color: 'var(--text-muted, var(--fg-3))' }}
                         title="Rename"
                       >
                         <Pencil className="h-3.5 w-3.5" />
@@ -454,8 +454,8 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                     <div 
                       className="inline-flex items-center px-2 py-1 rounded text-[12px] font-semibold"
                       style={{
-                        background: 'hsl(var(--muted))',
-                        color: 'var(--text-primary, hsl(var(--foreground)))'
+                        background: 'var(--bg-2)',
+                        color: 'var(--text-primary, var(--fg-1))'
                       }}
                     >
                       MVP
@@ -510,8 +510,8 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
-                      style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                      className="h-8 w-8 hover:bg-[var(--surface-hover,var(--bg-2))] press-scale transition-smooth"
+                      style={{ color: 'var(--text-muted, var(--fg-3))' }}
                     >
                       <MoreVertical className="h-4 w-4" />
                     </Button>
@@ -519,7 +519,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                   <DropdownMenuContent 
                     align="end" 
                     className="w-48 z-[400] shadow-catalyst-lg"
-                    style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
+                    style={{ background: 'var(--surface-bg, var(--bg-app))', borderColor: 'var(--border-default, var(--divider))' }}
                   >
                     <DropdownMenuItem onSelect={() => handleAdditionalOption('duplicate')}>
                       <Copy className="h-4 w-4 mr-2" />
@@ -541,8 +541,8 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                   variant="ghost" 
                   size="icon" 
                   onClick={handleClose}
-                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
-                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,var(--bg-2))] press-scale transition-smooth"
+                  style={{ color: 'var(--text-muted, var(--fg-3))' }}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -550,14 +550,14 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
             </div>
 
             {/* Bottom Border */}
-            <div style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }} />
+            <div style={{ borderBottom: '1px solid var(--border-default, var(--divider))' }} />
             <SheetDescription className="sr-only">Epic details panel</SheetDescription>
           </SheetHeader>
 
           {/* Progress Row - with tooltip */}
           <div 
             className="px-5 py-3"
-            style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
+            style={{ borderBottom: '1px solid var(--border-default, var(--divider))' }}
           >
             <ProgressWithTooltip
               entityType="epic"
@@ -572,7 +572,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
             <TabsList 
               className="w-full justify-start rounded-none h-auto shrink-0 flex-nowrap px-5 bg-transparent py-0"
-              style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
+              style={{ borderBottom: '1px solid var(--border-default, var(--divider))' }}
             >
               {EPIC_TABS.map((tab) => (
                 <TabsTrigger
@@ -600,7 +600,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
             <div 
               ref={tabsBodyScrollRef}
               className="flex-1 min-h-0 overflow-y-auto"
-              style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
+              style={{ background: 'var(--surface-subtle, color-mix(in srgb, var(--bg-2) 30%, transparent))' }}
             >
               {/* Epic Details Tab */}
               <TabsContent value="epic-details" className="mt-0 p-5 pb-8 focus-visible:outline-none">
@@ -649,10 +649,10 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
 
       {/* Delete Confirmation Dialog - Matches BusinessRequestDrawer */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}>
+        <AlertDialogContent style={{ background: 'var(--surface-bg, var(--bg-app))', borderColor: 'var(--border-default, var(--divider))' }}>
           <AlertDialogHeader>
-            <AlertDialogTitle style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>Delete Epic</AlertDialogTitle>
-            <AlertDialogDescription style={{ color: 'var(--text-secondary, hsl(var(--muted-foreground)))' }}>
+            <AlertDialogTitle style={{ color: 'var(--text-primary, var(--fg-1))' }}>Delete Epic</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-secondary, var(--fg-3))' }}>
               Are you sure you want to delete <span className="font-semibold">{epic?.epic_key}</span>? 
               This epic will be moved to deleted items and can be restored within 30 days.
             </AlertDialogDescription>

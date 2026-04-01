@@ -39,7 +39,7 @@ function FixedDropdown({ anchorRef, children, onClose, width = 180 }: {
       id="inline-dropdown-portal"
       style={{
         position: 'fixed', top: pos.top, left: pos.left, width,
-        background: '#FFFFFF', border: '1px solid var(--divider)', borderRadius: 6,
+        background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6,
         boxShadow: '0 12px 32px rgba(0,0,0,0.18)', zIndex: 9999,
         maxHeight: 280, overflowY: 'auto',
       }}
@@ -69,7 +69,7 @@ export function InlineSummaryEditor({ value, onSave, onCancel }: {
       onKeyDown={e => { if (e.key === 'Enter') save(); if (e.key === 'Escape') onCancel(); }}
       onBlur={save}
       className="w-full text-[12px] font-medium px-1 py-0.5 rounded outline-none"
-      style={{ border: '2px solid var(--cp-blue)', fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', background: '#FFF' }}
+      style={{ border: '2px solid var(--cp-blue)', fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', background: 'var(--cp-float)' }}
     />
   );
 }

@@ -29,7 +29,7 @@ const PRESET_COLORS = [
 ];
 
 const CATEGORY_SUGGESTIONS = [
-  'Test Type', 'Priority', 'Automation', 'Status', 'Module', 'Sprint', 'Feature', 'Custom'
+  'Test Type', 'Priority', 'Automation', 'Status', 'Module', 'Release', 'Feature', 'Custom'
 ];
 
 export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateTagModalProps) {

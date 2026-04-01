@@ -127,7 +127,7 @@ export function ProgressSparkline({
           <path
             d={pathD}
             fill="none"
-            stroke="hsl(var(--primary))"
+            stroke="var(--cp-blue)"
             strokeWidth={1.5}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -152,8 +152,8 @@ export function ProgressSparkline({
               cx={hoveredPoint.x}
               cy={hoveredPoint.y}
               r={3}
-              fill="hsl(var(--primary))"
-              stroke="hsl(var(--background))"
+              fill="var(--cp-blue)"
+              stroke="var(--bg-app)"
               strokeWidth={1.5}
             />
           )}

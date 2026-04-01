@@ -51,8 +51,8 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
               <Star
                 size={13}
                 strokeWidth={2}
-                fill={isActive ? '#EAB308' : 'none'}
-                color={isActive ? '#EAB308' : (isDark ? 'rgba(248,244,240,0.40)' : '#94A3B8')}
+                fill={isActive ? 'var(--sem-star)' : 'none'}
+                color={isActive ? 'var(--sem-star)' : (isDark ? 'rgba(248,244,240,0.40)' : 'var(--fg-4)')}
               />
             )}
             {tab.label}
@@ -65,7 +65,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 fontSize: 11,
                 fontWeight: 600,
                 background: isActive ? 'var(--cp-blue)' : (isDark ? 'rgba(255,255,255,0.08)' : 'var(--divider)'),
-                color: isActive ? '#FFFFFF' : (isDark ? 'rgba(248,244,240,0.60)' : 'var(--fg-3)'),
+                color: isActive ? 'var(--cp-float)' : (isDark ? 'rgba(248,244,240,0.60)' : 'var(--fg-3)'),
                 fontFamily: "'Inter', sans-serif",
               }}
             >

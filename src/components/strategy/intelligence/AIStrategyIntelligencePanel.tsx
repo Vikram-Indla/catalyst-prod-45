@@ -89,12 +89,12 @@ export function AIStrategyIntelligencePanel({
         transition: 'transform 400ms cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
-      <div className="h-[2px] w-full shrink-0" style={{ background: 'linear-gradient(90deg, #7C3AED 0%, #A78BFA 50%, #7C3AED 100%)' }} />
+      <div className="h-[2px] w-full shrink-0" style={{ background: 'linear-gradient(90deg, #2563EB 0%, #60A5FA 50%, #2563EB 100%)' }} />
 
       <div className="px-7 pt-4 pb-0 shrink-0">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #7C3AED, #6D28D9)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #2563EB, #1E3A8A)' }}>
               <Sparkles size={16} className="text-white" />
             </div>
             <h2 className="text-[15px] font-[700]" style={{ color: 'var(--fg-1)' }}>Strategy Intelligence</h2>
@@ -130,7 +130,7 @@ export function AIStrategyIntelligencePanel({
           {!metrics.epicKey && (
             <>
               <span className="text-[10px] font-medium" style={{ color: 'var(--fg-4)' }}>›</span>
-              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: '#5B21B6', background: '#EDE9FE', border: '1px solid #C4B5FD' }}>⚠ No Epic</span>
+              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: '#1E40AF', background: '#DBEAFE', border: '1px solid #93C5FD' }}>⚠ No Epic</span>
             </>
           )}
         </div>
@@ -178,7 +178,7 @@ export function AIStrategyIntelligencePanel({
 
       <div className="shrink-0 border-t px-7 py-2.5 flex items-center justify-between" style={{ borderColor: '#F1F5F9' }}>
         <div className="flex items-center gap-1.5 text-[10px]" style={{ color: 'var(--fg-4)' }}>
-          <span style={{ color: '#A78BFA' }}>✦</span> AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          <span style={{ color: '#60A5FA' }}>✦</span> AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
         <div className="flex items-center gap-2">
           <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)' }}>
@@ -243,7 +243,7 @@ function AIInsight({ text, signals, isLoading, showSignals = false }: {
   return (
     <div className="mt-5">
       <div className="flex items-center gap-1.5 mb-2">
-        <span className="text-purple-500 text-[11px]">✦</span>
+        <span className="text-blue-500 text-[11px]">✦</span>
         <span className="text-[12px] font-[700] text-slate-700 uppercase tracking-wider">AI Insight</span>
       </div>
       {isLoading ? (
@@ -336,7 +336,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
         </div>
         <div className="border border-slate-200 rounded-lg p-3.5">
           <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>AI Health</p>
-          <p className="font-bold leading-none" style={{ fontSize: 20, color: '#7C3AED' }}>
+          <p className="font-bold leading-none" style={{ fontSize: 20, color: '#2563EB' }}>
             {goalHealth}/100
           </p>
         </div>
@@ -406,7 +406,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
             {briefContent}
           </ReactMarkdown>
           {isBriefGenerating && (
-            <div className="flex items-center gap-2 mt-4" style={{ color: '#7C3AED', fontSize: 12 }}>
+            <div className="flex items-center gap-2 mt-4" style={{ color: '#2563EB', fontSize: 12 }}>
               <Sparkles size={14} className="animate-pulse" />
               <span className="font-medium">Generating…</span>
             </div>

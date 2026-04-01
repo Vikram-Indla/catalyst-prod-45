@@ -234,7 +234,7 @@ export function FilterChips({
             onClick={c.remove}
             style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex' }}
           >
-            <X size={12} color={dark ? '#60A5FA' : 'var(--cp-blue)'} />
+            <X size={12} color={dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)'} />
           </button>
         </span>
       ))}

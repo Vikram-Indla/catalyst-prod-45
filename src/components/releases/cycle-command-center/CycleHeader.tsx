@@ -104,7 +104,7 @@ export function CycleHeader({ cycle, stats, isLoading }: CycleHeaderProps) {
           <div className="flex items-center gap-3 mb-2">
             <span 
               className="text-xs font-medium px-2 py-0.5 rounded"
-              style={{ backgroundColor: '#eff6ff', color: CATALYST_V5.primary }}
+              style={{ backgroundColor: 'var(--bg-1)', color: CATALYST_V5.primary }}
             >
               {cycle.cycleKey}
             </span>

@@ -39,7 +39,7 @@ export function CreateSprintDialog({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sprints', teamId] });
-      toast.success('Sprint created successfully');
+      toast.success('Release created successfully');
       // Reset form
       setName('');
       setStartDate(format(new Date(), 'yyyy-MM-dd'));
@@ -48,13 +48,13 @@ export function CreateSprintDialog({
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to create sprint');
+      toast.error('Failed to create release');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     createSprint.mutate({
       name: name || `${sprintPrefix} ${Date.now()}`,
       team_id: teamId,
@@ -68,11 +68,11 @@ export function CreateSprintDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Create Sprint for {teamName}</DialogTitle>
+          <DialogTitle>Create Release for {teamName}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Sprint Name *</Label>
+            <Label htmlFor="name">Release Name *</Label>
             <Input
               id="name"
               value={name}
@@ -106,12 +106,12 @@ export function CreateSprintDialog({
           </div>
 
           <div>
-            <Label htmlFor="goal">Sprint Goal</Label>
+            <Label htmlFor="goal">Release Goal</Label>
             <Input
               id="goal"
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
-              placeholder="Optional sprint goal"
+              placeholder="Optional release goal"
             />
           </div>
 
@@ -120,7 +120,7 @@ export function CreateSprintDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={createSprint.isPending}>
-              {createSprint.isPending ? 'Creating...' : 'Create Sprint'}
+              {createSprint.isPending ? 'Creating...' : 'Create Release'}
             </Button>
           </DialogFooter>
         </form>

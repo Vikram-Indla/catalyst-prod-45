@@ -140,11 +140,11 @@ export function WikiAdminSyncTab() {
         }}>
           {/* Progress bar */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-            <Activity style={{ width: 16, height: 16, color: '#2563EB', flexShrink: 0 }} />
+            <Activity style={{ width: 16, height: 16, color: 'var(--cp-blue)', flexShrink: 0 }} />
             <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>
               Sync in progress
             </span>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#2563EB', fontWeight: 700 }}>
+            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: 'var(--cp-blue)', fontWeight: 700 }}>
               {progressPct}%
             </span>
             <div style={{ flex: 1 }} />
@@ -190,7 +190,7 @@ export function WikiAdminSyncTab() {
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '10px 16px', borderRadius: 6,
           background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.2)',
-          fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#DC2626',
+          fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--sem-danger)',
         }}>
           <AlertTriangle style={{ width: 16, height: 16, flexShrink: 0 }} />
           <span style={{ flex: 1 }}>
@@ -202,7 +202,7 @@ export function WikiAdminSyncTab() {
             style={{
               display: 'flex', alignItems: 'center', gap: 4,
               padding: '4px 10px', borderRadius: 4,
-              background: '#DC2626', color: '#fff', border: 'none', cursor: 'pointer',
+              background: 'var(--sem-danger)', color: '#fff', border: 'none', cursor: 'pointer',
               fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 600,
             }}
           >

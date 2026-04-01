@@ -4,7 +4,7 @@ import type { RaDocumentType, RaStatus } from '@/types/requirement-assist';
 const TYPE_STYLES: Record<RaDocumentType, { bg: string; text: string; label: string }> = {
   brd: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'BRD' },
   translation: { bg: 'bg-teal-100', text: 'text-teal-700', label: 'Translate' },
-  epic: { bg: 'bg-violet-100', text: 'text-violet-700', label: 'Epic' },
+  epic: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Epic' },
   uat: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'UAT' },
 };
 

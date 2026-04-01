@@ -172,7 +172,7 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
               Report Name <span style={{ color: 'var(--sem-danger)' }}>*</span>
             </label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g., Sprint 5 Test Results"
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g., Release 5 Test Results"
               style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.name ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 10, fontSize: 14 }} />
             {errors.name && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0' }}>{errors.name}</p>}
           </div>

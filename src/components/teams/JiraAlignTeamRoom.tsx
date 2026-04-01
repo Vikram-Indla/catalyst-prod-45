@@ -181,7 +181,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
               <SelectTrigger className="w-[400px] h-9">
                 <SelectValue>
                   <span className="text-sm">
-                    {currentSprint?.name || 'Select Sprint'}
+                    {currentSprint?.name || 'Select Release'}
                     {currentSprint?.goal && ` - ${currentSprint.goal}`}
                   </span>
                 </SelectValue>
@@ -392,7 +392,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                     <div className="flex-1">
                       <p className="text-sm font-medium text-foreground mb-1">No Dependencies</p>
                       <p className="text-xs text-muted-foreground">
-                        There are no Dependencies for the team in this sprint!
+                        There are no Dependencies for the team in this release!
                       </p>
                     </div>
                   </div>
@@ -501,7 +501,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                   <div className="flex-1">
                     <p className="text-sm font-medium text-foreground mb-1">No Impediments</p>
                     <p className="text-xs text-muted-foreground">
-                      There are no Impediments blocking the team in this sprint!
+                      There are no Impediments blocking the team in this release!
                     </p>
                   </div>
                 </div>
@@ -599,7 +599,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                 {displayStories.length === 0 ? (
                   <tr>
                     <td colSpan={17} className="py-8 text-center text-muted-foreground">
-                      No stories found for this sprint
+                      No stories found for this release
                     </td>
                   </tr>
                 ) : displayStories.map((story) => (
@@ -719,7 +719,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                     <div className="flex-1">
                       <p className="text-sm font-medium text-foreground mb-1">No Objectives</p>
                       <p className="text-xs text-muted-foreground mb-4">
-                        There are no Objectives for the team in this sprint, create one!
+                        There are no Objectives for the team in this release, create one!
                       </p>
                       <div className="flex gap-2">
                         <Button 

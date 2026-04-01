@@ -95,7 +95,7 @@ export function AvatarStack({ count }: { count: number }) {
             color: '#FFFFFF',
             fontSize: 9,
             fontWeight: 600,
-            border: '2px solid #FFFFFF',
+            border: '2px solid var(--cp-float)',
             fontFamily: "'Inter', sans-serif",
           }}
         >
@@ -112,7 +112,7 @@ export function AvatarStack({ count }: { count: number }) {
             color: 'var(--fg-3)',
             fontSize: 9,
             fontWeight: 600,
-            border: '2px solid #FFFFFF',
+            border: '2px solid var(--cp-float)',
             fontFamily: "'Inter', sans-serif",
           }}
         >

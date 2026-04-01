@@ -14,7 +14,7 @@ import { useRisks } from '@/hooks/risks/useRisks';
 
 function getStatusLabel(score: number): { label: string; color: string } {
   if (score >= 85) return { label: 'Excellent', color: 'var(--exec-confirm-green, #16A34A)' };
-  if (score >= 70) return { label: 'Good', color: 'var(--exec-ai-purple, #7C3AED)' };
+  if (score >= 70) return { label: 'Good', color: 'var(--exec-ai-blue, #2563EB)' };
   if (score >= 50) return { label: 'At Risk', color: 'var(--exec-signal-amber, #D97706)' };
   return { label: 'Critical', color: 'var(--exec-signal-red, #DC2626)' };
 }
@@ -109,7 +109,7 @@ export function AiHealthScore() {
   return (
     <div className="flex flex-col items-center">
       {/* AI Purple gauge — the ONE widget that uses purple */}
-      <CircularGauge value={compositeScore} size={100} strokeWidth={10} color="var(--exec-ai-purple, #7C3AED)" label="/ 100" animated />
+      <CircularGauge value={compositeScore} size={100} strokeWidth={10} color="var(--exec-ai-blue, #2563EB)" label="/ 100" animated />
 
       <span className="mt-2 mb-3" style={{
         fontSize: 11, fontWeight: 600, color: status.color,
@@ -143,7 +143,7 @@ export function AiHealthScore() {
       <div className="w-full space-y-1">
         {narrative.map((line, i) => (
           <div key={i} className="flex gap-1.5" style={{ fontSize: 10, color: 'var(--exec-text-secondary)', lineHeight: 1.4 }}>
-            <Sparkles size={8} style={{ color: 'var(--exec-ai-purple, #7C3AED)', flexShrink: 0, marginTop: 3 }} />
+            <Sparkles size={8} style={{ color: 'var(--exec-ai-blue, #2563EB)', flexShrink: 0, marginTop: 3 }} />
             <span>{line}</span>
           </div>
         ))}

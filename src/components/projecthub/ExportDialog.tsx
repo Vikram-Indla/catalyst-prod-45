@@ -58,7 +58,7 @@ export function ExportDialog({ open, onClose, projects }: Props) {
               className="flex flex-col items-center gap-2 rounded-lg transition-all hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-[rgba(248,244,240,0.03)] bg-[#F8FAFC] dark:bg-[rgba(248,244,240,0.03)] border border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)]"
               style={{ padding: '20px 12px', cursor: 'pointer' }}
             >
-              <f.icon size={24} color="#2563EB" />
+              <f.icon size={24} color="var(--cp-blue)" />
               <span className="text-[#334155] dark:text-[rgba(248,244,240,0.72)]" style={{ fontSize: 12, fontWeight: 600 }}>{f.label}</span>
             </button>
           ))}

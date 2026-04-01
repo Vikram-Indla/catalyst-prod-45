@@ -42,8 +42,8 @@ function formatDuration(days: number): string {
 }
 
 function getDaysColor(days: number): string {
-  if (days <= 1) return '#15803D';
-  if (days <= 4) return '#B45309';
+  if (days <= 1) return 'var(--sem-success-fg)';
+  if (days <= 4) return 'var(--sem-warning-fg)';
   return 'var(--sem-danger)';
 }
 

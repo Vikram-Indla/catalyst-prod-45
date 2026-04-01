@@ -35,7 +35,7 @@ export function GanttBar({ release: r, left, width, onClick }: Props) {
         <span>|</span>
         <span>Health: {r.health_score}</span>
         {r.days_until_target < 0 && r.status !== 'released' && (
-          <span style={{ color: '#FCA5A5' }}> · {Math.abs(r.days_until_target)}d overdue</span>
+          <span style={{ color: 'var(--sem-danger)' }}> · {Math.abs(r.days_until_target)}d overdue</span>
         )}
       </div>
     </div>

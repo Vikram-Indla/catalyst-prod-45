@@ -11,9 +11,9 @@ interface ValueTabProps {
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return 'hsl(var(--success))';
-  if (score >= 50) return 'hsl(var(--warning))';
-  return 'hsl(var(--destructive))';
+  if (score >= 80) return 'var(--sem-success)';
+  if (score >= 50) return 'var(--sem-warning)';
+  return 'var(--sem-danger)';
 }
 
 export function ValueTab({ 

@@ -573,9 +573,9 @@ export const BudgetScenarioTab = memo(function BudgetScenarioTab({ data, period,
           </div>
           
           {/* Licenses */}
-          <div className="bg-violet-50 dark:bg-violet-950/30 rounded-xl p-4 text-center border-t-4 border-violet-500">
-            <div className="text-xs text-violet-600 dark:text-violet-400 mb-1 uppercase font-medium">Licenses</div>
-            <div className="font-mono text-2xl font-bold text-violet-700 dark:text-violet-300">{formatCurrency(currentBudgetImpact.licenses)}</div>
+          <div className="bg-blue-50 dark:bg-blue-950/30 rounded-xl p-4 text-center border-t-4 border-blue-500">
+            <div className="text-xs text-blue-600 dark:text-blue-400 mb-1 uppercase font-medium">Licenses</div>
+            <div className="font-mono text-2xl font-bold text-blue-700 dark:text-blue-300">{formatCurrency(currentBudgetImpact.licenses)}</div>
             <div className="text-sm font-mono font-medium text-slate-500 dark:text-slate-400 mt-1">—</div>
           </div>
         </div>
@@ -1295,9 +1295,9 @@ export const BudgetScenarioTab = memo(function BudgetScenarioTab({ data, period,
                       <div className="font-mono font-bold text-amber-700 dark:text-amber-300">{formatCurrency(baselineBudget.outsourced)}</div>
                       <div className="text-xs text-muted-foreground">+0</div>
                     </div>
-                    <div className="bg-violet-50 dark:bg-violet-950/30 rounded-lg p-3 text-center">
-                      <div className="text-xs text-violet-600 dark:text-violet-400">Licenses</div>
-                      <div className="font-mono font-bold text-violet-700 dark:text-violet-300">{formatCurrency(baselineBudget.licenses)}</div>
+                    <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-3 text-center">
+                      <div className="text-xs text-blue-600 dark:text-blue-400">Licenses</div>
+                      <div className="font-mono font-bold text-blue-700 dark:text-blue-300">{formatCurrency(baselineBudget.licenses)}</div>
                       <div className="text-xs text-muted-foreground">+0</div>
                     </div>
                   </div>
@@ -1532,7 +1532,7 @@ export const BudgetScenarioTab = memo(function BudgetScenarioTab({ data, period,
                     ))}
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 text-violet-600">Licenses</td>
+                    <td className="px-4 py-3 text-blue-600">Licenses</td>
                     {compareScenariosList.map((s, idx) => (
                       <td key={idx} className="px-4 py-3 text-right font-mono">{formatCurrency(s.licensesBudget)}</td>
                     ))}

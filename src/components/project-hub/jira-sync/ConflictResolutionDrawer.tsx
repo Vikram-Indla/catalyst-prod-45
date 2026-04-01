@@ -67,7 +67,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 51,
           width: 720,
-          background: '#FFFFFF',
+          background: 'var(--cp-float)',
           boxShadow: '-8px 0 24px rgba(0,0,0,0.12)',
           display: 'flex', flexDirection: 'column',
           fontFamily: 'Inter, sans-serif',

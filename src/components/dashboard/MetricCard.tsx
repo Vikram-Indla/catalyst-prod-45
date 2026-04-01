@@ -53,9 +53,9 @@ const variantStyles = {
     border: 'border-teal-100 dark:border-teal-900/50',
   },
   purple: {
-    bg: 'bg-purple-50 dark:bg-purple-950/30',
-    icon: 'text-purple-600 dark:text-purple-400',
-    border: 'border-purple-100 dark:border-purple-900/50',
+    bg: 'bg-blue-50 dark:bg-blue-950/30',
+    icon: 'text-blue-600 dark:text-blue-400',
+    border: 'border-blue-100 dark:border-blue-900/50',
   },
 };
 

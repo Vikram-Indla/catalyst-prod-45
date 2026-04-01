@@ -36,7 +36,7 @@ export default function ReleaseDropdown({ projectId }: { projectId: string | nul
         <button
           style={{
             height: 34, padding: '0 14px', borderRadius: 8,
-            border: '1px solid var(--divider)', background: '#FFFFFF', cursor: 'pointer',
+            border: '1px solid var(--divider)', background: 'var(--cp-float)', cursor: 'pointer',
             fontSize: 13, fontWeight: 600, color: 'var(--fg-2)',
             display: 'flex', alignItems: 'center', gap: 6,
             transition: 'border-color 150ms, box-shadow 150ms',
@@ -49,7 +49,7 @@ export default function ReleaseDropdown({ projectId }: { projectId: string | nul
           <ChevronDown size={14} color="var(--fg-3)" />
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" sideOffset={6} style={{ width: 340, padding: 0, borderRadius: 10, border: '1px solid var(--divider)', background: '#FFFFFF', boxShadow: '0 4px 12px rgba(0,0,0,.08)' }}>
+      <PopoverContent align="end" sideOffset={6} style={{ width: 340, padding: 0, borderRadius: 10, border: '1px solid var(--divider)', background: 'var(--cp-float)', boxShadow: '0 4px 12px rgba(0,0,0,.08)' }}>
         <div style={{ padding: '10px 14px 6px', borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--fg-1)' }}>Select Releases</div>
         </div>

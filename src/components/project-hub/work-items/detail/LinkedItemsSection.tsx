@@ -159,7 +159,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
       <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.3)' }} />
       <div
         className="relative rounded-lg flex flex-col"
-        style={{ width: 440, background: '#FFF', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', maxHeight: '70vh' }}
+        style={{ width: 440, background: 'var(--cp-float)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', maxHeight: '70vh' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -180,7 +180,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
             value={linkType}
             onChange={e => setLinkType(e.target.value)}
             className="w-full text-[13px] px-3 py-2 rounded mb-4 focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
-            style={{ border: '1px solid var(--divider)', background: '#FFF' }}
+            style={{ border: '1px solid var(--divider)', background: 'var(--cp-float)' }}
           >
             {LINK_TYPES.map(t => (
               <option key={t.value} value={t.value}>{t.label}</option>

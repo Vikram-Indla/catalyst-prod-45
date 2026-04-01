@@ -119,7 +119,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
       <div className="absolute inset-0" style={{ background: 'rgba(9,30,66,0.54)' }} />
       <div
         className="relative flex flex-col"
-        style={{ width: 960, maxHeight: '90vh', background: '#FFFFFF', borderRadius: 10, boxShadow: '0 0 0 1px rgba(9,30,66,0.08), 0 2px 1px rgba(9,30,66,0.08), 0 0 20px -6px rgba(9,30,66,0.31)', overflow: 'hidden' }}
+        style={{ width: 960, maxHeight: '90vh', background: 'var(--cp-float)', borderRadius: 10, boxShadow: '0 0 0 1px rgba(9,30,66,0.08), 0 2px 1px rgba(9,30,66,0.08), 0 0 20px -6px rgba(9,30,66,0.31)', overflow: 'hidden' }}
         onClick={e => e.stopPropagation()}
       >
         {/* HEADER */}

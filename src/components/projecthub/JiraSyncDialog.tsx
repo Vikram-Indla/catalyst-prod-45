@@ -241,7 +241,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
 
       <div style={{
         position: 'relative', width: 620, maxHeight: '88vh',
-        background: '#FFFFFF', borderRadius: 16,
+        background: 'var(--cp-float)', borderRadius: 16,
         boxShadow: '0 25px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.05)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
         fontFamily: "'Inter', system-ui, sans-serif",
@@ -250,7 +250,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
         {/* ─── HEADER with Jira Icon ─── */}
         <div style={{
           padding: '20px 24px 16px',
-          borderBottom: '1px solid #E4E4E7',
+          borderBottom: '1px solid var(--divider)',
           background: 'linear-gradient(180deg, #FAFBFF 0%, #FFFFFF 100%)',
         }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
@@ -266,7 +266,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
               <div>
                 <h2 style={{
                   fontSize: 17, fontWeight: 700, fontFamily: "'Sora', system-ui, sans-serif",
-                  color: '#09090B', margin: 0, letterSpacing: '-0.02em',
+                  color: 'var(--fg-1)', margin: 0, letterSpacing: '-0.02em',
                   display: 'flex', alignItems: 'center', gap: 8,
                 }}>
                   Jira Sync
@@ -276,7 +276,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                     borderRadius: 4, letterSpacing: '0.04em',
                   }}>GUARDRAIL</span>
                 </h2>
-                <p style={{ fontSize: 12, color: '#71717A', margin: '2px 0 0', fontWeight: 400 }}>
+                <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '2px 0 0', fontWeight: 400 }}>
                   Append-only delta sync — data is never deleted
                 </p>
               </div>
@@ -284,9 +284,9 @@ export function JiraSyncDialog({ open, onClose }: Props) {
             <button
               onClick={!isSyncing ? onClose : undefined} disabled={isSyncing}
               style={{
-                background: 'none', border: '1px solid #E4E4E7', borderRadius: 8,
+                background: 'none', border: '1px solid var(--divider)', borderRadius: 8,
                 width: 32, height: 32, cursor: isSyncing ? 'not-allowed' : 'pointer',
-                color: '#71717A', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'var(--fg-3)', display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
             ><X size={15} /></button>
           </div>
@@ -296,7 +296,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
               display: 'inline-flex', alignItems: 'center', gap: 5,
               padding: '3px 10px', borderRadius: 20,
               background: '#F0FDF4', border: '1px solid #BBF7D0',
-              fontSize: 10, fontWeight: 600, color: '#16A34A',
+              fontSize: 10, fontWeight: 600, color: 'var(--sem-success)',
               fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.02em',
             }}>
               <Shield size={10} /> ENCRYPTED · TLS 1.3
@@ -304,8 +304,8 @@ export function JiraSyncDialog({ open, onClose }: Props) {
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 5,
               padding: '3px 10px', borderRadius: 20,
-              background: '#EFF6FF', border: '1px solid #BFDBFE',
-              fontSize: 10, fontWeight: 600, color: '#2563EB',
+              background: 'var(--cp-blue-wash)', border: '1px solid var(--cp-primary-20)',
+              fontSize: 10, fontWeight: 600, color: 'var(--cp-blue)',
               fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.02em',
             }}>
               <Database size={10} /> APPEND-ONLY
@@ -329,27 +329,27 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                   <div style={{
                     position: 'absolute', top: -4, right: -4,
                     width: 20, height: 20, borderRadius: 10,
-                    background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     <Loader2 size={12} color="#FFF" className="animate-spin" />
                   </div>
                 </div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: '#09090B', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>
                   Delta Synchronizing
                 </div>
-                <div style={{ fontSize: 13, color: '#71717A', marginBottom: 24 }}>{progressLabel}</div>
+                <div style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 24 }}>{progressLabel}</div>
                 {currentProject && (
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: 6,
                     padding: '4px 12px', borderRadius: 6,
-                    background: '#F4F4F5', marginBottom: 20,
-                    fontSize: 11, fontFamily: "'JetBrains Mono', monospace", color: '#3F3F46',
+                    background: 'var(--bg-2)', marginBottom: 20,
+                    fontSize: 11, fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-2)',
                   }}>
-                    <Zap size={10} color="#D97706" /> Processing: <span style={{ fontWeight: 700, color: '#2563EB' }}>{currentProject}</span>
+                    <Zap size={10} color="#D97706" /> Processing: <span style={{ fontWeight: 700, color: 'var(--cp-blue)' }}>{currentProject}</span>
                   </div>
                 )}
                 <div style={{ width: '100%', maxWidth: 400 }}>
-                  <div style={{ width: '100%', height: 8, borderRadius: 4, background: '#F4F4F5', overflow: 'hidden' }}>
+                  <div style={{ width: '100%', height: 8, borderRadius: 4, background: 'var(--bg-2)', overflow: 'hidden' }}>
                     <div style={{
                       width: `${Math.min(progressPct, 100)}%`, height: '100%',
                       background: 'linear-gradient(90deg, #2684FF, #0052CC)',
@@ -358,7 +358,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                   </div>
                   <div style={{
                     display: 'flex', justifyContent: 'space-between', marginTop: 6,
-                    fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: '#A1A1AA',
+                    fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-4)',
                   }}>
                     <span>{selected.size} project(s)</span>
                     <span>{Math.round(progressPct)}%</span>
@@ -396,29 +396,29 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                 }}>
                   <CheckCircle2 size={32} color="#16A34A" />
                 </div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#09090B', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>
                   Sync Complete
                 </div>
-                <div style={{ fontSize: 13, color: '#71717A', marginBottom: 28 }}>
+                <div style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 28 }}>
                   Baseline preserved — {syncResult.baselineTotal} total items in database
                 </div>
 
                 <div style={{
                   display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1,
-                  background: '#E4E4E7', borderRadius: 10, overflow: 'hidden',
+                  background: 'var(--divider)', borderRadius: 10, overflow: 'hidden',
                   width: '100%', maxWidth: 440, marginBottom: 32,
                 }}>
                   {[
-                    { label: 'Created', value: syncResult.created, color: '#16A34A' },
-                    { label: 'Updated', value: syncResult.updated, color: '#D97706' },
-                    { label: 'Removed', value: syncResult.softDeleted, color: '#DC2626' },
-                    { label: 'Baseline', value: syncResult.baselineTotal, color: '#2563EB' },
+                    { label: 'Created', value: syncResult.created, color: 'var(--sem-success)' },
+                    { label: 'Updated', value: syncResult.updated, color: 'var(--sem-warning)' },
+                    { label: 'Removed', value: syncResult.softDeleted, color: 'var(--sem-danger)' },
+                    { label: 'Baseline', value: syncResult.baselineTotal, color: 'var(--cp-blue)' },
                   ].map((s, i) => (
-                    <div key={i} style={{ background: '#FFF', padding: '14px 8px', textAlign: 'center' }}>
+                    <div key={i} style={{ background: 'var(--bg-app)', padding: '14px 8px', textAlign: 'center' }}>
                       <div style={{ fontSize: 20, fontWeight: 700, color: s.color, fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
                         {s.value}
                       </div>
-                      <div style={{ fontSize: 9, fontWeight: 600, color: '#71717A', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 2 }}>
+                      <div style={{ fontSize: 9, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 2 }}>
                         {s.label}
                       </div>
                     </div>
@@ -446,16 +446,16 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                 }}>
                   <AlertCircle size={32} color="#DC2626" />
                 </div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#09090B', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>Sync Failed</div>
-                <div style={{ fontSize: 13, color: '#71717A', marginBottom: 8, textAlign: 'center', maxWidth: 340 }}>{progressLabel}</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>Sync Failed</div>
+                <div style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 8, textAlign: 'center', maxWidth: 340 }}>{progressLabel}</div>
                 <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
                   <button onClick={() => { setPhase('idle'); setProgressPct(0); }} style={{
                     height: 36, padding: '0 20px', fontSize: 13, fontWeight: 500,
-                    color: '#3F3F46', background: '#FFF', border: '1px solid #E4E4E7', borderRadius: 8, cursor: 'pointer',
+                    color: 'var(--fg-2)', background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 8, cursor: 'pointer',
                   }}>Try Again</button>
                   <button onClick={onClose} style={{
                     height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
-                    color: '#FFF', background: '#DC2626', border: 'none', borderRadius: 8, cursor: 'pointer',
+                    color: '#FFF', background: 'var(--sem-danger)', border: 'none', borderRadius: 8, cursor: 'pointer',
                   }}>Close</button>
                 </div>
               </>
@@ -468,10 +468,10 @@ export function JiraSyncDialog({ open, onClose }: Props) {
           <>
             {/* Last 3 Syncs */}
             {recentSyncs.length > 0 && (
-              <div style={{ padding: '12px 24px', borderBottom: '1px solid #E4E4E7', background: '#FAFAFA' }}>
+              <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--divider)', background: 'var(--bg-1)' }}>
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8,
-                  fontSize: 10, fontWeight: 700, color: '#71717A', textTransform: 'uppercase',
+                  fontSize: 10, fontWeight: 700, color: 'var(--fg-3)', textTransform: 'uppercase',
                   letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif",
                 }}>
                   <History size={11} /> Last Syncs
@@ -480,7 +480,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                   {recentSyncs.map((s, i) => (
                     <div key={s.id} style={{
                       flex: 1, padding: '8px 10px', borderRadius: 8,
-                      background: '#FFF', border: '1px solid #E4E4E7',
+                      background: 'var(--bg-app)', border: '1px solid var(--divider)',
                       fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -491,13 +491,13 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                         }}>
                           {s.status === 'completed' ? '✓ OK' : '✗ FAIL'}
                         </span>
-                        <span style={{ color: '#A1A1AA', fontSize: 9 }}>{formatAge(s.started_at)}</span>
+                        <span style={{ color: 'var(--fg-4)', fontSize: 9 }}>{formatAge(s.started_at)}</span>
                       </div>
-                      <div style={{ color: '#3F3F46', fontSize: 10, fontWeight: 600 }}>
+                      <div style={{ color: 'var(--fg-2)', fontSize: 10, fontWeight: 600 }}>
                         +{s.items_created} / ~{s.items_updated}
-                        {s.items_deleted_soft > 0 && <span style={{ color: '#DC2626' }}> / −{s.items_deleted_soft}</span>}
+                        {s.items_deleted_soft > 0 && <span style={{ color: 'var(--sem-danger)' }}> / −{s.items_deleted_soft}</span>}
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 3, color: '#A1A1AA', fontSize: 9 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 3, color: 'var(--fg-4)', fontSize: 9 }}>
                         <Calendar size={8} />
                         <span>{s.baseline_snapshot_date}</span>
                         <span>·</span>
@@ -510,9 +510,9 @@ export function JiraSyncDialog({ open, onClose }: Props) {
             )}
 
             {/* Sync Mode */}
-            <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid #F4F4F5' }}>
+            <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid var(--cp-bd-zone)' }}>
               <label style={{
-                fontSize: 10, fontWeight: 700, color: '#71717A', textTransform: 'uppercase',
+                fontSize: 10, fontWeight: 700, color: 'var(--fg-3)', textTransform: 'uppercase',
                 letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif",
               }}>Sync Mode</label>
               <div style={{ position: 'relative', marginTop: 6 }}>
@@ -520,22 +520,22 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                   onClick={() => setShowModeDropdown(!showModeDropdown)}
                   style={{
                     width: '100%', height: 40, padding: '0 14px',
-                    background: '#FAFAFA', border: '1px solid #E4E4E7', borderRadius: 8,
+                    background: 'var(--bg-1)', border: '1px solid var(--divider)', borderRadius: 8,
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    fontSize: 13, fontWeight: 500, color: '#09090B', cursor: 'pointer',
+                    fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', cursor: 'pointer',
                   }}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span>{selectedMode.icon}</span>
                     <span style={{ fontWeight: 600 }}>{selectedMode.label}</span>
-                    <span style={{ color: '#71717A', fontWeight: 400, fontSize: 12 }}>— {selectedMode.desc}</span>
+                    <span style={{ color: 'var(--fg-3)', fontWeight: 400, fontSize: 12 }}>— {selectedMode.desc}</span>
                   </span>
                   <ChevronDown size={14} color="#A1A1AA" style={{ transition: 'transform 0.2s', transform: showModeDropdown ? 'rotate(180deg)' : 'none' }} />
                 </button>
                 {showModeDropdown && (
                   <div style={{
                     position: 'absolute', top: 44, left: 0, right: 0, zIndex: 10,
-                    background: '#FFF', border: '1px solid #E4E4E7', borderRadius: 10,
+                    background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 10,
                     boxShadow: '0 8px 24px rgba(0,0,0,0.12)', overflow: 'hidden',
                   }}>
                     {SYNC_OPTIONS.map(opt => (
@@ -543,12 +543,12 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                         width: '100%', padding: '10px 14px', textAlign: 'left',
                         background: syncMode === opt.value ? '#EFF6FF' : 'transparent',
                         border: 'none', cursor: 'pointer', fontSize: 13,
-                        display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid #F4F4F5',
+                        display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid var(--cp-bd-zone)',
                       }}>
                         <span style={{ fontSize: 16 }}>{opt.icon}</span>
                         <div>
-                          <div style={{ fontWeight: 600, color: '#09090B' }}>{opt.label}</div>
-                          <div style={{ fontSize: 11, color: '#71717A', marginTop: 1 }}>{opt.desc}</div>
+                          <div style={{ fontWeight: 600, color: 'var(--fg-1)' }}>{opt.label}</div>
+                          <div style={{ fontSize: 11, color: 'var(--fg-3)', marginTop: 1 }}>{opt.desc}</div>
                         </div>
                         {syncMode === opt.value && <Check size={14} color="#2563EB" style={{ marginLeft: 'auto' }} />}
                       </button>
@@ -562,20 +562,20 @@ export function JiraSyncDialog({ open, onClose }: Props) {
             <div style={{ flex: 1, overflow: 'auto', padding: '10px 24px 8px' }}>
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '6px 0 8px', borderBottom: '1px solid #E4E4E7',
+                padding: '6px 0 8px', borderBottom: '1px solid var(--divider)',
               }}>
                 <label style={{
-                  fontSize: 10, fontWeight: 700, color: '#71717A', textTransform: 'uppercase',
+                  fontSize: 10, fontWeight: 700, color: 'var(--fg-3)', textTransform: 'uppercase',
                   letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif",
                 }}>Projects ({selected.size} of {projects.length} selected)</label>
                 <button onClick={toggleAll} style={{
-                  background: 'none', border: 'none', fontSize: 11, color: '#2563EB',
+                  background: 'none', border: 'none', fontSize: 11, color: 'var(--cp-blue)',
                   fontWeight: 700, cursor: 'pointer', padding: '2px 6px', borderRadius: 4,
                 }}>{selected.size === projects.length ? 'Deselect All' : 'Select All'}</button>
               </div>
 
               {loading ? (
-                <div style={{ padding: 48, textAlign: 'center', color: '#A1A1AA', fontSize: 13 }}>
+                <div style={{ padding: 48, textAlign: 'center', color: 'var(--fg-4)', fontSize: 13 }}>
                   <Loader2 size={22} className="animate-spin" style={{ margin: '0 auto 10px', display: 'block' }} />
                   Loading projects...
                 </div>
@@ -602,10 +602,10 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                         </div>
                         <span style={{
                           fontSize: 11, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace",
-                          color: '#2563EB', minWidth: 52, letterSpacing: '0.02em',
+                          color: 'var(--cp-blue)', minWidth: 52, letterSpacing: '0.02em',
                         }}>{p.key}</span>
                         <span style={{
-                          flex: 1, fontSize: 13, fontWeight: 500, color: '#09090B',
+                          flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--fg-1)',
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                         }}>{p.name}</span>
                         <span style={{
@@ -621,16 +621,16 @@ export function JiraSyncDialog({ open, onClose }: Props) {
 
             {/* Footer */}
             <div style={{
-              padding: '14px 24px', borderTop: '1px solid #E4E4E7',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#FAFAFA',
+              padding: '14px 24px', borderTop: '1px solid var(--divider)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-1)',
             }}>
-              <span style={{ fontSize: 11, color: '#A1A1AA', fontFamily: "'JetBrains Mono', monospace" }}>
+              <span style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace" }}>
                 {selected.size} project(s) · {selectedMode.label}
               </span>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={onClose} style={{
                   height: 36, padding: '0 18px', fontSize: 13, fontWeight: 500,
-                  color: '#3F3F46', background: '#FFF', border: '1px solid #E4E4E7', borderRadius: 8, cursor: 'pointer',
+                  color: 'var(--fg-2)', background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 8, cursor: 'pointer',
                 }}>Cancel</button>
                 <button onClick={handleSync} disabled={selected.size === 0} style={{
                   height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,

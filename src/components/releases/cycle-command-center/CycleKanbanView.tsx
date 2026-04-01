@@ -68,7 +68,7 @@ function SortableCard({ item }: { item: CycleExecutionItem }) {
   return (
     <div
       ref={setNodeRef}
-      style={{ ...style, borderLeftWidth: 3, borderLeftColor: priorityStyle?.text || '#94a3b8' }}
+      style={{ ...style, borderLeftWidth: 3, borderLeftColor: priorityStyle?.text || 'var(--fg-4)' }}
       className="bg-background rounded-lg border p-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
       {...attributes}
       {...listeners}
@@ -118,7 +118,7 @@ function DragOverlayCard({ item }: { item: CycleExecutionItem }) {
   return (
     <div
       className="bg-background rounded-lg border p-3 shadow-lg"
-      style={{ borderLeftWidth: 3, borderLeftColor: priorityStyle?.text || '#94a3b8' }}
+      style={{ borderLeftWidth: 3, borderLeftColor: priorityStyle?.text || 'var(--fg-4)' }}
     >
       <div className="flex items-center justify-between mb-1">
         <span className="text-xs font-medium" style={{ color: CATALYST_V5.primary }}>

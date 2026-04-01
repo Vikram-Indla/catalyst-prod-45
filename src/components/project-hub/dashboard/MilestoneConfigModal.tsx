@@ -52,7 +52,7 @@ export default function MilestoneConfigModal({ open, onClose, projectId }: Props
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.35)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div onClick={e => e.stopPropagation()} style={{ background: '#FFFFFF', borderRadius: 16, width: 480, maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 24px 64px rgba(0,0,0,.15)' }}>
+        <div onClick={e => e.stopPropagation()} style={{ background: 'var(--cp-float)', borderRadius: 16, width: 480, maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 24px 64px rgba(0,0,0,.15)' }}>
           <div style={{ padding: '20px 24px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
               <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>Configure Key Milestones</div>
@@ -73,7 +73,7 @@ export default function MilestoneConfigModal({ open, onClose, projectId }: Props
           </div>
 
           <div style={{ padding: '14px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <button onClick={onClose} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid var(--divider)', background: '#FFFFFF', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: 'var(--fg-3)' }}>Cancel</button>
+            <button onClick={onClose} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid var(--divider)', background: 'var(--cp-float)', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: 'var(--fg-3)' }}>Cancel</button>
             <button onClick={save} style={{ padding: '8px 20px', borderRadius: 6, border: 'none', background: 'var(--cp-blue)', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>Save</button>
           </div>
         </div>

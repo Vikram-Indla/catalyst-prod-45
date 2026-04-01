@@ -191,8 +191,8 @@ export function SidebarBase({
               <div 
                 className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                  color: '#ffffff',
+                  background: 'var(--cp-blue)',
+                  color: 'var(--bg-app)',
                   fontSize: '0.62rem',
                   fontWeight: 700,
                   letterSpacing: '0.02em',
@@ -228,8 +228,8 @@ export function SidebarBase({
                 <div 
                   className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                    color: '#ffffff',
+                    background: 'var(--cp-blue)',
+                    color: 'var(--bg-app)',
                     fontSize: '0.62rem',
                     fontWeight: 700,
                     letterSpacing: '0.02em',
@@ -429,7 +429,7 @@ function renderMenuItem(
             top: '5px',
             bottom: '5px',
             width: '3px',
-            background: '#2563EB',
+            background: 'var(--cp-blue)',
             borderRadius: '0 3px 3px 0',
           }}
         />

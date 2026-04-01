@@ -48,7 +48,7 @@ export function IconColorPicker({ icon, color, onIconChange, onColorChange }: Ic
                 cursor: 'pointer',
               }}
             >
-              <Icon size={18} color={icon === name ? '#2563EB' : '#64748B'} strokeWidth={1.75} />
+              <Icon size={18} color={icon === name ? 'var(--cp-blue)' : 'var(--fg-3)'} strokeWidth={1.75} />
             </button>
           ))}
         </div>
@@ -72,7 +72,7 @@ export function IconColorPicker({ icon, color, onIconChange, onColorChange }: Ic
                 background: c,
                 border: color === c ? '3px solid var(--fg-1)' : '2px solid transparent',
                 cursor: 'pointer',
-                boxShadow: color === c ? `inset 0 0 0 3px #FFFFFF` : undefined,
+                boxShadow: color === c ? `inset 0 0 0 3px var(--cp-float)` : undefined,
               }}
             />
           ))}

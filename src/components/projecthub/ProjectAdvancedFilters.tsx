@@ -44,7 +44,7 @@ function FilterDropdown({ label, placeholder, options, selected, onToggle }: {
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           width: '100%', height: 36, padding: '0 12px',
-          fontSize: 13, color: selected.length > 0 ? (isDark ? 'rgba(248,244,240,0.92)' : '#0F172A') : (isDark ? 'rgba(248,244,240,0.40)' : '#94A3B8'),
+          fontSize: 13, color: selected.length > 0 ? (isDark ? 'rgba(248,244,240,0.92)' : 'var(--fg-1)') : (isDark ? 'rgba(248,244,240,0.40)' : 'var(--fg-4)'),
           borderRadius: 6, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
         }}
       >
@@ -67,18 +67,18 @@ function FilterDropdown({ label, placeholder, options, selected, onToggle }: {
                   display: 'flex', alignItems: 'center', gap: 8,
                   width: '100%', padding: '7px 10px', borderRadius: 6,
                   fontSize: 13,
-                  color: active ? '#2563EB' : (isDark ? 'rgba(248,244,240,0.72)' : '#334155'),
-                  background: active ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : 'transparent',
+                  color: active ? '#2563EB' : (isDark ? 'rgba(248,244,240,0.72)' : 'var(--fg-2)'),
+                  background: active ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : 'transparent',
                   fontWeight: active ? 600 : 400,
                   border: 'none', cursor: 'pointer', textAlign: 'left',
                 }}
-                onMouseEnter={e => { if (!active) (e.target as HTMLElement).style.background = isDark ? 'rgba(248,244,240,0.03)' : '#F8FAFC'; }}
+                onMouseEnter={e => { if (!active) (e.target as HTMLElement).style.background = isDark ? 'rgba(248,244,240,0.03)' : 'var(--bg-1)'; }}
                 onMouseLeave={e => { if (!active) (e.target as HTMLElement).style.background = 'transparent'; }}
               >
                 <span style={{
                   width: 16, height: 16, borderRadius: 4, flexShrink: 0,
-                  border: `1.5px solid ${active ? '#2563EB' : (isDark ? 'rgba(248,244,240,0.20)' : '#CBD5E1')}`,
-                  background: active ? '#2563EB' : (isDark ? 'transparent' : '#FFF'),
+                  border: `1.5px solid ${active ? 'var(--cp-blue)' : (isDark ? 'rgba(248,244,240,0.20)' : '#CBD5E1')}`,
+                  background: active ? '#2563EB' : (isDark ? 'transparent' : 'var(--bg-app)'),
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {active && <span style={{ color: '#FFF', fontSize: 10, fontWeight: 700 }}>✓</span>}
@@ -113,7 +113,7 @@ export function ProjectAdvancedFilters({ filters, onChange, departments, onClose
         <span className="text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]" style={{ fontSize: 13, fontWeight: 600 }}>Advanced Filters</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {hasFilters && (
-            <button onClick={clearAll} style={{ fontSize: 12, color: '#DC2626', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
+            <button onClick={clearAll} style={{ fontSize: 12, color: 'var(--sem-danger)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
               Clear all
             </button>
           )}

@@ -174,7 +174,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
             {groupOpen && (
               <div
                 className="absolute right-0 top-full mt-1 rounded-md py-1"
-                style={{ width: 160, background: '#FFF', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 9999 }}
+                style={{ width: 160, background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 9999 }}
               >
                 {GROUP_OPTIONS.map(o => (
                   <button
@@ -249,7 +249,7 @@ function FilterDropdown({ filters, onChange, statuses, priorities, types, assign
   return (
     <div
       className="absolute left-0 top-full mt-1 rounded-lg overflow-y-auto"
-      style={{ width: 240, maxHeight: 420, background: '#FFF', border: '1px solid var(--divider)', boxShadow: '0 12px 32px rgba(0,0,0,0.15)', zIndex: 9999 }}
+      style={{ width: 240, maxHeight: 420, background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 12px 32px rgba(0,0,0,0.15)', zIndex: 9999 }}
     >
       {/* Status */}
       <FilterSection title="Status">
@@ -370,7 +370,7 @@ function ColumnSettingsDropdown({ columns, onChange }: { columns: ColumnDef[]; o
   return (
     <div
       className="absolute right-0 top-full mt-1 rounded-lg py-2"
-      style={{ width: 200, background: '#FFF', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 9999 }}
+      style={{ width: 200, background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 9999 }}
     >
       <div className="px-3 pb-1.5 text-[10px] font-semibold uppercase" style={{ color: 'var(--fg-4)', letterSpacing: '0.06em' }}>
         Columns

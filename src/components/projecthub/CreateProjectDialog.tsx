@@ -92,18 +92,18 @@ export function CreateProjectDialog({ open, onClose }: Props) {
   if (!open) return null;
 
   // Dark / Light tokens
-  const surface = dk ? '#232019' : '#FFFFFF';
-  const textPrimary = dk ? 'rgba(248,244,240,0.92)' : '#0F172A';
-  const textSecondary = dk ? 'rgba(248,244,240,0.72)' : '#334155';
-  const textMuted = dk ? 'rgba(248,244,240,0.55)' : '#94A3B8';
+  const surface = dk ? '#232019' : 'var(--bg-app)';
+  const textPrimary = dk ? 'rgba(248,244,240,0.92)' : 'var(--fg-1)';
+  const textSecondary = dk ? 'rgba(248,244,240,0.72)' : 'var(--fg-2)';
+  const textMuted = dk ? 'rgba(248,244,240,0.55)' : 'var(--fg-4)';
   const textPlaceholder = dk ? 'rgba(248,244,240,0.40)' : undefined;
-  const border = dk ? 'rgba(248,244,240,0.10)' : '#E2E8F0';
-  const divider = dk ? 'rgba(248,244,240,0.08)' : '#E2E8F0';
-  const inputBg = dk ? 'transparent' : '#FFFFFF';
-  const closeHoverBg = dk ? 'rgba(248,244,240,0.06)' : '#F1F5F9';
-  const cancelBg = dk ? 'transparent' : '#FFFFFF';
-  const cancelHoverBg = dk ? 'rgba(248,244,240,0.06)' : '#F8FAFC';
-  const dropdownBg = dk ? '#232019' : '#FFFFFF';
+  const border = dk ? 'rgba(248,244,240,0.10)' : 'var(--divider)';
+  const divider = dk ? 'rgba(248,244,240,0.08)' : 'var(--divider)';
+  const inputBg = dk ? 'transparent' : 'var(--bg-app)';
+  const closeHoverBg = dk ? 'rgba(248,244,240,0.06)' : 'var(--cp-bd-zone)';
+  const cancelBg = dk ? 'transparent' : 'var(--bg-app)';
+  const cancelHoverBg = dk ? 'rgba(248,244,240,0.06)' : 'var(--bg-1)';
+  const dropdownBg = dk ? '#232019' : 'var(--cp-float)';
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
@@ -169,21 +169,21 @@ export function CreateProjectDialog({ open, onClose }: Props) {
         <div style={{ padding: 24, overflowY: 'auto', flex: 1 }}>
           {/* Project Name */}
           <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Project Name <span style={{ color: '#DC2626' }}>*</span></label>
+            <label style={labelStyle}>Project Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <input
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Enter project name"
               style={{ ...inputStyle, ...(textPlaceholder ? { ['--placeholder-color' as string]: textPlaceholder } : {}) }}
-              onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.18)'; }}
+              onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.18)'; }}
               onBlur={e => { e.currentTarget.style.borderColor = border; e.currentTarget.style.boxShadow = 'none'; }}
             />
-            {errors.name && <p style={{ fontSize: 12, color: '#DC2626', marginTop: 4 }}>{errors.name}</p>}
+            {errors.name && <p style={{ fontSize: 12, color: 'var(--sem-danger)', marginTop: 4 }}>{errors.name}</p>}
           </div>
 
           {/* Project Key */}
           <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Project Key <span style={{ color: '#DC2626' }}>*</span></label>
+            <label style={labelStyle}>Project Key <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <input
               value={key}
               onChange={e => {
@@ -201,7 +201,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               }}
               onFocus={e => {
                 if (!errors.key && !isDuplicate) {
-                  e.currentTarget.style.borderColor = '#2563EB';
+                  e.currentTarget.style.borderColor = 'var(--cp-blue)';
                   e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.18)';
                 }
               }}
@@ -212,7 +212,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
                 }
               }}
             />
-            {errors.key && <p style={{ fontSize: 12, color: '#DC2626', marginTop: 4 }}>{errors.key}</p>}
+            {errors.key && <p style={{ fontSize: 12, color: 'var(--sem-danger)', marginTop: 4 }}>{errors.key}</p>}
             {!errors.key && (
               <p style={{ fontSize: 11, color: textMuted, marginTop: 4 }}>Auto-generated from project name · 3–4 letters</p>
             )}
@@ -274,7 +274,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
                 fontSize: 14, fontFamily: "'Inter', sans-serif", color: textPrimary,
                 resize: 'vertical', outline: 'none', background: inputBg,
               }}
-              onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.18)'; }}
+              onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.18)'; }}
               onBlur={e => { e.currentTarget.style.borderColor = border; e.currentTarget.style.boxShadow = 'none'; }}
             />
           </div>

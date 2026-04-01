@@ -314,10 +314,10 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
               zIndex: 100001
             }}
           >
-            <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#0f172a', marginBottom: '8px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--fg-1)', marginBottom: '8px' }}>
               Delete Task
             </h3>
-            <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>
+            <p style={{ fontSize: '14px', color: 'var(--fg-3)', marginBottom: '24px' }}>
               Are you sure you want to delete "{task.title}"? This action cannot be undone.
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>

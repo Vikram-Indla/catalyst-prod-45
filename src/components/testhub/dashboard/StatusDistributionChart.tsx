@@ -23,12 +23,12 @@ function CustomTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   const item = payload[0].payload;
   return (
-    <div style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 10, padding: '10px 14px', boxShadow: '0 4px 16px hsla(0 0% 0%/.12)' }}>
+    <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 10, padding: '10px 14px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: item.color }} />
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))' }}>{item.name}</span>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>{item.name}</span>
       </div>
-      <p style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', margin: '4px 0 0' }}>
+      <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '4px 0 0' }}>
         <strong>{item.value}</strong> ({item.pct}%)
       </p>
     </div>
@@ -51,14 +51,14 @@ export function StatusDistributionChart({ stats }: Props) {
     : [];
 
   return (
-    <div style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 12, padding: 24, minHeight: 280 }}>
+    <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 12, padding: 24, minHeight: 280 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'hsl(152 81% 96%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Activity size={18} color="var(--sem-success)" />
         </div>
         <div>
-          <p style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))', margin: 0 }}>Execution by Status</p>
-          <p style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', margin: 0 }}>All test executions</p>
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>Execution by Status</p>
+          <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>All test executions</p>
         </div>
       </div>
 
@@ -77,8 +77,8 @@ export function StatusDistributionChart({ stats }: Props) {
             </ResponsiveContainer>
             {/* Center label */}
             <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-              <span style={{ fontSize: 22, fontWeight: 700, color: 'hsl(var(--foreground))', lineHeight: 1 }}>{total}</span>
-              <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))' }}>total</span>
+              <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--fg-1)', lineHeight: 1 }}>{total}</span>
+              <span style={{ fontSize: 11, color: 'var(--fg-3)' }}>total</span>
             </div>
           </div>
 
@@ -88,15 +88,15 @@ export function StatusDistributionChart({ stats }: Props) {
               <div key={d.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: d.color }} />
-                  <span style={{ fontSize: 13, color: 'hsl(var(--foreground))' }}>{d.name}</span>
+                  <span style={{ fontSize: 13, color: 'var(--fg-1)' }}>{d.name}</span>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', fontVariantNumeric: 'tabular-nums' }}>{d.value}</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontVariantNumeric: 'tabular-nums' }}>{d.value}</span>
               </div>
             ))}
           </div>
         </div>
       ) : (
-        <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(var(--muted-foreground))' }}>
+        <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--fg-3)' }}>
           <div style={{ textAlign: 'center' }}>
             <Activity size={32} style={{ marginBottom: 8, opacity: 0.4 }} />
             <p style={{ fontSize: 13 }}>No execution data available yet</p>

@@ -36,29 +36,29 @@ export function FeatureProgressVisualization({ progress, featureState }: Feature
   // Create conic gradient for doughnut chart
   const createConicGradient = () => {
     if (isAccepted) {
-      return 'conic-gradient(from 0deg, hsl(var(--chart-1)) 0deg 360deg)';
+      return 'conic-gradient(from 0deg, var(--chart-1) 0deg 360deg)';
     }
     
     let currentAngle = 0;
     const segments = [];
     
     if (acceptedPct > 0) {
-      segments.push(`hsl(var(--chart-1)) ${currentAngle}deg ${currentAngle + acceptedAngle}deg`);
+      segments.push(`var(--chart-1) ${currentAngle}deg ${currentAngle + acceptedAngle}deg`);
       currentAngle += acceptedAngle;
     }
     
     if (inProgressPct > 0) {
-      segments.push(`hsl(var(--chart-2)) ${currentAngle}deg ${currentAngle + inProgressAngle}deg`);
+      segments.push(`var(--chart-2) ${currentAngle}deg ${currentAngle + inProgressAngle}deg`);
       currentAngle += inProgressAngle;
     }
     
     if (notStartedPct > 0) {
-      segments.push(`hsl(var(--chart-3)) ${currentAngle}deg ${currentAngle + notStartedAngle}deg`);
+      segments.push(`var(--chart-3) ${currentAngle}deg ${currentAngle + notStartedAngle}deg`);
       currentAngle += notStartedAngle;
     }
     
     if (segments.length === 0) {
-      return 'conic-gradient(from 0deg, hsl(var(--muted)) 0deg 360deg)';
+      return 'conic-gradient(from 0deg, var(--bg-2) 0deg 360deg)';
     }
     
     return `conic-gradient(from 0deg, ${segments.join(', ')})`;
@@ -95,7 +95,7 @@ export function FeatureProgressVisualization({ progress, featureState }: Feature
             <div className="space-y-1">
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--chart-1))' }} />
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--chart-1)' }} />
                   <span>Accepted</span>
                 </div>
                 <span className="font-medium">{progress.accepted} / {progress.totalStories}</span>
@@ -105,7 +105,7 @@ export function FeatureProgressVisualization({ progress, featureState }: Feature
                   className="h-full transition-all"
                   style={{ 
                     width: `${acceptedPct}%`,
-                    backgroundColor: 'hsl(var(--chart-1))'
+                    backgroundColor: 'var(--chart-1)'
                   }}
                 />
               </div>
@@ -115,7 +115,7 @@ export function FeatureProgressVisualization({ progress, featureState }: Feature
             <div className="space-y-1">
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--chart-2))' }} />
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--chart-2)' }} />
                   <span>In Progress</span>
                 </div>
                 <span className="font-medium">{progress.inProgress} / {progress.totalStories}</span>
@@ -125,7 +125,7 @@ export function FeatureProgressVisualization({ progress, featureState }: Feature
                   className="h-full transition-all"
                   style={{ 
                     width: `${inProgressPct}%`,
-                    backgroundColor: 'hsl(var(--chart-2))'
+                    backgroundColor: 'var(--chart-2)'
                   }}
                 />
               </div>
@@ -135,7 +135,7 @@ export function FeatureProgressVisualization({ progress, featureState }: Feature
             <div className="space-y-1">
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--chart-3))' }} />
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--chart-3)' }} />
                   <span>Not Started</span>
                 </div>
                 <span className="font-medium">{progress.notStarted} / {progress.totalStories}</span>
@@ -145,7 +145,7 @@ export function FeatureProgressVisualization({ progress, featureState }: Feature
                   className="h-full transition-all"
                   style={{ 
                     width: `${notStartedPct}%`,
-                    backgroundColor: 'hsl(var(--chart-3))'
+                    backgroundColor: 'var(--chart-3)'
                   }}
                 />
               </div>

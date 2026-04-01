@@ -70,9 +70,9 @@ function FilterDropdown({
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           padding: '5px 10px', fontSize: 12, fontWeight: 500,
-          color: selected.length > 0 ? '#2563EB' : (isDark ? DK.t2 : '#64748B'),
-          background: selected.length > 0 ? 'rgba(37,99,235,0.06)' : (isDark ? 'transparent' : '#FFFFFF'),
-          border: `1px solid ${selected.length > 0 ? 'rgba(37,99,235,0.3)' : (isDark ? DK.border : '#E2E8F0')}`,
+          color: selected.length > 0 ? '#2563EB' : (isDark ? DK.t2 : 'var(--fg-3)'),
+          background: selected.length > 0 ? 'rgba(37,99,235,0.06)' : (isDark ? 'transparent' : 'var(--bg-app)'),
+          border: `1px solid ${selected.length > 0 ? 'rgba(37,99,235,0.3)' : (isDark ? DK.border : 'var(--divider)')}`,
           borderRadius: 8, cursor: 'pointer',
         }}
       >
@@ -83,21 +83,21 @@ function FilterDropdown({
       {open && (
         <div style={{
           position: 'absolute', top: '100%', left: 0, marginTop: 4,
-          background: isDark ? DK.float : '#FFFFFF',
-          border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`, borderRadius: 8,
+          background: isDark ? DK.float : 'var(--bg-app)',
+          border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8,
           boxShadow: isDark ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 16px rgba(0,0,0,0.08)',
           padding: 6, minWidth: 180, zIndex: 9999, maxHeight: 240, overflowY: 'auto',
         }}>
           {selected.length > 0 && (
-            <button onClick={() => { onClear(); }} style={{ fontSize: 11, color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', width: '100%', textAlign: 'left', marginBottom: 4 }}>
+            <button onClick={() => { onClear(); }} style={{ fontSize: 11, color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', width: '100%', textAlign: 'left', marginBottom: 4 }}>
               Clear all
             </button>
           )}
           {options.map(opt => {
             const isSelected = selected.includes(opt.id);
             return (
-              <label key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 12, color: isDark ? DK.t1 : '#0F172A' }}
-                onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(248,244,240,0.05)' : '#F1F5F9')}
+              <label key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 12, color: isDark ? DK.t1 : 'var(--fg-1)' }}
+                onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(248,244,240,0.05)' : 'var(--cp-bd-zone)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <input type="checkbox" checked={isSelected} onChange={() => onToggle(opt.id)} style={{ accentColor: '#2563EB' }} />
@@ -138,7 +138,7 @@ export function GoalsToolbar({
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         {/* View Switcher */}
-        <div style={{ display: 'inline-flex', background: isDark ? 'rgba(255,255,255,0.04)' : '#F1F5F9', borderRadius: 8, padding: 3, gap: 2 }}>
+        <div style={{ display: 'inline-flex', background: isDark ? 'rgba(255,255,255,0.04)' : 'var(--cp-bd-zone)', borderRadius: 8, padding: 3, gap: 2 }}>
           {viewButtons.map(vb => {
             const active = currentView === vb.key;
             return (
@@ -146,8 +146,8 @@ export function GoalsToolbar({
                 display: 'inline-flex', alignItems: 'center', gap: 5,
                 padding: '5px 12px', fontSize: 12,
                 fontWeight: active ? 600 : 500,
-                color: active ? (isDark ? '#FFFFFF' : '#0F172A') : (isDark ? '#9CA3AF' : '#64748B'),
-                background: active ? (isDark ? 'rgba(255,255,255,0.08)' : '#FFFFFF') : 'transparent',
+                color: active ? (isDark ? 'var(--bg-app)' : 'var(--fg-1)') : (isDark ? 'var(--fg-4)' : 'var(--fg-3)'),
+                background: active ? (isDark ? 'rgba(255,255,255,0.08)' : 'var(--bg-app)') : 'transparent',
                 border: 'none', borderRadius: 6, cursor: 'pointer',
                 boxShadow: active && !isDark ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                 transition: 'all 150ms',
@@ -160,12 +160,12 @@ export function GoalsToolbar({
         </div>
 
         {/* Search */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`, borderRadius: 8, padding: '5px 10px', minWidth: 220 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: isDark ? 'transparent' : 'var(--bg-app)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8, padding: '5px 10px', minWidth: 220 }}>
           <Search size={14} color={isDark ? 'rgba(248,244,240,0.35)' : '#94A3B8'} />
           <input
             type="text" placeholder="Search goals or KRs..."
             value={searchQuery} onChange={e => onSearch(e.target.value)}
-            style={{ border: 'none', outline: 'none', fontSize: 12, color: isDark ? 'var(--cp-t1)' : '#0F172A', background: 'transparent', width: '100%' }}
+            style={{ border: 'none', outline: 'none', fontSize: 12, color: isDark ? 'var(--cp-t1)' : 'var(--fg-1)', background: 'transparent', width: '100%' }}
           />
           {searchQuery && (
             <button onClick={() => onSearch('')} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
@@ -189,7 +189,7 @@ export function GoalsToolbar({
         {hasActiveFilters && (
           <button
             onClick={() => onFiltersChange?.({})}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', fontSize: 11, fontWeight: 500, color: '#EF4444', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, cursor: 'pointer' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', fontSize: 11, fontWeight: 500, color: 'var(--sem-danger)', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, cursor: 'pointer' }}
           >
             <X size={11} /> Clear all
           </button>
@@ -199,9 +199,9 @@ export function GoalsToolbar({
           <button onClick={onExpandAll} style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
             padding: '5px 12px', fontSize: 12, fontWeight: 500,
-            color: isDark ? DK.t2 : '#64748B',
-            background: isDark ? 'transparent' : '#FFFFFF',
-            border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`, borderRadius: 8, cursor: 'pointer',
+            color: isDark ? DK.t2 : 'var(--fg-3)',
+            background: isDark ? 'transparent' : 'var(--bg-app)',
+            border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8, cursor: 'pointer',
           }}>
             <ChevronsUpDown size={13} />
             {isAllExpanded ? 'Collapse All' : 'Expand All'}

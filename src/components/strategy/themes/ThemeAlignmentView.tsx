@@ -128,7 +128,7 @@ function AILoadingState() {
     <div className="px-8 py-8">
       <div className="flex items-center gap-3 mb-8">
         <div className="flex items-center justify-center rounded-xl" style={{ width: 40, height: 40, background: '#F3E8FF' }}>
-          <Sparkles size={16} className="animate-pulse" style={{ color: '#7C3AED' }} />
+          <Sparkles size={16} className="animate-pulse" style={{ color: '#2563EB' }} />
         </div>
         <div>
           <div className="h-3 w-48 bg-muted rounded-full animate-pulse" />

@@ -105,7 +105,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
           <div
             className="absolute right-0 top-full mt-1 z-10"
             style={{
-              width: 120, background: '#FFFFFF', border: '1px solid var(--divider)',
+              width: 120, background: 'var(--cp-float)', border: '1px solid var(--divider)',
               borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',
               overflow: 'hidden',
             }}

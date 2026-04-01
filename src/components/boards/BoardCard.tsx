@@ -144,7 +144,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           </button>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
-            {board.isPersonal && <Chip bg="#F5F3FF" color="#7C3AED">Personal</Chip>}
+            {board.isPersonal && <Chip bg="#EFF6FF" color="#2563EB">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
               <Chip bg="#F8FAFC" color="#64748B">By {board.swimlaneType}</Chip>

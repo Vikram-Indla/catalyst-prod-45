@@ -121,7 +121,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
               <div
                 key={groupId}
                 className="mb-3 rounded-xl border"
-                style={{ borderColor: 'var(--divider)', background: '#fff' }}
+                style={{ borderColor: 'var(--divider)', background: 'var(--cp-float)' }}
               >
                 {/* Group Header */}
                 <div

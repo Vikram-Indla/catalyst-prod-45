@@ -48,9 +48,9 @@ export function DependencyDrawer({
   };
 
   const getStatusConfig = (status: string | undefined) => {
-    if (!status) return { bgColor: 'hsl(var(--muted))', textColor: 'hsl(var(--muted-foreground))', label: 'Unknown' };
+    if (!status) return { bgColor: 'var(--bg-2)', textColor: 'var(--fg-3)', label: 'Unknown' };
     const config = STATUS_CONFIG[status as WorkflowStatus];
-    return config || { bgColor: 'hsl(var(--muted))', textColor: 'hsl(var(--muted-foreground))', label: status };
+    return config || { bgColor: 'var(--bg-2)', textColor: 'var(--fg-3)', label: status };
   };
 
   return (

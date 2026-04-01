@@ -120,15 +120,15 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 18, padding: '0 7px', borderRadius: 3,
-          background: '#F5F3FF', border: '0.75px solid #EDE9FE',
+          background: '#EFF6FF', border: '0.75px solid #DBEAFE',
           maxWidth: '100%', overflow: 'hidden',
         }}>
           <span style={{
             width: 5, height: 5, borderRadius: '50%',
-            background: '#7C3AED', flexShrink: 0,
+            background: '#2563EB', flexShrink: 0,
           }} />
           <span style={{
-            fontSize: 10.5, fontWeight: 500, color: '#7C3AED',
+            fontSize: 10.5, fontWeight: 500, color: '#2563EB',
             fontFamily: "'Inter', sans-serif",
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>{card.epic.title}</span>

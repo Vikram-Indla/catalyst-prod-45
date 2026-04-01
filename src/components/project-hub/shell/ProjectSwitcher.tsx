@@ -118,7 +118,7 @@ function ProjectRow({
         border: 'none',
         cursor: 'pointer',
       }}
-      onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = isDark ? 'rgba(248,244,240,0.03)' : '#EFF6FF'; }}
+      onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = isDark ? 'rgba(248,244,240,0.03)' : 'var(--cp-blue-wash)'; }}
       onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = ''; }}
     >
       <div

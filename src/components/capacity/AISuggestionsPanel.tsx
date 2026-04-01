@@ -47,20 +47,20 @@ export function AISuggestionsPanel({
 
   return (
     <div className={cn(
-      "bg-gradient-to-br from-violet-50 to-blue-50 dark:from-violet-950/20 dark:to-blue-950/20",
-      "border border-violet-200 dark:border-violet-800 rounded-lg overflow-hidden",
+      "bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-950/20 dark:to-blue-950/20",
+      "border border-blue-200 dark:border-blue-800 rounded-lg overflow-hidden",
       className
     )}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-violet-500/10 to-blue-500/10">
+      <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-500/10 to-blue-500/10">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-gradient-to-br from-violet-500 to-blue-500">
+          <div className="p-1.5 rounded-lg bg-gradient-to-br from-blue-500 to-blue-500">
             <Bot className="w-4 h-4 text-white" />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-1">
               AI Suggestions
-              <Sparkles className="w-3 h-3 text-violet-500" />
+              <Sparkles className="w-3 h-3 text-blue-500" />
             </h3>
             <p className="text-xs text-muted-foreground">
               Best matches for {demand.role} • {demand.percentageNeeded}%
@@ -141,7 +141,7 @@ function SuggestionCard({
         <div className={cn(
           "bg-card dark:bg-[var(--surface-0)] rounded-lg border transition-all",
           isTopMatch 
-            ? "border-violet-300 dark:border-violet-500 shadow-sm" 
+            ? "border-blue-300 dark:border-blue-500 shadow-sm" 
             : "border-border dark:border-[var(--border-subtle)]",
           "hover:shadow-md"
         )}>
@@ -150,7 +150,7 @@ function SuggestionCard({
             <div className={cn(
               "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
               isTopMatch 
-                ? "bg-gradient-to-br from-violet-500 to-blue-500 text-white" 
+                ? "bg-gradient-to-br from-blue-500 to-blue-500 text-white" 
                 : "bg-muted dark:bg-[var(--surface-3)] text-muted-foreground dark:text-[var(--text-secondary)]"
             )}>
               {rank}
@@ -166,7 +166,7 @@ function SuggestionCard({
               <div className="flex items-center gap-2">
                 <span className="font-medium text-sm truncate">{suggestion.resource.name}</span>
                 {isTopMatch && (
-                  <Badge variant="secondary" className="text-[10px] bg-violet-100 dark:bg-violet-900 text-violet-700 dark:text-violet-300">
+                  <Badge variant="secondary" className="text-[10px] bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
                     Best Match
                   </Badge>
                 )}

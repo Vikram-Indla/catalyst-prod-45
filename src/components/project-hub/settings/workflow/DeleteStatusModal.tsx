@@ -47,7 +47,7 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
       style={{ background: 'rgba(0,0,0,0.5)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div style={{ width: 440, background: '#FFFFFF', borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ width: 440, background: 'var(--cp-float)', borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: "'Inter', sans-serif" }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <AlertTriangle size={18} color="var(--sem-danger)" strokeWidth={2} />
@@ -85,7 +85,7 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
         )}
 
         <div className="flex justify-end gap-2">
-          <button onClick={onClose} style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, background: '#FFFFFF', cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose} style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, background: 'var(--cp-float)', cursor: 'pointer' }}>Cancel</button>
           <button
             onClick={() => onConfirm(hasMigration ? targetId : undefined)}
             disabled={loading || (hasMigration && !targetId)}

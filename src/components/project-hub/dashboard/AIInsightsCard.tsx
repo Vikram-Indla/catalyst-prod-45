@@ -5,7 +5,7 @@ export function AIInsightsCard() {
     <div
       style={{
         gridColumn: '1 / -1',
-        background: '#FFFFFF',
+        background: 'var(--cp-float)',
         border: '1px solid var(--divider)',
         borderRadius: 8,
         padding: 20,

@@ -23,8 +23,8 @@ export function StarButton({ isStarred, onClick, size = 16 }: StarButtonProps) {
       <Star
         size={size}
         strokeWidth={1.75}
-        fill={isStarred ? '#EAB308' : 'none'}
-        color={isStarred ? '#EAB308' : '#94A3B8'}
+        fill={isStarred ? 'var(--sem-star)' : 'none'}
+        color={isStarred ? 'var(--sem-star)' : 'var(--fg-4)'}
       />
     </button>
   );

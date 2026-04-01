@@ -39,7 +39,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         cursor: 'pointer',
       }}
       onMouseEnter={(e) => {
-        if (!isActive) e.currentTarget.style.background = isDark ? 'rgba(248,244,240,0.03)' : '#F1F5F9';
+        if (!isActive) e.currentTarget.style.background = isDark ? 'rgba(248,244,240,0.03)' : 'var(--cp-bd-zone)';
       }}
       onMouseLeave={(e) => {
         if (!isActive) e.currentTarget.style.background = 'transparent';

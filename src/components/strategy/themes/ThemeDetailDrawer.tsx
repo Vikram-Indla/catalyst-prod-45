@@ -236,7 +236,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
                 padding: '6px 0',
               }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: isDark ? DK.t1 : '#5B21B6' }}>{f.value}</p>
-                <p style={{ fontSize: 10, color: isDark ? DK.t3 : '#7C3AED' }}>{f.label}</p>
+                <p style={{ fontSize: 10, color: isDark ? DK.t3 : '#2563EB' }}>{f.label}</p>
               </div>
             ))}
           </div>

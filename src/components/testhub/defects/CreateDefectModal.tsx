@@ -25,8 +25,8 @@ const SEVERITY_OPTIONS = [
 
 const PRIORITY_OPTIONS = [
   { value: 'critical', label: 'Critical', desc: 'Fix immediately' },
-  { value: 'high', label: 'High', desc: 'Fix this sprint' },
-  { value: 'medium', label: 'Medium', desc: 'Fix next sprint' },
+  { value: 'high', label: 'High', desc: 'Fix this release' },
+  { value: 'medium', label: 'Medium', desc: 'Fix next release' },
   { value: 'low', label: 'Low', desc: 'When possible' },
 ];
 
@@ -166,13 +166,13 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
     }}>
       <div style={{
         width: '100%', maxWidth: 700, maxHeight: '90vh',
-        backgroundColor: 'hsl(var(--card))', borderRadius: 16,
+        backgroundColor: 'var(--bg-app)', borderRadius: 16,
         boxShadow: '0 20px 60px rgba(0,0,0,0.2)', display: 'flex',
         flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Header */}
         <div style={{
-          padding: '20px 24px', borderBottom: '1px solid hsl(var(--border))',
+          padding: '20px 24px', borderBottom: '1px solid var(--divider)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -184,10 +184,10 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               <Bug size={22} style={{ color: '#FFF' }} />
             </div>
             <div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
                 Create Defect
               </h2>
-              <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: 0 }}>
+              <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: 0 }}>
                 Report a new bug or issue
               </p>
             </div>
@@ -196,7 +196,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
             onClick={onClose}
             style={{
               width: 36, height: 36, border: 'none', borderRadius: 8,
-              backgroundColor: 'hsl(var(--muted))', color: 'hsl(var(--muted-foreground))',
+              backgroundColor: 'var(--bg-2)', color: 'var(--fg-3)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
@@ -208,7 +208,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           {/* Title */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
               Title <span style={{ color: 'var(--sem-danger)' }}>*</span>
             </label>
             <input
@@ -218,9 +218,9 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               placeholder="Brief description of the issue"
               style={{
                 width: '100%', height: 44, padding: '0 14px',
-                border: `1.5px solid ${errors.title ? 'var(--sem-danger)' : 'hsl(var(--border))'}`,
-                borderRadius: 10, fontSize: 14, backgroundColor: 'hsl(var(--background))',
-                color: 'hsl(var(--foreground))',
+                border: `1.5px solid ${errors.title ? 'var(--sem-danger)' : 'var(--divider)'}`,
+                borderRadius: 10, fontSize: 14, backgroundColor: 'var(--bg-app)',
+                color: 'var(--fg-1)',
               }}
             />
             {errors.title && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '4px 0 0' }}>{errors.title}</p>}
@@ -229,7 +229,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
           {/* Severity & Priority */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
                 Severity
               </label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -239,9 +239,9 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                     style={{
                       display: 'flex', alignItems: 'center', gap: 10,
                       padding: '10px 12px',
-                      border: `1.5px solid ${severity === opt.value ? opt.color : 'hsl(var(--border))'}`,
+                      border: `1.5px solid ${severity === opt.value ? opt.color : 'var(--divider)'}`,
                       borderRadius: 8,
-                      backgroundColor: severity === opt.value ? `${opt.color}10` : 'hsl(var(--background))',
+                      backgroundColor: severity === opt.value ? `${opt.color}10` : 'var(--bg-app)',
                       cursor: 'pointer',
                     }}
                   >
@@ -253,7 +253,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                     />
                     <div style={{
                       width: 16, height: 16, borderRadius: '50%',
-                      border: `2px solid ${severity === opt.value ? opt.color : 'hsl(var(--border))'}`,
+                      border: `2px solid ${severity === opt.value ? opt.color : 'var(--divider)'}`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       {severity === opt.value && (
@@ -261,10 +261,10 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                       )}
                     </div>
                     <div>
-                      <span style={{ fontSize: 13, fontWeight: 500, color: severity === opt.value ? opt.color : 'hsl(var(--foreground))' }}>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: severity === opt.value ? opt.color : 'var(--fg-1)' }}>
                         {opt.label}
                       </span>
-                      <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', marginLeft: 8 }}>{opt.desc}</span>
+                      <span style={{ fontSize: 11, color: 'var(--fg-3)', marginLeft: 8 }}>{opt.desc}</span>
                     </div>
                   </label>
                 ))}
@@ -272,7 +272,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
                 Priority
               </label>
               <select
@@ -280,8 +280,8 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                 onChange={(e) => setPriority(e.target.value)}
                 style={{
                   width: '100%', height: 44, padding: '0 12px',
-                  border: '1.5px solid hsl(var(--border))', borderRadius: 10, fontSize: 14,
-                  backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))',
+                  border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14,
+                  backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
                   marginBottom: 12,
                 }}
               >
@@ -290,7 +290,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                 ))}
               </select>
 
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
                 Assignee
               </label>
               <select
@@ -298,8 +298,8 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                 onChange={(e) => setAssignedTo(e.target.value)}
                 style={{
                   width: '100%', height: 44, padding: '0 12px',
-                  border: '1.5px solid hsl(var(--border))', borderRadius: 10, fontSize: 14,
-                  backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))',
+                  border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14,
+                  backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
                 }}
               >
                 <option value="">Unassigned</option>
@@ -312,7 +312,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
 
           {/* Description */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
               Description
             </label>
             <textarea
@@ -321,16 +321,16 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               placeholder="Detailed description of the issue..."
               rows={3}
               style={{
-                width: '100%', padding: 14, border: '1.5px solid hsl(var(--border))',
+                width: '100%', padding: 14, border: '1.5px solid var(--divider)',
                 borderRadius: 10, fontSize: 14, resize: 'vertical',
-                backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))',
+                backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
               }}
             />
           </div>
 
           {/* Environment */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
               Environment
             </label>
             <input
@@ -340,15 +340,15 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               placeholder="e.g., Production, Staging, Development"
               style={{
                 width: '100%', height: 44, padding: '0 14px',
-                border: '1.5px solid hsl(var(--border))', borderRadius: 10, fontSize: 14,
-                backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))',
+                border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14,
+                backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
               }}
             />
           </div>
 
           {/* Steps to Reproduce */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
               Steps to Reproduce
             </label>
             <textarea
@@ -357,9 +357,9 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               placeholder={"1. Go to...\n2. Click on...\n3. Observe that..."}
               rows={4}
               style={{
-                width: '100%', padding: 14, border: '1.5px solid hsl(var(--border))',
+                width: '100%', padding: 14, border: '1.5px solid var(--divider)',
                 borderRadius: 10, fontSize: 14, resize: 'vertical', fontFamily: 'monospace',
-                backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))',
+                backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
               }}
             />
           </div>
@@ -367,7 +367,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
           {/* Expected vs Actual */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
                 Expected Result
               </label>
               <textarea
@@ -376,14 +376,14 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                 placeholder="What should happen..."
                 rows={3}
                 style={{
-                  width: '100%', padding: 14, border: '1.5px solid hsl(var(--border))',
+                  width: '100%', padding: 14, border: '1.5px solid var(--divider)',
                   borderRadius: 10, fontSize: 14, resize: 'vertical',
-                  backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))',
+                  backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
                 }}
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <AlertCircle size={14} style={{ color: 'var(--sem-danger)' }} /> Actual Result
                 </span>
@@ -394,9 +394,9 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                 placeholder="What actually happened..."
                 rows={3}
                 style={{
-                  width: '100%', padding: 14, border: '1.5px solid hsl(var(--border))',
+                  width: '100%', padding: 14, border: '1.5px solid var(--divider)',
                   borderRadius: 10, fontSize: 14, resize: 'vertical',
-                  backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))',
+                  backgroundColor: 'var(--bg-app)', color: 'var(--fg-1)',
                 }}
               />
             </div>
@@ -405,7 +405,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
 
         {/* Footer */}
         <div style={{
-          padding: '16px 24px', borderTop: '1px solid hsl(var(--border))',
+          padding: '16px 24px', borderTop: '1px solid var(--divider)',
           display: 'flex', justifyContent: 'flex-end', gap: 12,
         }}>
           <button
@@ -413,9 +413,9 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
             disabled={isSubmitting}
             style={{
               height: 44, padding: '0 20px',
-              backgroundColor: 'hsl(var(--background))', border: '1.5px solid hsl(var(--border))',
+              backgroundColor: 'var(--bg-app)', border: '1.5px solid var(--divider)',
               borderRadius: 10, fontSize: 14, fontWeight: 500,
-              color: 'hsl(var(--foreground))', cursor: 'pointer',
+              color: 'var(--fg-1)', cursor: 'pointer',
             }}
           >
             Cancel

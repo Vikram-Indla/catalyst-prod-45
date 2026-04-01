@@ -52,7 +52,7 @@ export function BulkActionsBar({
         {statusOpen && (
           <div
             className="absolute left-0 top-full mt-1 rounded-md py-1"
-            style={{ width: 160, background: '#FFF', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.15)', zIndex: 9999 }}
+            style={{ width: 160, background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.15)', zIndex: 9999 }}
           >
             {statuses.map(s => (
               <button
@@ -82,7 +82,7 @@ export function BulkActionsBar({
         {priorityOpen && (
           <div
             className="absolute left-0 top-full mt-1 rounded-md py-1"
-            style={{ width: 140, background: '#FFF', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.15)', zIndex: 9999 }}
+            style={{ width: 140, background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.15)', zIndex: 9999 }}
           >
             {PRIORITIES.map(p => (
               <button

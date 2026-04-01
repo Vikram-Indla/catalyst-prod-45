@@ -51,11 +51,11 @@ const PROFICIENCY_LEVELS = ['awareness', 'beginner', 'intermediate', 'advanced',
 type ProficiencyLevel = typeof PROFICIENCY_LEVELS[number];
 
 const PROFICIENCY_COLORS: Record<string, string> = {
-  expert: 'hsl(var(--health-green))',
-  advanced: 'hsl(var(--info))',
-  intermediate: 'hsl(var(--warning))',
-  beginner: 'hsl(280 70% 50%)',
-  awareness: 'hsl(var(--muted-foreground))',
+  expert: 'var(--health-green)',
+  advanced: 'var(--sem-info)',
+  intermediate: 'var(--sem-warning)',
+  beginner: '#7B2FCC',
+  awareness: 'var(--fg-3)',
 };
 
 const PROFICIENCY_LABELS: Record<string, string> = {
@@ -67,13 +67,13 @@ const PROFICIENCY_LABELS: Record<string, string> = {
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Technical: 'hsl(var(--info))',
-  'Cloud & Infrastructure': 'hsl(185 70% 50%)',
-  Leadership: 'hsl(var(--brand-primary))',
-  'Soft Skills': 'hsl(330 70% 55%)',
-  'Data & Analytics': 'hsl(280 70% 50%)',
-  Security: 'hsl(var(--destructive))',
-  Methodology: 'hsl(var(--health-green))',
+  Technical: 'var(--sem-info)',
+  'Cloud & Infrastructure': '#26A6B5',
+  Leadership: 'var(--brand-primary)',
+  'Soft Skills': '#D94088',
+  'Data & Analytics': '#7B2FCC',
+  Security: 'var(--sem-danger)',
+  Methodology: 'var(--health-green)',
 };
 
 export function SkillRequirementsSection({ 
@@ -261,7 +261,7 @@ export function SkillRequirementsSection({
 
   const renderProficiencyDots = (level: string) => {
     const levelIndex = PROFICIENCY_LEVELS.indexOf(level as ProficiencyLevel);
-    const color = PROFICIENCY_COLORS[level] || 'hsl(var(--muted-foreground))';
+    const color = PROFICIENCY_COLORS[level] || 'var(--fg-3)';
     
     return (
       <div className="flex gap-1">
@@ -270,7 +270,7 @@ export function SkillRequirementsSection({
             key={idx}
             className="w-2 h-2 rounded-full"
             style={{
-              background: idx <= levelIndex ? color : 'hsl(var(--muted-foreground) / 0.3)',
+              background: idx <= levelIndex ? color : 'rgba(115,115,115,0.3)',
             }}
           />
         ))}
@@ -333,7 +333,7 @@ export function SkillRequirementsSection({
           <div className="space-y-2">
             {requirements.map((req) => {
               const isGap = (req.currentCount || 0) < req.required_count;
-              const availabilityColor = isGap ? 'hsl(var(--destructive))' : 'hsl(var(--health-green))';
+              const availabilityColor = isGap ? 'var(--sem-danger)' : 'var(--health-green)';
               const availabilityPercent = Math.min(100, ((req.currentCount || 0) / req.required_count) * 100);
               
               return (
@@ -352,8 +352,8 @@ export function SkillRequirementsSection({
                           <span
                             className="text-[10px] px-1.5 py-0.5 rounded"
                             style={{
-                              background: `${CATEGORY_COLORS[req.skill.category] || 'hsl(var(--muted-foreground))'}20`,
-                              color: CATEGORY_COLORS[req.skill.category] || 'hsl(var(--muted-foreground))',
+                              background: `${CATEGORY_COLORS[req.skill.category] || 'var(--fg-3)'}20`,
+                              color: CATEGORY_COLORS[req.skill.category] || 'var(--fg-3)',
                             }}
                           >
                             {req.skill.category}
@@ -369,8 +369,8 @@ export function SkillRequirementsSection({
                       <span
                         className="text-xs px-2 py-0.5 rounded-full font-medium"
                         style={{
-                          background: `${PROFICIENCY_COLORS[req.required_proficiency] || 'hsl(var(--muted-foreground))'}20`,
-                          color: PROFICIENCY_COLORS[req.required_proficiency] || 'hsl(var(--muted-foreground))',
+                          background: `${PROFICIENCY_COLORS[req.required_proficiency] || 'var(--fg-3)'}20`,
+                          color: PROFICIENCY_COLORS[req.required_proficiency] || 'var(--fg-3)',
                         }}
                       >
                         {PROFICIENCY_LABELS[req.required_proficiency] || req.required_proficiency}

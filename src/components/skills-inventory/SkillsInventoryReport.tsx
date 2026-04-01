@@ -40,11 +40,11 @@ const statsData = [
 ];
 
 const proficiencyData: ProficiencyData[] = [
-  { level: 'Expert', count: 52, percentage: 21, colorClass: 'hsl(var(--health-green))' },
-  { level: 'Advanced', count: 69, percentage: 28, colorClass: 'hsl(var(--info))' },
-  { level: 'Intermediate', count: 74, percentage: 30, colorClass: 'hsl(var(--warning))' },
-  { level: 'Beginner', count: 37, percentage: 15, colorClass: 'hsl(280 70% 50%)' },
-  { level: 'Awareness', count: 15, percentage: 6, colorClass: 'hsl(var(--muted-foreground))' },
+  { level: 'Expert', count: 52, percentage: 21, colorClass: 'var(--health-green)' },
+  { level: 'Advanced', count: 69, percentage: 28, colorClass: 'var(--sem-info)' },
+  { level: 'Intermediate', count: 74, percentage: 30, colorClass: 'var(--sem-warning)' },
+  { level: 'Beginner', count: 37, percentage: 15, colorClass: '#7B2FCC' },
+  { level: 'Awareness', count: 15, percentage: 6, colorClass: 'var(--fg-3)' },
 ];
 
 const categoryData: CategoryData[] = [

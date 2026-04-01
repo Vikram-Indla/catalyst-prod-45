@@ -34,15 +34,15 @@ export function RecentActivityFeed({ activities }: Props) {
   const navigate = useNavigate();
 
   return (
-    <div style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 12, padding: 24, minHeight: 260 }}>
+    <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 12, padding: 24, minHeight: 260 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'hsl(250 91% 96%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#EDE9FE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Activity size={18} color="#2563EB" />
         </div>
         <div>
-          <p style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))', margin: 0 }}>Recent Activity</p>
-          <p style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', margin: 0 }}>Latest test executions</p>
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>Recent Activity</p>
+          <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>Latest test executions</p>
         </div>
       </div>
 
@@ -55,7 +55,7 @@ export function RecentActivityFeed({ activities }: Props) {
               <div
                 key={a.id}
                 onClick={() => navigate(`/testhub/cycles/${a.cycle_id}`)}
-                style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: i < activities.length - 1 ? '1px solid hsl(var(--border))' : 'none', cursor: 'pointer' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: i < activities.length - 1 ? '1px solid var(--divider)' : 'none', cursor: 'pointer' }}
               >
                 <div style={{ width: 30, height: 30, borderRadius: '50%', backgroundColor: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Icon size={14} color={cfg.color} />
@@ -63,11 +63,11 @@ export function RecentActivityFeed({ activities }: Props) {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)' }}>{a.case_key}</span>
-                    <span style={{ fontSize: 13, color: 'hsl(var(--foreground))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
+                    <span style={{ fontSize: 13, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
                   </div>
-                  <p style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', margin: '2px 0 0' }}>{a.cycle_key} · {a.executed_by_name}</p>
+                  <p style={{ fontSize: 11, color: 'var(--fg-3)', margin: '2px 0 0' }}>{a.cycle_key} · {a.executed_by_name}</p>
                 </div>
-                <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                <span style={{ fontSize: 11, color: 'var(--fg-3)', whiteSpace: 'nowrap', flexShrink: 0 }}>
                   {formatTimeAbbreviated(a.executed_at)}
                 </span>
               </div>
@@ -75,7 +75,7 @@ export function RecentActivityFeed({ activities }: Props) {
           })}
         </div>
       ) : (
-        <div style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(var(--muted-foreground))' }}>
+        <div style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--fg-3)' }}>
           <div style={{ textAlign: 'center' }}>
             <Activity size={32} style={{ marginBottom: 8, opacity: 0.4 }} />
             <p style={{ fontSize: 13, margin: 0 }}>No recent activity</p>
