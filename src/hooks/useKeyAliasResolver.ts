@@ -19,22 +19,24 @@ export function useProgramKeyResolver(key: string | undefined): KeyResolution {
       if (!key) return null;
 
       // First check if key exists as current key
-      const { data: program } = await supabase
+      const { data: program, error: programError } = await supabase
         .from('programs')
         .select('id, key')
         .eq('key', key)
         .maybeSingle();
+      if (programError) throw programError;
 
       if (program) {
         return { isAlias: false, currentKey: program.key, entityId: program.id };
       }
 
       // Check if it's an alias
-      const { data: alias } = await supabase
+      const { data: alias, error: aliasError } = await supabase
         .from('program_key_aliases')
         .select('program_id, programs(id, key)')
         .eq('old_key', key)
         .maybeSingle();
+      if (aliasError) throw aliasError;
 
       if (alias?.programs) {
         return { 
@@ -64,22 +66,24 @@ export function useProjectKeyResolver(key: string | undefined): KeyResolution {
       if (!key) return null;
 
       // First check if key exists as current key
-      const { data: project } = await supabase
+      const { data: project, error: projectError } = await supabase
         .from('projects')
         .select('id, key')
         .eq('key', key)
         .maybeSingle();
+      if (projectError) throw projectError;
 
       if (project) {
         return { isAlias: false, currentKey: project.key, entityId: project.id };
       }
 
       // Check if it's an alias
-      const { data: alias } = await supabase
+      const { data: alias, error: projAliasError } = await supabase
         .from('project_key_aliases')
         .select('project_id, projects(id, key)')
         .eq('old_key', key)
         .maybeSingle();
+      if (projAliasError) throw projAliasError;
 
       if (alias?.projects) {
         return { 

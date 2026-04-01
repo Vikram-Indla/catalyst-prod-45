@@ -203,7 +203,8 @@ export function useEnterpriseGrid(config: EnterpriseGridConfig): UseEnterpriseGr
         .select('*')
         .eq('grid_id', gridId)
         .or(`user_id.eq.${user.id},is_shared.eq.true`)
-        .order('name');
+        .order('name')
+        .limit(1000);
 
       if (error) throw error;
       return ((data || []) as any[]).map(mapDbViewToGridView);

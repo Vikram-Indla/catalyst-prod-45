@@ -230,10 +230,6 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
         insertPayload.relationship = relationship;
       }
 
-      // INSTRUMENTATION: Log payload keys
-      console.log('[ENTITY RISK CREATE] Payload keys:', Object.keys(insertPayload));
-      console.log('[ENTITY RISK CREATE] Full payload:', JSON.stringify(insertPayload, null, 2));
-
       // Insert with minimal select to guarantee success
       const { data: insertResult, error: insertError } = await supabase
         .from('risks')
@@ -241,14 +237,10 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
         .select('id')
         .single();
       
-      console.log('[ENTITY RISK CREATE] Select string: .select("id")');
-      
       if (insertError) {
         console.error('[ENTITY RISK CREATE] Error:', insertError);
         throw insertError;
       }
-      
-      console.log('[ENTITY RISK CREATE] Success, id:', insertResult?.id);
       
       // Refetch after insert
       if (insertResult?.id) {
@@ -257,7 +249,6 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
           .select('*')
           .eq('id', insertResult.id)
           .single();
-        console.log('[ENTITY RISK CREATE] Refetched:', refetched?.id);
         return refetched;
       }
       return insertResult;
@@ -280,11 +271,6 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
       // Remove any PI-related fields that might sneak in
       const { program_increment_id, ...cleanData } = data as any;
       
-      // INSTRUMENTATION: Log payload keys
-      console.log('[ENTITY RISK UPDATE] Payload keys:', Object.keys(cleanData));
-      console.log('[ENTITY RISK UPDATE] Full payload:', JSON.stringify(cleanData, null, 2));
-      console.log('[ENTITY RISK UPDATE] Risk ID:', id);
-      
       // Update with minimal select to guarantee success
       const { data: updateResult, error: updateError } = await supabase
         .from('risks')
@@ -293,14 +279,10 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
         .select('id')
         .single();
       
-      console.log('[ENTITY RISK UPDATE] Select string: .select("id")');
-      
       if (updateError) {
         console.error('[ENTITY RISK UPDATE] Error:', updateError);
         throw updateError;
       }
-      
-      console.log('[ENTITY RISK UPDATE] Success, id:', updateResult?.id);
       
       // Refetch after update
       const { data: refetched } = await supabase
@@ -308,8 +290,6 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
         .select('*')
         .eq('id', id)
         .single();
-      console.log('[ENTITY RISK UPDATE] Refetched:', refetched?.id);
-      
       return refetched || updateResult;
     },
     onSuccess: () => {

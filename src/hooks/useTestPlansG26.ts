@@ -141,7 +141,8 @@ export function useSaveAsTemplate() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ planId, templateName }: { planId: string; templateName: string }) => {
-      const { data: plan } = await supabase.from('tm_test_plans' as any).select('*').eq('id', planId).single();
+      const { data: plan, error: planError } = await supabase.from('tm_test_plans' as any).select('*').eq('id', planId).single();
+      if (planError && planError.code !== 'PGRST116') throw planError;
       if (!plan) throw new Error('Plan not found');
       const { data: { user } } = await supabase.auth.getUser();
       const p = plan as any;
@@ -176,10 +177,12 @@ export function usePlanScope(planId: string) {
       const items = (data || []) as unknown as PlanScope[];
       for (const item of items) {
         if (item.scope_type === 'folder') {
-          const { data: folder } = await supabase.from('tm_folders' as any).select('id, name').eq('id', item.entity_id).single();
+          const { data: folder, error: folderError } = await supabase.from('tm_folders' as any).select('id, name').eq('id', item.entity_id).single();
+          if (folderError && folderError.code !== 'PGRST116') throw folderError;
           if (folder) item.folder = folder as any;
         } else if (item.scope_type === 'test_case') {
-          const { data: tc } = await supabase.from('tm_test_cases' as any).select('id, case_key, title').eq('id', item.entity_id).single();
+          const { data: tc, error: tcError } = await supabase.from('tm_test_cases' as any).select('id, case_key, title').eq('id', item.entity_id).single();
+          if (tcError && tcError.code !== 'PGRST116') throw tcError;
           if (tc) item.test_case = tc as any;
         }
       }
@@ -193,9 +196,12 @@ export function useScopeSummary(planId: string) {
   return useQuery({
     queryKey: ['g26-scope-summary', planId],
     queryFn: async () => {
-      const { data: folders } = await supabase.from('tm_plan_scope' as any).select('entity_id').eq('plan_id', planId).eq('scope_type', 'folder').eq('action', 'include');
-      const { data: testCases } = await supabase.from('tm_plan_scope' as any).select('entity_id').eq('plan_id', planId).eq('scope_type', 'test_case').eq('action', 'include');
-      const { data: excluded } = await supabase.from('tm_plan_scope' as any).select('entity_id').eq('plan_id', planId).eq('action', 'exclude');
+      const { data: folders, error: foldersError } = await supabase.from('tm_plan_scope' as any).select('entity_id').eq('plan_id', planId).eq('scope_type', 'folder').eq('action', 'include');
+      if (foldersError) throw foldersError;
+      const { data: testCases, error: testCasesError } = await supabase.from('tm_plan_scope' as any).select('entity_id').eq('plan_id', planId).eq('scope_type', 'test_case').eq('action', 'include');
+      if (testCasesError) throw testCasesError;
+      const { data: excluded, error: excludedError } = await supabase.from('tm_plan_scope' as any).select('entity_id').eq('plan_id', planId).eq('action', 'exclude');
+      if (excludedError) throw excludedError;
 
       const folderIds = (folders as any)?.map((f: any) => f.entity_id) || [];
       let testsFromFolders = 0;

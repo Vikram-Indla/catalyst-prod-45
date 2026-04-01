@@ -66,37 +66,42 @@ export function useExecutionAgainstOutcomes(snapshotId?: string) {
       }
 
       // 1. Fetch snapshot quarters configuration
-      const { data: snapshotConfig } = await supabase
+      const { data: snapshotConfig, error: snapshotConfigError } = await supabase
         .from('snapshot_configurations')
         .select('quarters')
         .eq('snapshot_id', snapshotId)
         .maybeSingle();
-      
+      if (snapshotConfigError) throw snapshotConfigError;
+
       const snapshotQuarterIds = snapshotConfig?.quarters || [];
 
       // 2. Fetch objectives by tier within snapshot scope
-      const { data: objectives = [] } = await supabase
+      const { data: objectives = [], error: objError } = await supabase
         .from('objectives')
         .select('id, tier, summary, program_increment_ids')
         .or(`tier.eq.portfolio,tier.eq.program,tier.eq.team`);
+      if (objError) throw objError;
 
       // 3. Fetch objective-epic direct links
-      const { data: objectiveEpicLinks = [] } = await supabase
+      const { data: objectiveEpicLinks = [], error: oelError } = await supabase
         .from('objective_epic_links')
         .select('objective_id, epic_id');
+      if (oelError) throw oelError;
 
       // 4. Fetch objective-theme links
-      const { data: objectiveThemeLinks = [] } = await supabase
+      const { data: objectiveThemeLinks = [], error: otlError } = await supabase
         .from('objective_theme_links')
         .select('objective_id, theme_id');
+      if (otlError) throw otlError;
 
       // 5. Fetch theme-epic links (for indirect alignment)
-      const { data: themeEpicLinks = [] } = await supabase
+      const { data: themeEpicLinks = [], error: telError } = await supabase
         .from('theme_epic_links')
         .select('theme_id, epic_id');
+      if (telError) throw telError;
 
       // 6. Fetch all epics with program info
-      const { data: epics = [] } = await supabase
+      const { data: epics = [], error: epicsError } = await supabase
         .from('epics')
         .select(`
           id,
@@ -105,12 +110,14 @@ export function useExecutionAgainstOutcomes(snapshotId?: string) {
           primary_program_id,
           programs:primary_program_id (id, name)
         `);
+      if (epicsError) throw epicsError;
 
       // 7. Fetch strategic goals for "Strategic Goals" tier
-      const { data: strategicGoals = [] } = await supabase
+      const { data: strategicGoals = [], error: goalsError } = await supabase
         .from('strategic_goals')
         .select('id, title')
         .eq('snapshot_id', snapshotId);
+      if (goalsError) throw goalsError;
 
       // Build mapping of epic_id -> aligned objective IDs
       const epicToObjectives = new Map<string, Set<string>>();
@@ -267,11 +274,12 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
       }
 
       // Fetch snapshot strategy links to get linked theme IDs (for epic links)
-      const { data: snapshotLinks } = await supabase
+      const { data: snapshotLinks, error: snapshotLinksError } = await supabase
         .from('snapshot_strategy_links')
         .select('theme_ids')
         .eq('snapshot_id', snapshotId)
         .maybeSingle();
+      if (snapshotLinksError) throw snapshotLinksError;
 
       const linkedThemeIds = snapshotLinks?.theme_ids || [];
 
@@ -293,9 +301,10 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
         : [];
 
       // Fetch objective-epic links
-      const { data: objectiveEpicLinks = [] } = await supabase
+      const { data: objectiveEpicLinks = [], error: pyramidOelError } = await supabase
         .from('objective_epic_links')
         .select('epic_id');
+      if (pyramidOelError) throw pyramidOelError;
 
       // Combined aligned epic IDs
       const alignedEpicIds = new Set([
@@ -414,18 +423,20 @@ export function useThemeProgress(snapshotId?: string) {
       if (!snapshotId) return [];
 
       // 1. Fetch all strategic themes (optionally linked to snapshot)
-      const { data: themes = [] } = await supabase
+      const { data: themes = [], error: themesError } = await supabase
         .from('strategic_themes')
         .select('id, name, snapshot_id')
         .order('name');
+      if (themesError) throw themesError;
 
       // Also get themes linked to snapshot via snapshot_strategy_links
-      const { data: snapshotLinks } = await supabase
+      const { data: snapshotLinks, error: themeSnapshotLinksError } = await supabase
         .from('snapshot_strategy_links')
         .select('theme_ids')
         .eq('snapshot_id', snapshotId)
         .maybeSingle();
-      
+      if (themeSnapshotLinksError) throw themeSnapshotLinksError;
+
       const linkedThemeIds = new Set(snapshotLinks?.theme_ids || []);
 
       // Combine: themes directly with snapshot_id OR in linked theme_ids
@@ -436,15 +447,17 @@ export function useThemeProgress(snapshotId?: string) {
       if (relevantThemes.length === 0) return [];
 
       // 2. Fetch ALL objectives (Portfolio AND Program) for roll-up calculation
-      const { data: allObjectives = [] } = await supabase
+      const { data: allObjectives = [], error: allObjError } = await supabase
         .from('objectives')
         .select('id, name, summary, tier, parent_objective_id')
         .in('tier', ['portfolio', 'program']);
+      if (allObjError) throw allObjError;
 
       // 3. Fetch ALL key results from key_results_v2 for KR progress computation
-      const { data: allKeyResults = [] } = await supabase
+      const { data: allKeyResults = [], error: allKrError } = await supabase
         .from('key_results_v2')
         .select('id, objective_id, baseline_value, current_value, goal_value');
+      if (allKrError) throw allKrError;
 
       // Build key results by objective map
       const keyResultsByObjective = new Map<string, any[]>();
@@ -494,9 +507,10 @@ export function useThemeProgress(snapshotId?: string) {
       });
 
       // 7. Fetch objective-theme links
-      const { data: objectiveThemeLinks = [] } = await supabase
+      const { data: objectiveThemeLinks = [], error: themeOtlError } = await supabase
         .from('objective_theme_links')
         .select('objective_id, theme_id');
+      if (themeOtlError) throw themeOtlError;
 
       // Build theme -> Portfolio objectives mapping (themes link to Portfolio objectives)
       const portfolioObjectives = allObjectives.filter(o => o.tier === 'portfolio');

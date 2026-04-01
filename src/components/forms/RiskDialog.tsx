@@ -42,12 +42,7 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId }: RiskD
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {
-      // INSTRUMENTATION: Log payload keys
-      console.log('[RISK DIALOG] Payload keys:', Object.keys(data));
-      console.log('[RISK DIALOG] Full payload:', JSON.stringify(data, null, 2));
-      
       if (risk) {
-        console.log('[RISK DIALOG] Updating risk ID:', risk.id);
         const { data: updateResult, error: updateError } = await supabase
           .from('risks')
           .update(data)
@@ -55,36 +50,28 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId }: RiskD
           .select('id')
           .single();
         
-        console.log('[RISK DIALOG UPDATE] Select string: .select("id")');
         if (updateError) {
           console.error('[RISK DIALOG UPDATE] Error:', updateError);
           throw updateError;
         }
-        console.log('[RISK DIALOG UPDATE] Success, id:', updateResult?.id);
-        
         // Refetch after update
         const { data: refetched } = await supabase
           .from('risks')
           .select('*')
           .eq('id', risk.id)
           .single();
-        console.log('[RISK DIALOG UPDATE] Refetched:', refetched?.id);
         return refetched;
       } else {
-        console.log('[RISK DIALOG] Creating new risk');
         const { data: insertResult, error: insertError } = await supabase
           .from('risks')
           .insert([data])
           .select('id')
           .single();
         
-        console.log('[RISK DIALOG INSERT] Select string: .select("id")');
         if (insertError) {
           console.error('[RISK DIALOG INSERT] Error:', insertError);
           throw insertError;
         }
-        console.log('[RISK DIALOG INSERT] Success, id:', insertResult?.id);
-        
         // Refetch after insert
         if (insertResult?.id) {
           const { data: refetched } = await supabase
@@ -92,7 +79,6 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId }: RiskD
             .select('*')
             .eq('id', insertResult.id)
             .single();
-          console.log('[RISK DIALOG INSERT] Refetched:', refetched?.id);
           return refetched;
         }
         return insertResult;
@@ -146,7 +132,6 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId }: RiskD
       created_by: risk?.created_by || placeholderId,
     };
     
-    console.log('[RISK DIALOG SUBMIT] Final payload (no PI field):', Object.keys(payload));
     mutation.mutate(payload);
   };
 

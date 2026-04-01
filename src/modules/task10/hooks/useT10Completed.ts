@@ -23,8 +23,6 @@ export function useT10CompletedSummary() {
   return useQuery({
     queryKey: ['t10', 'completed', 'summary'],
     queryFn: async (): Promise<T10CompletedSummaryStats> => {
-      console.log('[T10] Fetching completed summary stats...');
-      
       const { data, error } = await supabase
         .from('t10_completed_summary_stats')
         .select('*')
@@ -47,7 +45,6 @@ export function useT10CompletedSummary() {
         };
       }
 
-      console.log('[T10] Completed summary loaded:', data);
       return data as T10CompletedSummaryStats;
     },
     staleTime: 30 * 1000, // 30 seconds
@@ -63,8 +60,6 @@ export function useT10CompletedWeeks(filters?: T10CompletedFilters) {
   return useQuery({
     queryKey: ['t10', 'completed', 'weeks', filters],
     queryFn: async (): Promise<T10CompletedWeek[]> => {
-      console.log('[T10] Fetching completed weeks with filters:', filters);
-      
       let query = supabase
         .from('t10_completed_weeks_summary')
         .select('*')
@@ -121,7 +116,6 @@ export function useT10CompletedWeeks(filters?: T10CompletedFilters) {
         throw error;
       }
 
-      console.log('[T10] Completed weeks loaded:', data?.length);
       return (data || []) as T10CompletedWeek[];
     },
     staleTime: 30 * 1000,
@@ -139,8 +133,6 @@ export function useT10CompletedItems(weekId: string | null) {
     queryFn: async (): Promise<T10CompletedItem[]> => {
       if (!weekId) return [];
       
-      console.log('[T10] Fetching completed items for week:', weekId);
-      
       const { data, error } = await supabase
         .from('t10_completed_items_detail')
         .select('*')
@@ -152,8 +144,6 @@ export function useT10CompletedItems(weekId: string | null) {
         throw error;
       }
 
-      console.log('[T10] Completed items loaded:', data?.length);
-      
       // Map the data to match T10CompletedItem interface
       return (data || []).map((item: any) => ({
         ...item,
@@ -176,8 +166,6 @@ export function useT10ListPerformance(listId: string | null) {
     queryFn: async (): Promise<T10ListPerformance | null> => {
       if (!listId) return null;
       
-      console.log('[T10] Fetching list performance for:', listId);
-      
       const { data, error } = await supabase
         .from('t10_list_performance')
         .select('*')
@@ -189,7 +177,6 @@ export function useT10ListPerformance(listId: string | null) {
         throw error;
       }
 
-      console.log('[T10] List performance loaded:', data);
       return data as T10ListPerformance | null;
     },
     enabled: !!listId,
@@ -215,8 +202,6 @@ export function useT10Checkout() {
       carryForwardItemIds?: string[];
       dropItemIds?: string[];
     }): Promise<T10CheckoutResult> => {
-      console.log('[T10] Checking out week:', weekId);
-      
       const { data, error } = await supabase.rpc('t10_checkout_week', {
         p_week_id: weekId,
         p_carry_forward_item_ids: carryForwardItemIds,
@@ -228,7 +213,6 @@ export function useT10Checkout() {
         throw error;
       }
 
-      console.log('[T10] Checkout complete:', data);
       return data as unknown as T10CheckoutResult;
     },
     onSuccess: () => {
@@ -237,7 +221,6 @@ export function useT10Checkout() {
       queryClient.invalidateQueries({ queryKey: ['t10', 'weeks'] });
       queryClient.invalidateQueries({ queryKey: ['t10', 'lists'] });
       
-      console.log('[T10] Checkout successful, queries invalidated');
     },
   });
 }
@@ -250,8 +233,6 @@ export function useT10Checkout() {
 export function useT10ExportCSV() {
   return useMutation({
     mutationFn: async (filters?: T10CompletedFilters): Promise<string> => {
-      console.log('[T10] Exporting CSV with filters:', filters);
-      
       // Fetch weeks
       let query = supabase
         .from('t10_completed_weeks_summary')
@@ -300,7 +281,6 @@ export function useT10ExportCSV() {
         ...(rows?.map((r: any) => r.map((c: any) => `"${c}"`).join(',')) || []),
       ].join('\n');
 
-      console.log('[T10] CSV generated, rows:', rows?.length);
       return csv;
     },
   });

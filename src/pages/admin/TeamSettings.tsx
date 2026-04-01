@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,13 +14,47 @@ import { toast } from 'sonner';
  * Source: Administration guide PDF, Page 18
  */
 export default function TeamSettings() {
+  const queryClient = useQueryClient();
   const [pointSystem, setPointSystem] = useState<string>('fibonacci');
   const [pointsPerWeek, setPointsPerWeek] = useState<string>('10');
-  
-  const handleSave = () => {
-    // TODO: Save to team_point_system_settings table
-    toast.success('Team estimation settings saved');
-  };
+
+  // Load existing settings
+  useQuery({
+    queryKey: ['team-settings'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('general_settings')
+        .select('key, value')
+        .in('key', ['team_point_system', 'team_points_per_week']);
+      if (error) throw error;
+      const settings = new Map((data || []).map((s: any) => [s.key, s.value]));
+      if (settings.has('team_point_system')) setPointSystem(settings.get('team_point_system'));
+      if (settings.has('team_points_per_week')) setPointsPerWeek(settings.get('team_points_per_week'));
+      return data;
+    },
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const settings = [
+        { key: 'team_point_system', value: pointSystem },
+        { key: 'team_points_per_week', value: pointsPerWeek },
+      ];
+      for (const s of settings) {
+        const { error } = await (supabase as any)
+          .from('general_settings')
+          .upsert({ key: s.key, value: s.value }, { onConflict: 'key' });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['team-settings'] });
+      toast.success('Team estimation settings saved');
+    },
+    onError: () => toast.error('Failed to save settings'),
+  });
+
+  const handleSave = () => saveMutation.mutate();
 
   return (
     <AdminGuard>

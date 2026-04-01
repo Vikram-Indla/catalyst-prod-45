@@ -54,18 +54,12 @@ export function useTMDashboardKPIs() {
   return useQuery({
     queryKey: TM_QUERY_KEYS.dashboardKPIs,
     queryFn: async (): Promise<TMDashboardKPIs> => {
-      console.log('[TM] Fetching dashboard KPIs...');
-      
       // Parallel queries for performance
       const [casesResult, scopeResult, defectsResult] = await Promise.all([
         supabase.from('tm_test_cases').select('id, status'),
         supabase.from('tm_cycle_scope').select('id, current_status'),
         supabase.from('tm_defects').select('id, status, severity'),
       ]);
-
-      console.log('[TM] Cases result:', casesResult);
-      console.log('[TM] Scope result:', scopeResult);
-      console.log('[TM] Defects result:', defectsResult);
 
       if (casesResult.error) {
         console.error('[TM] Cases query error:', casesResult.error);
@@ -118,7 +112,6 @@ export function useTMDashboardKPIs() {
         blockers: blocked,
       };
 
-      console.log('[TM] Calculated KPIs:', kpis);
       return kpis;
     },
     staleTime: 30 * 1000,
@@ -135,8 +128,6 @@ export function useTMActiveCycles() {
   return useQuery({
     queryKey: TM_QUERY_KEYS.activeCycles,
     queryFn: async (): Promise<TMCycleSummary[]> => {
-      console.log('[TM] Fetching active cycles...');
-      
       const { data: cycles, error } = await supabase
         .from('tm_test_cycles')
         .select('*')
@@ -148,8 +139,6 @@ export function useTMActiveCycles() {
         console.error('[TM] Cycles query error:', error);
         throw new Error(`Failed to fetch cycles: ${error.message}`);
       }
-
-      console.log('[TM] Cycles data:', cycles);
 
       if (!cycles || cycles.length === 0) return [];
 
@@ -198,8 +187,6 @@ export function useTMActivityFeed(limit: number = 10) {
   return useQuery({
     queryKey: TM_QUERY_KEYS.activityFeed(limit),
     queryFn: async (): Promise<TMActivityItem[]> => {
-      console.log('[TM] Fetching activity feed...');
-      
       const { data, error } = await supabase
         .from('tm_activity_log')
         .select('*')
@@ -210,8 +197,6 @@ export function useTMActivityFeed(limit: number = 10) {
         console.error('[TM] Activity query error:', error);
         throw new Error(`Failed to fetch activity: ${error.message}`);
       }
-
-      console.log('[TM] Activity data:', data);
 
       const now = new Date();
       return (data ?? []).map((row, index): TMActivityItem => ({
@@ -239,8 +224,6 @@ export function useTMMyWork() {
   return useQuery({
     queryKey: TM_QUERY_KEYS.myWork,
     queryFn: async (): Promise<TMMyWorkItem[]> => {
-      console.log('[TM] Fetching my work...');
-      
       const { data, error } = await supabase
         .from('tm_test_cases')
         .select('id, case_key, title, status, priority_id, updated_at')
@@ -251,8 +234,6 @@ export function useTMMyWork() {
         console.error('[TM] My work query error:', error);
         throw new Error(`Failed to fetch work: ${error.message}`);
       }
-
-      console.log('[TM] My work data:', data);
 
       return (data ?? []).map((row): TMMyWorkItem => {
         const mappedStatus = mapCaseStatus(row.status);
@@ -280,7 +261,6 @@ export function useTMRefresh() {
   const queryClient = useQueryClient();
 
   const refreshAll = () => {
-    console.log('[TM] Refreshing all data...');
     queryClient.invalidateQueries({ queryKey: ['tm-dashboard-kpis'] });
     queryClient.invalidateQueries({ queryKey: ['tm-active-cycles'] });
     queryClient.invalidateQueries({ queryKey: ['tm-activity-feed'] });

@@ -16,8 +16,8 @@ export default function WorkItemsPage() {
   const effectiveGenerationId = generationId || searchParams.get('generationId');
 
   const handleItemClick = (itemId: string) => {
-    // Navigate to detail view (to be implemented)
-    console.log('Opening work item:', itemId);
+    // Navigate to detail view
+    navigate(`/browse/${itemId}`);
   };
 
   if (!effectiveGenerationId) {

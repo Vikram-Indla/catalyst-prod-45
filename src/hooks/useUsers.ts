@@ -86,14 +86,16 @@ export function useUsers() {
         .from('profiles')
         .select('*, rid, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_start_date, contract_end_date, country, country_code, country_flag_svg_url, location, resource_type, ctc')
         .order('vendor', { ascending: true, nullsFirst: false })
-        .order('full_name', { ascending: true });
+        .order('full_name', { ascending: true })
+        .limit(1000);
 
       if (profilesError) throw profilesError;
 
       // Fetch ALL resource_inventory records (including those without profile_id)
       const { data: resourceInventory } = await (supabase as any)
         .from('resource_inventory')
-        .select('id, rid, profile_id, name, contract_start_date, contract_end_date, vendor_name, role_name, assignment_id, department_id, department_name, vendor_id, country_id, location_id, resource_type, ctc');
+        .select('id, rid, profile_id, name, contract_start_date, contract_end_date, vendor_name, role_name, assignment_id, department_id, department_name, vendor_id, country_id, location_id, resource_type, ctc')
+        .limit(1000);
       
       // Fetch reference tables for lookups
       const [
@@ -107,23 +109,28 @@ export function useUsers() {
         supabase
           .from('resource_assignments')
           .select('id, name, assignment_id')
-          .or('is_active.is.null,is_active.eq.true'),
+          .or('is_active.is.null,is_active.eq.true')
+          .limit(1000),
         supabase
           .from('capacity_departments')
           .select('id, name, department_id')
-          .or('is_active.is.null,is_active.eq.true'),
+          .or('is_active.is.null,is_active.eq.true')
+          .limit(1000),
         supabase
           .from('resource_vendors')
           .select('id, name, vendor_code')
-          .or('is_active.is.null,is_active.eq.true'),
+          .or('is_active.is.null,is_active.eq.true')
+          .limit(1000),
         supabase
           .from('resource_countries')
           .select('id, name, code, flag_svg')
-          .or('is_active.is.null,is_active.eq.true'),
+          .or('is_active.is.null,is_active.eq.true')
+          .limit(1000),
         supabase
           .from('resource_locations')
           .select('id, name')
-          .or('is_active.is.null,is_active.eq.true'),
+          .or('is_active.is.null,is_active.eq.true')
+          .limit(1000),
       ]);
 
       // Create lookup maps (include short codes for DID/AID/VID)
@@ -158,14 +165,16 @@ export function useUsers() {
       // Fetch all user_product_roles with role info
       const { data: userRoles, error: rolesError } = await supabase
         .from('user_product_roles')
-        .select('id, user_id, role_id, business_lines');
+        .select('id, user_id, role_id, business_lines')
+        .limit(1000);
 
       if (rolesError) throw rolesError;
 
       // Fetch all product_roles for mapping
       const { data: productRoles, error: productRolesError } = await supabase
         .from('product_roles')
-        .select('id, name, code');
+        .select('id, name, code')
+        .limit(1000);
 
       if (productRolesError) throw productRolesError;
 

@@ -62,10 +62,11 @@ export function useMoveWorkItem(projectId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ itemId, newParentId }: { itemId: string; newParentId: string }) => {
-      const { data: isValid } = await supabase.rpc('hi_validate_hierarchy_move', {
+      const { data: isValid, error: rpcError } = await supabase.rpc('hi_validate_hierarchy_move', {
         p_node_id: itemId,
         p_new_parent_id: newParentId,
       } as any);
+      if (rpcError) throw rpcError;
       if (!isValid) throw new Error('Invalid hierarchy move');
       const { error } = await supabase.from('hi_work_items' as any)
         .update({ parent_id: newParentId } as any)

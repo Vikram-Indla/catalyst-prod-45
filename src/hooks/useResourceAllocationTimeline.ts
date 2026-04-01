@@ -91,7 +91,8 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
         .from('resource_assignments')
         .select('id, name, color')
         .eq('is_active', true)
-        .order('sort_order');
+        .order('sort_order')
+        .limit(1000);
       
       if (error) throw error;
       return (data || []).map((a, index) => ({
@@ -123,7 +124,8 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
           resource_assignments(id, name, color)
         `)
         .eq('resource_id', resource.id)
-        .order('start_date');
+        .order('start_date')
+        .limit(1000);
       
       if (error) throw error;
       

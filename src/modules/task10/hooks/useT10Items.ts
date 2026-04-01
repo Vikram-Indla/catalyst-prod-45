@@ -124,9 +124,6 @@ export function useT10Items(weekId: string | undefined | null) {
         throw new Error(error.message);
       }
 
-      // Log for Stage D verification
-      console.log('[T10] Items fetched for week:', weekId, '| Count:', data?.length);
-
       return (data || []).map((row) => mapDbToT10ItemFull(row as unknown as DbT10ItemFullView));
     },
     enabled: !!weekId,
@@ -160,8 +157,6 @@ export function useT10BufferItems(weekId: string | null) {
         throw new Error(error.message);
       }
 
-      console.log('[T10] Buffer items fetched:', data?.length);
-
       return (data || []).map(item => mapDbToT10ItemFull(item as unknown as DbT10ItemFullView));
     },
     enabled: !!weekId,
@@ -187,8 +182,6 @@ export function useT10Item(itemId: string | null) {
         console.error('Error fetching T10 item:', error);
         throw new Error(error.message);
       }
-
-      console.log('[T10] Item fetched:', data?.title);
 
       return mapDbToT10ItemFull(data as unknown as DbT10ItemFullView);
     },
@@ -246,8 +239,6 @@ export function useT10CreateItem() {
         console.error('Error creating T10 item:', error);
         throw new Error(error.message);
       }
-
-      console.log('[T10] Item created:', data.title, 'at rank:', safeRank);
 
       // Return immediately with constructed full item (no extra fetch)
       return {
@@ -360,8 +351,6 @@ export function useT10UpdateItem() {
         throw new Error(error.message);
       }
 
-      console.log('[T10] Item updated:', data.title);
-
       // Fetch full item
       const { data: fullItem } = await supabase
         .from('t10_items_full')
@@ -458,8 +447,6 @@ export function useT10ToggleItemStatus() {
         throw new Error(error.message);
       }
 
-      console.log('[T10] Item status toggled:', item.title, '->', newStatus);
-
       const { data: fullItem } = await supabase
         .from('t10_items_full')
         .select('*')
@@ -532,7 +519,6 @@ export function useT10ReorderItems() {
         if (error) throw new Error(error.message);
       }
 
-      console.log('[T10] Items reordered:', item_id, 'from', old_rank, 'to', new_rank);
     },
     onMutate: async (input) => {
       // Cancel outgoing refetches
@@ -583,8 +569,6 @@ export function useT10DeleteItem() {
 
   return useMutation({
     mutationFn: async (item: T10ItemFull): Promise<void> => {
-      console.log('[T10] Attempting to delete item:', item.id, item.title);
-      
       const { error } = await supabase
         .from('t10_items')
         .delete()
@@ -595,10 +579,8 @@ export function useT10DeleteItem() {
         throw new Error(error.message);
       }
 
-      console.log('[T10] Item deleted successfully:', item.title);
     },
     onSuccess: (_, item) => {
-      console.log('[T10] Invalidating queries after delete for week:', item.week_id);
       queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(item.week_id) });
       queryClient.invalidateQueries({ queryKey: t10ItemKeys.buffer(item.week_id) });
       queryClient.invalidateQueries({ queryKey: t10WeekKeys.all });
@@ -748,7 +730,6 @@ export function useT10UpdateItemLabels() {
         }
       }
 
-      console.log('[T10] Item labels updated:', item_id, label_ids.length, 'labels');
     },
     onSuccess: (_, input) => {
       queryClient.invalidateQueries({ queryKey: t10ItemKeys.item(input.item_id) });
@@ -816,7 +797,6 @@ export function useT10SwapWithTen() {
 
       if (updateTen) throw new Error(updateTen.message);
 
-      console.log('[T10] Swapped buffer item with #10:', buffer_item_id, '<->', rank10Item.id);
     },
     onSuccess: (_, { week_id }) => {
       queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(week_id) });
@@ -891,7 +871,6 @@ export function useT10PromoteToTop10() {
         }
       }
 
-      console.log('[T10] Promoted buffer item to Top 10 at rank:', nextRank);
     },
     onSuccess: (_, { week_id }) => {
       queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(week_id) });

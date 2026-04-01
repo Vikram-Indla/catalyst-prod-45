@@ -6,10 +6,12 @@ export const usePIProgress = (piId: string) => {
     queryKey: ['pi-progress', piId],
     queryFn: async () => {
       // Get all epics for this PI
-      const { data: epicPIs } = await supabase
+      const { data: epicPIs, error: epicPIsError } = await supabase
         .from('epic_program_increments')
         .select('epic_id')
-        .eq('pi_id', piId);
+        .eq('pi_id', piId)
+        .limit(1000);
+      if (epicPIsError) throw epicPIsError;
 
       if (!epicPIs || epicPIs.length === 0) {
         return { percentage: 0, acceptedPoints: 0, totalPoints: 0 };
@@ -18,10 +20,12 @@ export const usePIProgress = (piId: string) => {
       const epicIds = epicPIs.map(ep => ep.epic_id);
 
       // Get all features for these epics
-      const { data: features } = await supabase
+      const { data: features, error: featuresError } = await supabase
         .from('features')
         .select('estimate_points, status')
-        .in('epic_id', epicIds);
+        .in('epic_id', epicIds)
+        .limit(1000);
+      if (featuresError) throw featuresError;
 
       if (!features || features.length === 0) {
         return { percentage: 0, acceptedPoints: 0, totalPoints: 0 };

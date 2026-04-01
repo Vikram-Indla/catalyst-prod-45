@@ -83,7 +83,6 @@ export function T10SidePanelNew({
     setTimeout(() => {
       onClose();
     }, 200);
-    console.log('[T10] Side panel closed');
   }, [onClose]);
 
   // Handle ESC key
@@ -108,7 +107,6 @@ export function T10SidePanelNew({
   const handleTitleSave = async () => {
     if (item && titleValue.trim() && titleValue !== item.title) {
       await updateItem.mutateAsync({ id: item.id, title: titleValue.trim() });
-      console.log('[T10] Title saved:', titleValue);
       onUpdated?.();
     }
     setIsEditingTitle(false);
@@ -126,7 +124,6 @@ export function T10SidePanelNew({
           description: notesValue || null,
         });
         setNotesStatus('saved');
-        console.log('[T10] Notes auto-saved');
         onUpdated?.();
         setTimeout(() => setNotesStatus('idle'), 2000);
       } catch (err) {

@@ -81,33 +81,37 @@ export function useIncident(id: string) {
       if (error) throw error;
 
       // Fetch labels separately due to junction table
-      const { data: labelData } = await supabase
+      const { data: labelData, error: labelError } = await supabase
         .from('incident_labels')
         .select('label:incident_label_defs(*)')
         .eq('incident_id', id);
+      if (labelError) throw labelError;
 
       // Fetch comments
-      const { data: commentsData } = await supabase
+      const { data: commentsData, error: commentsError } = await supabase
         .from('incident_comments')
         .select('*, author:incident_user_profiles(*)')
         .eq('incident_id', id)
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
+      if (commentsError) throw commentsError;
 
       // Fetch attachments
-      const { data: attachmentsData } = await supabase
+      const { data: attachmentsData, error: attachmentsError } = await supabase
         .from('incident_attachments')
         .select('*, uploader:incident_user_profiles(*)')
         .eq('incident_id', id)
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
+      if (attachmentsError) throw attachmentsError;
 
       // Fetch history
-      const { data: historyData } = await supabase
+      const { data: historyData, error: historyError } = await supabase
         .from('incident_history')
         .select('*, changer:incident_user_profiles(*)')
         .eq('incident_id', id)
         .order('changed_at', { ascending: false });
+      if (historyError) throw historyError;
 
       // Transform data to match types
       const transformedData = {

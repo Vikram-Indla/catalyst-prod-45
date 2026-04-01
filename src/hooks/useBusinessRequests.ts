@@ -11,8 +11,9 @@ const generateRequestKey = async (): Promise<string> => {
   const { data, error } = await (supabase as any)
     .from('business_requests')
     .select('request_key')
-    .not('request_key', 'is', null);
-  
+    .not('request_key', 'is', null)
+    .limit(1000);
+
   if (error) {
     console.error('Error getting request keys:', error);
     // Fallback to timestamp-based key to avoid collisions
@@ -355,7 +356,8 @@ export function useUpdateBusinessRequest() {
             .select('id, rank')
             .not('id', 'eq', id)
             .not('rank', 'is', null)
-            .order('rank', { ascending: true });
+            .order('rank', { ascending: true })
+            .limit(1000);
           
           const allItemsTyped = (allItems || []) as any[];
           

@@ -43,12 +43,13 @@ export function useActivityFeed(options: UseActivityFeedOptions) {
 
       if (tab === "worked" || tab === "viewed") {
         // Get recent activity (rooms user has accessed)
-        const { data: recentData } = await supabase
+        const { data: recentData, error: recentError } = await supabase
           .from("recent_activity")
           .select("*")
           .eq("user_id", user.id)
           .order("last_accessed_at", { ascending: false })
           .range(offset, offset + limit - 1);
+        if (recentError) throw recentError;
 
         if (recentData) {
           allItems = recentData.map((item) => {
@@ -165,12 +166,13 @@ export function useActivityFeed(options: UseActivityFeedOptions) {
         allItems.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
       } else if (tab === "starred") {
         // Get starred items
-        const { data: starredData } = await supabase
+        const { data: starredData, error: starredError } = await supabase
           .from("starred_items")
           .select("*")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
           .range(offset, offset + limit - 1);
+        if (starredError) throw starredError;
 
         if (starredData) {
           allItems = starredData.map((item) => {

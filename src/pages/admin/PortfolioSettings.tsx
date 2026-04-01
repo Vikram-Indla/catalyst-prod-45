@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,13 +14,46 @@ import { toast } from 'sonner';
  * Source: Administration guide PDF, Page 21
  */
 export default function PortfolioSettings() {
+  const queryClient = useQueryClient();
   const [estimationSystem, setEstimationSystem] = useState<string>('points');
   const [displayWeeksIn, setDisplayWeeksIn] = useState<string>('member_weeks');
-  
-  const handleSave = () => {
-    // TODO: Save to program_estimation_settings table
-    toast.success('Program estimation settings saved');
-  };
+
+  useQuery({
+    queryKey: ['portfolio-settings'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('general_settings')
+        .select('key, value')
+        .in('key', ['program_estimation_system', 'program_display_weeks_in']);
+      if (error) throw error;
+      const settings = new Map((data || []).map((s: any) => [s.key, s.value]));
+      if (settings.has('program_estimation_system')) setEstimationSystem(settings.get('program_estimation_system'));
+      if (settings.has('program_display_weeks_in')) setDisplayWeeksIn(settings.get('program_display_weeks_in'));
+      return data;
+    },
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const settings = [
+        { key: 'program_estimation_system', value: estimationSystem },
+        { key: 'program_display_weeks_in', value: displayWeeksIn },
+      ];
+      for (const s of settings) {
+        const { error } = await (supabase as any)
+          .from('general_settings')
+          .upsert({ key: s.key, value: s.value }, { onConflict: 'key' });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['portfolio-settings'] });
+      toast.success('Program estimation settings saved');
+    },
+    onError: () => toast.error('Failed to save settings'),
+  });
+
+  const handleSave = () => saveMutation.mutate();
 
   return (
     <AdminGuard>

@@ -43,7 +43,7 @@ export function useKanbanBoards(filters?: {
         query = query.eq('portfolio_id', filters.portfolioId);
       }
 
-      const { data, error } = await query;
+      const { data, error } = await query.limit(1000);
       if (error) throw error;
       return (data || []).map(board => ({
         ...board,
@@ -184,7 +184,8 @@ export function useKanbanColumns(boardId?: string) {
         .from('kanban_columns')
         .select('*')
         .eq('board_id', boardId)
-        .order('sort_order', { ascending: true });
+        .order('sort_order', { ascending: true })
+        .limit(1000);
 
       if (error) throw error;
       return (data || []).map(col => ({
@@ -295,7 +296,8 @@ export function useSwimLanes(boardId?: string) {
         .from('kanban_swim_lanes')
         .select('*')
         .eq('board_id', boardId)
-        .order('sort_order', { ascending: true });
+        .order('sort_order', { ascending: true })
+        .limit(1000);
 
       if (error) throw error;
       return data as SwimLane[];
@@ -339,7 +341,8 @@ export function useKanbanCards(boardId?: string) {
         .from('kanban_cards')
         .select('*')
         .eq('board_id', boardId)
-        .order('sort_order', { ascending: true });
+        .order('sort_order', { ascending: true })
+        .limit(1000);
 
       if (error) throw error;
       return data as KanbanCard[];
@@ -423,7 +426,8 @@ export function useBoardUsers(boardId?: string) {
       const { data, error } = await (supabase as any)
         .from('kanban_board_users')
         .select('*, profiles:user_id(id, full_name, email)')
-        .eq('board_id', boardId);
+        .eq('board_id', boardId)
+        .limit(1000);
 
       if (error) throw error;
       return data as (BoardUser & { profiles: any })[];

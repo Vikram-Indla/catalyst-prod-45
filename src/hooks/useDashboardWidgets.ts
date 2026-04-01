@@ -9,16 +9,18 @@ import { supabase } from '@/integrations/supabase/client';
 const INACTIVE_STATUSES = ['archived', 'released', 'shipped'] as const;
 
 async function getProjectKey(projectId: string): Promise<string | null> {
-  const { data } = await supabase.from('projects').select('key').eq('id', projectId).single();
+  const { data, error } = await supabase.from('projects').select('key').eq('id', projectId).single();
+  if (error && error.code !== 'PGRST116') throw error;
   return data?.key ?? null;
 }
 
 async function getActiveReleaseNames(projectId: string): Promise<string[]> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('releases')
     .select('name')
     .eq('project_id', projectId)
     .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
+  if (error) throw error;
   return (data ?? []).map(r => r.name).filter(Boolean) as string[];
 }
 
@@ -162,18 +164,20 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      const { data: releases } = await supabase
+      const { data: releases, error: releasesError } = await supabase
         .from('releases')
         .select('id, name, start_date')
         .eq('project_id', projectId!)
         .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
+      if (releasesError) throw releasesError;
       if (!releases?.length) return [];
 
-      const { data: issues } = await supabase
+      const { data: issues, error: issuesError } = await supabase
         .from('ph_issues')
         .select('fix_versions, jira_created_at')
         .eq('project_key', pKey)
         .is('deleted_at', null);
+      if (issuesError) throw issuesError;
 
       const results: { releaseName: string; totalItems: number; addedAfterStart: number; deltaPercent: number }[] = [];
 
@@ -290,18 +294,20 @@ export function useDashboardReleaseHealth(projectId: string | null | undefined) 
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      const { data: releases } = await supabase
+      const { data: releases, error: relHealthRelError } = await supabase
         .from('releases')
         .select('id, name, status, target_date, start_date')
         .eq('project_id', projectId!)
         .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
+      if (relHealthRelError) throw relHealthRelError;
       if (!releases?.length) return [];
 
-      const { data: issues } = await supabase
+      const { data: issues, error: relHealthIssError } = await supabase
         .from('ph_issues')
         .select('fix_versions, status_category')
         .eq('project_key', pKey)
         .is('deleted_at', null);
+      if (relHealthIssError) throw relHealthIssError;
 
       return releases.map(rel => {
         let total = 0;
