@@ -150,7 +150,7 @@ export function CreateFolderModal({
               width: 36,
               height: 36,
               borderRadius: 8,
-              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -229,14 +229,14 @@ export function CreateFolderModal({
                   }}
                   onMouseEnter={(e) => {
                     if (icon !== opt.key) {
-                      e.currentTarget.style.borderColor = '#CBD5E1';
-                      e.currentTarget.style.backgroundColor = '#F8FAFC';
+                      e.currentTarget.style.borderColor = 'var(--divider)';
+                      e.currentTarget.style.backgroundColor = 'var(--bg-1)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (icon !== opt.key) {
-                      e.currentTarget.style.borderColor = '#E2E8F0';
-                      e.currentTarget.style.backgroundColor = '#FFFFFF';
+                      e.currentTarget.style.borderColor = 'var(--divider)';
+                      e.currentTarget.style.backgroundColor = 'var(--cp-float)';
                     }
                   }}
                 >

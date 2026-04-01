@@ -94,16 +94,16 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
 
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24 }}>
-      <div style={{ width: '100%', maxWidth: 450, backgroundColor: '#FFFFFF', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', overflow: 'hidden' }}>
+      <div style={{ width: '100%', maxWidth: 450, backgroundColor: 'var(--cp-float)', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', overflow: 'hidden' }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 44, height: 44, borderRadius: 10, background: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Tags size={22} style={{ color: '#FFFFFF' }} />
             </div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>{editingTag ? 'Edit Tag' : 'Create Tag'}</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>{editingTag ? 'Edit Tag' : 'Create Tag'}</h2>
           </div>
-          <button onClick={onClose} style={{ width: 36, height: 36, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 36, height: 36, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--fg-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
           </button>
         </div>
@@ -111,26 +111,26 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
         {/* Body */}
         <div style={{ padding: 24 }}>
           {/* Preview */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, marginBottom: 24, backgroundColor: '#F8FAFC', borderRadius: 10 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 14px', backgroundColor: '#FFFFFF', borderRadius: 8, border: `2px solid ${color}`, boxShadow: `0 2px 8px ${color}30` }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, marginBottom: 24, backgroundColor: 'var(--bg-1)', borderRadius: 10 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 14px', backgroundColor: 'var(--cp-float)', borderRadius: 8, border: `2px solid ${color}`, boxShadow: `0 2px 8px ${color}30` }}>
               <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: color }} />
-              <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{name || 'Tag Preview'}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)' }}>{name || 'Tag Preview'}</span>
             </div>
           </div>
 
           {/* Name */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
-              <Hash size={14} /> Name <span style={{ color: '#DC2626' }}>*</span>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
+              <Hash size={14} /> Name <span style={{ color: 'var(--sem-danger)' }}>*</span>
             </label>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g., Smoke Test, High Priority" maxLength={50}
               style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.name ? '#DC2626' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14 }} />
-            {errors.name && <p style={{ fontSize: 12, color: '#DC2626', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} /> {errors.name}</p>}
+            {errors.name && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} /> {errors.name}</p>}
           </div>
 
           {/* Color */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 8 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 8 }}>
               <Palette size={14} /> Color
             </label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
@@ -142,22 +142,22 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <input type="color" value={color} onChange={(e) => setColor(e.target.value)} style={{ width: 44, height: 44, border: 'none', borderRadius: 8, cursor: 'pointer' }} />
               <input type="text" value={color} onChange={(e) => setColor(e.target.value)} placeholder="#6366F1"
-                style={{ flex: 1, height: 44, padding: '0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, fontFamily: 'monospace' }} />
+                style={{ flex: 1, height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, fontFamily: 'monospace' }} />
             </div>
           </div>
 
           {/* Category */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>Category</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>Category</label>
             <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} placeholder="e.g., Test Type, Priority" list="category-suggestions"
-              style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14 }} />
+              style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14 }} />
             <datalist id="category-suggestions">
               {CATEGORY_SUGGESTIONS.map((cat) => <option key={cat} value={cat} />)}
             </datalist>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
               {CATEGORY_SUGGESTIONS.slice(0, 4).map((cat) => (
                 <button key={cat} onClick={() => setCategory(cat)}
-                  style={{ padding: '4px 10px', fontSize: 12, border: '1px solid #E2E8F0', borderRadius: 6, backgroundColor: category === cat ? '#F1F5F9' : '#FFF', color: '#64748B', cursor: 'pointer' }}>
+                  style={{ padding: '4px 10px', fontSize: 12, border: '1px solid var(--divider)', borderRadius: 6, backgroundColor: category === cat ? '#F1F5F9' : '#FFF', color: 'var(--fg-3)', cursor: 'pointer' }}>
                   {cat}
                 </button>
               ))}
@@ -166,15 +166,15 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
 
           {/* Description */}
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>Description</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>Description</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Optional description for this tag..." rows={2}
-              style={{ width: '100%', padding: 14, border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
+              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-          <button onClick={onClose} disabled={isSubmitting} style={{ height: 44, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer' }}>Cancel</button>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+          <button onClick={onClose} disabled={isSubmitting} style={{ height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting}
             style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}>
             {isSubmitting ? 'Saving...' : (editingTag ? 'Update Tag' : 'Create Tag')}

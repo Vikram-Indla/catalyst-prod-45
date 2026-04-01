@@ -118,13 +118,13 @@ export function AssignTesterModal({
       justifyContent: 'center', zIndex: 1000,
     }}>
       <div style={{
-        width: 440, maxHeight: '80vh', backgroundColor: '#FFFFFF',
+        width: 440, maxHeight: '80vh', backgroundColor: 'var(--cp-float)',
         borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
         display: 'flex', flexDirection: 'column',
       }}>
         {/* Header */}
         <div style={{
-          padding: '20px 24px', borderBottom: '1px solid #E2E8F0',
+          padding: '20px 24px', borderBottom: '1px solid var(--divider)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -135,10 +135,10 @@ export function AssignTesterModal({
               <Users size={20} style={{ color: '#4F46E5' }} />
             </div>
             <div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
                 Assign Tester
               </h2>
-              <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0' }}>
+              <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '2px 0 0' }}>
                 {cycleTestCaseIds.length} test case{cycleTestCaseIds.length !== 1 ? 's' : ''} selected
               </p>
             </div>
@@ -148,7 +148,7 @@ export function AssignTesterModal({
             disabled={isSubmitting}
             style={{
               width: 32, height: 32, padding: 0, border: 'none', borderRadius: 8,
-              backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer',
+              backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
@@ -159,7 +159,7 @@ export function AssignTesterModal({
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
           {isLoading ? (
-            <div style={{ textAlign: 'center', padding: 40, color: '#64748B' }}>
+            <div style={{ textAlign: 'center', padding: 40, color: 'var(--fg-3)' }}>
               Loading team members...
             </div>
           ) : (
@@ -175,16 +175,16 @@ export function AssignTesterModal({
                 }}
               >
                 <div style={{
-                  width: 40, height: 40, borderRadius: '50%', backgroundColor: '#F1F5F9',
+                  width: 40, height: 40, borderRadius: '50%', backgroundColor: 'var(--cp-bd-zone)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <User size={20} style={{ color: '#94A3B8' }} />
+                  <User size={20} style={{ color: 'var(--fg-4)' }} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 14, fontWeight: 500, color: '#64748B', margin: 0, fontStyle: 'italic' }}>
+                  <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-3)', margin: 0, fontStyle: 'italic' }}>
                     Unassigned
                   </p>
-                  <p style={{ fontSize: 12, color: '#94A3B8', margin: '2px 0 0' }}>
+                  <p style={{ fontSize: 12, color: 'var(--fg-4)', margin: '2px 0 0' }}>
                     Clear assignment
                   </p>
                 </div>
@@ -194,7 +194,7 @@ export function AssignTesterModal({
               </button>
 
               {/* Divider */}
-              <div style={{ height: 1, backgroundColor: '#E2E8F0', margin: '8px 0' }} />
+              <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '8px 0' }} />
 
               {/* Team Members */}
               {profiles.map((profile) => {
@@ -226,7 +226,7 @@ export function AssignTesterModal({
                         {profile.full_name}
                       </p>
                       {profile.email && (
-                        <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
+                        <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '2px 0 0' }}>
                           {profile.email}
                         </p>
                       )}
@@ -239,7 +239,7 @@ export function AssignTesterModal({
               })}
 
               {profiles.length === 0 && (
-                <div style={{ textAlign: 'center', padding: 24, color: '#94A3B8', fontSize: 14 }}>
+                <div style={{ textAlign: 'center', padding: 24, color: 'var(--fg-4)', fontSize: 14 }}>
                   No team members found
                 </div>
               )}
@@ -249,16 +249,16 @@ export function AssignTesterModal({
 
         {/* Footer */}
         <div style={{
-          padding: '16px 24px', borderTop: '1px solid #E2E8F0',
+          padding: '16px 24px', borderTop: '1px solid var(--divider)',
           display: 'flex', justifyContent: 'flex-end', gap: 12,
         }}>
           <button
             onClick={onClose}
             disabled={isSubmitting}
             style={{
-              height: 40, padding: '0 20px', backgroundColor: '#FFFFFF',
-              border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14,
-              fontWeight: 500, color: '#334155', cursor: 'pointer',
+              height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)',
+              border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14,
+              fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
             }}
           >
             Cancel

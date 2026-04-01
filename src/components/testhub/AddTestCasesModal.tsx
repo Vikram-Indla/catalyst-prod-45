@@ -27,10 +27,10 @@ interface AddTestCasesModalProps {
 }
 
 const priorityConfig: Record<string, { color: string; bg: string }> = {
-  critical: { color: '#DC2626', bg: '#FEF2F2' },
+  critical: { color: 'var(--sem-danger)', bg: '#FEF2F2' },
   high: { color: '#EA580C', bg: '#FFF7ED' },
-  medium: { color: '#D97706', bg: '#FFFBEB' },
-  low: { color: '#059669', bg: '#ECFDF5' },
+  medium: { color: 'var(--sem-warning)', bg: '#FFFBEB' },
+  low: { color: 'var(--sem-success)', bg: '#ECFDF5' },
 };
 
 export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClose, onSuccess }: AddTestCasesModalProps) {
@@ -112,14 +112,14 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
 
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-      <div style={{ width: 900, height: '80vh', maxHeight: 700, backgroundColor: '#FFFFFF', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ width: 900, height: '80vh', maxHeight: 700, backgroundColor: 'var(--cp-float)', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>Add Test Cases</h2>
-            <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0' }}>Select test cases from the repository to add to this cycle</p>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Add Test Cases</h2>
+            <p style={{ fontSize: 14, color: 'var(--fg-3)', margin: '4px 0 0' }}>Select test cases from the repository to add to this cycle</p>
           </div>
-          <button onClick={onClose} style={{ width: 32, height: 32, padding: 0, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 32, height: 32, padding: 0, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
           </button>
         </div>
@@ -127,9 +127,9 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
         {/* Body */}
         <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
           {/* Folder Sidebar */}
-          <div style={{ width: 220, borderRight: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid #F1F5F9' }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>Folders</p>
+          <div style={{ width: 220, borderRight: '1px solid var(--divider)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--cp-bd-zone)' }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>Folders</p>
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: 8 }}>
               <button onClick={() => setSelectedFolderId(null)} style={{
@@ -157,25 +157,25 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
 
           {/* Test Cases List */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{ position: 'relative', flex: 1 }}>
-                <Search size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+                <Search size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)' }} />
                 <input type="text" placeholder="Search test cases..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{ width: '100%', height: 36, paddingLeft: 36, paddingRight: 12, border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 13, color: '#0F172A' }}
+                  style={{ width: '100%', height: 36, paddingLeft: 36, paddingRight: 12, border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 13, color: 'var(--fg-1)' }}
                 />
               </div>
-              <button onClick={selectAll} style={{ height: 36, padding: '0 12px', border: '1px solid #E2E8F0', borderRadius: 6, backgroundColor: '#FFFFFF', color: '#2563EB', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>Select All</button>
+              <button onClick={selectAll} style={{ height: 36, padding: '0 12px', border: '1px solid var(--divider)', borderRadius: 6, backgroundColor: 'var(--cp-float)', color: 'var(--cp-blue)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>Select All</button>
               {selectedIds.size > 0 && (
-                <button onClick={() => setSelectedIds(new Set())} style={{ height: 36, padding: '0 12px', border: '1px solid #E2E8F0', borderRadius: 6, backgroundColor: '#FFFFFF', color: '#64748B', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>Deselect All</button>
+                <button onClick={() => setSelectedIds(new Set())} style={{ height: 36, padding: '0 12px', border: '1px solid var(--divider)', borderRadius: 6, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>Deselect All</button>
               )}
-              <span style={{ fontSize: 13, color: '#64748B' }}>{filteredTestCases.length} available</span>
+              <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>{filteredTestCases.length} available</span>
             </div>
 
             <div style={{ flex: 1, overflowY: 'auto' }}>
               {isLoading ? (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, color: '#64748B' }}>Loading...</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, color: 'var(--fg-3)' }}>Loading...</div>
               ) : filteredTestCases.length === 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 200, color: '#94A3B8' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 200, color: 'var(--fg-4)' }}>
                   <p style={{ fontSize: 14, margin: 0 }}>{searchQuery ? 'No matching test cases' : 'All test cases already added'}</p>
                 </div>
               ) : (
@@ -185,17 +185,17 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
                       const isSelected = selectedIds.has(tc.id);
                       const priority = priorityConfig[tc.priority?.toLowerCase()] || priorityConfig.medium;
                       return (
-                        <tr key={tc.id} onClick={() => toggleSelection(tc.id)} style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', backgroundColor: isSelected ? '#EFF6FF' : 'transparent' }}>
+                        <tr key={tc.id} onClick={() => toggleSelection(tc.id)} style={{ borderBottom: '1px solid var(--cp-bd-zone)', cursor: 'pointer', backgroundColor: isSelected ? '#EFF6FF' : 'transparent' }}>
                           <td style={{ padding: '12px 16px', width: 40 }}>
                             <div style={{ width: 20, height: 20, borderRadius: 4, border: isSelected ? 'none' : '2px solid #CBD5E1', backgroundColor: isSelected ? '#2563EB' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               {isSelected && <Check size={14} style={{ color: '#FFFFFF' }} />}
                             </div>
                           </td>
                           <td style={{ padding: '12px 8px', width: 100 }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '3px 8px', borderRadius: 4 }}>{tc.case_key}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', padding: '3px 8px', borderRadius: 4 }}>{tc.case_key}</span>
                           </td>
                           <td style={{ padding: '12px 8px' }}>
-                            <span style={{ fontSize: 14, color: '#334155' }}>{tc.title}</span>
+                            <span style={{ fontSize: 14, color: 'var(--fg-2)' }}>{tc.title}</span>
                           </td>
                           <td style={{ padding: '12px 16px', width: 90 }}>
                             <span style={{ fontSize: 11, fontWeight: 500, color: priority.color, backgroundColor: priority.bg, padding: '3px 8px', borderRadius: 4, textTransform: 'capitalize' as const }}>{tc.priority || 'Medium'}</span>
@@ -211,10 +211,10 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>{selectedIds.size > 0 && <span style={{ fontSize: 14, fontWeight: 600, color: '#2563EB' }}>{selectedIds.size} test case{selectedIds.size !== 1 ? 's' : ''} selected</span>}</div>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>{selectedIds.size > 0 && <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-blue)' }}>{selectedIds.size} test case{selectedIds.size !== 1 ? 's' : ''} selected</span>}</div>
           <div style={{ display: 'flex', gap: 12 }}>
-            <button onClick={onClose} disabled={isSubmitting} style={{ height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer' }}>Cancel</button>
+            <button onClick={onClose} disabled={isSubmitting} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
             <button onClick={handleSubmit} disabled={isSubmitting || selectedIds.size === 0} style={{
               height: 40, padding: '0 20px',
               background: selectedIds.size > 0 ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' : '#94A3B8',

@@ -109,7 +109,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
     fontSize: 14,
   });
 
-  const labelStyle = { display: 'block' as const, fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 };
+  const labelStyle = { display: 'block' as const, fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 };
 
   return (
     <div style={{
@@ -118,13 +118,13 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
       justifyContent: 'center', zIndex: 1000, padding: 24,
     }}>
       <div style={{
-        width: '100%', maxWidth: 600, maxHeight: '90vh', backgroundColor: '#FFFFFF',
+        width: '100%', maxWidth: 600, maxHeight: '90vh', backgroundColor: 'var(--cp-float)',
         borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Header */}
         <div style={{
-          padding: '20px 24px', borderBottom: '1px solid #E2E8F0',
+          padding: '20px 24px', borderBottom: '1px solid var(--divider)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -135,11 +135,11 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
             }}>
               <ClipboardList size={22} style={{ color: '#FFFFFF' }} />
             </div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>Create Test Plan</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Create Test Plan</h2>
           </div>
           <button onClick={onClose} style={{
             width: 36, height: 36, border: 'none', borderRadius: 8,
-            backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer',
+            backgroundColor: 'transparent', color: 'var(--fg-3)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}><X size={20} /></button>
         </div>
@@ -147,11 +147,11 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           <div style={{ marginBottom: 20 }}>
-            <label style={labelStyle}>Plan Name <span style={{ color: '#DC2626' }}>*</span></label>
+            <label style={labelStyle}>Plan Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Release 2.0 Testing" style={inputStyle(!!errors.name)} />
             {errors.name && (
-              <p style={{ fontSize: 12, color: '#DC2626', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <AlertCircle size={12} /> {errors.name}
               </p>
             )}
@@ -170,7 +170,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><User size={14} /> Owner</span>
               </label>
               <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)}
-                style={{ ...inputStyle(), backgroundColor: '#FFFFFF' }}>
+                style={{ ...inputStyle(), backgroundColor: 'var(--cp-float)' }}>
                 <option value="">Select owner</option>
                 {users.map((u) => (
                   <option key={u.id} value={u.id}>{u.full_name}</option>
@@ -191,7 +191,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={14} /> End Date</span>
               </label>
               <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={inputStyle(!!errors.endDate)} />
-              {errors.endDate && <p style={{ fontSize: 12, color: '#DC2626', margin: '6px 0 0' }}>{errors.endDate}</p>}
+              {errors.endDate && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0' }}>{errors.endDate}</p>}
             </div>
           </div>
 
@@ -201,7 +201,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
             </label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief description of the test plan..." rows={3}
-              style={{ width: '100%', padding: 14, border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
+              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
           </div>
 
           <div style={{ marginBottom: 20 }}>
@@ -210,22 +210,22 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
             </label>
             <textarea value={objectives} onChange={(e) => setObjectives(e.target.value)}
               placeholder="What are the testing objectives?" rows={3}
-              style={{ width: '100%', padding: 14, border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
+              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
           </div>
 
           <div>
             <label style={labelStyle}>Scope</label>
             <textarea value={scope} onChange={(e) => setScope(e.target.value)}
               placeholder="What is in/out of scope for this plan?" rows={3}
-              style={{ width: '100%', padding: 14, border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
+              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting} style={{
-            height: 44, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0',
-            borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer',
+            height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)',
+            borderRadius: 10, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 44, padding: '0 24px',

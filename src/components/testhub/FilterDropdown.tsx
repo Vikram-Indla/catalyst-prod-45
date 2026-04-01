@@ -63,7 +63,7 @@ export function FilterDropdown({ filters, onChange, onClose }: FilterDropdownPro
           height: 32,
           cursor: 'pointer',
           fontSize: 13,
-          color: '#334155',
+          color: 'var(--fg-2)',
         }}
       >
         <input
@@ -86,8 +86,8 @@ export function FilterDropdown({ filters, onChange, onClose }: FilterDropdownPro
         left: 0,
         marginTop: 4,
         width: 320,
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        backgroundColor: 'var(--cp-float)',
+        border: '1px solid var(--divider)',
         borderRadius: 12,
         boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
         padding: 16,
@@ -101,18 +101,18 @@ export function FilterDropdown({ filters, onChange, onClose }: FilterDropdownPro
         alignItems: 'center',
         marginBottom: 16,
       }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>Filters</span>
+        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)' }}>Filters</span>
         <button
           onClick={clearAll}
           style={{
             background: 'none',
             border: 'none',
             fontSize: 13,
-            color: '#64748B',
+            color: 'var(--fg-3)',
             cursor: 'pointer',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = '#2563EB'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = '#64748B'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--cp-blue)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--fg-3)'; }}
         >
           Clear
         </button>
@@ -125,7 +125,7 @@ export function FilterDropdown({ filters, onChange, onClose }: FilterDropdownPro
           fontWeight: 600,
           textTransform: 'uppercase',
           letterSpacing: '0.06em',
-          color: '#64748B',
+          color: 'var(--fg-3)',
           marginBottom: 8,
         }}>
           Priority
@@ -142,7 +142,7 @@ export function FilterDropdown({ filters, onChange, onClose }: FilterDropdownPro
           fontWeight: 600,
           textTransform: 'uppercase',
           letterSpacing: '0.06em',
-          color: '#64748B',
+          color: 'var(--fg-3)',
           marginBottom: 8,
         }}>
           Status
@@ -159,7 +159,7 @@ export function FilterDropdown({ filters, onChange, onClose }: FilterDropdownPro
           fontWeight: 600,
           textTransform: 'uppercase',
           letterSpacing: '0.06em',
-          color: '#64748B',
+          color: 'var(--fg-3)',
           marginBottom: 8,
         }}>
           Type
@@ -175,7 +175,7 @@ export function FilterDropdown({ filters, onChange, onClose }: FilterDropdownPro
         style={{
           width: '100%',
           height: 36,
-          background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+          background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
           border: 'none',
           borderRadius: 8,
           fontSize: 13,

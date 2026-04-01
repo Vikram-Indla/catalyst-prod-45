@@ -164,18 +164,18 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
 
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-      <div style={{ width: 560, maxHeight: '90vh', backgroundColor: '#FFFFFF', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ width: 560, maxHeight: '90vh', backgroundColor: 'var(--cp-float)', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
               {isEdit ? 'Edit Test Cycle' : 'Create Test Cycle'}
             </h2>
-            <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0' }}>
+            <p style={{ fontSize: 14, color: 'var(--fg-3)', margin: '4px 0 0' }}>
               {isEdit ? 'Update cycle details' : 'Plan a new test execution cycle'}
             </p>
           </div>
-          <button onClick={onClose} style={{ width: 32, height: 32, padding: 0, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 32, height: 32, padding: 0, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
           </button>
         </div>
@@ -184,53 +184,53 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           {/* Name */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
-              Cycle Name <span style={{ color: '#EF4444' }}>*</span>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
+              Cycle Name <span style={{ color: 'var(--sem-danger)' }}>*</span>
             </label>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Sprint 24 - User Authentication"
-              style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${errors.name ? '#EF4444' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14, color: '#0F172A' }}
+              style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${errors.name ? '#EF4444' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14, color: 'var(--fg-1)' }}
             />
-            {errors.name && <p style={{ fontSize: 12, color: '#EF4444', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.name}</p>}
+            {errors.name && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.name}</p>}
           </div>
 
           {/* Description */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>Description</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>Description</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe the scope and goals..." rows={3}
-              style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, color: '#0F172A', resize: 'vertical', fontFamily: 'inherit' }}
+              style={{ width: '100%', padding: '10px 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', resize: 'vertical', fontFamily: 'inherit' }}
             />
           </div>
 
           {/* Date Fields */}
           <div style={{ display: 'flex', gap: 16, marginBottom: 20 }}>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
-                <Calendar size={14} style={{ color: '#64748B' }} /> Start Date
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
+                <Calendar size={14} style={{ color: 'var(--fg-3)' }} /> Start Date
               </label>
               <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-                style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, color: '#0F172A' }}
+                style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)' }}
               />
             </div>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
-                <Calendar size={14} style={{ color: '#64748B' }} /> End Date
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
+                <Calendar size={14} style={{ color: 'var(--fg-3)' }} /> End Date
               </label>
               <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} min={startDate}
-                style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${errors.endDate ? '#EF4444' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14, color: '#0F172A' }}
+                style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${errors.endDate ? '#EF4444' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14, color: 'var(--fg-1)' }}
               />
-              {errors.endDate && <p style={{ fontSize: 12, color: '#EF4444', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.endDate}</p>}
+              {errors.endDate && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.endDate}</p>}
             </div>
           </div>
 
           {/* Environment */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
-              <Server size={14} style={{ color: '#64748B' }} /> Environment
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
+              <Server size={14} style={{ color: 'var(--fg-3)' }} /> Environment
             </label>
             <select value={environmentId} onChange={(e) => setEnvironmentId(e.target.value)}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, color: '#0F172A', backgroundColor: '#FFFFFF' }}
+              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)' }}
             >
               <option value="">Select environment (optional)</option>
               {environments.map(env => (
@@ -243,11 +243,11 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
 
           {/* Owner */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
-              <User size={14} style={{ color: '#64748B' }} /> Owner
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
+              <User size={14} style={{ color: 'var(--fg-3)' }} /> Owner
             </label>
             <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, color: '#0F172A', backgroundColor: '#FFFFFF' }}
+              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)' }}
             >
               <option value="">Select owner (optional)</option>
               {profiles.map(p => <option key={p.id} value={p.id}>{p.full_name}</option>)}
@@ -255,7 +255,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           </div>
 
           {!isEdit && (
-            <div style={{ padding: 16, backgroundColor: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8 }}>
+            <div style={{ padding: 16, backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--cp-blue) 25%, transparent)', borderRadius: 8 }}>
               <p style={{ fontSize: 13, color: '#1E40AF', margin: 0 }}>
                 <strong>Note:</strong> The cycle will be created in <strong>Draft</strong> status. Add test cases and start when ready.
               </p>
@@ -264,8 +264,8 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-          <button onClick={onClose} disabled={isSubmitting} style={{ height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer' }}>Cancel</button>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+          <button onClick={onClose} disabled={isSubmitting} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting || !name.trim()} style={{
             height: 40, padding: '0 20px',
             background: name.trim() ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' : '#94A3B8',

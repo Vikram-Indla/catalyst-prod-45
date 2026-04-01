@@ -43,8 +43,8 @@ export function SortDropdown({ sort, onSortChange, onClose }: SortDropdownProps)
         left: 0,
         marginTop: 4,
         width: 240,
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        backgroundColor: 'var(--cp-float)',
+        border: '1px solid var(--divider)',
         borderRadius: 12,
         boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
         padding: 8,
@@ -56,8 +56,8 @@ export function SortDropdown({ sort, onSortChange, onClose }: SortDropdownProps)
         padding: '8px 12px',
         fontSize: 12,
         fontWeight: 600,
-        color: '#64748B',
-        borderBottom: '1px solid #F1F5F9',
+        color: 'var(--fg-3)',
+        borderBottom: '1px solid var(--cp-bd-zone)',
       }}>
         Sort by
       </div>
@@ -80,7 +80,7 @@ export function SortDropdown({ sort, onSortChange, onClose }: SortDropdownProps)
           }}
           onMouseEnter={(e) => {
             if (sort.column !== opt.value) {
-              e.currentTarget.style.backgroundColor = '#F8FAFC';
+              e.currentTarget.style.backgroundColor = 'var(--bg-1)';
             }
           }}
           onMouseLeave={(e) => {
@@ -96,7 +96,7 @@ export function SortDropdown({ sort, onSortChange, onClose }: SortDropdownProps)
               readOnly
               style={{ width: 16, height: 16, accentColor: '#2563EB' }}
             />
-            <span style={{ fontSize: 13, color: '#334155' }}>{opt.label}</span>
+            <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>{opt.label}</span>
           </div>
 
           {sort.column === opt.value && (

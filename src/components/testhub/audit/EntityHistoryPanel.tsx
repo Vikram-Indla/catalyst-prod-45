@@ -26,10 +26,10 @@ interface EntityHistoryPanelProps {
 }
 
 const ACTION_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
-  create: { label: 'Created', color: '#059669', icon: Plus },
-  update: { label: 'Updated', color: '#2563EB', icon: Edit2 },
-  delete: { label: 'Deleted', color: '#DC2626', icon: Trash2 },
-  status_change: { label: 'Status Changed', color: '#D97706', icon: ArrowRight },
+  create: { label: 'Created', color: 'var(--sem-success)', icon: Plus },
+  update: { label: 'Updated', color: 'var(--cp-blue)', icon: Edit2 },
+  delete: { label: 'Deleted', color: 'var(--sem-danger)', icon: Trash2 },
+  status_change: { label: 'Status Changed', color: 'var(--sem-warning)', icon: ArrowRight },
 };
 
 const FIELD_LABELS: Record<string, string> = {
@@ -111,7 +111,7 @@ export function EntityHistoryPanel({ entityType, entityId, maxEntries = 20 }: En
 
   if (history.length === 0) {
     return (
-      <div style={{ padding: 24, textAlign: 'center', color: '#94A3B8' }}>
+      <div style={{ padding: 24, textAlign: 'center', color: 'var(--fg-4)' }}>
         <History size={32} style={{ marginBottom: 8, opacity: 0.5 }} />
         <p style={{ margin: 0, fontSize: 13 }}>No history available</p>
       </div>
@@ -120,8 +120,8 @@ export function EntityHistoryPanel({ entityType, entityId, maxEntries = 20 }: En
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
-        <h4 style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--divider)' }}>
+        <h4 style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
           <History size={16} style={{ color: '#8B5CF6' }} />
           History ({history.length})
         </h4>
@@ -130,7 +130,7 @@ export function EntityHistoryPanel({ entityType, entityId, maxEntries = 20 }: En
       <div style={{ padding: '16px 20px' }}>
         <div style={{ position: 'relative' }}>
           {/* Timeline line */}
-          <div style={{ position: 'absolute', left: 15, top: 0, bottom: 0, width: 2, backgroundColor: '#E2E8F0' }} />
+          <div style={{ position: 'absolute', left: 15, top: 0, bottom: 0, width: 2, backgroundColor: 'var(--divider)' }} />
 
           {displayedHistory.map((entry) => {
             const action = ACTION_CONFIG[entry.action] || ACTION_CONFIG.update;
@@ -150,14 +150,14 @@ export function EntityHistoryPanel({ entityType, entityId, maxEntries = 20 }: En
                     <span style={{ fontSize: 13, fontWeight: 600, color: action.color }}>{action.label}</span>
                     {hasChanges && (
                       <button onClick={() => toggleExpanded(entry.id)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '2px 6px', fontSize: 11, border: '1px solid #E2E8F0', borderRadius: 4, backgroundColor: '#F8FAFC', color: '#64748B', cursor: 'pointer' }}>
+                        style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '2px 6px', fontSize: 11, border: '1px solid var(--divider)', borderRadius: 4, backgroundColor: 'var(--bg-1)', color: 'var(--fg-3)', cursor: 'pointer' }}>
                         {entry.changed_fields?.length} field{entry.changed_fields?.length !== 1 ? 's' : ''}
                         {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
                       </button>
                     )}
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: '#64748B' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: 'var(--fg-3)' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <User size={12} /> {entry.user_name || 'System'}
                     </span>
@@ -167,7 +167,7 @@ export function EntityHistoryPanel({ entityType, entityId, maxEntries = 20 }: En
                   </div>
 
                   {isExpanded && hasChanges && (
-                    <div style={{ marginTop: 12, padding: 12, backgroundColor: '#F8FAFC', borderRadius: 8, border: '1px solid #E2E8F0' }}>
+                    <div style={{ marginTop: 12, padding: 12, backgroundColor: 'var(--bg-1)', borderRadius: 8, border: '1px solid var(--divider)' }}>
                       {entry.changed_fields?.map((field) => {
                         const oldVal = entry.old_values?.[field];
                         const newVal = entry.new_values?.[field];
@@ -175,12 +175,12 @@ export function EntityHistoryPanel({ entityType, entityId, maxEntries = 20 }: En
 
                         return (
                           <div key={field} style={{ marginBottom: 8 }}>
-                            <p style={{ fontSize: 11, fontWeight: 600, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase' }}>{label}</p>
+                            <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', margin: '0 0 4px', textTransform: 'uppercase' }}>{label}</p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
                               <span style={{ padding: '2px 8px', backgroundColor: '#FEE2E2', borderRadius: 4, color: '#991B1B', textDecoration: 'line-through', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {formatValue(oldVal)}
                               </span>
-                              <ArrowRight size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
+                              <ArrowRight size={14} style={{ color: 'var(--fg-4)', flexShrink: 0 }} />
                               <span style={{ padding: '2px 8px', backgroundColor: '#DCFCE7', borderRadius: 4, color: '#166534', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {formatValue(newVal)}
                               </span>
@@ -198,7 +198,7 @@ export function EntityHistoryPanel({ entityType, entityId, maxEntries = 20 }: En
 
         {history.length > 5 && (
           <button onClick={() => setShowAll(!showAll)}
-            style={{ width: '100%', padding: 12, border: '1px dashed #CBD5E1', borderRadius: 8, backgroundColor: 'transparent', color: '#64748B', fontSize: 13, cursor: 'pointer', marginTop: 8 }}>
+            style={{ width: '100%', padding: 12, border: '1px dashed var(--divider)', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--fg-3)', fontSize: 13, cursor: 'pointer', marginTop: 8 }}>
             {showAll ? 'Show less' : `Show ${history.length - 5} more`}
           </button>
         )}

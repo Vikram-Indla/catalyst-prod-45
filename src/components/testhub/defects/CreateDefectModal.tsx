@@ -17,10 +17,10 @@ interface CreateDefectModalProps {
 }
 
 const SEVERITY_OPTIONS = [
-  { value: 'critical', label: 'Critical', color: '#DC2626', desc: 'System crash, data loss' },
+  { value: 'critical', label: 'Critical', color: 'var(--sem-danger)', desc: 'System crash, data loss' },
   { value: 'high', label: 'High', color: '#EA580C', desc: 'Major feature broken' },
-  { value: 'medium', label: 'Medium', color: '#D97706', desc: 'Feature partially works' },
-  { value: 'low', label: 'Low', color: '#059669', desc: 'Minor/cosmetic issue' },
+  { value: 'medium', label: 'Medium', color: 'var(--sem-warning)', desc: 'Feature partially works' },
+  { value: 'low', label: 'Low', color: 'var(--sem-success)', desc: 'Minor/cosmetic issue' },
 ];
 
 const PRIORITY_OPTIONS = [
@@ -178,7 +178,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
               width: 44, height: 44, borderRadius: 10,
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Bug size={22} style={{ color: '#FFF' }} />
@@ -209,7 +209,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
           {/* Title */}
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 6 }}>
-              Title <span style={{ color: '#EF4444' }}>*</span>
+              Title <span style={{ color: 'var(--sem-danger)' }}>*</span>
             </label>
             <input
               type="text"
@@ -223,7 +223,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
                 color: 'hsl(var(--foreground))',
               }}
             />
-            {errors.title && <p style={{ fontSize: 12, color: '#EF4444', margin: '4px 0 0' }}>{errors.title}</p>}
+            {errors.title && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '4px 0 0' }}>{errors.title}</p>}
           </div>
 
           {/* Severity & Priority */}
@@ -385,7 +385,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <AlertCircle size={14} style={{ color: '#DC2626' }} /> Actual Result
+                  <AlertCircle size={14} style={{ color: 'var(--sem-danger)' }} /> Actual Result
                 </span>
               </label>
               <textarea
@@ -425,7 +425,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
             disabled={isSubmitting}
             style={{
               height: 44, padding: '0 24px',
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
               border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600,
               color: '#FFFFFF', cursor: isSubmitting ? 'not-allowed' : 'pointer',
               opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8,

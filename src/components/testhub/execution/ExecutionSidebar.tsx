@@ -83,7 +83,7 @@ export function ExecutionSidebar({
               onClick={onCreateDefect}
               style={{
                 width: '100%', padding: '10px 14px', marginBottom: 16,
-                background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
                 border: 'none', borderRadius: 8, color: '#FFFFFF',
                 fontSize: 13, fontWeight: 600, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,

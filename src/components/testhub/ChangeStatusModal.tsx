@@ -17,10 +17,10 @@ interface ChangeStatusModalProps {
 }
 
 const STATUSES = [
-  { value: 'draft', label: 'Draft', icon: Clock, color: '#64748B', bg: '#F1F5F9' },
-  { value: 'ready', label: 'Ready for Review', icon: FileCheck, color: '#2563EB', bg: '#EFF6FF' },
-  { value: 'approved', label: 'Approved', icon: CheckCircle, color: '#059669', bg: '#ECFDF5' },
-  { value: 'deprecated', label: 'Deprecated', icon: Archive, color: '#DC2626', bg: '#FEF2F2' },
+  { value: 'draft', label: 'Draft', icon: Clock, color: 'var(--fg-3)', bg: '#F1F5F9' },
+  { value: 'ready', label: 'Ready for Review', icon: FileCheck, color: 'var(--cp-blue)', bg: '#EFF6FF' },
+  { value: 'approved', label: 'Approved', icon: CheckCircle, color: 'var(--sem-success)', bg: '#ECFDF5' },
+  { value: 'deprecated', label: 'Deprecated', icon: Archive, color: 'var(--sem-danger)', bg: '#FEF2F2' },
 ];
 
 export function ChangeStatusModal({
@@ -77,16 +77,16 @@ export function ChangeStatusModal({
       onClick={(e) => e.target === e.currentTarget && onClose()}
       style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}
     >
-      <div onClick={(e) => e.stopPropagation()} style={{ width: 400, backgroundColor: '#FFFFFF', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: 400, backgroundColor: 'var(--cp-float)', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>Change Status</h2>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#64748B', margin: '4px 0 0 0' }}>
+            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Change Status</h2>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0 0' }}>
               {testCaseIds.length} test case{testCaseIds.length > 1 ? 's' : ''} selected
             </p>
           </div>
-          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X style={{ width: 20, height: 20 }} />
           </button>
         </div>
@@ -118,11 +118,11 @@ export function ChangeStatusModal({
                 }}
               >
                 <Icon style={{ width: 18, height: 18, color: status.color, flexShrink: 0 }} />
-                <span style={{ fontSize: 14, fontWeight: isSelected ? 600 : 500, color: '#0F172A', flex: 1 }}>
+                <span style={{ fontSize: 14, fontWeight: isSelected ? 600 : 500, color: 'var(--fg-1)', flex: 1 }}>
                   {status.label}
                 </span>
                 {isCurrent && (
-                  <span style={{ fontSize: 11, color: '#94A3B8', fontStyle: 'italic' }}>current</span>
+                  <span style={{ fontSize: 11, color: 'var(--fg-4)', fontStyle: 'italic' }}>current</span>
                 )}
                 {isSelected && (
                   <div style={{ width: 18, height: 18, borderRadius: '50%', backgroundColor: status.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -137,8 +137,8 @@ export function ChangeStatusModal({
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-          <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer' }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+          <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>
             Cancel
           </button>
           <button

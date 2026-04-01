@@ -152,11 +152,11 @@ export function CloneTestCaseModal({
     height: 40,
     width: '100%',
     padding: '0 12px',
-    border: '1.5px solid #E2E8F0',
+    border: '1.5px solid var(--divider)',
     borderRadius: 8,
     fontFamily: 'Inter, sans-serif',
     fontSize: 14,
-    color: '#0F172A',
+    color: 'var(--fg-1)',
     outline: 'none',
     transition: 'border-color 0.15s, box-shadow 0.15s',
   };
@@ -172,11 +172,11 @@ export function CloneTestCaseModal({
     width: 18,
     height: 18,
     borderRadius: 4,
-    border: '1.5px solid #CBD5E1',
+    border: '1.5px solid var(--divider)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'var(--cp-float)',
     transition: 'all 0.15s',
   };
 
@@ -199,7 +199,7 @@ export function CloneTestCaseModal({
         style={{
           width: 440,
           maxWidth: '95vw',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: 'var(--cp-float)',
           borderRadius: 12,
           boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
           display: 'flex',
@@ -210,7 +210,7 @@ export function CloneTestCaseModal({
         {/* Header */}
         <div style={{
           padding: '20px 24px',
-          borderBottom: '1px solid #E2E8F0',
+          borderBottom: '1px solid var(--divider)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
@@ -220,13 +220,13 @@ export function CloneTestCaseModal({
               fontFamily: 'Inter, sans-serif',
               fontSize: 18,
               fontWeight: 700,
-              color: '#0F172A',
+              color: 'var(--fg-1)',
               margin: 0,
             }}>Clone Test Case</h2>
             <p style={{
               fontFamily: 'Inter, sans-serif',
               fontSize: 14,
-              color: '#64748B',
+              color: 'var(--fg-3)',
               margin: '4px 0 0 0',
             }}>Create a copy of {testCase.case_key}</p>
           </div>
@@ -239,7 +239,7 @@ export function CloneTestCaseModal({
               border: 'none',
               borderRadius: 8,
               backgroundColor: 'transparent',
-              color: '#94A3B8',
+              color: 'var(--fg-4)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -258,7 +258,7 @@ export function CloneTestCaseModal({
               fontFamily: 'Inter, sans-serif',
               fontSize: 13,
               fontWeight: 600,
-              color: '#0F172A',
+              color: 'var(--fg-1)',
               marginBottom: 6,
             }}>New Title</label>
             <input
@@ -267,11 +267,11 @@ export function CloneTestCaseModal({
               onChange={(e) => setNewTitle(e.target.value)}
               style={inputStyle}
               onFocus={(e) => {
-                e.target.style.borderColor = '#2563EB';
+                e.target.style.borderColor = 'var(--cp-blue)';
                 e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = '#E2E8F0';
+                e.target.style.borderColor = 'var(--divider)';
                 e.target.style.boxShadow = 'none';
               }}
             />
@@ -293,7 +293,7 @@ export function CloneTestCaseModal({
                   </svg>
                 )}
               </div>
-              <span style={{ fontFamily: 'Inter', fontSize: 14, color: '#0F172A' }}>Include test steps</span>
+              <span style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)' }}>Include test steps</span>
             </label>
 
             <label 
@@ -311,7 +311,7 @@ export function CloneTestCaseModal({
                   </svg>
                 )}
               </div>
-              <span style={{ fontFamily: 'Inter', fontSize: 14, color: '#0F172A' }}>Include attachments</span>
+              <span style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)' }}>Include attachments</span>
             </label>
           </div>
         </div>
@@ -319,7 +319,7 @@ export function CloneTestCaseModal({
         {/* Footer */}
         <div style={{
           padding: '16px 24px',
-          borderTop: '1px solid #E2E8F0',
+          borderTop: '1px solid var(--divider)',
           display: 'flex',
           justifyContent: 'flex-end',
           gap: 12,
@@ -329,13 +329,13 @@ export function CloneTestCaseModal({
             style={{
               height: 40,
               padding: '0 20px',
-              backgroundColor: '#FFFFFF',
-              border: '1.5px solid #E2E8F0',
+              backgroundColor: 'var(--cp-float)',
+              border: '1.5px solid var(--divider)',
               borderRadius: 8,
               fontFamily: 'Inter, sans-serif',
               fontSize: 14,
               fontWeight: 500,
-              color: '#334155',
+              color: 'var(--fg-2)',
               cursor: 'pointer',
             }}
           >Cancel</button>

@@ -343,18 +343,18 @@ export function CreateTestCaseModal({
     height: 40,
     width: '100%',
     padding: '0 12px',
-    border: '1.5px solid #E2E8F0',
+    border: '1.5px solid var(--divider)',
     borderRadius: 8,
     fontFamily: 'Inter, sans-serif',
     fontSize: 14,
-    color: '#0F172A',
+    color: 'var(--fg-1)',
     outline: 'none',
     transition: 'border-color 0.15s, box-shadow 0.15s',
   };
 
   const inputErrorStyle: React.CSSProperties = {
     ...inputStyle,
-    borderColor: '#EF4444',
+    borderColor: 'var(--sem-danger)',
   };
 
   const textareaStyle: React.CSSProperties = {
@@ -380,7 +380,7 @@ export function CreateTestCaseModal({
     fontFamily: 'Inter, sans-serif',
     fontSize: 13,
     fontWeight: 600,
-    color: '#0F172A',
+    color: 'var(--fg-1)',
     marginBottom: 6,
   };
 
@@ -417,7 +417,7 @@ export function CreateTestCaseModal({
           width: 880,
           maxWidth: '95vw',
           maxHeight: '90vh',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: 'var(--cp-float)',
           borderRadius: 12,
           boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
           display: 'flex',
@@ -428,7 +428,7 @@ export function CreateTestCaseModal({
         {/* Header */}
         <div style={{
           padding: '20px 24px',
-          borderBottom: '1px solid #E2E8F0',
+          borderBottom: '1px solid var(--divider)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
@@ -439,13 +439,13 @@ export function CreateTestCaseModal({
               fontFamily: 'Inter, sans-serif',
               fontSize: 18,
               fontWeight: 700,
-              color: '#0F172A',
+              color: 'var(--fg-1)',
               margin: 0,
             }}>{modalTitle}</h2>
             <p style={{
               fontFamily: 'Inter, sans-serif',
               fontSize: 14,
-              color: '#64748B',
+              color: 'var(--fg-3)',
               margin: '4px 0 0 0',
             }}>{modalSubtitle}</p>
           </div>
@@ -458,7 +458,7 @@ export function CreateTestCaseModal({
               border: 'none',
               borderRadius: 8,
               backgroundColor: 'transparent',
-              color: '#94A3B8',
+              color: 'var(--fg-4)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -466,12 +466,12 @@ export function CreateTestCaseModal({
               transition: 'all 0.15s',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#F1F5F9';
-              e.currentTarget.style.color = '#0F172A';
+              e.currentTarget.style.backgroundColor = 'var(--cp-bd-zone)';
+              e.currentTarget.style.color = 'var(--fg-1)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = '#94A3B8';
+              e.currentTarget.style.color = 'var(--fg-4)';
             }}
           >
             <X style={{ width: 20, height: 20 }} />
@@ -495,7 +495,7 @@ export function CreateTestCaseModal({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div>
                 <label style={labelStyle}>
-                  Title <span style={{ color: '#EF4444' }}>*</span>
+                  Title <span style={{ color: 'var(--sem-danger)' }}>*</span>
                 </label>
                 <input
                   type="text"
@@ -508,13 +508,13 @@ export function CreateTestCaseModal({
                   style={errors.title ? inputErrorStyle : inputStyle}
                   onFocus={(e) => {
                     if (!errors.title) {
-                      e.target.style.borderColor = '#2563EB';
+                      e.target.style.borderColor = 'var(--cp-blue)';
                       e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
                     }
                   }}
                   onBlur={(e) => {
                     if (!errors.title) {
-                      e.target.style.borderColor = '#E2E8F0';
+                      e.target.style.borderColor = 'var(--divider)';
                       e.target.style.boxShadow = 'none';
                     }
                   }}
@@ -523,7 +523,7 @@ export function CreateTestCaseModal({
                   <p style={{
                     fontFamily: 'Inter, sans-serif',
                     fontSize: 12,
-                    color: '#EF4444',
+                    color: 'var(--sem-danger)',
                     marginTop: 4,
                   }}>{errors.title}</p>
                 )}
@@ -537,11 +537,11 @@ export function CreateTestCaseModal({
                   onChange={(e) => setObjective(e.target.value)}
                   style={{ ...textareaStyle, minHeight: 100 }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#2563EB';
+                    e.target.style.borderColor = 'var(--cp-blue)';
                     e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#E2E8F0';
+                    e.target.style.borderColor = 'var(--divider)';
                     e.target.style.boxShadow = 'none';
                   }}
                 />
@@ -555,11 +555,11 @@ export function CreateTestCaseModal({
                   onChange={(e) => setPreconditions(e.target.value)}
                   style={textareaStyle}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#2563EB';
+                    e.target.style.borderColor = 'var(--cp-blue)';
                     e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#E2E8F0';
+                    e.target.style.borderColor = 'var(--divider)';
                     e.target.style.boxShadow = 'none';
                   }}
                 />
@@ -571,16 +571,16 @@ export function CreateTestCaseModal({
               display: 'flex', 
               flexDirection: 'column', 
               gap: 16,
-              backgroundColor: '#F8FAFC',
+              backgroundColor: 'var(--bg-1)',
               padding: 16,
               borderRadius: 8,
-              border: '1px solid #E2E8F0',
+              border: '1px solid var(--divider)',
               height: 'fit-content',
             }}>
               {/* Folder - Full width with validation */}
               <div>
                 <label style={{ ...labelStyle, fontSize: 13 }}>
-                  Folder <span style={{ color: '#EF4444' }}>*</span>
+                  Folder <span style={{ color: 'var(--sem-danger)' }}>*</span>
                 </label>
                 <select
                   value={folderId}
@@ -590,7 +590,7 @@ export function CreateTestCaseModal({
                   }}
                   style={{ 
                     ...selectStyle, 
-                    backgroundColor: '#FFFFFF',
+                    backgroundColor: 'var(--cp-float)',
                     borderColor: errors.folder ? '#EF4444' : '#E2E8F0',
                   }}
                 >
@@ -600,7 +600,7 @@ export function CreateTestCaseModal({
                   ))}
                 </select>
                 {errors.folder && (
-                  <p style={{ fontSize: 12, color: '#EF4444', marginTop: 4 }}>
+                  <p style={{ fontSize: 12, color: 'var(--sem-danger)', marginTop: 4 }}>
                     {errors.folder}
                   </p>
                 )}
@@ -610,12 +610,12 @@ export function CreateTestCaseModal({
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
                   <label style={{ ...labelStyle, fontSize: 13 }}>
-                    Priority <span style={{ color: '#EF4444' }}>*</span>
+                    Priority <span style={{ color: 'var(--sem-danger)' }}>*</span>
                   </label>
                   <select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
-                    style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
+                    style={{ ...selectStyle, backgroundColor: 'var(--cp-float)' }}
                   >
                     <option value="critical">Critical</option>
                     <option value="high">High</option>
@@ -625,12 +625,12 @@ export function CreateTestCaseModal({
                 </div>
                 <div>
                   <label style={{ ...labelStyle, fontSize: 13 }}>
-                    Type <span style={{ color: '#EF4444' }}>*</span>
+                    Type <span style={{ color: 'var(--sem-danger)' }}>*</span>
                   </label>
                   <select
                     value={type}
                     onChange={(e) => setType(e.target.value)}
-                    style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
+                    style={{ ...selectStyle, backgroundColor: 'var(--cp-float)' }}
                   >
                     <option value="functional">Functional</option>
                     <option value="regression">Regression</option>
@@ -648,7 +648,7 @@ export function CreateTestCaseModal({
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
+                  style={{ ...selectStyle, backgroundColor: 'var(--cp-float)' }}
                 >
                   <option value="draft">Draft</option>
                   <option value="ready">Ready</option>
@@ -663,7 +663,7 @@ export function CreateTestCaseModal({
                 <select
                   value={assignedTo}
                   onChange={(e) => setAssignedTo(e.target.value)}
-                  style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
+                  style={{ ...selectStyle, backgroundColor: 'var(--cp-float)' }}
                 >
                   <option value="">Unassigned</option>
                   {users.map(user => (
@@ -685,7 +685,7 @@ export function CreateTestCaseModal({
               marginBottom: 12,
             }}>
               <label style={{ ...labelStyle, marginBottom: 0 }}>
-                Test Steps <span style={{ color: '#EF4444' }}>*</span>
+                Test Steps <span style={{ color: 'var(--sem-danger)' }}>*</span>
               </label>
               <button
                 type="button"
@@ -693,7 +693,7 @@ export function CreateTestCaseModal({
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#2563EB',
+                  color: 'var(--cp-blue)',
                   fontSize: 13,
                   fontWeight: 500,
                   cursor: 'pointer',
@@ -731,7 +731,7 @@ export function CreateTestCaseModal({
         {/* Footer */}
         <div style={{
           padding: '16px 24px',
-          borderTop: '1px solid #E2E8F0',
+          borderTop: '1px solid var(--divider)',
           display: 'flex',
           justifyContent: 'flex-end',
           gap: 12,
@@ -746,15 +746,15 @@ export function CreateTestCaseModal({
               border: 'none',
               fontSize: 14,
               fontWeight: 500,
-              color: '#64748B',
+              color: 'var(--fg-3)',
               cursor: 'pointer',
               transition: 'all 0.15s',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#0F172A';
+              e.currentTarget.style.color = 'var(--fg-1)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = '#64748B';
+              e.currentTarget.style.color = 'var(--fg-3)';
             }}
           >Cancel</button>
           <button
@@ -766,23 +766,23 @@ export function CreateTestCaseModal({
             style={{
               height: 40,
               padding: '0 20px',
-              backgroundColor: '#FFFFFF',
-              border: '1.5px solid #E2E8F0',
+              backgroundColor: 'var(--cp-float)',
+              border: '1.5px solid var(--divider)',
               borderRadius: 8,
               fontFamily: 'Inter, sans-serif',
               fontSize: 14,
               fontWeight: 500,
-              color: '#334155',
+              color: 'var(--fg-2)',
               cursor: isSaving ? 'not-allowed' : 'pointer',
               transition: 'all 0.15s',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#F8FAFC';
-              e.currentTarget.style.borderColor = '#CBD5E1';
+              e.currentTarget.style.backgroundColor = 'var(--bg-1)';
+              e.currentTarget.style.borderColor = 'var(--divider)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#FFFFFF';
-              e.currentTarget.style.borderColor = '#E2E8F0';
+              e.currentTarget.style.backgroundColor = 'var(--cp-float)';
+              e.currentTarget.style.borderColor = 'var(--divider)';
             }}
           >Save Draft</button>
           <button

@@ -139,8 +139,8 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
       if (part.match(/^\{\{[^}]+\}\}$/)) {
         return (
           <span key={i} style={{
-            display: 'inline', padding: '1px 6px', backgroundColor: '#EFF6FF',
-            color: '#2563EB', borderRadius: 4, fontFamily: 'monospace', fontSize: 12, fontWeight: 600,
+            display: 'inline', padding: '1px 6px', backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)',
+            color: 'var(--cp-blue)', borderRadius: 4, fontFamily: 'monospace', fontSize: 12, fontWeight: 600,
           }}>{part}</span>
         );
       }
@@ -153,7 +153,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
     width: '100%', height: 40, padding: '0 12px',
     border: `1.5px solid ${hasError ? '#EF4444' : '#E2E8F0'}`, borderRadius: 8,
-    fontSize: 14, color: '#0F172A', fontFamily: 'Inter',
+    fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter',
   });
 
   return (
@@ -162,25 +162,25 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
       backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1200,
     }}>
       <div onClick={(e) => e.stopPropagation()} style={{
-        width: 600, maxHeight: '90vh', backgroundColor: '#FFFFFF', borderRadius: 12,
+        width: 600, maxHeight: '90vh', backgroundColor: 'var(--cp-float)', borderRadius: 12,
         boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column',
       }}>
         {/* Header */}
         <div style={{
-          padding: '20px 24px', borderBottom: '1px solid #E2E8F0',
+          padding: '20px 24px', borderBottom: '1px solid var(--divider)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexShrink: 0,
         }}>
           <div>
-            <h2 style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+            <h2 style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
               {mode === 'edit' ? 'Edit Shared Step' : 'Create Shared Step'}
             </h2>
-            <p style={{ fontFamily: 'Inter', fontSize: 13, color: '#64748B', margin: '4px 0 0' }}>
+            <p style={{ fontFamily: 'Inter', fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0' }}>
               {mode === 'edit' ? 'Update this shared step' : 'Create a reusable test step for your test cases'}
             </p>
           </div>
           <button onClick={onClose} style={{
             width: 32, height: 32, border: 'none', borderRadius: 6,
-            backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer',
+            backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <X size={18} />
@@ -208,7 +208,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle}>Category</label>
             <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}
-              style={{ ...inputStyle(), backgroundColor: '#FFFFFF' }}>
+              style={{ ...inputStyle(), backgroundColor: 'var(--cp-float)' }}>
               <option value="">No category</option>
               {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
@@ -218,7 +218,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle}>
               Action *
-              <span style={{ fontWeight: 400, color: '#94A3B8', marginLeft: 8 }}>
+              <span style={{ fontWeight: 400, color: 'var(--fg-4)', marginLeft: 8 }}>
                 Use {'{{variable}}'} for dynamic values
               </span>
             </label>
@@ -227,15 +227,15 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
               style={{
                 width: '100%', minHeight: 100, padding: '10px 12px',
                 border: `1.5px solid ${errors.action ? '#EF4444' : '#E2E8F0'}`, borderRadius: 8,
-                fontSize: 14, color: '#0F172A', resize: 'vertical', fontFamily: 'Inter',
+                fontSize: 14, color: 'var(--fg-1)', resize: 'vertical', fontFamily: 'Inter',
               }} />
             {errors.action && <ErrorText text={errors.action} />}
             {action && (
               <div style={{
-                marginTop: 8, padding: 12, backgroundColor: '#F8FAFC', borderRadius: 8,
-                fontSize: 13, color: '#334155', lineHeight: 1.6,
+                marginTop: 8, padding: 12, backgroundColor: 'var(--bg-1)', borderRadius: 8,
+                fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.6,
               }}>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B', display: 'block', marginBottom: 4 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', display: 'block', marginBottom: 4 }}>
                   PREVIEW:
                 </span>
                 {highlightPreview(action)}
@@ -250,8 +250,8 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
               placeholder="Describe the expected outcome"
               style={{
                 width: '100%', minHeight: 80, padding: '10px 12px',
-                border: '1.5px solid #E2E8F0', borderRadius: 8,
-                fontSize: 14, color: '#0F172A', resize: 'vertical', fontFamily: 'Inter',
+                border: '1.5px solid var(--divider)', borderRadius: 8,
+                fontSize: 14, color: 'var(--fg-1)', resize: 'vertical', fontFamily: 'Inter',
               }} />
           </div>
 
@@ -259,16 +259,16 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: 8, marginBottom: 0 }}>
-                <Variable size={16} style={{ color: '#2563EB' }} />
+                <Variable size={16} style={{ color: 'var(--cp-blue)' }} />
                 Variables
                 <span style={{
-                  fontSize: 11, fontWeight: 500, color: '#64748B',
-                  backgroundColor: '#F1F5F9', padding: '2px 6px', borderRadius: 4,
+                  fontSize: 11, fontWeight: 500, color: 'var(--fg-3)',
+                  backgroundColor: 'var(--cp-bd-zone)', padding: '2px 6px', borderRadius: 4,
                 }}>{variables.length}</span>
               </label>
               <button type="button" onClick={addVariable} style={{
-                height: 32, padding: '0 12px', border: '1px solid #E2E8F0', borderRadius: 6,
-                backgroundColor: '#FFFFFF', color: '#2563EB', fontSize: 13, fontWeight: 500,
+                height: 32, padding: '0 12px', border: '1px solid var(--divider)', borderRadius: 6,
+                backgroundColor: 'var(--cp-float)', color: 'var(--cp-blue)', fontSize: 13, fontWeight: 500,
                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'Inter',
               }}>
                 <Plus size={14} /> Add Variable
@@ -279,8 +279,8 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
 
             {variables.length === 0 ? (
               <div style={{
-                padding: 16, backgroundColor: '#F8FAFC', borderRadius: 8,
-                textAlign: 'center', color: '#94A3B8', fontSize: 13, fontFamily: 'Inter',
+                padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 8,
+                textAlign: 'center', color: 'var(--fg-4)', fontSize: 13, fontFamily: 'Inter',
               }}>
                 No variables defined. Variables are auto-detected from {'{{variable}}'} in action text.
               </div>
@@ -289,34 +289,34 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
                 {variables.map((v, i) => (
                   <div key={i} style={{
                     display: 'flex', gap: 12, alignItems: 'center',
-                    padding: 12, backgroundColor: '#F8FAFC', borderRadius: 8,
+                    padding: 12, backgroundColor: 'var(--bg-1)', borderRadius: 8,
                   }}>
                     <div style={{ flex: 1 }}>
-                      <label style={{ fontSize: 11, color: '#64748B', display: 'block', marginBottom: 4, fontFamily: 'Inter' }}>
+                      <label style={{ fontSize: 11, color: 'var(--fg-3)', display: 'block', marginBottom: 4, fontFamily: 'Inter' }}>
                         Variable Name
                       </label>
                       <input type="text" value={v.name} onChange={(e) => updateVariable(i, 'name', e.target.value)}
                         placeholder="e.g., username"
                         style={{
                           width: '100%', height: 36, padding: '0 10px',
-                          border: '1.5px solid #E2E8F0', borderRadius: 6,
+                          border: '1.5px solid var(--divider)', borderRadius: 6,
                           fontSize: 13, fontFamily: 'monospace',
                         }} />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <label style={{ fontSize: 11, color: '#64748B', display: 'block', marginBottom: 4, fontFamily: 'Inter' }}>
+                      <label style={{ fontSize: 11, color: 'var(--fg-3)', display: 'block', marginBottom: 4, fontFamily: 'Inter' }}>
                         Default Value
                       </label>
                       <input type="text" value={v.default} onChange={(e) => updateVariable(i, 'default', e.target.value)}
                         placeholder="Optional default"
                         style={{
                           width: '100%', height: 36, padding: '0 10px',
-                          border: '1.5px solid #E2E8F0', borderRadius: 6, fontSize: 13, fontFamily: 'Inter',
+                          border: '1.5px solid var(--divider)', borderRadius: 6, fontSize: 13, fontFamily: 'Inter',
                         }} />
                     </div>
                     <button type="button" onClick={() => removeVariable(i)} style={{
                       width: 36, height: 36, padding: 0, border: 'none', borderRadius: 6,
-                      backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer',
+                      backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 18,
                     }}>
                       <Trash2 size={16} />
@@ -330,17 +330,17 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
 
         {/* Footer */}
         <div style={{
-          padding: '16px 24px', borderTop: '1px solid #E2E8F0',
+          padding: '16px 24px', borderTop: '1px solid var(--divider)',
           display: 'flex', justifyContent: 'flex-end', gap: 12, flexShrink: 0,
         }}>
           <button onClick={onClose} disabled={isSubmitting} style={{
-            height: 40, padding: '0 20px', backgroundColor: '#FFFFFF',
-            border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, fontWeight: 500,
-            color: '#334155', cursor: 'pointer', fontFamily: 'Inter',
+            height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)',
+            border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500,
+            color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'Inter',
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 40, padding: '0 20px',
-            background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+            background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
             border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
             color: '#FFFFFF', cursor: isSubmitting ? 'wait' : 'pointer',
             opacity: isSubmitting ? 0.7 : 1, fontFamily: 'Inter',
@@ -354,12 +354,12 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
 }
 
 const labelStyle: React.CSSProperties = {
-  display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6, fontFamily: 'Inter',
+  display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6, fontFamily: 'Inter',
 };
 
 function ErrorText({ text }: { text: string }) {
   return (
-    <p style={{ fontSize: 12, color: '#EF4444', margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'Inter' }}>
+    <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'Inter' }}>
       <AlertCircle size={12} /> {text}
     </p>
   );

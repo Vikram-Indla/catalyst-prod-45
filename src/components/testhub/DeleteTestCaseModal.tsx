@@ -83,7 +83,7 @@ export function DeleteTestCaseModal({
         style={{
           width: 440,
           maxWidth: '95vw',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: 'var(--cp-float)',
           borderRadius: 12,
           boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
           display: 'flex',
@@ -94,7 +94,7 @@ export function DeleteTestCaseModal({
         {/* Header */}
         <div style={{
           padding: '20px 24px',
-          borderBottom: '1px solid #E2E8F0',
+          borderBottom: '1px solid var(--divider)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -103,7 +103,7 @@ export function DeleteTestCaseModal({
             fontFamily: 'Inter, sans-serif',
             fontSize: 18,
             fontWeight: 700,
-            color: '#0F172A',
+            color: 'var(--fg-1)',
             margin: 0,
           }}>
             {isBulk ? 'Delete Test Cases' : 'Delete Test Case'}
@@ -117,7 +117,7 @@ export function DeleteTestCaseModal({
               border: 'none',
               borderRadius: 8,
               backgroundColor: 'transparent',
-              color: '#94A3B8',
+              color: 'var(--fg-4)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -141,13 +141,13 @@ export function DeleteTestCaseModal({
               justifyContent: 'center',
               flexShrink: 0,
             }}>
-              <AlertTriangle style={{ width: 24, height: 24, color: '#D97706' }} />
+              <AlertTriangle style={{ width: 24, height: 24, color: 'var(--sem-warning)' }} />
             </div>
             <div>
               <p style={{
                 fontFamily: 'Inter, sans-serif',
                 fontSize: 14,
-                color: '#0F172A',
+                color: 'var(--fg-1)',
                 margin: 0,
                 lineHeight: 1.5,
               }}>
@@ -162,7 +162,7 @@ export function DeleteTestCaseModal({
                 <p style={{
                   fontFamily: 'Inter, sans-serif',
                   fontSize: 13,
-                  color: '#64748B',
+                  color: 'var(--fg-3)',
                   margin: '0 0 8px 0',
                 }}>
                   This will permanently delete:
@@ -170,7 +170,7 @@ export function DeleteTestCaseModal({
                 <ul style={{
                   fontFamily: 'Inter, sans-serif',
                   fontSize: 13,
-                  color: '#64748B',
+                  color: 'var(--fg-3)',
                   margin: 0,
                   paddingLeft: 20,
                   lineHeight: 1.8,
@@ -185,7 +185,7 @@ export function DeleteTestCaseModal({
                 fontFamily: 'Inter, sans-serif',
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#DC2626',
+                color: 'var(--sem-danger)',
                 margin: '16px 0 0 0',
               }}>
                 This action cannot be undone.
@@ -197,7 +197,7 @@ export function DeleteTestCaseModal({
         {/* Footer */}
         <div style={{
           padding: '16px 24px',
-          borderTop: '1px solid #E2E8F0',
+          borderTop: '1px solid var(--divider)',
           display: 'flex',
           justifyContent: 'flex-end',
           gap: 12,
@@ -208,13 +208,13 @@ export function DeleteTestCaseModal({
             style={{
               height: 40,
               padding: '0 20px',
-              backgroundColor: '#FFFFFF',
-              border: '1.5px solid #E2E8F0',
+              backgroundColor: 'var(--cp-float)',
+              border: '1.5px solid var(--divider)',
               borderRadius: 8,
               fontFamily: 'Inter, sans-serif',
               fontSize: 14,
               fontWeight: 500,
-              color: '#334155',
+              color: 'var(--fg-2)',
               cursor: isDeleting ? 'not-allowed' : 'pointer',
               opacity: isDeleting ? 0.5 : 1,
             }}

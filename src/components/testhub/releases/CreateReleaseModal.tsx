@@ -62,12 +62,12 @@ export function CreateReleaseModal({ open, onClose, onCreated }: CreateReleaseMo
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)' }} onClick={onClose} />
       <div style={{ position: 'relative', width: 560, maxHeight: '90vh', background: '#fff', borderRadius: 14, boxShadow: '0 25px 50px rgba(0,0,0,0.2)', overflow: 'auto' }}>
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderBottom: '1px solid var(--divider)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Package style={{ width: 20, height: 20, color: '#2563EB' }} />
-            <h2 style={{ fontSize: 17, fontWeight: 700, color: '#0F172A', margin: 0 }}>Create Release</h2>
+            <Package style={{ width: 20, height: 20, color: 'var(--cp-blue)' }} />
+            <h2 style={{ fontSize: 17, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Create Release</h2>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--fg-4)' }}>
             <X style={{ width: 20, height: 20 }} />
           </button>
         </div>
@@ -118,8 +118,8 @@ export function CreateReleaseModal({ open, onClose, onCreated }: CreateReleaseMo
         </div>
 
         {/* Footer */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, padding: '16px 24px', borderTop: '1px solid #E2E8F0' }}>
-          <button onClick={onClose} style={{ padding: '9px 18px', border: '1px solid #E2E8F0', borderRadius: 8, background: '#fff', fontSize: 14, cursor: 'pointer', color: '#64748B' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, padding: '16px 24px', borderTop: '1px solid var(--divider)' }}>
+          <button onClick={onClose} style={{ padding: '9px 18px', border: '1px solid var(--divider)', borderRadius: 8, background: '#fff', fontSize: 14, cursor: 'pointer', color: 'var(--fg-3)' }}>
             Cancel
           </button>
           <button
@@ -155,11 +155,11 @@ function FormField({ label, value, onChange, placeholder, type = 'text' }: { lab
 }
 
 const labelStyle: React.CSSProperties = {
-  display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6,
+  display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 6,
 };
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', height: 38, padding: '0 12px', border: '1px solid #E2E8F0',
-  borderRadius: 8, fontSize: 13, color: '#0F172A', outline: 'none',
+  width: '100%', height: 38, padding: '0 12px', border: '1px solid var(--divider)',
+  borderRadius: 8, fontSize: 13, color: 'var(--fg-1)', outline: 'none',
   background: '#fff',
 };

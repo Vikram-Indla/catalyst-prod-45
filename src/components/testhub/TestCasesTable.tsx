@@ -93,13 +93,13 @@ export function TestCasesTable({
   const headerCellStyle: React.CSSProperties = {
     height: 44,
     padding: '0 12px',
-    backgroundColor: '#F8FAFC',
-    borderBottom: '1px solid #E2E8F0',
+    backgroundColor: 'var(--bg-1)',
+    borderBottom: '1px solid var(--divider)',
     fontSize: 11,
     fontWeight: 600,
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
-    color: '#64748B',
+    color: 'var(--fg-3)',
     verticalAlign: 'middle',
   };
 
@@ -107,14 +107,14 @@ export function TestCasesTable({
   const bodyCellStyle: React.CSSProperties = {
     height: 36,
     padding: '0 12px',
-    borderBottom: '1px solid #E2E8F0',
+    borderBottom: '1px solid var(--divider)',
     verticalAlign: 'middle',
   };
 
   return (
     <div className="th-table-wrapper" style={{
-      backgroundColor: '#FFFFFF',
-      border: '1px solid #E2E8F0',
+      backgroundColor: 'var(--cp-float)',
+      border: '1px solid var(--divider)',
       borderRadius: 8,
       overflow: 'hidden',
     }}>
@@ -236,7 +236,7 @@ export function TestCasesTable({
                   ...bodyCellStyle,
                   fontFamily: 'Consolas, Monaco, monospace',
                   fontSize: 12,
-                  color: '#64748B',
+                  color: 'var(--fg-3)',
                 }}>
                   {tc.caseKey}
                 </td>
@@ -245,7 +245,7 @@ export function TestCasesTable({
                 <td className="th-table-col-title" style={{
                   ...bodyCellStyle,
                   fontWeight: 500,
-                  color: '#0F172A',
+                  color: 'var(--fg-1)',
                   lineHeight: 1.4,
                   paddingTop: 10,
                   paddingBottom: 10,
@@ -349,18 +349,18 @@ export function TestCasesTable({
                           {tc.ownerInitials}
                         </div>
                       )}
-                      <span style={{ fontSize: 12, color: '#334155', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <span style={{ fontSize: 12, color: 'var(--fg-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {tc.ownerName}
                       </span>
                     </div>
                   ) : (
-                    <span style={{ color: '#94A3B8', fontSize: 12, fontStyle: 'italic' }}>Unassigned</span>
+                    <span style={{ color: 'var(--fg-4)', fontSize: 12, fontStyle: 'italic' }}>Unassigned</span>
                   )}
                 </td>
                 
                 {/* Updated - Gray relative time */}
                 <td className="th-table-col-updated" style={bodyCellStyle}>
-                  <span style={{ fontSize: 12, color: '#94A3B8' }}>
+                  <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>
                     {formatRelativeTime(tc.updatedAt)}
                   </span>
                 </td>
@@ -381,7 +381,7 @@ export function TestCasesTable({
                       border: 'none',
                       borderRadius: 6,
                       backgroundColor: 'transparent',
-                      color: '#94A3B8',
+                      color: 'var(--fg-4)',
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -390,12 +390,12 @@ export function TestCasesTable({
                       transition: 'opacity 0.15s, background-color 0.15s',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#F1F5F9';
-                      e.currentTarget.style.color = '#64748B';
+                      e.currentTarget.style.backgroundColor = 'var(--cp-bd-zone)';
+                      e.currentTarget.style.color = 'var(--fg-3)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.color = '#94A3B8';
+                      e.currentTarget.style.color = 'var(--fg-4)';
                     }}
                   >
                     <MoreVertical style={{ width: 16, height: 16 }} />

@@ -24,10 +24,10 @@ interface Props {
 
 const STATUS_CFG: Record<string, { icon: typeof CheckCircle2; color: string; bg: string }> = {
   passed:  { icon: CheckCircle2,  color: '#10B981', bg: '#ECFDF5' },
-  failed:  { icon: XCircle,       color: '#EF4444', bg: '#FEF2F2' },
+  failed:  { icon: XCircle,       color: 'var(--sem-danger)', bg: '#FEF2F2' },
   blocked: { icon: AlertTriangle, color: '#F59E0B', bg: '#FFFBEB' },
-  skipped: { icon: SkipForward,   color: '#64748B', bg: '#F1F5F9' },
-  not_run: { icon: Clock,         color: '#94A3B8', bg: '#F8FAFC' },
+  skipped: { icon: SkipForward,   color: 'var(--fg-3)', bg: '#F1F5F9' },
+  not_run: { icon: Clock,         color: 'var(--fg-4)', bg: '#F8FAFC' },
 };
 
 export function RecentActivityFeed({ activities }: Props) {
@@ -62,7 +62,7 @@ export function RecentActivityFeed({ activities }: Props) {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#2563EB' }}>{a.case_key}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)' }}>{a.case_key}</span>
                     <span style={{ fontSize: 13, color: 'hsl(var(--foreground))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
                   </div>
                   <p style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', margin: '2px 0 0' }}>{a.cycle_key} · {a.executed_by_name}</p>

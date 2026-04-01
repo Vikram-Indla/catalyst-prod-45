@@ -30,7 +30,7 @@ function CustomTooltip({ active, payload }: any) {
       <p style={{ fontSize: 13, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0 }}>{item.cycle_key}</p>
       <p style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', margin: '2px 0 8px' }}>{item.cycle_name}</p>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-        <span style={{ fontSize: 20, fontWeight: 700, color: '#2563EB' }}>{item.pass_rate}%</span>
+        <span style={{ fontSize: 20, fontWeight: 700, color: 'var(--cp-blue)' }}>{item.pass_rate}%</span>
         <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))' }}>pass rate</span>
       </div>
       <p style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', margin: '4px 0 0' }}>
@@ -47,7 +47,7 @@ export function PassRateTrendChart({ data }: Props) {
     <div style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 12, padding: 24, minHeight: 280 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
         <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'hsl(217 91% 96%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <TrendingUp size={18} color="#2563EB" />
+          <TrendingUp size={18} color="var(--cp-blue)" />
         </div>
         <div>
           <p style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))', margin: 0 }}>Pass Rate Trend</p>
@@ -62,7 +62,7 @@ export function PassRateTrendChart({ data }: Props) {
             <XAxis dataKey="cycle_key" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
             <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${v}%`} />
             <Tooltip content={<CustomTooltip />} />
-            <Line type="monotone" dataKey="pass_rate" stroke="#2563EB" strokeWidth={2.5} dot={{ r: 4, fill: '#2563EB', strokeWidth: 2, stroke: '#FFF' }} activeDot={{ r: 6, fill: '#2563EB' }} />
+            <Line type="monotone" dataKey="pass_rate" stroke="#2563EB" strokeWidth={2.5} dot={{ r: 4, fill: 'var(--cp-blue)', strokeWidth: 2, stroke: '#FFF' }} activeDot={{ r: 6, fill: 'var(--cp-blue)' }} />
           </LineChart>
         </ResponsiveContainer>
       ) : (

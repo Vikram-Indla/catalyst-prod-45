@@ -9,10 +9,10 @@ import type { DashboardStats } from './DashboardStatCards';
 
 const STATUS_COLORS: { key: string; label: string; color: string }[] = [
   { key: 'passed', label: 'Passed', color: '#10B981' },
-  { key: 'failed', label: 'Failed', color: '#EF4444' },
+  { key: 'failed', label: 'Failed', color: 'var(--sem-danger)' },
   { key: 'blocked', label: 'Blocked', color: '#F59E0B' },
-  { key: 'skipped', label: 'Skipped', color: '#64748B' },
-  { key: 'not_run', label: 'Not Run', color: '#CBD5E1' },
+  { key: 'skipped', label: 'Skipped', color: 'var(--fg-3)' },
+  { key: 'not_run', label: 'Not Run', color: 'var(--divider)' },
 ];
 
 interface Props {

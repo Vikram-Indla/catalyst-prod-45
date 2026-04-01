@@ -71,7 +71,7 @@ export function TestHubSidebar({
           fontWeight: 600,
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
-          color: '#64748B',
+          color: 'var(--fg-3)',
         }}>
           {title}
         </span>
@@ -145,8 +145,8 @@ export function TestHubSidebar({
   return (
     <div style={{
       width: 220,
-      backgroundColor: '#FFFFFF',
-      borderRight: '1px solid #E2E8F0',
+      backgroundColor: 'var(--cp-float)',
+      borderRight: '1px solid var(--divider)',
       display: 'flex',
       flexDirection: 'column',
       flexShrink: 0,

@@ -32,7 +32,7 @@ export function ActiveCyclesList({ cycles }: Props) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'hsl(170 76% 96%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Play size={18} color="#0D9488" />
+            <Play size={18} color="var(--sem-success)" />
           </div>
           <div>
             <p style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))', margin: 0 }}>Active Cycles</p>
@@ -41,7 +41,7 @@ export function ActiveCyclesList({ cycles }: Props) {
         </div>
         <button
           onClick={() => navigate('/testhub/cycles')}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', border: 'none', borderRadius: 6, backgroundColor: 'transparent', color: '#2563EB', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', border: 'none', borderRadius: 6, backgroundColor: 'transparent', color: 'var(--cp-blue)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
         >
           View All <ChevronRight size={14} />
         </button>
@@ -64,13 +64,13 @@ export function ActiveCyclesList({ cycles }: Props) {
                 key={cycle.id}
                 onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
                 style={{ padding: 14, backgroundColor: 'hsl(var(--muted) / .35)', borderRadius: 10, cursor: 'pointer', transition: 'background-color 0.15s', border: '1px solid transparent' }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'hsl(217 91% 96%)'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'hsl(217 91% 96%)'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--cp-blue) 25%, transparent)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'hsl(var(--muted) / .35)'; e.currentTarget.style.borderColor = 'transparent'; }}
               >
                 {/* Top row */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 6, whiteSpace: 'nowrap' }}>{cycle.cycle_key}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)', backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', padding: '2px 8px', borderRadius: 6, whiteSpace: 'nowrap' }}>{cycle.cycle_key}</span>
                     <span style={{ fontSize: 13, fontWeight: 500, color: 'hsl(var(--foreground))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cycle.name}</span>
                   </div>
                   <span style={{ fontSize: 13, fontWeight: 700, color: pctColor, whiteSpace: 'nowrap', marginLeft: 8 }}>{pct}%</span>
@@ -84,8 +84,8 @@ export function ActiveCyclesList({ cycles }: Props) {
                 {/* Stats */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 12, color: 'hsl(var(--muted-foreground))' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><CheckCircle2 size={12} color="#10B981" />{cycle.passed_count ?? 0}</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><XCircle size={12} color="#EF4444" />{cycle.failed_count ?? 0}</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Clock size={12} color="#94A3B8" />{cycle.not_run_count ?? 0}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><XCircle size={12} color="var(--sem-danger)" />{cycle.failed_count ?? 0}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Clock size={12} color="var(--fg-4)" />{cycle.not_run_count ?? 0}</span>
                   <span>of {cycle.total_cases ?? 0}</span>
                 </div>
               </div>
@@ -99,7 +99,7 @@ export function ActiveCyclesList({ cycles }: Props) {
             <p style={{ fontSize: 13, margin: '0 0 12px' }}>No active cycles</p>
             <button
               onClick={() => navigate('/testhub/cycles')}
-              style={{ padding: '8px 16px', border: 'none', borderRadius: 6, backgroundColor: '#2563EB', color: '#FFF', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+              style={{ padding: '8px 16px', border: 'none', borderRadius: 6, backgroundColor: 'var(--cp-blue)', color: '#FFF', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
             >
               Create Cycle
             </button>

@@ -24,10 +24,10 @@ interface Props {
 }
 
 const SEVERITY_BARS = [
-  { key: 'critical_defects', label: 'Critical', color: '#DC2626' },
+  { key: 'critical_defects', label: 'Critical', color: 'var(--sem-danger)' },
   { key: 'high_defects', label: 'High', color: '#EA580C' },
-  { key: 'medium_defects', label: 'Medium', color: '#D97706' },
-  { key: 'low_defects', label: 'Low', color: '#059669' },
+  { key: 'medium_defects', label: 'Medium', color: 'var(--sem-warning)' },
+  { key: 'low_defects', label: 'Low', color: 'var(--sem-success)' },
 ] as const;
 
 export function DefectStatsWidget({ stats }: Props) {
@@ -57,7 +57,7 @@ export function DefectStatsWidget({ stats }: Props) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{
             width: 36, height: 36, borderRadius: 8,
-            background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+            background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <Bug size={18} color="#FFFFFF" />
@@ -72,7 +72,7 @@ export function DefectStatsWidget({ stats }: Props) {
           </div>
         </div>
         <span style={{
-          fontSize: 11, fontWeight: 600, color: '#2563EB',
+          fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)',
           cursor: 'pointer',
         }}>
           View All →
@@ -85,10 +85,10 @@ export function DefectStatsWidget({ stats }: Props) {
         marginBottom: 20,
       }}>
         {[
-          { label: 'Open', value: stats?.open_defects ?? 0, icon: AlertCircle, color: '#DC2626' },
-          { label: 'In Progress', value: stats?.in_progress_defects ?? 0, icon: Clock, color: '#2563EB' },
-          { label: 'Fixed', value: stats?.fixed_defects ?? 0, icon: CheckCircle2, color: '#059669' },
-          { label: 'Closed', value: stats?.closed_defects ?? 0, icon: TrendingDown, color: '#6B7280' },
+          { label: 'Open', value: stats?.open_defects ?? 0, icon: AlertCircle, color: 'var(--sem-danger)' },
+          { label: 'In Progress', value: stats?.in_progress_defects ?? 0, icon: Clock, color: 'var(--cp-blue)' },
+          { label: 'Fixed', value: stats?.fixed_defects ?? 0, icon: CheckCircle2, color: 'var(--sem-success)' },
+          { label: 'Closed', value: stats?.closed_defects ?? 0, icon: TrendingDown, color: 'var(--fg-3)' },
         ].map(item => {
           const Icon = item.icon;
           return (

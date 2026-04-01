@@ -14,12 +14,12 @@ interface FailureReasonModalProps {
 }
 
 const FAILURE_REASONS = [
-  { id: 'bug', label: 'Bug / Defect', description: 'Application defect found', icon: Bug, color: '#DC2626' },
+  { id: 'bug', label: 'Bug / Defect', description: 'Application defect found', icon: Bug, color: 'var(--sem-danger)' },
   { id: 'environment', label: 'Environment Issue', description: 'Environment or configuration problem', icon: Server, color: '#7C3AED' },
   { id: 'test_data', label: 'Test Data Issue', description: 'Invalid or missing test data', icon: Database, color: '#0891B2' },
   { id: 'test_script', label: 'Test Script Error', description: 'Error in the test case itself', icon: FileWarning, color: '#EA580C' },
   { id: 'timeout', label: 'Timeout', description: 'Operation timed out', icon: Clock, color: '#CA8A04' },
-  { id: 'other', label: 'Other', description: 'Other reason (notes required)', icon: HelpCircle, color: '#64748B' },
+  { id: 'other', label: 'Other', description: 'Other reason (notes required)', icon: HelpCircle, color: 'var(--fg-3)' },
 ];
 
 export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCaseId, cycleId, cycleTestCaseId, onClose, onConfirm }: FailureReasonModalProps) {
@@ -51,7 +51,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
           <div style={{ padding: '20px 24px', borderBottom: '1px solid hsl(var(--border))', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ display: 'flex', gap: 12 }}>
               <div style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <XCircle size={24} style={{ color: '#DC2626' }} />
+                <XCircle size={24} style={{ color: 'var(--sem-danger)' }} />
               </div>
               <div>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0 }}>Test Failed</h2>
@@ -67,14 +67,14 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
           <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
             <div style={{ padding: 12, backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 8, marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '3px 8px', borderRadius: 4 }}>{testCaseKey}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', padding: '3px 8px', borderRadius: 4 }}>{testCaseKey}</span>
                 <span style={{ fontSize: 14, color: 'hsl(var(--foreground))', fontWeight: 500 }}>{testCaseTitle}</span>
               </div>
             </div>
 
             <div style={{ marginBottom: 20 }}>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 10 }}>
-                Failure Reason <span style={{ color: '#EF4444' }}>*</span>
+                Failure Reason <span style={{ color: 'var(--sem-danger)' }}>*</span>
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 {FAILURE_REASONS.map((reason) => {
@@ -112,7 +112,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
                   onClick={() => setShowCreateDefect(true)}
                   style={{
                     height: 40, padding: '0 14px',
-                    background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                    background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
                     border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
                     color: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                     whiteSpace: 'nowrap',
@@ -125,7 +125,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
 
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))', marginBottom: 6 }}>
-                Notes{selectedReason === 'other' && <span style={{ color: '#EF4444' }}> *</span>}
+                Notes{selectedReason === 'other' && <span style={{ color: 'var(--sem-danger)' }}> *</span>}
               </label>
               <textarea value={notes} onChange={(e) => { setNotes(e.target.value); setError(''); }}
                 placeholder={selectedReason === 'other' ? 'Please describe the failure reason...' : 'Add any additional details about the failure...'}
@@ -133,7 +133,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
             </div>
 
             {error && (
-              <p style={{ fontSize: 13, color: '#DC2626', margin: '12px 0 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <p style={{ fontSize: 13, color: 'var(--sem-danger)', margin: '12px 0 0', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <XCircle size={14} /> {error}
               </p>
             )}
@@ -142,7 +142,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
           {/* Footer */}
           <div style={{ padding: '16px 24px', borderTop: '1px solid hsl(var(--border))', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
             <button onClick={handleClose} style={{ height: 40, padding: '0 20px', backgroundColor: 'hsl(var(--card))', border: '1.5px solid hsl(var(--border))', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'hsl(var(--foreground))', cursor: 'pointer' }}>Cancel</button>
-            <button onClick={handleConfirm} style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button onClick={handleConfirm} style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, var(--sem-danger) 0%, var(--sem-danger) 100%)', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
               <XCircle size={16} /> Mark as Failed
             </button>
           </div>

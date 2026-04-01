@@ -67,17 +67,17 @@ interface ViewTestCaseModalProps {
 type TabKey = 'details' | 'steps' | 'attachments' | 'links' | 'history' | 'runs';
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  draft: { bg: '#F1F5F9', color: '#64748B' },
-  ready: { bg: '#DCFCE7', color: '#16A34A' },
-  approved: { bg: '#DBEAFE', color: '#2563EB' },
-  deprecated: { bg: '#FEE2E2', color: '#DC2626' },
+  draft: { bg: '#F1F5F9', color: 'var(--fg-3)' },
+  ready: { bg: '#DCFCE7', color: 'var(--sem-success)' },
+  approved: { bg: '#DBEAFE', color: 'var(--cp-blue)' },
+  deprecated: { bg: '#FEE2E2', color: 'var(--sem-danger)' },
 };
 
 const PRIORITY_STYLES: Record<string, { color: string }> = {
-  critical: { color: '#DC2626' },
+  critical: { color: 'var(--sem-danger)' },
   high: { color: '#EA580C' },
   medium: { color: '#CA8A04' },
-  low: { color: '#64748B' },
+  low: { color: 'var(--fg-3)' },
 };
 
 // --- ADD LINK MODAL ---
@@ -135,18 +135,18 @@ function AddLinkModal({
         onClick={(e) => e.stopPropagation()}
         style={{
           width: 440,
-          backgroundColor: '#FFFFFF',
+          backgroundColor: 'var(--cp-float)',
           borderRadius: 12,
           boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
           overflow: 'hidden',
         }}
       >
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
-          <h3 style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 600, color: '#0F172A', margin: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--divider)' }}>
+          <h3 style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>
             Add {titleMap[linkType]} Link
           </h3>
-          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X style={{ width: 18, height: 18 }} />
           </button>
         </div>
@@ -154,7 +154,7 @@ function AddLinkModal({
         {/* Body */}
         <div style={{ padding: 20 }}>
           <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 6 }}>
               Item Key *
             </label>
             <input
@@ -168,14 +168,14 @@ function AddLinkModal({
                 padding: '0 12px',
                 fontSize: 14,
                 fontFamily: 'Inter, sans-serif',
-                border: '1.5px solid #E2E8F0',
+                border: '1.5px solid var(--divider)',
                 borderRadius: 8,
                 outline: 'none',
               }}
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 6 }}>
               Title
             </label>
             <input
@@ -189,7 +189,7 @@ function AddLinkModal({
                 padding: '0 12px',
                 fontSize: 14,
                 fontFamily: 'Inter, sans-serif',
-                border: '1.5px solid #E2E8F0',
+                border: '1.5px solid var(--divider)',
                 borderRadius: 8,
                 outline: 'none',
               }}
@@ -198,8 +198,8 @@ function AddLinkModal({
         </div>
 
         {/* Footer */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '16px 20px', borderTop: '1px solid #E2E8F0' }}>
-          <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#64748B', cursor: 'pointer' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '16px 20px', borderTop: '1px solid var(--divider)' }}>
+          <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-3)', cursor: 'pointer' }}>
             Cancel
           </button>
           <button
@@ -392,7 +392,7 @@ export function ViewTestCaseModal({
     if (loading) {
       return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
-          <div style={{ width: 32, height: 32, border: '3px solid #E2E8F0', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+          <div style={{ width: 32, height: 32, border: '3px solid var(--divider)', borderTopColor: 'var(--cp-blue)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
         </div>
       );
     }
@@ -402,19 +402,19 @@ export function ViewTestCaseModal({
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div>
-              <h4 style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 600, color: '#64748B', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Objective</h4>
+              <h4 style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Objective</h4>
               {testCase.objective ? (
-                <p style={{ fontFamily: 'Inter', fontSize: 14, color: '#0F172A', lineHeight: 1.6 }}>{testCase.objective}</p>
+                <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)', lineHeight: 1.6 }}>{testCase.objective}</p>
               ) : (
-                <p style={{ fontFamily: 'Inter', fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>No objective defined</p>
+                <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-4)', fontStyle: 'italic' }}>No objective defined</p>
               )}
             </div>
             <div>
-              <h4 style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 600, color: '#64748B', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Preconditions</h4>
+              <h4 style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Preconditions</h4>
               {testCase.preconditions ? (
-                <p style={{ fontFamily: 'Inter', fontSize: 14, color: '#0F172A', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{testCase.preconditions}</p>
+                <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{testCase.preconditions}</p>
               ) : (
-                <p style={{ fontFamily: 'Inter', fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>No preconditions defined</p>
+                <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-4)', fontStyle: 'italic' }}>No preconditions defined</p>
               )}
             </div>
           </div>
@@ -422,23 +422,23 @@ export function ViewTestCaseModal({
 
       case 'steps':
         return steps.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 40, color: '#94A3B8' }}>No steps defined</div>
+          <div style={{ textAlign: 'center', padding: 40, color: 'var(--fg-4)' }}>No steps defined</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {steps.map((step) => (
-              <div key={step.id} style={{ display: 'flex', gap: 16, padding: 16, backgroundColor: '#F8FAFC', borderRadius: 8, border: '1px solid #E2E8F0' }}>
-                <div style={{ width: 32, height: 32, backgroundColor: '#2563EB', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontFamily: 'Inter', fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
+              <div key={step.id} style={{ display: 'flex', gap: 16, padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 8, border: '1px solid var(--divider)' }}>
+                <div style={{ width: 32, height: 32, backgroundColor: 'var(--cp-blue)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontFamily: 'Inter', fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
                   {step.step_number}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ marginBottom: 8 }}>
-                    <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>Action</span>
-                    <p style={{ fontFamily: 'Inter', fontSize: 14, color: '#0F172A', marginTop: 4 }}>{step.action}</p>
+                    <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' }}>Action</span>
+                    <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)', marginTop: 4 }}>{step.action}</p>
                   </div>
                   {step.expected_result && (
                     <div>
-                      <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>Expected Result</span>
-                      <p style={{ fontFamily: 'Inter', fontSize: 14, color: '#0F172A', marginTop: 4 }}>{step.expected_result}</p>
+                      <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' }}>Expected Result</span>
+                      <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)', marginTop: 4 }}>{step.expected_result}</p>
                     </div>
                   )}
                 </div>
@@ -461,7 +461,7 @@ export function ViewTestCaseModal({
                   border: 'none',
                   fontSize: 13,
                   fontWeight: 600,
-                  color: '#2563EB',
+                  color: 'var(--cp-blue)',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -495,17 +495,17 @@ export function ViewTestCaseModal({
                         alignItems: 'center',
                         gap: 12,
                         padding: 16,
-                        backgroundColor: '#FFFFFF',
-                        border: '1px solid #E2E8F0',
+                        backgroundColor: 'var(--cp-float)',
+                        border: '1px solid var(--divider)',
                         borderRadius: 8,
                       }}
                     >
-                      <FileIcon style={{ width: 20, height: 20, color: '#64748B', flexShrink: 0 }} />
+                      <FileIcon style={{ width: 20, height: 20, color: 'var(--fg-3)', flexShrink: 0 }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#0F172A', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <p style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: 'var(--fg-1)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {att.file_name}
                         </p>
-                        <p style={{ fontFamily: 'Inter', fontSize: 12, color: '#94A3B8', margin: '2px 0 0 0' }}>
+                        <p style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--fg-4)', margin: '2px 0 0 0' }}>
                           {fileExt} • {fileSizeKb} KB
                           {att.uploaded_at && ` • Uploaded ${formatDistanceToNow(new Date(att.uploaded_at), { addSuffix: true })}`}
                         </p>
@@ -519,7 +519,7 @@ export function ViewTestCaseModal({
                           border: 'none',
                           fontSize: 13,
                           fontWeight: 500,
-                          color: '#2563EB',
+                          color: 'var(--cp-blue)',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
@@ -537,15 +537,15 @@ export function ViewTestCaseModal({
                           padding: 0,
                           backgroundColor: 'transparent',
                           border: 'none',
-                          color: '#94A3B8',
+                          color: 'var(--fg-4)',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           borderRadius: 4,
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = '#DC2626')}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = '#94A3B8')}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--sem-danger)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--fg-4)')}
                       >
                         <Trash2 style={{ width: 14, height: 14 }} />
                       </button>
@@ -585,16 +585,16 @@ export function ViewTestCaseModal({
               <input {...getInputProps()} />
               {isUploading ? (
                 <>
-                  <div style={{ width: 24, height: 24, border: '3px solid #E2E8F0', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 8px' }} />
-                  <p style={{ fontFamily: 'Inter', fontSize: 14, color: '#64748B', margin: 0 }}>Uploading...</p>
+                  <div style={{ width: 24, height: 24, border: '3px solid var(--divider)', borderTopColor: 'var(--cp-blue)', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 8px' }} />
+                  <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>Uploading...</p>
                 </>
               ) : (
                 <>
-                  <Upload style={{ width: 24, height: 24, color: '#64748B', margin: '0 auto 8px' }} />
-                  <p style={{ fontFamily: 'Inter', fontSize: 14, color: '#64748B', margin: 0 }}>
+                  <Upload style={{ width: 24, height: 24, color: 'var(--fg-3)', margin: '0 auto 8px' }} />
+                  <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>
                     {isDragActive ? 'Drop files here...' : 'Drag and drop files here, or click to upload'}
                   </p>
-                  <p style={{ fontFamily: 'Inter', fontSize: 12, color: '#94A3B8', margin: '4px 0 0' }}>Max 10MB per file</p>
+                  <p style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--fg-4)', margin: '4px 0 0' }}>Max 10MB per file</p>
                 </>
               )}
             </div>
@@ -619,7 +619,7 @@ export function ViewTestCaseModal({
             <div style={{ marginBottom: 24 }}>
               {/* Section Header */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                <span style={{ fontFamily: 'Inter', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B' }}>
+                <span style={{ fontFamily: 'Inter', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)' }}>
                   {title}
                 </span>
                 <button
@@ -631,7 +631,7 @@ export function ViewTestCaseModal({
                     border: 'none',
                     fontSize: 12,
                     fontWeight: 600,
-                    color: '#2563EB',
+                    color: 'var(--cp-blue)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -645,7 +645,7 @@ export function ViewTestCaseModal({
 
               {/* Items */}
               {items.length === 0 ? (
-                <p style={{ fontFamily: 'Inter', fontSize: 13, color: '#94A3B8', textAlign: 'center', padding: '16px 0' }}>
+                <p style={{ fontFamily: 'Inter', fontSize: 13, color: 'var(--fg-4)', textAlign: 'center', padding: '16px 0' }}>
                   No {title.toLowerCase()} linked
                 </p>
               ) : (
@@ -657,16 +657,16 @@ export function ViewTestCaseModal({
                         display: 'flex',
                         alignItems: 'center',
                         padding: '12px 16px',
-                        backgroundColor: '#FFFFFF',
-                        border: '1px solid #E2E8F0',
+                        backgroundColor: 'var(--cp-float)',
+                        border: '1px solid var(--divider)',
                         borderRadius: 8,
                       }}
                     >
                       <Icon style={{ width: 16, height: 16, color: iconColor, flexShrink: 0 }} />
-                      <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 600, color: '#0F172A', marginLeft: 12, minWidth: 100 }}>
+                      <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginLeft: 12, minWidth: 100 }}>
                         {link.linked_item_key}
                       </span>
-                      <span style={{ fontFamily: 'Inter', fontSize: 13, color: '#64748B', flex: 1 }}>
+                      <span style={{ fontFamily: 'Inter', fontSize: 13, color: 'var(--fg-3)', flex: 1 }}>
                         {link.linked_item_title}
                       </span>
                       <button
@@ -677,15 +677,15 @@ export function ViewTestCaseModal({
                           padding: 0,
                           backgroundColor: 'transparent',
                           border: 'none',
-                          color: '#94A3B8',
+                          color: 'var(--fg-4)',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           borderRadius: 4,
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = '#DC2626')}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = '#94A3B8')}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--sem-danger)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--fg-4)')}
                       >
                         <Trash2 style={{ width: 14, height: 14 }} />
                       </button>
@@ -707,7 +707,7 @@ export function ViewTestCaseModal({
 
       case 'history':
         if (history.length === 0) {
-          return <div style={{ textAlign: 'center', padding: 40, color: '#94A3B8' }}>No version history</div>;
+          return <div style={{ textAlign: 'center', padding: 40, color: 'var(--fg-4)' }}>No version history</div>;
         }
 
         const formatChange = (changes: any): string => {
@@ -736,7 +736,7 @@ export function ViewTestCaseModal({
               top: 6,
               bottom: 6,
               width: 2,
-              backgroundColor: '#E2E8F0',
+              backgroundColor: 'var(--divider)',
             }} />
 
             {history.map((ver, idx) => {
@@ -750,7 +750,7 @@ export function ViewTestCaseModal({
                     top: 4,
                     width: 12,
                     height: 12,
-                    backgroundColor: '#2563EB',
+                    backgroundColor: 'var(--cp-blue)',
                     border: '2px solid #FFFFFF',
                     borderRadius: '50%',
                     boxShadow: '0 0 0 2px #E2E8F0',
@@ -758,26 +758,26 @@ export function ViewTestCaseModal({
 
                   {/* Content */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
+                    <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: 'var(--fg-1)' }}>
                       Version {ver.version}
                     </span>
-                    <span style={{ fontFamily: 'Inter', fontSize: 13, color: '#94A3B8' }}>
+                    <span style={{ fontFamily: 'Inter', fontSize: 13, color: 'var(--fg-4)' }}>
                       {formatDistanceToNow(new Date(ver.changed_at), { addSuffix: true })}
                     </span>
                   </div>
-                  <div style={{ fontFamily: 'Inter', fontSize: 13, color: '#64748B', marginTop: 4 }}>
+                  <div style={{ fontFamily: 'Inter', fontSize: 13, color: 'var(--fg-3)', marginTop: 4 }}>
                     {formatChange(ver.changes)}
                   </div>
                   {diff && (
                     <div style={{ fontFamily: 'Inter', fontSize: 13, marginTop: 4 }}>
                       {diff.old && (
-                        <span style={{ color: '#DC2626', textDecoration: 'line-through' }}>"{diff.old}"</span>
+                        <span style={{ color: 'var(--sem-danger)', textDecoration: 'line-through' }}>"{diff.old}"</span>
                       )}
                       {diff.old && diff.new && (
-                        <span style={{ color: '#64748B', margin: '0 6px' }}>→</span>
+                        <span style={{ color: 'var(--fg-3)', margin: '0 6px' }}>→</span>
                       )}
                       {diff.new && (
-                        <span style={{ color: '#059669' }}>"{diff.new}"</span>
+                        <span style={{ color: 'var(--sem-success)' }}>"{diff.new}"</span>
                       )}
                     </div>
                   )}
@@ -789,20 +789,20 @@ export function ViewTestCaseModal({
 
       case 'runs':
         return runs.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 40, color: '#94A3B8' }}>No test runs</div>
+          <div style={{ textAlign: 'center', padding: 40, color: 'var(--fg-4)' }}>No test runs</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {runs.map((run) => {
               const resultStyle = run.result === 'passed' 
-                ? { bg: '#DCFCE7', color: '#16A34A' } 
+                ? { bg: '#DCFCE7', color: 'var(--sem-success)' } 
                 : run.result === 'failed' 
-                  ? { bg: '#FEE2E2', color: '#DC2626' }
-                  : { bg: '#F1F5F9', color: '#64748B' };
+                  ? { bg: '#FEE2E2', color: 'var(--sem-danger)' }
+                  : { bg: '#F1F5F9', color: 'var(--fg-3)' };
               return (
-                <div key={run.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, backgroundColor: '#F8FAFC', borderRadius: 8, border: '1px solid #E2E8F0' }}>
-                  <span style={{ fontFamily: 'Inter', fontSize: 14, color: '#0F172A', flex: 1 }}>{run.cycle_name}</span>
+                <div key={run.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, backgroundColor: 'var(--bg-1)', borderRadius: 8, border: '1px solid var(--divider)' }}>
+                  <span style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)', flex: 1 }}>{run.cycle_name}</span>
                   <span style={{ padding: '4px 10px', backgroundColor: resultStyle.bg, color: resultStyle.color, borderRadius: 12, fontFamily: 'Inter', fontSize: 12, fontWeight: 600, textTransform: 'capitalize' }}>{run.result}</span>
-                  <span style={{ fontFamily: 'Inter', fontSize: 12, color: '#94A3B8' }}>
+                  <span style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--fg-4)' }}>
                     {formatDistanceToNow(new Date(run.executed_at), { addSuffix: true })}
                   </span>
                 </div>
@@ -837,7 +837,7 @@ export function ViewTestCaseModal({
             width: 'calc(100vw - 80px)',
             maxWidth: 1200,
             height: 'calc(100vh - 80px)',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: 'var(--cp-float)',
             borderRadius: 12,
             boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
             display: 'flex',
@@ -846,35 +846,35 @@ export function ViewTestCaseModal({
           }}
         >
           {/* Header */}
-          <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)' }}>
             {/* Top row */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 600, backgroundColor: '#F1F5F9', padding: '4px 8px', borderRadius: 4, color: '#64748B' }}>
+                <span style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 600, backgroundColor: 'var(--cp-bd-zone)', padding: '4px 8px', borderRadius: 4, color: 'var(--fg-3)' }}>
                   {testCase.case_key}
                 </span>
-                <h2 style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                <h2 style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
                   {testCase.title}
                 </h2>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <button 
                   onClick={onEdit}
-                  style={{ height: 36, padding: '0 16px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#334155', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                  style={{ height: 36, padding: '0 16px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
                 >
                   <Edit2 style={{ width: 14, height: 14 }} />
                   Edit
                 </button>
                 <button 
                   onClick={onClone}
-                  style={{ height: 36, padding: '0 16px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#334155', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                  style={{ height: 36, padding: '0 16px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
                 >
                   <Copy style={{ width: 14, height: 14 }} />
                   Clone
                 </button>
                 <button 
                   onClick={onClose}
-                  style={{ width: 36, height: 36, padding: 0, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ width: 36, height: 36, padding: 0, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                   <X style={{ width: 20, height: 20 }} />
                 </button>
@@ -889,18 +889,18 @@ export function ViewTestCaseModal({
               <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 600, color: priorityStyle.color, textTransform: 'uppercase' }}>
                 {testCase.priority}
               </span>
-              <span style={{ padding: '4px 10px', backgroundColor: '#F1F5F9', color: '#64748B', borderRadius: 12, fontFamily: 'Inter', fontSize: 12, fontWeight: 500, textTransform: 'capitalize' }}>
+              <span style={{ padding: '4px 10px', backgroundColor: 'var(--cp-bd-zone)', color: 'var(--fg-3)', borderRadius: 12, fontFamily: 'Inter', fontSize: 12, fontWeight: 500, textTransform: 'capitalize' }}>
                 {testCase.type}
               </span>
-              <span style={{ fontFamily: 'Inter', fontSize: 12, color: '#94A3B8' }}>v{testCase.version}</span>
-              <span style={{ fontFamily: 'Inter', fontSize: 12, color: '#94A3B8' }}>
+              <span style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--fg-4)' }}>v{testCase.version}</span>
+              <span style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--fg-4)' }}>
                 Updated {formatDistanceToNow(new Date(testCase.updated_at), { addSuffix: true })}
               </span>
             </div>
           </div>
 
           {/* Tabs */}
-          <div style={{ display: 'flex', borderBottom: '1px solid #E2E8F0', padding: '0 24px' }}>
+          <div style={{ display: 'flex', borderBottom: '1px solid var(--divider)', padding: '0 24px' }}>
             {tabs.map((tab) => (
               <button
                 key={tab.key}
@@ -942,7 +942,7 @@ export function ViewTestCaseModal({
                   </span>
                 )}
                 {activeTab === tab.key && (
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, backgroundColor: '#2563EB' }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, backgroundColor: 'var(--cp-blue)' }} />
                 )}
               </button>
             ))}

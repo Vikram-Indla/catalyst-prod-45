@@ -96,16 +96,16 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
       display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        width: 480, maxHeight: '90vh', backgroundColor: '#FFFFFF', borderRadius: 12,
+        width: 480, maxHeight: '90vh', backgroundColor: 'var(--cp-float)', borderRadius: 12,
         boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column',
       }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: 'Inter' }}>Create Category</h2>
-            <p style={{ fontSize: 13, color: '#64748B', margin: '4px 0 0', fontFamily: 'Inter' }}>Organize your shared steps with categories</p>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0, fontFamily: 'Inter' }}>Create Category</h2>
+            <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0', fontFamily: 'Inter' }}>Organize your shared steps with categories</p>
           </div>
-          <button onClick={onClose} style={{ width: 32, height: 32, padding: 0, border: 'none', backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6 }}>
+          <button onClick={onClose} style={{ width: 32, height: 32, padding: 0, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6 }}>
             <X size={18} />
           </button>
         </div>
@@ -113,40 +113,40 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
         {/* Body */}
         <div style={{ padding: 24, overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 20, fontFamily: 'Inter' }}>
           {/* Preview */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 16, backgroundColor: '#F8FAFC', borderRadius: 10, border: '1px solid #E2E8F0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 10, border: '1px solid var(--divider)' }}>
             <div style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: `${color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <SelectedIcon size={20} style={{ color }} />
             </div>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: '#0F172A' }}>{name.trim() || 'Category Name'}</div>
-              <div style={{ fontSize: 12, color: '#94A3B8' }}>Preview</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-1)' }}>{name.trim() || 'Category Name'}</div>
+              <div style={{ fontSize: 12, color: 'var(--fg-4)' }}>Preview</div>
             </div>
           </div>
 
           {/* Name */}
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6 }}>Name *</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 6 }}>Name *</label>
             <input
               value={name} onChange={e => { setName(e.target.value); setError(''); }}
               placeholder="e.g., Authentication" maxLength={50}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${error ? '#EF4444' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14, color: '#0F172A', fontFamily: 'Inter' }}
+              style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${error ? '#EF4444' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter' }}
             />
-            {error && <p style={{ fontSize: 12, color: '#EF4444', margin: '4px 0 0' }}>{error}</p>}
+            {error && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '4px 0 0' }}>{error}</p>}
           </div>
 
           {/* Description */}
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6 }}>Description</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 6 }}>Description</label>
             <input
               value={description} onChange={e => setDescription(e.target.value)}
               placeholder="Brief description (optional)" maxLength={100}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, color: '#0F172A', fontFamily: 'Inter' }}
+              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter' }}
             />
           </div>
 
           {/* Color Picker */}
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 8 }}>Color</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 8 }}>Color</label>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {PRESET_COLORS.map(c => (
                 <button key={c} onClick={() => setColor(c)} style={{
@@ -159,7 +159,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
 
           {/* Icon Picker */}
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 8 }}>Icon</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 8 }}>Icon</label>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(44px, 1fr))', gap: 6 }}>
               {AVAILABLE_ICONS.map(opt => {
                 const IconComp = opt.icon;
@@ -180,10 +180,10 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-          <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer', fontFamily: 'Inter' }}>Cancel</button>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+          <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'Inter' }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting} style={{
-            height: 40, padding: '0 24px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+            height: 40, padding: '0 24px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
             border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', fontFamily: 'Inter', opacity: isSubmitting ? 0.7 : 1,
           }}>{isSubmitting ? 'Creating...' : 'Create Category'}</button>
         </div>

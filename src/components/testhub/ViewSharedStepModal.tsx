@@ -53,8 +53,8 @@ function highlightVariables(text: string) {
     if (part.match(/^\{\{[^}]+\}\}$/)) {
       return (
         <span key={i} style={{
-          display: 'inline', padding: '1px 6px', backgroundColor: '#EFF6FF',
-          color: '#2563EB', borderRadius: 4, fontFamily: 'monospace', fontSize: 12, fontWeight: 600,
+          display: 'inline', padding: '1px 6px', backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)',
+          color: 'var(--cp-blue)', borderRadius: 4, fontFamily: 'monospace', fontSize: 12, fontWeight: 600,
         }}>{part}</span>
       );
     }
@@ -96,8 +96,8 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
 
   const iconBtn = (onClick: () => void, title: string, children: React.ReactNode, danger = false): React.ReactNode => (
     <button onClick={onClick} title={title} style={{
-      width: 36, height: 36, padding: 0, border: '1px solid #E2E8F0', borderRadius: 8,
-      backgroundColor: '#FFFFFF', color: danger ? '#DC2626' : '#64748B', cursor: 'pointer',
+      width: 36, height: 36, padding: 0, border: '1px solid var(--divider)', borderRadius: 8,
+      backgroundColor: 'var(--cp-float)', color: danger ? '#DC2626' : '#64748B', cursor: 'pointer',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>{children}</button>
   );
@@ -108,11 +108,11 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
       backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        width: 680, maxHeight: '90vh', backgroundColor: '#FFFFFF', borderRadius: 12,
+        width: 680, maxHeight: '90vh', backgroundColor: 'var(--cp-float)', borderRadius: 12,
         boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column',
       }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', flexShrink: 0 }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', flexShrink: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               {sharedStep.category && (
@@ -127,11 +127,11 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
                   {sharedStep.category.name}
                 </span>
               )}
-              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: 'Inter' }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1)', margin: 0, fontFamily: 'Inter' }}>
                 {sharedStep.name}
               </h2>
               {sharedStep.description && (
-                <p style={{ fontSize: 14, color: '#64748B', margin: '6px 0 0', fontFamily: 'Inter' }}>
+                <p style={{ fontSize: 14, color: 'var(--fg-3)', margin: '6px 0 0', fontFamily: 'Inter' }}>
                   {sharedStep.description}
                 </p>
               )}
@@ -144,11 +144,11 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
             </div>
           </div>
           <div style={{ display: 'flex', gap: 16, marginTop: 12 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#64748B', fontFamily: 'Inter' }}>
-              <CheckCircle size={14} style={{ color: '#0D9488' }} />
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--fg-3)', fontFamily: 'Inter' }}>
+              <CheckCircle size={14} style={{ color: 'var(--sem-success)' }} />
               Used {sharedStep.usage_count} times
             </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#64748B', fontFamily: 'Inter' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--fg-3)', fontFamily: 'Inter' }}>
               <Clock size={14} />
               Updated {formatTimestamp(sharedStep.updated_at)}
             </span>
@@ -160,8 +160,8 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
           {/* Action */}
           <Section title="Action">
             <div style={{
-              padding: 16, backgroundColor: '#F8FAFC', borderRadius: 8,
-              fontSize: 14, color: '#334155', lineHeight: 1.7, fontFamily: 'Inter',
+              padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 8,
+              fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.7, fontFamily: 'Inter',
             }}>
               {highlightVariables(sharedStep.action)}
             </div>
@@ -181,18 +181,18 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
 
           {/* Variables */}
           {vars.length > 0 && (
-            <Section title={`Variables (${vars.length})`} icon={<Variable size={16} style={{ color: '#2563EB' }} />}>
+            <Section title={`Variables (${vars.length})`} icon={<Variable size={16} style={{ color: 'var(--cp-blue)' }} />}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {vars.map((v, i) => (
                   <div key={i} style={{
-                    padding: '8px 14px', backgroundColor: '#F8FAFC', borderRadius: 8,
-                    border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: 2,
+                    padding: '8px 14px', backgroundColor: 'var(--bg-1)', borderRadius: 8,
+                    border: '1px solid var(--divider)', display: 'flex', flexDirection: 'column', gap: 2,
                   }}>
                     <span style={{
-                      fontFamily: 'monospace', fontSize: 13, fontWeight: 600, color: '#2563EB',
+                      fontFamily: 'monospace', fontSize: 13, fontWeight: 600, color: 'var(--cp-blue)',
                     }}>{`{{${v.name}}}`}</span>
                     {v.default && (
-                      <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: 'Inter' }}>
+                      <span style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: 'Inter' }}>
                         Default: {v.default}
                       </span>
                     )}
@@ -203,11 +203,11 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
           )}
 
           {/* Linked Test Cases */}
-          <Section title="Linked Test Cases" icon={<Link2 size={16} style={{ color: '#64748B' }} />}>
+          <Section title="Linked Test Cases" icon={<Link2 size={16} style={{ color: 'var(--fg-3)' }} />}>
             {isLoadingLinks ? (
-              <p style={{ fontSize: 13, color: '#94A3B8', fontFamily: 'Inter' }}>Loading...</p>
+              <p style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: 'Inter' }}>Loading...</p>
             ) : linkedTestCases.length === 0 ? (
-              <p style={{ fontSize: 13, color: '#94A3B8', padding: 16, backgroundColor: '#F8FAFC', borderRadius: 8, margin: 0, fontFamily: 'Inter' }}>
+              <p style={{ fontSize: 13, color: 'var(--fg-4)', padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 8, margin: 0, fontFamily: 'Inter' }}>
                 This shared step is not used in any test cases yet.
               </p>
             ) : (
@@ -221,24 +221,24 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
                     }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
-                      backgroundColor: '#F8FAFC', borderRadius: 8, border: '1px solid #E2E8F0',
+                      backgroundColor: 'var(--bg-1)', borderRadius: 8, border: '1px solid var(--divider)',
                       cursor: 'pointer', textAlign: 'left', width: '100%',
                       transition: 'all 0.15s', fontFamily: 'Inter',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#EFF6FF'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#F8FAFC'; e.currentTarget.style.borderColor = '#E2E8F0'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--cp-blue) 8%, transparent)'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--cp-blue) 25%, transparent)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-1)'; e.currentTarget.style.borderColor = 'var(--divider)'; }}
                   >
                     <span style={{
-                      fontFamily: 'monospace', fontSize: 12, fontWeight: 600, color: '#2563EB',
-                      backgroundColor: '#EFF6FF', padding: '4px 10px', borderRadius: 6,
-                      border: '1px solid #BFDBFE', flexShrink: 0,
+                      fontFamily: 'monospace', fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)',
+                      backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', padding: '4px 10px', borderRadius: 6,
+                      border: '1px solid color-mix(in srgb, var(--cp-blue) 25%, transparent)', flexShrink: 0,
                     }}>{tc.case_key}</span>
-                    <span style={{ flex: 1, fontSize: 13, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tc.title}</span>
-                    <ExternalLink size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
+                    <span style={{ flex: 1, fontSize: 13, color: 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tc.title}</span>
+                    <ExternalLink size={14} style={{ color: 'var(--fg-4)', flexShrink: 0 }} />
                   </button>
                 ))}
                 {sharedStep.usage_count > linkedTestCases.length && (
-                  <p style={{ fontSize: 12, color: '#94A3B8', margin: '4px 0 0', fontFamily: 'Inter' }}>
+                  <p style={{ fontSize: 12, color: 'var(--fg-4)', margin: '4px 0 0', fontFamily: 'Inter' }}>
                     +{sharedStep.usage_count - linkedTestCases.length} more test cases
                   </p>
                 )}
@@ -249,13 +249,13 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
 
         {/* Footer */}
         <div style={{
-          padding: '16px 24px', borderTop: '1px solid #E2E8F0',
+          padding: '16px 24px', borderTop: '1px solid var(--divider)',
           display: 'flex', justifyContent: 'flex-end', flexShrink: 0,
         }}>
           <button onClick={onClose} style={{
-            height: 40, padding: '0 20px', backgroundColor: '#FFFFFF',
-            border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14,
-            fontWeight: 500, color: '#334155', cursor: 'pointer', fontFamily: 'Inter',
+            height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)',
+            border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14,
+            fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'Inter',
           }}>Close</button>
         </div>
       </div>
@@ -267,7 +267,7 @@ function Section({ title, icon, children }: { title: string; icon?: React.ReactN
   return (
     <div style={{ marginBottom: 24 }}>
       <h3 style={{
-        fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 10,
+        fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 10,
         display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'Inter',
       }}>
         {icon}

@@ -19,14 +19,14 @@ interface ActivityItem {
 }
 
 const ACTION_CONFIG: Record<string, { label: string; icon: any; color: string }> = {
-  'create': { label: 'Created', icon: Plus, color: '#059669' },
-  'update': { label: 'Updated', icon: Edit2, color: '#2563EB' },
-  'delete': { label: 'Deleted', icon: Trash2, color: '#DC2626' },
+  'create': { label: 'Created', icon: Plus, color: 'var(--sem-success)' },
+  'update': { label: 'Updated', icon: Edit2, color: 'var(--cp-blue)' },
+  'delete': { label: 'Deleted', icon: Trash2, color: 'var(--sem-danger)' },
   'execute': { label: 'Executed', icon: Play, color: '#7C3AED' },
-  'pass': { label: 'Passed', icon: CheckCircle2, color: '#059669' },
-  'fail': { label: 'Failed', icon: XCircle, color: '#DC2626' },
-  'assign': { label: 'Assigned', icon: User, color: '#D97706' },
-  'login': { label: 'Logged in', icon: User, color: '#64748B' },
+  'pass': { label: 'Passed', icon: CheckCircle2, color: 'var(--sem-success)' },
+  'fail': { label: 'Failed', icon: XCircle, color: 'var(--sem-danger)' },
+  'assign': { label: 'Assigned', icon: User, color: 'var(--sem-warning)' },
+  'login': { label: 'Logged in', icon: User, color: 'var(--fg-3)' },
 };
 
 const ENTITY_CONFIG: Record<string, { label: string; icon: any }> = {
@@ -83,7 +83,7 @@ export function ActivityLog({ limit = 20, showHeader = true }: ActivityLogProps)
   };
 
   const getActionConfig = (action: string) => {
-    return ACTION_CONFIG[action] || { label: action, icon: Activity, color: '#64748B' };
+    return ACTION_CONFIG[action] || { label: action, icon: Activity, color: 'var(--fg-3)' };
   };
 
   const getEntityConfig = (entityType: string | null) => {
@@ -94,7 +94,7 @@ export function ActivityLog({ limit = 20, showHeader = true }: ActivityLogProps)
   if (isLoading) {
     return (
       <div style={{ padding: 40, textAlign: 'center' }}>
-        <RefreshCw size={24} style={{ animation: 'spin 1s linear infinite', color: '#64748B' }} />
+        <RefreshCw size={24} style={{ animation: 'spin 1s linear infinite', color: 'var(--fg-3)' }} />
       </div>
     );
   }
@@ -103,13 +103,13 @@ export function ActivityLog({ limit = 20, showHeader = true }: ActivityLogProps)
     <div>
       {showHeader && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <Activity size={20} style={{ color: '#64748B' }} />
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', margin: 0 }}>Recent Activity</h3>
+          <Activity size={20} style={{ color: 'var(--fg-3)' }} />
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>Recent Activity</h3>
         </div>
       )}
 
       {activities.length === 0 ? (
-        <div style={{ padding: 40, textAlign: 'center', color: '#94A3B8' }}>
+        <div style={{ padding: 40, textAlign: 'center', color: 'var(--fg-4)' }}>
           <Clock size={32} style={{ marginBottom: 12, opacity: 0.5 }} />
           <p style={{ margin: 0 }}>No recent activity</p>
         </div>
@@ -126,12 +126,12 @@ export function ActivityLog({ limit = 20, showHeader = true }: ActivityLogProps)
                   <ActionIcon size={18} style={{ color: actionConfig.color }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 14, color: '#0F172A', margin: 0 }}>
+                  <p style={{ fontSize: 14, color: 'var(--fg-1)', margin: 0 }}>
                     <span style={{ fontWeight: 600 }}>{actionConfig.label}</span>
-                    {entityConfig && <span style={{ color: '#64748B' }}> {entityConfig.label.toLowerCase()}</span>}
+                    {entityConfig && <span style={{ color: 'var(--fg-3)' }}> {entityConfig.label.toLowerCase()}</span>}
                     {activity.entity_name && <span style={{ fontWeight: 500 }}> "{activity.entity_name}"</span>}
                   </p>
-                  <p style={{ fontSize: 12, color: '#94A3B8', margin: '4px 0 0' }}>{formatRelativeTime(activity.created_at)}</p>
+                  <p style={{ fontSize: 12, color: 'var(--fg-4)', margin: '4px 0 0' }}>{formatRelativeTime(activity.created_at)}</p>
                 </div>
               </div>
             );

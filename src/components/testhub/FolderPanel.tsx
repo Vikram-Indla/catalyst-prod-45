@@ -145,8 +145,8 @@ export function FolderPanel({
     return (
       <div style={{
         width: 48,
-        backgroundColor: '#FFFFFF',
-        borderRight: '1px solid #E2E8F0',
+        backgroundColor: 'var(--cp-float)',
+        borderRight: '1px solid var(--divider)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -162,8 +162,8 @@ export function FolderPanel({
             padding: 0,
             border: 'none',
             borderRadius: 8,
-            backgroundColor: '#F8FAFC',
-            color: '#64748B',
+            backgroundColor: 'var(--bg-1)',
+            color: 'var(--fg-3)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -171,12 +171,12 @@ export function FolderPanel({
             transition: 'all 0.15s',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#EFF6FF';
-            e.currentTarget.style.color = '#2563EB';
+            e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--cp-blue) 8%, transparent)';
+            e.currentTarget.style.color = 'var(--cp-blue)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#F8FAFC';
-            e.currentTarget.style.color = '#64748B';
+            e.currentTarget.style.backgroundColor = 'var(--bg-1)';
+            e.currentTarget.style.color = 'var(--fg-3)';
           }}
         >
           <Folder style={{ width: 20, height: 20 }} />
@@ -191,8 +191,8 @@ export function FolderPanel({
       width: 280,
       minWidth: 280,
       maxWidth: 280,
-      backgroundColor: '#FFFFFF',
-      borderRight: '1px solid #E2E8F0',
+      backgroundColor: 'var(--cp-float)',
+      borderRight: '1px solid var(--divider)',
       display: 'flex',
       flexDirection: 'column',
       flexShrink: 0,
@@ -201,7 +201,7 @@ export function FolderPanel({
       <div style={{
         height: 48,
         padding: '0 12px 0 16px',
-        borderBottom: '1px solid #F1F5F9',
+        borderBottom: '1px solid var(--cp-bd-zone)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -211,7 +211,7 @@ export function FolderPanel({
           fontWeight: 600,
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
-          color: '#64748B',
+          color: 'var(--fg-3)',
         }}>Folders</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <button
@@ -224,19 +224,19 @@ export function FolderPanel({
               border: 'none',
               borderRadius: 6,
               backgroundColor: 'transparent',
-              color: '#94A3B8',
+              color: 'var(--fg-4)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#F1F5F9';
-              e.currentTarget.style.color = '#475569';
+              e.currentTarget.style.backgroundColor = 'var(--cp-bd-zone)';
+              e.currentTarget.style.color = 'var(--fg-2)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = '#94A3B8';
+              e.currentTarget.style.color = 'var(--fg-4)';
             }}
           >
             <Plus style={{ width: 16, height: 16 }} />
@@ -251,19 +251,19 @@ export function FolderPanel({
               border: 'none',
               borderRadius: 6,
               backgroundColor: 'transparent',
-              color: '#94A3B8',
+              color: 'var(--fg-4)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#F1F5F9';
-              e.currentTarget.style.color = '#475569';
+              e.currentTarget.style.backgroundColor = 'var(--cp-bd-zone)';
+              e.currentTarget.style.color = 'var(--fg-2)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = '#94A3B8';
+              e.currentTarget.style.color = 'var(--fg-4)';
             }}
           >
             <ChevronsLeft style={{ width: 14, height: 14 }} />
@@ -281,7 +281,7 @@ export function FolderPanel({
             transform: 'translateY(-50%)',
             width: 14,
             height: 14,
-            color: '#94A3B8',
+            color: 'var(--fg-4)',
             pointerEvents: 'none',
           }} />
           <input
@@ -296,21 +296,21 @@ export function FolderPanel({
               paddingRight: 12,
               fontSize: 13,
               fontFamily: 'Inter, sans-serif',
-              color: '#0F172A',
-              backgroundColor: '#F8FAFC',
-              border: '1px solid #E2E8F0',
+              color: 'var(--fg-1)',
+              backgroundColor: 'var(--bg-1)',
+              border: '1px solid var(--divider)',
               borderRadius: 8,
               outline: 'none',
               transition: 'all 0.15s',
             }}
             onFocus={(e) => {
-              e.target.style.backgroundColor = '#FFFFFF';
-              e.target.style.borderColor = '#2563EB';
+              e.target.style.backgroundColor = 'var(--cp-float)';
+              e.target.style.borderColor = 'var(--cp-blue)';
               e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)';
             }}
             onBlur={(e) => {
-              e.target.style.backgroundColor = '#F8FAFC';
-              e.target.style.borderColor = '#E2E8F0';
+              e.target.style.backgroundColor = 'var(--bg-1)';
+              e.target.style.borderColor = 'var(--divider)';
               e.target.style.boxShadow = 'none';
             }}
           />
@@ -352,7 +352,7 @@ export function FolderPanel({
               top: 6,
               bottom: 6,
               width: 3,
-              backgroundColor: '#2563EB',
+              backgroundColor: 'var(--cp-blue)',
               borderRadius: '0 2px 2px 0',
             }} />
           )}
@@ -363,7 +363,7 @@ export function FolderPanel({
             fontWeight: selectedFolderId === null ? 600 : 500,
             color: selectedFolderId === null ? '#2563EB' : '#334155',
           }}>All Test Cases</span>
-          <span style={{ fontSize: 12, color: '#94A3B8' }}>{totalTestCases}</span>
+          <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>{totalTestCases}</span>
         </div>
 
         {/* Folders */}
@@ -391,8 +391,8 @@ export function FolderPanel({
             position: 'fixed',
             top: folderContextMenu.y,
             left: folderContextMenu.x,
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #E2E8F0',
+            backgroundColor: 'var(--cp-float)',
+            border: '1px solid var(--divider)',
             borderRadius: 8,
             boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
             zIndex: 99999,
@@ -416,14 +416,14 @@ export function FolderPanel({
                 border: 'none',
                 backgroundColor: 'transparent',
                 fontSize: 13,
-                color: '#334155',
+                color: 'var(--fg-2)',
                 cursor: 'pointer',
                 textAlign: 'left',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FAFC'}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-1)'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
-              <Pencil size={14} color="#64748B" />
+              <Pencil size={14} color="var(--fg-3)" />
               Rename
             </button>
           )}
@@ -443,14 +443,14 @@ export function FolderPanel({
                 border: 'none',
                 backgroundColor: 'transparent',
                 fontSize: 13,
-                color: '#DC2626',
+                color: 'var(--sem-danger)',
                 cursor: 'pointer',
                 textAlign: 'left',
               }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FEF2F2'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
-              <Trash2 size={14} color="#DC2626" />
+              <Trash2 size={14} color="var(--sem-danger)" />
               Delete
             </button>
           )}
@@ -526,7 +526,7 @@ function FolderTreeItem({
             top: 6,
             bottom: 6,
             width: 3,
-            backgroundColor: '#2563EB',
+            backgroundColor: 'var(--cp-blue)',
             borderRadius: '0 2px 2px 0',
           }} />
         )}
@@ -541,7 +541,7 @@ function FolderTreeItem({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#94A3B8',
+              color: 'var(--fg-4)',
               cursor: hasChildren ? 'pointer' : 'default',
               transform: isExpanded ? 'rotate(90deg)' : 'none',
               transition: 'transform 0.15s',
@@ -568,7 +568,7 @@ function FolderTreeItem({
         }}>{folder.name}</span>
 
         {/* Count */}
-        <span style={{ fontSize: 12, color: '#94A3B8' }}>{folder.testCaseCount}</span>
+        <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>{folder.testCaseCount}</span>
       </div>
 
       {/* Children */}

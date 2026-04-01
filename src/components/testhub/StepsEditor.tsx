@@ -60,7 +60,7 @@ function SortableStepRow({
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : undefined,
     display: 'flex',
-    borderBottom: '1px solid #E2E8F0',
+    borderBottom: '1px solid var(--divider)',
     backgroundColor: step.sharedStepId ? '#FEFCE8' : '#FFFFFF',
     position: 'relative',
   };
@@ -70,11 +70,11 @@ function SortableStepRow({
       {/* Drag Handle */}
       <div {...listeners} style={{
         width: 40, display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-        paddingTop: 20, borderRight: '1px solid #E2E8F0',
-        cursor: isDragging ? 'grabbing' : 'grab', color: '#CBD5E1', transition: 'color 0.15s',
+        paddingTop: 20, borderRight: '1px solid var(--divider)',
+        cursor: isDragging ? 'grabbing' : 'grab', color: 'var(--divider)', transition: 'color 0.15s',
       }}
-        onMouseEnter={(e) => e.currentTarget.style.color = '#94A3B8'}
-        onMouseLeave={(e) => e.currentTarget.style.color = '#CBD5E1'}
+        onMouseEnter={(e) => e.currentTarget.style.color = 'var(--fg-4)'}
+        onMouseLeave={(e) => e.currentTarget.style.color = 'var(--divider)'}
       >
         <GripVertical style={{ width: 16, height: 16 }} />
       </div>
@@ -99,31 +99,31 @@ function SortableStepRow({
         )}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <div>
-            <label style={{ display: 'block', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 6 }}>Action</label>
+            <label style={{ display: 'block', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 6 }}>Action</label>
             <textarea value={step.action} onChange={(e) => onUpdate('action', e.target.value)} placeholder="Describe the action to perform..."
-              style={{ width: '100%', minHeight: 80, padding: '10px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', color: '#0F172A', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, resize: 'vertical', outline: 'none', transition: 'border-color 0.15s, box-shadow 0.15s' }}
-              onFocus={(e) => { e.target.style.borderColor = '#2563EB'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
-              onBlur={(e) => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'none'; }}
+              style={{ width: '100%', minHeight: 80, padding: '10px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, resize: 'vertical', outline: 'none', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
+              onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 6 }}>Expected Result</label>
+            <label style={{ display: 'block', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 6 }}>Expected Result</label>
             <textarea value={step.expectedResult} onChange={(e) => onUpdate('expectedResult', e.target.value)} placeholder="Describe the expected outcome..."
-              style={{ width: '100%', minHeight: 80, padding: '10px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', color: '#0F172A', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, resize: 'vertical', outline: 'none', transition: 'border-color 0.15s, box-shadow 0.15s' }}
-              onFocus={(e) => { e.target.style.borderColor = '#2563EB'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
-              onBlur={(e) => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'none'; }}
+              style={{ width: '100%', minHeight: 80, padding: '10px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, resize: 'vertical', outline: 'none', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
+              onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
             />
           </div>
         </div>
         {step.attachments && step.attachments.length > 0 && (
           <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {step.attachments.map((att, attIndex) => (
-              <div key={attIndex} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', backgroundColor: '#F1F5F9', borderRadius: 6, fontSize: 12 }}>
-                <Paperclip size={12} style={{ color: '#64748B' }} />
-                <span style={{ color: '#334155', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{att.name}</span>
-                <span style={{ color: '#94A3B8' }}>({Math.round(att.size / 1024)}KB)</span>
-                <button type="button" onClick={() => onRemoveAttachment(attIndex)} style={{ padding: 2, border: 'none', background: 'none', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = '#DC2626'} onMouseLeave={(e) => e.currentTarget.style.color = '#94A3B8'}
+              <div key={attIndex} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', backgroundColor: 'var(--cp-bd-zone)', borderRadius: 6, fontSize: 12 }}>
+                <Paperclip size={12} style={{ color: 'var(--fg-3)' }} />
+                <span style={{ color: 'var(--fg-2)', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{att.name}</span>
+                <span style={{ color: 'var(--fg-4)' }}>({Math.round(att.size / 1024)}KB)</span>
+                <button type="button" onClick={() => onRemoveAttachment(attIndex)} style={{ padding: 2, border: 'none', background: 'none', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--sem-danger)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--fg-4)'}
                 ><X size={14} /></button>
               </div>
             ))}
@@ -132,7 +132,7 @@ function SortableStepRow({
       </div>
 
       {/* Actions Column */}
-      <div style={{ width: 80, borderLeft: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 16, gap: 4 }}>
+      <div style={{ width: 80, borderLeft: '1px solid var(--divider)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 16, gap: 4 }}>
         <AttachButton onClick={onAttach} count={step.attachments?.length || 0} />
         <ActionButton icon={Copy} title="Clone step" onClick={onClone} />
         <ActionButton icon={ArrowUp} title="Insert above" onClick={onInsertAbove} />
@@ -278,7 +278,7 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
   return (
     <>
       <div style={{
-        border: '1px solid #E2E8F0',
+        border: '1px solid var(--divider)',
         borderRadius: 8,
         overflow: 'hidden',
       }}>
@@ -286,14 +286,14 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
         <div style={{
           height: 48,
           padding: '0 16px',
-          backgroundColor: '#F8FAFC',
-          borderBottom: '1px solid #E2E8F0',
+          backgroundColor: 'var(--bg-1)',
+          borderBottom: '1px solid var(--divider)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>Steps</span>
-          <span style={{ fontSize: 13, color: '#64748B' }}>{steps.length} step(s)</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)' }}>Steps</span>
+          <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>{steps.length} step(s)</span>
         </div>
 
         {/* Steps List */}
@@ -319,7 +319,7 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
         </div>
 
         {/* Add Step with Dropdown */}
-        <div style={{ padding: 16, borderTop: '1px solid #E2E8F0' }}>
+        <div style={{ padding: 16, borderTop: '1px solid var(--divider)' }}>
           <div ref={dropdownRef} style={{ position: 'relative' }}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -328,11 +328,11 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
                 height: 48,
                 padding: 0,
                 backgroundColor: 'transparent',
-                border: '2px dashed #E2E8F0',
+                border: '2px dashed var(--divider)',
                 borderRadius: 8,
                 fontSize: 14,
                 fontWeight: 500,
-                color: '#64748B',
+                color: 'var(--fg-3)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -341,14 +341,14 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
                 transition: 'all 0.15s',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#2563EB';
-                e.currentTarget.style.color = '#2563EB';
+                e.currentTarget.style.borderColor = 'var(--cp-blue)';
+                e.currentTarget.style.color = 'var(--cp-blue)';
                 e.currentTarget.style.backgroundColor = 'rgba(37,99,235,0.04)';
               }}
               onMouseLeave={(e) => {
                 if (!dropdownOpen) {
-                  e.currentTarget.style.borderColor = '#E2E8F0';
-                  e.currentTarget.style.color = '#64748B';
+                  e.currentTarget.style.borderColor = 'var(--divider)';
+                  e.currentTarget.style.color = 'var(--fg-3)';
                   e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
@@ -366,8 +366,8 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
                   left: 0,
                   right: 0,
                   marginBottom: 4,
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #E2E8F0',
+                  backgroundColor: 'var(--cp-float)',
+                  border: '1px solid var(--divider)',
                   borderRadius: 8,
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                   overflow: 'hidden',
@@ -383,17 +383,17 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
                     backgroundColor: 'transparent',
                     border: 'none',
                     fontSize: 14,
-                    color: '#0F172A',
+                    color: 'var(--fg-1)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 10,
                     textAlign: 'left',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-1)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
-                  <Plus style={{ width: 16, height: 16, color: '#64748B' }} />
+                  <Plus style={{ width: 16, height: 16, color: 'var(--fg-3)' }} />
                   Add New Step
                 </button>
                 <button
@@ -404,19 +404,19 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
                     padding: '0 16px',
                     backgroundColor: 'transparent',
                     border: 'none',
-                    borderTop: '1px solid #E2E8F0',
+                    borderTop: '1px solid var(--divider)',
                     fontSize: 14,
-                    color: '#0F172A',
+                    color: 'var(--fg-1)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 10,
                     textAlign: 'left',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-1)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
-                  <Library style={{ width: 16, height: 16, color: '#64748B' }} />
+                  <Library style={{ width: 16, height: 16, color: 'var(--fg-3)' }} />
                   Insert Shared Step
                 </button>
               </div>
@@ -444,7 +444,7 @@ function AttachButton({ onClick, count }: { onClick: () => void; count: number }
         width: 32,
         height: 32,
         padding: 0,
-        border: '1px solid #E2E8F0',
+        border: '1px solid var(--divider)',
         borderRadius: 6,
         backgroundColor: count > 0 ? '#EFF6FF' : '#FFFFFF',
         color: count > 0 ? '#2563EB' : '#94A3B8',
@@ -461,7 +461,7 @@ function AttachButton({ onClick, count }: { onClick: () => void; count: number }
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = count > 0 ? '#EFF6FF' : '#FFFFFF';
-        e.currentTarget.style.borderColor = '#E2E8F0';
+        e.currentTarget.style.borderColor = 'var(--divider)';
       }}
     >
       <Paperclip size={14} />
@@ -473,7 +473,7 @@ function AttachButton({ onClick, count }: { onClick: () => void; count: number }
           width: 16,
           height: 16,
           borderRadius: '50%',
-          backgroundColor: '#2563EB',
+          backgroundColor: 'var(--cp-blue)',
           color: '#FFFFFF',
           fontSize: 10,
           fontWeight: 600,
@@ -510,10 +510,10 @@ function ActionButton({
         width: 32,
         height: 32,
         padding: 0,
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        backgroundColor: 'var(--cp-float)',
+        border: '1px solid var(--divider)',
         borderRadius: 6,
-        color: '#94A3B8',
+        color: 'var(--fg-4)',
         cursor: disabled ? 'not-allowed' : 'pointer',
         display: 'flex',
         alignItems: 'center',
@@ -525,19 +525,19 @@ function ActionButton({
         if (!disabled) {
           if (danger) {
             e.currentTarget.style.backgroundColor = '#FEF2F2';
-            e.currentTarget.style.borderColor = '#FECACA';
-            e.currentTarget.style.color = '#DC2626';
+            e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--sem-danger) 20%, transparent)';
+            e.currentTarget.style.color = 'var(--sem-danger)';
           } else {
-            e.currentTarget.style.backgroundColor = '#F8FAFC';
-            e.currentTarget.style.borderColor = '#CBD5E1';
-            e.currentTarget.style.color = '#475569';
+            e.currentTarget.style.backgroundColor = 'var(--bg-1)';
+            e.currentTarget.style.borderColor = 'var(--divider)';
+            e.currentTarget.style.color = 'var(--fg-2)';
           }
         }
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = '#FFFFFF';
-        e.currentTarget.style.borderColor = '#E2E8F0';
-        e.currentTarget.style.color = '#94A3B8';
+        e.currentTarget.style.backgroundColor = 'var(--cp-float)';
+        e.currentTarget.style.borderColor = 'var(--divider)';
+        e.currentTarget.style.color = 'var(--fg-4)';
       }}
     >
       <Icon style={{ width: 14, height: 14 }} />

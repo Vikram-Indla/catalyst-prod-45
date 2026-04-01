@@ -52,10 +52,10 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case 'approved': return { bg: 'rgba(16,185,129,0.1)', color: '#059669' };
-      case 'ready': return { bg: 'rgba(37,99,235,0.1)', color: '#2563EB' };
-      case 'deprecated': return { bg: 'rgba(239,68,68,0.1)', color: '#DC2626' };
-      default: return { bg: '#F1F5F9', color: '#64748B' };
+      case 'approved': return { bg: 'rgba(16,185,129,0.1)', color: 'var(--sem-success)' };
+      case 'ready': return { bg: 'rgba(37,99,235,0.1)', color: 'var(--cp-blue)' };
+      case 'deprecated': return { bg: 'rgba(239,68,68,0.1)', color: 'var(--sem-danger)' };
+      default: return { bg: '#F1F5F9', color: 'var(--fg-3)' };
     }
   };
 
@@ -75,7 +75,7 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
             key={tc.id}
             onClick={() => onRowClick(tc)}
             style={{
-              backgroundColor: '#FFFFFF',
+              backgroundColor: 'var(--cp-float)',
               border: `1px solid ${isSelected ? '#2563EB' : '#E2E8F0'}`,
               borderRadius: 12,
               padding: 16,
@@ -84,20 +84,20 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
             }}
             onMouseEnter={(e) => {
               if (!isSelected) {
-                e.currentTarget.style.borderColor = '#CBD5E1';
+                e.currentTarget.style.borderColor = 'var(--divider)';
                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
               }
             }}
             onMouseLeave={(e) => {
               if (!isSelected) {
-                e.currentTarget.style.borderColor = '#E2E8F0';
+                e.currentTarget.style.borderColor = 'var(--divider)';
                 e.currentTarget.style.boxShadow = 'none';
               }
             }}
           >
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <span style={{ fontSize: 12, fontFamily: 'monospace', color: '#64748B' }}>
+              <span style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--fg-3)' }}>
                 {tc.caseKey}
               </span>
               <input
@@ -116,7 +116,7 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
             <h3 style={{
               fontSize: 14,
               fontWeight: 600,
-              color: '#0F172A',
+              color: 'var(--fg-1)',
               margin: '8px 0 12px',
               lineHeight: 1.4,
               display: '-webkit-box',
@@ -128,7 +128,7 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
             </h3>
 
             {/* Divider */}
-            <div style={{ height: 1, backgroundColor: '#E2E8F0', margin: '12px 0' }} />
+            <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '12px 0' }} />
 
             {/* Metadata */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
@@ -166,7 +166,7 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
                   {tc.ownerInitials}
                 </div>
               )}
-              <span style={{ fontSize: 12, color: '#94A3B8' }}>
+              <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>
                 {formatRelativeTime(tc.updatedAt)}
               </span>
             </div>

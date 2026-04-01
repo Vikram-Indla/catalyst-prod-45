@@ -104,7 +104,7 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
           style={{
             width: 640,
             maxHeight: 'calc(100vh - 120px)',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: 'var(--cp-float)',
             borderRadius: 12,
             boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
             overflow: 'hidden',
@@ -113,24 +113,24 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
           }}
         >
           {/* Header */}
-          <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-              <h3 style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 600, color: '#0F172A', margin: 0 }}>
+              <h3 style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>
                 Shared Steps Library
               </h3>
-              <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <X style={{ width: 18, height: 18 }} />
               </button>
             </div>
-            <p style={{ fontFamily: 'Inter', fontSize: 14, color: '#64748B', margin: 0 }}>
+            <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>
               Insert reusable test steps
             </p>
           </div>
 
           {/* Search */}
-          <div style={{ padding: '16px 24px', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--divider)' }}>
             <div style={{ position: 'relative' }}>
-              <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 18, height: 18, color: '#94A3B8' }} />
+              <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 18, height: 18, color: 'var(--fg-4)' }} />
               <input
                 type="text"
                 value={search}
@@ -143,7 +143,7 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
                   paddingRight: 12,
                   fontSize: 14,
                   fontFamily: 'Inter, sans-serif',
-                  border: '1.5px solid #E2E8F0',
+                  border: '1.5px solid var(--divider)',
                   borderRadius: 8,
                   outline: 'none',
                 }}
@@ -155,10 +155,10 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
           <div style={{ flex: 1, overflow: 'auto', padding: '16px 24px' }}>
             {loading ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
-                <div style={{ width: 32, height: 32, border: '3px solid #E2E8F0', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                <div style={{ width: 32, height: 32, border: '3px solid var(--divider)', borderTopColor: 'var(--cp-blue)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
               </div>
             ) : filteredSteps.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: 40, color: '#94A3B8' }}>
+              <div style={{ textAlign: 'center', padding: 40, color: 'var(--fg-4)' }}>
                 {search ? 'No matching steps found' : 'No shared steps yet'}
               </div>
             ) : (
@@ -168,27 +168,27 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
                     key={step.id}
                     style={{
                       padding: 16,
-                      backgroundColor: '#FFFFFF',
-                      border: '1px solid #E2E8F0',
+                      backgroundColor: 'var(--cp-float)',
+                      border: '1px solid var(--divider)',
                       borderRadius: 8,
                       transition: 'border-color 0.15s',
                       cursor: 'pointer',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#2563EB')}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#E2E8F0')}
+                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--cp-blue)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--divider)')}
                   >
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
-                      <h4 style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>
+                      <h4 style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>
                         {step.name}
                       </h4>
-                      <span style={{ fontFamily: 'Inter', fontSize: 12, color: '#94A3B8', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--fg-4)', whiteSpace: 'nowrap' }}>
                         Used {step.usage_count}x
                       </span>
                     </div>
                     <p style={{
                       fontFamily: 'Inter',
                       fontSize: 13,
-                      color: '#64748B',
+                      color: 'var(--fg-3)',
                       margin: '0 0 12px 0',
                       display: '-webkit-box',
                       WebkitLineClamp: 2,
@@ -207,7 +207,7 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
                           border: 'none',
                           fontSize: 13,
                           fontWeight: 600,
-                          color: '#2563EB',
+                          color: 'var(--cp-blue)',
                           cursor: 'pointer',
                         }}
                       >
@@ -221,8 +221,8 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
           </div>
 
           {/* Footer */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '16px 24px', borderTop: '1px solid #E2E8F0' }}>
-            <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#64748B', cursor: 'pointer' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '16px 24px', borderTop: '1px solid var(--divider)' }}>
+            <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-3)', cursor: 'pointer' }}>
               Cancel
             </button>
             <button
@@ -230,7 +230,7 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
               style={{
                 height: 40,
                 padding: '0 20px',
-                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
                 border: 'none',
                 borderRadius: 8,
                 fontSize: 14,

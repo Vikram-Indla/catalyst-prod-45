@@ -102,7 +102,7 @@ export function TestCasesToolbar({
   const renderCheckbox = (category: keyof FilterState, value: string, label: string) => {
     const checked = localFilters[category].includes(value);
     return (
-      <label key={value} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, cursor: 'pointer', fontSize: 13, color: '#334155' }}>
+      <label key={value} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, cursor: 'pointer', fontSize: 13, color: 'var(--fg-2)' }}>
         <input type="checkbox" checked={checked} onChange={() => toggleFilter(category, value)} style={{ width: 16, height: 16, cursor: 'pointer' }} />
         {label}
       </label>
@@ -113,8 +113,8 @@ export function TestCasesToolbar({
     <div style={{
       height: 56,
       padding: '0 20px',
-      backgroundColor: '#FFFFFF',
-      borderBottom: '1px solid #E2E8F0',
+      backgroundColor: 'var(--cp-float)',
+      borderBottom: '1px solid var(--divider)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -130,14 +130,14 @@ export function TestCasesToolbar({
             onChange={(e) => onSearchChange(e.target.value)}
             style={{
               width: '100%', height: 40, padding: '0 12px 0 40px', fontSize: 14,
-              fontFamily: 'Inter, sans-serif', color: '#0F172A', backgroundColor: '#FFFFFF',
-              border: '1.5px solid #E2E8F0', borderRadius: 8, outline: 'none',
+              fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)',
+              border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none',
               transition: 'border-color 0.15s, box-shadow 0.15s',
             }}
-            onFocus={(e) => { e.target.style.borderColor = '#2563EB'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
-            onBlur={(e) => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'none'; }}
+            onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
+            onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
           />
-          <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 17, height: 17, color: '#94A3B8', pointerEvents: 'none' }} />
+          <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 17, height: 17, color: 'var(--fg-4)', pointerEvents: 'none' }} />
         </div>
 
         {/* Filter button */}
@@ -161,26 +161,26 @@ export function TestCasesToolbar({
           {isFilterOpen && (
             <div style={{
               position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 320,
-              backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
+              backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 12,
               boxShadow: '0 10px 40px rgba(0,0,0,0.12)', padding: 16, zIndex: 100,
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>Filters</span>
-                <button onClick={clearAllFilters} style={{ background: 'none', border: 'none', fontSize: 13, color: '#64748B', cursor: 'pointer' }}>Clear</button>
+                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)' }}>Filters</span>
+                <button onClick={clearAllFilters} style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--fg-3)', cursor: 'pointer' }}>Clear</button>
               </div>
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 8 }}>Priority</div>
+                <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 8 }}>Priority</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>{PRIORITY_OPTIONS.map(p => renderCheckbox('priorities', p, p.charAt(0).toUpperCase() + p.slice(1)))}</div>
               </div>
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 8 }}>Status</div>
+                <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 8 }}>Status</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>{STATUS_OPTIONS.map(s => renderCheckbox('statuses', s, s.charAt(0).toUpperCase() + s.slice(1)))}</div>
               </div>
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 8 }}>Type</div>
+                <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 8 }}>Type</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>{TYPE_OPTIONS.map(t => renderCheckbox('types', t, t.charAt(0).toUpperCase() + t.slice(1)))}</div>
               </div>
-              <button onClick={applyFilters} style={{ width: '100%', height: 36, background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer' }}>Apply Filters</button>
+              <button onClick={applyFilters} style={{ width: '100%', height: 36, background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer' }}>Apply Filters</button>
             </div>
           )}
         </div>
@@ -190,13 +190,13 @@ export function TestCasesToolbar({
           <button
             onClick={() => { setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
             style={{
-              height: 40, padding: '0 16px', backgroundColor: '#FFFFFF',
-              border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14,
-              fontFamily: 'Inter, sans-serif', fontWeight: 500, color: '#334155',
+              height: 40, padding: '0 16px', backgroundColor: 'var(--cp-float)',
+              border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14,
+              fontFamily: 'Inter, sans-serif', fontWeight: 500, color: 'var(--fg-2)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
             }}
           >
-            <ArrowUpDown style={{ width: 16, height: 16, color: '#64748B' }} />
+            <ArrowUpDown style={{ width: 16, height: 16, color: 'var(--fg-3)' }} />
             Sort
           </button>
 
@@ -204,10 +204,10 @@ export function TestCasesToolbar({
           {isSortOpen && (
             <div style={{
               position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 240,
-              backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
+              backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 12,
               boxShadow: '0 10px 40px rgba(0,0,0,0.12)', padding: 8, zIndex: 100,
             }}>
-              <div style={{ padding: '8px 12px', fontSize: 12, fontWeight: 600, color: '#64748B', borderBottom: '1px solid #F1F5F9' }}>Sort by</div>
+              <div style={{ padding: '8px 12px', fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', borderBottom: '1px solid var(--cp-bd-zone)' }}>Sort by</div>
               {SORT_OPTIONS.map(opt => (
                 <div
                   key={opt.value}
@@ -219,16 +219,16 @@ export function TestCasesToolbar({
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <input type="radio" checked={sort.column === opt.value} readOnly style={{ width: 16, height: 16, accentColor: '#2563EB' }} />
-                    <span style={{ fontSize: 13, color: '#334155' }}>{opt.label}</span>
+                    <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>{opt.label}</span>
                   </div>
                   {sort.column === opt.value && (
                     <div style={{ display: 'flex', gap: 2 }}>
                       <button onClick={(e) => { e.stopPropagation(); onSortChange({ ...sort, direction: 'asc' }); }}
-                        style={{ width: 24, height: 24, padding: 0, border: 'none', borderRadius: 4, backgroundColor: sort.direction === 'asc' ? '#2563EB' : 'transparent', color: sort.direction === 'asc' ? '#FFFFFF' : '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ width: 24, height: 24, padding: 0, border: 'none', borderRadius: 4, backgroundColor: sort.direction === 'asc' ? 'var(--cp-blue)' : 'transparent', color: sort.direction === 'asc' ? '#FFFFFF' : '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <ArrowUp size={14} />
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); onSortChange({ ...sort, direction: 'desc' }); }}
-                        style={{ width: 24, height: 24, padding: 0, border: 'none', borderRadius: 4, backgroundColor: sort.direction === 'desc' ? '#2563EB' : 'transparent', color: sort.direction === 'desc' ? '#FFFFFF' : '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ width: 24, height: 24, padding: 0, border: 'none', borderRadius: 4, backgroundColor: sort.direction === 'desc' ? 'var(--cp-blue)' : 'transparent', color: sort.direction === 'desc' ? '#FFFFFF' : '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <ArrowDown size={14} />
                       </button>
                     </div>
@@ -242,12 +242,12 @@ export function TestCasesToolbar({
 
       {/* Right side */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <span style={{ fontSize: 13, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>
-          <strong style={{ color: '#0F172A', fontWeight: 600 }}>{testCaseCount}</strong> test cases
+        <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>
+          <strong style={{ color: 'var(--fg-1)', fontWeight: 600 }}>{testCaseCount}</strong> test cases
         </span>
 
         {/* View toggle */}
-        <div style={{ display: 'flex', backgroundColor: '#F1F5F9', borderRadius: 8, padding: 4 }}>
+        <div style={{ display: 'flex', backgroundColor: 'var(--cp-bd-zone)', borderRadius: 8, padding: 4 }}>
           <button
             onClick={() => onViewModeChange('list')}
             style={{

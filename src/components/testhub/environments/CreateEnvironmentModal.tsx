@@ -98,16 +98,16 @@ export function CreateEnvironmentModal({ isOpen, onClose, onCreated }: CreateEnv
 
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24 }}>
-      <div style={{ width: '100%', maxWidth: 550, maxHeight: '90vh', backgroundColor: '#FFFFFF', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ width: '100%', maxWidth: 550, maxHeight: '90vh', backgroundColor: 'var(--cp-float)', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 44, height: 44, borderRadius: 10, background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Server size={22} style={{ color: '#FFFFFF' }} />
             </div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>Add Environment</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Add Environment</h2>
           </div>
-          <button onClick={onClose} style={{ width: 36, height: 36, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 36, height: 36, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--fg-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
           </button>
         </div>
@@ -116,72 +116,72 @@ export function CreateEnvironmentModal({ isOpen, onClose, onCreated }: CreateEnv
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
-                Name <span style={{ color: '#DC2626' }}>*</span>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
+                Name <span style={{ color: 'var(--sem-danger)' }}>*</span>
               </label>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g., QA Environment"
                 style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.name ? '#DC2626' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14 }} />
-              {errors.name && <p style={{ fontSize: 12, color: '#DC2626', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} /> {errors.name}</p>}
+              {errors.name && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} /> {errors.name}</p>}
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>Type</label>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>Type</label>
               <select value={type} onChange={(e) => setType(e.target.value)}
-                style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFFFFF' }}>
+                style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, backgroundColor: 'var(--cp-float)' }}>
                 {TYPE_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
             </div>
           </div>
 
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Globe size={14} /> Application URL</span>
             </label>
             <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://qa.example.com"
               style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.url ? '#DC2626' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14 }} />
-            {errors.url && <p style={{ fontSize: 12, color: '#DC2626', margin: '6px 0 0' }}>{errors.url}</p>}
+            {errors.url && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0' }}>{errors.url}</p>}
           </div>
 
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Link2 size={14} /> API URL</span>
             </label>
             <input type="text" value={apiUrl} onChange={(e) => setApiUrl(e.target.value)} placeholder="https://api.qa.example.com"
               style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.apiUrl ? '#DC2626' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14 }} />
-            {errors.apiUrl && <p style={{ fontSize: 12, color: '#DC2626', margin: '6px 0 0' }}>{errors.apiUrl}</p>}
+            {errors.apiUrl && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0' }}>{errors.apiUrl}</p>}
           </div>
 
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Database size={14} /> Database Info</span>
             </label>
             <input type="text" value={databaseInfo} onChange={(e) => setDatabaseInfo(e.target.value)} placeholder="e.g., PostgreSQL @ db.qa.example.com:5432"
-              style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14 }} />
+              style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14 }} />
           </div>
 
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><User size={14} /> Owner</span>
             </label>
             <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)}
-              style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFFFFF' }}>
+              style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, backgroundColor: 'var(--cp-float)' }}>
               <option value="">Select owner</option>
               {users.map((u) => <option key={u.id} value={u.id}>{u.full_name}</option>)}
             </select>
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><FileText size={14} /> Description</span>
             </label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Notes about this environment..." rows={3}
-              style={{ width: '100%', padding: 14, border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
+              style={{ width: '100%', padding: 14, border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, resize: 'vertical' }} />
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer' }}>
+            style={{ height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}
