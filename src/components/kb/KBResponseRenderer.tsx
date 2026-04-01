@@ -403,7 +403,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
     medium: { color: '#D97706', label: 'Medium confidence' },
     low: { color: '#DC2626', label: 'Low confidence — verify with sources' },
     insufficient: { color: '#DC2626', label: 'Insufficient data' },
-  }[confidence] || { color: '#71717A', label: '' };
+  }[confidence] || { color: 'var(--fg-3, #71717A)', label: '' };
 
   // Parse "Showing X of Y" from the response text for scope bar
   const showingMatch = (response.answer || '').match(/Showing\s+(\d+)\s+of\s+(\d+)/i);
@@ -425,7 +425,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
     <div dir={dir}>
       {/* Title */}
       {response.title && (
-        <h3 style={{ fontSize: 15, fontWeight: 700, color: '#09090B', margin: '0 0 6px', fontFamily: "system-ui, sans-serif" }}>
+        <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1, #09090B)', margin: '0 0 6px', fontFamily: "system-ui, sans-serif" }}>
           {response.title}
         </h3>
       )}
@@ -490,7 +490,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
         </div>
       )}
       {(feedbackGiven || feedbackState !== 'none') && (
-        <div style={{ fontSize: 10, color: '#71717A', marginTop: 8, transition: 'opacity 200ms' }}>
+        <div style={{ fontSize: 10, color: 'var(--fg-3, #71717A)', marginTop: 8, transition: 'opacity 200ms' }}>
           {showThanks ? (
             <span style={{ animation: 'kb-feedback-bounce 200ms ease' }}>Thanks for the feedback</span>
           ) : '✓ Feedback recorded'}

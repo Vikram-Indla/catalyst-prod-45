@@ -689,7 +689,7 @@ function EAReviewSelect({ value, onChange }: { value: string; onChange: (v: stri
         <ChevronDown size={12} style={{ opacity: 0, transition: 'opacity 0.15s' }} className="group-hover:!opacity-60" />
       </div>
       {open && (
-        <div style={{ position: 'absolute', top: '100%', left: -8, zIndex: 100, background: 'white', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', minWidth: 180, padding: 4, marginTop: 4 }}>
+        <div style={{ position: 'absolute', top: '100%', left: -8, zIndex: 100, background: 'var(--bg-app, white)', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', minWidth: 180, padding: 4, marginTop: 4 }}>
           {EA_REVIEW_OPTIONS.map(o => (
             <div key={o.value} onClick={() => { onChange(o.value); setOpen(false); }}
               style={{ padding: '6px 10px', fontSize: 13, cursor: 'pointer', borderRadius: 4, background: o.value === value ? 'var(--pb-surface-secondary)' : 'transparent' }}
@@ -733,7 +733,7 @@ function PrioritySelect({ value, onChange }: { value: string; onChange: (v: stri
         <ChevronDown size={12} style={{ opacity: 0, transition: 'opacity 0.15s' }} className="group-hover:!opacity-60" />
       </div>
       {open && (
-        <div style={{ position: 'absolute', top: '100%', left: -8, zIndex: 100, background: 'white', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', minWidth: 150, padding: 4, marginTop: 4 }}>
+        <div style={{ position: 'absolute', top: '100%', left: -8, zIndex: 100, background: 'var(--bg-app, white)', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', minWidth: 150, padding: 4, marginTop: 4 }}>
           {PRIORITY_OPTIONS.map(o => (
             <div key={o.value} onClick={() => { onChange(o.value); setOpen(false); }}
               style={{ padding: '6px 10px', fontSize: 13, cursor: 'pointer', borderRadius: 4, textTransform: 'capitalize', background: o.value === value ? 'var(--pb-surface-secondary)' : 'transparent' }}

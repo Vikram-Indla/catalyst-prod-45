@@ -201,13 +201,13 @@ export default function ResourceListingPage() {
   };
 
   return (
-    <div style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif", height: '100%', overflow: 'auto', background: '#F8FAFC' }}>
+    <div style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif", height: '100%', overflow: 'auto', background: 'var(--surface-subtle, #F8FAFC)' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '20px', fontWeight: 800, color: '#0F172A', margin: 0 }}>Resources</h1>
+        <h1 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--fg-1, #0F172A)', margin: 0 }}>Resources</h1>
         <span style={{
-          fontSize: '12px', fontWeight: 700, color: '#475569',
-          background: '#F1F5F9', borderRadius: '10px', padding: '3px 10px',
+          fontSize: '12px', fontWeight: 700, color: 'var(--fg-2, #475569)',
+          background: 'var(--surface-muted, #F1F5F9)', borderRadius: '10px', padding: '3px 10px',
         }}>
           {filtered.length} resource{filtered.length !== 1 ? 's' : ''}
         </span>
@@ -217,7 +217,7 @@ export default function ResourceListingPage() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
         {/* Search */}
         <div style={{ position: 'relative', width: '100%', maxWidth: '420px' }}>
-          <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+          <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4, #94A3B8)' }} />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -226,7 +226,7 @@ export default function ResourceListingPage() {
               width: '100%', padding: '10px 14px 10px 40px',
               fontSize: '13.5px', fontWeight: 500,
               background: '#fff', border: '1.5px solid #B0B8C4',
-              borderRadius: '8px', outline: 'none', color: '#0F172A',
+              borderRadius: '8px', outline: 'none', color: 'var(--fg-1, #0F172A)',
             }}
             onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,.1)'; }}
             onBlur={e => { e.currentTarget.style.borderColor = '#B0B8C4'; e.currentTarget.style.boxShadow = 'none'; }}
@@ -252,7 +252,7 @@ export default function ResourceListingPage() {
       {/* Resource Type Filter Pills */}
       <div style={{ display: 'flex', gap: 8, padding: '12px 0 4px 0', alignItems: 'center' }}>
         <span style={{
-          fontSize: 11, fontWeight: 600, color: '#64748B',
+          fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)',
           textTransform: 'uppercase', letterSpacing: '0.05em',
           marginRight: 4, alignSelf: 'center',
         }}>
@@ -278,7 +278,7 @@ export default function ResourceListingPage() {
                 fontSize: 13, fontWeight: isActive ? 600 : 500, cursor: 'pointer',
                 transition: 'all 150ms ease',
                 display: 'inline-flex', alignItems: 'center', gap: 6,
-                border: isActive ? `1.5px solid ${pill.accentColor}` : '1px solid #E2E8F0',
+                border: isActive ? `1.5px solid ${pill.accentColor}` : '1px solid var(--divider, #E2E8F0)',
                 background: isActive ? '#FFFFFF' : '#F1F5F9',
                 color: isActive ? pill.accentColor : '#475569',
               }}
@@ -313,8 +313,8 @@ export default function ResourceListingPage() {
 
       {/* Table */}
       <div style={{
-        border: '1.5px solid #E2E8F0', borderRadius: '12px', overflow: 'hidden',
-        background: '#FFFFFF',
+        border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: '12px', overflow: 'hidden',
+        background: 'var(--bg-app, #FFFFFF)',
       }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -325,9 +325,9 @@ export default function ResourceListingPage() {
                     key={col.key}
                     onClick={() => col.key !== 'actions' && handleSort(col.key as SortKey)}
                     style={{
-                      background: '#FAFAFA', padding: '0 16px', height: '40px',
+                      background: 'var(--surface-subtle, #FAFAFA)', padding: '0 16px', height: '40px',
                       fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
-                      letterSpacing: '0.07em', color: '#475569',
+                      letterSpacing: '0.07em', color: 'var(--fg-2, #475569)',
                       borderBottom: '1px solid #e5e7eb',
                       cursor: col.key !== 'actions' ? 'pointer' : 'default',
                       textAlign: col.center ? 'center' : 'left',
@@ -368,8 +368,8 @@ export default function ResourceListingPage() {
                 <tr>
                   <td colSpan={6} style={{ textAlign: 'center', padding: '60px 20px' }}>
                     <Search size={32} style={{ color: '#D1D5DB', margin: '0 auto 12px' }} />
-                    <div style={{ fontSize: '15px', fontWeight: 700, color: '#0F172A', marginBottom: '4px' }}>No resources match your search.</div>
-                    <div style={{ fontSize: '12px', color: '#94A3B8' }}>Try adjusting your search or filters</div>
+                    <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--fg-1, #0F172A)', marginBottom: '4px' }}>No resources match your search.</div>
+                    <div style={{ fontSize: '12px', color: 'var(--fg-4, #94A3B8)' }}>Try adjusting your search or filters</div>
                   </td>
                 </tr>
               ) : sorted.map(r => (
@@ -494,7 +494,7 @@ function PillButton({ active, onClick, label }: { active: boolean; onClick: () =
     <button
       onClick={onClick}
       style={{
-        background: '#FFFFFF',
+        background: 'var(--bg-app, #FFFFFF)',
         border: `1.5px solid ${active ? '#111' : '#e5e7eb'}`,
         color: active ? '#111' : '#6b7280',
         borderRadius: '20px',

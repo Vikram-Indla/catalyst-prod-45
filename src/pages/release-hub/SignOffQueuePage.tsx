@@ -54,7 +54,7 @@ export default function SignOffQueuePage() {
   };
 
   return (
-    <div className="p-6" style={{ background: '#FFFFFF' }}>
+    <div className="p-6" style={{ background: 'var(--bg-app, #FFFFFF)' }}>
       <div className="mb-5">
         <h1 className="text-[24px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: RH.ink1 }}>Sign-off Queue</h1>
         <p className="text-[13px] text-[#64748B] mt-1">All pending approvals — notifications sent to approver's For You homepage</p>
@@ -66,7 +66,7 @@ export default function SignOffQueuePage() {
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
           <input type="text" placeholder="Search changes or approvers..." value={search} onChange={e => setSearch(e.target.value)}
             className="h-9 w-72 pl-9 pr-3 rounded-[4px] text-[13px] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
-            style={{ border: '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: '#FFFFFF' }} />
+            style={{ border: '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: 'var(--bg-app, #FFFFFF)' }} />
         </div>
       </div>
 
@@ -76,10 +76,10 @@ export default function SignOffQueuePage() {
       ) : signoffs.length === 0 ? (
         <EmptyState icon={CheckSquare} title="No pending sign-offs" subtitle="All approvals are up to date" />
       ) : (
-        <div className="rounded-[6px] overflow-hidden" style={{ border: '0.75px solid rgba(15,23,42,0.12)', background: '#FFFFFF' }}>
+        <div className="rounded-[6px] overflow-hidden" style={{ border: '0.75px solid rgba(15,23,42,0.12)', background: 'var(--bg-app, #FFFFFF)' }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
             <thead>
-              <tr style={{ background: '#F1F5F9' }}>
+              <tr style={{ background: 'var(--surface-muted, #F1F5F9)' }}>
                 {['CHANGE', 'TITLE', 'GATE', 'APPROVER', 'RISK', 'STATUS', 'ACTIONS'].map(h => (
                   <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em] text-[#64748B]" style={{ fontWeight: 600, height: 36, padding: '0 12px' }}>{h}</th>
                 ))}
@@ -123,7 +123,7 @@ export default function SignOffQueuePage() {
 
       {/* Approve/Reject Modal */}
       <Dialog open={!!actionModal} onOpenChange={() => { setActionModal(null); setComment(''); }}>
-        <DialogContent className="sm:max-w-[520px]" style={{ background: '#FFFFFF' }}>
+        <DialogContent className="sm:max-w-[520px]" style={{ background: 'var(--bg-app, #FFFFFF)' }}>
           <DialogHeader>
             <DialogTitle style={{ fontFamily: RH.fontDisplay, fontWeight: 650 }}>
               {actionModal?.action === 'approve' ? 'Approve Sign-off' : 'Reject Sign-off'}
@@ -131,7 +131,7 @@ export default function SignOffQueuePage() {
           </DialogHeader>
           {actionModal && (
             <div className="space-y-4">
-              <div className="rounded-[6px] p-3" style={{ background: '#F1F5F9' }}>
+              <div className="rounded-[6px] p-3" style={{ background: 'var(--surface-muted, #F1F5F9)' }}>
                 <p className="text-[12px] text-[#64748B] mb-1">Gate: <span className="font-bold text-[#334155]">{actionModal.signoff.signoff_role || actionModal.signoff.stage}</span></p>
                 <p className="text-[12px] text-[#64748B]">Change: <span style={{ fontFamily: RH.fontMono, fontWeight: 650, color: '#2563EB' }}>{actionModal.signoff.rh_changes?.chg_number}</span> — {actionModal.signoff.rh_changes?.title}</p>
                 {actionModal.signoff.rh_changes?.risk_level && <div className="mt-2"><RiskBadge risk={actionModal.signoff.rh_changes.risk_level} /></div>}

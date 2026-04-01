@@ -28,7 +28,7 @@ interface BulkOpsHistoryProps {
 export function BulkOpsHistory({ onClose }: BulkOpsHistoryProps) {
   const { data: entries = [], isLoading } = useBulkOpsLog();
 
-  const opConfig = (op: string) => OP_CONFIG[op] || { label: op, bg: '#f1f5f9', color: '#475569' };
+  const opConfig = (op: string) => OP_CONFIG[op] || { label: op, bg: '#f1f5f9', color: 'var(--fg-2, #475569)' };
 
   return (
     <div

@@ -106,7 +106,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
               alt={name}
               style={{
                 width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
-                border: '2px solid #E4E4E7', background: avatarBg,
+                border: '2px solid var(--divider, #E4E4E7)', background: avatarBg,
               }}
               onError={(e) => {
                 const el = e.currentTarget;

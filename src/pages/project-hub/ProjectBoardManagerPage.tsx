@@ -46,7 +46,7 @@ export default function ProjectBoardManagerPage() {
 
   if (!project) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748B', fontSize: 13 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--fg-3, #64748B)', fontSize: 13 }}>
         Project not found
       </div>
     );

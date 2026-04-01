@@ -36,17 +36,17 @@ const THEME_STATUS_COLORS: Record<string, StatusConfig> = {
 export const THEME_EPIC_MARKER_STATUS_COLORS: Record<string, { border: string; background: string; text: string }> = {
   'proposed': {
     border: 'hsl(var(--roadmap-status-new))',
-    background: 'white',
+    background: 'var(--bg-app, white)',
     text: 'hsl(var(--roadmap-status-new))',
   },
   'analyzing': {
     border: 'hsl(var(--roadmap-status-analyse))',
-    background: 'white',
+    background: 'var(--bg-app, white)',
     text: 'hsl(var(--roadmap-status-analyse))',
   },
   'approved': {
     border: 'hsl(var(--roadmap-status-approved))',
-    background: 'white',
+    background: 'var(--bg-app, white)',
     text: 'hsl(var(--roadmap-status-approved))',
   },
   'in_progress': {

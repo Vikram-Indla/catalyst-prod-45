@@ -26,7 +26,7 @@ export function Resource360Toolbar({
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12,
-      padding: '8px 20px', background: '#FFFFFF',
+      padding: '8px 20px', background: 'var(--bg-app, #FFFFFF)',
       borderBottom: '1px solid #D9D2C9', flexShrink: 0,
     }}>
       {/* View tabs — dark navy active */}
@@ -85,7 +85,7 @@ export function Resource360Toolbar({
             width: 32, height: 32, borderRadius: 6,
             border: '1px solid #D9D2C9', background: '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', fontSize: 16, color: '#6B7280',
+            cursor: 'pointer', fontSize: 16, color: 'var(--fg-3, #6B7280)',
           }}
         >
           {isFullscreen ? '✕' : '⛶'}

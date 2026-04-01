@@ -111,7 +111,7 @@ const PRIORITIES = [
   { value: 'Critical', icon: ChevronsUp, color: '#DC2626' },
   { value: 'High', icon: ArrowUp, color: '#D97706' },
   { value: 'Medium', icon: ArrowRight, color: '#2563EB' },
-  { value: 'Low', icon: ArrowDown, color: '#94A3B8' },
+  { value: 'Low', icon: ArrowDown, color: 'var(--fg-4, #94A3B8)' },
 ];
 
 export function InlinePriorityPicker({ current, anchorRef, onSelect, onClose }: {

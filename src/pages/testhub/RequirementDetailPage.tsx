@@ -54,20 +54,20 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  draft: { label: 'Draft', color: '#64748B', bg: '#F1F5F9' },
+  draft: { label: 'Draft', color: 'var(--fg-3, #64748B)', bg: '#F1F5F9' },
   approved: { label: 'Approved', color: '#2563EB', bg: '#EFF6FF' },
   in_progress: { label: 'In Progress', color: '#D97706', bg: '#FFFBEB' },
   implemented: { label: 'Implemented', color: '#7C3AED', bg: '#F5F3FF' },
   verified: { label: 'Verified', color: '#059669', bg: '#ECFDF5' },
-  deprecated: { label: 'Deprecated', color: '#94A3B8', bg: '#F8FAFC' },
+  deprecated: { label: 'Deprecated', color: 'var(--fg-4, #94A3B8)', bg: '#F8FAFC' },
 };
 
 const EXEC_STATUS_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
   passed: { label: 'Passed', color: '#059669', icon: CheckCircle2 },
   failed: { label: 'Failed', color: '#DC2626', icon: XCircle },
   blocked: { label: 'Blocked', color: '#D97706', icon: AlertTriangle },
-  skipped: { label: 'Skipped', color: '#64748B', icon: Clock },
-  not_run: { label: 'Not Run', color: '#94A3B8', icon: Clock },
+  skipped: { label: 'Skipped', color: 'var(--fg-3, #64748B)', icon: Clock },
+  not_run: { label: 'Not Run', color: 'var(--fg-4, #94A3B8)', icon: Clock },
 };
 
 export default function RequirementDetailPage() {
@@ -145,7 +145,7 @@ export default function RequirementDetailPage() {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#F8FAFC' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'var(--surface-subtle, #F8FAFC)' }}>
         <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#0891B2' }} />
         <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -153,7 +153,7 @@ export default function RequirementDetailPage() {
   }
 
   if (!requirement) {
-    return <div style={{ padding: 24, textAlign: 'center', color: '#64748B' }}>Requirement not found</div>;
+    return <div style={{ padding: 24, textAlign: 'center', color: 'var(--fg-3, #64748B)' }}>Requirement not found</div>;
   }
 
   const type = TYPE_CONFIG[requirement.type] || TYPE_CONFIG.functional;
@@ -161,9 +161,9 @@ export default function RequirementDetailPage() {
   const coverageColor = getCoverageColor(requirement.coverage_percent);
 
   return (
-    <div style={{ padding: 24, backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
+    <div style={{ padding: 24, backgroundColor: 'var(--surface-subtle, #F8FAFC)', minHeight: '100vh' }}>
       <button onClick={() => navigate('/testhub/requirements')}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: '1px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFF', color: '#64748B', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
+        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 8, backgroundColor: '#FFF', color: 'var(--fg-3, #64748B)', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
         <ArrowLeft size={16} /> Back to Requirements
       </button>
 
@@ -175,20 +175,20 @@ export default function RequirementDetailPage() {
             <span style={{ fontSize: 12, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '4px 10px', borderRadius: 6 }}>{type.label}</span>
             <span style={{ fontSize: 12, fontWeight: 500, color: status.color, backgroundColor: status.bg, padding: '4px 10px', borderRadius: 6 }}>{status.label}</span>
             {requirement.external_id && (
-              <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', backgroundColor: '#F1F5F9', padding: '4px 10px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3, #64748B)', backgroundColor: 'var(--surface-muted, #F1F5F9)', padding: '4px 10px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
                 <ExternalLink size={12} /> {requirement.external_id}
               </span>
             )}
           </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#0F172A', margin: 0 }}>{requirement.title}</h1>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 13, color: '#64748B' }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>{requirement.title}</h1>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 13, color: 'var(--fg-3, #64748B)' }}>
             {requirement.owner && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><User size={14} /> {requirement.owner.full_name}</span>}
             {requirement.release_version && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Tag size={14} /> v{requirement.release_version}</span>}
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <select value={requirement.status} onChange={(e) => updateStatus(e.target.value)}
-            style={{ height: 40, padding: '0 14px', border: '1px solid #E2E8F0', borderRadius: 8, fontSize: 13, backgroundColor: '#FFF', cursor: 'pointer' }}>
+            style={{ height: 40, padding: '0 14px', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 8, fontSize: 13, backgroundColor: '#FFF', cursor: 'pointer' }}>
             {Object.entries(STATUS_CONFIG).map(([key, val]) => <option key={key} value={key}>{val.label}</option>)}
           </select>
           <button onClick={deleteRequirement}
@@ -199,34 +199,34 @@ export default function RequirementDetailPage() {
       </div>
 
       {/* Coverage Card */}
-      <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 24, border: '1px solid #E2E8F0', marginBottom: 24 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', margin: '0 0 16px' }}>Test Coverage</h3>
+      <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 24, border: '1px solid var(--divider, #E2E8F0)', marginBottom: 24 }}>
+        <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 16px' }}>Test Coverage</h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
           <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-              <span style={{ fontSize: 14, color: '#64748B' }}>Coverage</span>
+              <span style={{ fontSize: 14, color: 'var(--fg-3, #64748B)' }}>Coverage</span>
               <span style={{ fontSize: 18, fontWeight: 700, color: coverageColor }}>{requirement.coverage_percent}%</span>
             </div>
             <div style={{ height: 12, backgroundColor: '#E2E8F0', borderRadius: 6, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${requirement.coverage_percent}%`, backgroundColor: coverageColor, borderRadius: 6 }} />
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 20, borderLeft: '1px solid #E2E8F0', paddingLeft: 24 }}>
+          <div style={{ display: 'flex', gap: 20, borderLeft: '1px solid var(--divider, #E2E8F0)', paddingLeft: 24 }}>
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontSize: 24, fontWeight: 700, color: '#0F172A', margin: 0 }}>{requirement.total_linked_tests}</p>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>Linked</p>
+              <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>{requirement.total_linked_tests}</p>
+              <p style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', margin: '4px 0 0' }}>Linked</p>
             </div>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontSize: 24, fontWeight: 700, color: '#059669', margin: 0 }}>{requirement.passed_tests}</p>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>Passed</p>
+              <p style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', margin: '4px 0 0' }}>Passed</p>
             </div>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontSize: 24, fontWeight: 700, color: '#DC2626', margin: 0 }}>{requirement.failed_tests}</p>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>Failed</p>
+              <p style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', margin: '4px 0 0' }}>Failed</p>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontSize: 24, fontWeight: 700, color: '#94A3B8', margin: 0 }}>{requirement.not_run_tests}</p>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>Not Run</p>
+              <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--fg-4, #94A3B8)', margin: 0 }}>{requirement.not_run_tests}</p>
+              <p style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', margin: '4px 0 0' }}>Not Run</p>
             </div>
           </div>
         </div>
@@ -234,8 +234,8 @@ export default function RequirementDetailPage() {
 
       {/* Description */}
       {requirement.description && (
-        <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 24, border: '1px solid #E2E8F0', marginBottom: 24 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 24, border: '1px solid var(--divider, #E2E8F0)', marginBottom: 24 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
             <FileText size={18} style={{ color: '#0891B2' }} /> Description
           </h3>
           <p style={{ fontSize: 14, color: '#334155', margin: 0, whiteSpace: 'pre-wrap' }}>{requirement.description}</p>
@@ -243,9 +243,9 @@ export default function RequirementDetailPage() {
       )}
 
       {/* Linked Tests */}
-      <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 24, border: '1px solid #E2E8F0' }}>
+      <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 24, border: '1px solid var(--divider, #E2E8F0)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Link2 size={18} style={{ color: '#0891B2' }} /> Linked Test Cases ({linkedTests.length})
           </h3>
           <button onClick={() => setShowLinkModal(true)}
@@ -255,7 +255,7 @@ export default function RequirementDetailPage() {
         </div>
 
         {linkedTests.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 40, color: '#94A3B8' }}>
+          <div style={{ textAlign: 'center', padding: 40, color: 'var(--fg-4, #94A3B8)' }}>
             <Link2 size={40} style={{ marginBottom: 12, opacity: 0.5 }} />
             <p style={{ margin: 0 }}>No test cases linked</p>
             <p style={{ margin: '8px 0 0', fontSize: 13 }}>Link test cases to track coverage</p>
@@ -267,7 +267,7 @@ export default function RequirementDetailPage() {
               const StatusIcon = execStatus.icon;
               return (
                 <div key={test.link_id}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, backgroundColor: '#F8FAFC', borderRadius: 10, border: '1px solid #E2E8F0' }}>
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, backgroundColor: 'var(--surface-subtle, #F8FAFC)', borderRadius: 10, border: '1px solid var(--divider, #E2E8F0)' }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                       <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4 }}>{test.case_key}</span>
@@ -275,16 +275,16 @@ export default function RequirementDetailPage() {
                         <StatusIcon size={12} /> {execStatus.label}
                       </span>
                     </div>
-                    <p style={{ fontSize: 14, color: '#0F172A', margin: 0 }}>{test.title}</p>
-                    {test.last_executed && <p style={{ fontSize: 12, color: '#94A3B8', margin: '4px 0 0' }}>Last executed: {formatDate(test.last_executed)}</p>}
+                    <p style={{ fontSize: 14, color: 'var(--fg-1, #0F172A)', margin: 0 }}>{test.title}</p>
+                    {test.last_executed && <p style={{ fontSize: 12, color: 'var(--fg-4, #94A3B8)', margin: '4px 0 0' }}>Last executed: {formatDate(test.last_executed)}</p>}
                   </div>
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
-                      style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', border: '1px solid #E2E8F0', borderRadius: 6, backgroundColor: '#FFF', color: '#334155', fontSize: 12, cursor: 'pointer' }}>
+                      style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 6, backgroundColor: '#FFF', color: '#334155', fontSize: 12, cursor: 'pointer' }}>
                       View <ChevronRight size={14} />
                     </button>
                     <button onClick={() => unlinkTest(test.link_id)}
-                      style={{ width: 32, height: 32, border: '1px solid #E2E8F0', borderRadius: 6, backgroundColor: '#FFF', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      style={{ width: 32, height: 32, border: '1px solid var(--divider, #E2E8F0)', borderRadius: 6, backgroundColor: '#FFF', color: 'var(--fg-4, #94A3B8)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Unlink size={14} />
                     </button>
                   </div>

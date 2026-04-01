@@ -141,7 +141,7 @@ export default function IdeationPage() {
           <>
             <AIIntelligenceButton label="Intelligence" onClick={() => setIntelligenceOpen(true)} />
             <button style={{
-              background: '#FFFFFF', color: '#334155', border: '1px solid rgba(15,23,42,0.12)',
+              background: 'var(--bg-app, #FFFFFF)', color: '#334155', border: '1px solid rgba(15,23,42,0.12)',
               borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 500,
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
               fontFamily: "'Inter', system-ui, sans-serif",
@@ -165,35 +165,35 @@ export default function IdeationPage() {
 
       {/* ─── Stats Bar ─── */}
       <div style={{
-        background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.08)',
+        background: 'var(--bg-app, #FFFFFF)', borderBottom: '1px solid rgba(15,23,42,0.08)',
         display: 'flex', alignItems: 'stretch',
       }}>
         {/* Total Ideas */}
         <div style={{ padding: '14px 24px', borderRight: '1px solid rgba(15,23,42,0.06)' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '4px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', marginBottom: '4px' }}>
             TOTAL IDEAS
           </div>
-          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: '#0F172A' }}>
+          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: 'var(--fg-1, #0F172A)' }}>
             {stats.total}
           </span>
         </div>
 
         {/* Converted */}
         <div style={{ padding: '14px 24px', borderRight: '1px solid rgba(15,23,42,0.06)' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '4px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', marginBottom: '4px' }}>
             CONVERTED
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
             <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: '#FFFFFF' }}>
               {stats.converted}
             </span>
-            <span style={{ fontSize: '11px', color: '#64748B' }}>→ Initiatives</span>
+            <span style={{ fontSize: '11px', color: 'var(--fg-3, #64748B)' }}>→ Initiatives</span>
           </div>
         </div>
 
         {/* By Quarter */}
         <div style={{ flex: 1, padding: '14px 24px' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: '8px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', marginBottom: '8px' }}>
             BY QUARTER
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -208,7 +208,7 @@ export default function IdeationPage() {
                     borderRadius: '3px', fontSize: '11px', fontWeight: 700,
                     background: qb.bg, color: qb.text,
                   }}>{q}</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '16px', fontWeight: 700, color: '#0F172A' }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '16px', fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>
                     {count}
                   </span>
                 </div>
@@ -216,8 +216,8 @@ export default function IdeationPage() {
             })}
             <div style={{ width: '1px', height: '20px', background: 'rgba(15,23,42,0.08)' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 500 }}>Unassigned</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '16px', fontWeight: 700, color: '#94A3B8' }}>
+              <span style={{ fontSize: '11px', color: 'var(--fg-4, #94A3B8)', fontWeight: 500 }}>Unassigned</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '16px', fontWeight: 700, color: 'var(--fg-4, #94A3B8)' }}>
                 {stats.unassigned}
               </span>
             </div>
@@ -231,7 +231,7 @@ export default function IdeationPage() {
           <span style={{ fontSize: '11px', fontWeight: 500, color: '#2563EB' }}>
             Showing {activeFilter.replace('_', ' ')} ideas only
           </span>
-          <span style={{ color: '#94A3B8' }}>·</span>
+          <span style={{ color: 'var(--fg-4, #94A3B8)' }}>·</span>
           <button onClick={() => setActiveFilter('all')} style={{ fontSize: '11px', color: '#2563EB', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             Clear filter
           </button>
@@ -240,19 +240,19 @@ export default function IdeationPage() {
 
       {/* ─── Toolbar ─── */}
       <div style={{
-        background: '#FFFFFF', borderBottom: '1px solid rgba(15,23,42,0.08)',
+        background: 'var(--bg-app, #FFFFFF)', borderBottom: '1px solid rgba(15,23,42,0.08)',
         padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px',
       }}>
         <div style={{ position: 'relative', width: '220px' }}>
-          <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+          <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4, #94A3B8)' }} />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search ideas..."
             style={{
               width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px',
-              background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px',
-              fontSize: '13px', color: '#0F172A', outline: 'none',
+              background: 'var(--surface-subtle, #F8FAFC)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: '6px',
+              fontSize: '13px', color: 'var(--fg-1, #0F172A)', outline: 'none',
             }}
             onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; e.currentTarget.style.borderColor = '#2563EB'; }}
             onBlur={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)'; }}
@@ -285,7 +285,7 @@ export default function IdeationPage() {
       </div>
 
       {/* ─── View Content ─── */}
-      <div style={{ flex: 1, overflow: 'auto', background: '#FFFFFF' }}>
+      <div style={{ flex: 1, overflow: 'auto', background: 'var(--bg-app, #FFFFFF)' }}>
         {activeView === 'list' && (
           <div style={{ padding: '16px 28px 24px' }}>
             <IdeationListView
@@ -345,12 +345,12 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
 }) {
   return (
     <div style={{
-      background: '#FFFFFF', borderRadius: '6px', border: '1px solid rgba(15,23,42,0.12)',
+      background: 'var(--bg-app, #FFFFFF)', borderRadius: '6px', border: '1px solid rgba(15,23,42,0.12)',
       overflow: 'hidden',
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
-          <tr style={{ height: '36px', background: '#F8FAFC' }}>
+          <tr style={{ height: '36px', background: 'var(--surface-subtle, #F8FAFC)' }}>
             <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
               <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
             </th>
@@ -368,7 +368,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
             ].map(col => (
               <th key={col.label} style={{
                 textAlign: 'left', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
-                letterSpacing: '0.06em', color: '#64748B', padding: '10px 12px',
+                letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', padding: '10px 12px',
                 borderBottom: '0.75px solid rgba(15,23,42,0.08)',
                 whiteSpace: 'nowrap', width: col.width,
               }}>
@@ -404,7 +404,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
               </td>
               <td style={{ padding: '8px 12px', maxWidth: '400px' }}>
                 <div style={{
-                  fontSize: '13px', fontWeight: 500, color: '#0F172A',
+                  fontSize: '13px', fontWeight: 500, color: 'var(--fg-1, #0F172A)',
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 }}>
                   {idea.title}
@@ -436,7 +436,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
         padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         borderTop: '0.75px solid rgba(15,23,42,0.06)',
       }}>
-        <span style={{ fontSize: '12px', color: '#64748B' }}>Showing 1–{ideas.length} of {ideas.length} ideas</span>
+        <span style={{ fontSize: '12px', color: 'var(--fg-3, #64748B)' }}>Showing 1–{ideas.length} of {ideas.length} ideas</span>
       </div>
     </div>
   );
@@ -463,7 +463,7 @@ function TypeBadge({ type }: { type: Idea['type'] }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
       borderRadius: 3, fontSize: '11px', fontWeight: 500,
-      background: c.bg, color: c.text, border: '1px solid #E2E8F0',
+      background: c.bg, color: c.text, border: '1px solid var(--divider, #E2E8F0)',
     }}>
       {c.label}
     </span>
@@ -498,10 +498,10 @@ function ImpactCell({ score }: { score: number }) {
 
 function QuarterBadge({ quarter }: { quarter?: string | null }) {
   if (!quarter) {
-    return <span style={{ fontSize: '11px', color: '#94A3B8' }}>—</span>;
+    return <span style={{ fontSize: '11px', color: 'var(--fg-4, #94A3B8)' }}>—</span>;
   }
   const qb = QUARTER_BADGE[quarter];
-  if (!qb) return <span style={{ fontSize: '11px', color: '#94A3B8' }}>{quarter}</span>;
+  if (!qb) return <span style={{ fontSize: '11px', color: 'var(--fg-4, #94A3B8)' }}>{quarter}</span>;
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -516,7 +516,7 @@ function QuarterBadge({ quarter }: { quarter?: string | null }) {
 
 function AssigneeCell({ assignee }: { assignee: Idea['assignee'] }) {
   if (!assignee) {
-    return <span style={{ fontSize: '13px', color: '#94A3B8', fontStyle: 'italic' }}>Unassigned</span>;
+    return <span style={{ fontSize: '13px', color: 'var(--fg-4, #94A3B8)', fontStyle: 'italic' }}>Unassigned</span>;
   }
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -533,11 +533,11 @@ function AssigneeCell({ assignee }: { assignee: Idea['assignee'] }) {
 }
 
 function DateCell({ date }: { date?: string | null }) {
-  if (!date) return <span style={{ color: '#94A3B8', fontSize: '12px' }}>—</span>;
+  if (!date) return <span style={{ color: 'var(--fg-4, #94A3B8)', fontSize: '12px' }}>—</span>;
   const d = new Date(date);
   const str = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   return (
-    <span style={{ fontSize: '12px', color: '#64748B' }}>
+    <span style={{ fontSize: '12px', color: 'var(--fg-3, #64748B)' }}>
       {str}
     </span>
   );

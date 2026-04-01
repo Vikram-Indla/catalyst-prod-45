@@ -257,11 +257,11 @@ export default function SharedStepsPage() {
   // no longer needed — counts come from fetchCategories
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--surface-subtle, #F8FAFC)' }}>
       <TestHubPageHeader title="Shared Steps Library" subtitle="Reusable test steps for consistency across test cases">
             <button onClick={handleRefresh} title="Refresh" style={{
-              width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8,
-              backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer',
+              width: 40, height: 40, padding: 0, border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8,
+              backgroundColor: 'var(--bg-app, #FFFFFF)', color: 'var(--fg-3, #64748B)', cursor: 'pointer',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <RefreshCw size={18} />
@@ -282,7 +282,7 @@ export default function SharedStepsPage() {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         {/* Category Sidebar */}
         <div style={{
-          width: 260, backgroundColor: '#FFFFFF', borderRight: '1px solid #E2E8F0',
+          width: 260, backgroundColor: 'var(--bg-app, #FFFFFF)', borderRight: '1px solid var(--divider, #E2E8F0)',
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}>
           {/* Sidebar Header */}
@@ -291,12 +291,12 @@ export default function SharedStepsPage() {
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
             <h2 style={{
-              fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase',
+              fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase',
               letterSpacing: '0.05em', margin: 0, fontFamily: 'Inter, sans-serif',
             }}>Categories</h2>
             <button onClick={() => setIsCreateCategoryModalOpen(true)} title="Add category" style={{
-              width: 28, height: 28, padding: 0, border: '1px solid #E2E8F0', borderRadius: 6,
-              backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer',
+              width: 28, height: 28, padding: 0, border: '1px solid var(--divider, #E2E8F0)', borderRadius: 6,
+              backgroundColor: 'var(--bg-app, #FFFFFF)', color: 'var(--fg-3, #64748B)', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Plus size={14} />
@@ -315,7 +315,7 @@ export default function SharedStepsPage() {
               onClick={() => setSelectedCategoryId(null)}
             />
 
-            <div style={{ height: 1, backgroundColor: '#F1F5F9', margin: '8px 0' }} />
+            <div style={{ height: 1, backgroundColor: 'var(--surface-muted, #F1F5F9)', margin: '8px 0' }} />
 
             {categories.map(cat => (
               <CategorySidebarItem
@@ -331,7 +331,7 @@ export default function SharedStepsPage() {
           </div>
 
           {/* Sidebar Footer */}
-          <div style={{ padding: '12px 16px', borderTop: '1px solid #F1F5F9', fontSize: 12, color: '#94A3B8' }}>
+          <div style={{ padding: '12px 16px', borderTop: '1px solid #F1F5F9', fontSize: 12, color: 'var(--fg-4, #94A3B8)' }}>
             {categories.length} categories
           </div>
         </div>
@@ -340,18 +340,18 @@ export default function SharedStepsPage() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {/* Toolbar */}
           <div style={{
-            padding: '16px 24px', backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+            padding: '16px 24px', backgroundColor: 'var(--bg-app, #FFFFFF)', borderBottom: '1px solid var(--divider, #E2E8F0)',
             display: 'flex', alignItems: 'center', gap: 12,
           }}>
             <div style={{ position: 'relative', flex: 1, maxWidth: 400 }}>
-              <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+              <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4, #94A3B8)' }} />
               <input
                 type="text" placeholder="Search shared steps..." value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   width: '100%', height: 40, paddingLeft: 40, paddingRight: 12,
-                  border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14,
-                  color: '#0F172A', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif',
+                  border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, fontSize: 14,
+                  color: 'var(--fg-1, #0F172A)', backgroundColor: 'var(--bg-app, #FFFFFF)', fontFamily: 'Inter, sans-serif',
                 }}
               />
             </div>
@@ -389,7 +389,7 @@ export default function SharedStepsPage() {
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 280,
-                    backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
+                    backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 12,
                     boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, overflow: 'hidden',
                   }}
                 >
@@ -397,7 +397,7 @@ export default function SharedStepsPage() {
                     padding: '12px 16px', borderBottom: '1px solid #F1F5F9',
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: '#64748B', fontFamily: 'Inter' }}>Filter by Category</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-3, #64748B)', fontFamily: 'Inter' }}>Filter by Category</span>
                     {activeFilters.length > 0 && (
                       <button onClick={() => setActiveFilters([])} style={{
                         background: 'none', border: 'none', color: '#2563EB', fontSize: 12,
@@ -427,7 +427,7 @@ export default function SharedStepsPage() {
                           />
                           <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: cat.color, flexShrink: 0 }} />
                           <span style={{ flex: 1 }}>{cat.name}</span>
-                          <span style={{ fontSize: 12, color: '#94A3B8' }}>{cat.step_count || 0}</span>
+                          <span style={{ fontSize: 12, color: 'var(--fg-4, #94A3B8)' }}>{cat.step_count || 0}</span>
                         </label>
                       );
                     })}
@@ -451,8 +451,8 @@ export default function SharedStepsPage() {
               <button
                 onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
                 style={{
-                  height: 40, padding: '0 14px', border: '1.5px solid #E2E8F0', borderRadius: 8,
-                  backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500,
+                  height: 40, padding: '0 14px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8,
+                  backgroundColor: 'var(--bg-app, #FFFFFF)', color: '#334155', fontSize: 14, fontWeight: 500,
                   cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'Inter',
                 }}
               >
@@ -466,7 +466,7 @@ export default function SharedStepsPage() {
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 220,
-                    backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
+                    backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 12,
                     boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8,
                   }}
                 >
@@ -511,7 +511,7 @@ export default function SharedStepsPage() {
             <div style={{ flex: 1 }} />
 
             {/* View Toggle */}
-            <div style={{ display: 'flex', border: '1.5px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, overflow: 'hidden' }}>
               <button onClick={() => setViewMode('list')} title="List view" style={{
                 width: 40, height: 38, padding: 0, border: 'none',
                 backgroundColor: viewMode === 'list' ? '#EFF6FF' : '#FFFFFF',
@@ -522,7 +522,7 @@ export default function SharedStepsPage() {
               </button>
               <button onClick={() => setViewMode('card')} title="Card view" style={{
                 width: 40, height: 38, padding: 0, border: 'none',
-                borderLeft: '1px solid #E2E8F0',
+                borderLeft: '1px solid var(--divider, #E2E8F0)',
                 backgroundColor: viewMode === 'card' ? '#EFF6FF' : '#FFFFFF',
                 color: viewMode === 'card' ? '#2563EB' : '#64748B', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -531,7 +531,7 @@ export default function SharedStepsPage() {
               </button>
             </div>
 
-            <span style={{ fontSize: 13, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>
+            <span style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', fontFamily: 'Inter, sans-serif' }}>
               {totalCount} shared step{totalCount !== 1 ? 's' : ''}
             </span>
           </div>
@@ -541,14 +541,14 @@ export default function SharedStepsPage() {
             {loading ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300 }}>
                 <div style={{
-                  width: 40, height: 40, border: '3px solid #E2E8F0', borderTopColor: '#2563EB',
+                  width: 40, height: 40, border: '3px solid var(--divider, #E2E8F0)', borderTopColor: '#2563EB',
                   borderRadius: '50%', animation: 'spin 1s linear infinite',
                 }} />
               </div>
             ) : sharedSteps.length === 0 ? (
               <div style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', height: '100%', color: '#94A3B8',
+                justifyContent: 'center', height: '100%', color: 'var(--fg-4, #94A3B8)',
               }}>
                 <Library size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
                 <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', fontFamily: 'Inter' }}>
@@ -559,15 +559,15 @@ export default function SharedStepsPage() {
                 </p>
               </div>
             ) : viewMode === 'list' ? (
-              <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, overflow: 'hidden' }}>
+              <div style={{ backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 12, overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter' }}>
                   <thead>
-                    <tr style={{ borderBottom: '1px solid #E2E8F0', backgroundColor: '#F8FAFC' }}>
-                      <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name</th>
-                      <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category</th>
-                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Variables</th>
-                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', width: 70 }}>Used</th>
-                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Actions</th>
+                    <tr style={{ borderBottom: '1px solid var(--divider, #E2E8F0)', backgroundColor: 'var(--surface-subtle, #F8FAFC)' }}>
+                      <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Variables</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', width: 70 }}>Used</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -585,9 +585,9 @@ export default function SharedStepsPage() {
                           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                           <td style={{ padding: '12px 16px' }}>
-                            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{step.name}</div>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{step.name}</div>
                             {step.description && (
-                              <div style={{ fontSize: 12, color: '#64748B', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 400 }}>
+                              <div style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 400 }}>
                                 {step.description}
                               </div>
                             )}
@@ -603,7 +603,7 @@ export default function SharedStepsPage() {
                                 {step.category.name}
                               </span>
                             ) : (
-                              <span style={{ color: '#94A3B8', fontSize: 13 }}>—</span>
+                              <span style={{ color: 'var(--fg-4, #94A3B8)', fontSize: 13 }}>—</span>
                             )}
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }}>
@@ -612,7 +612,7 @@ export default function SharedStepsPage() {
                                 {variables.length}
                               </span>
                             ) : (
-                              <span style={{ color: '#94A3B8', fontSize: 13 }}>—</span>
+                              <span style={{ color: 'var(--fg-4, #94A3B8)', fontSize: 13 }}>—</span>
                             )}
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }}>
@@ -627,14 +627,14 @@ export default function SharedStepsPage() {
                           <td style={{ padding: '12px 16px', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
                             <button onClick={() => setEditingStep(step)} title="Edit" style={{
                               width: 32, height: 32, padding: 0, border: 'none', borderRadius: 6,
-                              backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer',
+                              backgroundColor: 'transparent', color: 'var(--fg-3, #64748B)', cursor: 'pointer',
                               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                             }}>
                               <Pencil size={14} />
                             </button>
                             <button onClick={() => handleDelete(step)} title="Delete" style={{
                               width: 32, height: 32, padding: 0, border: 'none', borderRadius: 6,
-                              backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer',
+                              backgroundColor: 'transparent', color: 'var(--fg-3, #64748B)', cursor: 'pointer',
                               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                             }}>
                               <Trash2 size={14} />
@@ -774,7 +774,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete }: {
   return (
     <div
       style={{
-        backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
+        backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 12,
         padding: 20, cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s',
       }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#CBD5E1'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
@@ -808,7 +808,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete }: {
             onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen); }}
             style={{
               width: 32, height: 32, padding: 0, border: 'none', borderRadius: 6,
-              backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer',
+              backgroundColor: 'transparent', color: 'var(--fg-4, #94A3B8)', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
@@ -818,15 +818,15 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete }: {
             <div
               onClick={(e) => e.stopPropagation()}
               style={{
-                position: 'absolute', right: 0, top: 36, width: 160, backgroundColor: '#FFFFFF',
-                borderRadius: 8, border: '1px solid #E2E8F0', boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                position: 'absolute', right: 0, top: 36, width: 160, backgroundColor: 'var(--bg-app, #FFFFFF)',
+                borderRadius: 8, border: '1px solid var(--divider, #E2E8F0)', boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
                 padding: 4, zIndex: 50,
               }}
             >
               <MenuButton icon={<Eye size={14} />} label="View" onClick={() => { onView(); setMenuOpen(false); }} />
               <MenuButton icon={<Pencil size={14} />} label="Edit" onClick={() => { onEdit(); setMenuOpen(false); }} />
               <MenuButton icon={<Copy size={14} />} label="Duplicate" onClick={() => { onDuplicate(); setMenuOpen(false); }} />
-              <div style={{ height: 1, backgroundColor: '#F1F5F9', margin: '4px 0' }} />
+              <div style={{ height: 1, backgroundColor: 'var(--surface-muted, #F1F5F9)', margin: '4px 0' }} />
               <MenuButton icon={<Trash2 size={14} />} label="Delete" onClick={() => { onDelete(); setMenuOpen(false); }} danger />
             </div>
           )}
@@ -834,14 +834,14 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete }: {
       </div>
 
       {/* Name */}
-      <h3 style={{ fontFamily: 'Inter', fontSize: 15, fontWeight: 600, color: '#0F172A', margin: '0 0 4px' }}>
+      <h3 style={{ fontFamily: 'Inter', fontSize: 15, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 4px' }}>
         {step.name}
       </h3>
 
       {/* Description */}
       {step.description && (
         <p style={{
-          fontFamily: 'Inter', fontSize: 13, color: '#64748B', margin: '0 0 12px',
+          fontFamily: 'Inter', fontSize: 13, color: 'var(--fg-3, #64748B)', margin: '0 0 12px',
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
         }}>
           {step.description}
@@ -850,7 +850,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete }: {
 
       {/* Action */}
       <div style={{ marginBottom: 12 }}>
-        <span style={{ fontFamily: 'Inter', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B' }}>
+        <span style={{ fontFamily: 'Inter', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)' }}>
           Action
         </span>
         <p style={{
@@ -867,8 +867,8 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete }: {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingTop: 12, borderTop: '1px solid #F1F5F9' }}>
           {variables.map((v, i) => (
             <span key={i} style={{
-              padding: '2px 8px', backgroundColor: '#F1F5F9', borderRadius: 4,
-              fontFamily: 'monospace', fontSize: 11, color: '#64748B',
+              padding: '2px 8px', backgroundColor: 'var(--surface-muted, #F1F5F9)', borderRadius: 4,
+              fontFamily: 'monospace', fontSize: 11, color: 'var(--fg-3, #64748B)',
             }}>
               {`{{${v.name}}}`}
             </span>

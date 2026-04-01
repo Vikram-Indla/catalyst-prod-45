@@ -167,8 +167,8 @@ export default function AdminDiagnosticPage() {
           <Zap style={{ width: 18, height: 18, color: '#7C3AED' }} />
         </div>
         <div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', fontFamily: 'Sora, sans-serif', margin: 0 }}>System Diagnostic</h1>
-          <p style={{ fontSize: 12, color: '#64748B', margin: 0, fontFamily: 'Inter, sans-serif' }}>Edge functions, table inspector, and column guard checks</p>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, #0F172A)', fontFamily: 'Sora, sans-serif', margin: 0 }}>System Diagnostic</h1>
+          <p style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', margin: 0, fontFamily: 'Inter, sans-serif' }}>Edge functions, table inspector, and column guard checks</p>
         </div>
       </div>
 
@@ -178,7 +178,7 @@ export default function AdminDiagnosticPage() {
           {/* SECTION A — Connection Status */}
           <Card title="Connection Status">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 12, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>{supabaseUrl}</span>
+              <span style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', fontFamily: 'JetBrains Mono, monospace' }}>{supabaseUrl}</span>
               {connStatus === 'checking' && <StatusLozenge status="running" />}
               {connStatus === 'connected' && <StatusLozenge status="passed" />}
               {connStatus === 'error' && <StatusLozenge status="failed" />}
@@ -194,7 +194,7 @@ export default function AdminDiagnosticPage() {
                   onClick={() => selectPreset(p.name)}
                   style={{
                     fontSize: 11, padding: '3px 8px', borderRadius: 4,
-                    border: fnName === p.name ? '1px solid #7C3AED' : '1px solid #E2E8F0',
+                    border: fnName === p.name ? '1px solid #7C3AED' : '1px solid var(--divider, #E2E8F0)',
                     background: fnName === p.name ? '#F5F3FF' : '#FFFFFF',
                     color: fnName === p.name ? '#7C3AED' : '#334155',
                     cursor: 'pointer', fontFamily: 'JetBrains Mono, monospace',
@@ -260,13 +260,13 @@ export default function AdminDiagnosticPage() {
                   <div key={g.label} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     height: 36, padding: '0 12px', borderRadius: 4,
-                    border: '0.75px solid #E2E8F0', background: '#FFFFFF',
+                    border: '0.75px solid var(--divider, #E2E8F0)', background: 'var(--bg-app, #FFFFFF)',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {result ? (
                         result.passed ? <CheckCircle2 style={{ width: 14, height: 14, color: '#16A34A' }} /> : <XCircle style={{ width: 14, height: 14, color: '#DC2626' }} />
                       ) : (
-                        <Minus style={{ width: 14, height: 14, color: '#94A3B8' }} />
+                        <Minus style={{ width: 14, height: 14, color: 'var(--fg-4, #94A3B8)' }} />
                       )}
                       <span style={{ fontSize: 12, fontFamily: 'JetBrains Mono, monospace', color: '#334155' }}>{g.label}</span>
                     </div>
@@ -306,12 +306,12 @@ export default function AdminDiagnosticPage() {
               </div>
             )}
             {tableData && tableData.length > 0 && (
-              <div style={{ overflowX: 'auto', border: '0.75px solid #E2E8F0', borderRadius: 4 }}>
+              <div style={{ overflowX: 'auto', border: '0.75px solid var(--divider, #E2E8F0)', borderRadius: 4 }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11, fontFamily: 'JetBrains Mono, monospace' }}>
                   <thead>
-                    <tr style={{ background: '#F8FAFC' }}>
+                    <tr style={{ background: 'var(--surface-subtle, #F8FAFC)' }}>
                       {Object.keys(tableData[0]).map(col => (
-                        <th key={col} style={{ height: 36, padding: '0 10px', textAlign: 'left', fontWeight: 650, fontSize: 10, textTransform: 'uppercase', color: '#64748B', borderBottom: '0.75px solid #E2E8F0', whiteSpace: 'nowrap' }}>
+                        <th key={col} style={{ height: 36, padding: '0 10px', textAlign: 'left', fontWeight: 650, fontSize: 10, textTransform: 'uppercase', color: 'var(--fg-3, #64748B)', borderBottom: '0.75px solid var(--divider, #E2E8F0)', whiteSpace: 'nowrap' }}>
                           {col}
                         </th>
                       ))}
@@ -319,10 +319,10 @@ export default function AdminDiagnosticPage() {
                   </thead>
                   <tbody>
                     {tableData.map((row, i) => (
-                      <tr key={i} style={{ borderBottom: '0.75px solid #E2E8F0' }}>
+                      <tr key={i} style={{ borderBottom: '0.75px solid var(--divider, #E2E8F0)' }}>
                         {Object.values(row).map((val, j) => (
                           <td key={j} style={{ height: 36, padding: '0 10px', color: '#334155', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {val === null ? <span style={{ color: '#94A3B8' }}>null</span> : typeof val === 'object' ? JSON.stringify(val).slice(0, 50) : String(val).slice(0, 80)}
+                            {val === null ? <span style={{ color: 'var(--fg-4, #94A3B8)' }}>null</span> : typeof val === 'object' ? JSON.stringify(val).slice(0, 50) : String(val).slice(0, 80)}
                           </td>
                         ))}
                       </tr>
@@ -332,7 +332,7 @@ export default function AdminDiagnosticPage() {
               </div>
             )}
             {tableData && tableData.length === 0 && (
-              <div style={{ fontSize: 12, color: '#64748B', padding: 10, textAlign: 'center' }}>No rows returned</div>
+              <div style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', padding: 10, textAlign: 'center' }}>No rows returned</div>
             )}
           </Card>
 
@@ -345,10 +345,10 @@ export default function AdminDiagnosticPage() {
                 height: 260, overflowY: 'auto', fontFamily: 'JetBrains Mono, monospace', fontSize: 12,
               }}
             >
-              {logs.length === 0 && <span style={{ color: '#475569' }}>No log entries yet...</span>}
+              {logs.length === 0 && <span style={{ color: 'var(--fg-2, #475569)' }}>No log entries yet...</span>}
               {logs.map((entry, i) => (
                 <div key={i} style={{ marginBottom: 3, lineHeight: 1.5 }}>
-                  <span style={{ color: '#64748B' }}>[{entry.ts}]</span>{' '}
+                  <span style={{ color: 'var(--fg-3, #64748B)' }}>[{entry.ts}]</span>{' '}
                   <span style={{
                     color: entry.type === 'error' ? '#F87171' : entry.type === 'success' ? '#4ADE80' : '#93C5FD',
                   }}>
@@ -371,11 +371,11 @@ export default function AdminDiagnosticPage() {
 function Card({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div style={{
-      background: '#FFFFFF', border: '0.75px solid #E2E8F0', borderRadius: 8, padding: 16,
+      background: 'var(--bg-app, #FFFFFF)', border: '0.75px solid var(--divider, #E2E8F0)', borderRadius: 8, padding: 16,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
         {icon}
-        <h2 style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', fontFamily: 'Sora, sans-serif', margin: 0 }}>{title}</h2>
+        <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)', fontFamily: 'Sora, sans-serif', margin: 0 }}>{title}</h2>
       </div>
       {children}
     </div>

@@ -165,7 +165,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
         {/* Fix 2: Sticky Header — 56px */}
         <div style={{
           position: 'sticky', top: 0, zIndex: 10,
-          background: '#FFFFFF', borderBottom: '1px solid var(--divider)',
+          background: 'var(--bg-app, #FFFFFF)', borderBottom: '1px solid var(--divider)',
           padding: '0 20px', height: 56,
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
@@ -217,7 +217,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
         {/* Fix 2: Sticky Tab bar */}
         <div style={{
           position: 'sticky', top: 56, zIndex: 10,
-          background: '#FFFFFF', borderBottom: '1px solid var(--divider)',
+          background: 'var(--bg-app, #FFFFFF)', borderBottom: '1px solid var(--divider)',
           padding: '0 20px', display: 'flex', gap: 0,
         }}>
           {TABS.map(tab => (
@@ -488,7 +488,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
         const pctColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : 'var(--sem-danger)';
         return (
           <div key={kr.id} className="kr-detail-card" style={{
-            background: '#FFFFFF', border: '1px solid var(--divider)', borderRadius: 8,
+            background: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider)', borderRadius: 8,
             padding: '14px 16px', transition: 'all 150ms',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>

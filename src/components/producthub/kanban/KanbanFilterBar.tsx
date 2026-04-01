@@ -39,7 +39,7 @@ export const KanbanFilterBar: React.FC<KanbanFilterBarProps> = ({
             style={{
               background: isActive ? 'var(--cp-blue-wash)' : 'var(--bg-app)',
               color: isActive ? 'var(--cp-blue)' : '#3F3F46',
-              border: isActive ? '1px solid var(--cp-blue)' : '1px solid #E4E4E7',
+              border: isActive ? '1px solid var(--cp-blue)' : '1px solid var(--divider, #E4E4E7)',
               fontWeight: isActive ? 600 : 500,
             }}
           >

@@ -46,7 +46,7 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
       ref={ref}
       style={{
         position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 180,
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6,
+        background: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 6,
         boxShadow: '0 4px 16px rgba(0,0,0,0.10)', zIndex: 9999, overflow: 'hidden',
       }}
     >
@@ -65,7 +65,7 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
             onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? '#F8FAFC' : '')}
           >
             <PriorityBarsInline level={p.level} />
-            <span style={{ fontSize: 12, color: '#0F172A', flex: 1 }}>{p.name}</span>
+            <span style={{ fontSize: 12, color: 'var(--fg-1, #0F172A)', flex: 1 }}>{p.name}</span>
             {isCurrent && <Check size={14} color="#2563EB" />}
           </div>
         );

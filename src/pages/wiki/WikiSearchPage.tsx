@@ -95,26 +95,26 @@ export default function WikiSearchPage() {
   const confBg = (c: number) => c >= 90 ? '#1B7F37' : c >= 70 ? '#0C66E4' : '#FEF3C7';
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: '#0F172A', background: '#F8FAFC', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'Inter, sans-serif', color: 'var(--fg-1, #0F172A)', background: 'var(--surface-subtle, #F8FAFC)', minHeight: '100%' }}>
       <div style={{ maxWidth: 840, marginInline: 'auto', padding: '24px 28px 48px' }}>
         {/* Breadcrumb */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
           <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-          <ChevronRight size={12} style={{ color: '#94A3B8' }} />
-          <span style={{ fontSize: 13, color: '#64748B', fontWeight: 600 }}>Search</span>
+          <ChevronRight size={12} style={{ color: 'var(--fg-4, #94A3B8)' }} />
+          <span style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', fontWeight: 600 }}>Search</span>
         </nav>
 
         {/* ── Search Input ── */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
           borderRadius: 10, border: '1.5px solid rgba(15,23,42,0.12)',
-          background: '#FFFFFF', marginBottom: 16,
+          background: 'var(--bg-app, #FFFFFF)', marginBottom: 16,
           transition: 'border-color 150ms, box-shadow 150ms',
         }}
           onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
           onBlur={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)'; e.currentTarget.style.boxShadow = 'none'; }}
         >
-          <Search size={18} style={{ color: '#94A3B8', flexShrink: 0 }} />
+          <Search size={18} style={{ color: 'var(--fg-4, #94A3B8)', flexShrink: 0 }} />
           <input
             value={query}
             onChange={e => handleQueryChange(e.target.value)}
@@ -124,7 +124,7 @@ export default function WikiSearchPage() {
             style={{
               flex: 1, fontSize: 15, fontFamily: 'Inter, sans-serif',
               background: 'transparent', border: 'none', outline: 'none',
-              color: '#0F172A',
+              color: 'var(--fg-1, #0F172A)',
             }}
           />
           {mode === 'ai' && (
@@ -180,7 +180,7 @@ export default function WikiSearchPage() {
 
         {/* ── Results count ── */}
         {debouncedQuery.length >= 2 && !isLoading && (
-          <div style={{ fontSize: 13, color: '#64748B', marginBottom: 16 }}>
+          <div style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', marginBottom: 16 }}>
             {mode === 'keyword'
               ? `${keywordResults?.length ?? 0} results for '${debouncedQuery}'`
               : aiSources.length > 0
@@ -230,14 +230,14 @@ export default function WikiSearchPage() {
                 </div>
                 {aiSources.length > 0 && (
                   <div style={{ marginTop: 14, paddingTop: 12, borderTop: '0.75px solid rgba(15,23,42,0.08)' }}>
-                    <div style={{ fontSize: 11, color: '#64748B', marginBottom: 8 }}>
+                    <div style={{ fontSize: 11, color: 'var(--fg-3, #64748B)', marginBottom: 8 }}>
                       Sources used: {aiSources.length} article{aiSources.length !== 1 ? 's' : ''}
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                       {aiSources.map((s: any, i: number) => (
                         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <span style={{
-                            fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#94A3B8',
+                            fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--fg-4, #94A3B8)',
                             minWidth: 20, textAlign: 'right' as const,
                           }}>[{i + 1}]</span>
                           <span
@@ -257,7 +257,7 @@ export default function WikiSearchPage() {
                               color: confColor(Math.round(s.similarity * 100)),
                             }}>{Math.round(s.similarity * 100)}%</span>
                           )}
-                          <span style={{ fontSize: 11, color: '#94A3B8' }}>{s.entity_type || 'wiki'}</span>
+                          <span style={{ fontSize: 11, color: 'var(--fg-4, #94A3B8)' }}>{s.entity_type || 'wiki'}</span>
                         </div>
                       ))}
                     </div>
@@ -268,7 +268,7 @@ export default function WikiSearchPage() {
 
             {/* No AI results */}
             {!aiAnswer && aiSources.length === 0 && (
-              <div style={{ padding: 40, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>
+              <div style={{ padding: 40, textAlign: 'center', color: 'var(--fg-4, #94A3B8)', fontSize: 13 }}>
                 No AI results for '{debouncedQuery}'. Try rephrasing your question or switch to keyword search.
               </div>
             )}
@@ -286,7 +286,7 @@ export default function WikiSearchPage() {
                     ? <FileDown size={14} style={{ color: '#DC2626', flexShrink: 0 }} />
                     : r.format === 'video'
                     ? <Video size={14} style={{ color: '#7C3AED', flexShrink: 0 }} />
-                    : <FileText size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />;
+                    : <FileText size={14} style={{ color: 'var(--fg-4, #94A3B8)', flexShrink: 0 }} />;
                   const verBadge = r.verification_status === 'verified'
                     ? { bg: '#1B7F37', color: '#FFFFFF', label: 'Verified' }
                     : r.verification_status === 'needs_review'
@@ -307,7 +307,7 @@ export default function WikiSearchPage() {
                       {/* Title row */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                         {fmtIcon}
-                        <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>
                           {highlightText(r.title || '—', debouncedQuery)}
                         </span>
                       </div>
@@ -319,7 +319,7 @@ export default function WikiSearchPage() {
                           background: '#0C66E4', color: '#FFFFFF',
                         }}>{r.domain_code || '—'}</span>
                         {r.read_time_minutes && (
-                          <span style={{ fontSize: 11, color: '#64748B', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                          <span style={{ fontSize: 11, color: 'var(--fg-3, #64748B)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                             <Clock size={10} /> {r.read_time_minutes} min
                           </span>
                         )}
@@ -337,13 +337,13 @@ export default function WikiSearchPage() {
                             display: 'inline-flex', alignItems: 'center', gap: 3,
                           }}>{r.verification_status === 'verified' && <ShieldCheck size={9} />} {verBadge.label}</span>
                         )}
-                        <span style={{ fontSize: 11, color: '#94A3B8' }}>{r.updated_at ? timeAgo(r.updated_at) : '—'}</span>
+                        <span style={{ fontSize: 11, color: 'var(--fg-4, #94A3B8)' }}>{r.updated_at ? timeAgo(r.updated_at) : '—'}</span>
                       </div>
 
                       {/* Snippet */}
                       {r.lead_content && (
                         <div style={{
-                          fontSize: 12, color: '#64748B', lineHeight: 1.6,
+                          fontSize: 12, color: 'var(--fg-3, #64748B)', lineHeight: 1.6,
                           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden',
                         }}>
                           {highlightText(r.lead_content.substring(0, 200), debouncedQuery)}
@@ -356,7 +356,7 @@ export default function WikiSearchPage() {
                           {(r.tags as string[]).slice(0, 4).map(t => (
                             <span key={t} style={{
                               fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                              background: '#F1F5F9', color: '#64748B', fontWeight: 500,
+                              background: 'var(--surface-muted, #F1F5F9)', color: 'var(--fg-3, #64748B)', fontWeight: 500,
                             }}>{t}</span>
                           ))}
                         </div>
@@ -376,11 +376,11 @@ export default function WikiSearchPage() {
                       onClick={() => setPage(p => p - 1)}
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
-                        border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF',
+                        border: '1px solid rgba(15,23,42,0.12)', background: 'var(--bg-app, #FFFFFF)',
                         color: page === 0 ? '#CBD5E1' : '#334155', cursor: page === 0 ? 'default' : 'pointer',
                       }}
                     >← Previous</button>
-                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#64748B' }}>
+                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'var(--fg-3, #64748B)' }}>
                       {page + 1} / {totalPages}
                     </span>
                     <button
@@ -388,7 +388,7 @@ export default function WikiSearchPage() {
                       onClick={() => setPage(p => p + 1)}
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
-                        border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF',
+                        border: '1px solid rgba(15,23,42,0.12)', background: 'var(--bg-app, #FFFFFF)',
                         color: page >= totalPages - 1 ? '#CBD5E1' : '#334155', cursor: page >= totalPages - 1 ? 'default' : 'pointer',
                       }}
                     >Next →</button>
@@ -396,7 +396,7 @@ export default function WikiSearchPage() {
                 )}
               </>
             ) : (
-              <div style={{ padding: 40, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>
+              <div style={{ padding: 40, textAlign: 'center', color: 'var(--fg-4, #94A3B8)', fontSize: 13 }}>
                 No results for '{debouncedQuery}'. Try a different search term or browse by domain.
               </div>
             )}
@@ -405,7 +405,7 @@ export default function WikiSearchPage() {
 
         {/* ── Minimum character prompt ── */}
         {debouncedQuery.length < 2 && (
-          <div style={{ padding: 48, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>
+          <div style={{ padding: 48, textAlign: 'center', color: 'var(--fg-4, #94A3B8)', fontSize: 13 }}>
             Enter at least 2 characters to search
           </div>
         )}

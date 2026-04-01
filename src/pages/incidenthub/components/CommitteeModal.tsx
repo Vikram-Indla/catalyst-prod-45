@@ -55,19 +55,19 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           {activeTab === 0 && (
             <div className="space-y-3">
               {members.length === 0 && (
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>No committee members assigned.</p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--fg-4, #94A3B8)' }}>No committee members assigned.</p>
               )}
               {members.map((m: any) => {
                 const vote = m.vote;
                 const voteStatus = vote?.vote || 'pending';
                 return (
                   <div key={m.id} className="flex items-center gap-3 p-2" style={{ border: '1px solid rgba(15,23,42,0.08)', borderRadius: 4 }}>
-                    <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 32, height: 32, backgroundColor: '#E2E8F0', fontSize: 12, fontWeight: 650, color: '#475569' }}>
+                    <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 32, height: 32, backgroundColor: '#E2E8F0', fontSize: 12, fontWeight: 650, color: 'var(--fg-2, #475569)' }}>
                       {(m.user?.full_name || 'U').charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: '#0F172A' }}>
+                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: 'var(--fg-1, #0F172A)' }}>
                           {m.user?.full_name || 'Member'}
                         </span>
                         {m.role === 'chair' && (
@@ -77,7 +77,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                           <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: '#FEE2E2', color: '#991B1B', borderRadius: 3 }}>VETO</span>
                         )}
                       </div>
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B' }}>{m.role || 'Member'}</span>
+                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'var(--fg-3, #64748B)' }}>{m.role || 'Member'}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       {['approved', 'rejected', 'pending'].map(v => (
@@ -108,11 +108,11 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           )}
 
           {activeTab === 1 && (
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>Approver management coming soon.</p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--fg-4, #94A3B8)' }}>Approver management coming soon.</p>
           )}
 
           {activeTab === 2 && (
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>Activity log coming soon.</p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--fg-4, #94A3B8)' }}>Activity log coming soon.</p>
           )}
         </div>
 

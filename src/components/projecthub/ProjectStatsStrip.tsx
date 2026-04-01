@@ -35,7 +35,7 @@ export function ProjectStatsStrip({ stats }: StatsStripProps) {
             key={c.key}
             style={{
               background: 'var(--bg-app)',
-              border: '1px solid #E2E8F0',
+              border: '1px solid var(--divider, #E2E8F0)',
               borderRadius: 8,
               padding: 14,
             }}
@@ -57,7 +57,7 @@ export function ProjectStatsStrip({ stats }: StatsStripProps) {
             key={c.key}
             style={{
               background: 'var(--bg-app)',
-              border: '1px solid #E2E8F0',
+              border: '1px solid var(--divider, #E2E8F0)',
               borderRadius: 8,
               padding: '12px 14px',
               display: 'flex',

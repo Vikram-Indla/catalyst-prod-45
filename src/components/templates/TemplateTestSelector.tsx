@@ -139,7 +139,7 @@ export function TemplateTestSelector({
               { value: 'critical', color: '#ef4444', bg: '#fee2e2' },
               { value: 'high', color: '#d97706', bg: '#fef3c7' },
               { value: 'medium', color: '#2563eb', bg: '#dbeafe' },
-              { value: 'low', color: '#475569', bg: '#f1f5f9' },
+              { value: 'low', color: 'var(--fg-2, #475569)', bg: '#f1f5f9' },
             ].map(priority => (
               <div key={priority.value} className="flex items-center space-x-2">
                 <Checkbox
@@ -243,7 +243,7 @@ export function TemplateTestSelector({
                   { label: 'Critical', count: preview.criticalCount, color: '#ef4444', bg: '#fee2e2' },
                   { label: 'High', count: preview.highCount, color: '#d97706', bg: '#fef3c7' },
                   { label: 'Medium', count: preview.mediumCount, color: '#2563eb', bg: '#dbeafe' },
-                  { label: 'Low', count: preview.lowCount, color: '#475569', bg: '#f1f5f9' },
+                  { label: 'Low', count: preview.lowCount, color: 'var(--fg-2, #475569)', bg: '#f1f5f9' },
                 ].map(item => (
                   <div key={item.label} className="flex items-center gap-2">
                     <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">

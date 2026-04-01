@@ -33,8 +33,8 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
         left: 0,
         marginTop: 4,
         width: 200,
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        background: 'var(--bg-app, #FFFFFF)',
+        border: '1px solid var(--divider, #E2E8F0)',
         borderRadius: 6,
         boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
         maxHeight: 300,
@@ -63,7 +63,7 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
             onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? '#F8FAFC' : '')}
           >
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: style.color, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: '#0F172A', flex: 1 }}>{status}</span>
+            <span style={{ fontSize: 12, color: 'var(--fg-1, #0F172A)', flex: 1 }}>{status}</span>
             {isCurrent && <Check size={14} color="#2563EB" />}
           </div>
         );

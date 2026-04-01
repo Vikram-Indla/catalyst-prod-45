@@ -45,7 +45,7 @@ export const PRIORITY_COLORS: Record<string, { color: string; bg: string; label:
 // ── Status Colors ──
 export const STATUS_COLORS: Record<string, { color: string; bg: string; label: string }> = {
   Active:    { color: '#16A34A', bg: '#F0FDF4', label: 'Active' },
-  Planned:   { color: '#94A3B8', bg: '#F8FAFC', label: 'Planned' },
+  Planned:   { color: 'var(--fg-4, #94A3B8)', bg: '#F8FAFC', label: 'Planned' },
   Completed: { color: '#0D9488', bg: '#F0FDFA', label: 'Completed' },
   Cancelled: { color: '#EF4444', bg: '#FEF2F2', label: 'Cancelled' },
 };

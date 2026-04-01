@@ -227,7 +227,7 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
           ) : (
             <>
               <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>Stay on this page</button>
-              <button onClick={handleLeave} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '0.75px solid #CBD5E1', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'} onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-app)'}>Leave & Notify Me When Done</button>
+              <button onClick={handleLeave} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '0.75px solid var(--divider, #CBD5E1)', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'} onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-app)'}>Leave & Notify Me When Done</button>
             </>
           )}
         </div>

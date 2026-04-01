@@ -675,7 +675,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontWeight: 600,
     borderRadius: 6,
     background: '#f1f5f9',
-    color: '#475569',
+    color: 'var(--fg-2, #475569)',
     border: '1px solid #e2e8f0',
   };
 
@@ -695,7 +695,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     border: '1px solid #e2e8f0',
     borderRadius: 6,
     cursor: 'pointer',
-    color: '#475569',
+    color: 'var(--fg-2, #475569)',
     transition: 'all 0.15s',
   };
 
@@ -749,7 +749,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const progressTextStyle: React.CSSProperties = {
     fontSize: 13,
     fontWeight: 500,
-    color: '#475569',
+    color: 'var(--fg-2, #475569)',
     whiteSpace: 'nowrap',
   };
 
@@ -809,7 +809,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '8px 16px',
     fontSize: 13,
     fontWeight: 500,
-    color: '#475569',
+    color: 'var(--fg-2, #475569)',
     background: '#ffffff',
     border: '1px solid #e2e8f0',
     borderRadius: 8,
@@ -844,7 +844,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontFamily: 'inherit',
     fontSize: 12,
     fontWeight: 500,
-    color: '#475569',
+    color: 'var(--fg-2, #475569)',
     background: '#ffffff',
     border: '1px solid #e2e8f0',
     borderRadius: 6,

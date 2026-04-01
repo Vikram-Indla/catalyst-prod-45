@@ -23,9 +23,9 @@ interface EpicDetailDrawerProps {
 
 const DETAIL_LABEL: React.CSSProperties = {
   width: 100, flexShrink: 0, fontSize: 11, fontWeight: 650,
-  textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', lineHeight: '36px',
+  textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3, #64748B)', lineHeight: '36px',
 };
-const DETAIL_VALUE: React.CSSProperties = { fontSize: 14, color: '#0F172A', fontWeight: 400 };
+const DETAIL_VALUE: React.CSSProperties = { fontSize: 14, color: 'var(--fg-1, #0F172A)', fontWeight: 400 };
 
 const STATUS_GROUPS = [
   { label: 'TO DO', statuses: ['Backlog', 'To Do'] },
@@ -46,10 +46,10 @@ type TabId = 'details' | 'comments' | 'history';
 
 const TAB_STYLE: React.CSSProperties = {
   fontSize: 12, fontWeight: 600, padding: '8px 12px', border: 'none', cursor: 'pointer',
-  background: 'none', color: '#64748B', borderBottom: '2px solid transparent',
+  background: 'none', color: 'var(--fg-3, #64748B)', borderBottom: '2px solid transparent',
   display: 'inline-flex', alignItems: 'center', gap: 5,
 };
-const TAB_ACTIVE: React.CSSProperties = { ...TAB_STYLE, color: '#0F172A', borderBottomColor: '#2563EB' };
+const TAB_ACTIVE: React.CSSProperties = { ...TAB_STYLE, color: 'var(--fg-1, #0F172A)', borderBottomColor: '#2563EB' };
 
 function formatFixVersions(fv: any): string {
   if (!fv) return '—';
@@ -165,14 +165,14 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent style={{ width: 560, maxWidth: '100vw', padding: 0, background: '#FFFFFF' }} className="overflow-y-auto border-l">
+      <SheetContent style={{ width: 560, maxWidth: '100vw', padding: 0, background: 'var(--bg-app, #FFFFFF)' }} className="overflow-y-auto border-l">
         {/* Header */}
-        <div style={{ position: 'sticky', top: 0, zIndex: 10, background: '#FFFFFF', borderBottom: '0.75px solid rgba(15,23,42,0.06)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--bg-app, #FFFFFF)', borderBottom: '0.75px solid rgba(15,23,42,0.06)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
           {epic ? (
             <>
               <JiraIssueTypeIcon type="epic" size={20} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{epic.issue_key}</span>
-              <span style={{ fontSize: 13, color: '#64748B' }}>· Epic</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{epic.issue_key}</span>
+              <span style={{ fontSize: 13, color: 'var(--fg-3, #64748B)' }}>· Epic</span>
             </>
           ) : <div style={{ height: 20, width: 120, borderRadius: 3, background: '#E2E8F0' }} />}
           <button onClick={onClose} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={20} color="#64748B" /></button>
@@ -202,16 +202,16 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                       {statusColors && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text }}>{statusColors.label}</span>}
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
+                  <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app, #FFFFFF)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
                     {STATUS_GROUPS.map(group => (
                       <div key={group.label}>
-                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '6px 12px 2px' }}>{group.label}</div>
+                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-4, #94A3B8)', padding: '6px 12px 2px' }}>{group.label}</div>
                         {group.statuses.map(s => {
                           const sc = getEpicStatusColors(s);
                           return (
                             <button key={s} onClick={() => handleUpdate('status', s)} style={{
                               width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
-                              background: epic.status === s ? 'rgba(37,99,235,0.08)' : 'transparent', color: '#0F172A', cursor: 'pointer',
+                              background: epic.status === s ? 'rgba(37,99,235,0.08)' : 'transparent', color: 'var(--fg-1, #0F172A)', cursor: 'pointer',
                             }}>
                               <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
                             </button>
@@ -228,11 +228,11 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                 <input value={titleValue} onChange={e => setTitleValue(e.target.value)}
                   onBlur={() => { handleUpdate('summary', titleValue); setEditingTitle(false); }}
                   onKeyDown={e => { if (e.key === 'Enter') { handleUpdate('summary', titleValue); setEditingTitle(false); } if (e.key === 'Escape') setEditingTitle(false); }}
-                  autoFocus style={{ width: '100%', fontSize: 20, fontWeight: 650, color: '#0F172A', border: '1.5px solid #2563EB', borderRadius: 4, padding: '4px 8px', outline: 'none', fontFamily: "'Sora', sans-serif", marginBottom: 8 }}
+                  autoFocus style={{ width: '100%', fontSize: 20, fontWeight: 650, color: 'var(--fg-1, #0F172A)', border: '1.5px solid #2563EB', borderRadius: 4, padding: '4px 8px', outline: 'none', fontFamily: "'Sora', sans-serif", marginBottom: 8 }}
                 />
               ) : (
-                <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: '#0F172A', margin: '0 0 8px', cursor: 'text', fontFamily: "'Sora', sans-serif", lineHeight: 1.3 }}>
-                  {epic.summary || <span style={{ fontStyle: 'italic', color: '#94A3B8' }}>Click to add a title...</span>}
+                <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: 'var(--fg-1, #0F172A)', margin: '0 0 8px', cursor: 'text', fontFamily: "'Sora', sans-serif", lineHeight: 1.3 }}>
+                  {epic.summary || <span style={{ fontStyle: 'italic', color: 'var(--fg-4, #94A3B8)' }}>Click to add a title...</span>}
                 </h2>
               )}
             </div>
@@ -249,12 +249,12 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                 <>
                   {/* Description */}
                   <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 6 }}>Description</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3, #64748B)', marginBottom: 6 }}>Description</div>
                     {editingDesc ? (
                       <textarea value={descValue} onChange={e => setDescValue(e.target.value)}
                         onBlur={() => { handleUpdate('description_text', descValue); setEditingDesc(false); }}
                         autoFocus rows={4}
-                        style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: '#0F172A', fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80 }}
+                        style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: 'var(--fg-1, #0F172A)', fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80 }}
                       />
                     ) : (
                       <div onClick={() => setEditingDesc(true)} style={{
@@ -267,7 +267,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                   </div>
 
                   <div style={{ border: '0.75px solid rgba(15,23,42,0.06)', borderRadius: 6, padding: '8px 16px' }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 4 }}>Key Details</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3, #64748B)', marginBottom: 4 }}>Key Details</div>
 
                     <DetailRow label="Status">
                       {statusColors && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text }}>{statusColors.label}</span>}
@@ -276,13 +276,13 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                     <DetailRow label="Assignee">
                       {epic.assignee_display_name ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>{getInitials(epic.assignee_display_name)}</div>
+                          <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--fg-3, #64748B)', flexShrink: 0 }}>{getInitials(epic.assignee_display_name)}</div>
                           <span style={DETAIL_VALUE}>{epic.assignee_display_name}</span>
                         </div>
-                      ) : <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set assignee</span>}
+                      ) : <span style={{ fontSize: 14, color: 'var(--fg-4, #94A3B8)', fontStyle: 'italic' }}>— Set assignee</span>}
                     </DetailRow>
                     <DetailRow label="Reporter">
-                      {epic.reporter_display_name ? <span style={DETAIL_VALUE}>{epic.reporter_display_name}</span> : <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set reporter</span>}
+                      {epic.reporter_display_name ? <span style={DETAIL_VALUE}>{epic.reporter_display_name}</span> : <span style={{ fontSize: 14, color: 'var(--fg-4, #94A3B8)', fontStyle: 'italic' }}>— Set reporter</span>}
                     </DetailRow>
                     <DetailRow label="Due Date">
                       <span style={{ ...DETAIL_VALUE, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: epic.due_date ? '#0F172A' : '#94A3B8' }}>
@@ -307,16 +307,16 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                   </div>
 
                   {jiraSyncData?.jira_key && (
-                    <div style={{ borderTop: '0.75px solid #E2E8F0', paddingTop: 16, marginTop: 16 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 12 }}>Jira Sync</div>
+                    <div style={{ borderTop: '0.75px solid var(--divider, #E2E8F0)', paddingTop: 16, marginTop: 16 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3, #64748B)', marginBottom: 12 }}>Jira Sync</div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Jira Issue</span>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '2px 8px', borderRadius: 4, background: '#F1F5F9', color: '#1E293B' }}>{jiraSyncData.jira_key}</span>
+                          <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: 'var(--fg-3, #6B7280)' }}>Jira Issue</span>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '2px 8px', borderRadius: 4, background: 'var(--surface-muted, #F1F5F9)', color: 'var(--fg-1, #1E293B)' }}>{jiraSyncData.jira_key}</span>
                         </div>
                         {jiraSyncData.jira_sync_status && (
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Sync Status</span>
+                            <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: 'var(--fg-3, #6B7280)' }}>Sync Status</span>
                             <span style={{
                               display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3,
                               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
@@ -326,7 +326,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                           </div>
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Last Synced</span>
+                          <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: 'var(--fg-3, #6B7280)' }}>Last Synced</span>
                           <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
                             {jiraSyncData.jira_pushed_at ? format(new Date(jiraSyncData.jira_pushed_at), 'MMM d, yyyy, hh:mm a') : '—'}
                           </span>
@@ -364,9 +364,9 @@ function CommentsPane({ comments, isLoading }: { comments: any[]; isLoading: boo
       {comments.map((c: any) => (
         <div key={c.id} style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)', paddingBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>{getInitials(c.author_display_name || 'U')}</div>
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{c.author_display_name || 'Unknown'}</span>
-            <span style={{ fontSize: 11, color: '#94A3B8', marginLeft: 'auto' }}>{c.jira_created_at ? formatDistanceToNow(new Date(c.jira_created_at), { addSuffix: true }) : ''}</span>
+            <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--fg-3, #64748B)', flexShrink: 0 }}>{getInitials(c.author_display_name || 'U')}</div>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{c.author_display_name || 'Unknown'}</span>
+            <span style={{ fontSize: 11, color: 'var(--fg-4, #94A3B8)', marginLeft: 'auto' }}>{c.jira_created_at ? formatDistanceToNow(new Date(c.jira_created_at), { addSuffix: true }) : ''}</span>
           </div>
           <div style={{ fontSize: 13, color: '#334155', lineHeight: 1.6, whiteSpace: 'pre-wrap', paddingLeft: 32 }}>{c.body || ''}</div>
         </div>
@@ -386,24 +386,24 @@ function HistoryPane({ changelog, isLoading, getStatusColors }: { changelog: any
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       {statusChanges.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>Status Transitions ({statusChanges.length})</div>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3, #64748B)', marginBottom: 8 }}>Status Transitions ({statusChanges.length})</div>
           {statusChanges.map((entry: any) => {
             const fromColors = getStatusColors(entry.from_string || '');
             const toColors = getStatusColors(entry.to_string || '');
             return (
               <div key={entry.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '0.75px solid rgba(15,23,42,0.04)' }}>
-                <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0, marginTop: 2 }}>{getInitials(entry.author_display_name || 'S')}</div>
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--fg-3, #64748B)', flexShrink: 0, marginTop: 2 }}>{getInitials(entry.author_display_name || 'S')}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{entry.author_display_name || 'System'}</span>
-                    <span style={{ fontSize: 11, color: '#94A3B8' }}>{entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{entry.author_display_name || 'System'}</span>
+                    <span style={{ fontSize: 11, color: 'var(--fg-4, #94A3B8)' }}>{entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: fromColors.bg, color: fromColors.text }}>{fromColors.label}</span>
-                    <span style={{ fontSize: 12, color: '#94A3B8' }}>→</span>
+                    <span style={{ fontSize: 12, color: 'var(--fg-4, #94A3B8)' }}>→</span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 3, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: toColors.bg, color: toColors.text }}>{toColors.label}</span>
                   </div>
-                  {entry.jira_created_at && <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2, fontFamily: "'JetBrains Mono', monospace" }}>{format(new Date(entry.jira_created_at), 'MMM d, yyyy, hh:mm a')}</div>}
+                  {entry.jira_created_at && <div style={{ fontSize: 11, color: 'var(--fg-4, #94A3B8)', marginTop: 2, fontFamily: "'JetBrains Mono', monospace" }}>{format(new Date(entry.jira_created_at), 'MMM d, yyyy, hh:mm a')}</div>}
                 </div>
               </div>
             );
@@ -412,19 +412,19 @@ function HistoryPane({ changelog, isLoading, getStatusColors }: { changelog: any
       )}
       {otherChanges.length > 0 && (
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>Other Changes ({otherChanges.length})</div>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3, #64748B)', marginBottom: 8 }}>Other Changes ({otherChanges.length})</div>
           {otherChanges.map((entry: any) => (
             <div key={entry.id} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: '0.75px solid rgba(15,23,42,0.04)' }}>
-              <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>{getInitials(entry.author_display_name || 'S')}</div>
+              <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--fg-3, #64748B)', flexShrink: 0 }}>{getInitials(entry.author_display_name || 'S')}</div>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{entry.author_display_name || 'System'}</span>
-                  <span style={{ fontSize: 11, color: '#94A3B8' }}>{entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{entry.author_display_name || 'System'}</span>
+                  <span style={{ fontSize: 11, color: 'var(--fg-4, #94A3B8)' }}>{entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}</span>
                 </div>
-                <div style={{ fontSize: 13, color: '#64748B' }}>
-                  Changed <strong style={{ color: '#0F172A', fontWeight: 600 }}>{entry.field_name}</strong>
-                  {entry.from_string && <> from <span style={{ color: '#94A3B8' }}>{entry.from_string}</span></>}
-                  {entry.to_string && <> to <span style={{ color: '#0F172A' }}>{entry.to_string}</span></>}
+                <div style={{ fontSize: 13, color: 'var(--fg-3, #64748B)' }}>
+                  Changed <strong style={{ color: 'var(--fg-1, #0F172A)', fontWeight: 600 }}>{entry.field_name}</strong>
+                  {entry.from_string && <> from <span style={{ color: 'var(--fg-4, #94A3B8)' }}>{entry.from_string}</span></>}
+                  {entry.to_string && <> to <span style={{ color: 'var(--fg-1, #0F172A)' }}>{entry.to_string}</span></>}
                 </div>
               </div>
             </div>
@@ -450,5 +450,5 @@ function SkeletonList({ count }: { count: number }) {
 }
 
 function EmptyState({ text }: { text: string }) {
-  return <div style={{ padding: 24, textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>{text}</div>;
+  return <div style={{ padding: 24, textAlign: 'center', fontSize: 13, color: 'var(--fg-4, #94A3B8)' }}>{text}</div>;
 }

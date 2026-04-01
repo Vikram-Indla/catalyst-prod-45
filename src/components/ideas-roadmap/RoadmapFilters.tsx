@@ -11,7 +11,7 @@ export function RoadmapFilters({ teams, activeTeam, onTeamChange, ideaCount }: R
   return (
     <div style={{
       height: 44, display: 'flex', alignItems: 'center', gap: 6,
-      padding: '0 24px', background: '#FAFBFC', borderBottom: '1px solid var(--divider)',
+      padding: '0 24px', background: 'var(--surface-subtle, #FAFBFC)', borderBottom: '1px solid var(--divider)',
     }}>
       {teams.map(t => (
         <button

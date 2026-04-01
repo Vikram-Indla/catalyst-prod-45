@@ -592,7 +592,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                       }}>
                         <div style={{
                           width: 20, height: 20, borderRadius: 5,
-                          border: isSelected ? 'none' : '2px solid #D4D4D8',
+                          border: isSelected ? 'none' : '2px solid var(--divider, #D4D4D8)',
                           background: isSelected ? '#2563EB' : '#FFF',
                           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                         }}>

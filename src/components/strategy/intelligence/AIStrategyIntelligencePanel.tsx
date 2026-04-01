@@ -231,7 +231,7 @@ function StatusDot({ status }: { status: 'on_track' | 'at_risk' | 'critical' }) 
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <div className="mb-2.5 mt-1" style={{ fontSize: 12, fontWeight: 700, color: '#1E293B', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
+    <div className="mb-2.5 mt-1" style={{ fontSize: 12, fontWeight: 700, color: 'var(--fg-1, #1E293B)', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
       {children}
     </div>
   );

@@ -56,16 +56,16 @@ const TYPE_CONFIG: Record<string, { label: string; icon: any; color: string }> =
   shared_steps: { label: 'Shared Steps', icon: Layers, color: '#7C3AED' },
   tags: { label: 'Tags', icon: Tags, color: '#EC4899' },
   cycles: { label: 'Test Cycles', icon: RefreshCw, color: '#0891B2' },
-  full_backup: { label: 'Full Backup', icon: Database, color: '#64748B' },
+  full_backup: { label: 'Full Backup', icon: Database, color: 'var(--fg-3, #64748B)' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  pending: { label: 'Pending', color: '#64748B', bg: '#F1F5F9', icon: Clock },
+  pending: { label: 'Pending', color: 'var(--fg-3, #64748B)', bg: '#F1F5F9', icon: Clock },
   validating: { label: 'Validating', color: '#D97706', bg: '#FFFBEB', icon: AlertTriangle },
   processing: { label: 'Processing', color: '#2563EB', bg: '#EFF6FF', icon: RefreshCw },
   completed: { label: 'Completed', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
   failed: { label: 'Failed', color: '#DC2626', bg: '#FEF2F2', icon: XCircle },
-  cancelled: { label: 'Cancelled', color: '#94A3B8', bg: '#F8FAFC', icon: XCircle },
+  cancelled: { label: 'Cancelled', color: 'var(--fg-4, #94A3B8)', bg: '#F8FAFC', icon: XCircle },
 };
 
 export default function ImportExportPage() {
@@ -130,9 +130,9 @@ export default function ImportExportPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--surface-subtle, #F8FAFC)' }}>
       <TestHubPageHeader title="Import / Export" subtitle="Import data from files or export your test data">
-        <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px', border: '1px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+        <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 8, backgroundColor: 'var(--bg-app, #FFFFFF)', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
           <RefreshCw size={16} /> Refresh
         </button>
       </TestHubPageHeader>
@@ -141,22 +141,22 @@ export default function ImportExportPage() {
       {/* Stats Cards */}
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid var(--divider, #E2E8F0)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <FileUp size={18} style={{ color: '#14B8A6' }} />
-              <span style={{ fontSize: 12, color: '#64748B', textTransform: 'uppercase' }}>Total Imports</span>
+              <span style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase' }}>Total Imports</span>
             </div>
-            <p style={{ fontSize: 28, fontWeight: 700, color: '#0F172A', margin: 0 }}>{stats.total_imports}</p>
+            <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>{stats.total_imports}</p>
             <p style={{ fontSize: 12, color: '#059669', margin: '4px 0 0' }}>
               {stats.records_imported.toLocaleString()} records
             </p>
           </div>
-          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid var(--divider, #E2E8F0)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <FileDown size={18} style={{ color: '#14B8A6' }} />
-              <span style={{ fontSize: 12, color: '#64748B', textTransform: 'uppercase' }}>Total Exports</span>
+              <span style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase' }}>Total Exports</span>
             </div>
-            <p style={{ fontSize: 28, fontWeight: 700, color: '#0F172A', margin: 0 }}>{stats.total_exports}</p>
+            <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>{stats.total_exports}</p>
             <p style={{ fontSize: 12, color: '#059669', margin: '4px 0 0' }}>
               {stats.records_exported.toLocaleString()} records
             </p>
@@ -217,10 +217,10 @@ export default function ImportExportPage() {
         </div>
       ) : activeTab === 'import' ? (
         importJobs.length === 0 ? (
-          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 60, textAlign: 'center', border: '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 60, textAlign: 'center', border: '1px solid var(--divider, #E2E8F0)' }}>
             <Upload size={48} style={{ color: '#CBD5E1', marginBottom: 16 }} />
-            <p style={{ fontSize: 16, color: '#64748B', margin: 0 }}>No import jobs yet</p>
-            <p style={{ fontSize: 14, color: '#94A3B8', margin: '8px 0 0' }}>
+            <p style={{ fontSize: 16, color: 'var(--fg-3, #64748B)', margin: 0 }}>No import jobs yet</p>
+            <p style={{ fontSize: 14, color: 'var(--fg-4, #94A3B8)', margin: '8px 0 0' }}>
               Click "Import" to start importing data
             </p>
           </div>
@@ -235,7 +235,7 @@ export default function ImportExportPage() {
               return (
                 <div key={job.id} style={{
                   backgroundColor: '#FFF', borderRadius: 12, padding: 20,
-                  border: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  border: '1px solid var(--divider, #E2E8F0)', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{
@@ -257,8 +257,8 @@ export default function ImportExportPage() {
                           <StatusIcon size={12} /> {status.label}
                         </span>
                       </div>
-                      <p style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', margin: 0 }}>{job.name}</p>
-                      <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>
+                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-1, #0F172A)', margin: 0 }}>{job.name}</p>
+                      <p style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', margin: '4px 0 0' }}>
                         {type.label} • {job.source_format.toUpperCase()} • {formatDate(job.created_at)}
                       </p>
                     </div>
@@ -294,10 +294,10 @@ export default function ImportExportPage() {
         )
       ) : (
         exportJobs.length === 0 ? (
-          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 60, textAlign: 'center', border: '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 60, textAlign: 'center', border: '1px solid var(--divider, #E2E8F0)' }}>
             <Download size={48} style={{ color: '#CBD5E1', marginBottom: 16 }} />
-            <p style={{ fontSize: 16, color: '#64748B', margin: 0 }}>No export jobs yet</p>
-            <p style={{ fontSize: 14, color: '#94A3B8', margin: '8px 0 0' }}>
+            <p style={{ fontSize: 16, color: 'var(--fg-3, #64748B)', margin: 0 }}>No export jobs yet</p>
+            <p style={{ fontSize: 14, color: 'var(--fg-4, #94A3B8)', margin: '8px 0 0' }}>
               Click "Export" to export your data
             </p>
           </div>
@@ -312,7 +312,7 @@ export default function ImportExportPage() {
               return (
                 <div key={job.id} style={{
                   backgroundColor: '#FFF', borderRadius: 12, padding: 20,
-                  border: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  border: '1px solid var(--divider, #E2E8F0)', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{
@@ -334,8 +334,8 @@ export default function ImportExportPage() {
                           <StatusIcon size={12} /> {status.label}
                         </span>
                       </div>
-                      <p style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', margin: 0 }}>{job.name}</p>
-                      <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>
+                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-1, #0F172A)', margin: 0 }}>{job.name}</p>
+                      <p style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', margin: '4px 0 0' }}>
                         {type.label} • {job.export_format.toUpperCase()} • {job.total_items} items • {formatDate(job.created_at)}
                       </p>
                     </div>

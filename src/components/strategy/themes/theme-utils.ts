@@ -83,7 +83,7 @@ export const PRIORITY_CONFIG: Record<string, { label: string; color: string }> =
   critical: { label: 'Critical', color: '#DC2626' },
   high:     { label: 'High',     color: '#D97706' },
   medium:   { label: 'Medium',   color: '#2563EB' },
-  low:      { label: 'Low',      color: '#64748B' },
+  low:      { label: 'Low',      color: 'var(--fg-3, #64748B)' },
 };
 
 // ═══ COLOR SWATCHES ═══

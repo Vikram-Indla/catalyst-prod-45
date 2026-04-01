@@ -212,7 +212,7 @@ export function T10ListCardV3({
                     gap: '8px',
                     padding: '8px 10px',
                     fontSize: '13px',
-                    color: '#475569',
+                    color: 'var(--fg-2, #475569)',
                     backgroundColor: 'transparent',
                     border: 'none',
                     borderRadius: '6px',
@@ -428,7 +428,7 @@ export function T10ListCardV3({
                         flexShrink: 0,
                       }}
                     />
-                    <span style={{ fontSize: '13px', fontWeight: 500, color: '#475569' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--fg-2, #475569)' }}>
                       {formatT10Date(week.week_start)} - {formatT10Date(week.week_end)}
                     </span>
                     <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: 'auto' }}>

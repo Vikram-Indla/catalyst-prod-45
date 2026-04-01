@@ -48,7 +48,7 @@ import { useLocation } from 'react-router-dom';
 const TEAMS = ['All Teams', 'Senaie BAU', 'Integration Team', 'Mobile App Team'];
 
 function SkeletonCard() {
-  return <div style={{ height: 80, background: '#F1F5F9', borderRadius: 8, animation: 'shimmer 1.5s infinite' }} />;
+  return <div style={{ height: 80, background: 'var(--surface-muted, #F1F5F9)', borderRadius: 8, animation: 'shimmer 1.5s infinite' }} />;
 }
 
 function LoadingSkeleton() {
@@ -57,9 +57,9 @@ function LoadingSkeleton() {
       {[1, 2, 3, 4, 5].map(col => (
         <div key={col} style={{
           flex: 1, minWidth: 220, display: 'flex', flexDirection: 'column', gap: 8,
-          borderRadius: 8, border: '1px solid #E2E8F0', padding: 12,
+          borderRadius: 8, border: '1px solid var(--divider, #E2E8F0)', padding: 12,
         }}>
-          <div style={{ height: 20, width: 100, background: '#F1F5F9', borderRadius: 4, marginBottom: 8 }} />
+          <div style={{ height: 20, width: 100, background: 'var(--surface-muted, #F1F5F9)', borderRadius: 4, marginBottom: 8 }} />
           {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
         </div>
       ))}
@@ -177,7 +177,7 @@ export default function IdeasRoadmapPage() {
     return (
       <div style={{
         height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', gap: 12, background: '#FFFFFF', fontFamily: "'Inter', sans-serif",
+        justifyContent: 'center', gap: 12, background: 'var(--bg-app, #FFFFFF)', fontFamily: "'Inter', sans-serif",
       }}>
         <div style={{ fontSize: 14, fontWeight: 600, color: '#DC2626' }}>Failed to load roadmap</div>
         <button
@@ -199,18 +199,18 @@ export default function IdeasRoadmapPage() {
     return (
       <div style={{
         height: '100%', display: 'flex', flexDirection: 'column',
-        background: '#FFFFFF', fontFamily: "'Inter', sans-serif",
+        background: 'var(--bg-app, #FFFFFF)', fontFamily: "'Inter', sans-serif",
       }}>
         <RoadmapToolbar view={view} onViewChange={setView} committedOnly={committedOnly}
           onCommittedOnlyChange={setCommittedOnly} totalCount={0} committedCount={0}
           onPresent={handlePresent} onExport={handleExport} onGantt={handleGantt} />
         <div style={{
           flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', gap: 12, color: '#64748B',
+          justifyContent: 'center', gap: 12, color: 'var(--fg-3, #64748B)',
         }}>
           <div style={{ fontSize: 40, opacity: 0.3 }}>💡</div>
           <div style={{ fontSize: 14, fontWeight: 600, color: '#334155' }}>No ideas in backlog yet</div>
-          <div style={{ fontSize: 13, color: '#94A3B8' }}>Add ideas from the Ideas list to get started.</div>
+          <div style={{ fontSize: 13, color: 'var(--fg-4, #94A3B8)' }}>Add ideas from the Ideas list to get started.</div>
           <a href="/producthub/ideation" style={{
             marginTop: 8, fontSize: 13, fontWeight: 600, color: '#2563EB', textDecoration: 'none',
           }}>Go to Ideas →</a>
@@ -227,7 +227,7 @@ export default function IdeasRoadmapPage() {
   return (
     <div style={{
       height: '100%', display: 'flex', flexDirection: 'column',
-      background: '#FFFFFF', fontFamily: "'Inter', sans-serif",
+      background: 'var(--bg-app, #FFFFFF)', fontFamily: "'Inter', sans-serif",
     }}>
       <RoadmapToolbar
         view={view} onViewChange={setView}
@@ -249,7 +249,7 @@ export default function IdeasRoadmapPage() {
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', gap: 8, padding: 24, textAlign: 'center',
           }}>
-            <div style={{ fontSize: 14, color: '#64748B', maxWidth: 340, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 14, color: 'var(--fg-3, #64748B)', maxWidth: 340, lineHeight: 1.5 }}>
               No committed ideas yet. Toggle an idea's committed switch to include it on the roadmap.
             </div>
             <button
@@ -265,7 +265,7 @@ export default function IdeasRoadmapPage() {
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', gap: 8,
           }}>
-            <div style={{ fontSize: 14, color: '#64748B' }}>No ideas match the current filters</div>
+            <div style={{ fontSize: 14, color: 'var(--fg-3, #64748B)' }}>No ideas match the current filters</div>
             <button
               onClick={() => { setTeamFilter('All Teams'); setCommittedOnly(false); }}
               style={{

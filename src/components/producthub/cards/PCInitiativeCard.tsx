@@ -25,14 +25,14 @@ const STATUS_PILL_STYLES: Record<string, { color: string; bg: string; border: st
   analysis: { color: '#0EA5E9', bg: '#F0F9FF', border: 'rgba(14,165,233,0.2)' },
   ready_for_development: { color: '#14B8A6', bg: '#F0FDFA', border: 'rgba(20,184,166,0.2)' },
   under_implementation: { color: '#D97706', bg: '#FFFBEB', border: 'rgba(217,119,6,0.2)' },
-  on_hold: { color: '#6B7280', bg: '#F9FAFB', border: 'rgba(107,114,128,0.2)' },
+  on_hold: { color: 'var(--fg-3, #6B7280)', bg: '#F9FAFB', border: 'rgba(107,114,128,0.2)' },
   implementation_review: { color: '#F97316', bg: '#FFF7ED', border: 'rgba(249,115,22,0.2)' },
   in_support: { color: '#10B981', bg: '#ECFDF5', border: 'rgba(16,185,129,0.2)' },
   done: { color: '#16A34A', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
   cancelled: { color: '#DC2626', bg: '#FEF2F2', border: 'rgba(220,38,38,0.2)' },
 };
 
-const DEFAULT_STATUS_PILL = { color: '#71717A', bg: '#F4F4F5', border: 'rgba(113,113,122,0.2)' };
+const DEFAULT_STATUS_PILL = { color: 'var(--fg-3, #71717A)', bg: '#F4F4F5', border: 'rgba(113,113,122,0.2)' };
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; Icon: LucideIcon }> = {
   project: { label: 'Project', color: '#0D9488', Icon: FolderKanban },
@@ -112,7 +112,7 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
 
       {/* Progress */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <div style={{ flex: 1, height: 4, background: '#F4F4F5', borderRadius: 2, overflow: 'hidden', border: 'none' }}>
+        <div style={{ flex: 1, height: 4, background: 'var(--surface-muted, #F4F4F5)', borderRadius: 2, overflow: 'hidden', border: 'none' }}>
           <div style={{
             height: '100%',
             width: `${Math.min(initiative.progress, 100)}%`,
@@ -126,7 +126,7 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
           fontFamily: "'JetBrains Mono', monospace",
           fontSize: 11,
           fontWeight: 500,
-          color: '#71717A',
+          color: 'var(--fg-3, #71717A)',
           minWidth: 28,
           textAlign: 'right' as const,
         }}>

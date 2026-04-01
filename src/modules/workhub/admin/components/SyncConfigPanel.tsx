@@ -304,7 +304,7 @@ export function SyncConfigPanel() {
           {selectedProjects.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <label style={{
-                fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase' as const,
+                fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase' as const,
                 letterSpacing: '.4px', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 6,
               }}>
                 <Settings2 size={12} />
@@ -338,7 +338,7 @@ export function SyncConfigPanel() {
                     >
                       {isExpanded
                         ? <ChevronDown size={14} style={{ color: '#2563EB', flexShrink: 0 }} />
-                        : <ChevronRight size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
+                        : <ChevronRight size={14} style={{ color: 'var(--fg-4, #94A3B8)', flexShrink: 0 }} />
                       }
                       <span style={{
                         fontFamily: 'var(--wh-mo)', fontSize: 12, fontWeight: 700,
@@ -365,7 +365,7 @@ export function SyncConfigPanel() {
                         {/* Timeline Lookback */}
                         <div>
                           <label style={{
-                            fontSize: 10, fontWeight: 600, color: '#64748B',
+                            fontSize: 10, fontWeight: 600, color: 'var(--fg-3, #64748B)',
                             textTransform: 'uppercase' as const, letterSpacing: '.4px',
                             fontFamily: 'Inter, sans-serif', display: 'block', marginBottom: 6,
                           }}>

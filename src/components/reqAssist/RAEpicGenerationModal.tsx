@@ -278,7 +278,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid var(--divider, #CBD5E1)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Close
@@ -344,7 +344,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid var(--divider, #CBD5E1)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Close
@@ -454,7 +454,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid var(--divider, #CBD5E1)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Stay on this page
@@ -463,7 +463,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid var(--divider, #CBD5E1)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Leave & Notify Me When Done

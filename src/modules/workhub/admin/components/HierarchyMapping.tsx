@@ -83,17 +83,17 @@ export function HierarchyMapping() {
   }
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>Loading hierarchy config...</div>
+    return <div style={{ padding: 40, color: 'var(--fg-3, #64748B)', fontFamily: 'Inter, sans-serif' }}>Loading hierarchy config...</div>
   }
 
   return (
     <div style={{ maxWidth: 900, fontFamily: 'Inter, sans-serif' }}>
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Hierarchy Mapping
         </h1>
-        <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', marginTop: 4 }}>
           Define issue type hierarchy levels and map Jira types to each. Drag rows to reorder priority.
         </p>
       </div>
@@ -113,11 +113,11 @@ export function HierarchyMapping() {
 
       {/* Card 1: Hierarchy Levels */}
       <div style={{
-        background: '#fff', border: '1px solid #E2E8F0', borderRadius: 8,
+        background: '#fff', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 8,
         padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>
+          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
             Hierarchy Levels
           </h2>
           <span style={{
@@ -136,18 +136,18 @@ export function HierarchyMapping() {
               onDrop={handleDrop}
               onDragEnd={() => { dragItem.current = null; dragOver.current = null }}
               style={{
-                background: '#fff', border: '1px solid #E2E8F0', borderRadius: 6,
+                background: '#fff', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 6,
                 padding: '10px 14px', marginBottom: 4, display: 'flex', alignItems: 'center',
                 gap: 12, cursor: 'grab', transition: 'box-shadow .15s',
               }}
               onMouseOver={(e) => (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)')}
               onMouseOut={(e) => (e.currentTarget.style.boxShadow = 'none')}
             >
-              <span style={{ color: '#94A3B8', fontSize: 16, cursor: 'grab', userSelect: 'none' }}>⠿</span>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', width: 100 }}>
+              <span style={{ color: 'var(--fg-4, #94A3B8)', fontSize: 16, cursor: 'grab', userSelect: 'none' }}>⠿</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)', width: 100 }}>
                 {l.level}. {l.name}
               </span>
-              <span style={{ fontSize: 11, color: '#64748B', flex: 1 }}>
+              <span style={{ fontSize: 11, color: 'var(--fg-3, #64748B)', flex: 1 }}>
                 Mapped: {l.jiraTypes.join(', ') || 'None'}
               </span>
             </li>
@@ -157,10 +157,10 @@ export function HierarchyMapping() {
 
       {/* Card 2: Type Mapping */}
       <div style={{
-        background: '#fff', border: '1px solid #E2E8F0', borderRadius: 8,
+        background: '#fff', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 8,
         padding: 20, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
       }}>
-        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: '#0F172A', margin: '0 0 16px' }}>
+        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 16px' }}>
           Type Mapping
         </h2>
 
@@ -168,7 +168,7 @@ export function HierarchyMapping() {
           <div key={l.name} style={{ marginBottom: 16 }}>
             <label style={{
               fontFamily: 'Sora, sans-serif', fontSize: 11, textTransform: 'uppercase',
-              color: '#64748B', letterSpacing: '.3px', fontWeight: 600, display: 'block', marginBottom: 6,
+              color: 'var(--fg-3, #64748B)', letterSpacing: '.3px', fontWeight: 600, display: 'block', marginBottom: 6,
             }}>
               Level: {l.name}
             </label>
@@ -211,7 +211,7 @@ export function HierarchyMapping() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: '#F8FAFC', color: '#334155', border: '1px solid #E2E8F0', cursor: 'pointer',
+              background: 'var(--surface-subtle, #F8FAFC)', color: '#334155', border: '1px solid var(--divider, #E2E8F0)', cursor: 'pointer',
             }}
           >
             Reset to Default
