@@ -135,7 +135,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     >
       {/* View Tabs */}
       <div role="tablist" aria-label="View tabs" style={{
-        display: 'flex', background: '#F1F5F9', borderRadius: 8, padding: 3, gap: 2,
+        display: 'flex', background: 'var(--bg-3)', borderRadius: 8, padding: 3, gap: 2,
       }}>
         {views.map(v => (
           <button
@@ -151,7 +151,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         ))}
       </div>
 
-      <div style={{ width: 1, height: 24, background: '#E2E8F0' }} />
+      <div style={{ width: 1, height: 24, background: 'var(--divider)' }} />
 
       {/* Dynamic Filters */}
       <FilterDropdown
@@ -188,11 +188,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
         Group: {groupBy === 'status' ? 'Status' : 'Hub'}
       </button>
 
-      <div style={{ width: 1, height: 24, background: '#E2E8F0' }} />
+      <div style={{ width: 1, height: 24, background: 'var(--divider)' }} />
 
       {/* Role Toggle */}
       <div role="tablist" aria-label="Role filter" style={{
-        display: 'flex', background: '#F1F5F9', borderRadius: 6, padding: 2, gap: 1,
+        display: 'flex', background: 'var(--bg-3)', borderRadius: 6, padding: 2, gap: 1,
       }}>
         {roles.map(r => (
           <button
@@ -215,7 +215,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         onClick={onAiClick}
         aria-label="Open AI Intelligence overlay"
         style={{
-          background: '#2563EB',
+          background: 'var(--cp-blue)',
           color: '#FFFFFF', border: 'none', borderRadius: 20,
           padding: '0 16px', height: 32, fontSize: 12, fontWeight: 600,
           letterSpacing: '0.3px', cursor: 'pointer',

@@ -83,17 +83,17 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
         }}
         title="Manage columns"
       >
-        <Settings size={14} color="#64748B" />
+        <Settings size={14} color="var(--fg-3)" />
       </button>
 
       {open && (
         <div style={{
           position: 'absolute', top: '100%', right: 0, marginTop: 4, width: 220,
-          background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6,
+          background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6,
           boxShadow: '0 4px 16px rgba(0,0,0,0.10)', zIndex: 100, padding: '8px 0',
           fontFamily: "'Inter', sans-serif",
         }}>
-          <div style={{ padding: '4px 12px 8px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.06em' }}>
+          <div style={{ padding: '4px 12px 8px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>
             Columns
           </div>
           {ALL_COLUMNS.map(col => {
@@ -109,13 +109,13 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
                   background: 'none', border: 'none', cursor: col.alwaysVisible ? 'default' : 'pointer',
                   textAlign: 'left', opacity: col.alwaysVisible ? 0.6 : 1,
                 }}
-                onMouseEnter={e => { if (!col.alwaysVisible) e.currentTarget.style.background = '#F8FAFC'; }}
+                onMouseEnter={e => { if (!col.alwaysVisible) e.currentTarget.style.background = 'var(--bg-1)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = ''; }}
               >
                 <div style={{
                   width: 16, height: 16, borderRadius: 3,
-                  border: isVisible ? '1px solid #2563EB' : '1px solid #CBD5E1',
-                  background: isVisible ? '#2563EB' : 'transparent',
+                  border: isVisible ? '1px solid var(--cp-blue)' : '1px solid #CBD5E1',
+                  background: isVisible ? 'var(--cp-blue)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
                   {isVisible && <Check size={10} color="#FFFFFF" strokeWidth={3} />}

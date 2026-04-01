@@ -167,7 +167,7 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
       <button
         onClick={onClearAll}
         className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full transition-colors shrink-0 hover:bg-red-50"
-        style={{ color: '#ef4444' }}
+        style={{ color: 'var(--sem-danger)' }}
       >
         <X className="w-3 h-3" /> Clear
       </button>

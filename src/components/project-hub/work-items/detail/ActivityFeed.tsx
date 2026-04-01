@@ -31,7 +31,7 @@ export function ActivityFeed({ workItemId }: Props) {
 
   return (
     <div style={{ marginTop: 16 }}>
-      <h3 className="text-[16px] font-semibold mb-3" style={{ color: '#0F172A' }}>Activity</h3>
+      <h3 className="text-[16px] font-semibold mb-3" style={{ color: 'var(--fg-1)' }}>Activity</h3>
 
       {/* Tabs */}
       <div className="flex" style={{ borderBottom: '2px solid #DFE1E6', marginBottom: 16 }}>
@@ -71,10 +71,10 @@ export function ActivityFeed({ workItemId }: Props) {
               border: '1px solid #DFE1E6',
               padding: '10px 12px',
               minHeight: 40,
-              background: '#F8FAFC',
+              background: 'var(--bg-1)',
             }}
-            onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.background = '#FFF'; e.currentTarget.style.minHeight = '60px'; }}
-            onBlur={e => { if (!commentText) { e.currentTarget.style.borderColor = '#DFE1E6'; e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.minHeight = '40px'; } }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.background = 'var(--bg-app)'; e.currentTarget.style.minHeight = '60px'; }}
+            onBlur={e => { if (!commentText) { e.currentTarget.style.borderColor = '#DFE1E6'; e.currentTarget.style.background = 'var(--bg-1)'; e.currentTarget.style.minHeight = '40px'; } }}
           />
           {commentText && (
             <div className="flex items-center justify-between mt-2">
@@ -94,7 +94,7 @@ export function ActivityFeed({ workItemId }: Props) {
                 onClick={handleSubmit}
                 disabled={isAddingComment}
                 className="px-3 py-1 text-[12px] font-semibold rounded text-white"
-                style={{ background: '#2563EB' }}
+                style={{ background: 'var(--cp-blue)' }}
               >
                 {isAddingComment ? '…' : 'Save'}
               </button>
@@ -109,7 +109,7 @@ export function ActivityFeed({ workItemId }: Props) {
           <Loader2 size={20} className="animate-spin text-[#94A3B8]" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-8 text-[13px]" style={{ color: '#94A3B8' }}>No activity yet</div>
+        <div className="text-center py-8 text-[13px]" style={{ color: 'var(--fg-4)' }}>No activity yet</div>
       ) : (
         <div className="flex flex-col">
           {filtered.map(entry => (
@@ -146,7 +146,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
     <>
       <div className="flex items-center justify-between">
         <div className="text-[14px]">
-          <strong style={{ color: '#0F172A' }}>{entry.actor_name}</strong>
+          <strong style={{ color: 'var(--fg-1)' }}>{entry.actor_name}</strong>
           <span style={{ color: '#44546F' }}> added a comment</span>
         </div>
         <button
@@ -160,7 +160,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
       <div className="text-[12px] mb-1" style={{ color: '#626F86' }}>{entry.relative_time}</div>
       <div
         className="rounded text-[13px]"
-        style={{ padding: 8, background: '#F7F8F9', borderRadius: 4, lineHeight: '20px', color: '#0F172A' }}
+        style={{ padding: 8, background: '#F7F8F9', borderRadius: 4, lineHeight: '20px', color: 'var(--fg-1)' }}
       >
         {entry.body}
       </div>
@@ -173,9 +173,9 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
             onClick={() => onToggleReaction(r.emoji)}
             className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] transition-colors"
             style={{
-              border: r.reacted_by_me ? '1px solid #2563EB' : '1px solid #DFE1E6',
-              background: r.reacted_by_me ? '#E9F2FF' : '#FFF',
-              color: r.reacted_by_me ? '#2563EB' : '#44546F',
+              border: r.reacted_by_me ? '1px solid var(--cp-blue)' : '1px solid #DFE1E6',
+              background: r.reacted_by_me ? '#E9F2FF' : 'var(--bg-app)',
+              color: r.reacted_by_me ? 'var(--cp-blue)' : '#44546F',
             }}
           >
             {r.emoji} {r.count}
@@ -218,7 +218,7 @@ function HistoryEntry({ entry }: { entry: ActivityEntry }) {
   return (
     <>
       <div className="text-[14px]">
-        <strong style={{ color: '#0F172A' }}>{entry.actor_name}</strong>
+        <strong style={{ color: 'var(--fg-1)' }}>{entry.actor_name}</strong>
         <span style={{ color: '#44546F' }}> changed the {formatFieldName(entry.field_name)}</span>
       </div>
       <div className="text-[12px] mb-0.5" style={{ color: '#626F86' }}>{entry.relative_time}</div>
@@ -268,7 +268,7 @@ function UserAvatar() {
   return (
     <div
       className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
-      style={{ background: '#2563EB' }}
+      style={{ background: 'var(--cp-blue)' }}
     >
       ME
     </div>

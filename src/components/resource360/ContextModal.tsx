@@ -19,10 +19,10 @@ function deriveHub(item: any): string {
 
 const MetaField = ({ label, children, span }: { label: string; children: React.ReactNode; span?: number }) => (
   <div style={{ gridColumn: span === 2 ? '1 / -1' : undefined }}>
-    <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', marginBottom: 4 }}>
+    <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--fg-2)', marginBottom: 4 }}>
       {label}
     </div>
-    <div style={{ fontSize: 13, color: '#0F172A' }}>{children}</div>
+    <div style={{ fontSize: 13, color: 'var(--fg-1)' }}>{children}</div>
   </div>
 );
 
