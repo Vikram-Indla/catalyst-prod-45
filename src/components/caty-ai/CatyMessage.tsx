@@ -4,6 +4,7 @@
  */
 
 import React, { useMemo, useEffect, useRef, useCallback } from 'react';
+import DOMPurify from 'dompurify';
 import ReactMarkdown from 'react-markdown';
 import { CatyMessage } from './types';
 import { HubIcon } from './constants';
@@ -140,7 +141,7 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
       return (
         <div 
           className="caty-response-html"
-          dangerouslySetInnerHTML={{ __html: message.content }} 
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(message.content) }}
         />
       );
     }

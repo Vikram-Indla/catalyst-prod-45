@@ -3,6 +3,7 @@
  * AI and User message bubbles with actions
  */
 
+import DOMPurify from 'dompurify';
 import { Copy, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-react';
 import catalystLogoWhite from '@/assets/catalyst-ai-logo-white.svg';
 import { cn } from '@/lib/utils';
@@ -33,7 +34,7 @@ export function CatyMessageBubble({
   const renderContent = (content: string) => {
     return content.split('\n').map((line, i) => {
       const formattedLine = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-      return <span key={i} className="block" dangerouslySetInnerHTML={{ __html: formattedLine }} />;
+      return <span key={i} className="block" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formattedLine) }} />;
     });
   };
 

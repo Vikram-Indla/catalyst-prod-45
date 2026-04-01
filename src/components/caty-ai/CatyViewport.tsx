@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import DOMPurify from 'dompurify';
 import { AlertTriangle, Clock, Users, TrendingUp, ChevronRight, Zap } from 'lucide-react';
 import { useCatyViewportData } from '@/hooks/useCatyViewportData';
 import type { ProbingQuestion, ViewportSection as ViewportSectionType } from '@/types/caty-viewport';
@@ -264,7 +265,7 @@ function IssueTile({ question, accentColor, onClick }: IssueTileProps) {
       <div style={styles.tileContent}>
         <div 
           style={styles.tileText}
-          dangerouslySetInnerHTML={{ __html: question.text }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(question.text) }}
         />
         
         {/* Tags Row */}

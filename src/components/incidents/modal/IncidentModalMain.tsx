@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import DOMPurify from 'dompurify';
 import { Plus, MoreHorizontal, Download, Trash2, ChevronDown } from 'lucide-react';
 import type { Incident, Attachment } from '@/types/release';
 import { IncidentActivitySection } from './IncidentActivitySection';
@@ -110,7 +111,7 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
             setIsDescFocused(false);
             onFieldChange('description', e.currentTarget.innerHTML);
           }}
-          dangerouslySetInnerHTML={{ __html: incident.description }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(incident.description) }}
         />
       </div>
 

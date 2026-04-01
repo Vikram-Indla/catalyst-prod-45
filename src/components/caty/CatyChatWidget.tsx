@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import DOMPurify from 'dompurify';
 import { X, RotateCw, Send, Minus, ChevronDown, Copy, ThumbsUp, ThumbsDown, Mic } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';
@@ -460,7 +461,7 @@ export function CatyChatWidget() {
   const renderMessageContent = (content: string) => {
     return content.split('\n').map((line, i) => {
       const formattedLine = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-      return <span key={i} className="block" dangerouslySetInnerHTML={{ __html: formattedLine }} />;
+      return <span key={i} className="block" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formattedLine) }} />;
     });
   };
 
