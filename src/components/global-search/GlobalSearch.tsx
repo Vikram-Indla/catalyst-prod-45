@@ -272,9 +272,14 @@ function FilterChip({ label, items, selected, onSelect }: {
               )}
               {item.color && !item.svg && (
                 <span style={{
-                  width: 8, height: 8, borderRadius: "50%",
-                  backgroundColor: item.color, flexShrink: 0,
-                }} />
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  width: 24, height: 24, borderRadius: "50%",
+                  backgroundColor: item.color, color: "#FFFFFF",
+                  fontSize: 10, fontWeight: 600, fontFamily: "Inter, sans-serif",
+                  flexShrink: 0, lineHeight: 1,
+                }}>
+                  {item.display.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
+                </span>
               )}
               {item.display}
             </div>
