@@ -123,6 +123,7 @@ export function ForYouTable({
             <th style={{ ...thStyle, width: 95 }}>Hub</th>
             <th style={{ ...thStyle, width: 75 }}>Priority</th>
             <th style={{ ...thStyle, width: 100 }}>Updated</th>
+            <th style={{ ...thStyle, width: 170 }}>Assigned to</th>
             <th style={{ ...thStyle, width: 170 }}>Reported by</th>
           </tr>
         </thead>
@@ -131,7 +132,7 @@ export function ForYouTable({
             <React.Fragment key={group}>
               {/* Group header — zone borders, no fill in dark mode */}
               <tr>
-                <td colSpan={10} style={{
+                <td colSpan={11} style={{
                   height: 44, padding: '12px 12px',
                   background: 'var(--cp-bg)',
                   borderBottom: '1px solid var(--cp-bd-zone)',
@@ -224,6 +225,29 @@ export function ForYouTable({
                     {/* Updated */}
                     <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', width: 100 }}>
                       {item.updatedAt}
+                    </td>
+
+                    {/* Assigned to */}
+                    <td style={{ padding: '8px 12px', width: 170 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        {(() => {
+                          const assigneeName = item.assignee.name;
+                          if (!assigneeName || assigneeName === 'Unassigned') return <span style={{ fontSize: 13, color: 'var(--cp-t3)' }}>—</span>;
+                          const avatarUrl = nameAvatarMap.get(assigneeName.toLowerCase());
+                          const ini = assigneeName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
+                          const clr = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'][ini.charCodeAt(0) % 5];
+                          return (
+                            <>
+                              {avatarUrl ? (
+                                <img src={avatarUrl} alt={assigneeName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-bd)' }} />
+                              ) : (
+                                <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: 'var(--bg-app)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                              )}
+                              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{assigneeName}</span>
+                            </>
+                          );
+                        })()}
+                      </div>
                     </td>
 
                     {/* Reported by */}
