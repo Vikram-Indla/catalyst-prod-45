@@ -27,11 +27,12 @@ export function EpicContextMenu({ epicId, onRefetch, children }: EpicContextMenu
   const { data: programIncrements } = useQuery({
     queryKey: ['program-increments'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('program_increments')
         .select('*')
         .order('start_date', { ascending: false })
         .limit(10);
+      if (error) throw error;
       return data || [];
     },
   });
@@ -39,22 +40,24 @@ export function EpicContextMenu({ epicId, onRefetch, children }: EpicContextMenu
   const duplicateMutation = useMutation({
     mutationFn: async (newName: string) => {
       // Check if name already exists
-      const { data: existing } = await supabase
+      const { data: existing, error: existErr } = await supabase
         .from('epics')
         .select('id')
         .eq('name', newName)
         .single();
-      
+      if (existErr && existErr.code !== 'PGRST116') throw existErr;
+
       if (existing) {
         throw new Error('Epic with this name already exists');
       }
 
-      const { data: original } = await supabase
+      const { data: original, error: origErr } = await supabase
         .from('epics')
         .select('*')
         .eq('id', epicId)
         .single();
-      
+      if (origErr && origErr.code !== 'PGRST116') throw origErr;
+
       if (!original) throw new Error('Epic not found');
       
       const { error } = await supabase
@@ -97,7 +100,8 @@ export function EpicContextMenu({ epicId, onRefetch, children }: EpicContextMenu
 
   const moveToBottomMutation = useMutation({
     mutationFn: async () => {
-      const { data: epics } = await supabase.from('epics').select('global_rank').order('global_rank', { ascending: false }).limit(1);
+      const { data: epics, error: rankErr } = await supabase.from('epics').select('global_rank').order('global_rank', { ascending: false }).limit(1);
+      if (rankErr) throw rankErr;
       const maxRank = epics?.[0]?.global_rank || 0;
       await supabase.from('epics').update({ global_rank: maxRank + 1 }).eq('id', epicId);
     },
@@ -124,13 +128,14 @@ export function EpicContextMenu({ epicId, onRefetch, children }: EpicContextMenu
         await supabase.from('epic_program_increments').delete().eq('epic_id', epicId);
       } else {
         // First check if already assigned
-        const { data: existing } = await supabase
+        const { data: existing, error: existErr } = await supabase
           .from('epic_program_increments')
           .select('*')
           .eq('epic_id', epicId)
           .eq('pi_id', piId)
           .single();
-        
+        if (existErr && existErr.code !== 'PGRST116') throw existErr;
+
         if (!existing) {
           await supabase.from('epic_program_increments').insert({ epic_id: epicId, pi_id: piId });
         }

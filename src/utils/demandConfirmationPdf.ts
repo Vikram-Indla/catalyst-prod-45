@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-const loadJsPDF = () => import('jspdf').then(m => m.default);
+import { loadJsPDF } from '@/lib/exportLoaders';
 
 interface DemandConfirmationData {
   requestId: string;

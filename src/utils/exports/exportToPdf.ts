@@ -2,7 +2,7 @@
  * PDF Export Utility
  * Export data to PDF format using jsPDF
  */
-const loadJsPDF = () => import('jspdf').then(m => m.default);
+import { loadJsPDF } from '@/lib/exportLoaders';
 const loadAutoTable = () => import('jspdf-autotable').then(m => m.default);
 import type { ExportColumn, PdfExportOptions } from './types';
 

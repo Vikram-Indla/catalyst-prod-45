@@ -6,7 +6,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Download, ChevronDown, Calendar, Loader2, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-const loadExcelJS = () => import('exceljs');
+import { loadExcelJS } from '@/lib/exportLoaders';
 const loadFileSaver = () => import('file-saver').then(m => m.saveAs);
 import { format, subMonths, addMonths, startOfMonth, endOfMonth } from 'date-fns';
 

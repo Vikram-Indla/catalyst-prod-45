@@ -193,10 +193,11 @@ export function useWorkItemDependencies(
     enabled: !!workItemId,
   });
 
-  // Real-time subscription for dependencies table
+  // Real-time subscription for dependencies table with debouncing
   useEffect(() => {
     if (!workItemId) return;
 
+    let debounceTimer: ReturnType<typeof setTimeout>;
     const channel = supabase
       .channel(`dependencies-${workItemId}`)
       .on(
@@ -206,14 +207,17 @@ export function useWorkItemDependencies(
           schema: 'public',
           table: 'dependencies',
         },
-        (payload) => {
-          // Invalidate and refetch when any dependency changes
-          queryClient.invalidateQueries({ queryKey: ['work-item-dependencies', workItemType, workItemId] });
+        () => {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => {
+            queryClient.invalidateQueries({ queryKey: ['work-item-dependencies', workItemType, workItemId] });
+          }, 500);
         }
       )
       .subscribe();
 
     return () => {
+      clearTimeout(debounceTimer);
       supabase.removeChannel(channel);
     };
   }, [workItemId, workItemType, queryClient]);

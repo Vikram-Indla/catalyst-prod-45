@@ -19,7 +19,8 @@ export function FolderSelector({ open, onClose, planId }: Props) {
   const { data: folders } = useQuery({
     queryKey: ['tm-folders-all'],
     queryFn: async () => {
-      const { data } = await supabase.from('tm_folders' as any).select('id, name').order('name');
+      const { data, error } = await supabase.from('tm_folders' as any).select('id, name').order('name');
+      if (error) throw error;
       return (data || []) as unknown as { id: string; name: string }[];
     },
     enabled: open,

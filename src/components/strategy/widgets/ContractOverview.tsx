@@ -27,12 +27,13 @@ export function ContractOverview() {
   const { data: resources, isLoading } = useQuery({
     queryKey: ['strategy', 'contracts-radar'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('resource_inventory')
         .select('id, name, role_name, department_name, vendor_name, contract_end_date, resource_type, is_active')
         .eq('is_active', true)
         .not('contract_end_date', 'is', null)
         .order('contract_end_date', { ascending: true });
+      if (error) throw error;
       return data || [];
     },
     staleTime: 60_000,

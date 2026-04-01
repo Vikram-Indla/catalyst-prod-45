@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Users, Target, Star, Award, AlertTriangle, Download, Loader2 } from 'lucide-react';
-const loadJsPDF = () => import('jspdf').then(m => m.default);
+import { loadJsPDF } from '@/lib/exportLoaders';
 const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
 import { toast } from 'sonner';
 

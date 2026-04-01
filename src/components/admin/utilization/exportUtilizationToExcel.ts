@@ -3,7 +3,7 @@
  * Features: Professional column widths, monthly breakdown, clean data presentation
  * Primary Key: RID (Resource ID)
  */
-const loadXLSX = () => import('xlsx');
+import { loadXLSX } from '@/lib/exportLoaders';
 import { format } from 'date-fns';
 import type { ResourceUtilizationItem } from '@/hooks/useResourceUtilization';
 import { MONTHS } from '@/hooks/useResourceUtilization';

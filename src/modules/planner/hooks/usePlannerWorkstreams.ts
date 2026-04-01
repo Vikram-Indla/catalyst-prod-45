@@ -75,9 +75,10 @@ export function usePlannerWorkstreams(includeArchived = false) {
       if (!workstreams) return [];
 
       // Fetch members for each workstream (no FK join - profiles fetched separately)
-      const { data: membersRaw } = await supabase
+      const { data: membersRaw, error: membersError } = await supabase
         .from('workstream_members')
         .select('id, workstream_id, user_id, role');
+      if (membersError) throw membersError;
 
       // Fetch profile data for all member user_ids
       const memberUserIds = (membersRaw || [])
@@ -86,10 +87,11 @@ export function usePlannerWorkstreams(includeArchived = false) {
       
       let profilesMap = new Map<string, { id: string; full_name: string | null; email: string | null; avatar_url: string | null }>();
       if (memberUserIds.length > 0) {
-        const { data: profilesData } = await supabase
+        const { data: profilesData, error: profilesError } = await supabase
           .from('profiles')
           .select('id, full_name, email, avatar_url')
           .in('id', memberUserIds);
+        if (profilesError) throw profilesError;
         
         (profilesData || []).forEach(p => {
           profilesMap.set(p.id, p);
@@ -103,15 +105,17 @@ export function usePlannerWorkstreams(includeArchived = false) {
       }));
 
       // Fetch task counts from planner_tasks
-      const { data: tasks } = await supabase
+      const { data: tasks, error: tasksError } = await supabase
         .from('planner_tasks')
         .select('id, workstream_id, due_date, status_id');
+      if (tasksError) throw tasksError;
 
       // Get status for done check
-      const { data: statuses } = await supabase
+      const { data: statuses, error: statusesError } = await supabase
         .from('planner_statuses')
         .select('id, slug')
         .eq('slug', 'done');
+      if (statusesError) throw statusesError;
       
       const doneStatusId = statuses?.[0]?.id;
 

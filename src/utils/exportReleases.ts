@@ -4,7 +4,7 @@
  */
 
 import Papa from 'papaparse';
-const loadXLSX = () => import('xlsx');
+import { loadXLSX } from '@/lib/exportLoaders';
 
 export interface ReleaseExportData {
   id: string;

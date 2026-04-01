@@ -29,20 +29,22 @@ export function usePlannerResources() {
       }
 
       // Fetch team memberships
-      const { data: teamMembers } = await supabase
+      const { data: teamMembers, error: teamMembersError } = await supabase
         .from('team_members')
         .select(`
           user_id,
           role,
           team:teams(id, name)
         `);
+      if (teamMembersError) throw teamMembersError;
 
       // Fetch all stories with assignees (use stories table, not tasks)
-      const { data: stories } = await supabase
+      const { data: stories, error: storiesError } = await supabase
         .from('stories')
         .select('id, title, status, start_date, updated_at, assignee_id, team_id')
         .is('deleted_at', null)
         .not('status', 'eq', 'done');
+      if (storiesError) throw storiesError;
 
       const now = new Date();
       const weekFromNow = addDays(now, DUE_SOON_DAYS);
@@ -129,16 +131,17 @@ export function usePlannerResource(userId: string | null) {
       }
 
       // Fetch team memberships
-      const { data: teamMembers } = await supabase
+      const { data: teamMembers, error: teamMembersError } = await supabase
         .from('team_members')
         .select(`
           role,
           team:teams(id, name)
         `)
         .eq('user_id', userId);
+      if (teamMembersError) throw teamMembersError;
 
       // Fetch stories assigned to this user (use stories table, not tasks)
-      const { data: storiesData } = await supabase
+      const { data: storiesData, error: storiesError } = await supabase
         .from('stories')
         .select(`
           id,
@@ -154,6 +157,7 @@ export function usePlannerResource(userId: string | null) {
         .is('deleted_at', null)
         .not('status', 'eq', 'done')
         .order('start_date', { ascending: true, nullsFirst: false });
+      if (storiesError) throw storiesError;
 
       const now = new Date();
       const weekFromNow = addDays(now, DUE_SOON_DAYS);

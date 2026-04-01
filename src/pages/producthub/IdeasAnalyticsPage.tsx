@@ -64,24 +64,28 @@ export default function IdeasAnalyticsPage() {
   const maxFunnel = Math.max(...funnelData.map(s => s.count), 1);
   const maxQuarter = Math.max(...stats.byQuarter.map(q => q.count), 1);
 
-  const themeConvMap: Record<string, { total: number; converted: number }> = {};
-  allIdeas.forEach(i => {
-    if (!i.theme) return;
-    if (!themeConvMap[i.theme]) themeConvMap[i.theme] = { total: 0, converted: 0 };
-    themeConvMap[i.theme].total++;
-    if (i.status === 'Converted to Initiative') themeConvMap[i.theme].converted++;
-  });
-  const convByTheme = Object.entries(themeConvMap).map(([theme, d]) => ({ theme, ...d })).sort((a, b) => b.converted - a.converted).slice(0, 4);
-  const maxConvTheme = Math.max(...convByTheme.map(t => t.total), 1);
-
-  const qConvMap: Record<string, { total: number; converted: number }> = {};
-  allIdeas.forEach(i => {
-    if (!i.roadmap_quarter) return;
-    if (!qConvMap[i.roadmap_quarter]) qConvMap[i.roadmap_quarter] = { total: 0, converted: 0 };
-    qConvMap[i.roadmap_quarter].total++;
-    if (i.status === 'Converted to Initiative') qConvMap[i.roadmap_quarter].converted++;
-  });
-  const convByQuarter = ['Q1', 'Q2', 'Q3', 'Q4'].map(q => ({ quarter: q, total: qConvMap[q]?.total || 0, converted: qConvMap[q]?.converted || 0 }));
+  const { convByTheme, maxConvTheme, convByQuarter } = useMemo(() => {
+    const themeConvMap: Record<string, { total: number; converted: number }> = {};
+    const qConvMap: Record<string, { total: number; converted: number }> = {};
+    allIdeas.forEach(i => {
+      if (i.theme) {
+        if (!themeConvMap[i.theme]) themeConvMap[i.theme] = { total: 0, converted: 0 };
+        themeConvMap[i.theme].total++;
+        if (i.status === 'Converted to Initiative') themeConvMap[i.theme].converted++;
+      }
+      if (i.roadmap_quarter) {
+        if (!qConvMap[i.roadmap_quarter]) qConvMap[i.roadmap_quarter] = { total: 0, converted: 0 };
+        qConvMap[i.roadmap_quarter].total++;
+        if (i.status === 'Converted to Initiative') qConvMap[i.roadmap_quarter].converted++;
+      }
+    });
+    const cbt = Object.entries(themeConvMap).map(([theme, d]) => ({ theme, ...d })).sort((a, b) => b.converted - a.converted).slice(0, 4);
+    return {
+      convByTheme: cbt,
+      maxConvTheme: Math.max(...cbt.map(t => t.total), 1),
+      convByQuarter: ['Q1', 'Q2', 'Q3', 'Q4'].map(q => ({ quarter: q, total: qConvMap[q]?.total || 0, converted: qConvMap[q]?.converted || 0 })),
+    };
+  }, [allIdeas]);
   const maxConvQ = Math.max(...convByQuarter.map(q => q.total), 1);
 
   const barTrack = isDark ? 'rgba(255,255,255,0.08)' : '#F4F4F5';

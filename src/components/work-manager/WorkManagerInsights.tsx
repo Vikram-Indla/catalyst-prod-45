@@ -16,7 +16,7 @@ import { users, teams, getUserById, getTeamById } from '@/lib/work-manager-data'
 import type { TaskExtended } from './types';
 import { cn } from '@/lib/utils';
 import { ManagerFollowUpNotes } from './ManagerFollowUpNotes';
-const loadJsPDF = () => import('jspdf').then(m => m.jsPDF);
+import { loadJsPDF } from '@/lib/exportLoaders';
 import { toast } from 'sonner';
 
 interface WorkManagerInsightsProps {

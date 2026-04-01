@@ -4,7 +4,7 @@
  */
 
 const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
-const loadJsPDF = () => import('jspdf').then(m => m.default);
+import { loadJsPDF } from '@/lib/exportLoaders';
 import type { HeatmapResource } from '@/types/capacity-heatmap';
 import { formatMonth } from './utils';
 

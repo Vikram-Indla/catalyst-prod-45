@@ -4,6 +4,7 @@ import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } fr
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
 import { ProtectedRoute } from "../components/ProtectedRoute";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 
 const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
 
@@ -410,7 +411,9 @@ const PriListsPage = lazy(() => import("../modules/priorities/pages/PriListsPage
 const PriWeekPage = lazy(() => import("../modules/priorities/pages/PriWeekPage").then(m => ({ default: m.PriWeekPage })));
 
 const S = ({ children }: { children: React.ReactNode }) => (
-  <Suspense fallback={<div className="p-8">Loading...</div>}>{children}</Suspense>
+  <ErrorBoundary>
+    <Suspense fallback={<div className="p-8">Loading...</div>}>{children}</Suspense>
+  </ErrorBoundary>
 );
 
 /** Runtime module gate wrapper for route elements */

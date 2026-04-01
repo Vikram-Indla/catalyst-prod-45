@@ -1408,9 +1408,9 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
     return Array.from(map.entries()).sort(([a], [b]) => b.localeCompare(a));
   }, [activeItems]);
 
-  // Split out Today's group from the rest
-  const todayGroup = groups.find(([k]) => k === todayStr);
-  const otherGroups = groups.filter(([k]) => k !== todayStr);
+  // Split out Today's group from the rest — memoized
+  const todayGroup = useMemo(() => groups.find(([k]) => k === todayStr), [groups, todayStr]);
+  const otherGroups = useMemo(() => groups.filter(([k]) => k !== todayStr), [groups, todayStr]);
 
   // D-19: No auto-scroll — Chronology renders Today first at the top.
   // The tab-switch handler already scrolls to top on view change.
@@ -1630,11 +1630,11 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
 // ═══════════════════════════════════════════
 function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void }) {
   const doneColRef = useRef<HTMLDivElement>(null);
-  const columns = [
+  const columns = useMemo(() => [
     { key: 'to_do', label: 'TO DO', color: '#D97706', items: items.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked') },
     { key: 'in_progress', label: 'IN PROGRESS', color: '#2563EB', items: items.filter(i => i.status_category === 'in_progress' || i.status_category === 'in_qa') },
     { key: 'done', label: 'DONE', color: '#16A34A', items: items.filter(i => i.status_category === 'done') },
-  ];
+  ], [items]);
 
   const accentColor = (cat: string) => cat === 'in_progress' ? '#2563EB' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? '#EF4444' : cat === 'done' ? '#16A34A' : '#D97706';
 

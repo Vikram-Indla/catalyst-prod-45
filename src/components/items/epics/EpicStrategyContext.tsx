@@ -66,27 +66,30 @@ export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicSt
     queryFn: async (): Promise<ThemeData | null> => {
       // First try direct theme_id
       if (themeId) {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('strategic_themes')
           .select('id, name, status, color_tag')
           .eq('id', themeId)
           .maybeSingle();
+        if (error) throw error;
         if (data) return data;
       }
 
       // Fallback to theme_epic_links
-      const { data: link } = await supabase
+      const { data: link, error: linkErr } = await supabase
         .from('theme_epic_links')
         .select('theme_id')
         .eq('epic_id', epicId)
         .maybeSingle();
+      if (linkErr) throw linkErr;
 
       if (link?.theme_id) {
-        const { data: themeData } = await supabase
+        const { data: themeData, error: themeErr } = await supabase
           .from('strategic_themes')
           .select('id, name, status, color_tag')
           .eq('id', link.theme_id)
           .maybeSingle();
+        if (themeErr) throw themeErr;
         return themeData;
       }
 
@@ -100,27 +103,30 @@ export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicSt
     queryKey: ['epic-strategy-objectives-with-krs', epicId],
     queryFn: async (): Promise<ObjectiveData[]> => {
       // First get the links
-      const { data: links } = await supabase
+      const { data: links, error: linksErr } = await supabase
         .from('objective_epic_links')
         .select('objective_id')
         .eq('epic_id', epicId);
+      if (linksErr) throw linksErr;
 
       if (!links || links.length === 0) return [];
 
       // Then fetch the objectives
       const objectiveIds = links.map(l => l.objective_id);
-      const { data: objectivesData } = await supabase
+      const { data: objectivesData, error: objErr } = await supabase
         .from('objectives')
         .select('id, name, health, key_result_progress, tier')
         .in('id', objectiveIds);
+      if (objErr) throw objErr;
 
       if (!objectivesData || objectivesData.length === 0) return [];
 
       // Fetch key results for each objective
-      const { data: keyResults } = await supabase
+      const { data: keyResults, error: krErr } = await supabase
         .from('key_results')
         .select('id, name, current_value, target_value, objective_id')
         .in('objective_id', objectiveIds);
+      if (krErr) throw krErr;
 
       // Map key results to their objectives
       return objectivesData.map(obj => ({

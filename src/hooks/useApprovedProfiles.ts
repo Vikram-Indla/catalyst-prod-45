@@ -18,24 +18,25 @@ export interface ApprovedProfile {
 export function useApprovedProfiles() {
   const queryClient = useQueryClient();
 
-  // Set up real-time subscription
+  // Set up real-time subscription with debouncing
   useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout>;
     const channel = supabase
       .channel('approved-profiles-sync')
       .on(
         'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'profiles',
-        },
+        { event: '*', schema: 'public', table: 'profiles' },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['approved-profiles'] });
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => {
+            queryClient.invalidateQueries({ queryKey: ['approved-profiles'] });
+          }, 1000);
         }
       )
       .subscribe();
 
     return () => {
+      clearTimeout(debounceTimer);
       supabase.removeChannel(channel);
     };
   }, [queryClient]);

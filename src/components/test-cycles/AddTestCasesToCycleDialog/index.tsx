@@ -53,7 +53,8 @@ export function AddTestCasesToCycleDialog({
   const { data: priorities = [] } = useQuery({
     queryKey: ['tm-priorities', projectId],
     queryFn: async () => {
-      const { data } = await supabase.from('tm_case_priorities').select('*').eq('project_id', projectId).order('sort_order');
+      const { data, error } = await supabase.from('tm_case_priorities').select('*').eq('project_id', projectId).order('sort_order');
+      if (error) throw error;
       return data || [];
     },
     enabled: !!projectId,
@@ -62,7 +63,8 @@ export function AddTestCasesToCycleDialog({
   const { data: types = [] } = useQuery({
     queryKey: ['tm-types', projectId],
     queryFn: async () => {
-      const { data } = await supabase.from('tm_case_types').select('*').eq('project_id', projectId).order('name');
+      const { data, error } = await supabase.from('tm_case_types').select('*').eq('project_id', projectId).order('name');
+      if (error) throw error;
       // Map to include sort_order since DB doesn't have it
       return (data || []).map((row, index) => ({
         ...row,

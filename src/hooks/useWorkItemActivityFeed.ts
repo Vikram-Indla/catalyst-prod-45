@@ -62,7 +62,7 @@ export function useWorkItemActivityFeed(entityType: string, entityId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('activity_logs')
-        .select('*')
+        .select('id, action, entity_type, entity_id, actor_id, before_json, after_json, created_at')
         .eq('entity_type', entityType)
         .eq('entity_id', entityId)
         .order('created_at', { ascending: false })

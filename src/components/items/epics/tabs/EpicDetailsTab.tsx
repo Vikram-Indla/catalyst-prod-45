@@ -100,7 +100,8 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const { data: themes } = useQuery({
     queryKey: ['themes'],
     queryFn: async () => {
-      const { data } = await supabase.from('strategic_themes').select('*').order('name');
+      const { data, error } = await supabase.from('strategic_themes').select('*').order('name');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -108,7 +109,8 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const { data: programs } = useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
-      const { data } = await supabase.from('programs').select('*').order('name');
+      const { data, error } = await supabase.from('programs').select('*').order('name');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -116,11 +118,12 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const { data: users } = useQuery({
     queryKey: ['users-for-dropdown'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email')
         .eq('approval_status', 'APPROVED')
         .order('full_name');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -129,7 +132,8 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const { data: processSteps } = useQuery({
     queryKey: ['process-steps'],
     queryFn: async () => {
-      const { data } = await supabase.from('process_steps').select('id, name, sort_order').order('sort_order');
+      const { data, error } = await supabase.from('process_steps').select('id, name, sort_order').order('sort_order');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -140,10 +144,11 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const { data: additionalPrograms } = useQuery({
     queryKey: ['epic-additional-programs', epic.id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('epic_projects')
         .select('project_id, projects(id, name)')
         .eq('epic_id', epic.id);
+      if (error) throw error;
       return data || [];
     },
   });
@@ -152,11 +157,12 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const { data: epicSpend } = useQuery({
     queryKey: ['epic-spend', epic.id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('epic_spend')
         .select('*')
         .eq('epic_id', epic.id)
         .single();
+      if (error && error.code !== 'PGRST116') throw error;
       return data;
     },
   });
@@ -165,11 +171,12 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const { data: acceptanceCriteria } = useQuery({
     queryKey: ['epic-acceptance-criteria', epic.id],
     queryFn: async () => {
-      const { data } = await (supabase as any)
+      const { data, error } = await (supabase as any)
         .from('epic_acceptance_criteria')
         .select('*')
         .eq('epic_id', epic.id)
         .order('created_at');
+      if (error) throw error;
       return (data || []) as any[];
     },
   });
@@ -188,7 +195,8 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         query = query.eq('program_id', epic.primary_program_id);
       }
       
-      const { data } = await query.order('title');
+      const { data, error } = await query.order('title');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -198,21 +206,23 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     queryKey: ['epic-dependencies', epic.id, epic.primary_program_id],
     queryFn: async () => {
       // Get feature IDs for this epic
-      const { data: features } = await supabase
+      const { data: features, error: featErr } = await supabase
         .from('features')
         .select('id')
         .eq('epic_id', epic.id);
-      
+      if (featErr) throw featErr;
+
       if (!features || features.length === 0) return { count: 0, dependencies: [] };
-      
+
       const featureIds = features.map(f => f.id);
-      
+
       // Fetch dependencies where from_feature_id or to_feature_id is in our features
-      const { data: deps } = await supabase
+      const { data: deps, error: depsErr } = await supabase
         .from('dependencies')
         .select('*, from_feature:from_feature_id(id, name), to_feature:to_feature_id(id, name)')
         .or(`from_feature_id.in.(${featureIds.join(',')}),to_feature_id.in.(${featureIds.join(',')})`);
-      
+      if (depsErr) throw depsErr;
+
       return { count: deps?.length || 0, dependencies: deps || [] };
     },
   });
@@ -223,12 +233,13 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     queryFn: async () => {
       if (!epic.primary_program_id) return [];
       
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('dependencies')
         .select('*, from_feature:from_feature_id(id, name, program_id), to_feature:to_feature_id(id, name, program_id)')
         .or(`requesting_program_id.eq.${epic.primary_program_id},depends_on_program_id.eq.${epic.primary_program_id}`)
         .limit(50);
-      
+      if (error) throw error;
+
       return data || [];
     },
     enabled: !!epic.primary_program_id,
@@ -378,12 +389,13 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const { data: linkedRisks } = useQuery({
     queryKey: ['epic-linked-risks', epic.id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('risks')
         .select('id, title, status, impact, occurrence')
         .eq('relationship', 'Epic')
         .eq('related_item_id', epic.id)
         .is('deleted_at', null);
+      if (error) throw error;
       return data || [];
     },
   });

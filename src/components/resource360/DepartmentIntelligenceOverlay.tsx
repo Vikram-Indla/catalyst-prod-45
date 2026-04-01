@@ -3,6 +3,7 @@
  * 3-Tab: Executive Summary (default) → Weekly Digest → Recommendations
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import DOMPurify from 'dompurify';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Sparkles, X, FileText, Trophy, Code, CheckSquare, BookOpen, PenTool, Users, Server, ChevronRightIcon } from 'lucide-react';
@@ -157,7 +158,7 @@ function ExecutiveSummaryV5({ data, avatarMap, roleMap }: { data: ExecSummaryV5 
                       </span>
                     )}
                   </div>
-                  <span className="di-res-desc" dangerouslySetInnerHTML={{ __html: injectClaims(res.desc) }} />
+                  <span className="di-res-desc" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(injectClaims(res.desc)) }} />
                 </div>
               ))}
             </div>
@@ -170,7 +171,7 @@ function ExecutiveSummaryV5({ data, avatarMap, roleMap }: { data: ExecSummaryV5 
         <div className="di-exec-section">
           <div className="di-exec-label">REQUIRES ATTENTION</div>
           {data.requiresAttention.map((item, i) => (
-            <div key={i} className="di-attn-item" dangerouslySetInnerHTML={{ __html: item }} />
+            <div key={i} className="di-attn-item" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item) }} />
           ))}
         </div>
       )}
@@ -209,7 +210,7 @@ function WeeklyDigest({ events, weekStart }: { events: DigestEvent[]; weekStart:
                     {ev.signalLabel && ev.signal && (
                       <span className={`di-ev-signal sig-${ev.signal === 'escalation' ? 'esc' : ev.signal === 'delivery_gap' ? 'gap' : ev.signal === 'action' ? 'action' : ev.signal === 'observation' ? 'observe' : ev.signal}`}>{ev.signalLabel}</span>
                     )}
-                    <span dangerouslySetInnerHTML={{ __html: ev.body }} />
+                    <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(ev.body) }} />
                   </div>
                 </div>
               </div>
@@ -255,7 +256,7 @@ function Recommendations({ items }: { items: Recommendation[] }) {
                 {rec.project && <span>{rec.project}</span>}
               </div>
             )}
-            <div className="di-rec-desc" dangerouslySetInnerHTML={{ __html: rec.description }} />
+            <div className="di-rec-desc" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rec.description) }} />
           </div>
           <span className={`di-rec-pri pri-${rec.priority}`}>
             {rec.priority === 'high' ? 'HIGH' : 'MEDIUM'}
@@ -356,7 +357,7 @@ function ProjectCard({ prj }: { prj: ProjectActivity }) {
 
         {/* Narrative */}
         {prj.narrative && (
-          <div className="di-prj-narrative" dangerouslySetInnerHTML={{ __html: prj.narrative }} />
+          <div className="di-prj-narrative" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(prj.narrative) }} />
         )}
 
         {/* Contributors */}
@@ -381,7 +382,7 @@ function ProjectCard({ prj }: { prj: ProjectActivity }) {
             <svg className="di-prj-blocker-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
             </svg>
-            <span className="di-prj-blocker-txt" dangerouslySetInnerHTML={{ __html: prj.alert.text }} />
+            <span className="di-prj-blocker-txt" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(prj.alert.text) }} />
           </div>
         )}
         {prj.alert && prj.alert.type === 'warning' && (
@@ -389,7 +390,7 @@ function ProjectCard({ prj }: { prj: ProjectActivity }) {
             <svg className="di-prj-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
-            <span className="di-prj-warning-txt" dangerouslySetInnerHTML={{ __html: prj.alert.text }} />
+            <span className="di-prj-warning-txt" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(prj.alert.text) }} />
           </div>
         )}
       </div>

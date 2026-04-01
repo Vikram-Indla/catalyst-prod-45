@@ -29,11 +29,12 @@ export function FeaturesFiltersDialog({
   const { data: epics } = useQuery({
     queryKey: ['epics-filter'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('epics')
         .select('id, name')
         .is('deleted_at', null)
         .order('name');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -41,10 +42,11 @@ export function FeaturesFiltersDialog({
   const { data: programs } = useQuery({
     queryKey: ['programs-filter'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('programs')
         .select('id, name')
         .order('name');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -52,10 +54,11 @@ export function FeaturesFiltersDialog({
   const { data: programIncrements } = useQuery({
     queryKey: ['program-increments-filter'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('program_increments')
         .select('id, name')
         .order('start_date', { ascending: false });
+      if (error) throw error;
       return data || [];
     },
   });
@@ -63,10 +66,11 @@ export function FeaturesFiltersDialog({
   const { data: iterations } = useQuery({
     queryKey: ['iterations-filter'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('iterations')
         .select('id, name')
         .order('start_date', { ascending: false });
+      if (error) throw error;
       return data || [];
     },
   });

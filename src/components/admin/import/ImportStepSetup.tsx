@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import { useDropzone } from 'react-dropzone';
 import Papa from 'papaparse';
-const loadXLSX = () => import('xlsx');
+import { loadXLSX } from '@/lib/exportLoaders';
 
 interface ImportStepSetupProps {
   file: File | null;

@@ -75,11 +75,12 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
 
       try {
         // Search epics
-        const { data: epics } = await supabase
+        const { data: epics, error: epicsErr } = await supabase
           .from('epics')
           .select('id, epic_key, name, updated_at')
           .or(`epic_key.ilike.${searchTerm},name.ilike.${searchTerm}`)
           .limit(5);
+        if (epicsErr) throw epicsErr;
         
         epics?.forEach(e => searchResults.push({
           id: e.id,
@@ -91,11 +92,12 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
         }));
 
         // Search features
-        const { data: features } = await supabase
+        const { data: features, error: featErr } = await supabase
           .from('features')
           .select('id, name, updated_at')
           .ilike('name', searchTerm)
           .limit(5);
+        if (featErr) throw featErr;
         
         features?.forEach(f => searchResults.push({
           id: f.id,
@@ -107,11 +109,12 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
         }));
 
         // Search stories
-        const { data: stories } = await supabase
+        const { data: stories, error: storiesErr } = await supabase
           .from('stories')
           .select('id, story_key, title, updated_at')
           .or(`story_key.ilike.${searchTerm},title.ilike.${searchTerm}`)
           .limit(5);
+        if (storiesErr) throw storiesErr;
         
         stories?.forEach(s => searchResults.push({
           id: s.id,
@@ -123,12 +126,13 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
         }));
 
         // Search incidents
-        const { data: incidents } = await supabase
+        const { data: incidents, error: incErr } = await supabase
           .from('incidents')
           .select('id, incident_key, title, updated_at')
           .or(`incident_key.ilike.${searchTerm},title.ilike.${searchTerm}`)
           .is('deleted_at', null)
           .limit(5);
+        if (incErr) throw incErr;
         
         incidents?.forEach(i => searchResults.push({
           id: i.id,
@@ -140,12 +144,13 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
         }));
 
         // Search business requests
-        const { data: requests } = await (supabase as any)
+        const { data: requests, error: reqErr } = await (supabase as any)
           .from('business_requests')
           .select('id, request_key, title, updated_at')
           .or(`request_key.ilike.${searchTerm},title.ilike.${searchTerm}`)
           .is('deleted_at', null)
           .limit(5);
+        if (reqErr) throw reqErr;
         
         (requests as any[] || []).forEach((r: any) => searchResults.push({
           id: r.id,

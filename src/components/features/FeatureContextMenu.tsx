@@ -27,11 +27,12 @@ export function FeatureContextMenu({ featureId, onRefetch, children }: FeatureCo
   const { data: programIncrements } = useQuery({
     queryKey: ['program-increments'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('program_increments')
         .select('*')
         .order('start_date', { ascending: false })
         .limit(10);
+      if (error) throw error;
       return data || [];
     },
   });
@@ -40,33 +41,36 @@ export function FeatureContextMenu({ featureId, onRefetch, children }: FeatureCo
   const { data: iterations } = useQuery({
     queryKey: ['iterations'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('iterations')
         .select('*')
         .order('start_date', { ascending: false })
         .limit(20);
+      if (error) throw error;
       return data || [];
     },
   });
 
   const duplicateMutation = useMutation({
     mutationFn: async (newName: string) => {
-      const { data: existing } = await supabase
+      const { data: existing, error: existErr } = await supabase
         .from('features')
         .select('id')
         .eq('name', newName)
         .single();
-      
+      if (existErr && existErr.code !== 'PGRST116') throw existErr;
+
       if (existing) {
         throw new Error('Feature with this name already exists');
       }
 
-      const { data: original } = await supabase
+      const { data: original, error: origErr } = await supabase
         .from('features')
         .select('*')
         .eq('id', featureId)
         .single();
-      
+      if (origErr && origErr.code !== 'PGRST116') throw origErr;
+
       if (!original) throw new Error('Feature not found');
       
       const { error } = await supabase
@@ -109,7 +113,8 @@ export function FeatureContextMenu({ featureId, onRefetch, children }: FeatureCo
 
   const moveToBottomMutation = useMutation({
     mutationFn: async () => {
-      const { data: features } = await supabase.from('features').select('rank_within_epic').order('rank_within_epic', { ascending: false }).limit(1);
+      const { data: features, error: rankErr } = await supabase.from('features').select('rank_within_epic').order('rank_within_epic', { ascending: false }).limit(1);
+      if (rankErr) throw rankErr;
       const maxRank = features?.[0]?.rank_within_epic || 0;
       await supabase.from('features').update({ rank_within_epic: maxRank + 1 }).eq('id', featureId);
     },

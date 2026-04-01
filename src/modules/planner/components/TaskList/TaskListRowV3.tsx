@@ -4,7 +4,7 @@
  * Dropdowns match CreateTaskModal V10 styling
  */
 
-import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback, memo } from 'react';
 import { Lock, MoreHorizontal, ExternalLink, Copy, Trash2, Check, Plus, Tag, Search, Loader2, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -101,7 +101,7 @@ interface AssigneeDropdownProps {
   onUpdate: (taskId: string, field: string, value: any) => void;
 }
 
-function AssigneeDropdown({ task, users, workstreamColor, width, onUpdate }: AssigneeDropdownProps) {
+const AssigneeDropdown = memo(function AssigneeDropdown({ task, users, workstreamColor, width, onUpdate }: AssigneeDropdownProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -225,7 +225,7 @@ function AssigneeDropdown({ task, users, workstreamColor, width, onUpdate }: Ass
       </Popover>
     </td>
   );
-}
+});
 
 // ============================================================
 // STATUS DROPDOWN - Modal-style with colored dots
@@ -238,7 +238,7 @@ interface StatusDropdownProps {
   onUpdate: (taskId: string, field: string, value: any) => void;
 }
 
-function StatusDropdown({ task, statuses, statusConfig, width, onUpdate }: StatusDropdownProps) {
+const StatusDropdown = memo(function StatusDropdown({ task, statuses, statusConfig, width, onUpdate }: StatusDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -327,7 +327,7 @@ function StatusDropdown({ task, statuses, statusConfig, width, onUpdate }: Statu
       </div>
     </td>
   );
-}
+});
 
 // Shared DropdownItem for Status
 function StatusDropdownItem({ value, color, isSelected, onClick }: { value: string; color: string; isSelected: boolean; onClick: () => void }) {
@@ -373,7 +373,7 @@ interface PriorityDropdownProps {
   onUpdate: (taskId: string, field: string, value: any) => void;
 }
 
-function PriorityDropdown({ task, width, onUpdate }: PriorityDropdownProps) {
+const PriorityDropdown = memo(function PriorityDropdown({ task, width, onUpdate }: PriorityDropdownProps) {
   const [open, setOpen] = useState(false);
   const currentConfig = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.medium;
 
@@ -412,7 +412,7 @@ function PriorityDropdown({ task, width, onUpdate }: PriorityDropdownProps) {
       </Popover>
     </td>
   );
-}
+});
 
 // ============================================================
 // WORKSTREAM DROPDOWN - Modal-style with colored dots
@@ -424,7 +424,7 @@ interface WorkstreamDropdownProps {
   onUpdate: (taskId: string, field: string, value: any) => void;
 }
 
-function WorkstreamDropdown({ task, workstreamColors, width, onUpdate }: WorkstreamDropdownProps) {
+const WorkstreamDropdown = memo(function WorkstreamDropdown({ task, workstreamColors, width, onUpdate }: WorkstreamDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -523,7 +523,7 @@ function WorkstreamDropdown({ task, workstreamColors, width, onUpdate }: Workstr
       </div>
     </td>
   );
-}
+});
 
 // Shared DropdownItem for Workstream
 function WorkstreamDropdownItem({ value, color, isSelected, onClick }: { value: string; color: string; isSelected: boolean; onClick: () => void }) {
@@ -585,7 +585,7 @@ const LABEL_COLORS = [
   { name: 'Lime', value: '#84cc16' }
 ];
 
-function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
+const LabelsDropdown = memo(function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [updatingLabels, setUpdatingLabels] = useState<Set<string>>(new Set());
@@ -971,7 +971,7 @@ function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
       </Popover>
     </td>
   );
-}
+});
 
 interface TaskListRowV3Props {
   task: TaskListTask;
@@ -988,7 +988,7 @@ interface TaskListRowV3Props {
   labels?: Label[];
 }
 
-export function TaskListRowV3({
+export const TaskListRowV3 = memo(function TaskListRowV3({
   task,
   index,
   isSelected,
@@ -1346,4 +1346,4 @@ export function TaskListRowV3({
       )}
     </tr>
   );
-}
+});

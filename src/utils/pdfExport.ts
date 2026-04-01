@@ -7,7 +7,7 @@
  * - Tabular data with proper column alignment
  */
 
-const loadJsPDF = () => import('jspdf').then(m => m.default || m.jsPDF);
+import { loadJsPDF } from '@/lib/exportLoaders';
 
 interface InsightData {
   label: string;

@@ -26,16 +26,18 @@ export function useCommandCenterKPIs(projectId?: string) {
     queryKey: ['command-center-kpis', projectId],
     queryFn: async (): Promise<KPIMetric[]> => {
       // Fetch total test cases
-      const { count: totalTests } = await supabase
+      const { count: totalTests, error: totalTestsError } = await supabase
         .from('tm_test_cases')
         .select('*', { count: 'exact', head: true });
+      if (totalTestsError) throw totalTestsError;
 
       // Fetch test runs from last 30 days
       const thirtyDaysAgo = subDays(new Date(), 30).toISOString();
-      const { data: recentRuns } = await supabase
+      const { data: recentRuns, error: recentRunsError } = await supabase
         .from('tm_test_runs')
         .select('status, created_at')
-        .gte('created_at', thirtyDaysAgo) as { data: { status: string; created_at: string }[] | null };
+        .gte('created_at', thirtyDaysAgo) as { data: { status: string; created_at: string }[] | null; error: any };
+      if (recentRunsError) throw recentRunsError;
 
       // Calculate pass rate
       const passedCount = recentRuns?.filter(r => r.status === 'passed').length || 0;
@@ -43,16 +45,18 @@ export function useCommandCenterKPIs(projectId?: string) {
       const passRate = totalRuns > 0 ? (passedCount / totalRuns) * 100 : 0;
 
       // Fetch open defects
-      const { count: openDefects } = await supabase
+      const { count: openDefects, error: openDefectsError } = await supabase
         .from('tm_defects')
         .select('*', { count: 'exact', head: true })
         .not('status', 'in', '("closed","resolved")');
+      if (openDefectsError) throw openDefectsError;
 
       // Fetch blocked tests from active cycles
-      const { data: activeCycles } = await supabase
+      const { data: activeCycles, error: activeCyclesError } = await supabase
         .from('tm_test_cycles')
         .select('id')
-        .eq('status', 'in_progress') as { data: { id: string }[] | null };
+        .eq('status', 'in_progress') as { data: { id: string }[] | null; error: any };
+      if (activeCyclesError) throw activeCyclesError;
 
       const cycleIds = activeCycles?.map(c => c.id) || [];
       
@@ -71,16 +75,18 @@ export function useCommandCenterKPIs(projectId?: string) {
       const sevenDaysAgo = subDays(new Date(), 7).toISOString();
       const fourteenDaysAgo = subDays(new Date(), 14).toISOString();
 
-      const { data: currentWeekRuns } = await supabase
+      const { data: currentWeekRuns, error: currentWeekError } = await supabase
         .from('tm_test_runs')
         .select('status')
         .gte('executed_at', sevenDaysAgo);
+      if (currentWeekError) throw currentWeekError;
 
-      const { data: previousWeekRuns } = await supabase
+      const { data: previousWeekRuns, error: previousWeekError } = await supabase
         .from('tm_test_runs')
         .select('status')
         .gte('executed_at', fourteenDaysAgo)
         .lt('executed_at', sevenDaysAgo);
+      if (previousWeekError) throw previousWeekError;
 
       const currentPassRate = currentWeekRuns?.length 
         ? (currentWeekRuns.filter(r => r.status === 'passed').length / currentWeekRuns.length) * 100 

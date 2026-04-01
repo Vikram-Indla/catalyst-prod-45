@@ -12,13 +12,14 @@ export function FeatureAuditTab({ featureId }: FeatureAuditTabProps) {
     queryFn: async () => {
       if (!featureId) return [];
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('activity_logs')
         .select('*')
         .eq('entity_type', 'features')
         .eq('entity_id', featureId)
         .order('created_at', { ascending: false })
         .limit(50);
+      if (error) throw error;
 
       return data || [];
     },

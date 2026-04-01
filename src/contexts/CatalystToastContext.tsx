@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect, useState, useCallback, useMemo } from 'react';
 import { CatalystToastContainer } from '@/components/ui/catalyst-toast';
 import type { CatalystToastAction, CatalystToastType } from '@/components/ui/catalyst-toast';
 import { catalystToast, CatalystToastItem } from '@/lib/catalystToast';
@@ -56,7 +56,7 @@ export const CatalystToastProvider: React.FC<CatalystToastProviderProps> = ({
     return unsubscribe;
   }, [maxToasts, dismissToast]);
 
-  const contextValue: CatalystToastContextValue = {
+  const contextValue = useMemo<CatalystToastContextValue>(() => ({
     showToast: catalystToast.show,
     dismissToast,
     dismissAll,
@@ -66,7 +66,7 @@ export const CatalystToastProvider: React.FC<CatalystToastProviderProps> = ({
     info: catalystToast.info,
     loading: catalystToast.loading,
     undo: catalystToast.undo,
-  };
+  }), [dismissToast, dismissAll]);
 
   return (
     <CatalystToastContext.Provider value={contextValue}>

@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
+import DOMPurify from 'dompurify';
 import { FileSearch, FileText, Loader2, Copy, Check, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
@@ -160,5 +161,5 @@ const HighlightedText: React.FC<{ text: string }> = ({ text }) => {
     result = result.replace(regex, (match) => `<span class="${className}">${match}</span>`);
   });
 
-  return <span dangerouslySetInnerHTML={{ __html: result }} />;
+  return <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result) }} />;
 };

@@ -67,9 +67,10 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
   const { data: workTypes = [] } = useQuery<WorkTypeOption[]>({
     queryKey: ['ph-work-types', projectId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('ph_work_types').select('id, name, color, icon, level')
         .eq('project_id', projectId).eq('is_enabled', true).order('position');
+      if (error) throw error;
       return (data || []) as WorkTypeOption[];
     },
     enabled: !!projectId,
@@ -78,9 +79,10 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
   const { data: statuses = [] } = useQuery<StatusOption[]>({
     queryKey: ['ph-statuses-default', projectId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('ph_workflow_statuses').select('id, name, is_default')
         .eq('project_id', projectId).order('position');
+      if (error) throw error;
       return (data || []) as StatusOption[];
     },
     enabled: !!projectId,
@@ -89,7 +91,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
   const { data: profiles = [] } = useQuery<ProfileOption[]>({
     queryKey: ['ph-profiles-all'],
     queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, full_name, avatar_url').order('full_name');
+      const { data, error } = await supabase.from('profiles').select('id, full_name, avatar_url').order('full_name');
+      if (error) throw error;
       return (data || []) as ProfileOption[];
     },
   });
@@ -97,9 +100,10 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
   const { data: parentItems = [] } = useQuery<ParentOption[]>({
     queryKey: ['ph-parent-items', projectId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('ph_work_items').select('id, item_key, title, summary')
         .eq('project_id', projectId).order('item_key');
+      if (error) throw error;
       return (data || []) as ParentOption[];
     },
     enabled: !!projectId,
@@ -108,9 +112,10 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
   const { data: labels = [] } = useQuery<LabelOption[]>({
     queryKey: ['ph-labels', projectId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('ph_labels').select('id, name, color')
         .eq('project_id', projectId).order('name');
+      if (error) throw error;
       return (data || []) as LabelOption[];
     },
     enabled: !!projectId,
@@ -119,9 +124,10 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
   const { data: releases = [] } = useQuery<ReleaseOption[]>({
     queryKey: ['ph-releases', projectId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('ph_releases').select('id, name, status')
         .eq('project_id', projectId).order('release_date');
+      if (error) throw error;
       return (data || []) as ReleaseOption[];
     },
     enabled: !!projectId,

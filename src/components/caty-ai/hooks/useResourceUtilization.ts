@@ -32,31 +32,34 @@ export function useResourceUtilization(departmentId?: string | null) {
       if (!resources || resources.length === 0) return [];
       
       // Fetch countries for country name
-      const { data: countries } = await supabase
+      const { data: countries, error: countryErr } = await supabase
         .from('resource_countries')
         .select('id, code, name')
         .eq('is_active', true);
-      
+      if (countryErr) throw countryErr;
+
       const countryMap = new Map(countries?.map(c => [c.id, { code: c.code || '', name: c.name }]) || []);
-      
+
       // Fetch locations for On-Site/Off-Shore determination
-      const { data: locations } = await supabase
+      const { data: locations, error: locErr } = await supabase
         .from('resource_locations')
         .select('id, name')
         .eq('is_active', true);
-      
+      if (locErr) throw locErr;
+
       const locationMap = new Map(locations?.map(l => [l.id, l.name]) || []);
-      
+
       // Fetch allocations for the current period - include all valid statuses
       const resourceIds = resources.map(r => r.id);
-      const { data: allocations } = await supabase
+      const { data: allocations, error: allocErr } = await supabase
         .from('resource_allocations')
         .select('resource_id, allocation_percent')
         .in('resource_id', resourceIds)
         .lte('start_date', today)
         .gte('end_date', today)
         .in('status', ['active', 'committed', 'forecast']);
-      
+      if (allocErr) throw allocErr;
+
       return resources.map(resource => {
         const resourceAllocs = allocations?.filter(a => a.resource_id === resource.id) || [];
         const utilization = resourceAllocs.reduce((sum, a) => sum + (a.allocation_percent || 0), 0);

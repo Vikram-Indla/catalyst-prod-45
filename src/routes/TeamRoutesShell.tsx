@@ -4,6 +4,7 @@
  */
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 const TeamComingSoon = lazy(() => import("../pages/team/ComingSoon"));
 const WorkTreePage = lazy(() => import("../pages/work-tree").then(m => ({ default: m.WorkTreePage })));
@@ -13,7 +14,9 @@ const KanbanBoardAnalytics = lazy(() => import("../pages/KanbanBoardAnalytics"))
 const PlaceholderPage = lazy(() => import("../pages/jira-align/PlaceholderPage"));
 
 const S = ({ children }: { children: React.ReactNode }) => (
-  <Suspense fallback={<div className="p-8">Loading...</div>}>{children}</Suspense>
+  <ErrorBoundary>
+    <Suspense fallback={<div className="p-8">Loading...</div>}>{children}</Suspense>
+  </ErrorBoundary>
 );
 
 // /teams/:teamId/*

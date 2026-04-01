@@ -393,10 +393,11 @@ function getTableName(type: any): string {
 
 async function fetchBacklogMeta(params: BacklogQueryParams): Promise<BacklogMeta> {
   // Fetch process steps
-  const { data: processStepsData } = await supabase
+  const { data: processStepsData, error: processStepsError } = await supabase
     .from('process_steps')
     .select('*')
     .order('sort_order');
+  if (processStepsError) throw processStepsError;
 
   const processSteps = (processStepsData || []).map((step: any) => ({
     id: step.id,
@@ -406,10 +407,11 @@ async function fetchBacklogMeta(params: BacklogQueryParams): Promise<BacklogMeta
   }));
 
   // Fetch program increments
-  const { data: programIncrementsData } = await supabase
+  const { data: programIncrementsData, error: programIncrementsError } = await supabase
     .from('program_increments')
     .select('*')
     .order('start_date');
+  if (programIncrementsError) throw programIncrementsError;
 
   const programIncrements = (programIncrementsData || []).map((pi: any) => ({
     id: pi.id,
@@ -421,10 +423,11 @@ async function fetchBacklogMeta(params: BacklogQueryParams): Promise<BacklogMeta
   }));
 
   // Fetch teams if needed
-  const { data: teamsData } = await supabase
+  const { data: teamsData, error: teamsError } = await supabase
     .from('teams')
     .select('*')
     .order('name');
+  if (teamsError) throw teamsError;
 
   const teams = (teamsData || []).map((team: any) => ({
     id: team.id,
@@ -478,10 +481,11 @@ async function groupItemsIntoPISections(
     .from(junctionTable as any) as any)
     .select('*, program_increments(*)');
 
-  const { data: pis } = await supabase
+  const { data: pis, error: pisError } = await supabase
     .from('program_increments')
     .select('*')
     .order('start_date');
+  if (pisError) throw pisError;
 
   const itemIdField = type === 'epic' ? 'epic_id' : 'feature_id';
   const piMap = new Map<string, any[]>();

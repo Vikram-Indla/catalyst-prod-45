@@ -16,10 +16,11 @@ export function FeatureMassMoveDialog({ open, onClose, selectedFeatureIds }: Fea
   const { data: programs } = useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('programs')
         .select('id, name')
         .order('name');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -27,10 +28,11 @@ export function FeatureMassMoveDialog({ open, onClose, selectedFeatureIds }: Fea
   const { data: programIncrements } = useQuery({
     queryKey: ['program-increments'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('program_increments')
         .select('id, name')
         .order('start_date', { ascending: false });
+      if (error) throw error;
       return data || [];
     },
   });

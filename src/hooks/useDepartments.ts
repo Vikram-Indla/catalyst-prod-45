@@ -7,7 +7,7 @@ export function useDepartments() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('departments')
-        .select('*')
+        .select('id, name, sort_order, code, parent_id, is_active')
         .eq('is_active', true)
         .order('sort_order');
 

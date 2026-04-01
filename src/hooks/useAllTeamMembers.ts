@@ -6,35 +6,32 @@ import type { User } from '@/components/work-manager/types';
 export function useAllTeamMembers() {
   const queryClient = useQueryClient();
 
-  // Set up real-time subscription to sync with profiles changes
+  // Set up real-time subscription with debouncing to prevent rapid-fire refetches
   useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout>;
+    const debouncedInvalidate = () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['all-team-members'] });
+      }, 1000);
+    };
+
     const channel = supabase
       .channel('all-team-members-sync')
       .on(
         'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'profiles',
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['all-team-members'] });
-        }
+        { event: '*', schema: 'public', table: 'profiles' },
+        debouncedInvalidate
       )
       .on(
         'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'team_members',
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['all-team-members'] });
-        }
+        { event: '*', schema: 'public', table: 'team_members' },
+        debouncedInvalidate
       )
       .subscribe();
 
     return () => {
+      clearTimeout(debounceTimer);
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
@@ -107,35 +104,32 @@ export function useAllTeamMembers() {
 export function useTeamMemberIds() {
   const queryClient = useQueryClient();
 
-  // Set up real-time subscription
+  // Set up real-time subscription with debouncing
   useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout>;
+    const debouncedInvalidate = () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['team-member-ids'] });
+      }, 1000);
+    };
+
     const channel = supabase
       .channel('team-member-ids-sync')
       .on(
         'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'profiles',
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['team-member-ids'] });
-        }
+        { event: '*', schema: 'public', table: 'profiles' },
+        debouncedInvalidate
       )
       .on(
         'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'team_members',
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['team-member-ids'] });
-        }
+        { event: '*', schema: 'public', table: 'team_members' },
+        debouncedInvalidate
       )
       .subscribe();
 
     return () => {
+      clearTimeout(debounceTimer);
       supabase.removeChannel(channel);
     };
   }, [queryClient]);

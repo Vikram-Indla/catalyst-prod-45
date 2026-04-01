@@ -124,11 +124,12 @@ export function EpicRoadmap({ programId }: EpicRoadmapProps) {
 
       if (programId) {
         // check if it's a valid program
-        const { data: prog } = await supabase
+        const { data: prog, error: progError } = await supabase
           .from('programs')
           .select('id')
           .eq('id', programId)
           .maybeSingle();
+        if (progError) throw progError;
         if (prog) {
           query = query.eq('primary_program_id', programId);
         }

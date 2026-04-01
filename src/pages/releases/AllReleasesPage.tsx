@@ -504,7 +504,7 @@ export default function AllReleasesPage() {
         <button
           onClick={() => refetch()}
           className="flex items-center gap-1.5 transition-colors"
-          style={{ padding: '8px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+          style={{ ...primaryBtnStyle, padding: '8px 16px' }}
         >
           <RefreshCw className="w-3.5 h-3.5" /> Retry
         </button>
@@ -526,7 +526,7 @@ export default function AllReleasesPage() {
         <button
           onClick={() => setIsNewReleaseModalOpen(true)}
           className="flex items-center gap-1.5 transition-colors"
-          style={{ padding: '8px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+          style={{ ...primaryBtnStyle, padding: '8px 16px' }}
         >
           <Plus className="w-3.5 h-3.5" /> Create First Release
         </button>
@@ -633,9 +633,9 @@ export default function AllReleasesPage() {
             <CheckboxRow key={s} checked={statusFilter.includes(s)} label={`${getStatusConfig(s).label} (${releases.filter(r => r.status === s).length})`}
               onChange={() => { setStatusFilter(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s]); }} />
           ))}
-          <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '4px', paddingTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
-            <button onClick={() => setStatusFilter([])} style={{ fontSize: '12px', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer' }}>Clear</button>
-            <button onClick={() => setActiveFilterDropdown(null)} style={{ fontSize: '12px', color: '#2563eb', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>Apply</button>
+          <div style={filterDividerStyle}>
+            <button onClick={() => setStatusFilter([])} style={clearBtnStyle}>Clear</button>
+            <button onClick={() => setActiveFilterDropdown(null)} style={applyBtnStyle}>Apply</button>
           </div>
         </FilterPill>
 
@@ -651,9 +651,9 @@ export default function AllReleasesPage() {
             return <CheckboxRow key={h} checked={healthFilter.includes(h)} label={labels[h]}
               onChange={() => { setHealthFilter(p => p.includes(h) ? p.filter(x => x !== h) : [...p, h]); }} />;
           })}
-          <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '4px', paddingTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
-            <button onClick={() => setHealthFilter([])} style={{ fontSize: '12px', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer' }}>Clear</button>
-            <button onClick={() => setActiveFilterDropdown(null)} style={{ fontSize: '12px', color: '#2563eb', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>Apply</button>
+          <div style={filterDividerStyle}>
+            <button onClick={() => setHealthFilter([])} style={clearBtnStyle}>Clear</button>
+            <button onClick={() => setActiveFilterDropdown(null)} style={applyBtnStyle}>Apply</button>
           </div>
         </FilterPill>
 
@@ -668,9 +668,9 @@ export default function AllReleasesPage() {
             <CheckboxRow key={q} checked={quarterFilter.includes(q)} label={q}
               onChange={() => { setQuarterFilter(p => p.includes(q) ? p.filter(x => x !== q) : [...p, q]); }} />
           ))}
-          <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '4px', paddingTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
-            <button onClick={() => setQuarterFilter([])} style={{ fontSize: '12px', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer' }}>Clear</button>
-            <button onClick={() => setActiveFilterDropdown(null)} style={{ fontSize: '12px', color: '#2563eb', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>Apply</button>
+          <div style={filterDividerStyle}>
+            <button onClick={() => setQuarterFilter([])} style={clearBtnStyle}>Clear</button>
+            <button onClick={() => setActiveFilterDropdown(null)} style={applyBtnStyle}>Apply</button>
           </div>
         </FilterPill>
 
@@ -720,7 +720,7 @@ export default function AllReleasesPage() {
           >
             <span style={{ fontWeight: 500 }}>{selectedIds.size} releases selected</span>
             <div className="relative" data-dropdown>
-              <button onClick={() => setBulkStatusDropdown(p => !p)} className="flex items-center gap-1" style={{ padding: '4px 10px', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '4px', color: '#fff', background: 'transparent', fontSize: '12px', cursor: 'pointer' }}>
+              <button onClick={() => setBulkStatusDropdown(p => !p)} className="flex items-center gap-1" style={bulkBarBtnStyle}>
                 Change Status <ChevronDown className="w-3 h-3" />
               </button>
               {bulkStatusDropdown && (
@@ -733,10 +733,10 @@ export default function AllReleasesPage() {
                 </div>
               )}
             </div>
-            <button onClick={handleExportSelected} style={{ padding: '4px 10px', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '4px', color: '#fff', background: 'transparent', fontSize: '12px', cursor: 'pointer' }}>
+            <button onClick={handleExportSelected} style={bulkBarBtnStyle}>
               Export Selected
             </button>
-            <button onClick={() => setDeleteConfirm(true)} style={{ padding: '4px 10px', border: '1px solid rgba(239,68,68,0.5)', borderRadius: '4px', color: '#fca5a5', background: 'transparent', fontSize: '12px', cursor: 'pointer' }}>
+            <button onClick={() => setDeleteConfirm(true)} style={{ ...bulkBarBtnStyle, borderColor: 'rgba(239,68,68,0.5)', color: '#fca5a5' }}>
               Delete
             </button>
             <div className="flex-1" />
@@ -759,7 +759,7 @@ export default function AllReleasesPage() {
                 <button
                   onClick={() => setIsNewReleaseModalOpen(true)}
                   className="mt-4 transition-colors"
-                  style={{ padding: '6px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                  style={primaryBtnStyle}
                 >
                   Create Release
                 </button>
@@ -767,7 +767,7 @@ export default function AllReleasesPage() {
                 <button
                   onClick={() => { setSearchQuery(''); setStatusFilter([]); setHealthFilter([]); setQuarterFilter([]); }}
                   className="mt-4 transition-colors"
-                  style={{ padding: '6px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                  style={primaryBtnStyle}
                 >
                   Clear all filters
                 </button>
@@ -840,7 +840,7 @@ export default function AllReleasesPage() {
           <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '480px', background: '#fff', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: '#e2e8f0' }}>
               <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>{detailRelease.name}</h2>
-              <button onClick={() => setDetailRelease(null)} style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>✕</button>
+              <button onClick={() => setDetailRelease(null)} style={closeBtnStyle}>✕</button>
             </div>
             <div className="px-6 py-5">
               <div className="flex gap-4 mb-6">
@@ -871,7 +871,7 @@ export default function AllReleasesPage() {
                 <button
                   onClick={() => { navigate(`/releasehub/command-center?releaseId=${detailRelease.id}`); }}
                   className="flex-1 transition-colors"
-                  style={{ padding: '8px 0', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                  style={{ ...primaryBtnStyle, padding: '8px 0' }}
                 >
                   Open in Command Center
                 </button>
@@ -891,7 +891,7 @@ export default function AllReleasesPage() {
                 <Sparkles className="w-4 h-4" style={{ color: '#8b5cf6' }} />
                 <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>AI Insights</h2>
               </div>
-              <button onClick={() => setIsAIDrawerOpen(false)} style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>✕</button>
+              <button onClick={() => setIsAIDrawerOpen(false)} style={closeBtnStyle}>✕</button>
             </div>
             <div className="px-6 py-4 space-y-3">
               {generateDynamicInsights(releases).map((insight, i) => {
@@ -940,7 +940,7 @@ export default function AllReleasesPage() {
               <button
                 onClick={handleBulkDelete}
                 disabled={bulkDeleteMutation.isPending}
-                style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: '#ef4444', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+                style={{ ...primaryBtnStyle, background: '#ef4444' }}
               >
                 {bulkDeleteMutation.isPending ? 'Deleting...' : 'Delete'}
               </button>
@@ -1021,6 +1021,25 @@ const colHeaderStyle: React.CSSProperties = {
   fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase',
   letterSpacing: '0.05em', textAlign: 'left', padding: '0 12px', whiteSpace: 'nowrap',
   height: '32px', lineHeight: '32px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc',
+};
+
+const filterDividerStyle: React.CSSProperties = {
+  borderTop: '1px solid #e2e8f0', marginTop: '4px', paddingTop: '4px', display: 'flex', justifyContent: 'space-between',
+};
+const clearBtnStyle: React.CSSProperties = {
+  fontSize: '12px', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer',
+};
+const applyBtnStyle: React.CSSProperties = {
+  fontSize: '12px', color: '#2563eb', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer',
+};
+const bulkBarBtnStyle: React.CSSProperties = {
+  padding: '4px 10px', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '4px', color: '#fff', background: 'transparent', fontSize: '12px', cursor: 'pointer',
+};
+const closeBtnStyle: React.CSSProperties = {
+  color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px',
+};
+const primaryBtnStyle: React.CSSProperties = {
+  padding: '6px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer',
 };
 
 
@@ -1256,7 +1275,7 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '500px', background: '#fff', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.15)', animation: 'scaleIn 200ms ease' }}>
         <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: '#e2e8f0' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>Create New Release</h2>
-          <button onClick={onClose} style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>✕</button>
+          <button onClick={onClose} style={closeBtnStyle}>✕</button>
         </div>
         <div className="px-6 py-5 space-y-4">
           <div>
@@ -1292,7 +1311,7 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
           <button
             onClick={handleSubmit}
             disabled={isCreating}
-            style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer', opacity: isCreating ? 0.7 : 1 }}
+            style={{ ...primaryBtnStyle, opacity: isCreating ? 0.7 : 1 }}
           >
             {isCreating ? 'Creating...' : 'Create Release'}
           </button>

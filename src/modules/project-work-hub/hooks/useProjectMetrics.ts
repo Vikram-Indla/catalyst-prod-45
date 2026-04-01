@@ -12,22 +12,24 @@ export function useProjectMetrics(projectId: string) {
       const now = new Date().toISOString();
 
       // Get feature IDs for this project
-      const { data: features } = await supabase
+      const { data: features, error: featuresError } = await supabase
         .from('features')
         .select('id, status, created_at, updated_at, planned_end_date')
         .eq('project_id', projectId)
         .is('deleted_at', null);
+      if (featuresError) throw featuresError;
 
       const featureIds = (features || []).map(f => f.id);
 
       // Get stories for these features
       let stories: any[] = [];
       if (featureIds.length > 0) {
-        const { data: storyData } = await supabase
+        const { data: storyData, error: storyError } = await supabase
           .from('stories')
           .select('id, status, created_at, updated_at')
           .in('feature_id', featureIds)
           .is('deleted_at', null);
+        if (storyError) throw storyError;
         stories = storyData || [];
       }
 
@@ -75,22 +77,24 @@ export function useStatusDistribution(projectId: string, includeFeatures: boolea
     queryKey: ['status-distribution', projectId, includeFeatures],
     queryFn: async (): Promise<StatusCount[]> => {
       // Get features for this project
-      const { data: features } = await supabase
+      const { data: features, error: featuresError } = await supabase
         .from('features')
         .select('id, status')
         .eq('project_id', projectId)
         .is('deleted_at', null);
+      if (featuresError) throw featuresError;
 
       const featureIds = (features || []).map(f => f.id);
 
       // Get stories for these features
       let stories: any[] = [];
       if (featureIds.length > 0) {
-        const { data: storyData } = await supabase
+        const { data: storyData, error: storyError } = await supabase
           .from('stories')
           .select('id, status')
           .in('feature_id', featureIds)
           .is('deleted_at', null);
+        if (storyError) throw storyError;
         stories = storyData || [];
       }
 
@@ -137,22 +141,24 @@ export function usePriorityDistribution(projectId: string, includeStories: boole
     queryKey: ['priority-distribution', projectId, includeStories],
     queryFn: async (): Promise<PriorityCount[]> => {
       // Get feature IDs for this project
-      const { data: features } = await supabase
+      const { data: features, error: featuresError } = await supabase
         .from('features')
         .select('id')
         .eq('project_id', projectId)
         .is('deleted_at', null);
+      if (featuresError) throw featuresError;
 
       const featureIds = (features || []).map(f => f.id);
 
       // Get stories with priority for these features
       let stories: any[] = [];
       if (featureIds.length > 0) {
-        const { data: storyData } = await supabase
+        const { data: storyData, error: storyError } = await supabase
           .from('stories')
           .select('id, priority')
           .in('feature_id', featureIds)
           .is('deleted_at', null);
+        if (storyError) throw storyError;
         stories = storyData || [];
       }
 
@@ -187,11 +193,12 @@ export function useTypeDistribution(projectId: string) {
     queryKey: ['type-distribution', projectId],
     queryFn: async (): Promise<TypeCount[]> => {
       // Get features for this project
-      const { data: features } = await supabase
+      const { data: features, error: featuresError } = await supabase
         .from('features')
         .select('id')
         .eq('project_id', projectId)
         .is('deleted_at', null);
+      if (featuresError) throw featuresError;
 
       const featureCount = (features || []).length;
       const featureIds = (features || []).map(f => f.id);
@@ -199,11 +206,12 @@ export function useTypeDistribution(projectId: string) {
       // Get stories for these features
       let storyCount = 0;
       if (featureIds.length > 0) {
-        const { count } = await supabase
+        const { count, error: countError } = await supabase
           .from('stories')
           .select('id', { count: 'exact', head: true })
           .in('feature_id', featureIds)
           .is('deleted_at', null);
+        if (countError) throw countError;
         storyCount = count || 0;
       }
 

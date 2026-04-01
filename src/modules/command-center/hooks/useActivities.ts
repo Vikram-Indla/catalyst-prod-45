@@ -16,7 +16,7 @@ export function useActivities(limit: number = 10, projectId?: string) {
       const activities: ActivityItem[] = [];
 
       // Fetch recent test runs
-      const { data: recentRuns } = await supabase
+      const { data: recentRuns, error: runsError } = await supabase
         .from('tm_test_runs')
         .select(`
           id,
@@ -27,7 +27,8 @@ export function useActivities(limit: number = 10, projectId?: string) {
         `)
         .not('executed_by', 'is', null)
         .order('created_at', { ascending: false })
-        .limit(limit) as { data: any[] | null };
+        .limit(limit) as { data: any[] | null; error: any };
+      if (runsError) throw runsError;
 
       for (const run of recentRuns || []) {
         let activityType: ActivityType = 'passed';
@@ -47,7 +48,7 @@ export function useActivities(limit: number = 10, projectId?: string) {
       }
 
       // Fetch recent defects
-      const { data: recentDefects } = await supabase
+      const { data: recentDefects, error: defectsError } = await supabase
         .from('tm_defects')
         .select(`
           id,
@@ -56,7 +57,8 @@ export function useActivities(limit: number = 10, projectId?: string) {
           created_at
         `)
         .order('created_at', { ascending: false })
-        .limit(5) as { data: any[] | null };
+        .limit(5) as { data: any[] | null; error: any };
+      if (defectsError) throw defectsError;
 
       for (const defect of recentDefects || []) {
         activities.push({

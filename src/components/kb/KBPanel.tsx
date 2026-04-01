@@ -75,12 +75,13 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
       const lastWeekISO = lastSunday.toISOString();
 
       // 1) Person most active THIS week (most recently updated items)
-      const { data: weekItems } = await supabase
+      const { data: weekItems, error: weekErr } = await supabase
         .from('ph_issues')
         .select('assignee_display_name')
         .gte('jira_updated_at', thisWeekISO)
         .not('assignee_display_name', 'is', null)
         .limit(200);
+      if (weekErr) throw weekErr;
 
       if (weekItems && weekItems.length > 0) {
         const counts: Record<string, number> = {};
@@ -94,13 +95,14 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
 
       // 2) Most recently updated ticket THIS week
       const offset = chipGeneration % 3;
-      const { data: recentTickets } = await supabase
+      const { data: recentTickets, error: ticketErr } = await supabase
         .from('ph_issues')
         .select('issue_key')
         .gte('jira_updated_at', thisWeekISO)
         .not('issue_key', 'is', null)
         .order('jira_updated_at', { ascending: false })
         .range(offset, offset);
+      if (ticketErr) throw ticketErr;
 
       if (recentTickets && recentTickets[0]) {
         chips.push(`Status of ${recentTickets[0].issue_key}`);

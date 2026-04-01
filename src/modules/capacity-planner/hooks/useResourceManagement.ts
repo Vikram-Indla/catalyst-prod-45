@@ -33,12 +33,13 @@ export function useResourceManagement() {
       // Update resource_inventory for assignment_id using profile_id
       if (assignment_id !== undefined) {
         // Check if resource exists in resource_inventory by profile_id
-        const { data: existingResource } = await supabase
+        const { data: existingResource, error: existingError } = await supabase
           .from('resource_inventory')
           .select('id')
           .eq('profile_id', id)
           .maybeSingle();
-        
+        if (existingError) throw existingError;
+
         if (existingResource) {
           // Update existing resource_inventory entry
           const { error: inventoryError } = await supabase
@@ -52,12 +53,13 @@ export function useResourceManagement() {
           if (inventoryError) throw inventoryError;
         } else {
           // Create resource_inventory entry with profile_id
-          const { data: profile } = await supabase
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('full_name, role')
             .eq('id', id)
             .single();
-          
+          if (profileError) throw profileError;
+
           if (profile) {
             const { error: insertError } = await supabase
               .from('resource_inventory')
@@ -177,11 +179,12 @@ export function useResourceManagement() {
       allocation?: number;
     }) => {
       // Check if resource exists in resource_inventory by profile_id
-      const { data: existingResource } = await supabase
+      const { data: existingResource, error: existingError } = await supabase
         .from('resource_inventory')
         .select('id')
         .eq('profile_id', resourceId)
         .maybeSingle();
+      if (existingError) throw existingError;
 
       if (existingResource) {
         // Update existing resource_inventory entry
@@ -206,11 +209,12 @@ export function useResourceManagement() {
         return data;
       } else {
         // Create resource_inventory entry with profile_id
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('full_name, role')
           .eq('id', resourceId)
           .single();
+        if (profileError) throw profileError;
 
         if (profile) {
           const insertData = {

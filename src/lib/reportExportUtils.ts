@@ -1,8 +1,7 @@
 import { format } from 'date-fns';
 
-const loadJsPDF = () => import('jspdf').then(m => m.default || m.jsPDF);
+import { loadJsPDF, loadXLSX } from '@/lib/exportLoaders';
 const loadAutoTable = () => import('jspdf-autotable').then(m => m.default);
-const loadXLSX = () => import('xlsx');
 const loadFileSaver = () => import('file-saver').then(m => m.saveAs);
 
 export interface ExportData {

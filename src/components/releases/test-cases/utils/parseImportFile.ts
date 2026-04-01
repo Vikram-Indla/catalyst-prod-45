@@ -3,7 +3,7 @@
  */
 
 import Papa from 'papaparse';
-const loadXLSX = () => import('xlsx');
+import { loadXLSX } from '@/lib/exportLoaders';
 
 export interface ParsedTestCase {
   title: string;
