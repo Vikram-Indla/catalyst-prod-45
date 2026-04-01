@@ -25,7 +25,7 @@ export function PersonWorkResponse({ onItemClick, namePattern = '' }: { onItemCl
   const { data: allData, loading: loadingAll, loaded: allLoaded, loadAll } = useLoadAllItems(fetchAll);
 
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Loader2 size={20} className="animate-spin" color="#2563EB" /></div>;
-  if (!data.length) return <div style={{ padding: 24, color: '#64748B', fontSize: 13, textAlign: 'center' }}>No active items found for this person.</div>;
+  if (!data.length) return <div style={{ padding: 24, color: 'var(--fg-3)', fontSize: 13, textAlign: 'center' }}>No active items found for this person.</div>;
 
   const displayData = allLoaded ? allData : data;
 
@@ -34,9 +34,9 @@ export function PersonWorkResponse({ onItemClick, namePattern = '' }: { onItemCl
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <User size={16} strokeWidth={2} color="#2563EB" />
-          <span style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 650, color: '#0F172A' }}>{personName}</span>
+          <span style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 650, color: 'var(--fg-1)' }}>{personName}</span>
         </div>
-        <span style={{ fontFamily: F.mono, fontSize: 12, color: '#64748B' }}>📁 {total} active items</span>
+        <span style={{ fontFamily: F.mono, fontSize: 12, color: 'var(--fg-3)' }}>📁 {total} active items</span>
       </div>
       <V12Table
         headers={['KEY', 'TYPE', 'TITLE', 'STATUS', 'PROJECT', 'UPDATED']}
@@ -60,7 +60,7 @@ export function PersonWorkResponse({ onItemClick, namePattern = '' }: { onItemCl
       {loadingAll && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px' }}>
           <Loader2 size={14} className="animate-spin" color="#2563EB" />
-          <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.inter }}>Loading…</span>
+          <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: F.inter }}>Loading…</span>
         </div>
       )}
     </div>

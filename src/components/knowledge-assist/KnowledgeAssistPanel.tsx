@@ -134,7 +134,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         style={{
           position: 'fixed', top: 48, right: 0, bottom: 0,
           width: '50vw', minWidth: 480, maxWidth: 960,
-          background: '#FAFBFC',
+          background: 'var(--bg-1)',
           borderLeft: '1px solid rgba(15,23,42,0.12)',
           boxShadow: '-4px 0 24px rgba(0,0,0,0.06)',
           zIndex: 50, display: 'flex', flexDirection: 'column',
@@ -146,20 +146,20 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         {/* Header */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '14px 20px', borderBottom: '1px solid #ECEEF2',
-          flexShrink: 0, background: '#FFFFFF',
+          padding: '14px 20px', borderBottom: '1px solid var(--divider)',
+          flexShrink: 0, background: 'var(--bg-app)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {view === 'chat' && (
               <button onClick={() => { setView('land'); setChatMessages([]); }} className="ka-icon-btn"
-                style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #ECEEF2', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--divider)', background: 'var(--bg-app)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                <span style={{ fontSize: 14, color: '#5E6270' }}>←</span>
+                <span style={{ fontSize: 14, color: 'var(--fg-3)' }}>←</span>
               </button>
             )}
             {/* CATY AI icon */}
             <div style={{
-              width: 40, height: 40, borderRadius: 12, background: '#2563EB',
+              width: 40, height: 40, borderRadius: 12, background: 'var(--cp-blue)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>
               <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
@@ -176,27 +176,27 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               </svg>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: '#1A1D23', letterSpacing: '-0.01em', fontFamily: F.sora }}>
+              <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1)', letterSpacing: '-0.01em', fontFamily: F.sora }}>
                 Knowledge Assist
               </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#8B8FA3', fontFamily: F.inter }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#2563EB', flexShrink: 0, animation: 'ka-pulse 2s infinite' }} />
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--fg-3)', fontFamily: F.inter }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-blue)', flexShrink: 0, animation: 'ka-pulse 2s infinite' }} />
                 {userCtx ? `${effectiveRole} · Live` : 'Connecting...'}
               </span>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <button onClick={handleRefresh} title="Refresh data" aria-label="Refresh" className="ka-icon-btn"
-              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #ECEEF2', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#F7F8FA'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--divider)', background: 'var(--bg-app)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <RefreshCw size={15} strokeWidth={2} color="#8B8FA3" />
             </button>
             <button onClick={onClose} aria-label="Close" className="ka-icon-btn"
-              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #ECEEF2', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#F7F8FA'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--divider)', background: 'var(--bg-app)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
               <X size={15} strokeWidth={2} color="#8B8FA3" />
             </button>
@@ -229,7 +229,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                     <div style={{ display: 'flex', justifyContent: 'flex-end', animation: 'ka-msg-in 200ms ease' }}>
                       <div style={{
                         maxWidth: '85%', padding: '10px 16px',
-                        borderRadius: '8px 8px 3px 8px', background: '#4C6EF5',
+                        borderRadius: '8px 8px 3px 8px', background: 'var(--cp-blue)',
                         color: '#FFFFFF', fontSize: 13, fontWeight: 500, lineHeight: 1.5,
                         fontFamily: F.inter,
                       }}>{msg.text}</div>
@@ -248,7 +248,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               {isProcessing && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0', animation: 'ka-msg-in 200ms ease' }}>
                   <Loader2 size={16} color="#4C6EF5" style={{ animation: 'spin 1s linear infinite' }} />
-                  <span style={{ fontSize: 13, color: '#8B8FA3', fontFamily: F.inter }}>Searching your projects...</span>
+                  <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: F.inter }}>Searching your projects...</span>
                 </div>
               )}
             </div>
@@ -256,23 +256,23 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         </div>
 
         {/* Input Area */}
-        <div style={{ borderTop: '1px solid #ECEEF2', padding: '16px 20px', flexShrink: 0, background: '#FFFFFF' }}>
+        <div style={{ borderTop: '1px solid var(--divider)', padding: '16px 20px', flexShrink: 0, background: 'var(--bg-app)' }}>
           <div
             style={{
               display: 'flex', alignItems: 'flex-end', gap: 8,
-              background: '#FAFBFC', border: '1.5px solid #ECEEF2',
+              background: 'var(--bg-1)', border: '1.5px solid #ECEEF2',
               borderRadius: 12, padding: '12px 16px', minHeight: 52,
               transition: 'border-color 200ms, box-shadow 200ms',
             }}
             onFocus={e => {
-              e.currentTarget.style.borderColor = '#4C6EF5';
+              e.currentTarget.style.borderColor = 'var(--cp-blue)';
               e.currentTarget.style.boxShadow = '0 0 0 3px rgba(76,110,245,0.12)';
-              e.currentTarget.style.background = '#FFFFFF';
+              e.currentTarget.style.background = 'var(--bg-app)';
             }}
             onBlur={e => {
-              e.currentTarget.style.borderColor = '#ECEEF2';
+              e.currentTarget.style.borderColor = 'var(--divider)';
               e.currentTarget.style.boxShadow = 'none';
-              e.currentTarget.style.background = '#FAFBFC';
+              e.currentTarget.style.background = 'var(--bg-1)';
             }}
           >
             <button
@@ -297,7 +297,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               rows={1}
               style={{
                 flex: 1, border: 'none', outline: 'none', background: 'transparent',
-                fontSize: 14, color: '#1A1D23', fontFamily: F.inter,
+                fontSize: 14, color: 'var(--fg-1)', fontFamily: F.inter,
                 resize: 'none', minHeight: 32, lineHeight: 1.5,
                 padding: '4px 0', boxShadow: 'none',
               }}
@@ -310,7 +310,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               style={{
                 width: 36, height: 36, borderRadius: 8, flexShrink: 0,
                 border: 'none',
-                background: input.trim() ? '#4C6EF5' : 'rgba(15,23,42,0.06)',
+                background: input.trim() ? 'var(--cp-blue)' : 'rgba(15,23,42,0.06)',
                 cursor: input.trim() ? 'pointer' : 'default',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'background 80ms',

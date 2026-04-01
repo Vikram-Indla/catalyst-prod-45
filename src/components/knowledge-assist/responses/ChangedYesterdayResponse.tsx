@@ -24,7 +24,7 @@ export function ChangedYesterdayResponse({ onItemClick }: { onItemClick?: (key: 
   const { data: allData, loading: loadingAll, loaded: allLoaded, loadAll } = useLoadAllItems(fetchAll);
 
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Loader2 size={20} className="animate-spin" color="#2563EB" /></div>;
-  if (!data.length) return <div style={{ padding: 24, color: '#64748B', fontSize: 13, textAlign: 'center' }}>No changes found in the last 24 hours.</div>;
+  if (!data.length) return <div style={{ padding: 24, color: 'var(--fg-3)', fontSize: 13, textAlign: 'center' }}>No changes found in the last 24 hours.</div>;
 
   const displayData = allLoaded ? allData : data;
 
@@ -53,7 +53,7 @@ export function ChangedYesterdayResponse({ onItemClick }: { onItemClick?: (key: 
       {loadingAll && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px' }}>
           <Loader2 size={14} className="animate-spin" color="#2563EB" />
-          <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.inter }}>Loading…</span>
+          <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: F.inter }}>Loading…</span>
         </div>
       )}
     </div>

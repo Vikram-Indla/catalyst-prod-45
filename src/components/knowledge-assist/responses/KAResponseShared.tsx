@@ -64,8 +64,8 @@ export function CardHeader({ icon: Icon, iconColor, title, titleColor, subtitle 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
       <Icon size={16} strokeWidth={2} color={iconColor} />
-      <span style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 650, color: titleColor || '#0F172A' }}>{title}</span>
-      <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.inter }}>{subtitle}</span>
+      <span style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 650, color: titleColor || 'var(--fg-1)' }}>{title}</span>
+      <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: F.inter }}>{subtitle}</span>
     </div>
   );
 }
@@ -86,12 +86,12 @@ export function V12Table({ headers, widths, children }: {
           {widths.map((w, i) => <col key={i} style={{ width: w }} />)}
         </colgroup>
         <thead>
-          <tr style={{ height: 36, background: '#F1F5F9' }}>
+          <tr style={{ height: 36, background: 'var(--cp-bd-zone)' }}>
             {headers.map((h, i) => (
               <th key={i} style={{
                 padding: '8px 12px', fontSize: 11, fontWeight: 650,
                 textTransform: 'uppercase', letterSpacing: '0.06em',
-                color: '#64748B', fontFamily: F.inter, textAlign: 'left',
+                color: 'var(--fg-3)', fontFamily: F.inter, textAlign: 'left',
                 whiteSpace: 'nowrap',
                 borderBottom: '1.5px solid rgba(15,23,42,0.12)',
               }}>{h}</th>
@@ -119,7 +119,7 @@ export function Row({ children, onClick }: { children: React.ReactNode; onClick?
 
 export function KeyCell({ value }: { value: string }) {
   return (
-    <td style={{ padding: '8px 12px', fontFamily: F.mono, fontSize: 12, fontWeight: 600, color: '#1D4ED8', whiteSpace: 'nowrap' }}>
+    <td style={{ padding: '8px 12px', fontFamily: F.mono, fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', whiteSpace: 'nowrap' }}>
       {value}
     </td>
   );
@@ -129,7 +129,7 @@ export function Cell({ children, mono, muted, bold }: { children: React.ReactNod
   return (
     <td style={{
       padding: '8px 12px', fontSize: 13, fontWeight: bold ? 600 : 400,
-      color: muted ? '#64748B' : '#0F172A',
+      color: muted ? 'var(--fg-3)' : 'var(--fg-1)',
       fontFamily: mono ? F.mono : F.inter,
       fontVariantNumeric: mono ? 'tabular-nums' : undefined,
       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -144,9 +144,9 @@ export function ScopeBar({ showing, total, label }: { showing: number; total: nu
   return (
     <div style={{
       padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 6,
-      fontSize: 12, color: '#64748B', fontFamily: F.inter,
+      fontSize: 12, color: 'var(--fg-3)', fontFamily: F.inter,
     }}>
-      <Clock size={14} strokeWidth={2} color="#64748B" />
+      <Clock size={14} strokeWidth={2} color="var(--fg-3)" />
       <span>{showing} of {total} · {label}</span>
     </div>
   );
@@ -164,12 +164,12 @@ export function ExtendLink({ main, hint, onClick, loading }: { main: string; hin
         border: '1.5px solid rgba(15,23,42,0.08)', borderRadius: 8,
         cursor: 'pointer', textAlign: 'left', transition: 'all 150ms',
       }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.background = 'rgba(37,99,235,0.04)'; }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.background = 'rgba(37,99,235,0.04)'; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.08)'; e.currentTarget.style.background = 'transparent'; }}
     >
-      <ArrowUpRight size={14} strokeWidth={2} color="#2563EB" />
-      <span style={{ fontSize: 12, fontWeight: 500, color: '#2563EB', fontFamily: F.inter }}>{main}</span>
-      <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: F.inter }}>{hint}</span>
+      <ArrowUpRight size={14} strokeWidth={2} color="var(--cp-blue)" />
+      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', fontFamily: F.inter }}>{main}</span>
+      <span style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: F.inter }}>{hint}</span>
     </button>
   );
 }
@@ -189,7 +189,7 @@ export function AgeingDot({ value }: { value: string }) {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
       <span style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0 }} />
-      <span style={{ fontSize: 12, fontFamily: F.mono, color: '#64748B', fontVariantNumeric: 'tabular-nums' }}>{value}</span>
+      <span style={{ fontSize: 12, fontFamily: F.mono, color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>{value}</span>
     </span>
   );
 }

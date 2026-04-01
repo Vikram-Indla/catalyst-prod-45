@@ -13,7 +13,7 @@ export function TeamWorkloadResponse() {
   const { data, loading } = useTeamWorkload();
 
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Loader2 size={20} className="animate-spin" color="#2563EB" /></div>;
-  if (!data.length) return <div style={{ padding: 24, color: '#64748B', fontSize: 13, textAlign: 'center' }}>No team workload data available.</div>;
+  if (!data.length) return <div style={{ padding: 24, color: 'var(--fg-3)', fontSize: 13, textAlign: 'center' }}>No team workload data available.</div>;
 
   return (
     <div>

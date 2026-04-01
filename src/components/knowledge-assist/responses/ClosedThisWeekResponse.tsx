@@ -8,7 +8,7 @@ export function ClosedThisWeekResponse({ onItemClick }: { onItemClick?: (key: st
   const { data: earlierData, loading: loadingEarlier, loaded: earlierLoaded, loadEarlier } = useEarlierClosures();
 
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Loader2 size={20} className="animate-spin" color="#16A34A" /></div>;
-  if (!data.length) return <div style={{ padding: 24, color: '#64748B', fontSize: 13, textAlign: 'center' }}>No items closed recently.</div>;
+  if (!data.length) return <div style={{ padding: 24, color: 'var(--fg-3)', fontSize: 13, textAlign: 'center' }}>No items closed recently.</div>;
 
   return (
     <div>
@@ -36,7 +36,7 @@ export function ClosedThisWeekResponse({ onItemClick }: { onItemClick?: (key: st
           {loadingEarlier ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px' }}>
               <Loader2 size={14} className="animate-spin" color="#2563EB" />
-              <span style={{ fontSize: 12, color: '#2563EB', fontFamily: F.inter }}>Loading earlier closures…</span>
+              <span style={{ fontSize: 12, color: 'var(--cp-blue)', fontFamily: F.inter }}>Loading earlier closures…</span>
             </div>
           ) : (
             <ExtendLink main="Load earlier closures" hint="items from 2–6 weeks ago" />
@@ -46,7 +46,7 @@ export function ClosedThisWeekResponse({ onItemClick }: { onItemClick?: (key: st
 
       {earlierLoaded && earlierData.length > 0 && (
         <div style={{ marginTop: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, padding: '0 4px' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, padding: '0 4px' }}>
             EARLIER CLOSURES (2–6 WEEKS AGO)
           </div>
           <V12Table
@@ -68,7 +68,7 @@ export function ClosedThisWeekResponse({ onItemClick }: { onItemClick?: (key: st
       )}
 
       {earlierLoaded && earlierData.length === 0 && (
-        <div style={{ padding: '12px 14px', fontSize: 12, color: '#64748B', textAlign: 'center' }}>
+        <div style={{ padding: '12px 14px', fontSize: 12, color: 'var(--fg-3)', textAlign: 'center' }}>
           No earlier closures found (2–6 weeks ago).
         </div>
       )}
