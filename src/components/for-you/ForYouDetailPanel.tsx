@@ -333,6 +333,7 @@ function SubTaskCard({ item, onClick }: { item: SubTaskItem; onClick: () => void
 }
 
 function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; onSubTaskClick: (st: SubTaskItem) => void }) {
+  const T = useT();
   const { subTasks, isLoading } = useSubTasksForPanel(parentKey);
 
   if (isLoading) {
