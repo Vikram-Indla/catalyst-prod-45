@@ -199,7 +199,7 @@ async function fetchMyBlocked(ctx: UserContext): Promise<QueryResult> {
 }
 
 async function fetchTeamWorkload(ctx: UserContext): Promise<QueryResult> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('ph_issues')
     .select('assignee_display_name, status, project_key')
     .in('project_key', ctx.projectKeys)
@@ -209,6 +209,7 @@ async function fetchTeamWorkload(ctx: UserContext): Promise<QueryResult> {
     .not('status', 'ilike', '%closed%')
     .not('status', 'ilike', '%resolved%')
     .limit(2000);
+  if (error) throw error;
 
   if (!data?.length) return {
     type: 'narrative', title: 'No open items', message: 'No open items found in your projects.',
@@ -262,7 +263,7 @@ async function fetchOverloaded(ctx: UserContext): Promise<QueryResult> {
 
 async function fetchAging(ctx: UserContext): Promise<QueryResult> {
   const twoWeeksAgo = new Date(Date.now() - 14 * 86400000).toISOString();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('ph_issues')
     .select(FIELDS)
     .in('project_key', ctx.projectKeys)
@@ -273,6 +274,7 @@ async function fetchAging(ctx: UserContext): Promise<QueryResult> {
     .not('status', 'ilike', '%resolved%')
     .order('jira_updated_at', { ascending: true })
     .limit(15);
+  if (error) throw error;
 
   if (!data?.length) return {
     type: 'narrative', title: 'No aging items',
@@ -294,7 +296,7 @@ async function fetchAging(ctx: UserContext): Promise<QueryResult> {
 }
 
 async function fetchUnassigned(ctx: UserContext): Promise<QueryResult> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('ph_issues')
     .select(FIELDS)
     .in('project_key', ctx.projectKeys)
@@ -304,6 +306,7 @@ async function fetchUnassigned(ctx: UserContext): Promise<QueryResult> {
     .not('status', 'ilike', '%closed%')
     .order('jira_created_at', { ascending: false })
     .limit(15);
+  if (error) throw error;
 
   if (!data?.length) return {
     type: 'narrative', title: 'No unassigned items',
@@ -326,7 +329,7 @@ async function fetchUnassigned(ctx: UserContext): Promise<QueryResult> {
 }
 
 async function fetchMyOpen(ctx: UserContext): Promise<QueryResult> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('ph_issues')
     .select(FIELDS)
     .is('jira_removed_at', null)
@@ -336,6 +339,7 @@ async function fetchMyOpen(ctx: UserContext): Promise<QueryResult> {
     .not('status', 'ilike', '%resolved%')
     .order('jira_updated_at', { ascending: false })
     .limit(20);
+  if (error) throw error;
 
   if (!data?.length) return {
     type: 'narrative', title: 'No open items',
@@ -358,7 +362,7 @@ async function fetchMyOpen(ctx: UserContext): Promise<QueryResult> {
 
 async function fetchMyClosed(ctx: UserContext): Promise<QueryResult> {
   const weekStart = getSaudiWeekStart();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('ph_issues')
     .select(FIELDS)
     .is('jira_removed_at', null)
@@ -367,6 +371,7 @@ async function fetchMyClosed(ctx: UserContext): Promise<QueryResult> {
     .gte('jira_updated_at', weekStart)
     .order('jira_updated_at', { ascending: false })
     .limit(20);
+  if (error) throw error;
 
   if (!data?.length) return {
     type: 'narrative', title: 'No closures this week',
@@ -387,7 +392,7 @@ async function fetchDueSoon(ctx: UserContext): Promise<QueryResult> {
   const endOfWeek = new Date(today);
   endOfWeek.setDate(today.getDate() + (4 - today.getDay() + 7) % 7);
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('ph_issues')
     .select(FIELDS)
     .is('jira_removed_at', null)
@@ -399,6 +404,7 @@ async function fetchDueSoon(ctx: UserContext): Promise<QueryResult> {
     .not('due_date', 'is', null)
     .order('due_date', { ascending: true })
     .limit(15);
+  if (error) throw error;
 
   if (!data?.length) return {
     type: 'narrative', title: 'Nothing due this week',
@@ -415,7 +421,7 @@ async function fetchDueSoon(ctx: UserContext): Promise<QueryResult> {
 }
 
 async function fetchMyBugs(ctx: UserContext): Promise<QueryResult> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('ph_issues')
     .select(FIELDS)
     .is('jira_removed_at', null)
@@ -425,6 +431,7 @@ async function fetchMyBugs(ctx: UserContext): Promise<QueryResult> {
     .not('status', 'ilike', '%closed%')
     .order('jira_updated_at', { ascending: false })
     .limit(15);
+  if (error) throw error;
 
   if (!data?.length) return {
     type: 'narrative', title: 'No open defects',
@@ -442,7 +449,7 @@ async function fetchMyBugs(ctx: UserContext): Promise<QueryResult> {
 
 async function fetchOverdue(ctx: UserContext): Promise<QueryResult> {
   const today = new Date().toISOString().split('T')[0];
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('ph_issues')
     .select(FIELDS)
     .in('project_key', ctx.projectKeys)
@@ -453,6 +460,7 @@ async function fetchOverdue(ctx: UserContext): Promise<QueryResult> {
     .not('status', 'ilike', '%closed%')
     .order('due_date', { ascending: true })
     .limit(15);
+  if (error) throw error;
 
   if (!data?.length) return {
     type: 'narrative', title: 'Nothing overdue',
@@ -472,7 +480,7 @@ async function fetchOverdue(ctx: UserContext): Promise<QueryResult> {
 }
 
 async function fetchReopened(ctx: UserContext): Promise<QueryResult> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('ph_issues')
     .select(FIELDS)
     .in('project_key', ctx.projectKeys)
@@ -480,6 +488,7 @@ async function fetchReopened(ctx: UserContext): Promise<QueryResult> {
     .or('status.ilike.%re-open%,status.ilike.%reopen%,status.ilike.%re open%')
     .order('jira_updated_at', { ascending: false })
     .limit(15);
+  if (error) throw error;
 
   if (!data?.length) return {
     type: 'narrative', title: 'No reopened items',
@@ -496,13 +505,14 @@ async function fetchReopened(ctx: UserContext): Promise<QueryResult> {
 }
 
 async function fetchReleaseReadiness(ctx: UserContext): Promise<QueryResult> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('ph_issues')
     .select('project_key, status, status_category')
     .in('project_key', ctx.projectKeys)
     .is('jira_removed_at', null)
     .not('status', 'ilike', '%cancelled%')
     .limit(2000);
+  if (error) throw error;
 
   if (!data?.length) return {
     type: 'narrative', title: 'No release data', message: 'No items found for release analysis.',
@@ -587,7 +597,7 @@ async function fetchItemByKey(key: string, ctx: UserContext): Promise<QueryResul
 }
 
 async function fetchPersonItems(name: string, ctx: UserContext): Promise<QueryResult> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('ph_issues')
     .select(FIELDS)
     .in('project_key', ctx.projectKeys)
@@ -597,6 +607,7 @@ async function fetchPersonItems(name: string, ctx: UserContext): Promise<QueryRe
     .not('status', 'ilike', '%closed%')
     .order('jira_updated_at', { ascending: false })
     .limit(15);
+  if (error) throw error;
 
   if (!data?.length) return {
     type: 'narrative',

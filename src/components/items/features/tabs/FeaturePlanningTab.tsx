@@ -26,10 +26,11 @@ export function FeaturePlanningTab({ feature }: FeaturePlanningTabProps) {
   const { data: programIncrements } = useQuery({
     queryKey: ['program-increments'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('program_increments')
         .select('id, name')
         .order('start_date', { ascending: false });
+      if (error) throw error;
       return data || [];
     },
   });
@@ -37,10 +38,11 @@ export function FeaturePlanningTab({ feature }: FeaturePlanningTabProps) {
   const { data: teams } = useQuery({
     queryKey: ['teams'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('teams')
         .select('id, name')
         .order('name');
+      if (error) throw error;
       return data || [];
     },
   });

@@ -22,12 +22,13 @@ export function useMilestones(limit: number = 5) {
       const today = new Date();
       
       // Fetch upcoming releases with target dates
-      const { data: releases } = await supabase
+      const { data: releases, error: releasesError } = await supabase
         .from('releases')
         .select('id, name, version, target_date, status')
         .gte('target_date', today.toISOString())
         .order('target_date', { ascending: true })
         .limit(limit * 2); // Fetch more to generate multiple milestones per release
+      if (releasesError) throw releasesError;
 
       const milestones: Milestone[] = [];
 

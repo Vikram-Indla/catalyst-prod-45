@@ -235,27 +235,32 @@ export const incidentApi = {
   },
 
   async getWorkgroups(): Promise<Workgroup[]> {
-    const { data } = await supabase.from('workgroups').select('*').is('deleted_at', null);
+    const { data, error } = await supabase.from('workgroups').select('*').is('deleted_at', null);
+    if (error) throw error;
     return (data || []) as unknown as Workgroup[];
   },
 
   async getUserProfiles(): Promise<UserProfile[]> {
-    const { data } = await supabase.from('incident_user_profiles').select('*');
+    const { data, error } = await supabase.from('incident_user_profiles').select('*');
+    if (error) throw error;
     return (data || []) as unknown as UserProfile[];
   },
 
   async getReleaseVersions(): Promise<ReleaseVersion[]> {
-    const { data } = await supabase.from('release_versions').select('*').order('version', { ascending: false });
+    const { data, error } = await supabase.from('release_versions').select('*').order('version', { ascending: false });
+    if (error) throw error;
     return (data || []) as unknown as ReleaseVersion[];
   },
 
   async getDepartments(): Promise<Department[]> {
-    const { data } = await supabase.from('departments').select('*');
+    const { data, error } = await supabase.from('departments').select('*');
+    if (error) throw error;
     return (data || []) as unknown as Department[];
   },
 
   async getBusinessProcesses(): Promise<BusinessProcess[]> {
-    const { data } = await (supabase as any).from('business_processes').select('*').eq('active', true).order('sort_order');
+    const { data, error } = await (supabase as any).from('business_processes').select('*').eq('active', true).order('sort_order');
+    if (error) throw error;
     return (data || []) as unknown as BusinessProcess[];
   },
 
@@ -265,7 +270,8 @@ export const incidentApi = {
   },
 
   async getSlaConfigs(): Promise<SlaConfig[]> {
-    const { data } = await supabase.from('sla_configs').select('*');
+    const { data, error } = await supabase.from('sla_configs').select('*');
+    if (error) throw error;
     return (data || []) as unknown as SlaConfig[];
   },
 };

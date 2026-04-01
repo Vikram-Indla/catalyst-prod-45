@@ -21,11 +21,12 @@ export function useTestProgress(sprintCount: number = 6, projectId?: string) {
         const monthEnd = endOfMonth(monthDate);
         
         // Fetch test runs for this period
-        const { data: runs } = await supabase
+        const { data: runs, error: runsError } = await supabase
           .from('tm_test_runs')
           .select('status, created_at')
           .gte('created_at', monthStart.toISOString())
-          .lte('created_at', monthEnd.toISOString()) as { data: { status: string }[] | null };
+          .lte('created_at', monthEnd.toISOString()) as { data: { status: string }[] | null; error: any };
+        if (runsError) throw runsError;
 
         const passed = runs?.filter(r => r.status === 'passed').length || 0;
         const failed = runs?.filter(r => r.status === 'failed').length || 0;

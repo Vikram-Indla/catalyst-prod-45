@@ -88,7 +88,8 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
   const { data: projects } = useQuery({
     queryKey: ['projects-list'],
     queryFn: async () => {
-      const { data } = await supabase.from('projects').select('id, name, is_default').order('name');
+      const { data, error } = await supabase.from('projects').select('id, name, is_default').order('name');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -96,7 +97,8 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
   const { data: programs } = useQuery({
     queryKey: ['programs-list'],
     queryFn: async () => {
-      const { data } = await supabase.from('programs').select('id, name').order('name');
+      const { data, error } = await supabase.from('programs').select('id, name').order('name');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -104,7 +106,8 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
   const { data: epics } = useQuery({
     queryKey: ['epics-list'],
     queryFn: async () => {
-      const { data } = await supabase.from('epics').select('id, epic_key, name').order('epic_key');
+      const { data, error } = await supabase.from('epics').select('id, epic_key, name').order('epic_key');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -112,7 +115,8 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
   const { data: profiles } = useQuery({
     queryKey: ['profiles-list'],
     queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, full_name, email').order('full_name');
+      const { data, error } = await supabase.from('profiles').select('id, full_name, email').order('full_name');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -120,7 +124,8 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
   const { data: departments } = useQuery({
     queryKey: ['departments-list'],
     queryFn: async () => {
-      const { data } = await supabase.from('departments').select('id, name').eq('is_active', true).order('sort_order');
+      const { data, error } = await supabase.from('departments').select('id, name').eq('is_active', true).order('sort_order');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -128,7 +133,8 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
   const { data: products } = useQuery({
     queryKey: ['products-list'],
     queryFn: async () => {
-      const { data } = await supabase.from('products').select('id, name').order('name');
+      const { data, error } = await supabase.from('products').select('id, name').order('name');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -136,7 +142,8 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
   const { data: businessOwners } = useQuery({
     queryKey: ['business-owners-list'],
     queryFn: async () => {
-      const { data } = await (supabase as any).from('business_owners').select('id, name').eq('is_active', true).order('sort_order');
+      const { data, error } = await (supabase as any).from('business_owners').select('id, name').eq('is_active', true).order('sort_order');
+      if (error) throw error;
       return (data || []) as any[];
     },
   });
@@ -144,7 +151,8 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
   const { data: releases } = useQuery({
     queryKey: ['releases-list'],
     queryFn: async () => {
-      const { data } = await supabase.from('releases').select('id, name, status').order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('releases').select('id, name, status').order('created_at', { ascending: false });
+      if (error) throw error;
       return data || [];
     },
   });
@@ -152,7 +160,8 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
   const { data: changeNumbers } = useQuery({
     queryKey: ['change-numbers-list'],
     queryFn: async () => {
-      const { data } = await supabase.from('change_numbers').select('id, number, description').order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('change_numbers').select('id, number, description').order('created_at', { ascending: false });
+      if (error) throw error;
       return data || [];
     },
   });

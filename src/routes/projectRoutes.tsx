@@ -5,6 +5,7 @@
 
 import React, { lazy, Suspense } from 'react';
 import { RouteObject, Navigate } from 'react-router-dom';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Lazy load view components for code splitting
 const ProjectWorkspace = lazy(() => import('@/pages/project/ProjectWorkspace'));
@@ -29,9 +30,9 @@ export const projectRoutes: RouteObject[] = [
   {
     path: '/projects/:projectId',
     element: (
-      <Suspense fallback={<ViewLoader />}>
+      <ErrorBoundary><Suspense fallback={<ViewLoader />}>
         <ProjectWorkspace />
-      </Suspense>
+      </Suspense></ErrorBoundary>
     ),
     children: [
       {
@@ -41,17 +42,17 @@ export const projectRoutes: RouteObject[] = [
       {
         path: 'board',
         element: (
-          <Suspense fallback={<ViewLoader />}>
+          <ErrorBoundary><Suspense fallback={<ViewLoader />}>
             <BoardView />
-          </Suspense>
+          </Suspense></ErrorBoundary>
         ),
       },
       {
         path: 'timeline',
         element: (
-          <Suspense fallback={<ViewLoader />}>
+          <ErrorBoundary><Suspense fallback={<ViewLoader />}>
             <TimelineView />
-          </Suspense>
+          </Suspense></ErrorBoundary>
         ),
       },
       {
@@ -61,35 +62,35 @@ export const projectRoutes: RouteObject[] = [
       {
         path: 'backlog/epics',
         element: (
-          <Suspense fallback={<ViewLoader />}>
+          <ErrorBoundary><Suspense fallback={<ViewLoader />}>
             <EpicBacklogPage />
-          </Suspense>
+          </Suspense></ErrorBoundary>
         ),
       },
       {
         path: 'backlog/features',
         element: (
-          <Suspense fallback={<ViewLoader />}>
+          <ErrorBoundary><Suspense fallback={<ViewLoader />}>
             <FeatureBacklogPage />
-          </Suspense>
+          </Suspense></ErrorBoundary>
         ),
       },
       {
         path: 'backlog/stories',
         element: (
-          <Suspense fallback={<ViewLoader />}>
+          <ErrorBoundary><Suspense fallback={<ViewLoader />}>
             <StoryBacklogPage />
-          </Suspense>
+          </Suspense></ErrorBoundary>
         ),
       },
       {
         path: 'feature-map',
         element: (
-          <Suspense fallback={<ViewLoader />}>
+          <ErrorBoundary><Suspense fallback={<ViewLoader />}>
             <div className="h-full flex items-center justify-center text-gray-500">
               Feature Map View - Coming Soon
             </div>
-          </Suspense>
+          </Suspense></ErrorBoundary>
         ),
       },
     ],

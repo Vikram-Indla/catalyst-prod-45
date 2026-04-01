@@ -44,10 +44,11 @@ export function useQualityGates(releaseId?: string) {
       const thirtyDaysAgo = subDays(new Date(), 30).toISOString();
 
       // Calculate pass rate
-      const { data: runs } = await supabase
+      const { data: runs, error: runsError } = await supabase
         .from('tm_test_runs')
         .select('status')
         .gte('executed_at', thirtyDaysAgo);
+      if (runsError) throw runsError;
 
       const totalRuns = runs?.length || 0;
       const passedRuns = runs?.filter(r => r.status === 'passed').length || 0;
@@ -58,11 +59,12 @@ export function useQualityGates(releaseId?: string) {
       const executionRate = totalRuns > 0 ? (executedRuns / totalRuns) * 100 : 0;
 
       // Get critical defects
-      const { count: criticalDefects } = await supabase
+      const { count: criticalDefects, error: criticalDefectsError } = await supabase
         .from('tm_defects')
         .select('*', { count: 'exact', head: true })
         .eq('severity', 'critical')
         .not('status', 'in', '("closed","resolved")');
+      if (criticalDefectsError) throw criticalDefectsError;
 
       // Build quality gates with real values
       const gates: QualityGate[] = [

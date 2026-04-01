@@ -35,7 +35,7 @@ export function useTeamPerformance(limit: number = 5, projectId?: string) {
       const todayStart = startOfDay(new Date()).toISOString();
 
       // Fetch test runs executed today with user info
-      const { data: todayRuns } = await supabase
+      const { data: todayRuns, error: todayRunsError } = await supabase
         .from('tm_test_runs')
         .select(`
           status,
@@ -44,6 +44,7 @@ export function useTeamPerformance(limit: number = 5, projectId?: string) {
         `)
         .gte('executed_at', todayStart)
         .not('executed_by', 'is', null);
+      if (todayRunsError) throw todayRunsError;
 
       // Group by executor
       const executorStats = new Map<string, {

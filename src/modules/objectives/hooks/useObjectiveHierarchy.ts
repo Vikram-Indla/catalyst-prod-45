@@ -8,16 +8,18 @@ const DONE_STATUSES = ['done', 'completed', 'accepted', 'closed', 'released', 'd
 // Returns 0-1 value or null if no aligned work items
 async function computeOwnWorkProgressForObjective(objectiveId: string): Promise<number | null> {
   // Fetch feature links for this objective
-  const { data: featureLinks } = await supabase
+  const { data: featureLinks, error: featureLinksError } = await supabase
     .from('objective_feature_links')
     .select('feature_id')
     .eq('objective_id', objectiveId);
+  if (featureLinksError) throw featureLinksError;
   
   // Fetch work item alignments for this objective
-  const { data: workAlignments } = await supabase
+  const { data: workAlignments, error: workAlignmentsError } = await supabase
     .from('objective_work_item_alignments')
     .select('work_item_id, work_item_type')
     .eq('objective_id', objectiveId);
+  if (workAlignmentsError) throw workAlignmentsError;
   
   let totalItems = 0;
   let completedItems = 0;
@@ -25,11 +27,12 @@ async function computeOwnWorkProgressForObjective(objectiveId: string): Promise<
   // Process feature links
   if (featureLinks && featureLinks.length > 0) {
     const featureIds = featureLinks.map(l => l.feature_id);
-    const { data: features } = await supabase
+    const { data: features, error: featLinkFeaturesError } = await supabase
       .from('features')
       .select('id, status')
       .in('id', featureIds);
-    
+    if (featLinkFeaturesError) throw featLinkFeaturesError;
+
     features?.forEach(feature => {
       totalItems++;
       if (feature.status && DONE_STATUSES.includes(feature.status.toLowerCase())) {
@@ -47,11 +50,12 @@ async function computeOwnWorkProgressForObjective(objectiveId: string): Promise<
     // Fetch features
     if (featureAlignments.length > 0) {
       const featureIds = featureAlignments.map(a => a.work_item_id);
-      const { data: features } = await supabase
+      const { data: features, error: alignedFeaturesError } = await supabase
         .from('features')
         .select('id, status')
         .in('id', featureIds);
-      
+      if (alignedFeaturesError) throw alignedFeaturesError;
+
       features?.forEach(feature => {
         totalItems++;
         if (feature.status && DONE_STATUSES.includes(feature.status.toLowerCase())) {
@@ -63,11 +67,12 @@ async function computeOwnWorkProgressForObjective(objectiveId: string): Promise<
     // Fetch stories
     if (storyAlignments.length > 0) {
       const storyIds = storyAlignments.map(a => a.work_item_id);
-      const { data: stories } = await supabase
+      const { data: stories, error: storiesError } = await supabase
         .from('stories')
         .select('id, status')
         .in('id', storyIds);
-      
+      if (storiesError) throw storiesError;
+
       stories?.forEach(story => {
         totalItems++;
         if (story.status && DONE_STATUSES.includes(story.status.toLowerCase())) {
@@ -90,12 +95,13 @@ async function computeOwnWorkProgressForObjective(objectiveId: string): Promise<
 async function fetchParentChain(parentId: string | null, chain: any[] = []): Promise<any[]> {
   if (!parentId) return chain;
 
-  const { data: parent } = await supabase
+  const { data: parent, error: parentError } = await supabase
     .from('objectives')
     .select('*')
     .eq('id', parentId)
     .single();
 
+  if (parentError) throw parentError;
   if (!parent) return chain;
 
   chain.push(parent);
@@ -116,30 +122,33 @@ export function useObjectiveHierarchy(objectiveId: string) {
       if (currentError) throw currentError;
 
       // Fetch key results ONLY for the selected objective (not children)
-      const { data: keyResults } = await supabase
+      const { data: keyResults, error: keyResultsError } = await supabase
         .from('key_results_v2')
         .select('*')
         .eq('objective_id', objectiveId);
+      if (keyResultsError) throw keyResultsError;
 
       // Fetch portfolio and program names for context
       let portfolioName = null;
       let programName = null;
 
       if (current.portfolio_id) {
-        const { data: portfolio } = await supabase
+        const { data: portfolio, error: portfolioError } = await supabase
           .from('programs')
           .select('name')
           .eq('id', current.portfolio_id)
           .single();
+        if (portfolioError) throw portfolioError;
         portfolioName = portfolio?.name;
       }
 
       if (current.project_id) {
-        const { data: program } = await supabase
+        const { data: program, error: programError } = await supabase
           .from('projects')
           .select('name')
           .eq('id', current.project_id)
           .single();
+        if (programError) throw programError;
         programName = program?.name;
       }
 
@@ -163,47 +172,52 @@ export function useObjectiveHierarchy(objectiveId: string) {
       const ownWorkProgress = await computeOwnWorkProgressForObjective(objectiveId);
 
       // Fetch direct children (where parent_objective_id = this objective)
-      const { data: children } = await supabase
+      const { data: children, error: childrenError } = await supabase
         .from('objectives')
         .select('*')
         .eq('parent_objective_id', objectiveId);
+      if (childrenError) throw childrenError;
 
       // For each child, fetch their own KRs, work progress, context, and child count
       const childrenWithKRs = await Promise.all(
         (children || []).map(async (child) => {
           // Fetch child's KRs
-          const { data: childKRs } = await supabase
+          const { data: childKRs, error: childKRsError } = await supabase
             .from('key_results_v2')
             .select('*')
             .eq('objective_id', child.id);
+          if (childKRsError) throw childKRsError;
 
           // Fetch child's portfolio/program context
           let childPortfolioName = null;
           let childProgramName = null;
 
           if (child.portfolio_id) {
-            const { data: portfolio } = await supabase
+            const { data: portfolio, error: childPortfolioError } = await supabase
               .from('programs')
               .select('name')
               .eq('id', child.portfolio_id)
               .single();
+            if (childPortfolioError) throw childPortfolioError;
             childPortfolioName = portfolio?.name;
           }
 
           if (child.project_id) {
-            const { data: program } = await supabase
+            const { data: program, error: childProgramError } = await supabase
               .from('projects')
               .select('name')
               .eq('id', child.project_id)
               .single();
+            if (childProgramError) throw childProgramError;
             childProgramName = program?.name;
           }
 
           // Count grandchildren (children of this child)
-          const { count: grandchildCount } = await supabase
+          const { count: grandchildCount, error: grandchildError } = await supabase
             .from('objectives')
             .select('id', { count: 'exact', head: true })
             .eq('parent_objective_id', child.id);
+          if (grandchildError) throw grandchildError;
 
           // Calculate child's OWN KR progress from their own KRs only
           const childKeyResults = childKRs || [];
