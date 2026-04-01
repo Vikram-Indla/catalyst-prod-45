@@ -99,7 +99,6 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
       throw new Error('No brd_id');
     }
 
-    console.log('generate_epics_for_brd invoke payload:', { brd_id: brdId, doc });
     const { data, error } = await supabase.functions.invoke('generate_epics_for_brd', { body: { brd_id: brdId } });
     if (error) {
       console.error('[RA] Generation failed');
@@ -139,19 +138,13 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
       if (hasStarted.current) return;
       hasStarted.current = true;
 
-      console.log('[EpicModal] INVOCATION STARTED — doc keys:', Object.keys(doc));
-
       let brdId: string | null = null;
 
       try {
 
         brdId = await resolveBrdId();
 
-        console.log('[EpicModal] resolveBrdId result:', brdId);
-
       } catch (err) {
-
-        console.error('[EpicModal] resolveBrdId threw:', err);
 
         setHasFailed(true);
 
@@ -163,8 +156,6 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
 
       if (!brdId) {
 
-        console.error('[EpicModal] resolveBrdId returned null — no brd_id');
-
         setHasFailed(true);
 
         setErrorMsg('Could not find or create BRD document entry. Check jira_ticket_key on this document.');
@@ -172,8 +163,6 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
         return;
 
       }
-
-      console.log('[EpicModal] INVOKING EDGE FUNCTION with brdId:', brdId);
 
       setResolvedBrdId(brdId);
 
