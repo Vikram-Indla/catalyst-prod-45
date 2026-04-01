@@ -247,7 +247,7 @@ Deno.serve(async (req) => {
         await supabase
           .from("jira_write_back_queue")
           .update({
-            push_status: "failed",
+            status: "failed",
             retry_count: (item.retry_count || 0) + 1,
             last_error: errMsg.substring(0, 1000),
             push_attempted_at: new Date().toISOString(),

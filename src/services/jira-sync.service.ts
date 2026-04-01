@@ -244,7 +244,7 @@ export const jiraSyncService = {
     const { error } = await supabase
       .from('jira_write_back_queue')
       .update({
-        push_status: 'approved',
+        status: 'approved',
         approved_at: new Date().toISOString(),
         approved_by: userId,
         updated_by: userId,
