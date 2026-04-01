@@ -36,7 +36,7 @@ export function TeamSprintsTab({ teamId, teamType, teamName, sprintPrefix }: Tea
       <Card>
         <CardContent className="pt-6 text-center text-muted-foreground">
           <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>Kanban teams use continuous flow and don't track sprints</p>
+          <p>Kanban teams use continuous flow and don't track releases</p>
         </CardContent>
       </Card>
     );
@@ -45,26 +45,26 @@ export function TeamSprintsTab({ teamId, teamType, teamName, sprintPrefix }: Tea
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-sm font-medium text-foreground">Sprints ({sprints.length})</h3>
+        <h3 className="text-sm font-medium text-foreground">Releases ({sprints.length})</h3>
         <Button size="sm" onClick={() => setCreateSprintOpen(true)}>
           <Plus className="w-3 h-3 mr-1" />
-          Create Sprint
+          Create Release
         </Button>
       </div>
 
       {isLoading ? (
         <Card>
           <CardContent className="pt-6 text-center text-muted-foreground">
-            <p>Loading sprints...</p>
+            <p>Loading releases...</p>
           </CardContent>
         </Card>
       ) : sprints.length === 0 ? (
         <Card>
           <CardContent className="pt-6 text-center text-muted-foreground">
             <Calendar className="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p className="mb-2">No sprints yet</p>
+            <p className="mb-2">No releases yet</p>
             <Button variant="link" size="sm" onClick={() => setCreateSprintOpen(true)}>
-              Create your first sprint
+              Create your first release
             </Button>
           </CardContent>
         </Card>

@@ -59,11 +59,11 @@ export function SprintDialog({ open, onOpenChange, sprint }: SprintDialogProps) 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['iterations'] });
       queryClient.invalidateQueries({ queryKey: ['sprints'] });
-      toast.success(sprint ? 'Sprint updated' : 'Sprint created');
+      toast.success(sprint ? 'Release updated' : 'Release created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save sprint');
+      toast.error('Failed to save release');
     },
   });
 
@@ -86,7 +86,7 @@ export function SprintDialog({ open, onOpenChange, sprint }: SprintDialogProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{sprint ? 'Edit Sprint' : 'Create Sprint'}</DialogTitle>
+          <DialogTitle>{sprint ? 'Edit Release' : 'Create Release'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

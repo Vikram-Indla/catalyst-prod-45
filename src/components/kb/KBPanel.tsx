@@ -23,7 +23,7 @@ const BRIEFING_MESSAGES = [
   'Your queries are matched against multiple sources — Jira data, ministry regulations, and project documentation — with answers traced back to their origin for full accountability.',
   'Answers include source citations so you can trace every fact back to its origin document.',
   'Answers include source citations so you can trace every fact back to its origin document.',
-  '25 knowledge domains are indexed and searchable. Ask about licensing, permits, compliance, sprints, or any Catalyst module.',
+  '25 knowledge domains are indexed and searchable. Ask about licensing, permits, compliance, releases, or any Catalyst module.',
 ];
 
 function getGreeting(): string {

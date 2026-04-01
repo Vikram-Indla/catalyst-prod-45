@@ -66,7 +66,7 @@ export function TeamDetailsDrawer({ teamId, open, onOpenChange }: TeamDetailsDra
                   </TabsTrigger>
                   <TabsTrigger value="sprints" className="executive-drawer-tab">
                     <Calendar className="w-3 h-3 mr-1" />
-                    Sprints
+                    Releases
                   </TabsTrigger>
                   <TabsTrigger value="velocity" className="executive-drawer-tab">
                     <BarChart3 className="w-3 h-3 mr-1" />

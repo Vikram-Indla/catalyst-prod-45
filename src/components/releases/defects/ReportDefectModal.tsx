@@ -695,7 +695,7 @@ export function ReportDefectModal({
                     </SelectTrigger>
                     <SelectContent className="bg-popover">
                       <SelectItem value="P1">P1 — Urgent (Fix immediately)</SelectItem>
-                      <SelectItem value="P2">P2 — High (Fix this sprint)</SelectItem>
+                      <SelectItem value="P2">P2 — High (Fix this release)</SelectItem>
                       <SelectItem value="P3">P3 — Medium (Fix soon)</SelectItem>
                       <SelectItem value="P4">P4 — Low (When possible)</SelectItem>
                     </SelectContent>

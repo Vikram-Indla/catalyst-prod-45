@@ -515,7 +515,7 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
         textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.06em',
       }}>
         <span style={{ flex: 1 }}>Work</span>
-        <span style={{ width: 80, textAlign: 'right' }}>Sprint</span>
+        <span style={{ width: 80, textAlign: 'right' }}>Release</span>
         <span style={{ width: 100, textAlign: 'right' }}>Status</span>
         <span style={{ width: 80, textAlign: 'right' }}>Assignee</span>
       </div>

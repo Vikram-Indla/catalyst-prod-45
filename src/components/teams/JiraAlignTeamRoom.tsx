@@ -198,7 +198,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
             <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="h-9">
               <TabsList className="h-9">
                 <TabsTrigger value="dashboard" className="text-sm">Dashboard</TabsTrigger>
-                <TabsTrigger value="sprint-board" className="text-sm">Sprint Board</TabsTrigger>
+                <TabsTrigger value="sprint-board" className="text-sm">Release Board</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
@@ -525,7 +525,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Sprint:</span>
+                  <span className="text-sm text-muted-foreground">Release:</span>
                   <Select value={workItemFilter} onValueChange={setWorkItemFilter}>
                     <SelectTrigger className="w-[140px] h-8">
                       <SelectValue />
@@ -687,7 +687,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
           <div className="space-y-6">
             {/* Sprint Goal */}
             <div>
-              <h3 className="text-xs font-semibold text-muted-foreground mb-3">Sprint Goal:</h3>
+              <h3 className="text-xs font-semibold text-muted-foreground mb-3">Release Goal:</h3>
               <Card className="p-4">
                 {currentSprint?.goal ? (
                   <p className="text-sm text-foreground">{currentSprint.goal}</p>

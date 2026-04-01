@@ -126,7 +126,7 @@ export function PlannerNoUpcomingEmptyState({ className }: EmptyStateProps) {
         No upcoming work items
       </h3>
       <p className="text-xs text-[var(--text-3)] max-w-xs mx-auto">
-        Work scheduled for upcoming sprints will appear here.
+        Work scheduled for upcoming releases will appear here.
       </p>
     </div>
   );
