@@ -56,8 +56,8 @@ export function ThemesPage() {
       }}>
         <p style={{ color: 'var(--sem-danger)', fontSize: 14 }}>Failed to load themes</p>
         <button onClick={() => refetch()} style={{
-          padding: '8px 16px', borderRadius: 6, border: '1px solid var(--wh-border)',
-          background: 'var(--wh-surface)', fontSize: 13, cursor: 'pointer',
+          padding: '8px 16px', borderRadius: 6, border: '1px solid var(--divider)',
+          background: 'var(--cp-float)', fontSize: 13, cursor: 'pointer',
         }}>
           Retry
         </button>
@@ -139,7 +139,7 @@ export function ThemesPage() {
       <style>{`
         .wh-theme-card:hover {
           box-shadow: var(--wh-shadow-md) !important;
-          border-color: var(--wh-border-hover, #cbd5e1) !important;
+          border-color: var(--divider) !important;
         }
       `}</style>
       </div>{/* end content wrapper */}

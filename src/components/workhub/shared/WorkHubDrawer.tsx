@@ -52,21 +52,21 @@ export function WorkHubDrawer({
         className="fixed top-0 right-0 h-screen bg-white border-l flex flex-col shadow-xl animate-in slide-in-from-right duration-200"
         style={{
           width: `${width}px`,
-          borderColor: 'var(--wh-border)',
+          borderColor: 'var(--divider)',
           zIndex: 'var(--wh-z-drawer)',
         }}
       >
         {/* Header */}
         <div
           className="flex items-start justify-between p-6 border-b"
-          style={{ borderColor: 'var(--wh-border)' }}
+          style={{ borderColor: 'var(--divider)' }}
         >
           <div className="flex-1">
-            <h2 className="text-lg font-semibold" style={{ color: 'var(--wh-text-primary)' }}>
+            <h2 className="text-lg font-semibold" style={{ color: 'var(--fg-1)' }}>
               {title}
             </h2>
             {subtitle && (
-              <p className="text-sm mt-1" style={{ color: 'var(--wh-text-secondary)' }}>
+              <p className="text-sm mt-1" style={{ color: 'var(--fg-3)' }}>
                 {subtitle}
               </p>
             )}
@@ -75,7 +75,7 @@ export function WorkHubDrawer({
             onClick={onClose}
             className="p-1 hover:bg-slate-100 rounded transition-colors"
           >
-            <X className="w-5 h-5" style={{ color: 'var(--wh-text-secondary)' }} />
+            <X className="w-5 h-5" style={{ color: 'var(--fg-3)' }} />
           </button>
         </div>
 
@@ -86,7 +86,7 @@ export function WorkHubDrawer({
         {footer && (
           <div
             className="p-6 border-t sticky bottom-0"
-            style={{ borderColor: 'var(--wh-border)', backgroundColor: 'var(--wh-surface)' }}
+            style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--cp-float)' }}
           >
             {footer}
           </div>

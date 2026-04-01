@@ -33,7 +33,7 @@ export function ReleaseDetail() {
 
   if (loadingRelease) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--wh-text-secondary)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--fg-3)' }}>
         <Loader2 className="animate-spin" size={24} />
         <span style={{ marginLeft: 8, fontSize: 14 }}>Loading release...</span>
       </div>
@@ -46,7 +46,7 @@ export function ReleaseDetail() {
         <p style={{ color: 'var(--sem-danger)', fontSize: 14 }}>Release not found: {versionName}</p>
         <button onClick={() => navigate('/projecthub/releases')} style={{
           marginTop: 12, padding: '8px 16px', borderRadius: 6,
-          border: '1px solid var(--wh-border)', background: 'var(--wh-surface)',
+          border: '1px solid var(--divider)', background: 'var(--cp-float)',
           fontSize: 13, cursor: 'pointer',
         }}>
           Back to Releases
@@ -59,11 +59,11 @@ export function ReleaseDetail() {
     && release.doneItems < release.totalItems;
 
   const segments = [
-    { label: 'Done', value: release.doneItems, color: '#16a34a' },
-    { label: 'In Progress', value: release.inProgressItems, color: '#2563eb' },
+    { label: 'Done', value: release.doneItems, color: 'var(--sem-success)' },
+    { label: 'In Progress', value: release.inProgressItems, color: 'var(--cp-blue)' },
     { label: 'In Review', value: release.inReviewItems, color: '#7c3aed' },
-    { label: 'Blocked', value: release.blockedItems, color: '#ef4444' },
-    { label: 'To Do', value: release.todoItems, color: '#94a3b8' },
+    { label: 'Blocked', value: release.blockedItems, color: 'var(--sem-danger)' },
+    { label: 'To Do', value: release.todoItems, color: 'var(--fg-4)' },
   ];
 
   const items = workItemsData?.items ?? [];
@@ -75,11 +75,11 @@ export function ReleaseDetail() {
   else if (release.inProgressItems > 0 || release.inReviewItems > 0) statusLabel = 'Active';
 
   const kpis = [
-    { label: 'Completion', value: `${release.completionPercent}%`, icon: TrendingUp, color: release.completionPercent > 50 ? '#16a34a' : '#d97706' },
-    { label: 'Items', value: String(release.totalItems), icon: FileStack, color: '#2563eb' },
+    { label: 'Completion', value: `${release.completionPercent}%`, icon: TrendingUp, color: release.completionPercent > 50 ? 'var(--sem-success)' : 'var(--sem-warning)' },
+    { label: 'Items', value: String(release.totalItems), icon: FileStack, color: 'var(--cp-blue)' },
     { label: 'Assignees', value: String(release.assignees.length), icon: Users, color: '#7c3aed' },
-    { label: 'Projects', value: String(release.projects.length), icon: FolderGit2, color: '#0d9488' },
-    { label: 'Blocked', value: String(release.blockedItems), icon: AlertTriangle, color: release.blockedItems > 0 ? '#ef4444' : '#94a3b8' },
+    { label: 'Projects', value: String(release.projects.length), icon: FolderGit2, color: 'var(--sem-success)' },
+    { label: 'Blocked', value: String(release.blockedItems), icon: AlertTriangle, color: release.blockedItems > 0 ? 'var(--sem-danger)' : 'var(--fg-4)' },
   ];
 
   return (
@@ -119,8 +119,8 @@ export function ReleaseDetail() {
           display: 'inline-flex', alignItems: 'center', gap: 6,
           padding: '4px 12px', borderRadius: 9999,
           fontSize: 12, fontWeight: 600,
-          background: statusLabel === 'Completed' ? '#d1fae5' : statusLabel === 'Active' ? '#dbeafe' : statusLabel === 'At Risk' ? '#fee2e2' : '#f1f5f9',
-          color: statusLabel === 'Completed' ? '#047857' : statusLabel === 'Active' ? '#1d4ed8' : statusLabel === 'At Risk' ? '#991b1b' : '#475569',
+          background: statusLabel === 'Completed' ? '#d1fae5' : statusLabel === 'Active' ? '#dbeafe' : statusLabel === 'At Risk' ? '#fee2e2' : 'var(--bg-1)',
+          color: statusLabel === 'Completed' ? '#047857' : statusLabel === 'Active' ? '#1d4ed8' : statusLabel === 'At Risk' ? '#991b1b' : 'var(--fg-2)',
         }}>
           {statusLabel}
         </span>
@@ -205,7 +205,7 @@ export function ReleaseDetail() {
           background: 'var(--cp-float)', border: '1px solid var(--divider)',
           borderRadius: 'var(--wh-radius-lg, 8px)', padding: '16px 20px', marginBottom: 24,
         }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--wh-text-primary)', marginBottom: 10 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 10 }}>
             Team ({release.assignees.length})
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -232,7 +232,7 @@ export function ReleaseDetail() {
             textAlign: 'center',
           }}>
             <FileStack size={32} color="var(--fg-4)" style={{ marginBottom: 8 }} />
-            <p style={{ fontSize: 14, color: 'var(--wh-text-secondary)', margin: 0 }}>
+            <p style={{ fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>
               No work items in this fix version.
             </p>
           </div>

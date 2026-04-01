@@ -221,7 +221,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 ) : (
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: 500, color: '#020617', wordBreak: 'break-word' }}>{cell.value}</div>
-                    {cell.sub && <div style={{ fontSize: '11px', color: '#334155', marginTop: '2px' }}>{cell.sub}</div>}
+                    {cell.sub && <div style={{ fontSize: '11px', color: 'var(--fg-2)', marginTop: '2px' }}>{cell.sub}</div>}
                   </div>
                 )}
               </div>

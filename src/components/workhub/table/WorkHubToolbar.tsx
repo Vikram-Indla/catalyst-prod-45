@@ -62,30 +62,30 @@ export default function WorkHubToolbar({
       display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
       padding: '0 16px', height: 48, minHeight: 48,
       borderBottom: '0.75px solid rgba(15,23,42,0.06)',
-      background: '#FFFFFF', flexShrink: 0,
+      background: 'var(--bg-app)', flexShrink: 0,
     }} role="toolbar" aria-label="Work items toolbar">
       {/* LEFT */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
         {/* Search */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6, width: 240, height: 32,
-          padding: '0 8px', background: '#F1F5F9', borderRadius: 4,
+          padding: '0 8px', background: 'var(--bg-1)', borderRadius: 4,
         }}>
-          <Search size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
+          <Search size={14} style={{ color: 'var(--fg-4)', flexShrink: 0 }} />
           <input
             ref={sRef as any}
             value={searchValue}
             onChange={e => handleSearch(e.target.value)}
             placeholder="Search work items..."
             aria-label="Search work items"
-            style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: '#0F172A', fontFamily: 'Inter, sans-serif' }}
+            style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
           />
           {searchValue ? (
             <button onClick={() => handleSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} aria-label="Clear search">
               <X size={12} color="#94A3B8" />
             </button>
           ) : (
-            <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', fontFamily: "'JetBrains Mono', monospace", background: '#E2E8F0', borderRadius: 3, padding: '1px 4px' }}>⌘K</span>
+            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace", background: 'var(--divider)', borderRadius: 3, padding: '1px 4px' }}>⌘K</span>
           )}
         </div>
 
@@ -99,9 +99,9 @@ export default function WorkHubToolbar({
               display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px',
               border: (filters.statuses?.length || 0) > 0 ? '1px solid #2563EB' : '1px solid rgba(15,23,42,0.12)',
               borderRadius: 4, background: (filters.statuses?.length || 0) > 0 ? 'rgba(37,99,235,0.08)' : 'transparent',
-              fontSize: 12, fontWeight: 500, color: (filters.statuses?.length || 0) > 0 ? '#2563EB' : '#334155', cursor: 'pointer',
+              fontSize: 12, fontWeight: 500, color: (filters.statuses?.length || 0) > 0 ? 'var(--cp-blue)' : 'var(--fg-2)', cursor: 'pointer',
             }}>
-              Status {(filters.statuses?.length || 0) > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: '#2563EB', color: 'white', borderRadius: 10, padding: '0 5px' }}>{filters.statuses?.length}</span>}
+              Status {(filters.statuses?.length || 0) > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--bg-app)', borderRadius: 10, padding: '0 5px' }}>{filters.statuses?.length}</span>}
               <ChevronDown size={12} />
             </button>
           }
@@ -117,9 +117,9 @@ export default function WorkHubToolbar({
               display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px',
               border: (filters.types?.length || 0) > 0 ? '1px solid #2563EB' : '1px solid rgba(15,23,42,0.12)',
               borderRadius: 4, background: (filters.types?.length || 0) > 0 ? 'rgba(37,99,235,0.08)' : 'transparent',
-              fontSize: 12, fontWeight: 500, color: (filters.types?.length || 0) > 0 ? '#2563EB' : '#334155', cursor: 'pointer',
+              fontSize: 12, fontWeight: 500, color: (filters.types?.length || 0) > 0 ? 'var(--cp-blue)' : 'var(--fg-2)', cursor: 'pointer',
             }}>
-              Type {(filters.types?.length || 0) > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: '#2563EB', color: 'white', borderRadius: 10, padding: '0 5px' }}>{filters.types?.length}</span>}
+              Type {(filters.types?.length || 0) > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--bg-app)', borderRadius: 10, padding: '0 5px' }}>{filters.types?.length}</span>}
               <ChevronDown size={12} />
             </button>
           }
@@ -135,9 +135,9 @@ export default function WorkHubToolbar({
               display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px',
               border: (filters.priorities?.length || 0) > 0 ? '1px solid #2563EB' : '1px solid rgba(15,23,42,0.12)',
               borderRadius: 4, background: (filters.priorities?.length || 0) > 0 ? 'rgba(37,99,235,0.08)' : 'transparent',
-              fontSize: 12, fontWeight: 500, color: (filters.priorities?.length || 0) > 0 ? '#2563EB' : '#334155', cursor: 'pointer',
+              fontSize: 12, fontWeight: 500, color: (filters.priorities?.length || 0) > 0 ? 'var(--cp-blue)' : 'var(--fg-2)', cursor: 'pointer',
             }}>
-              Priority {(filters.priorities?.length || 0) > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: '#2563EB', color: 'white', borderRadius: 10, padding: '0 5px' }}>{filters.priorities?.length}</span>}
+              Priority {(filters.priorities?.length || 0) > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: 'var(--cp-blue)', color: 'var(--bg-app)', borderRadius: 10, padding: '0 5px' }}>{filters.priorities?.length}</span>}
               <ChevronDown size={12} />
             </button>
           }
@@ -145,7 +145,7 @@ export default function WorkHubToolbar({
 
         {activeFilterCount > 0 && (
           <button onClick={() => onFiltersChange({ statuses: [], types: [], priorities: [], assignee_ids: [], has_due_date: null, search_query: '' })}
-            style={{ fontSize: 11, color: '#DC2626', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>
+            style={{ fontSize: 11, color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>
             Clear all
           </button>
         )}
@@ -159,19 +159,19 @@ export default function WorkHubToolbar({
             <button style={{
               display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px',
               border: '1px solid rgba(15,23,42,0.12)', borderRadius: 4, background: 'transparent',
-              fontSize: 12, fontWeight: 500, color: '#334155', cursor: 'pointer',
+              fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
             }}>
               Group: {GROUP_OPTIONS.find(g => g.value === groupBy)?.label || 'Status'}
               <ChevronDown size={12} />
             </button>
           </PopoverTrigger>
-          <PopoverContent align="end" style={{ width: 160, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
+          <PopoverContent align="end" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
             {GROUP_OPTIONS.map(opt => (
               <button key={opt.value} onClick={() => onGroupByChange(opt.value)}
                 style={{
                   width: '100%', padding: '6px 12px', fontSize: 13, border: 'none', textAlign: 'left',
                   background: groupBy === opt.value ? 'rgba(37,99,235,0.08)' : 'transparent',
-                  color: groupBy === opt.value ? '#2563EB' : '#0F172A', cursor: 'pointer', fontWeight: groupBy === opt.value ? 600 : 400,
+                  color: groupBy === opt.value ? 'var(--cp-blue)' : 'var(--fg-1)', cursor: 'pointer', fontWeight: groupBy === opt.value ? 600 : 400,
                 }}>
                 {opt.label}
               </button>
@@ -187,15 +187,15 @@ export default function WorkHubToolbar({
                 <Settings2 size={16} color="#64748B" />
               </button>
             </PopoverTrigger>
-            <PopoverContent align="end" style={{ width: 220, padding: '8px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '4px 12px 6px' }}>Columns</div>
+            <PopoverContent align="end" style={{ width: 220, padding: '8px 0', background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-4)', padding: '4px 12px 6px' }}>Columns</div>
               {columns.map(col => (
                 <button key={col.id} onClick={() => onColumnToggle(col.id)} style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '5px 12px',
-                  border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, color: '#0F172A', textAlign: 'left',
+                  border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, color: 'var(--fg-1)', textAlign: 'left',
                 }}>
                   {col.visible ? <Eye size={14} color="#2563EB" /> : <EyeOff size={14} color="#94A3B8" />}
-                  <span style={{ color: col.visible ? '#0F172A' : '#94A3B8' }}>{col.label}</span>
+                  <span style={{ color: col.visible ? 'var(--fg-1)' : 'var(--fg-4)' }}>{col.label}</span>
                 </button>
               ))}
             </PopoverContent>
@@ -213,7 +213,7 @@ export default function WorkHubToolbar({
                 width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 border: 'none', cursor: 'pointer',
                 background: viewMode === mode ? 'rgba(37,99,235,0.08)' : 'transparent',
-                color: viewMode === mode ? '#2563EB' : '#64748B',
+                color: viewMode === mode ? 'var(--cp-blue)' : 'var(--fg-3)',
               }}>
               <Icon size={16} />
             </button>
@@ -223,7 +223,7 @@ export default function WorkHubToolbar({
         {/* Create */}
         <button onClick={onCreateClick} style={{
           display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 14px',
-          background: '#2563EB', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer',
+          background: 'var(--cp-blue)', color: 'var(--bg-app)', border: 'none', borderRadius: 6, cursor: 'pointer',
           fontSize: 13, fontWeight: 600,
         }}>
           <Plus size={16} /> Create Item

@@ -168,7 +168,7 @@ export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, 
                   e.currentTarget.style.boxShadow = T.shadowHover;
                   e.currentTarget.style.zIndex = '20';
                   e.currentTarget.style.transform = 'translate(-50%,-50%) translateY(-4px) scale(1.03)';
-                  e.currentTarget.style.borderColor = '#2563EB';
+                  e.currentTarget.style.borderColor = 'var(--cp-blue)';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.boxShadow = T.shadow;
@@ -250,7 +250,7 @@ export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, 
                 <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.text3 }}>{item.item_key}</span>
                 <span style={{ fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px', borderRadius: 3, background: hc }}>{hs}</span>
                 {/* D13: Monospace dates with distinct style */}
-                <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: '#6B6B80', marginLeft: 'auto' }}>{item.assigned_at?.slice(5, 10)}</span>
+                <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: 'var(--fg-3)', marginLeft: 'auto' }}>{item.assigned_at?.slice(5, 10)}</span>
               </div>
               <div style={{ fontSize: 11, fontWeight: 500, color: T.text2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
             </div>

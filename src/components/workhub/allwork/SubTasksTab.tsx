@@ -35,7 +35,7 @@ function PriorityBars({ priority }: { priority: string }) {
         <div key={i} style={{
           width: 3, height: 3 + i * 2.5,
           borderRadius: 1,
-          backgroundColor: i <= cfg.bars ? '#71717A' : '#E4E4E7',
+          backgroundColor: i <= cfg.bars ? 'var(--fg-3)' : '#E4E4E7',
         }} />
       ))}
     </div>
@@ -87,7 +87,7 @@ function MiniAvatar({ name }: { name: string }) {
         width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
         backgroundColor: AVATAR_COLORS[hash % AVATAR_COLORS.length],
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 10, fontWeight: 700, color: '#fff',
+        fontSize: 10, fontWeight: 700, color: 'var(--bg-app)',
       }}
     >
       {name.charAt(0).toUpperCase()}
@@ -106,20 +106,20 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
         display: 'flex', flexDirection: 'column', gap: 8,
         padding: '12px 14px', width: '100%', textAlign: 'left',
         border: '1px solid #E4E4E7', borderRadius: 8,
-        cursor: 'pointer', backgroundColor: '#FFFFFF',
+        cursor: 'pointer', backgroundColor: 'var(--bg-app)',
         transition: 'all 0.12s ease',
       }}
       onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FAFAFA'; e.currentTarget.style.borderColor = '#D4D4D8'; }}
-      onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#FFFFFF'; e.currentTarget.style.borderColor = '#E4E4E7'; }}
+      onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'var(--bg-app)'; e.currentTarget.style.borderColor = '#E4E4E7'; }}
     >
       {/* Row 1: Icon + Key + Summary */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 650, color: '#2563EB', flexShrink: 0 }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 650, color: 'var(--cp-blue)', flexShrink: 0 }}>
           {item.issue_key}
         </span>
         <span style={{
-          fontSize: 13, fontWeight: 500, color: '#09090B',
+          fontSize: 13, fontWeight: 500, color: 'var(--fg-1)',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
           fontFamily: 'Inter, sans-serif',
         }}>
@@ -134,7 +134,7 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
         {item.assignee_display_name && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <MiniAvatar name={item.assignee_display_name} />
-            <span style={{ fontSize: 12, fontWeight: 500, color: '#3F3F46', fontFamily: 'Inter, sans-serif' }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'Inter, sans-serif' }}>
               {item.assignee_display_name}
             </span>
           </div>
@@ -142,12 +142,12 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <PriorityBars priority={item.priority} />
-          <span style={{ fontSize: 12, fontWeight: 500, color: '#71717A', fontFamily: 'Inter, sans-serif' }}>
+          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>
             {prio.label}
           </span>
         </div>
 
-        <span style={{ fontSize: 11, fontWeight: 500, color: '#71717A', marginLeft: 'auto', fontFamily: "'JetBrains Mono', monospace" }}>
+        <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)', marginLeft: 'auto', fontFamily: "'JetBrains Mono', monospace" }}>
           {formatRel(item.jira_updated_at)}
         </span>
       </div>
@@ -168,7 +168,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0', gap: 8 }}>
         <Loader2 size={16} color="#71717A" style={{ animation: 'spin 1s linear infinite' }} />
-        <span style={{ fontSize: 13, color: '#71717A', fontFamily: 'Inter, sans-serif' }}>Loading sub-tasks…</span>
+        <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>Loading sub-tasks…</span>
       </div>
     );
   }
@@ -180,7 +180,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
         padding: '48px 24px', textAlign: 'center', gap: 8,
       }}>
         <ListTree size={28} color="#A1A1AA" strokeWidth={1.5} />
-        <span style={{ fontSize: 13, fontWeight: 500, color: '#71717A', fontFamily: 'Inter, sans-serif' }}>
+        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>
           No sub-tasks found for this item.
         </span>
       </div>
@@ -201,21 +201,21 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
         padding: '10px 14px', backgroundColor: '#FAFAFA', borderRadius: 8, border: '1px solid #E4E4E7',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#09090B', fontFamily: 'Inter, sans-serif' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}>
             {total} sub-task{total !== 1 ? 's' : ''}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {[
               { count: todoTasks.length, label: 'To Do', bg: '#DFE1E6', color: '#44546F' },
-              { count: progressTasks.length, label: 'In Progress', bg: '#0C66E4', color: '#FFFFFF' },
-              { count: doneTasks.length, label: 'Done', bg: '#1B7F37', color: '#FFFFFF' },
+              { count: progressTasks.length, label: 'In Progress', bg: '#0C66E4', color: 'var(--bg-app)' },
+              { count: doneTasks.length, label: 'Done', bg: '#1B7F37', color: 'var(--bg-app)' },
             ].map(s => (
               <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{
                   display: 'inline-block', padding: '1px 6px', borderRadius: 3,
                   backgroundColor: s.bg, color: s.color, fontSize: 11, fontWeight: 700,
                 }}>{s.count}</span>
-                <span style={{ fontSize: 11, color: '#71717A', fontFamily: 'Inter, sans-serif' }}>{s.label}</span>
+                <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>{s.label}</span>
               </span>
             ))}
           </div>

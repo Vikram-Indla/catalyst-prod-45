@@ -84,7 +84,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
         return (
           <button
             onClick={e => { e.stopPropagation(); onOpenPanel(item.id); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: '#2563EB', textDecoration: 'none', outline: 'none' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: 'var(--cp-blue)', textDecoration: 'none', outline: 'none' }}
             onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
             onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
             onFocus={e => (e.currentTarget.style.outline = '2px solid #2563EB')}
@@ -99,14 +99,14 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
           return (
             <input ref={inputRef} value={editValue} onChange={e => setEditValue(e.target.value)}
               onBlur={commitEdit} onKeyDown={handleKeyDown}
-              style={{ flex: 1, height: 28, border: '1.5px solid #2563EB', borderRadius: 3, padding: '0 6px', fontSize: 13, outline: 'none', fontFamily: 'Inter, sans-serif', color: '#0F172A', background: 'white' }}
+              style={{ flex: 1, height: 28, border: '1.5px solid #2563EB', borderRadius: 3, padding: '0 6px', fontSize: 13, outline: 'none', fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', background: 'var(--bg-app)' }}
             />
           );
         }
         return (
           <span onClick={e => { e.stopPropagation(); startEdit('summary', item.summary); }}
             title={item.summary?.length > 80 ? item.summary : undefined}
-            style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13, color: '#0F172A', cursor: 'text', fontWeight: item.child_count > 0 ? 500 : 400 }}>
+            style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13, color: 'var(--fg-1)', cursor: 'text', fontWeight: item.child_count > 0 ? 500 : 400 }}>
             {highlightMatch(item.summary, searchQuery)}
           </span>
         );
@@ -119,15 +119,15 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
                 <WorkHubStatusLozenge status={item.status} statusCategory={item.status_category} />
               </button>
             </PopoverTrigger>
-            <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
+            <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
               {STATUS_GROUPS.map(group => (
                 <div key={group.label}>
-                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '6px 12px 2px' }}>{group.label}</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-4)', padding: '6px 12px 2px' }}>{group.label}</div>
                   {group.statuses.map(s => (
                     <button key={s} onClick={() => onInlineEdit(item.id, 'status', s)} style={{
                       width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
                       background: item.status === s ? 'rgba(37,99,235,0.08)' : 'transparent',
-                      color: '#0F172A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                      color: 'var(--fg-1)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                     }}>
                       <WorkHubStatusLozenge status={s} statusCategory={group.category} />
                     </button>
@@ -139,23 +139,23 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
         );
 
       case 'parent':
-        if (!item.parent_key) return <span style={{ color: '#94A3B8', fontSize: 13 }}>—</span>;
+        if (!item.parent_key) return <span style={{ color: 'var(--fg-4)', fontSize: 13 }}>—</span>;
         return (
           <span title={`${item.parent_key} · ${item.parent_summary || ''}`} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 6px',
-            background: '#F1F5F9', borderRadius: 3, maxWidth: 180, overflow: 'hidden',
+            background: 'var(--bg-1)', borderRadius: 3, maxWidth: 180, overflow: 'hidden',
           }}>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 500, flexShrink: 0 }}>{item.parent_key}</span>
-            {item.parent_summary && <span style={{ fontSize: 11, color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>· {item.parent_summary}</span>}
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--cp-blue)', fontWeight: 500, flexShrink: 0 }}>{item.parent_key}</span>
+            {item.parent_summary && <span style={{ fontSize: 11, color: 'var(--fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>· {item.parent_summary}</span>}
           </span>
         );
 
       case 'assignee':
-        if (!item.assignee_display_name) return <span style={{ color: '#94A3B8', fontSize: 13, fontStyle: 'italic', fontWeight: 400 }}>Unassigned</span>;
+        if (!item.assignee_display_name) return <span style={{ color: 'var(--fg-4)', fontSize: 13, fontStyle: 'italic', fontWeight: 400 }}>Unassigned</span>;
         return (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
             <AvatarCircle name={item.assignee_display_name} size={20} />
-            <span style={{ fontSize: 13, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.assignee_display_name}</span>
+            <span style={{ fontSize: 13, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.assignee_display_name}</span>
           </span>
         );
 
@@ -167,12 +167,12 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
                 <WorkHubPriorityIcon priority={item.priority || 'Medium'} size={16} />
               </button>
             </PopoverTrigger>
-            <PopoverContent align="start" style={{ width: 160, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
+            <PopoverContent align="start" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
               {PRIORITY_OPTIONS.map(p => (
                 <button key={p} onClick={() => onInlineEdit(item.id, 'priority', p)} style={{
                   width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
                   background: item.priority === p ? 'rgba(37,99,235,0.08)' : 'transparent',
-                  color: '#0F172A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                  color: 'var(--fg-1)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                 }}>
                   <WorkHubPriorityIcon priority={p} size={14} showLabel />
                 </button>
@@ -182,11 +182,11 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
         );
 
       case 'created':
-        return <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDate(item.jira_created_at)}</span>;
+        return <span style={{ fontSize: 12, color: 'var(--fg-2)', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDate(item.jira_created_at)}</span>;
       case 'updated':
-        return <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDate(item.jira_updated_at)}</span>;
+        return <span style={{ fontSize: 12, color: 'var(--fg-2)', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>{formatDate(item.jira_updated_at)}</span>;
       case 'due_date':
-        return <span style={{ fontSize: 12, color: item.due_date ? '#334155' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums', cursor: 'pointer' }}>{formatDate(item.due_date)}</span>;
+        return <span style={{ fontSize: 12, color: item.due_date ? 'var(--fg-2)' : 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums', cursor: 'pointer' }}>{formatDate(item.due_date)}</span>;
 
       case 'points':
         if (editField === 'points') {
@@ -194,19 +194,19 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
             <input ref={inputRef} type="number" min={0} max={100} value={editValue}
               onChange={e => setEditValue(e.target.value)} onBlur={commitPoints}
               onKeyDown={e => { if (e.key === 'Enter') commitPoints(); if (e.key === 'Escape') cancelEdit(); }}
-              style={{ width: 50, height: 28, border: '1.5px solid #2563EB', borderRadius: 3, padding: '0 4px', fontSize: 13, outline: 'none', fontFamily: "'JetBrains Mono', monospace", color: '#0F172A', background: 'white', textAlign: 'center' }}
+              style={{ width: 50, height: 28, border: '1.5px solid #2563EB', borderRadius: 3, padding: '0 4px', fontSize: 13, outline: 'none', fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-1)', background: 'var(--bg-app)', textAlign: 'center' }}
             />
           );
         }
         return (
           <span onClick={e => { e.stopPropagation(); startEdit('points', String(item.story_points ?? '')); }}
-            style={{ fontSize: 13, color: item.story_points != null ? '#0F172A' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace", cursor: 'text' }}>
+            style={{ fontSize: 13, color: item.story_points != null ? 'var(--fg-1)' : 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace", cursor: 'text' }}>
             {item.story_points != null ? item.story_points : '—'}
           </span>
         );
 
       default:
-        return <span style={{ color: '#94A3B8' }}>—</span>;
+        return <span style={{ color: 'var(--fg-4)' }}>—</span>;
     }
   };
 
@@ -243,7 +243,7 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
         <div style={{ width: 44, minWidth: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <input type="checkbox" checked={selected} onChange={e => { e.stopPropagation(); onSelect(e.target.checked); }}
             aria-label={`Select ${item.issue_key}`}
-            style={{ width: 18, height: 18, accentColor: '#2563EB', cursor: 'pointer' }} />
+            style={{ width: 18, height: 18, accentColor: 'var(--cp-blue)', cursor: 'pointer' }} />
         </div>
 
         {visibleCols.map(col => (
@@ -257,12 +257,12 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
           opacity: hovered ? 1 : 0, transition: 'opacity 120ms', pointerEvents: hovered ? 'auto' : 'none',
         }}>
           <button onClick={e => { e.stopPropagation(); startEdit('summary', item.summary); }} title="Edit" aria-label="Edit summary"
-            style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'white', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 4, cursor: 'pointer' }}>
+            style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 4, cursor: 'pointer' }}>
             <Pencil size={14} color="#64748B" />
           </button>
           {onDelete && (
             <button onClick={e => { e.stopPropagation(); onDelete(item.id); }} title="Delete" aria-label="Delete item"
-              style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'white', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 4, cursor: 'pointer' }}>
+              style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 4, cursor: 'pointer' }}>
               <Trash2 size={14} color="#DC2626" />
             </button>
           )}
@@ -272,22 +272,22 @@ export default memo(function WorkHubRow({ item, columns, selected, onSelect, onO
       {contextMenu && (
         <div style={{
           position: 'fixed', top: contextMenu.y, left: contextMenu.x,
-          width: 200, background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)',
+          width: 200, background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)',
           borderRadius: 6, padding: '4px 0', zIndex: 99999,
           boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         }} role="menu">
           <button role="menuitem" onClick={() => { onOpenPanel(item.id); setContextMenu(null); }}
-            style={{ width: '100%', padding: '6px 12px', fontSize: 13, border: 'none', background: 'transparent', color: '#0F172A', cursor: 'pointer', textAlign: 'left' }}>
+            style={{ width: '100%', padding: '6px 12px', fontSize: 13, border: 'none', background: 'transparent', color: 'var(--fg-1)', cursor: 'pointer', textAlign: 'left' }}>
             Open in panel
           </button>
           <button role="menuitem" onClick={() => { navigator.clipboard.writeText(item.issue_key); setContextMenu(null); }}
-            style={{ width: '100%', padding: '6px 12px', fontSize: 13, border: 'none', background: 'transparent', color: '#0F172A', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8 }}>
+            style={{ width: '100%', padding: '6px 12px', fontSize: 13, border: 'none', background: 'transparent', color: 'var(--fg-1)', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8 }}>
             <Copy size={13} /> Copy key
           </button>
           <div style={{ height: 1, background: 'rgba(15,23,42,0.06)', margin: '4px 0' }} />
           {onDelete && (
             <button role="menuitem" onClick={() => { onDelete(item.id); setContextMenu(null); }}
-              style={{ width: '100%', padding: '6px 12px', fontSize: 13, border: 'none', background: 'transparent', color: '#DC2626', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8 }}>
+              style={{ width: '100%', padding: '6px 12px', fontSize: 13, border: 'none', background: 'transparent', color: 'var(--sem-danger)', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Trash2 size={13} /> Delete
             </button>
           )}

@@ -52,11 +52,11 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
   return (
     <div
       className="flex items-center justify-between px-8 py-2.5"
-      style={{ borderTop: '1px solid rgba(15,23,42,0.08)', backgroundColor: '#fff' }}
+      style={{ borderTop: '1px solid rgba(15,23,42,0.08)', backgroundColor: 'var(--bg-app)' }}
     >
       {/* Left: count */}
       <span className="text-[12px]" style={{ color: '#6b6e76', fontFamily: 'Inter, sans-serif' }}>
-        Showing <b style={{ color: '#0F172A' }}>{start}–{end}</b> of <b style={{ color: '#0F172A' }}>{totalCount.toLocaleString()}</b>
+        Showing <b style={{ color: 'var(--fg-1)' }}>{start}–{end}</b> of <b style={{ color: 'var(--fg-1)' }}>{totalCount.toLocaleString()}</b>
       </span>
 
       {/* Center: pages */}
@@ -73,7 +73,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
 
         {pages.map((p, i) => {
           if (p < 0) {
-            return <span key={`e${i}`} className="text-[12px] px-1" style={{ color: '#71717A' }}>…</span>;
+            return <span key={`e${i}`} className="text-[12px] px-1" style={{ color: 'var(--fg-3)' }}>…</span>;
           }
           return (
             <button
@@ -81,8 +81,8 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
               onClick={() => onPageChange(p)}
               className="w-8 h-8 rounded text-[12px] font-medium transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB] focus-visible:outline-offset-2"
               style={{
-                backgroundColor: p === currentPage ? '#2563EB' : 'transparent',
-                color: p === currentPage ? '#fff' : '#6b6e76',
+                backgroundColor: p === currentPage ? 'var(--cp-blue)' : 'transparent',
+                color: p === currentPage ? 'var(--bg-app)' : '#6b6e76',
               }}
               aria-label={`Page ${p + 1}`}
               aria-current={p === currentPage ? 'page' : undefined}
@@ -109,7 +109,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
         <button
           onClick={() => setSizeOpen(!sizeOpen)}
           className="inline-flex items-center gap-1 px-2.5 h-8 text-[12px] rounded border hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-          style={{ borderColor: 'rgba(15,23,42,0.12)', color: '#0F172A', fontFamily: "'JetBrains Mono', monospace" }}
+          style={{ borderColor: 'rgba(15,23,42,0.12)', color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}
           aria-haspopup="listbox"
           aria-expanded={sizeOpen}
         >
@@ -127,12 +127,12 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
                 key={s}
                 onClick={() => { onPageSizeChange(s); setSizeOpen(false); }}
                 className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] hover:bg-[rgba(15,23,42,0.04)] transition-colors duration-[80ms]"
-                style={{ color: '#0F172A', fontFamily: "'JetBrains Mono', monospace" }}
+                style={{ color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}
                 role="option"
                 aria-selected={s === pageSize}
               >
                 {s}
-                {s === pageSize && <Check className="w-3 h-3" style={{ color: '#2563EB' }} />}
+                {s === pageSize && <Check className="w-3 h-3" style={{ color: 'var(--cp-blue)' }} />}
               </button>
             ))}
           </div>

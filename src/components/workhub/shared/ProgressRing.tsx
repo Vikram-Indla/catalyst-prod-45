@@ -34,7 +34,7 @@ export function ProgressRing({
         cy={center}
         r={radius}
         fill="none"
-        stroke="var(--wh-border-light, #f1f5f9)"
+        stroke="var(--bg-1)"
         strokeWidth={strokeWidth}
       />
       {/* Progress arc */}

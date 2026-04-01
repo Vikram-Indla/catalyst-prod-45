@@ -29,17 +29,17 @@ export default function WorkHubGroupHeader({ label, count, collapsed, onToggle, 
       onBlur={e => (e.currentTarget.style.boxShadow = 'none')}
     >
       <ChevronRight size={16} color="#334155" style={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)', transition: 'transform 200ms ease' }} />
-      <span style={{ fontSize: 12, fontWeight: 650, textTransform: 'uppercase', color: '#334155', letterSpacing: '0.03em' }}>{label}</span>
+      <span style={{ fontSize: 12, fontWeight: 650, textTransform: 'uppercase', color: 'var(--fg-2)', letterSpacing: '0.03em' }}>{label}</span>
       <span style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         height: 16, minWidth: 16, padding: '0 8px', borderRadius: 10,
-        background: '#F1F5F9', fontSize: 11, fontWeight: 600, color: '#64748B',
+        background: 'var(--bg-1)', fontSize: 11, fontWeight: 600, color: 'var(--fg-3)',
       }}>{count}</span>
       <button
         onClick={e => { e.stopPropagation(); onAddItem(); }}
         style={{
           marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4,
-          background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: '#64748B',
+          background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--fg-3)',
           opacity: 0, transition: 'opacity 120ms',
         }}
         onMouseEnter={e => (e.currentTarget.style.opacity = '1')}

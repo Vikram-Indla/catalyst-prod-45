@@ -11,9 +11,9 @@ interface Props {
 }
 
 const T = {
-  text1: '#0A0A0A', text2: '#1A1A2E', text3: '#3D3D56', text4: '#6B6B80',
-  border: '#D9D2C9', surface: '#FFFFFF', warm: '#FAF8F5',
-  todo: '#E23636', progress: '#2563EB', done: '#0E8A5F',
+  text1: 'var(--fg-1)', text2: '#1A1A2E', text3: '#3D3D56', text4: 'var(--fg-3)',
+  border: 'var(--divider)', surface: 'var(--cp-float)', warm: '#FAF8F5',
+  todo: '#E23636', progress: 'var(--cp-blue)', done: '#0E8A5F',
   mono: "'JetBrains Mono','SF Mono',monospace",
 };
 
@@ -78,7 +78,7 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
                 {stale && (
                   <span style={{
                     fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 4,
-                    background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA',
+                    background: '#FEF2F2', color: 'var(--sem-danger)', border: '1px solid #FECACA',
                   }}>🔴 Stale — {item.age_days}d</span>
                 )}
                 <span style={{ flex: 1 }} />
@@ -115,7 +115,7 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
                   <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', color: T.text4 }}>{cell.label}</span>
                   <span style={{
                     fontSize: 12, fontWeight: 700, textAlign: 'right',
-                    color: cell.blue ? '#2563EB' : T.text1,
+                    color: cell.blue ? 'var(--cp-blue)' : T.text1,
                     ...(cell.mono ? { fontFamily: T.mono, fontSize: 11 } : {}),
                   }}>
                     {cell.value}
@@ -202,7 +202,7 @@ export function Resource360ContextModal({ item, allItems, onClose, onNavigate }:
                   </div>
                 </div>
               ) : (
-                <div style={{ fontSize: 11, fontStyle: 'italic', color: '#9CA3AF', padding: '8px 0' }}>Top-level item — no parent</div>
+                <div style={{ fontSize: 11, fontStyle: 'italic', color: 'var(--fg-4)', padding: '8px 0' }}>Top-level item — no parent</div>
               )}
             </div>
 
@@ -287,7 +287,7 @@ function TagChip({ label }: { label: string }) {
 
 function SidebarLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.1em', color: '#6B6B80', marginBottom: 8, paddingBottom: 6, borderBottom: '1px solid #D9D2C9' }}>
+    <div style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--fg-3)', marginBottom: 8, paddingBottom: 6, borderBottom: '1px solid var(--divider)' }}>
       {children}
     </div>
   );
@@ -303,7 +303,7 @@ function TimelineNode({ letter, label, color, active }: { letter: string; label:
         boxShadow: active ? `0 0 0 3px ${color}33` : 'none',
         transition: 'all .15s',
       }}>{letter}</div>
-      <span style={{ fontSize: 8, fontWeight: 700, color: active ? color : '#9CA3AF', textTransform: 'uppercase', letterSpacing: '.04em', whiteSpace: 'nowrap' }}>{label}</span>
+      <span style={{ fontSize: 8, fontWeight: 700, color: active ? color : 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '.04em', whiteSpace: 'nowrap' }}>{label}</span>
     </div>
   );
 }
@@ -318,7 +318,7 @@ const PRI_MAP: Record<string, { icon: string; color: string; label: string }> = 
 };
 
 function PriorityIndicator({ priority }: { priority?: string | null }) {
-  if (!priority) return <span style={{ color: '#9CA3AF' }}>—</span>;
+  if (!priority) return <span style={{ color: 'var(--fg-4)' }}>—</span>;
   const p = PRI_MAP[priority] ?? { icon: '●', color: '#6B6B80', label: priority };
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, color: p.color }}>

@@ -240,7 +240,7 @@ export default function WorkHubTable({ projectKey, projectId, defaultType = 'Sto
   const hasActiveFilters = (filters.statuses?.length || 0) + (filters.types?.length || 0) + (filters.priorities?.length || 0) + (filters.assignee_ids?.length || 0) > 0 || !!filters.search_query;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#FFFFFF', minWidth: 1320 }} role="region" aria-label="Work items table">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-app)', minWidth: 1320 }} role="region" aria-label="Work items table">
       <WorkHubToolbar
         filters={filters}
         onFiltersChange={setFilters}
@@ -279,7 +279,7 @@ export default function WorkHubTable({ projectKey, projectId, defaultType = 'Sto
               <div style={{ fontSize: 14, fontWeight: 600, color: '#991B1B' }}>Failed to load work items</div>
               <div style={{ fontSize: 13, color: '#7F1D1D', marginTop: 2 }}>{(error as Error).message || 'An unexpected error occurred'}</div>
             </div>
-            <button onClick={() => refetch()} style={{ padding: '6px 16px', fontSize: 13, fontWeight: 600, color: 'white', background: '#DC2626', border: 'none', borderRadius: 4, cursor: 'pointer', flexShrink: 0 }}>Retry</button>
+            <button onClick={() => refetch()} style={{ padding: '6px 16px', fontSize: 13, fontWeight: 600, color: 'var(--bg-app)', background: 'var(--sem-danger)', border: 'none', borderRadius: 4, cursor: 'pointer', flexShrink: 0 }}>Retry</button>
           </div>
         )}
 
@@ -325,20 +325,20 @@ export default function WorkHubTable({ projectKey, projectId, defaultType = 'Sto
         {/* Empty state — no items */}
         {!isLoading && !error && items.length === 0 && !hasActiveFilters && (
           <div style={{ padding: '60px 0', textAlign: 'center' }}>
-            <div style={{ width: 160, height: 120, margin: '0 auto 20px', background: '#F1F5F9', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 160, height: 120, margin: '0 auto 20px', background: 'var(--bg-1)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="8" y="12" width="32" height="24" rx="3" stroke="#94A3B8" strokeWidth="1.5" /><path d="M16 22H32M16 28H26" stroke="#CBD5E1" strokeWidth="1.5" strokeLinecap="round" /></svg>
             </div>
-            <div style={{ fontSize: 20, fontWeight: 650, color: '#0F172A', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>No work items yet</div>
-            <div style={{ fontSize: 14, color: '#64748B', marginBottom: 20 }}>Create your first work item to get started</div>
-            <button onClick={handleToolbarCreate} style={{ padding: '8px 20px', fontSize: 13, fontWeight: 600, color: 'white', background: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer' }}>+ Create Item</button>
+            <div style={{ fontSize: 20, fontWeight: 650, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>No work items yet</div>
+            <div style={{ fontSize: 14, color: 'var(--fg-3)', marginBottom: 20 }}>Create your first work item to get started</div>
+            <button onClick={handleToolbarCreate} style={{ padding: '8px 20px', fontSize: 13, fontWeight: 600, color: 'var(--bg-app)', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>+ Create Item</button>
           </div>
         )}
 
         {/* Empty state — filters active but no match */}
         {!isLoading && !error && items.length === 0 && hasActiveFilters && (
           <div style={{ padding: '48px 0', textAlign: 'center' }}>
-            <div style={{ fontSize: 15, fontWeight: 500, color: '#64748B', marginBottom: 4 }}>No items match your filters</div>
-            <button onClick={() => setFilters(EMPTY_FILTERS)} style={{ fontSize: 13, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500, marginTop: 8, textDecoration: 'underline' }}>Clear all filters</button>
+            <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--fg-3)', marginBottom: 4 }}>No items match your filters</div>
+            <button onClick={() => setFilters(EMPTY_FILTERS)} style={{ fontSize: 13, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500, marginTop: 8, textDecoration: 'underline' }}>Clear all filters</button>
           </div>
         )}
       </div>
@@ -368,32 +368,32 @@ export default function WorkHubTable({ projectKey, projectId, defaultType = 'Sto
           <div onClick={() => setDeleteConfirm(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 9998 }} />
           <div role="alertdialog" aria-label="Delete confirmation" style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            width: 420, background: '#FFFFFF', borderRadius: 8, padding: 24,
+            width: 420, background: 'var(--bg-app)', borderRadius: 8, padding: 24,
             boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', zIndex: 9999,
           }}>
-            <h3 style={{ fontSize: 16, fontWeight: 650, color: '#0F172A', marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 650, color: 'var(--fg-1)', marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>
               Delete {deleteConfirm.ids.length === 1 ? deleteConfirm.items[0]?.issue_key : `${deleteConfirm.ids.length} items`}?
             </h3>
             {deleteConfirm.ids.length === 1 ? (
-              <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.5, marginBottom: 20 }}>
+              <p style={{ fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.5, marginBottom: 20 }}>
                 "{deleteConfirm.items[0]?.summary}" will be moved to trash. This action can be undone within 30 days.
               </p>
             ) : (
-              <div style={{ fontSize: 13, color: '#64748B', lineHeight: 1.6, marginBottom: 20 }}>
+              <div style={{ fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.6, marginBottom: 20 }}>
                 {deleteConfirm.items.slice(0, 3).map(item => (
                   <div key={item.id} style={{ display: 'flex', gap: 6, marginBottom: 2 }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: '#0F172A', flexShrink: 0 }}>{item.issue_key}:</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: 'var(--fg-1)', flexShrink: 0 }}>{item.issue_key}:</span>
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.summary}</span>
                   </div>
                 ))}
                 {deleteConfirm.items.length > 3 && (
-                  <div style={{ color: '#94A3B8', marginTop: 4 }}>...and {deleteConfirm.items.length - 3} more</div>
+                  <div style={{ color: 'var(--fg-4)', marginTop: 4 }}>...and {deleteConfirm.items.length - 3} more</div>
                 )}
               </div>
             )}
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button onClick={() => setDeleteConfirm(null)} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, color: '#334155', background: 'transparent', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
-              <button onClick={confirmDelete} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 600, color: 'white', background: '#DC2626', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
+              <button onClick={() => setDeleteConfirm(null)} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', background: 'transparent', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={confirmDelete} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 600, color: 'var(--bg-app)', background: 'var(--sem-danger)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
                 {deleteConfirm.ids.length === 1 ? 'Delete' : `Delete ${deleteConfirm.ids.length} items`}
               </button>
             </div>

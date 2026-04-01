@@ -17,15 +17,15 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
   const active = kpis.total_work_items - kpis.done_work_items - kpis.blocked_items;
 
   const segments = [
-    { label: 'Done', value: kpis.done_work_items, color: '#16a34a' },
-    { label: 'Active', value: Math.max(active, 0), color: '#2563eb' },
-    { label: 'Blocked', value: kpis.blocked_items, color: '#ef4444' },
+    { label: 'Done', value: kpis.done_work_items, color: 'var(--sem-success)' },
+    { label: 'Active', value: Math.max(active, 0), color: 'var(--cp-blue)' },
+    { label: 'Blocked', value: kpis.blocked_items, color: 'var(--sem-danger)' },
   ];
 
   return (
     <div style={{
-      background: 'var(--wh-surface, #fff)',
-      border: '1px solid var(--wh-border, #e2e8f0)',
+      background: 'var(--cp-float)',
+      border: '1px solid var(--divider)',
       borderRadius: 'var(--wh-radius-xl, 16px)',
       padding: 24,
     }}>
@@ -35,7 +35,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
           fontFamily: 'Inter, system-ui, sans-serif',
           fontSize: 18,
           fontWeight: 600,
-          color: 'var(--wh-text-primary, #0f172a)',
+          color: 'var(--fg-1)',
           margin: 0,
         }}>
           Overall Completion
@@ -45,7 +45,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
           style={{
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: 13,
-            color: 'var(--wh-primary, #2563eb)',
+            color: 'var(--cp-blue)',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
@@ -76,7 +76,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
         marginTop: 10,
         fontFamily: 'Inter, system-ui, sans-serif',
         fontSize: 13,
-        color: 'var(--wh-text-secondary, #64748b)',
+        color: 'var(--fg-3)',
         flexWrap: 'wrap',
       }}>
         <span>{kpis.total_work_items} total</span>
@@ -85,7 +85,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
         <span>·</span>
         <span>{Math.max(active, 0)} active</span>
         <span>·</span>
-        <span style={{ color: kpis.blocked_items > 0 ? '#ef4444' : undefined }}>
+        <span style={{ color: kpis.blocked_items > 0 ? 'var(--sem-danger)' : undefined }}>
           {kpis.blocked_items} blocked
         </span>
       </div>
@@ -97,7 +97,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
         gap: 24,
         marginTop: 20,
         paddingTop: 16,
-        borderTop: '1px solid var(--wh-border-light, #f1f5f9)',
+        borderTop: '1px solid var(--bg-1)',
       }}>
         <ProgressRing
           percent={kpis.overall_completion_percent}
@@ -111,7 +111,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
             style={{
               fontFamily: 'Inter, system-ui, sans-serif',
               fontSize: 13,
-              color: 'var(--wh-text-secondary, #64748b)',
+              color: 'var(--fg-3)',
               background: 'none',
               border: 'none',
               cursor: 'pointer',
@@ -120,14 +120,14 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
             }}
             className="hover:text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/30 rounded"
           >
-            Active Themes: <strong style={{ color: 'var(--wh-text-primary, #0f172a)' }}>{kpis.active_themes}</strong>
+            Active Themes: <strong style={{ color: 'var(--fg-1)' }}>{kpis.active_themes}</strong>
           </button>
           <button
             onClick={() => navigate('/projecthub/resource360')}
             style={{
               fontFamily: 'Inter, system-ui, sans-serif',
               fontSize: 13,
-              color: 'var(--wh-text-secondary, #64748b)',
+              color: 'var(--fg-3)',
               background: 'none',
               border: 'none',
               cursor: 'pointer',
@@ -136,12 +136,12 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
             }}
             className="hover:text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/30 rounded"
           >
-            Resources: <strong style={{ color: 'var(--wh-text-primary, #0f172a)' }}>{kpis.total_resources}</strong>
+            Resources: <strong style={{ color: 'var(--fg-1)' }}>{kpis.total_resources}</strong>
           </button>
           <span style={{
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: 13,
-            color: kpis.blocked_items > 0 ? '#ef4444' : 'var(--wh-text-secondary, #64748b)',
+            color: kpis.blocked_items > 0 ? 'var(--sem-danger)' : 'var(--fg-3)',
           }}>
             Blocked: <strong>{kpis.blocked_items}</strong>
           </span>

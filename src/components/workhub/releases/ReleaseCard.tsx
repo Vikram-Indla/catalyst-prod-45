@@ -37,11 +37,11 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
   const status = deriveStatus(release);
 
   const segments = [
-    { label: 'Done', value: release.doneItems, color: '#16a34a' },
-    { label: 'In Progress', value: release.inProgressItems, color: '#2563eb' },
+    { label: 'Done', value: release.doneItems, color: 'var(--sem-success)' },
+    { label: 'In Progress', value: release.inProgressItems, color: 'var(--cp-blue)' },
     { label: 'In Review', value: release.inReviewItems, color: '#7c3aed' },
-    { label: 'Blocked', value: release.blockedItems, color: '#ef4444' },
-    { label: 'To Do', value: release.todoItems, color: '#94a3b8' },
+    { label: 'Blocked', value: release.blockedItems, color: 'var(--sem-danger)' },
+    { label: 'To Do', value: release.todoItems, color: 'var(--fg-4)' },
   ];
 
   const MAX_AVATARS = 6;

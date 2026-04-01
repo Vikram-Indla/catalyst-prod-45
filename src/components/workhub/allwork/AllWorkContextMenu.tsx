@@ -74,7 +74,7 @@ export function AllWorkContextMenu({ item, x, y, onClose, onOpenItem }: Props) {
     >
       {ACTIONS.map((action) => {
         if (action.id.startsWith('divider')) {
-          return <div key={action.id} className="my-1 border-t" style={{ borderColor: '#E2E8F0' }} />;
+          return <div key={action.id} className="my-1 border-t" style={{ borderColor: 'var(--divider)' }} />;
         }
         const Icon = action.icon!;
         const isDanger = 'danger' in action && action.danger;
@@ -83,9 +83,9 @@ export function AllWorkContextMenu({ item, x, y, onClose, onOpenItem }: Props) {
             key={action.id}
             onClick={() => handleAction(action.id)}
             className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[#f8f8f8] transition-colors text-left"
-            style={{ color: isDanger ? '#dc2626' : '#1A1D23' }}
+            style={{ color: isDanger ? 'var(--sem-danger)' : '#1A1D23' }}
           >
-            <Icon className="w-4 h-4 shrink-0" style={{ color: isDanger ? '#dc2626' : '#6b6e76' }} />
+            <Icon className="w-4 h-4 shrink-0" style={{ color: isDanger ? 'var(--sem-danger)' : '#6b6e76' }} />
             {action.label}
           </button>
         );

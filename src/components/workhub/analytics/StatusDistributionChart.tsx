@@ -16,15 +16,15 @@ export function StatusDistributionChart({ data }: Props) {
 
   return (
     <div style={{
-      backgroundColor: 'var(--wh-surface)',
-      border: '1px solid var(--wh-border)',
+      backgroundColor: 'var(--cp-float)',
+      border: '1px solid var(--divider)',
       borderRadius: 'var(--wh-radius-xl, 16px)',
       padding: 24, minHeight: 340,
     }}>
       <h3 style={{
         fontFamily: 'Inter, system-ui, sans-serif',
         fontSize: 16, fontWeight: 600,
-        color: 'var(--wh-text-primary)', marginBottom: 16,
+        color: 'var(--fg-1)', marginBottom: 16,
       }}>
         Status Distribution
       </h3>
@@ -56,10 +56,10 @@ export function StatusDistributionChart({ data }: Props) {
           transform: 'translate(-50%, -50%)',
           textAlign: 'center', pointerEvents: 'none',
         }}>
-          <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700, color: 'var(--wh-text-primary)' }}>
+          <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700, color: 'var(--fg-1)' }}>
             {total}
           </div>
-          <div style={{ fontFamily: 'Inter, system-ui, sans-serif', fontSize: 11, color: 'var(--wh-text-tertiary)' }}>
+          <div style={{ fontFamily: 'Inter, system-ui, sans-serif', fontSize: 11, color: 'var(--fg-4)' }}>
             items
           </div>
         </div>

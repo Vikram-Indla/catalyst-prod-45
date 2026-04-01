@@ -185,8 +185,8 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
 function Sel({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
   return (
     <div>
-      <span style={{ fontSize: 9, fontWeight: 700, color: '#6B6B80', textTransform: 'uppercase', display: 'block', marginBottom: 2 }}>{label}</span>
-      <select value={value} onChange={e => onChange(e.target.value)} style={{ fontSize: 10, fontWeight: 600, padding: '3px 6px', borderRadius: 4, border: '1px solid #C5BDB3', background: '#fff', color: '#0A0A0A', cursor: 'pointer' }}>
+      <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--fg-3)', textTransform: 'uppercase', display: 'block', marginBottom: 2 }}>{label}</span>
+      <select value={value} onChange={e => onChange(e.target.value)} style={{ fontSize: 10, fontWeight: 600, padding: '3px 6px', borderRadius: 4, border: '1px solid var(--divider)', background: 'var(--bg-app)', color: 'var(--fg-1)', cursor: 'pointer' }}>
         <option value="all">All</option>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>

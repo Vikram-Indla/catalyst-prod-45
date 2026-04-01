@@ -24,7 +24,7 @@ export function Resource360ContextRight({
       className="flex flex-col"
       style={{
         width: 320, minWidth: 320,
-        background: '#FAFBFC',
+        background: 'var(--bg-1)',
         fontFamily: 'Inter, sans-serif',
         overflowY: 'auto',
       }}
@@ -33,28 +33,28 @@ export function Resource360ContextRight({
         <>
           {/* Parent section */}
           <div style={{ padding: '20px 18px 14px' }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', color: '#94A3B8', textTransform: 'uppercase' as const, marginBottom: 8 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--fg-4)', textTransform: 'uppercase' as const, marginBottom: 8 }}>
               Parent
             </div>
 
             <span
               onClick={onParentClick}
               className="cursor-pointer"
-              style={{ fontSize: 12, fontWeight: 700, color: '#2563EB', fontFamily: "'Inter', monospace" }}
+              style={{ fontSize: 12, fontWeight: 700, color: 'var(--cp-blue)', fontFamily: "'Inter', monospace" }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline'; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none'; }}
             >
               {parentItem.item_key}
             </span>
 
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', lineHeight: 1.35, marginTop: 4 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', lineHeight: 1.35, marginTop: 4 }}>
               {parentItem.title}
             </div>
 
             <div className="flex items-center gap-1.5 mt-2 flex-wrap">
               <StatusPill status={parentItem.status} />
               <HubBadge hub={parentItem.hub} />
-              <span style={{ fontSize: 10, color: '#94A3B8' }}>
+              <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>
                 {parentItem.project_name ?? ''}
               </span>
             </div>
@@ -71,10 +71,10 @@ export function Resource360ContextRight({
       ) : (
         <>
           <div style={{ padding: '20px 18px 14px' }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', color: '#94A3B8', textTransform: 'uppercase' as const, marginBottom: 8 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--fg-4)', textTransform: 'uppercase' as const, marginBottom: 8 }}>
               Top-Level Item
             </div>
-            <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
+            <div style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>
               No parent work item.
             </div>
           </div>
@@ -98,7 +98,7 @@ export function Resource360ContextRight({
           )}
 
           {childItems.length === 0 && (
-            <div style={{ padding: '0 18px', fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
+            <div style={{ padding: '0 18px', fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>
               No children to display
             </div>
           )}
@@ -161,8 +161,8 @@ function SiblingList({ label, items, currentKey, onItemClick }: SiblingListProps
           position: 'sticky', top: 0, zIndex: 2,
           padding: '10px 18px',
           fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
-          color: '#64748B', textTransform: 'uppercase' as const,
-          background: '#FAFBFC',
+          color: 'var(--fg-3)', textTransform: 'uppercase' as const,
+          background: 'var(--bg-1)',
           borderBottom: '1px solid #F0F0F3',
         }}
       >
@@ -183,7 +183,7 @@ function SiblingList({ label, items, currentKey, onItemClick }: SiblingListProps
               padding: isCurrent ? '10px 18px 10px 15px' : '10px 18px',
               borderBottom: '1px solid #F0F0F3',
               background: isCurrent ? '#EFF6FF' : 'transparent',
-              borderLeft: isCurrent ? '3px solid #2563EB' : 'none',
+              borderLeft: isCurrent ? '3px solid var(--cp-blue)' : 'none',
             }}
             onMouseEnter={(e) => {
               if (!isCurrent) (e.currentTarget as HTMLElement).style.background = '#F0F5FF';
@@ -193,7 +193,7 @@ function SiblingList({ label, items, currentKey, onItemClick }: SiblingListProps
             }}
           >
             <div className="flex items-center justify-between mb-0.5">
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', fontFamily: "'Inter', monospace" }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', fontFamily: "'Inter', monospace" }}>
                 {s.item_key}
               </span>
               <span style={{
@@ -208,7 +208,7 @@ function SiblingList({ label, items, currentKey, onItemClick }: SiblingListProps
             </div>
 
             <div style={{
-              fontSize: 12, fontWeight: 500, color: '#334155',
+              fontSize: 12, fontWeight: 500, color: 'var(--fg-2)',
               lineHeight: 1.35,
               display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const,
               overflow: 'hidden', marginBottom: 3,
@@ -217,10 +217,10 @@ function SiblingList({ label, items, currentKey, onItemClick }: SiblingListProps
             </div>
 
             <div className="flex items-center justify-between">
-              <span style={{ fontSize: 10, color: '#94A3B8' }}>
+              <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>
                 {s.assigner_name ?? '—'}
               </span>
-              <span style={{ fontSize: 10, color: '#94A3B8', fontFamily: "'Inter', monospace" }}>
+              <span style={{ fontSize: 10, color: 'var(--fg-4)', fontFamily: "'Inter', monospace" }}>
                 {s.age_days}d
               </span>
             </div>

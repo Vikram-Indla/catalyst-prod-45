@@ -20,10 +20,10 @@ function truncateName(name: string) {
 }
 
 const LEGEND = [
-  { label: '>80% Over-utilized', color: 'var(--wh-danger, #ef4444)' },
-  { label: '60-80% Busy', color: 'var(--wh-warning, #d97706)' },
-  { label: '40-60% Healthy', color: 'var(--wh-success, #16a34a)' },
-  { label: '<40% Under-utilized', color: 'var(--wh-text-tertiary, #94a3b8)' },
+  { label: '>80% Over-utilized', color: 'var(--sem-danger)' },
+  { label: '60-80% Busy', color: 'var(--sem-warning)' },
+  { label: '40-60% Healthy', color: 'var(--sem-success)' },
+  { label: '<40% Under-utilized', color: 'var(--fg-4)' },
 ];
 
 export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProps) {
@@ -32,8 +32,8 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
 
   return (
     <div style={{
-      background: 'var(--wh-surface, #fff)',
-      border: '1px solid var(--wh-border, #e2e8f0)',
+      background: 'var(--cp-float)',
+      border: '1px solid var(--divider)',
       borderRadius: 'var(--wh-radius-xl, 16px)',
       padding: 24,
     }}>
@@ -43,7 +43,7 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
           fontFamily: 'Inter, system-ui, sans-serif',
           fontSize: 18,
           fontWeight: 600,
-          color: 'var(--wh-text-primary, #0f172a)',
+          color: 'var(--fg-1)',
           margin: 0,
         }}>
           Team Utilization
@@ -53,7 +53,7 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
           style={{
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: 13,
-            color: 'var(--wh-primary, #2563eb)',
+            color: 'var(--cp-blue)',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
@@ -83,7 +83,7 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
               padding: '8px 4px',
               borderRadius: 'var(--wh-radius-md, 8px)',
               cursor: 'pointer',
-              transition: 'var(--wh-transition-fast, all 150ms ease)',
+              transition: 'all 150ms ease',
             }}
             className="hover:bg-blue-50/50 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
           >
@@ -100,7 +100,7 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
                 fontFamily: 'Inter, system-ui, sans-serif',
                 fontSize: 13,
                 fontWeight: 500,
-                color: 'var(--wh-text-primary, #0f172a)',
+                color: 'var(--fg-1)',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -135,7 +135,7 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
         gap: 16,
         marginTop: 16,
         paddingTop: 12,
-        borderTop: '1px solid var(--wh-border-light, #f1f5f9)',
+        borderTop: '1px solid var(--bg-1)',
         flexWrap: 'wrap',
       }}>
         {LEGEND.map(item => (
@@ -145,7 +145,7 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
             gap: 4,
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: 11,
-            color: 'var(--wh-text-tertiary, #94a3b8)',
+            color: 'var(--fg-4)',
           }}>
             <span style={{
               width: 8,

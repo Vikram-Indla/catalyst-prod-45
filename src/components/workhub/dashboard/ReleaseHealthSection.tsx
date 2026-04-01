@@ -23,7 +23,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
           fontFamily: 'Inter, system-ui, sans-serif',
           fontSize: 18,
           fontWeight: 600,
-          color: 'var(--wh-text-primary, #0f172a)',
+          color: 'var(--fg-1)',
           margin: 0,
         }}>
           Release Health
@@ -33,7 +33,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
           style={{
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: 13,
-            color: 'var(--wh-primary, #2563eb)',
+            color: 'var(--cp-blue)',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
@@ -51,7 +51,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
         <p style={{
           fontFamily: 'Inter, system-ui, sans-serif',
           fontSize: 13,
-          color: 'var(--wh-text-tertiary, #94a3b8)',
+          color: 'var(--fg-4)',
         }}>
           No active releases
         </p>
@@ -68,13 +68,13 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
                 tabIndex={0}
                 onKeyDown={e => e.key === 'Enter' && navigate(`/projecthub/releases/${release.id}`)}
                 style={{
-                  background: 'var(--wh-surface, #fff)',
-                  border: '1px solid var(--wh-border, #e2e8f0)',
+                  background: 'var(--cp-float)',
+                  border: '1px solid var(--divider)',
                   borderLeft: `3px solid ${release.color}`,
                   borderRadius: 'var(--wh-radius-lg, 12px)',
                   padding: 16,
                   cursor: 'pointer',
-                  transition: 'var(--wh-transition-fast, all 150ms ease)',
+                  transition: 'all 150ms ease',
                 }}
                 className="hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               >
@@ -83,7 +83,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
                   fontFamily: 'Inter, system-ui, sans-serif',
                   fontSize: 14,
                   fontWeight: 600,
-                  color: 'var(--wh-text-primary, #0f172a)',
+                  color: 'var(--fg-1)',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -102,7 +102,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
                   <span style={{
                     fontSize: 11,
                     fontWeight: 600,
-                    color: release.status === 'At Risk' ? '#ef4444' : '#2563eb',
+                    color: release.status === 'At Risk' ? 'var(--sem-danger)' : 'var(--cp-blue)',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: 4,
@@ -111,7 +111,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
                       width: 6,
                       height: 6,
                       borderRadius: '50%',
-                      background: release.status === 'At Risk' ? '#ef4444' : '#2563eb',
+                      background: release.status === 'At Risk' ? 'var(--sem-danger)' : 'var(--cp-blue)',
                       display: 'inline-block',
                     }} />
                     {release.status}
@@ -119,7 +119,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
                   <span style={{
                     fontSize: 13,
                     fontWeight: 700,
-                    color: 'var(--wh-text-primary, #0f172a)',
+                    color: 'var(--fg-1)',
                   }}>
                     {release.completion_percent}%
                   </span>
@@ -141,10 +141,10 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
                   marginTop: 8,
                   fontFamily: 'Inter, system-ui, sans-serif',
                   fontSize: 12,
-                  color: 'var(--wh-text-tertiary, #94a3b8)',
+                  color: 'var(--fg-4)',
                 }}>
                   <span>{release.total_items} items</span>
-                  <span style={{ color: isOverdue ? '#ef4444' : undefined, fontWeight: isOverdue ? 600 : undefined }}>
+                  <span style={{ color: isOverdue ? 'var(--sem-danger)' : undefined, fontWeight: isOverdue ? 600 : undefined }}>
                     {isOverdue ? 'Overdue' : `Due ${release.target_date}`}
                   </span>
                 </div>

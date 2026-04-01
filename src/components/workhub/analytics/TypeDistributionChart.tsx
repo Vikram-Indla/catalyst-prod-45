@@ -14,15 +14,15 @@ interface Props {
 export function TypeDistributionChart({ data }: Props) {
   return (
     <div style={{
-      backgroundColor: 'var(--wh-surface)',
-      border: '1px solid var(--wh-border)',
+      backgroundColor: 'var(--cp-float)',
+      border: '1px solid var(--divider)',
       borderRadius: 'var(--wh-radius-xl, 16px)',
       padding: 24, minHeight: 340,
     }}>
       <h3 style={{
         fontFamily: 'Inter, system-ui, sans-serif',
         fontSize: 16, fontWeight: 600,
-        color: 'var(--wh-text-primary)', marginBottom: 16,
+        color: 'var(--fg-1)', marginBottom: 16,
       }}>
         Type Distribution
       </h3>
@@ -37,7 +37,7 @@ export function TypeDistributionChart({ data }: Props) {
             {data.map((entry, i) => (
               <Cell key={i} fill={TYPE_CHART_COLORS[entry.name] || '#475569'} />
             ))}
-            <LabelList dataKey="value" position="top" style={{ fontSize: 12, fontWeight: 600, fontFamily: 'Inter', fill: 'var(--wh-text-secondary)' }} />
+            <LabelList dataKey="value" position="top" style={{ fontSize: 12, fontWeight: 600, fontFamily: 'Inter', fill: 'var(--fg-3)' }} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

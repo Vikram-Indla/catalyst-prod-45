@@ -24,8 +24,8 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
         display: 'block',
         width: '100%',
         textAlign: 'left',
-        background: 'var(--wh-surface, #fff)',
-        border: '1px solid var(--wh-border, #e2e8f0)',
+        background: 'var(--cp-float)',
+        border: '1px solid var(--divider)',
         borderRadius: 'var(--wh-radius-xl, 12px)',
         padding: 20,
         cursor: 'pointer',
@@ -39,13 +39,13 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <AvatarChip name={r.full_name} size={36} avatarUrl={r.avatar_url} />
           <div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--wh-text-primary, #0f172a)' }}>
+            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1)' }}>
               {r.full_name}
             </div>
-            <div style={{ fontSize: 13, color: 'var(--wh-text-secondary, #64748b)', marginTop: 1 }}>
+            <div style={{ fontSize: 13, color: 'var(--fg-3)', marginTop: 1 }}>
               {r.role || 'Team Member'}
               {r.assignment_type && (
-                <span style={{ marginLeft: 6, fontSize: 11, padding: '1px 6px', borderRadius: 4, background: 'rgba(100,116,139,0.1)', color: '#475569', fontWeight: 500 }}>
+                <span style={{ marginLeft: 6, fontSize: 11, padding: '1px 6px', borderRadius: 4, background: 'rgba(100,116,139,0.1)', color: 'var(--fg-2)', fontWeight: 500 }}>
                   {r.assignment_type}
                 </span>
               )}
@@ -59,18 +59,18 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
 
       {/* Row 2: Active/Done counts */}
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 8 }}>
-        <div style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
-          <span style={{ fontWeight: 600, color: 'var(--wh-text-primary, #0f172a)' }}>{r.active_subtasks}</span> active
-          <span style={{ margin: '0 6px', color: 'var(--wh-border, #e2e8f0)' }}>·</span>
-          <span style={{ fontWeight: 600, color: '#16a34a' }}>{r.done_subtasks}</span> done
+        <div style={{ color: 'var(--fg-3)' }}>
+          <span style={{ fontWeight: 600, color: 'var(--fg-1)' }}>{r.active_subtasks}</span> active
+          <span style={{ margin: '0 6px', color: 'var(--divider)' }}>·</span>
+          <span style={{ fontWeight: 600, color: 'var(--sem-success)' }}>{r.done_subtasks}</span> done
           {r.blocked_items > 0 && (
             <>
-              <span style={{ margin: '0 6px', color: 'var(--wh-border, #e2e8f0)' }}>·</span>
-              <span style={{ fontWeight: 600, color: '#ef4444' }}>{r.blocked_items}</span> blocked
+              <span style={{ margin: '0 6px', color: 'var(--divider)' }}>·</span>
+              <span style={{ fontWeight: 600, color: 'var(--sem-danger)' }}>{r.blocked_items}</span> blocked
             </>
           )}
         </div>
-        <div style={{ color: 'var(--wh-text-secondary, #64748b)', fontSize: 12 }}>
+        <div style={{ color: 'var(--fg-3)', fontSize: 12 }}>
           {nextDue ? `Next due: ${nextDue}` : 'No upcoming'}
         </div>
       </div>
@@ -85,7 +85,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
                 padding: '2px 8px',
                 borderRadius: 9999,
                 background: 'rgba(37, 99, 235, 0.08)',
-                color: '#2563eb',
+                color: 'var(--cp-blue)',
                 fontWeight: 500,
               }}
             >
@@ -98,10 +98,10 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
       <style>{`
         .wh-resource-card:hover {
           box-shadow: 0 4px 12px -2px rgba(0,0,0,0.08) !important;
-          border-color: var(--wh-border-hover, #cbd5e1) !important;
+          border-color: var(--divider) !important;
         }
         .wh-resource-card:focus-visible {
-          outline: 2px solid var(--wh-primary, #2563eb);
+          outline: 2px solid var(--cp-blue);
           outline-offset: 2px;
         }
       `}</style>

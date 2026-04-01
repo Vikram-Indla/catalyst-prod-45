@@ -221,7 +221,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                       <JiraIssueTypeIcon type={t.issue_type} size={16} />
-                      <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: '#2563eb' }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: 'var(--cp-blue)' }}>
                         {t.issue_key}
                       </span>
                       <span style={{

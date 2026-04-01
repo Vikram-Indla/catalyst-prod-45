@@ -279,7 +279,7 @@ export function WorkItemsPage() {
                   className="w-7 h-7 rounded-md text-xs font-medium transition-colors"
                   style={{
                     backgroundColor: pageNum === currentPage ? 'var(--cp-blue)' : 'transparent',
-                    color: pageNum === currentPage ? 'white' : 'var(--fg-3)',
+                    color: pageNum === currentPage ? 'var(--bg-app)' : 'var(--fg-3)',
                   }}
                 >
                   {pageNum + 1}

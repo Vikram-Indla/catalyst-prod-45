@@ -48,7 +48,7 @@ export function CalendarPage() {
   const monthName = getMonthName(month);
 
   return (
-    <div style={{ fontFamily: 'var(--wh-font-sans)', color: 'var(--wh-text-primary)', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <div style={{ fontFamily: 'var(--wh-font-sans)', color: 'var(--fg-1)', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       {/* Header */}
       <CommandCenterHeader
         title="Calendar"
@@ -72,7 +72,7 @@ export function CalendarPage() {
           <NavButton onClick={goPrev} aria-label="Previous month">
             <ChevronLeft style={{ width: 18, height: 18 }} />
           </NavButton>
-          <span style={{ fontFamily: 'var(--wh-font-display)', fontSize: 18, fontWeight: 600, color: 'var(--wh-text-primary)', minWidth: 180, textAlign: 'center' }}>
+          <span style={{ fontFamily: 'var(--wh-font-display)', fontSize: 18, fontWeight: 600, color: 'var(--fg-1)', minWidth: 180, textAlign: 'center' }}>
             {monthName} {year}
           </span>
           <NavButton onClick={goNext} aria-label="Next month">
@@ -86,12 +86,12 @@ export function CalendarPage() {
               fontSize: 13,
               fontWeight: 500,
               fontFamily: 'var(--wh-font-sans)',
-              color: 'var(--wh-primary)',
-              backgroundColor: 'var(--wh-primary-light)',
-              border: '1px solid var(--wh-primary-100)',
+              color: 'var(--cp-blue)',
+              backgroundColor: 'var(--cp-primary-5)',
+              border: '1px solid var(--cp-primary-20)',
               borderRadius: 'var(--wh-radius-full)',
               cursor: 'pointer',
-              transition: 'background var(--wh-transition-fast)',
+              transition: 'background 150ms',
               outline: 'none',
             }}
           >
@@ -100,7 +100,7 @@ export function CalendarPage() {
         </div>
 
         {/* View Switcher */}
-        <div style={{ display: 'flex', gap: 4, backgroundColor: '#f1f5f9', borderRadius: 'var(--wh-radius-md)', padding: 3 }}>
+        <div style={{ display: 'flex', gap: 4, backgroundColor: 'var(--bg-1)', borderRadius: 'var(--wh-radius-md)', padding: 3 }}>
           {VIEW_TABS.map((t) => (
             <button
               key={t.key}
@@ -113,9 +113,9 @@ export function CalendarPage() {
                 border: 'none',
                 borderRadius: 'var(--wh-radius-sm)',
                 cursor: 'pointer',
-                backgroundColor: viewMode === t.key ? '#2563eb' : 'transparent',
-                color: viewMode === t.key ? '#ffffff' : 'var(--wh-text-secondary)',
-                transition: 'all var(--wh-transition-fast)',
+                backgroundColor: viewMode === t.key ? 'var(--cp-blue)' : 'transparent',
+                color: viewMode === t.key ? 'var(--bg-app)' : 'var(--fg-3)',
+                transition: 'all 150ms',
                 outline: 'none',
               }}
             >
@@ -130,12 +130,12 @@ export function CalendarPage() {
 
       {/* Error */}
         {isError && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px', backgroundColor: 'var(--wh-danger-light)', border: '1px solid var(--wh-danger)', borderRadius: 'var(--wh-radius-lg)', marginBottom: 16, fontFamily: 'var(--wh-font-sans)' }}>
-            <AlertTriangle style={{ width: 20, height: 20, color: 'var(--wh-danger)' }} />
-            <span style={{ flex: 1, fontSize: 14, color: 'var(--wh-danger)' }}>Failed to load calendar events</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px', backgroundColor: 'var(--wh-danger-light)', border: '1px solid var(--sem-danger)', borderRadius: 'var(--wh-radius-lg)', marginBottom: 16, fontFamily: 'var(--wh-font-sans)' }}>
+            <AlertTriangle style={{ width: 20, height: 20, color: 'var(--sem-danger)' }} />
+            <span style={{ flex: 1, fontSize: 14, color: 'var(--sem-danger)' }}>Failed to load calendar events</span>
             <button
               onClick={() => refetch()}
-              style={{ padding: '6px 14px', fontSize: 13, fontWeight: 500, backgroundColor: 'var(--wh-danger)', color: '#ffffff', border: 'none', borderRadius: 'var(--wh-radius-md)', cursor: 'pointer' }}
+              style={{ padding: '6px 14px', fontSize: 13, fontWeight: 500, backgroundColor: 'var(--sem-danger)', color: 'var(--bg-app)', border: 'none', borderRadius: 'var(--wh-radius-md)', cursor: 'pointer' }}
             >
               Retry
             </button>
@@ -176,11 +176,11 @@ function NavButton({ children, ...props }: React.ButtonHTMLAttributes<HTMLButton
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 'var(--wh-radius-md)',
-        border: '1px solid var(--wh-border)',
-        backgroundColor: 'var(--wh-surface)',
-        color: 'var(--wh-text-primary)',
+        border: '1px solid var(--divider)',
+        backgroundColor: 'var(--cp-float)',
+        color: 'var(--fg-1)',
         cursor: 'pointer',
-        transition: 'background var(--wh-transition-fast)',
+        transition: 'background 150ms',
         outline: 'none',
       }}
     >

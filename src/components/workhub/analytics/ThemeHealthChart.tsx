@@ -17,15 +17,15 @@ export function ThemeHealthChart({ themes }: Props) {
 
   return (
     <div style={{
-      backgroundColor: 'var(--wh-surface)',
-      border: '1px solid var(--wh-border)',
+      backgroundColor: 'var(--cp-float)',
+      border: '1px solid var(--divider)',
       borderRadius: 'var(--wh-radius-xl, 16px)',
       padding: 24,
     }}>
       <h3 style={{
         fontFamily: 'Inter, system-ui, sans-serif',
         fontSize: 16, fontWeight: 600,
-        color: 'var(--wh-text-primary)', marginBottom: 16,
+        color: 'var(--fg-1)', marginBottom: 16,
       }}>
         Theme Health
       </h3>
@@ -37,11 +37,11 @@ export function ThemeHealthChart({ themes }: Props) {
             onClick={() => navigate(`/projecthub/themes/${theme.id}`)}
             style={{
               padding: '12px 0',
-              borderBottom: '1px solid var(--wh-border-light, #f1f5f9)',
+              borderBottom: '1px solid var(--bg-1)',
               cursor: 'pointer',
               transition: 'background-color 150ms',
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--wh-primary-light, #eff6ff)'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--cp-primary-5)'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -53,7 +53,7 @@ export function ThemeHealthChart({ themes }: Props) {
                 <span style={{
                   fontFamily: 'Inter, system-ui, sans-serif',
                   fontSize: 14, fontWeight: 600,
-                  color: 'var(--wh-text-primary)',
+                  color: 'var(--fg-1)',
                 }}>
                   {theme.name}
                 </span>
@@ -62,14 +62,14 @@ export function ThemeHealthChart({ themes }: Props) {
                 <span style={{
                   fontFamily: 'Inter, system-ui, sans-serif',
                   fontSize: 13, fontWeight: 700,
-                  color: 'var(--wh-text-primary)',
+                  color: 'var(--fg-1)',
                 }}>
                   {theme.completion_percent}%
                 </span>
                 <span style={{
                   fontFamily: 'Inter, system-ui, sans-serif',
                   fontSize: 12,
-                  color: 'var(--wh-text-tertiary)',
+                  color: 'var(--fg-4)',
                 }}>
                   {theme.done_items}/{theme.total_items} done
                 </span>
@@ -79,7 +79,7 @@ export function ThemeHealthChart({ themes }: Props) {
             {/* Progress bar */}
             <div style={{
               height: 8, borderRadius: 9999,
-              backgroundColor: 'var(--wh-border-light, #f1f5f9)',
+              backgroundColor: 'var(--bg-1)',
               overflow: 'hidden',
             }}>
               <div style={{

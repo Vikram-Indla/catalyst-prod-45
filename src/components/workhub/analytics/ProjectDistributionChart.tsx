@@ -13,15 +13,15 @@ interface Props {
 export function ProjectDistributionChart({ data }: Props) {
   return (
     <div style={{
-      backgroundColor: 'var(--wh-surface)',
-      border: '1px solid var(--wh-border)',
+      backgroundColor: 'var(--cp-float)',
+      border: '1px solid var(--divider)',
       borderRadius: 'var(--wh-radius-xl, 16px)',
       padding: 24, minHeight: 340,
     }}>
       <h3 style={{
         fontFamily: 'Inter, system-ui, sans-serif',
         fontSize: 16, fontWeight: 600,
-        color: 'var(--wh-text-primary)', marginBottom: 16,
+        color: 'var(--fg-1)', marginBottom: 16,
       }}>
         Project Distribution
       </h3>

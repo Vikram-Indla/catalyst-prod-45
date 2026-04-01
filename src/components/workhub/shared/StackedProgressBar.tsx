@@ -21,11 +21,11 @@ interface StackedProgressBarProps {
 
 export function releaseProgressSegments(progress: ReleaseProgress): ProgressSegment[] {
   return [
-    { label: 'Done', value: progress.done_items, color: '#16a34a' },
-    { label: 'In Progress', value: progress.in_progress_items, color: '#2563eb' },
+    { label: 'Done', value: progress.done_items, color: 'var(--sem-success)' },
+    { label: 'In Progress', value: progress.in_progress_items, color: 'var(--cp-blue)' },
     { label: 'In Review', value: progress.in_review_items, color: '#7c3aed' },
-    { label: 'Blocked', value: progress.blocked_items, color: '#ef4444' },
-    { label: 'To Do', value: progress.todo_items, color: '#94a3b8' },
+    { label: 'Blocked', value: progress.blocked_items, color: 'var(--sem-danger)' },
+    { label: 'To Do', value: progress.todo_items, color: 'var(--fg-4)' },
   ];
 }
 
@@ -79,7 +79,7 @@ export function StackedProgressBar({
           <span style={{
             fontSize: height >= 12 ? 18 : 14,
             fontWeight: 700,
-            color: 'var(--wh-text-primary, #0f172a)',
+            color: 'var(--fg-1)',
             fontFamily: 'Inter, system-ui, sans-serif',
             minWidth: 40,
             textAlign: 'right',
@@ -98,7 +98,7 @@ export function StackedProgressBar({
                 width: 8, height: 8, borderRadius: '50%',
                 background: seg.color, display: 'inline-block', flexShrink: 0,
               }} />
-              <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--wh-text-secondary, #64748b)' }}>
+              <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)' }}>
                 {seg.label} {seg.value}
               </span>
             </span>
@@ -108,7 +108,7 @@ export function StackedProgressBar({
 
       {/* Empty state */}
       {total === 0 && (
-        <span style={{ fontSize: 12, color: 'var(--wh-text-tertiary, #94a3b8)', marginTop: 4, display: 'block' }}>
+        <span style={{ fontSize: 12, color: 'var(--fg-4)', marginTop: 4, display: 'block' }}>
           No items
         </span>
       )}

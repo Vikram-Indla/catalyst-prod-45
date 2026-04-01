@@ -68,7 +68,7 @@ export function WorkHubDashboard() {
             alignItems: 'center',
             gap: 12,
           }}>
-            <AlertTriangle style={{ width: 20, height: 20, color: '#ef4444', flexShrink: 0 }} />
+            <AlertTriangle style={{ width: 20, height: 20, color: 'var(--sem-danger)', flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 600, color: '#991b1b' }}>Failed to load dashboard data</div>
               <div style={{ fontSize: 13, color: '#b91c1c', marginTop: 4 }}>{(kpisQuery.error as Error)?.message}</div>
@@ -76,8 +76,8 @@ export function WorkHubDashboard() {
             <button
               onClick={() => kpisQuery.refetch()}
               style={{
-                background: '#ef4444',
-                color: '#fff',
+                background: 'var(--sem-danger)',
+                color: 'var(--bg-app)',
                 border: 'none',
                 borderRadius: 8,
                 padding: '8px 16px',
@@ -104,8 +104,8 @@ export function WorkHubDashboard() {
         )}
         {kpisQuery.isLoading && (
           <div style={{
-            background: 'var(--wh-surface, #fff)',
-            border: '1px solid var(--wh-border, #e2e8f0)',
+            background: 'var(--cp-float)',
+            border: '1px solid var(--divider)',
             borderRadius: 'var(--wh-radius-xl, 16px)',
             padding: 24,
             marginBottom: 32,
@@ -125,8 +125,8 @@ export function WorkHubDashboard() {
             <ReleaseHealthSection releases={releasesQuery.data} />
           ) : (
             <div style={{
-              background: 'var(--wh-surface, #fff)',
-              border: '1px solid var(--wh-border, #e2e8f0)',
+              background: 'var(--cp-float)',
+              border: '1px solid var(--divider)',
               borderRadius: 'var(--wh-radius-xl, 16px)',
               padding: 24,
               height: 200,
@@ -137,8 +137,8 @@ export function WorkHubDashboard() {
             <ThemeProgressSection themes={themesQuery.data} />
           ) : (
             <div style={{
-              background: 'var(--wh-surface, #fff)',
-              border: '1px solid var(--wh-border, #e2e8f0)',
+              background: 'var(--cp-float)',
+              border: '1px solid var(--divider)',
               borderRadius: 'var(--wh-radius-xl, 16px)',
               padding: 24,
               height: 200,
@@ -153,8 +153,8 @@ export function WorkHubDashboard() {
             <ReleaseTimeline releases={releasesQuery.data} />
           ) : (
             <div style={{
-              background: 'var(--wh-surface, #fff)',
-              border: '1px solid var(--wh-border, #e2e8f0)',
+              background: 'var(--cp-float)',
+              border: '1px solid var(--divider)',
               borderRadius: 'var(--wh-radius-xl, 16px)',
               padding: 24,
               height: 300,
@@ -169,8 +169,8 @@ export function WorkHubDashboard() {
             <TeamUtilizationSection resources={resourcesQuery.data} />
           ) : (
             <div style={{
-              background: 'var(--wh-surface, #fff)',
-              border: '1px solid var(--wh-border, #e2e8f0)',
+              background: 'var(--cp-float)',
+              border: '1px solid var(--divider)',
               borderRadius: 'var(--wh-radius-xl, 16px)',
               padding: 24,
               height: 400,

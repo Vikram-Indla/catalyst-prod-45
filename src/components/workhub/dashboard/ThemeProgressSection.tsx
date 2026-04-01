@@ -23,7 +23,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
           fontFamily: 'Inter, system-ui, sans-serif',
           fontSize: 18,
           fontWeight: 600,
-          color: 'var(--wh-text-primary, #0f172a)',
+          color: 'var(--fg-1)',
           margin: 0,
         }}>
           Theme Progress
@@ -33,7 +33,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
           style={{
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: 13,
-            color: 'var(--wh-primary, #2563eb)',
+            color: 'var(--cp-blue)',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
@@ -51,7 +51,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
         <p style={{
           fontFamily: 'Inter, system-ui, sans-serif',
           fontSize: 13,
-          color: 'var(--wh-text-tertiary, #94a3b8)',
+          color: 'var(--fg-4)',
         }}>
           No active themes
         </p>
@@ -66,13 +66,13 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
               tabIndex={0}
               onKeyDown={e => e.key === 'Enter' && navigate(`/projecthub/themes/${theme.id}`)}
               style={{
-                background: 'var(--wh-surface, #fff)',
-                border: '1px solid var(--wh-border, #e2e8f0)',
+                background: 'var(--cp-float)',
+                border: '1px solid var(--divider)',
                 borderTop: `3px solid ${theme.color}`,
                 borderRadius: 'var(--wh-radius-lg, 12px)',
                 padding: 16,
                 cursor: 'pointer',
-                transition: 'var(--wh-transition-fast, all 150ms ease)',
+                transition: 'all 150ms ease',
                 display: 'flex',
                 gap: 14,
                 alignItems: 'center',
@@ -93,7 +93,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
                   fontFamily: 'Inter, system-ui, sans-serif',
                   fontSize: 14,
                   fontWeight: 600,
-                  color: 'var(--wh-text-primary, #0f172a)',
+                  color: 'var(--fg-1)',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -102,21 +102,21 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
                 </div>
                 <div style={{
                   fontSize: 12,
-                  color: 'var(--wh-text-secondary, #64748b)',
+                  color: 'var(--fg-3)',
                   marginTop: 2,
                 }}>
                   {theme.status}
                 </div>
                 <div style={{
                   fontSize: 12,
-                  color: 'var(--wh-text-tertiary, #94a3b8)',
+                  color: 'var(--fg-4)',
                   marginTop: 2,
                 }}>
                   E {theme.epic_count} · S {theme.story_count} · ST {theme.subtask_count}
                 </div>
                 <div style={{
                   fontSize: 12,
-                  color: 'var(--wh-text-tertiary, #94a3b8)',
+                  color: 'var(--fg-4)',
                   marginTop: 2,
                 }}>
                   {theme.done_items}/{theme.total_items} done

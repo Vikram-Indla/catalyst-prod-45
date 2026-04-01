@@ -49,7 +49,7 @@ export default function WorkHubInlineCreate({ defaultType, groupCategory, onSubm
         }}
       >
         <Plus size={14} color="#94A3B8" />
-        <span style={{ fontSize: 12, color: '#94A3B8' }}>Add {defaultType.toLowerCase()}</span>
+        <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>Add {defaultType.toLowerCase()}</span>
       </div>
     );
   }
@@ -69,13 +69,13 @@ export default function WorkHubInlineCreate({ defaultType, groupCategory, onSubm
         placeholder="What needs to be done?"
         style={{
           flex: 1, border: 'none', background: 'transparent', outline: 'none',
-          fontSize: 13, color: '#0F172A', fontFamily: 'Inter, sans-serif',
+          fontSize: 13, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif',
         }}
       />
-      <button onClick={handleCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', fontSize: 12, color: '#64748B' }}>Cancel</button>
+      <button onClick={handleCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', fontSize: 12, color: 'var(--fg-3)' }}>Cancel</button>
       <button onClick={handleSubmit} disabled={!summary.trim()} style={{
-        padding: '4px 12px', fontSize: 12, fontWeight: 600, color: 'white',
-        background: summary.trim() ? '#2563EB' : '#94A3B8', border: 'none', borderRadius: 4, cursor: summary.trim() ? 'pointer' : 'default',
+        padding: '4px 12px', fontSize: 12, fontWeight: 600, color: 'var(--bg-app)',
+        background: summary.trim() ? 'var(--cp-blue)' : 'var(--fg-4)', border: 'none', borderRadius: 4, cursor: summary.trim() ? 'pointer' : 'default',
       }}>Create</button>
     </div>
   );

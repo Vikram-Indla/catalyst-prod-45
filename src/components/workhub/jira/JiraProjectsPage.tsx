@@ -105,18 +105,18 @@ export function JiraProjectsPage() {
         <div className="flex items-start gap-4">
           <div
             className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-            style={{ backgroundColor: '#dbeafe' }}
+            style={{ backgroundColor: 'var(--cp-primary-20)' }}
           >
-            <FolderGit2 className="w-5 h-5" style={{ color: 'var(--wh-primary)' }} />
+            <FolderGit2 className="w-5 h-5" style={{ color: 'var(--cp-blue)' }} />
           </div>
           <div>
             <h1
               className="text-2xl font-bold"
-              style={{ fontFamily: 'var(--wh-font-display)', color: 'var(--wh-text-primary)' }}
+              style={{ fontFamily: 'var(--wh-font-display)', color: 'var(--fg-1)' }}
             >
               Jira Projects
             </h1>
-            <p className="text-sm mt-0.5" style={{ color: 'var(--wh-text-secondary)' }}>
+            <p className="text-sm mt-0.5" style={{ color: 'var(--fg-3)' }}>
               Connected Jira spaces — {projects.length} projects
             </p>
           </div>
@@ -127,8 +127,8 @@ export function JiraProjectsPage() {
           disabled={syncAllRunning || projectsLoading}
           className="px-4 py-2 text-sm font-medium rounded-lg border transition-colors disabled:opacity-50 flex items-center gap-2"
           style={{
-            borderColor: 'var(--wh-primary)',
-            color: 'var(--wh-primary)',
+            borderColor: 'var(--cp-blue)',
+            color: 'var(--cp-blue)',
             background: 'transparent',
           }}
         >
@@ -150,7 +150,7 @@ export function JiraProjectsPage() {
 
       {/* Project Cards Grid */}
       {projectsLoading ? (
-        <div className="flex items-center justify-center py-12" style={{ color: 'var(--wh-text-tertiary)' }}>
+        <div className="flex items-center justify-center py-12" style={{ color: 'var(--fg-4)' }}>
           <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading projects...
         </div>
       ) : (
@@ -165,8 +165,8 @@ export function JiraProjectsPage() {
                 key={project.id}
                 className="relative p-5 rounded-xl border cursor-pointer transition-shadow hover:shadow-md"
                 style={{
-                  background: 'var(--wh-surface)',
-                  borderColor: 'var(--wh-border)',
+                  background: 'var(--cp-float)',
+                  borderColor: 'var(--divider)',
                   borderRadius: 'var(--wh-radius-xl)',
                   borderLeft: `4px solid ${project.color}`,
                   boxShadow: 'var(--wh-shadow-sm)',
@@ -177,11 +177,11 @@ export function JiraProjectsPage() {
                   <div>
                     <div
                       className="text-xl font-bold"
-                      style={{ fontFamily: 'var(--wh-font-display)', color: 'var(--wh-text-primary)' }}
+                      style={{ fontFamily: 'var(--wh-font-display)', color: 'var(--fg-1)' }}
                     >
                       {project.project_key}
                     </div>
-                    <div className="text-[13px] mt-0.5" style={{ color: 'var(--wh-text-secondary)' }}>
+                    <div className="text-[13px] mt-0.5" style={{ color: 'var(--fg-3)' }}>
                       {project.name}
                     </div>
                   </div>
@@ -193,7 +193,7 @@ export function JiraProjectsPage() {
                   />
                 </div>
 
-                <div className="text-xs mb-3" style={{ color: 'var(--wh-text-tertiary)' }}>
+                <div className="text-xs mb-3" style={{ color: 'var(--fg-4)' }}>
                   {itemCount} work item{itemCount !== 1 ? 's' : ''}
                 </div>
 
@@ -207,8 +207,8 @@ export function JiraProjectsPage() {
                     disabled={isSyncing}
                     className="px-2.5 py-1 text-xs font-medium rounded-md border transition-colors disabled:opacity-50 flex items-center gap-1.5"
                     style={{
-                      borderColor: 'var(--wh-border)',
-                      color: 'var(--wh-text-secondary)',
+                      borderColor: 'var(--divider)',
+                      color: 'var(--fg-3)',
                       background: 'transparent',
                     }}
                   >

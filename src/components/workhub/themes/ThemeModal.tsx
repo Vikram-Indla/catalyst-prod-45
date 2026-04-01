@@ -163,7 +163,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
 
           {/* Color */}
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 6 }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
               Color
             </label>
             <div style={{ display: 'flex', gap: 8 }}>

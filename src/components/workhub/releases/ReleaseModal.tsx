@@ -26,7 +26,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
   const [form, setForm] = useState({
     name: '', title: '', description: '',
     status: 'Planned' as ReleaseStatus,
-    color: '#2563eb',
+    color: 'var(--cp-blue)',
     start_date: '', target_date: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -39,12 +39,12 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
           title: release.title ?? '',
           description: release.description ?? '',
           status: release.status ?? 'Planned',
-          color: release.color ?? '#2563eb',
+          color: release.color ?? 'var(--cp-blue)',
           start_date: release.start_date ?? '',
           target_date: release.target_date ?? '',
         });
       } else {
-        setForm({ name: '', title: '', description: '', status: 'Planned', color: '#2563eb', start_date: '', target_date: '' });
+        setForm({ name: '', title: '', description: '', status: 'Planned', color: 'var(--cp-blue)', start_date: '', target_date: '' });
       }
       setErrors({});
     }
@@ -215,7 +215,7 @@ function Field({ label, required, error, children }: {
         {label}{required && <span style={{ color: 'var(--sem-danger)' }}> *</span>}
       </label>
       {children}
-      {error && <span style={{ fontSize: 12, color: '#ef4444', marginTop: 2, display: 'block' }}>{error}</span>}
+      {error && <span style={{ fontSize: 12, color: 'var(--sem-danger)', marginTop: 2, display: 'block' }}>{error}</span>}
     </div>
   );
 }

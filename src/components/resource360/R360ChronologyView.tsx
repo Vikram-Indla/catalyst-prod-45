@@ -133,10 +133,10 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
               <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '10px' }}>{total} items</span>
               {/* Mini bar */}
               <div style={{ display: 'flex', height: '4px', borderRadius: '2px', overflow: 'hidden', width: '80px', background: 'var(--bg-3)', flexShrink: 0 }}>
-                {doneC > 0 && <div style={{ width: `${(doneC/total)*100}%`, background: '#16A34A' }} />}
-                {ipC > 0 && <div style={{ width: `${(ipC/total)*100}%`, background: '#2563EB' }} />}
-                {todoC > 0 && <div style={{ width: `${(todoC/total)*100}%`, background: '#D97706' }} />}
-                {blockC > 0 && <div style={{ width: `${(blockC/total)*100}%`, background: '#EF4444' }} />}
+                {doneC > 0 && <div style={{ width: `${(doneC/total)*100}%`, background: 'var(--sem-success)' }} />}
+                {ipC > 0 && <div style={{ width: `${(ipC/total)*100}%`, background: 'var(--cp-blue)' }} />}
+                {todoC > 0 && <div style={{ width: `${(todoC/total)*100}%`, background: 'var(--sem-warning)' }} />}
+                {blockC > 0 && <div style={{ width: `${(blockC/total)*100}%`, background: 'var(--sem-danger)' }} />}
               </div>
               {/* Chevron */}
               <svg style={{

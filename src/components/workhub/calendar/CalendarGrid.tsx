@@ -29,7 +29,7 @@ export function CalendarGrid({ year, month, events, renderCell, onDateClick }: C
   return (
     <div
       style={{
-        border: '1px solid var(--wh-border)',
+        border: '1px solid var(--divider)',
         borderRadius: 'var(--wh-radius-lg)',
         overflow: 'hidden',
       }}
@@ -39,8 +39,8 @@ export function CalendarGrid({ year, month, events, renderCell, onDateClick }: C
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(7, 1fr)',
-          borderBottom: '1px solid var(--wh-border)',
-          backgroundColor: 'var(--wh-surface)',
+          borderBottom: '1px solid var(--divider)',
+          backgroundColor: 'var(--cp-float)',
         }}
       >
         {DAY_HEADERS.map((d) => (
@@ -53,7 +53,7 @@ export function CalendarGrid({ year, month, events, renderCell, onDateClick }: C
               fontSize: 11,
               fontWeight: 600,
               textTransform: 'uppercase' as const,
-              color: 'var(--wh-text-tertiary)',
+              color: 'var(--fg-4)',
               letterSpacing: '0.05em',
             }}
           >
@@ -82,11 +82,11 @@ export function CalendarGrid({ year, month, events, renderCell, onDateClick }: C
               style={{
                 minHeight: 100,
                 padding: '4px 6px',
-                borderRight: (idx + 1) % 7 !== 0 ? '1px solid var(--wh-border-light)' : undefined,
-                borderBottom: idx < 35 ? '1px solid var(--wh-border-light)' : undefined,
-                backgroundColor: today ? 'var(--wh-primary-light)' : 'var(--wh-surface)',
+                borderRight: (idx + 1) % 7 !== 0 ? '1px solid var(--bg-1)' : undefined,
+                borderBottom: idx < 35 ? '1px solid var(--bg-1)' : undefined,
+                backgroundColor: today ? 'var(--cp-primary-5)' : 'var(--cp-float)',
                 cursor: 'pointer',
-                transition: 'background var(--wh-transition-fast)',
+                transition: 'background 150ms',
                 outline: 'none',
               }}
               onFocus={(e) => {
@@ -106,12 +106,12 @@ export function CalendarGrid({ year, month, events, renderCell, onDateClick }: C
                     width: today ? 28 : undefined,
                     height: today ? 28 : undefined,
                     borderRadius: today ? '50%' : undefined,
-                    backgroundColor: today ? 'var(--wh-primary)' : undefined,
+                    backgroundColor: today ? 'var(--cp-blue)' : undefined,
                     color: today
                       ? '#ffffff'
                       : inMonth
-                        ? 'var(--wh-text-primary)'
-                        : 'var(--wh-text-tertiary)',
+                        ? 'var(--fg-1)'
+                        : 'var(--fg-4)',
                     fontFamily: 'var(--wh-font-sans)',
                     fontSize: 13,
                     fontWeight: 500,
@@ -136,14 +136,14 @@ export function CalendarGridSkeleton() {
   return (
     <div
       style={{
-        border: '1px solid var(--wh-border)',
+        border: '1px solid var(--divider)',
         borderRadius: 'var(--wh-radius-lg)',
         overflow: 'hidden',
       }}
     >
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid var(--wh-border)', backgroundColor: 'var(--wh-surface)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid var(--divider)', backgroundColor: 'var(--cp-float)' }}>
         {DAY_HEADERS.map((d) => (
-          <div key={d} style={{ padding: '8px 4px', textAlign: 'center', fontFamily: 'var(--wh-font-sans)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--wh-text-tertiary)', letterSpacing: '0.05em' }}>
+          <div key={d} style={{ padding: '8px 4px', textAlign: 'center', fontFamily: 'var(--wh-font-sans)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-4)', letterSpacing: '0.05em' }}>
             {d}
           </div>
         ))}
@@ -155,9 +155,9 @@ export function CalendarGridSkeleton() {
             style={{
               minHeight: 100,
               padding: '4px 6px',
-              borderRight: (i + 1) % 7 !== 0 ? '1px solid var(--wh-border-light)' : undefined,
-              borderBottom: i < 35 ? '1px solid var(--wh-border-light)' : undefined,
-              backgroundColor: 'var(--wh-surface)',
+              borderRight: (i + 1) % 7 !== 0 ? '1px solid var(--bg-1)' : undefined,
+              borderBottom: i < 35 ? '1px solid var(--bg-1)' : undefined,
+              backgroundColor: 'var(--cp-float)',
             }}
           >
             <div
@@ -166,7 +166,7 @@ export function CalendarGridSkeleton() {
                 width: 20,
                 height: 14,
                 borderRadius: 4,
-                backgroundColor: 'var(--wh-border-light)',
+                backgroundColor: 'var(--bg-1)',
                 marginBottom: 8,
               }}
             />
@@ -176,7 +176,7 @@ export function CalendarGridSkeleton() {
                 width: '60%',
                 height: 6,
                 borderRadius: 3,
-                backgroundColor: 'var(--wh-border-light)',
+                backgroundColor: 'var(--bg-1)',
               }}
             />
           </div>

@@ -32,7 +32,7 @@ export default function WorkHubBulkBar({ selectedCount, onSetStatus, onSetPriori
     <div role="toolbar" aria-label="Bulk actions" style={{
       position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
       display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 16px',
-      background: '#0F172A', borderRadius: 8, color: 'white',
+      background: 'var(--fg-1)', borderRadius: 8, color: 'var(--bg-app)',
       boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
       zIndex: 9990, animation: 'slideUp 200ms ease-out',
     }}>
@@ -47,19 +47,19 @@ export default function WorkHubBulkBar({ selectedCount, onSetStatus, onSetPriori
           <button style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0 12px', height: 32,
             background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: 4, color: 'white', fontSize: 12, fontWeight: 500, cursor: 'pointer',
+            borderRadius: 4, color: 'var(--bg-app)', fontSize: 12, fontWeight: 500, cursor: 'pointer',
           }}>
             Set Status <ChevronDown size={12} />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="center" side="top" style={{ width: 220, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 99999, maxHeight: 320, overflowY: 'auto' }}>
+        <PopoverContent align="center" side="top" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 99999, maxHeight: 320, overflowY: 'auto' }}>
           {STATUS_GROUPS.map(group => (
             <div key={group.label}>
-              <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '6px 12px 2px' }}>{group.label}</div>
+              <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-4)', padding: '6px 12px 2px' }}>{group.label}</div>
               {group.statuses.map(s => (
                 <button key={s} onClick={() => onSetStatus(s)} style={{
                   width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
-                  background: 'transparent', color: '#0F172A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                  background: 'transparent', color: 'var(--fg-1)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                 }}>
                   <WorkHubStatusLozenge status={s} statusCategory={group.category} />
                 </button>
@@ -75,16 +75,16 @@ export default function WorkHubBulkBar({ selectedCount, onSetStatus, onSetPriori
           <button style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0 12px', height: 32,
             background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: 4, color: 'white', fontSize: 12, fontWeight: 500, cursor: 'pointer',
+            borderRadius: 4, color: 'var(--bg-app)', fontSize: 12, fontWeight: 500, cursor: 'pointer',
           }}>
             Priority <ChevronDown size={12} />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="center" side="top" style={{ width: 160, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 99999 }}>
+        <PopoverContent align="center" side="top" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 99999 }}>
           {PRIORITY_OPTIONS.map(p => (
             <button key={p} onClick={() => onSetPriority(p)} style={{
               width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
-              background: 'transparent', color: '#0F172A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+              background: 'transparent', color: 'var(--fg-1)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
             }}>
               <WorkHubPriorityIcon priority={p} size={14} showLabel />
             </button>

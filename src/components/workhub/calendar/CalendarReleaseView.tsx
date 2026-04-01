@@ -23,8 +23,8 @@ export function CalendarReleaseView({ year, month, events, isLoading, onDateClic
 
   if (filtered.length === 0) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', color: 'var(--wh-text-tertiary)', fontFamily: 'var(--wh-font-sans)' }}>
-        <CalendarDays style={{ width: 48, height: 48, marginBottom: 16, color: 'var(--wh-text-tertiary)' }} />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', color: 'var(--fg-4)', fontFamily: 'var(--wh-font-sans)' }}>
+        <CalendarDays style={{ width: 48, height: 48, marginBottom: 16, color: 'var(--fg-4)' }} />
         <p style={{ fontSize: 14, margin: 0 }}>No release deadlines or work items due in {getMonthName(month)} {year}</p>
       </div>
     );
@@ -83,7 +83,7 @@ export function CalendarReleaseView({ year, month, events, isLoading, onDateClic
 
         {/* Overflow */}
         {totalExtra > 0 && (
-          <span style={{ fontSize: 10, color: 'var(--wh-primary)', fontFamily: 'var(--wh-font-sans)', fontWeight: 500 }}>
+          <span style={{ fontSize: 10, color: 'var(--cp-blue)', fontFamily: 'var(--wh-font-sans)', fontWeight: 500 }}>
             +{totalExtra} more
           </span>
         )}
@@ -102,14 +102,14 @@ export function CalendarReleaseView({ year, month, events, isLoading, onDateClic
       />
 
       {/* Legend */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 0', fontFamily: 'var(--wh-font-sans)', fontSize: 11, color: 'var(--wh-text-secondary)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 0', fontFamily: 'var(--wh-font-sans)', fontSize: 11, color: 'var(--fg-3)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 16, height: 6, borderRadius: 3, backgroundColor: 'var(--wh-primary)' }} />
+          <div style={{ width: 16, height: 6, borderRadius: 3, backgroundColor: 'var(--cp-blue)' }} />
           <span>Releases</span>
         </div>
-        <span style={{ color: 'var(--wh-text-tertiary)' }}>·</span>
+        <span style={{ color: 'var(--fg-4)' }}>·</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--wh-primary)' }} />
+          <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--cp-blue)' }} />
           <span>Work Items</span>
         </div>
       </div>
