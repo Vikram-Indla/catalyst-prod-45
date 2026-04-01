@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Download, Clock, Loader2, CheckCircle2, AlertCircle, BarChart3, FolderGit2, ChevronDown, ChevronRight, Settings2 } from 'lucide-react';
 import { MultiSelectDropdown, type MultiSelectOption } from './MultiSelectDropdown';
 import {
