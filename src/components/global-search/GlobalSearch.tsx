@@ -136,6 +136,12 @@ function ResultRow({ item, query, onClick }: { item: SearchResult; query: string
               {item.project_name}
             </>
           )}
+          {item.assignee_name && (
+            <>
+              <span style={dotStyle} />
+              {item.assignee_name}
+            </>
+          )}
         </div>
       </div>
       {/* time */}
@@ -335,53 +341,7 @@ export function GlobalSearch() {
             ))
           ) : !hasQuery ? (
             <>
-              {/* Suggestions (FIX 3) */}
-              {recents.slice(0, 2).map(item => (
-                <div
-                  key={`sug-${item.id}`}
-                  onClick={() => onResultClick(item)}
-                  style={{ height: 42, display: 'flex', alignItems: 'center', padding: '0 12px', gap: 10, cursor: 'pointer' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                >
-                  <Search size={14} color="#64748B" />
-                  <div style={{ flex: 1, fontSize: 13, color: '#172B4D', display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
-                    <span style={{
-                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      width: 14, height: 14, borderRadius: 3,
-                      background: HUB_COLORS[item.hub] ?? '#64748B', color: '#ffffff',
-                      fontSize: 8, fontWeight: 700, flexShrink: 0,
-                      verticalAlign: 'middle', marginRight: 2,
-                    }}>
-                      {item.hub?.[0] ?? 'C'}
-                    </span>
-                    {item.hub} items in {item.project_name ?? item.hub}
-                    <span style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 2,
-                      fontSize: 10, fontWeight: 600, color: '#7C3AED', background: '#F5F3FF',
-                      borderRadius: 3, padding: '1px 5px', marginLeft: 6,
-                    }}>★ AI</span>
-                  </div>
-                  <span style={{ fontSize: 11, color: '#6B778C' }}>Suggestion</span>
-                </div>
-              ))}
-
-              {/* Recent searches */}
-              {searches.map(s => (
-                <div
-                  key={s.id}
-                  onClick={() => { setQuery(s.query); setDebouncedQuery(s.query); }}
-                  style={{ height: 42, display: 'flex', alignItems: 'center', padding: '0 12px', gap: 10, cursor: 'pointer' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                >
-                  <Clock size={14} color="#94A3B8" />
-                  <span style={{ flex: 1, fontSize: 13, color: '#334155' }}>{s.query}</span>
-                  <span style={{ fontSize: 11, color: '#6B778C' }}>Recent search</span>
-                </div>
-              ))}
-
-              {/* Recent items (FIX 6 label) */}
+              {/* Recent items */}
               {recents.length > 0 && (
                 <>
                   <div style={sectionLabelStyle}>Recent</div>
@@ -412,41 +372,14 @@ export function GlobalSearch() {
           )}
         </div>
 
-        {/* LAYER 4 — Bottom tab bar (FIX 7) */}
+        {/* LAYER 4 — Bottom bar */}
         <div style={{
-          height: 36, borderTop: '1px solid #E2E8F0', background: '#FAFAFA',
-          padding: '0 8px', display: 'flex', alignItems: 'center', flexShrink: 0, gap: 0,
+          height: 32, borderTop: '1px solid #E2E8F0', background: '#FAFAFA',
+          padding: '0 12px', display: 'flex', alignItems: 'center', flexShrink: 0,
         }}>
-          <ChevronRight size={12} color="#94A3B8" style={{ marginRight: 4 }} />
-          <div style={{ width: 1, height: 16, background: '#E2E8F0', margin: '0 4px' }} />
-          {[
-            { label: 'Boards', icon: LayoutGrid, path: '/project-hub' },
-            { label: 'Hubs', icon: Home, path: '/' },
-            { label: 'Filters', icon: Filter, path: '/project-hub' },
-            { label: 'Projects', icon: FileEdit, path: '/project-hub' },
-            { label: 'Teams', icon: Users2, path: '/' },
-          ].map(tab => (
-            <button
-              key={tab.label}
-              onClick={() => { navigate(tab.path); close(); }}
-              style={{
-                height: 36, padding: '0 10px', fontSize: 11, color: '#6B778C',
-                background: 'none', border: 'none', borderBottom: '2px solid transparent',
-                cursor: 'pointer', gap: 5, display: 'flex', alignItems: 'center',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = '#F4F5F7';
-                e.currentTarget.style.color = '#172B4D';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'none';
-                e.currentTarget.style.color = '#6B778C';
-              }}
-            >
-              <tab.icon size={12} />
-              {tab.label}
-            </button>
-          ))}
+          <span style={{ fontSize: 11, color: '#94A3B8' }}>
+            {hasQuery ? `${results.length} results` : `${recents.length} recent items`}
+          </span>
         </div>
       </DialogContent>
     </Dialog>
