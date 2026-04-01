@@ -178,7 +178,7 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
               t === 'epic' ? 'epic' : 'story';
             searchResults.push({
               id: wi.id,
-              key: wi.item_key || '',
+              key: wi.jira_key || wi.item_key || '',
               summary: wi.summary || '',
               type: mappedType,
               scopeName: `ProjectHub · ${wi.item_type || 'Item'}`,
