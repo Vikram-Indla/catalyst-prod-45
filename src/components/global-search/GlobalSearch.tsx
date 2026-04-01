@@ -209,8 +209,9 @@ export function GlobalSearch() {
           padding: 0, width: 640, maxWidth: '95vw', borderRadius: 8,
           border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column',
           maxHeight: '80vh', gap: 0, overflow: 'hidden',
+          backgroundColor: '#ffffff', color: '#0F172A',
         }}
-        className="!p-0"
+        className="!p-0 !bg-white"
       >
         {/* LAYER 1 — Search row */}
         <div style={{
