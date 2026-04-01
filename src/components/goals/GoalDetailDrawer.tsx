@@ -469,7 +469,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline, isD
 }
 
 // ── Tab: Key Results — Fix 2: modern card layout ──
-function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loading: boolean; onCheckinClick?: (id: string) => void }) {
+function KeyResultsTab({ krs, loading, onCheckinClick, isDark }: { krs: KeyResult[]; loading: boolean; onCheckinClick?: (id: string) => void; isDark: boolean }) {
   if (loading) return <div style={{ textAlign: 'center', color: 'var(--fg-4)', padding: 40 }}>Loading key results...</div>;
   if (krs.length === 0) {
     return (
@@ -516,14 +516,14 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
         <Plus size={13} /> Add Key Result
       </button>
       <style>{`
-        .kr-detail-card:hover { border-color: #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .kr-detail-card:hover { border-color: ${isDark ? 'rgba(235,238,245,0.15)' : '#CBD5E1'}; box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
       `}</style>
     </div>
   );
 }
 
 // ── Tab: Initiatives ──
-function InitiativesTab({ goalId }: { goalId: string }) {
+function InitiativesTab({ goalId, isDark }: { goalId: string; isDark: boolean }) {
   const { data: links = [], isLoading } = useGoalInitiatives(goalId);
   const linkMutation = useLinkInitiative();
   const unlinkMutation = useUnlinkInitiative();
@@ -614,7 +614,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
                   key={init.id}
                   onClick={() => { linkMutation.mutate({ goalId, initiativeId: init.id }); setShowSearch(false); setSearchQuery(''); }}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', transition: 'background 100ms' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#EFF6FF')}
+                  onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', fontFamily: 'ui-monospace, monospace' }}>{init.initiative_key}</span>
@@ -632,9 +632,9 @@ function InitiativesTab({ goalId }: { goalId: string }) {
       )}
 
       <style>{`
-        .init-card:hover { border-color: #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .init-card:hover { border-color: ${isDark ? 'rgba(235,238,245,0.15)' : '#CBD5E1'}; box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
         .unlink-btn:hover { color: #EF4444 !important; }
-        .link-init-btn:hover { border-color: #94A3B8; background: #F8FAFC; }
+        .link-init-btn:hover { border-color: ${isDark ? 'rgba(235,238,245,0.15)' : '#94A3B8'}; background: ${isDark ? 'rgba(235,238,245,0.03)' : '#F8FAFC'}; }
       `}</style>
     </div>
   );
