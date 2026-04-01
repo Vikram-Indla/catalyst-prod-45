@@ -493,8 +493,8 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                         height: 20,
                         borderRadius: 3,
                         letterSpacing: '0.05em',
-                        backgroundColor: jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'completed' ? '#E3FCEF' : jiraData.jira_sync_status === 'failed' || jiraData.jira_sync_status === 'conflict' ? '#FFEBE6' : '#DFE1E6',
-                        color: jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'completed' ? '#006644' : jiraData.jira_sync_status === 'failed' || jiraData.jira_sync_status === 'conflict' ? '#BF2600' : '#253858',
+                        backgroundColor: jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'completed' ? '#E3FCEF' : '#DFE1E6',
+                        color: jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'completed' ? '#006644' : '#253858',
                       }}
                     >
                       {jiraData.jira_sync_status}
