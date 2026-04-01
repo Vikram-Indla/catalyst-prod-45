@@ -1,0 +1,1 @@
+ALTER TABLE jira_write_back_queue RENAME COLUMN push_status TO status;
