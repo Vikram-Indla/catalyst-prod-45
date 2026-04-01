@@ -40,8 +40,8 @@ export function UnassignedThemeSlideout({ open, onClose, portfolioId }: Unassign
     theme.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleMoveToPI = (themeId: string) => {
-    console.log('Move to PI:', themeId);
+  const handleMoveToPI = (_themeId: string) => {
+    // TODO: implement move to PI
   };
 
   return (
@@ -68,14 +68,14 @@ export function UnassignedThemeSlideout({ open, onClose, portfolioId }: Unassign
             {filteredThemes?.map((theme, index) => (
               <ThemeContextMenu
                 key={theme.id}
-                onOpen={() => console.log('Open', theme.id)}
-                onDuplicate={() => console.log('Duplicate', theme.id)}
-                onMoveToTop={() => console.log('Move to top', theme.id)}
-                onMoveToBottom={() => console.log('Move to bottom', theme.id)}
-                onMoveToPosition={() => console.log('Move to position', theme.id)}
+                onOpen={() => {}}
+                onDuplicate={() => {}}
+                onMoveToTop={() => {}}
+                onMoveToBottom={() => {}}
+                onMoveToPosition={() => {}}
                 onMoveToPI={() => handleMoveToPI(theme.id)}
-                onMoveToUnassigned={() => console.log('Already unassigned')}
-                onDelete={() => console.log('Delete', theme.id)}
+                onMoveToUnassigned={() => {}}
+                onDelete={() => {}}
               >
                 <div className="flex items-center gap-3 p-3 border rounded-lg hover:bg-accent cursor-pointer group">
                   <GripVertical className="h-5 w-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity cursor-grab" />
