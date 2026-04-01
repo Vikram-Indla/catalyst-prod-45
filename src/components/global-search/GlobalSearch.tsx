@@ -376,6 +376,7 @@ export function GlobalSearch() {
   const onInput = useCallback((v: string) => {
     setQuery(v);
     setSelectedIdx(0);
+    setVisibleCount(8);
     clearTimeout(debRef.current);
     debRef.current = setTimeout(() => setDebouncedQuery(v), 220);
   }, []);
