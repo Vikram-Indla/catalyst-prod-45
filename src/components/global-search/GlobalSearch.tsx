@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, SlidersHorizontal, ChevronRight, X
@@ -35,14 +35,14 @@ const HUB_COLORS: Record<string, string> = {
 };
 
 const WORK_ITEM_ICONS: Record<string, string> = {
-  bug: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,17 C14.761,17 17,14.761 17,12 C17,9.239 14.761,7 12,7 C9.239,7 7,9.239 7,12 C7,14.761 9.239,17 12,17 Z"/></svg>`,
-  task: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z"/></svg>`,
-  story: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M15.647,19.515 L16.937,17.987 L12,13.82 L7.061,17.987 L7,18.153 L7,6.688 C7,6.348 7.412,6 8,6 L16,6 C16.587,6 17,6.349 17,6.688 L17,18.153 L15.647,19.515 C16.885,20.56 19,19.821 19,18.153 L19,6.688 C19,5.162 17.623,4 16,4 L8,4 C6.376,4 5,5.161 5,6.688 L5,18.153 C5,19.821 7.113,20.56 8.351,19.515 L12,16.437 Z"/></svg>`,
-  epic: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#6554C0" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M18.188,9.4 L15.125,9.4 L15.125,4.8 C15.125,3.803 14.31,3 13.313,3 L5,12.8 C5,13.81 5.819,14.399 6.77,14.56 L9.875,14.574 L9.875,19.2 C9.875,20.197 10.69,21 11.688,21 L20,11.2 C20,10.203 19.185,9.4 18.188,9.4 Z"/></svg>`,
-  incident: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M8.829,12 L7.923,15 L16.077,15 L15.171,12 Z M9.433,10 L14.567,10 L12.957,4.668 C12.289,4 11.043,4.668 9.433,10 Z M17,17 L7,17 L6,17 C5.448,17 5,17.448 5,18 L5,20 L19,20 L19,18 C19,17.448 18.552,17 18,17 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
-  new_feature: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M13,11 L13,5 C13,4.448 12.552,4 12,4 C11.448,4 11,4.448 11,5 L11,11 L5,11 C4.448,11 4,11.448 4,12 C4,12.552 4.448,13 5,13 L11,13 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 L13,13 L19,13 C19.552,13 20,12.552 20,12 C20,11.448 19.552,11 19,11 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
-  improvement: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M13,7.422 L16.284,10.707 C16.674,11.098 17.307,11.098 17.698,10.707 C18.088,10.317 18.088,9.684 17.698,9.293 L12.7,4.293 C12.31,3.902 11.676,3.902 11.286,4.293 L6.288,9.293 C5.897,9.684 5.897,10.317 6.288,10.707 C6.679,11.098 7.312,11.098 7.702,10.707 L11,7.408 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
-  subtask: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z"/></svg>`,
+  bug: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,17 C14.761,17 17,14.761 17,12 C17,9.239 14.761,7 12,7 C9.239,7 7,9.239 7,12 C7,14.761 9.239,17 12,17 Z"/></svg>`,
+  task: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z"/></svg>`,
+  story: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M15.647,19.515 L16.937,17.987 L12,13.82 L7.061,17.987 L7,18.153 L7,6.688 C7,6.348 7.412,6 8,6 L16,6 C16.587,6 17,6.349 17,6.688 L17,18.153 L15.647,19.515 C16.885,20.56 19,19.821 19,18.153 L19,6.688 C19,5.162 17.623,4 16,4 L8,4 C6.376,4 5,5.161 5,6.688 L5,18.153 C5,19.821 7.113,20.56 8.351,19.515 L12,16.437 Z"/></svg>`,
+  epic: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#6554C0" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M18.188,9.4 L15.125,9.4 L15.125,4.8 C15.125,3.803 14.31,3 13.313,3 L5,12.8 C5,13.81 5.819,14.399 6.77,14.56 L9.875,14.574 L9.875,19.2 C9.875,20.197 10.69,21 11.688,21 L20,11.2 C20,10.203 19.185,9.4 18.188,9.4 Z"/></svg>`,
+  incident: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M8.829,12 L7.923,15 L16.077,15 L15.171,12 Z M9.433,10 L14.567,10 L12.957,4.668 C12.289,4 11.043,4.668 9.433,10 Z M17,17 L7,17 L6,17 C5.448,17 5,17.448 5,18 L5,20 L19,20 L19,18 C19,17.448 18.552,17 18,17 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
+  new_feature: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M13,11 L13,5 C13,4.448 12.552,4 12,4 C11.448,4 11,4.448 11,5 L11,11 L5,11 C4.448,11 4,11.448 4,12 C4,12.552 4.448,13 5,13 L11,13 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 L13,13 L19,13 C19.552,13 20,12.552 20,12 C20,11.448 19.552,11 19,11 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
+  improvement: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M13,7.422 L16.284,10.707 C16.674,11.098 17.307,11.098 17.698,10.707 C18.088,10.317 18.088,9.684 17.698,9.293 L12.7,4.293 C12.31,3.902 11.676,3.902 11.286,4.293 L6.288,9.293 C5.897,9.684 5.897,10.317 6.288,10.707 C6.679,11.098 7.312,11.098 7.702,10.707 L11,7.408 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
+  subtask: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z"/></svg>`,
 };
 
 function formatTime(dateStr: string): string {
@@ -90,10 +90,10 @@ function mapToIconType(raw: string | null | undefined): string {
 
 const sectionLabelStyle: React.CSSProperties = {
   textTransform: 'uppercase', fontSize: 11, fontWeight: 600,
-  letterSpacing: '0.08em', color: '#5E6C84', padding: '8px 16px 4px',
+  letterSpacing: '0.08em', color: '#5E6C84', padding: '6px 14px 3px',
 };
 
-const midDot = <span style={{ margin: '0 5px', color: '#C1C7D0', fontSize: 10 }}>·</span>;
+const metaDot = <span style={{ margin: '0 4px', color: '#C1C7D0' }}>·</span>;
 
 /* ━━━ ResultRow ━━━ */
 function ResultRow({ item, query, onClick }: { item: SearchResult; query: string; onClick: () => void }) {
@@ -101,8 +101,9 @@ function ResultRow({ item, query, onClick }: { item: SearchResult; query: string
     <div
       onClick={onClick}
       style={{
-        height: 44, display: 'flex', alignItems: 'center', padding: '0 16px',
-        cursor: 'pointer', borderBottom: '1px solid #F4F5F7',
+        height: 40, minHeight: 40, maxHeight: 40,
+        display: 'flex', alignItems: 'center', padding: '0 14px',
+        cursor: 'pointer', borderBottom: '1px solid #F7F8F9',
       }}
       onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -110,11 +111,11 @@ function ResultRow({ item, query, onClick }: { item: SearchResult; query: string
       onMouseUp={e => (e.currentTarget.style.background = '#F4F5F7')}
     >
       <span
-        style={{ width: 20, height: 44, flexShrink: 0, marginRight: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        style={{ width: 24, flexShrink: 0, marginRight: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[mapToIconType(item.item_type)] ?? WORK_ITEM_ICONS.task }}
       />
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2 }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, overflow: 'hidden' }}>
           <span style={{
             fontFamily: "'SFMono-Regular', Consolas, monospace",
             fontSize: 11, fontWeight: 600, color: '#0052CC', flexShrink: 0,
@@ -122,21 +123,21 @@ function ResultRow({ item, query, onClick }: { item: SearchResult; query: string
             {item.item_key}
           </span>
           <span style={{
-            fontSize: 13, color: '#172B4D', fontWeight: 400,
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            fontSize: 12, color: '#172B4D', fontWeight: 400,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
           }}>
             {highlightMatch(item.title, query)}
           </span>
         </div>
         <div style={{
-          fontSize: 11, color: '#5E6C84', display: 'flex', alignItems: 'center',
-          flexWrap: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          fontSize: 11, color: '#6B778C', whiteSpace: 'nowrap',
+          overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
           <span>{item.project_name ?? item.hub}</span>
-          {midDot}
+          {metaDot}
           <span>{item.item_type.replace(/_/g, ' ')}</span>
-          {item.assignee_name && <>{midDot}<span>{item.assignee_name}</span></>}
-          {midDot}
+          {item.assignee_name && <>{metaDot}<span>{item.assignee_name}</span></>}
+          {metaDot}
           <span>{formatTime(item.viewed_at)}</span>
         </div>
       </div>
@@ -160,6 +161,41 @@ export function GlobalSearch() {
   const { data: results = [], isLoading } = useSearchResults(debouncedQuery, filters);
   const trackView = useTrackView();
   const saveSearch = useSaveSearch();
+
+  const recents = recentItems.data ?? [];
+  const hasQuery = debouncedQuery.length >= 2;
+
+  /* FIX 3 — Smart suggestions from real data */
+  const suggestions = useMemo(() => {
+    if (recents.length === 0) return [];
+
+    const bugCount = recents.filter(i => mapToIconType(i.item_type) === 'bug').length;
+
+    const projectCounts = recents.reduce((acc, item) => {
+      const p = item.project_name ?? 'Unknown';
+      acc[p] = (acc[p] ?? 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    const topProject = Object.entries(projectCounts)
+      .sort((a, b) => b[1] - a[1])[0]?.[0];
+
+    const assigneeCounts = recents.reduce((acc, item) => {
+      if (!item.assignee_name) return acc;
+      acc[item.assignee_name] = (acc[item.assignee_name] ?? 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    const topAssignee = Object.entries(assigneeCounts)
+      .sort((a, b) => b[1] - a[1])[0]?.[0];
+
+    const r: string[] = [];
+    if (bugCount > 0 && topProject) {
+      r.push(`Open bugs in ${topProject}`);
+    }
+    if (topAssignee && topProject) {
+      r.push(`Items assigned to ${topAssignee} in ${topProject}`);
+    }
+    return r.slice(0, 2);
+  }, [recents]);
 
   useEffect(() => {
     if (isOpen) {
@@ -202,17 +238,14 @@ export function GlobalSearch() {
   }, [debouncedQuery, navigate, close, trackView, saveSearch]);
 
   const chipStyle = (active: boolean): React.CSSProperties => ({
-    height: 24, padding: '0 8px', border: `1px solid ${active ? '#93C5FD' : '#DFE1E6'}`,
-    borderRadius: 4, fontSize: 11, color: active ? '#1D4ED8' : '#42526E',
+    height: 22, padding: '0 8px', border: `1px solid ${active ? '#93C5FD' : '#DFE1E6'}`,
+    borderRadius: 3, fontSize: 11, color: active ? '#1D4ED8' : '#42526E',
     background: active ? '#EFF6FF' : '#FAFAFA', cursor: 'pointer', gap: 4,
     flexShrink: 0, display: 'flex', alignItems: 'center',
   });
 
   const HUB_OPTIONS = ['All Hubs', 'StrategyHub', 'ProductHub', 'ProjectHub', 'ReleaseHub', 'TestHub', 'IncidentHub', 'TaskHub', 'PlanHub'];
   const TYPE_OPTIONS = ['All Types', 'bug', 'task', 'story', 'epic', 'incident', 'new_feature', 'improvement'];
-
-  const recents = recentItems.data ?? [];
-  const hasQuery = debouncedQuery.length >= 2;
 
   return (
     <Dialog open={isOpen} onOpenChange={o => { if (!o) close(); }}>
@@ -229,11 +262,11 @@ export function GlobalSearch() {
       >
         {/* Search row */}
         <div style={{
-          height: 44, borderBottom: '1px solid #E2E8F0', padding: '0 14px',
-          gap: 10, display: 'flex', alignItems: 'center', flexShrink: 0,
+          height: 40, borderBottom: '1px solid #E2E8F0', padding: '0 12px',
+          gap: 8, display: 'flex', alignItems: 'center', flexShrink: 0,
           backgroundColor: '#ffffff',
         }}>
-          <Search size={15} color="#94A3B8" />
+          <Search size={14} color="#94A3B8" />
           <input
             ref={inputRef}
             value={query}
@@ -242,35 +275,36 @@ export function GlobalSearch() {
             placeholder="Search Catalyst..."
             style={{
               border: 'none', outline: 'none', fontFamily: 'Inter, sans-serif',
-              fontSize: 14, color: '#172B4D', flex: 1, background: 'transparent',
+              fontSize: 13, color: '#172B4D', flex: 1, background: 'transparent',
             }}
           />
-          {query && (
-            <button
-              onClick={() => { setQuery(''); setDebouncedQuery(''); }}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
-            >
-              <X size={14} color="#94A3B8" />
-            </button>
-          )}
-          <kbd style={{
-            fontSize: 10, background: '#F1F5F9', border: '1px solid #E2E8F0',
-            borderRadius: 3, padding: '1px 5px', fontFamily: 'monospace', color: '#64748B',
-          }}>ESC</kbd>
+          <button
+            onClick={close}
+            style={{
+              width: 24, height: 24, borderRadius: 4,
+              border: 'none', background: 'transparent',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', color: '#97A0AF', flexShrink: 0,
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; e.currentTarget.style.color = '#172B4D'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#97A0AF'; }}
+          >
+            <X size={14} />
+          </button>
         </div>
 
         {/* Filter row */}
         <div style={{
-          height: 42, padding: '0 12px', borderBottom: '1px solid #F1F5F9', flexShrink: 0,
+          height: 34, padding: '0 10px', borderBottom: '1px solid #F1F5F9', flexShrink: 0,
           gap: 6, display: 'flex', alignItems: 'center',
           backgroundColor: '#ffffff',
         }}>
           <button style={{
-            width: 24, height: 24, border: '1px solid #DFE1E6', borderRadius: 4,
+            width: 22, height: 22, border: '1px solid #DFE1E6', borderRadius: 3,
             background: '#FAFAFA', cursor: 'pointer', display: 'flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
           }}>
-            <SlidersHorizontal size={12} color="#64748B" />
+            <SlidersHorizontal size={11} color="#64748B" />
           </button>
 
           <DropdownMenu>
@@ -317,50 +351,42 @@ export function GlobalSearch() {
         </div>
 
         {/* Scroll body */}
-        <div style={{ overflowY: 'auto', flex: 1, backgroundColor: '#ffffff', maxHeight: 'calc(600px - 44px - 42px)' }}>
+        <div style={{ overflowY: 'auto', flex: 1, backgroundColor: '#ffffff', maxHeight: 'calc(600px - 40px - 34px)' }}>
           {isLoading && hasQuery ? (
             Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} style={{ height: 44, display: 'flex', alignItems: 'center', padding: '0 16px', gap: 10 }}>
-                <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#F1F5F9' }} />
+              <div key={i} style={{ height: 40, display: 'flex', alignItems: 'center', padding: '0 14px', gap: 8 }}>
+                <div style={{ width: 14, height: 14, borderRadius: '50%', background: '#F1F5F9' }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ height: 11, width: '60%', background: '#F1F5F9', borderRadius: 3, marginBottom: 6 }} />
-                  <div style={{ height: 9, width: '40%', background: '#F8FAFC', borderRadius: 3 }} />
+                  <div style={{ height: 10, width: '60%', background: '#F1F5F9', borderRadius: 3, marginBottom: 4 }} />
+                  <div style={{ height: 8, width: '40%', background: '#F8FAFC', borderRadius: 3 }} />
                 </div>
               </div>
             ))
           ) : !hasQuery ? (
             <>
-              {/* AI Suggestion rows */}
-              {recents.slice(0, 2).map(item => (
+              {/* Smart suggestion rows */}
+              {suggestions.map((text, idx) => (
                 <div
-                  key={`sug-${item.id}`}
-                  onClick={() => onResultClick(item)}
+                  key={`sug-${idx}`}
+                  onClick={() => { setQuery(text); setDebouncedQuery(text); }}
                   style={{
-                    height: 36, padding: '0 16px', display: 'flex', alignItems: 'center',
-                    gap: 10, cursor: 'pointer', borderBottom: '1px solid #F4F5F7',
+                    height: 34, padding: '0 14px', display: 'flex', alignItems: 'center',
+                    gap: 10, cursor: 'pointer', borderBottom: '1px solid #F7F8F9',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <Search size={13} color="#94A3B8" />
-                  <div style={{ flex: 1, fontSize: 13, color: '#172B4D', display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <span style={{
-                      width: 14, height: 14, borderRadius: 3,
-                      background: HUB_COLORS[item.hub] ?? '#64748B', color: '#ffffff',
-                      fontSize: 8, fontWeight: 700, flexShrink: 0,
-                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      {item.hub?.[0] ?? 'C'}
-                    </span>
-                    {item.hub} items in {item.project_name ?? item.hub}
+                  <div style={{ flex: 1, fontSize: 13, color: '#172B4D', display: 'flex', alignItems: 'center' }}>
+                    {text}
                     <span style={{
                       marginLeft: 6, fontSize: 10, fontWeight: 600,
                       color: '#7C3AED', background: '#F5F3FF',
-                      borderRadius: 3, padding: '1px 6px',
+                      borderRadius: 3, padding: '1px 5px',
                       display: 'inline-flex', alignItems: 'center',
                     }}>✦ AI</span>
                   </div>
-                  <span style={{ fontSize: 11, color: '#94A3B8' }}>Suggestion</span>
+                  <span style={{ fontSize: 11, color: '#97A0AF' }}>Suggestion</span>
                 </div>
               ))}
 
