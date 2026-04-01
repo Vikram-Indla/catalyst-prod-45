@@ -535,58 +535,36 @@ export function CatalystHeader() {
 
             {/* Search Trigger */}
             <button
-              onClick={() => setIsSearchOpen(true)}
-              className="hidden sm:flex items-center gap-2 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cp-focus-ring)] focus-visible:ring-offset-1"
-              style={{ 
-                minWidth: '240px',
-                height: '34px',
-                padding: '0 12px',
-                background: 'var(--cp-bg)',
-                border: '1px solid var(--cp-bd)',
-                borderRadius: '8px',
+              onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+              className="hidden sm:flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cp-focus-ring)] focus-visible:ring-offset-1"
+              style={{
+                minWidth: '200px',
+                height: '32px',
+                padding: '0 10px',
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '6px',
                 cursor: 'pointer',
+                gap: '8px',
+                alignItems: 'center',
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'var(--cp-bd-hover)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'var(--cp-bd)';
-              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#CBD5E1'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; }}
             >
-              <Search className="h-4 w-4" style={{ color: 'var(--cp-t4)' }} />
-              <span style={{ fontSize: '13px', fontFamily: "'Inter', sans-serif", color: 'var(--cp-t4)', flex: 1, textAlign: 'left' }}>
-                Search anything...
+              <Search style={{ width: '14px', height: '14px', color: '#94A3B8', flexShrink: 0 }} />
+              <span style={{ flex: 1, fontSize: '12px', fontFamily: "'Inter', sans-serif", color: '#94A3B8', textAlign: 'left' }}>
+                Search...
               </span>
-              <div className="flex gap-1">
-                <kbd style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '22px', height: '22px', padding: '0 6px', background: 'var(--cp-bg)', border: '1px solid var(--cp-bd)', borderRadius: '4px', fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: 'var(--cp-t4)' }}>
-                  ⌘
-                </kbd>
-                <kbd style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '22px', height: '22px', padding: '0 6px', background: 'var(--cp-bg)', border: '1px solid var(--cp-bd)', borderRadius: '4px', fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: 'var(--cp-t4)' }}>
-                  K
-                </kbd>
-              </div>
+              <kbd style={{ fontSize: '10px', background: '#F1F5F9', border: '1px solid #E2E8F0', borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: '#64748B' }}>⌘</kbd>
+              <kbd style={{ fontSize: '10px', background: '#F1F5F9', border: '1px solid #E2E8F0', borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: '#64748B' }}>K</kbd>
             </button>
             {/* Mobile search icon */}
             <button
-              onClick={() => setIsSearchOpen(true)}
-              className="sm:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cp-focus-ring)] focus-visible:ring-offset-1"
-              style={{
-                width: '36px',
-                height: '36px',
-                color: 'var(--cp-t3)',
-                background: 'transparent',
-                borderRadius: '8px',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--cp-t1)';
-                e.currentTarget.style.background = 'var(--cp-hover)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'var(--cp-t3)';
-                e.currentTarget.style.background = 'transparent';
-              }}
+              onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+              className="sm:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none"
+              style={{ width: '36px', height: '36px', color: '#94A3B8', background: 'transparent', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
             >
-              <Search className="h-5 w-5" />
+              <Search style={{ width: '18px', height: '18px' }} />
             </button>
 
 
