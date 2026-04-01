@@ -201,11 +201,12 @@ function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
 }
 
 /* ── FilterChip with dropdown ── */
-function FilterChip({ label, items, selected, onSelect }: {
+function FilterChip({ label, items, selected, onSelect, avatarMap }: {
   label: string;
   items: { value: string; display: string; svg?: string; color?: string }[];
   selected: string | null;
   onSelect: (v: string | null) => void;
+  avatarMap?: Map<string, string>;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -282,17 +283,25 @@ function FilterChip({ label, items, selected, onSelect }: {
                 <span style={{ flexShrink: 0, width: 14, height: 14 }}
                   dangerouslySetInnerHTML={{ __html: item.svg }} />
               )}
-              {item.color && !item.svg && (
-                <span style={{
-                  display: "inline-flex", alignItems: "center", justifyContent: "center",
-                  width: 24, height: 24, borderRadius: "50%",
-                  backgroundColor: item.color, color: "#FFFFFF",
-                  fontSize: 10, fontWeight: 600, fontFamily: "Inter, sans-serif",
-                  flexShrink: 0, lineHeight: 1,
-                }}>
-                  {item.display.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
-                </span>
-              )}
+              {item.color && !item.svg && (() => {
+                const photoUrl = avatarMap?.get(item.display.toLowerCase());
+                if (photoUrl) {
+                  return <img src={photoUrl} alt={item.display} style={{
+                    width: 28, height: 28, borderRadius: "50%", objectFit: "cover", flexShrink: 0,
+                  }} />;
+                }
+                return (
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", justifyContent: "center",
+                    width: 28, height: 28, borderRadius: "50%",
+                    backgroundColor: item.color, color: "#FFFFFF",
+                    fontSize: 10, fontWeight: 600, fontFamily: "Inter, sans-serif",
+                    flexShrink: 0, lineHeight: 1,
+                  }}>
+                    {item.display.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
+                  </span>
+                );
+              })()}
               {item.display}
             </div>
           ))}
@@ -493,7 +502,7 @@ export function GlobalSearch() {
         }}>
           <Settings2 size={14} color="#97A0AF" style={{ flexShrink: 0, marginRight: 4 }} />
           <FilterChip label="Hub" items={hubOptions} selected={filters.hub} onSelect={v => setFilter("hub", v as any)} />
-          <FilterChip label="Assignee" items={assigneeOptions} selected={filters.assignee} onSelect={v => setFilter("assignee", v)} />
+          <FilterChip label="Assignee" items={assigneeOptions} selected={filters.assignee} onSelect={v => setFilter("assignee", v)} avatarMap={nameAvatarMap} />
           <FilterChip label="Type" items={typeOptions} selected={filters.type} onSelect={v => setFilter("type", v as any)} />
         </div>
 
