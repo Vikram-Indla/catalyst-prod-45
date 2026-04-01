@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { Search, Settings2, ChevronDown, X } from "lucide-react";
+import { Search, Settings2, ChevronDown, X, Clock } from "lucide-react";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import {
   useRecentItems,
@@ -81,6 +81,30 @@ function timeAgo(d: string): string {
   if (s < 3600) return `${Math.floor(s / 60)}m ago`;
   if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
   return `${Math.floor(s / 86400)}d ago`;
+}
+
+type DateGroup = "Today" | "Yesterday" | "This Week" | "Earlier";
+
+function getDateGroup(dateStr: string): DateGroup {
+  const now = new Date();
+  const then = new Date(dateStr);
+  const diffMs = now.getTime() - then.getTime();
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+  if (diffDays < 1 && now.getDate() === then.getDate()) return "Today";
+  if (diffDays < 2) return "Yesterday";
+  if (diffDays < 7) return "This Week";
+  return "Earlier";
+}
+
+function groupRecentItems(items: SearchResult[]): { group: DateGroup; items: SearchResult[] }[] {
+  const ORDER: DateGroup[] = ["Today", "Yesterday", "This Week", "Earlier"];
+  const map: Record<string, SearchResult[]> = {};
+  for (const item of items) {
+    const g = getDateGroup(item.viewed_at);
+    if (!map[g]) map[g] = [];
+    map[g].push(item);
+  }
+  return ORDER.filter(g => map[g]?.length > 0).map(g => ({ group: g, items: map[g] }));
 }
 
 function getInitials(name: string): string {
@@ -248,9 +272,14 @@ function FilterChip({ label, items, selected, onSelect }: {
               )}
               {item.color && !item.svg && (
                 <span style={{
-                  width: 8, height: 8, borderRadius: "50%",
-                  backgroundColor: item.color, flexShrink: 0,
-                }} />
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  width: 24, height: 24, borderRadius: "50%",
+                  backgroundColor: item.color, color: "#FFFFFF",
+                  fontSize: 10, fontWeight: 600, fontFamily: "Inter, sans-serif",
+                  flexShrink: 0, lineHeight: 1,
+                }}>
+                  {item.display.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
+                </span>
               )}
               {item.display}
             </div>
@@ -306,7 +335,7 @@ export function GlobalSearch() {
 
   // Derive unique hubs from recents
   const hubOptions = ALL_HUBS.map(h => ({
-    value: h, display: h.replace("Hub", "") + " Hub", color: HUB_COLORS[h],
+    value: h, display: h.replace(/([A-Z])/g, " $1").trim(), color: HUB_COLORS[h],
   }));
 
   // Type options with SVG icons
@@ -314,14 +343,31 @@ export function GlobalSearch() {
     value: t.key, display: t.label, svg: WORK_ICONS[t.key]?.svg,
   }));
 
+  const [visibleCount, setVisibleCount] = useState(8);
+
   const showSearch = debouncedQuery.length >= 2;
-  const displayItems = showSearch ? results : recents.slice(0, 10);
+
+  // Filter recents by active filters
+  const filteredRecents = recents.filter(item => {
+    if (filters.hub) {
+      const itemHub = (item.hub || "").trim();
+      const filterHub = (filters.hub || "").trim();
+      if (itemHub !== filterHub) return false;
+    }
+    if (filters.assignee && item.assignee_name !== filters.assignee) return false;
+    if (filters.type && mapType(item.item_type) !== filters.type) return false;
+    return true;
+  });
+
+  const allResults = showSearch ? results : filteredRecents;
+  const visibleResults = allResults.slice(0, visibleCount);
+  const hasMore = allResults.length > visibleCount;
 
   // Focus on open
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 50);
-      setQuery(""); setDebouncedQuery(""); setSelectedIdx(0);
+      setQuery(""); setDebouncedQuery(""); setSelectedIdx(0); setVisibleCount(8);
       setFilters({ hub: null, project: null, assignee: null, type: null });
     }
   }, [isOpen]);
@@ -330,6 +376,7 @@ export function GlobalSearch() {
   const onInput = useCallback((v: string) => {
     setQuery(v);
     setSelectedIdx(0);
+    setVisibleCount(8);
     clearTimeout(debRef.current);
     debRef.current = setTimeout(() => setDebouncedQuery(v), 220);
   }, []);
@@ -339,13 +386,13 @@ export function GlobalSearch() {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") { close(); return; }
-      if (e.key === "ArrowDown") { e.preventDefault(); setSelectedIdx(i => Math.min(i + 1, displayItems.length - 1)); }
+      if (e.key === "ArrowDown") { e.preventDefault(); setSelectedIdx(i => Math.min(i + 1, visibleResults.length - 1)); }
       if (e.key === "ArrowUp") { e.preventDefault(); setSelectedIdx(i => Math.max(i - 1, 0)); }
-      if (e.key === "Enter" && displayItems[selectedIdx]) { handleSelect(displayItems[selectedIdx]); }
+      if (e.key === "Enter" && visibleResults[selectedIdx]) { handleSelect(visibleResults[selectedIdx]); }
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [isOpen, displayItems, selectedIdx]);
+  }, [isOpen, visibleResults, selectedIdx]);
 
   const handleSelect = useCallback((item: SearchResult) => {
     trackView.mutate(item);
@@ -442,17 +489,6 @@ export function GlobalSearch() {
           flex: 1, overflowY: "auto",
           maxHeight: "calc(640px - 56px - 40px - 36px)",
         }}>
-          {/* Section label */}
-          {displayItems.length > 0 && (
-            <div style={{
-              padding: "10px 16px 4px", fontSize: 11, fontWeight: 600,
-              color: "#5E6C84", textTransform: "uppercase", letterSpacing: "0.06em",
-              fontFamily: "Inter, sans-serif",
-            }}>
-              {showSearch ? `Results (${results.length})` : "Recent Items"}
-            </div>
-          )}
-
           {/* Loading skeleton */}
           {showSearch && isLoading && [1,2,3,4].map(i => (
             <div key={i} style={{
@@ -464,27 +500,132 @@ export function GlobalSearch() {
             </div>
           ))}
 
-          {/* Empty state */}
-          {!isLoading && displayItems.length === 0 && (
-            <div style={{
-              padding: "48px 16px", textAlign: "center",
-              color: "#97A0AF", fontSize: 13, fontFamily: "Inter, sans-serif",
-            }}>
-              <Search size={32} color="#E2E8F0" style={{ margin: "0 auto 12px" }} />
-              <div>{showSearch ? `No results for "${debouncedQuery}"` : "Start searching across all hubs"}</div>
-            </div>
-          )}
+          {/* ── Recents: date-grouped ── */}
+          {!showSearch && (() => {
+            const groups = groupRecentItems(filteredRecents);
+            if (groups.length === 0) return (
+              <div style={{
+                display: "flex", flexDirection: "column", alignItems: "center",
+                justifyContent: "center", height: 200, gap: 8,
+              }}>
+                <Clock size={24} style={{ color: "#D4D4D4" }} />
+                <span style={{ fontSize: 13, color: "#A3A3A3", fontFamily: "Inter, sans-serif" }}>
+                  No recent items yet
+                </span>
+                <span style={{ fontSize: 12, color: "#D4D4D4", fontFamily: "Inter, sans-serif" }}>
+                  Items you open across Catalyst hubs will appear here
+                </span>
+              </div>
+            );
 
-          {/* Rows */}
-          {!isLoading && displayItems.map((item, idx) => (
-            <ResultRow
-              key={item.id}
-              item={item}
-              isSelected={idx === selectedIdx}
-              onHover={() => setSelectedIdx(idx)}
-              onClick={() => handleSelect(item)}
-            />
-          ))}
+            let globalIdx = 0;
+            return (
+              <>
+                {groups.map(({ group, items: groupItems }) => {
+                  const startIdx = globalIdx;
+                  globalIdx += groupItems.length;
+                  const groupVisible = groupItems.slice(0, Math.max(0, visibleCount - startIdx));
+                  if (groupVisible.length === 0) return null;
+                  return (
+                    <div key={group}>
+                      <div style={{
+                        padding: "10px 16px 4px", fontSize: 11, fontWeight: 600,
+                        color: "#A3A3A3", fontFamily: "Inter, sans-serif",
+                        textTransform: "uppercase", letterSpacing: "0.06em",
+                        backgroundColor: "#FAFAFA",
+                        borderBottom: "0.75px solid rgba(15,23,42,0.06)",
+                      }}>
+                        {group}
+                      </div>
+                      {groupVisible.map((item, relIdx) => (
+                        <ResultRow
+                          key={`${item.id}-${startIdx + relIdx}`}
+                          item={item}
+                          isSelected={selectedIdx === startIdx + relIdx}
+                          onHover={() => setSelectedIdx(startIdx + relIdx)}
+                          onClick={() => handleSelect(item)}
+                        />
+                      ))}
+                    </div>
+                  );
+                })}
+                {hasMore && (
+                  <div
+                    onClick={() => setVisibleCount(c => c + 10)}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      height: 40, fontSize: 12, fontWeight: 500,
+                      color: "#2563EB", fontFamily: "Inter, sans-serif",
+                      cursor: "pointer", borderTop: "0.75px solid rgba(15,23,42,0.06)",
+                      gap: 6, transition: "background 100ms ease",
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(37,99,235,0.04)")}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+                  >
+                    Show {Math.min(filteredRecents.length - visibleCount, 10)} more
+                    <span style={{ fontSize: 11, color: "#A3A3A3" }}>
+                      ({filteredRecents.length - visibleCount} remaining)
+                    </span>
+                  </div>
+                )}
+              </>
+            );
+          })()}
+
+          {/* ── Search results: flat list ── */}
+          {showSearch && !isLoading && (
+            <>
+              {results.length === 0 ? (
+                <div style={{
+                  display: "flex", flexDirection: "column", alignItems: "center",
+                  justifyContent: "center", height: 160, gap: 8,
+                }}>
+                  <Search size={24} style={{ color: "#D4D4D4" }} />
+                  <span style={{ fontSize: 13, color: "#A3A3A3", fontFamily: "Inter, sans-serif" }}>
+                    No results for "{debouncedQuery}"
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <div style={{
+                    padding: "10px 16px 4px", fontSize: 11, fontWeight: 600,
+                    color: "#5E6C84", textTransform: "uppercase", letterSpacing: "0.06em",
+                    fontFamily: "Inter, sans-serif",
+                  }}>
+                    Results ({results.length})
+                  </div>
+                  {visibleResults.map((item, idx) => (
+                    <ResultRow
+                      key={`${item.id}-${idx}`}
+                      item={item}
+                      isSelected={selectedIdx === idx}
+                      onHover={() => setSelectedIdx(idx)}
+                      onClick={() => handleSelect(item)}
+                    />
+                  ))}
+                  {hasMore && (
+                    <div
+                      onClick={() => setVisibleCount(c => c + 10)}
+                      style={{
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        height: 40, fontSize: 12, fontWeight: 500,
+                        color: "#2563EB", fontFamily: "Inter, sans-serif",
+                        cursor: "pointer", borderTop: "0.75px solid rgba(15,23,42,0.06)",
+                        gap: 6, transition: "background 100ms ease",
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(37,99,235,0.04)")}
+                      onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+                    >
+                      Show {Math.min(results.length - visibleCount, 10)} more
+                      <span style={{ fontSize: 11, color: "#A3A3A3" }}>
+                        ({results.length - visibleCount} remaining)
+                      </span>
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          )}
         </div>
 
         {/* ── FOOTER (36px) ── */}
