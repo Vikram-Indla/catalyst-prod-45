@@ -207,12 +207,14 @@ async function handleFullSync(
       const cfg = projectConfigs[projectKey] || {};
       const lookback = cfg.lookback_months || globalLookback;
 
-      // Build JQL
+      // Build JQL — enforce 2026 boundary
+      const year2026 = "2026-01-01";
       const lookbackDate = new Date();
       lookbackDate.setMonth(lookbackDate.getMonth() - lookback);
       const dateStr = lookbackDate.toISOString().split("T")[0];
+      const effectiveDate = dateStr > year2026 ? dateStr : year2026;
 
-      let jql = `project = "${projectKey}" AND updated >= "${dateStr}"`;
+      let jql = `project = "${projectKey}" AND (created >= "${effectiveDate}" OR updated >= "${effectiveDate}")`;
       if (cfg.issue_types?.length) {
         jql += ` AND issuetype IN (${cfg.issue_types.map((t: string) => `"${t}"`).join(",")})`;
       }
