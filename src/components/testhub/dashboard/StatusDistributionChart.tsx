@@ -54,7 +54,7 @@ export function StatusDistributionChart({ stats }: Props) {
     <div style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 12, padding: 24, minHeight: 280 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
         <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'hsl(152 81% 96%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Activity size={18} color="#10B981" />
+          <Activity size={18} color="var(--sem-success)" />
         </div>
         <div>
           <p style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))', margin: 0 }}>Execution by Status</p>

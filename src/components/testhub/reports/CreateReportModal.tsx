@@ -156,7 +156,7 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
                 return (
                   <div key={type.value} onClick={() => setReportType(type.value)}
                     style={{ padding: 14, borderRadius: 10, border: `2px solid ${isSelected ? 'var(--sem-warning)' : 'var(--divider)'}`, backgroundColor: isSelected ? '#FFFBEB' : 'var(--cp-float)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <TypeIcon size={20} style={{ color: isSelected ? '#F59E0B' : '#64748B' }} />
+                    <TypeIcon size={20} style={{ color: isSelected ? 'var(--sem-warning)' : 'var(--fg-3)' }} />
                     <div>
                       <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>{type.label}</p>
                       <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '2px 0 0' }}>{type.description}</p>

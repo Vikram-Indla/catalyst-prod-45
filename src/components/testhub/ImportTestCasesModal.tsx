@@ -253,7 +253,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
                   <FileText size={20} style={{ color: 'var(--fg-3)' }} />
                   <div>
                     <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)' }}>{file?.name}</p>
-                    <p style={{ fontSize: 13, color: '#10B981' }}>Found {parsedData.length} test cases</p>
+                    <p style={{ fontSize: 13, color: 'var(--sem-success)' }}>Found {parsedData.length} test cases</p>
                   </div>
                 </div>
                 <button onClick={resetState} style={{

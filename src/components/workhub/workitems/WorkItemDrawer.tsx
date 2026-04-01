@@ -284,22 +284,22 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
 
             {/* Changelog */}
             <div>
-              <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+              <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: 'var(--fg-4)' }}>
                 <Clock className="w-3.5 h-3.5" />
                 History ({changelog.length})
               </h3>
               {changelog.length === 0 ? (
-                <p className="text-[12px] italic" style={{ color: '#94a3b8' }}>No history synced yet.</p>
+                <p className="text-[12px] italic" style={{ color: 'var(--fg-4)' }}>No history synced yet.</p>
               ) : (
                 <div className="space-y-1.5 max-h-[300px] overflow-y-auto">
                   {changelog.map((entry: any, i: number) => (
-                    <div key={i} className="flex items-start gap-2 py-1.5 border-b text-[11px]" style={{ borderColor: '#f1f5f9' }}>
-                      <span className="font-medium shrink-0" style={{ color: '#475569' }}>{entry.author || 'System'}</span>
-                      <span style={{ color: '#64748b' }}>
+                    <div key={i} className="flex items-start gap-2 py-1.5 border-b text-[11px]" style={{ borderColor: 'var(--bg-1)' }}>
+                      <span className="font-medium shrink-0" style={{ color: 'var(--fg-2)' }}>{entry.author || 'System'}</span>
+                      <span style={{ color: 'var(--fg-3)' }}>
                         changed <b>{entry.field}</b> from "{entry.from || '—'}" to "{entry.to || '—'}"
                       </span>
                       {entry.created && (
-                        <span className="ml-auto shrink-0" style={{ color: '#94a3b8' }}>
+                        <span className="ml-auto shrink-0" style={{ color: 'var(--fg-4)' }}>
                           {formatDistanceToNow(new Date(entry.created), { addSuffix: true })}
                         </span>
                       )}

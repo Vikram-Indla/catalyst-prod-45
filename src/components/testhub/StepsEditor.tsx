@@ -447,7 +447,7 @@ function AttachButton({ onClick, count }: { onClick: () => void; count: number }
         border: '1px solid var(--divider)',
         borderRadius: 6,
         backgroundColor: count > 0 ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--cp-float)',
-        color: count > 0 ? '#2563EB' : '#94A3B8',
+        color: count > 0 ? 'var(--cp-blue)' : 'var(--fg-4)',
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',

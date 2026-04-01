@@ -32,10 +32,10 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
   };
 
   const getAvatarColor = (initials: string | null | undefined): string => {
-    if (!initials) return '#94A3B8';
+    if (!initials) return 'var(--fg-4)';
     const letter = initials.charAt(0).toUpperCase();
-    if (letter <= 'E') return '#3B82F6';
-    if (letter <= 'J') return '#10B981';
+    if (letter <= 'E') return 'var(--cp-blue)';
+    if (letter <= 'J') return 'var(--sem-success)';
     if (letter <= 'O') return '#8B5CF6';
     if (letter <= 'T') return '#F97316';
     return '#EC4899';
@@ -46,7 +46,7 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
       case 'critical': return '#991B1B';
       case 'high': return '#C2410C';
       case 'medium': return '#A16207';
-      default: return '#64748B';
+      default: return 'var(--fg-3)';
     }
   };
 
@@ -55,7 +55,7 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
       case 'approved': return { bg: 'rgba(16,185,129,0.1)', color: 'var(--sem-success)' };
       case 'ready': return { bg: 'rgba(37,99,235,0.1)', color: 'var(--cp-blue)' };
       case 'deprecated': return { bg: 'rgba(239,68,68,0.1)', color: 'var(--sem-danger)' };
-      default: return { bg: '#F1F5F9', color: 'var(--fg-3)' };
+      default: return { bg: 'var(--cp-bd-zone)', color: 'var(--fg-3)' };
     }
   };
 

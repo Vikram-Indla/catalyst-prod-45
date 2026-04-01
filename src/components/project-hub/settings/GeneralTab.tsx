@@ -115,7 +115,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 13, fontWeight: 500, color: '#334155', display: 'block', marginBottom: 6,
+    fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6,
     fontFamily: "'Inter', sans-serif",
   };
 
@@ -130,7 +130,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
           {/* Left column */}
           <div className="space-y-4">
             <div>
-              <label style={labelStyle}>Project Name <span style={{ color: '#EF4444' }}>*</span></label>
+              <label style={labelStyle}>Project Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
               <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
             </div>
 
@@ -139,14 +139,14 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               <div className="relative">
                 <input
                   value={project.key} readOnly
-                  style={{ ...inputStyle, background: '#F1F5F9', color: '#64748B', cursor: 'not-allowed', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.05em', paddingRight: 36 }}
+                  style={{ ...inputStyle, background: 'var(--cp-bd-zone)', color: 'var(--fg-3)', cursor: 'not-allowed', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.05em', paddingRight: 36 }}
                 />
-                <Lock size={14} color="#94A3B8" className="absolute right-3 top-1/2 -translate-y-1/2" />
+                <Lock size={14} color="var(--fg-4)" className="absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
             </div>
 
             <div>
-              <label style={labelStyle}>Department <span style={{ color: '#EF4444' }}>*</span></label>
+              <label style={labelStyle}>Department <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
               <select value={form.department} onChange={e => setForm(f => ({ ...f, department: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler as any} onBlur={inputBlurHandler as any}>
                 {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
@@ -187,23 +187,23 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
             {/* Feature Layer Toggle */}
             <div className="flex items-start justify-between gap-4 pt-2">
               <div>
-                <div style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>Feature Layer</div>
-                <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>Adds Feature between Epic and Story</div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>Feature Layer</div>
+                <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 2 }}>Adds Feature between Epic and Story</div>
               </div>
               <button
                 onClick={() => setForm(f => ({ ...f, feature_layer: !f.feature_layer }))}
                 className="flex-shrink-0 rounded-full transition-colors"
-                style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', background: form.feature_layer ? '#2563EB' : '#CBD5E1', position: 'relative' }}
+                style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', background: form.feature_layer ? 'var(--cp-blue)' : '#CBD5E1', position: 'relative' }}
               >
-                <span className="rounded-full" style={{ width: 16, height: 16, background: '#FFFFFF', borderRadius: '50%', position: 'absolute', top: 3, left: form.feature_layer ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
+                <span className="rounded-full" style={{ width: 16, height: 16, background: 'var(--bg-app)', borderRadius: '50%', position: 'absolute', top: 3, left: form.feature_layer ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
               </button>
             </div>
 
             {/* AI Assist Toggle */}
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>AI Assist</div>
-                <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>Enable AI features for this project</div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>AI Assist</div>
+                <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 2 }}>Enable AI features for this project</div>
               </div>
               <button
                 onClick={() => setForm(f => ({ ...f, ai_assist: !f.ai_assist }))}

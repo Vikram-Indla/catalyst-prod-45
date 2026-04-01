@@ -20,10 +20,10 @@ interface UnassignedCycle {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  draft: { label: 'Draft', color: 'var(--fg-3)', bg: '#F1F5F9', icon: Clock },
+  draft: { label: 'Draft', color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', icon: Clock },
   active: { label: 'Active', color: 'var(--sem-success)', bg: '#ECFDF5', icon: Play },
-  completed: { label: 'Completed', color: 'var(--cp-blue)', bg: '#EFF6FF', icon: CheckCircle2 },
-  archived: { label: 'Archived', color: 'var(--fg-4)', bg: '#F8FAFC', icon: Archive },
+  completed: { label: 'Completed', color: 'var(--cp-blue)', bg: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', icon: CheckCircle2 },
+  archived: { label: 'Archived', color: 'var(--fg-4)', bg: 'var(--bg-1)', icon: Archive },
 };
 
 export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCycleToPlanModalProps) {

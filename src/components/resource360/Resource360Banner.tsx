@@ -80,9 +80,9 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
       <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <span style={{
           fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 800,
-          color: '#0F172A', lineHeight: 1.2,
+          color: 'var(--fg-1)', lineHeight: 1.2,
         }}>{summary.name}</span>
-        <span style={{ fontSize: 13, color: '#64748B', lineHeight: 1.3, fontWeight: 500 }}>
+        <span style={{ fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.3, fontWeight: 500 }}>
           {summary.role}{summary.department ? ` · ${summary.department}` : ''}
         </span>
       </div>
@@ -93,14 +93,14 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
           <div key={k.label} style={{
             minWidth: 80, padding: '8px 16px', textAlign: 'center',
             borderRadius: 8, background: k.bg,
-            border: '1px solid #E2E8F0',
+            border: '1px solid var(--divider)',
           }}>
             <div style={{
               fontFamily: "'JetBrains Mono', monospace", fontSize: 22, fontWeight: 700,
               color: k.color, lineHeight: 1.2, fontVariantNumeric: 'tabular-nums',
             }}>{k.value}</div>
             <div style={{
-              fontSize: 10, color: '#64748B', fontWeight: 700, marginTop: 2,
+              fontSize: 10, color: 'var(--fg-3)', fontWeight: 700, marginTop: 2,
               textTransform: 'uppercase', letterSpacing: '0.05em',
             }}>{k.label}</div>
           </div>

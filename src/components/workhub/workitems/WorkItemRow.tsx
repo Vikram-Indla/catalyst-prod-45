@@ -52,7 +52,7 @@ export function WorkItemRow({
       style={{
         gridTemplateColumns: '36px 36px minmax(140px, auto) 1fr 120px 140px 120px 130px 90px 90px 90px',
         height: 'var(--wh-row-height, 44px)',
-        borderColor: '#f1f5f9',
+        borderColor: 'var(--bg-1)',
         fontFamily: 'var(--wh-font-sans)',
       }}
       onClick={onOpenDrawer}

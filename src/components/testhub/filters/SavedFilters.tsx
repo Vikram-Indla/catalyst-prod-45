@@ -154,7 +154,7 @@ export function SavedFilters({ entityType, currentFilters, onApplyFilter }: Save
                   </button>
                   <button onClick={() => setAsDefault(filter.id)} title={filter.is_default ? 'Default filter' : 'Set as default'}
                     style={{ width: 24, height: 24, padding: 0, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: filter.is_default ? 'var(--sem-warning)' : 'var(--divider)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Star size={14} fill={filter.is_default ? '#F59E0B' : 'none'} />
+                    <Star size={14} fill={filter.is_default ? 'var(--sem-warning)' : 'none'} />
                   </button>
                   <button onClick={() => deleteFilter(filter.id)}
                     style={{ width: 24, height: 24, padding: 0, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

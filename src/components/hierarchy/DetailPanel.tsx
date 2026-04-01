@@ -273,8 +273,8 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 onClick={() => setActiveDropdown(activeDropdown === 'priority' ? null : 'priority')}
               >
                 <PriorityBars level={priorityToLevel(item.priority?.name)} />
-                <span style={{ fontSize: 12, color: '#64748B' }}>{item.priority?.name || 'None'}</span>
-                <span style={{ fontSize: 8, color: '#94A3B8' }}>▾</span>
+                <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{item.priority?.name || 'None'}</span>
+                <span style={{ fontSize: 8, color: 'var(--fg-4)' }}>▾</span>
               </div>
               {activeDropdown === 'priority' && (
                 <PriorityDropdown
@@ -294,7 +294,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
               >
                 {item.assignee ? (
                   <>
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF' }}>
                         {item.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                       </span>

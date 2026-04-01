@@ -309,7 +309,7 @@ export function DeleteTestCycleModal({
               padding: '0 20px',
               background: (!hasTestCases || confirmText === cycle.cycle_key)
                 ? 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)'
-                : '#94A3B8',
+                : 'var(--fg-4)',
               border: 'none',
               borderRadius: 8,
               fontSize: 14,

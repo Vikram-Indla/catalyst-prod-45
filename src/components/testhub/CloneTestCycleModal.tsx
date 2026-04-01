@@ -265,12 +265,12 @@ export function CloneTestCycleModal({
                 <div>
                   <p style={{ 
                     fontSize: 14, fontWeight: 600, 
-                    color: includeTestCases ? '#1E40AF' : '#334155', margin: 0,
+                    color: includeTestCases ? 'var(--cp-primary-70)' : 'var(--fg-2)', margin: 0,
                   }}>
                     Include test cases
                   </p>
                   <p style={{ 
-                    fontSize: 13, color: includeTestCases ? '#3B82F6' : '#64748B', margin: '4px 0 0',
+                    fontSize: 13, color: includeTestCases ? 'var(--cp-blue)' : 'var(--fg-3)', margin: '4px 0 0',
                   }}>
                     Copy all {cycle.total_cases} test cases to the new cycle. 
                     Execution status will be reset to "Not Run".
@@ -285,7 +285,7 @@ export function CloneTestCycleModal({
             padding: 12, backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)',
             border: '1px solid color-mix(in srgb, var(--cp-blue) 25%, transparent)', borderRadius: 8,
           }}>
-            <p style={{ fontSize: 13, color: '#1E40AF', margin: 0 }}>
+            <p style={{ fontSize: 13, color: 'var(--cp-primary-70)', margin: 0 }}>
               The cloned cycle will be created in <strong>Draft</strong> status with a new cycle key.
             </p>
           </div>
@@ -314,7 +314,7 @@ export function CloneTestCycleModal({
               height: 40, padding: '0 20px',
               background: newName.trim()
                 ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
-                : '#94A3B8',
+                : 'var(--fg-4)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
               color: '#FFFFFF',
               cursor: newName.trim() ? 'pointer' : 'not-allowed',

@@ -135,21 +135,21 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
               <button onClick={() => setSelectedFolderId(null)} style={{
                 width: '100%', padding: '10px 12px', border: 'none', borderRadius: 8,
                 backgroundColor: selectedFolderId === null ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent',
-                color: selectedFolderId === null ? '#2563EB' : '#334155',
+                color: selectedFolderId === null ? 'var(--cp-blue)' : 'var(--fg-2)',
                 fontSize: 14, fontWeight: selectedFolderId === null ? 600 : 400, cursor: 'pointer', textAlign: 'left',
                 display: 'flex', alignItems: 'center', gap: 8,
               }}>
-                <FolderOpen size={16} style={{ color: selectedFolderId === null ? '#2563EB' : '#64748B' }} /> All Test Cases
+                <FolderOpen size={16} style={{ color: selectedFolderId === null ? 'var(--cp-blue)' : 'var(--fg-3)' }} /> All Test Cases
               </button>
               {folders.filter(f => !f.parent_id).map(folder => (
                 <button key={folder.id} onClick={() => setSelectedFolderId(folder.id)} style={{
                   width: '100%', padding: '10px 12px', border: 'none', borderRadius: 8,
                   backgroundColor: selectedFolderId === folder.id ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent',
-                  color: selectedFolderId === folder.id ? '#2563EB' : '#334155',
+                  color: selectedFolderId === folder.id ? 'var(--cp-blue)' : 'var(--fg-2)',
                   fontSize: 14, fontWeight: selectedFolderId === folder.id ? 600 : 400, cursor: 'pointer', textAlign: 'left',
                   display: 'flex', alignItems: 'center', gap: 8,
                 }}>
-                  <Folder size={16} style={{ color: selectedFolderId === folder.id ? '#2563EB' : '#64748B' }} /> {folder.name}
+                  <Folder size={16} style={{ color: selectedFolderId === folder.id ? 'var(--cp-blue)' : 'var(--fg-3)' }} /> {folder.name}
                 </button>
               ))}
             </div>

@@ -43,11 +43,11 @@ export function ExecutionHistoryModal({ isOpen, cycleTestCaseId, testCaseKey, te
   };
 
   const statusConfig: Record<string, { icon: any; color: string; bg: string; label: string }> = {
-    not_run: { icon: Clock, color: 'var(--fg-3)', bg: '#F1F5F9', label: 'Not Run' },
+    not_run: { icon: Clock, color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', label: 'Not Run' },
     passed: { icon: CheckCircle2, color: 'var(--sem-success)', bg: '#ECFDF5', label: 'Passed' },
     failed: { icon: XCircle, color: 'var(--sem-danger)', bg: '#FEF2F2', label: 'Failed' },
     blocked: { icon: AlertTriangle, color: 'var(--sem-warning)', bg: '#FFFBEB', label: 'Blocked' },
-    skipped: { icon: SkipForward, color: 'var(--fg-4)', bg: '#F8FAFC', label: 'Skipped' },
+    skipped: { icon: SkipForward, color: 'var(--fg-4)', bg: 'var(--bg-1)', label: 'Skipped' },
   };
 
   const formatDateTime = (d: string) => new Date(d).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });

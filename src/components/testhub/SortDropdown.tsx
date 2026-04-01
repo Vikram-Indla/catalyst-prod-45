@@ -94,7 +94,7 @@ export function SortDropdown({ sort, onSortChange, onClose }: SortDropdownProps)
               type="radio"
               checked={sort.column === opt.value}
               readOnly
-              style={{ width: 16, height: 16, accentColor: '#2563EB' }}
+              style={{ width: 16, height: 16, accentColor: 'var(--cp-blue)' }}
             />
             <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>{opt.label}</span>
           </div>
@@ -113,7 +113,7 @@ export function SortDropdown({ sort, onSortChange, onClose }: SortDropdownProps)
                   border: 'none',
                   borderRadius: 4,
                   backgroundColor: sort.direction === 'asc' ? 'var(--cp-blue)' : 'transparent',
-                  color: sort.direction === 'asc' ? '#FFFFFF' : '#94A3B8',
+                  color: sort.direction === 'asc' ? '#FFFFFF' : 'var(--fg-4)',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -134,7 +134,7 @@ export function SortDropdown({ sort, onSortChange, onClose }: SortDropdownProps)
                   border: 'none',
                   borderRadius: 4,
                   backgroundColor: sort.direction === 'desc' ? 'var(--cp-blue)' : 'transparent',
-                  color: sort.direction === 'desc' ? '#FFFFFF' : '#94A3B8',
+                  color: sort.direction === 'desc' ? '#FFFFFF' : 'var(--fg-4)',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',

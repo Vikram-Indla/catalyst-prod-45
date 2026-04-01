@@ -40,10 +40,10 @@ interface TestCycleCardProps {
 }
 
 const statusConfig = {
-  draft: { label: 'Draft', color: 'var(--fg-3)', bg: '#F1F5F9', border: 'var(--divider)' },
+  draft: { label: 'Draft', color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', border: 'var(--divider)' },
   active: { label: 'Active', color: 'var(--sem-success)', bg: '#ECFDF5', border: '#A7F3D0' },
-  completed: { label: 'Completed', color: 'var(--cp-blue)', bg: '#EFF6FF', border: 'color-mix(in srgb, var(--cp-blue) 25%, transparent)' },
-  archived: { label: 'Archived', color: 'var(--fg-4)', bg: '#F8FAFC', border: 'var(--divider)' },
+  completed: { label: 'Completed', color: 'var(--cp-blue)', bg: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', border: 'color-mix(in srgb, var(--cp-blue) 25%, transparent)' },
+  archived: { label: 'Archived', color: 'var(--fg-4)', bg: 'var(--bg-1)', border: 'var(--divider)' },
 };
 
 const menuItemStyle: React.CSSProperties = {
@@ -169,7 +169,7 @@ export function TestCycleCard({
               {cycle.status === 'completed' && (
                 <>
                   <button onClick={() => { onReopen(); setMenuOpen(false); }} style={menuItemStyle}>
-                    <RotateCcw size={14} style={{ color: '#F59E0B' }} /> Reopen Cycle
+                    <RotateCcw size={14} style={{ color: 'var(--sem-warning)' }} /> Reopen Cycle
                   </button>
                   <button onClick={() => { onArchive(); setMenuOpen(false); }} style={menuItemStyle}>
                     <Archive size={14} style={{ color: 'var(--fg-3)' }} /> Archive
@@ -221,7 +221,7 @@ export function TestCycleCard({
           }} />
         </div>
         <div style={{ textAlign: 'right', marginTop: 4 }}>
-          <span style={{ fontSize: 20, fontWeight: 700, color: cycle.progress_percent === 100 ? '#059669' : '#2563EB' }}>
+          <span style={{ fontSize: 20, fontWeight: 700, color: cycle.progress_percent === 100 ? 'var(--sem-success)' : 'var(--cp-blue)' }}>
             {cycle.progress_percent}%
           </span>
         </div>

@@ -149,11 +149,11 @@ export function TestCasesToolbar({
               backgroundColor: activeFilterCount > 0 ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--cp-float)',
               border: `1.5px solid ${activeFilterCount > 0 ? 'var(--cp-blue)' : 'var(--divider)'}`,
               borderRadius: 8, fontSize: 14, fontFamily: 'Inter, sans-serif', fontWeight: 500,
-              color: activeFilterCount > 0 ? '#2563EB' : '#334155',
+              color: activeFilterCount > 0 ? 'var(--cp-blue)' : 'var(--fg-2)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
             }}
           >
-            <Filter style={{ width: 16, height: 16, color: activeFilterCount > 0 ? '#2563EB' : '#64748B' }} />
+            <Filter style={{ width: 16, height: 16, color: activeFilterCount > 0 ? 'var(--cp-blue)' : 'var(--fg-3)' }} />
             Filter {activeFilterCount > 0 && `(${activeFilterCount})`}
           </button>
 
@@ -218,7 +218,7 @@ export function TestCasesToolbar({
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <input type="radio" checked={sort.column === opt.value} readOnly style={{ width: 16, height: 16, accentColor: '#2563EB' }} />
+                    <input type="radio" checked={sort.column === opt.value} readOnly style={{ width: 16, height: 16, accentColor: 'var(--cp-blue)' }} />
                     <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>{opt.label}</span>
                   </div>
                   {sort.column === opt.value && (
@@ -253,7 +253,7 @@ export function TestCasesToolbar({
             style={{
               width: 32, height: 32, padding: 0, border: 'none', borderRadius: 6,
               backgroundColor: viewMode === 'list' ? 'var(--cp-float)' : 'transparent',
-              color: viewMode === 'list' ? '#2563EB' : '#64748B',
+              color: viewMode === 'list' ? 'var(--cp-blue)' : 'var(--fg-3)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: viewMode === 'list' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none', transition: 'all 0.15s',
             }}
@@ -265,7 +265,7 @@ export function TestCasesToolbar({
             style={{
               width: 32, height: 32, padding: 0, border: 'none', borderRadius: 6,
               backgroundColor: viewMode === 'grid' ? 'var(--cp-float)' : 'transparent',
-              color: viewMode === 'grid' ? '#2563EB' : '#64748B',
+              color: viewMode === 'grid' ? 'var(--cp-blue)' : 'var(--fg-3)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: viewMode === 'grid' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none', transition: 'all 0.15s',
             }}

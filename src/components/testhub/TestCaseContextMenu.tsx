@@ -41,7 +41,7 @@ function ContextMenuItem({ icon: Icon, children, onClick, danger }: MenuItemProp
         backgroundColor: 'transparent',
         fontFamily: 'Inter, sans-serif',
         fontSize: 13,
-        color: danger ? '#DC2626' : '#334155',
+        color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
@@ -55,7 +55,7 @@ function ContextMenuItem({ icon: Icon, children, onClick, danger }: MenuItemProp
         e.currentTarget.style.backgroundColor = 'transparent';
       }}
     >
-      <Icon style={{ width: 16, height: 16, color: danger ? '#DC2626' : '#64748B' }} />
+      <Icon style={{ width: 16, height: 16, color: danger ? 'var(--sem-danger)' : 'var(--fg-3)' }} />
       {children}
     </button>
   );

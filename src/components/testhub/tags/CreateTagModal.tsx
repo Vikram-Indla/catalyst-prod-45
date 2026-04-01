@@ -157,7 +157,7 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
               {CATEGORY_SUGGESTIONS.slice(0, 4).map((cat) => (
                 <button key={cat} onClick={() => setCategory(cat)}
-                  style={{ padding: '4px 10px', fontSize: 12, border: '1px solid var(--divider)', borderRadius: 6, backgroundColor: category === cat ? '#F1F5F9' : '#FFF', color: 'var(--fg-3)', cursor: 'pointer' }}>
+                  style={{ padding: '4px 10px', fontSize: 12, border: '1px solid var(--divider)', borderRadius: 6, backgroundColor: category === cat ? 'var(--cp-bd-zone)' : '#FFF', color: 'var(--fg-3)', cursor: 'pointer' }}>
                   {cat}
                 </button>
               ))}

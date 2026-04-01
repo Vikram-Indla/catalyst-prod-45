@@ -90,7 +90,7 @@ export function TestHubSidebar({
                 padding: '0 16px',
                 textDecoration: 'none',
                 backgroundColor: active ? 'rgba(37, 99, 235, 0.1)' : 'transparent',
-                color: active ? '#2563EB' : '#334155',
+                color: active ? 'var(--cp-blue)' : 'var(--fg-2)',
                 borderRadius: 0,
                 transition: 'all 0.15s',
               }}
@@ -106,7 +106,7 @@ export function TestHubSidebar({
               }}
             >
               <span style={{
-                color: active ? '#2563EB' : '#64748B',
+                color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
                 marginRight: 12,
               }}>
                 {item.icon}
@@ -125,7 +125,7 @@ export function TestHubSidebar({
                   padding: '0 6px',
                   borderRadius: 10,
                   backgroundColor: active ? 'var(--cp-blue)' : 'var(--divider)',
-                  color: active ? '#FFFFFF' : '#64748B',
+                  color: active ? '#FFFFFF' : 'var(--fg-3)',
                   fontSize: 11,
                   fontWeight: 600,
                   display: 'flex',

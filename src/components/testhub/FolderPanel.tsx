@@ -45,7 +45,7 @@ interface FolderPanelProps {
 
 // Lucide icon mapping function based on folder name
 const getFolderIcon = (folderName: string, isSelected: boolean = false, hasParent: boolean = false) => {
-  const color = isSelected ? '#2563EB' : '#64748B';
+  const color = isSelected ? 'var(--cp-blue)' : 'var(--fg-3)';
   const size = 16;
   
   // Child folders always get simple folder icon
@@ -361,7 +361,7 @@ export function FolderPanel({
             flex: 1,
             fontSize: 14,
             fontWeight: selectedFolderId === null ? 600 : 500,
-            color: selectedFolderId === null ? '#2563EB' : '#334155',
+            color: selectedFolderId === null ? 'var(--cp-blue)' : 'var(--fg-2)',
           }}>All Test Cases</span>
           <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>{totalTestCases}</span>
         </div>
@@ -561,7 +561,7 @@ function FolderTreeItem({
           flex: 1,
           fontSize: 14,
           fontWeight: isSelected ? 600 : 500,
-          color: isSelected ? '#2563EB' : '#334155',
+          color: isSelected ? 'var(--cp-blue)' : 'var(--fg-2)',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',

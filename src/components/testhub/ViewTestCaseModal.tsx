@@ -67,7 +67,7 @@ interface ViewTestCaseModalProps {
 type TabKey = 'details' | 'steps' | 'attachments' | 'links' | 'history' | 'runs';
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  draft: { bg: '#F1F5F9', color: 'var(--fg-3)' },
+  draft: { bg: 'var(--cp-bd-zone)', color: 'var(--fg-3)' },
   ready: { bg: '#DCFCE7', color: 'var(--sem-success)' },
   approved: { bg: '#DBEAFE', color: 'var(--cp-blue)' },
   deprecated: { bg: '#FEE2E2', color: 'var(--sem-danger)' },
@@ -213,7 +213,7 @@ function AddLinkModal({
               borderRadius: 8,
               fontSize: 14,
               fontWeight: 600,
-              color: itemKey.trim() ? '#FFFFFF' : '#94A3B8',
+              color: itemKey.trim() ? '#FFFFFF' : 'var(--fg-4)',
               cursor: itemKey.trim() ? 'pointer' : 'not-allowed',
             }}
           >
@@ -699,8 +699,8 @@ export function ViewTestCaseModal({
 
         return (
           <div>
-            {renderLinkSection('Requirements', requirements, 'requirement', ClipboardList, '#2563EB', '#EFF6FF')}
-            {renderLinkSection('Defects', defects, 'defect', Bug, '#EF4444', '#FEF2F2')}
+            {renderLinkSection('Requirements', requirements, 'requirement', ClipboardList, 'var(--cp-blue)', 'color-mix(in srgb, var(--cp-blue) 8%, transparent)')}
+            {renderLinkSection('Defects', defects, 'defect', Bug, 'var(--sem-danger)', '#FEF2F2')}
             {renderLinkSection('Stories', stories, 'story', BookOpen, '#8B5CF6', '#F5F3FF')}
           </div>
         );
@@ -797,7 +797,7 @@ export function ViewTestCaseModal({
                 ? { bg: '#DCFCE7', color: 'var(--sem-success)' } 
                 : run.result === 'failed' 
                   ? { bg: '#FEE2E2', color: 'var(--sem-danger)' }
-                  : { bg: '#F1F5F9', color: 'var(--fg-3)' };
+                  : { bg: 'var(--cp-bd-zone)', color: 'var(--fg-3)' };
               return (
                 <div key={run.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, backgroundColor: 'var(--bg-1)', borderRadius: 8, border: '1px solid var(--divider)' }}>
                   <span style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)', flex: 1 }}>{run.cycle_name}</span>
@@ -913,7 +913,7 @@ export function ViewTestCaseModal({
                   fontFamily: 'Inter',
                   fontSize: 14,
                   fontWeight: activeTab === tab.key ? 600 : 500,
-                  color: activeTab === tab.key ? '#2563EB' : '#64748B',
+                  color: activeTab === tab.key ? 'var(--cp-blue)' : 'var(--fg-3)',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -929,7 +929,7 @@ export function ViewTestCaseModal({
                     minWidth: 20,
                     padding: '0 6px',
                     backgroundColor: activeTab === tab.key ? 'rgba(37,99,235,0.1)' : 'var(--cp-bd-zone)',
-                    color: activeTab === tab.key ? '#2563EB' : '#64748B',
+                    color: activeTab === tab.key ? 'var(--cp-blue)' : 'var(--fg-3)',
                     borderRadius: 10,
                     fontFamily: 'Inter',
                     fontSize: 11,

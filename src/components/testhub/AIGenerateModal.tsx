@@ -316,10 +316,10 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
             ) : (
               <span style={{ width: 18 }} />
             )}
-            <FolderOpen size={16} style={{ color: isSelected ? '#2563EB' : '#94A3B8', flexShrink: 0 }} />
+            <FolderOpen size={16} style={{ color: isSelected ? 'var(--cp-blue)' : 'var(--fg-4)', flexShrink: 0 }} />
             <span style={{
               fontSize: 14, fontWeight: isSelected ? 600 : 400,
-              color: isSelected ? '#2563EB' : '#334155',
+              color: isSelected ? 'var(--cp-blue)' : 'var(--fg-2)',
             }}>
               {node.name}
             </span>
@@ -383,7 +383,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                     width: 22, height: 22, borderRadius: '50%', fontSize: 11, fontWeight: 700,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     backgroundColor: step === s ? 'var(--cp-blue)' : (['folder', 'input', 'preview'].indexOf(step) > i ? 'var(--sem-success)' : 'var(--divider)'),
-                    color: step === s || (['folder', 'input', 'preview'].indexOf(step) > i) ? '#FFFFFF' : '#94A3B8',
+                    color: step === s || (['folder', 'input', 'preview'].indexOf(step) > i) ? '#FFFFFF' : 'var(--fg-4)',
                   }}>
                     {['folder', 'input', 'preview'].indexOf(step) > i ? '✓' : i + 1}
                   </div>
@@ -439,7 +439,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}>
                   <FolderOpen size={14} style={{ color: 'var(--cp-blue)', flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, color: '#1E40AF', fontWeight: 500 }}>
+                  <span style={{ fontSize: 13, color: 'var(--cp-primary-70)', fontWeight: 500 }}>
                     Target: {selectedFolderPath.join(' / ')}
                   </span>
                 </div>
@@ -603,10 +603,10 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                             borderRadius: 4,
                             backgroundColor: tc.priority === 'critical' ? 'rgba(220,38,38,0.1)' :
                                             tc.priority === 'high' ? 'rgba(234,88,12,0.1)' :
-                                            tc.priority === 'medium' ? 'rgba(161,98,7,0.1)' : '#F1F5F9',
-                            color: tc.priority === 'critical' ? '#DC2626' :
+                                            tc.priority === 'medium' ? 'rgba(161,98,7,0.1)' : 'var(--cp-bd-zone)',
+                            color: tc.priority === 'critical' ? 'var(--sem-danger)' :
                                    tc.priority === 'high' ? '#EA580C' :
-                                   tc.priority === 'medium' ? '#A16207' : '#64748B',
+                                   tc.priority === 'medium' ? '#A16207' : 'var(--fg-3)',
                           }}>
                             {tc.priority}
                           </span>

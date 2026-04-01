@@ -129,7 +129,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
             <input
               value={name} onChange={e => { setName(e.target.value); setError(''); }}
               placeholder="e.g., Authentication" maxLength={50}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${error ? '#EF4444' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter' }}
+              style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${error ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter' }}
             />
             {error && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '4px 0 0' }}>{error}</p>}
           </div>
@@ -167,11 +167,11 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
                 return (
                   <button key={opt.name} onClick={() => setIcon(opt.name)} title={opt.label} style={{
                     width: '100%', aspectRatio: '1', borderRadius: 8,
-                    backgroundColor: sel ? `${color}15` : '#F8FAFC',
+                    backgroundColor: sel ? `${color}15` : 'var(--bg-1)',
                     border: sel ? `2px solid ${color}` : '2px solid transparent',
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, transition: 'all 0.15s',
                   }}>
-                    <IconComp size={18} style={{ color: sel ? color : '#64748B' }} />
+                    <IconComp size={18} style={{ color: sel ? color : 'var(--fg-3)' }} />
                   </button>
                 );
               })}

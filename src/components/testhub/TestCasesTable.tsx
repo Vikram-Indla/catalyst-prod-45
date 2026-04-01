@@ -59,10 +59,10 @@ export function TestCasesTable({
   };
 
   const getAvatarColor = (initials: string | null | undefined): string => {
-    if (!initials) return '#94A3B8';
+    if (!initials) return 'var(--fg-4)';
     const letter = initials.charAt(0).toUpperCase();
-    if (letter <= 'E') return '#3B82F6'; // Blue
-    if (letter <= 'J') return '#10B981'; // Green
+    if (letter <= 'E') return 'var(--cp-blue)'; // Blue
+    if (letter <= 'J') return 'var(--sem-success)'; // Green
     if (letter <= 'O') return '#8B5CF6'; // Purple
     if (letter <= 'T') return '#F97316'; // Orange
     return '#EC4899'; // Pink
@@ -261,7 +261,7 @@ export function TestCasesTable({
                     fontSize: 13,
                     color: tc.priority === 'critical' ? '#991B1B' :
                            tc.priority === 'high' ? '#C2410C' :
-                           tc.priority === 'medium' ? '#A16207' : '#64748B',
+                           tc.priority === 'medium' ? '#A16207' : 'var(--fg-3)',
                   }}>
                     {tc.priority.charAt(0).toUpperCase() + tc.priority.slice(1)}
                   </span>
@@ -281,10 +281,10 @@ export function TestCasesTable({
                     borderRadius: 4,
                     backgroundColor: tc.type === 'security' ? 'rgba(239,68,68,0.1)' :
                                     tc.type === 'performance' ? 'rgba(215,119,6,0.1)' :
-                                    tc.type === 'api' ? 'rgba(139,92,246,0.1)' : '#F1F5F9',
-                    color: tc.type === 'security' ? '#DC2626' :
+                                    tc.type === 'api' ? 'rgba(139,92,246,0.1)' : 'var(--cp-bd-zone)',
+                    color: tc.type === 'security' ? 'var(--sem-danger)' :
                            tc.type === 'performance' ? '#B45309' :
-                           tc.type === 'api' ? '#7C3AED' : '#475569',
+                           tc.type === 'api' ? '#7C3AED' : 'var(--fg-2)',
                   }}>
                     {tc.type.toUpperCase()}
                   </span>
@@ -304,10 +304,10 @@ export function TestCasesTable({
                     borderRadius: 4,
                     backgroundColor: tc.status === 'approved' ? 'rgba(16,185,129,0.1)' :
                                     tc.status === 'ready' ? 'rgba(37,99,235,0.1)' :
-                                    tc.status === 'deprecated' ? 'rgba(239,68,68,0.1)' : '#F1F5F9',
-                    color: tc.status === 'approved' ? '#059669' :
-                           tc.status === 'ready' ? '#2563EB' :
-                           tc.status === 'deprecated' ? '#DC2626' : '#64748B',
+                                    tc.status === 'deprecated' ? 'rgba(239,68,68,0.1)' : 'var(--cp-bd-zone)',
+                    color: tc.status === 'approved' ? 'var(--sem-success)' :
+                           tc.status === 'ready' ? 'var(--cp-blue)' :
+                           tc.status === 'deprecated' ? 'var(--sem-danger)' : 'var(--fg-3)',
                   }}>
                     {tc.status.toUpperCase()}
                   </span>

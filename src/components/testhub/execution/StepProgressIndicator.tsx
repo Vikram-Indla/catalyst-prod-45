@@ -16,10 +16,10 @@ interface StepProgressIndicatorProps {
 
 const statusColors: Record<string, string> = {
   not_run: 'hsl(var(--muted-foreground))',
-  passed: '#059669',
-  failed: '#DC2626',
-  blocked: '#D97706',
-  skipped: '#94A3B8',
+  passed: 'var(--sem-success)',
+  failed: 'var(--sem-danger)',
+  blocked: 'var(--sem-warning)',
+  skipped: 'var(--fg-4)',
 };
 
 export function StepProgressIndicator({ steps, currentIndex, onStepClick }: StepProgressIndicatorProps) {

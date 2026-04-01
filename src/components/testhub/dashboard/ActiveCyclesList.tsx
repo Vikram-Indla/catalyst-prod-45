@@ -52,7 +52,7 @@ export function ActiveCyclesList({ cycles }: Props) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {cycles.map((cycle) => {
             const pct = cycle.progress_percent ?? 0;
-            const pctColor = pct >= 80 ? '#10B981' : pct >= 50 ? '#2563EB' : '#64748B';
+            const pctColor = pct >= 80 ? 'var(--sem-success)' : pct >= 50 ? 'var(--cp-blue)' : 'var(--fg-3)';
             const barGrad = pct >= 80
               ? 'linear-gradient(90deg, #10B981, #059669)'
               : pct >= 50
@@ -83,7 +83,7 @@ export function ActiveCyclesList({ cycles }: Props) {
 
                 {/* Stats */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 12, color: 'hsl(var(--muted-foreground))' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><CheckCircle2 size={12} color="#10B981" />{cycle.passed_count ?? 0}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><CheckCircle2 size={12} color="var(--sem-success)" />{cycle.passed_count ?? 0}</span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><XCircle size={12} color="var(--sem-danger)" />{cycle.failed_count ?? 0}</span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Clock size={12} color="var(--fg-4)" />{cycle.not_run_count ?? 0}</span>
                   <span>of {cycle.total_cases ?? 0}</span>

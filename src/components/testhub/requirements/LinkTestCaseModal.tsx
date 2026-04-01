@@ -23,7 +23,7 @@ interface TestCase {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  critical: '#DC2626', high: '#EA580C', medium: '#D97706', low: '#059669',
+  critical: 'var(--sem-danger)', high: '#EA580C', medium: 'var(--sem-warning)', low: 'var(--sem-success)',
 };
 
 export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, alreadyLinkedIds }: LinkTestCaseModalProps) {
@@ -142,7 +142,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
           ) : (
             filtered.map(tc => {
               const isSelected = selectedIds.has(tc.id);
-              const priorityColor = PRIORITY_COLORS[tc.priority] || '#D97706';
+              const priorityColor = PRIORITY_COLORS[tc.priority] || 'var(--sem-warning)';
               return (
                 <div key={tc.id} onClick={() => toggleSelect(tc.id)}
                   style={{

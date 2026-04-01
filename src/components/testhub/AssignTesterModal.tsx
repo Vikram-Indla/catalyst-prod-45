@@ -221,7 +221,7 @@ export function AssignTesterModal({
                     <div style={{ flex: 1 }}>
                       <p style={{ 
                         fontSize: 14, fontWeight: isSelected ? 600 : 500, 
-                        color: isSelected ? '#4338CA' : '#0F172A', margin: 0,
+                        color: isSelected ? '#4338CA' : 'var(--fg-1)', margin: 0,
                       }}>
                         {profile.full_name}
                       </p>

@@ -77,11 +77,11 @@ export function ExecutionTestCaseView({
   const testCase = cycleTestCase.test_case;
 
   const statusConfig: Record<string, { color: string; bg: string; label: string }> = {
-    not_run: { color: 'var(--fg-3)', bg: '#F1F5F9', label: 'Not Run' },
+    not_run: { color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', label: 'Not Run' },
     passed: { color: 'var(--sem-success)', bg: '#ECFDF5', label: 'Passed' },
     failed: { color: 'var(--sem-danger)', bg: '#FEF2F2', label: 'Failed' },
     blocked: { color: 'var(--sem-warning)', bg: '#FFFBEB', label: 'Blocked' },
-    skipped: { color: 'var(--fg-4)', bg: '#F8FAFC', label: 'Skipped' },
+    skipped: { color: 'var(--fg-4)', bg: 'var(--bg-1)', label: 'Skipped' },
   };
 
   const priorityConfig: Record<string, { color: string; bg: string }> = {
@@ -137,8 +137,8 @@ export function ExecutionTestCaseView({
               <History size={14} /> History
             </button>
             <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: elapsedTime > 0 ? '#FEF3C7' : 'var(--cp-bd-zone)', borderRadius: 6 }}>
-              <Timer size={14} style={{ color: elapsedTime > 0 ? '#D97706' : '#64748B' }} />
-              <span style={{ fontSize: 14, fontWeight: 600, fontFamily: 'monospace', color: elapsedTime > 0 ? '#D97706' : '#64748B' }}>
+              <Timer size={14} style={{ color: elapsedTime > 0 ? 'var(--sem-warning)' : 'var(--fg-3)' }} />
+              <span style={{ fontSize: 14, fontWeight: 600, fontFamily: 'monospace', color: elapsedTime > 0 ? 'var(--sem-warning)' : 'var(--fg-3)' }}>
                 {formatTime(elapsedTime)}
               </span>
             </div>

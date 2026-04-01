@@ -256,7 +256,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
 
           {!isEdit && (
             <div style={{ padding: 16, backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--cp-blue) 25%, transparent)', borderRadius: 8 }}>
-              <p style={{ fontSize: 13, color: '#1E40AF', margin: 0 }}>
+              <p style={{ fontSize: 13, color: 'var(--cp-primary-70)', margin: 0 }}>
                 <strong>Note:</strong> The cycle will be created in <strong>Draft</strong> status. Add test cases and start when ready.
               </p>
             </div>
