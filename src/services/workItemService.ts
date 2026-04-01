@@ -102,8 +102,8 @@ export async function createWorkItem(input: CreateWorkItemInput) {
       .maybeSingle();
 
     if (connection && data) {
-      const { data: mapping } = await supabase
-        .from('jira_project_mappings')
+      const { data: mapping } = await (supabase
+        .from('jira_project_mappings') as any)
         .select('jira_project_key')
         .eq('catalyst_project_id', input.project_id)
         .eq('sync_enabled', true)
