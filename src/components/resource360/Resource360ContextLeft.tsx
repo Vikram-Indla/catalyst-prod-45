@@ -125,7 +125,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
         {/* Status Timeline */}
         {transitions.length > 0 && (
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: '#94A3B8', textTransform: 'uppercase' as const, marginBottom: 8 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--fg-4)', textTransform: 'uppercase' as const, marginBottom: 8 }}>
               Status Timeline
             </div>
             <div className="flex items-center gap-1 flex-wrap">
@@ -142,7 +142,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
                     }}>
                       {tr.status}
                     </span>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: '#94A3B8', fontFamily: "'Inter', monospace" }}>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--fg-4)', fontFamily: "'Inter', monospace" }}>
                       {tr.days}d
                     </span>
                     {i < transitions.length - 1 && (

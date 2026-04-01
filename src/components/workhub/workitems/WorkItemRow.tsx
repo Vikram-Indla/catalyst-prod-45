@@ -164,10 +164,10 @@ export function WorkItemRow({
       </div>
 
       {/* 9. Updated */}
-      <span className="text-[10.5px] truncate" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>{formatDate(item.jira_updated_at)}</span>
+      <span className="text-[10.5px] truncate" style={{ color: 'var(--fg-4)' }}>{formatDate(item.jira_updated_at)}</span>
 
       {/* 10. Created */}
-      <span className="text-[10.5px] truncate" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>{formatDate(item.jira_created_at)}</span>
+      <span className="text-[10.5px] truncate" style={{ color: 'var(--fg-4)' }}>{formatDate(item.jira_created_at)}</span>
     </div>
   );
 }

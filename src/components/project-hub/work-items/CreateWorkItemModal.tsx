@@ -251,7 +251,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
             <span className="text-[14px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'Sora, sans-serif' }}>
               Create Work Item
             </span>
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: '#F1F5F9', color: '#64748B' }}>
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: 'var(--cp-bd-zone)', color: 'var(--fg-3)' }}>
               {projectKey}
             </span>
           </div>
@@ -268,7 +268,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
         <div className="px-5 py-4 flex flex-col gap-4 overflow-y-auto">
           {/* Type selector — hierarchy icons */}
           <div>
-            <label className="text-[10px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: '#94A3B8' }}>
+            <label className="text-[10px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--fg-4)' }}>
               Type
             </label>
             <div className="flex gap-1.5 flex-wrap">
@@ -281,9 +281,9 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                     onClick={() => setSelectedType(wt.id)}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-all"
                     style={{
-                      border: isSelected ? `2px solid ${hi.color}` : '1px solid #E2E8F0',
-                      background: isSelected ? `${hi.color}10` : '#FFFFFF',
-                      color: isSelected ? hi.color : '#475569',
+                      border: isSelected ? `2px solid ${hi.color}` : '1px solid var(--divider)',
+                      background: isSelected ? `${hi.color}10` : 'var(--bg-app)',
+                      color: isSelected ? hi.color : 'var(--fg-2)',
                       outline: isSelected ? `1px solid ${hi.color}` : 'none',
                     }}
                   >
@@ -297,8 +297,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
 
           {/* Title */}
           <div>
-            <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>
-              Title <span style={{ color: '#DC2626' }}>*</span>
+            <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>
+              Title <span style={{ color: 'var(--sem-danger)' }}>*</span>
             </label>
             <input
               ref={titleRef}
@@ -306,7 +306,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
               onChange={e => setTitle(e.target.value)}
               placeholder="What needs to be done?"
               className="w-full rounded-md border px-3 text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB] transition-shadow"
-              style={{ height: 40, borderColor: '#E2E8F0', color: '#0F172A', fontFamily: 'Inter, sans-serif' }}
+              style={{ height: 40, borderColor: 'var(--divider)', color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(); }}
             />
           </div>

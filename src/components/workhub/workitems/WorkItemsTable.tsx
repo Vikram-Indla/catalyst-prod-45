@@ -154,7 +154,7 @@ export function WorkItemsTable({
   const themeMap = useMemo(() => {
     if (!themes) return new Map<string, { name: string; color: string }>();
     const m = new Map<string, { name: string; color: string }>();
-    themes.forEach(t => m.set(t.id, { name: t.name, color: t.color || '#94a3b8' }));
+    themes.forEach(t => m.set(t.id, { name: t.name, color: t.color || 'var(--fg-4)' }));
     return m;
   }, [themes]);
 

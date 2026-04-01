@@ -423,13 +423,13 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
 
         {/* G. Activity placeholder */}
         <Section title="Activity" defaultOpen={false}>
-          <div style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ padding: '8px 20px', borderBottom: '1px solid var(--divider)' }}>
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               {['All', 'Comments', 'History'].map((tab, i) => (
                 <button key={tab} style={{
-                  background: 'none', border: 'none', borderBottom: i === 0 ? '2px solid #2563EB' : '2px solid transparent',
+                  background: 'none', border: 'none', borderBottom: i === 0 ? '2px solid var(--cp-blue)' : '2px solid transparent',
                   padding: '4px 0', fontSize: 12, fontWeight: i === 0 ? 600 : 400,
-                  color: i === 0 ? '#2563EB' : '#64748B', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                  color: i === 0 ? 'var(--cp-blue)' : 'var(--fg-3)', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
                 }}>
                   {tab}
                 </button>
@@ -442,7 +442,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 rows={2}
                 style={{
                   flex: 1, padding: 8, fontSize: 13, fontFamily: "'Inter', sans-serif",
-                  border: '1px solid #E2E8F0', borderRadius: 6, outline: 'none', resize: 'none',
+                  border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'none',
                 }}
               />
             </div>
