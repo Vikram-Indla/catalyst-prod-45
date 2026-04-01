@@ -146,8 +146,6 @@ export async function createFolder(input: CreateFolderInput): Promise<TestFolder
     throw new Error(`Failed to create folder: ${error.message}`);
   }
 
-  console.log('[FolderService] Created folder:', data);
-
   return {
     id: data.id,
     name: data.name,
@@ -226,8 +224,6 @@ export async function moveTestCasesToFolder(
   testCaseIds: string[],
   folderId: string | null
 ): Promise<number> {
-  console.log('[FolderService] moveTestCasesToFolder called with:', { testCaseIds, folderId });
-  
   // Filter out any invalid IDs (empty strings, display IDs like "TC-XXXX")
   const validUUIDs = testCaseIds.filter(id => {
     if (!id || id.trim() === '') return false;
@@ -235,8 +231,6 @@ export async function moveTestCasesToFolder(
     const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     return uuidPattern.test(id);
   });
-  
-  console.log('[FolderService] Valid UUIDs:', validUUIDs);
   
   if (validUUIDs.length === 0) {
     console.warn('[FolderService] No valid UUIDs provided. Original IDs:', testCaseIds);
@@ -254,7 +248,6 @@ export async function moveTestCasesToFolder(
     throw new Error(`Failed to move test cases: ${error.message}`);
   }
 
-  console.log('[FolderService] Moved test cases:', data);
   return data?.length || 0;
 }
 
