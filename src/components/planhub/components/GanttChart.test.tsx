@@ -75,7 +75,7 @@ describe("GanttChart", () => {
       { wrapper: createWrapper() }
     );
 
-    expect(container.querySelector(".ph-gantt-chart")).toBeInTheDocument();
+    expect(container.querySelector(".ph-gantt")).toBeInTheDocument();
   });
 
   it("renders month headers", () => {
@@ -103,7 +103,7 @@ describe("GanttChart", () => {
       { wrapper: createWrapper() }
     );
 
-    const milestone = container.querySelector(".ph-gantt-milestone");
+    const milestone = container.querySelector(".ph-gantt-bar.milestone");
     expect(milestone).toBeInTheDocument();
   });
 
@@ -133,16 +133,16 @@ describe("GanttChart", () => {
       { wrapper: createWrapper() }
     );
 
-    expect(container.textContent?.toLowerCase()).toContain("no tasks");
+    expect(container.textContent?.toLowerCase()).toContain("add tasks with dates");
   });
 
-  it("supports horizontal scrolling", () => {
+  it("supports horizontal scrolling via gantt body", () => {
     const { container } = render(
       React.createElement(GanttChart, { tasks: mockTasks }),
       { wrapper: createWrapper() }
     );
 
-    const scrollContainer = container.querySelector(".ph-gantt-scroll");
+    const scrollContainer = container.querySelector(".ph-gantt-body");
     expect(scrollContainer).toBeInTheDocument();
   });
 });
