@@ -290,6 +290,7 @@ function getStatusCategory(status: string): 'todo' | 'inprogress' | 'done' {
 }
 
 function SubTaskCard({ item, onClick }: { item: SubTaskItem; onClick: () => void }) {
+  const T = useT();
   const bars = PRI_MAP[item.priority] || 2;
   return (
     <button
