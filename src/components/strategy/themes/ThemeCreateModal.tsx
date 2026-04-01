@@ -26,6 +26,9 @@ const labelStyle: React.CSSProperties = {
   display: 'block', marginBottom: 4,
 };
 
+const labelCls = 'block text-[11px] font-semibold text-muted-foreground mb-1';
+const inputCls = 'w-full text-[13px] px-2.5 py-2 border border-border rounded-md text-foreground bg-card outline-none';
+
 export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props) {
   const { data: themeGroups = [] } = useThemeGroups();
   const createGroup = useCreateThemeGroup();
