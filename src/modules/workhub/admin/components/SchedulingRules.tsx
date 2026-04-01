@@ -95,7 +95,7 @@ export function SchedulingRules() {
         {priorities.map((p, i) => (
           <div key={i} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0',
-            borderBottom: i < 2 ? '1px solid #F1F5F9' : 'none',
+            borderBottom: i < 2 ? '1px solid var(--wh-bdr, #F1F5F9)' : 'none',
           }}>
             <Toggle checked={priorityToggles[i]} onChange={(v) => {
               const copy = [...priorityToggles]

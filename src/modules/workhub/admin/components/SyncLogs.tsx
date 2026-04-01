@@ -170,10 +170,10 @@ export function SyncLogs() {
       {/* Health Strip */}
       <div className="grid grid-cols-5 gap-3">
         <HealthBox label="SYNC STATUS" value={syncStatus === 'healthy' ? '● Healthy' : syncStatus === 'syncing' ? '● Syncing' : syncStatus === 'error' ? '● Error' : '● Waiting'} valueColor={syncStatus === 'healthy' ? '#10B981' : syncStatus === 'syncing' ? '#2563EB' : syncStatus === 'error' ? '#EF4444' : '#94A3B8'} loading={healthLoading} spinning={syncStatus === 'syncing'} />
-        <HealthBox label="LAST SYNC" value={health?.lastSync ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true }) : '—'} valueColor="#0F172A" loading={healthLoading} />
-        <HealthBox label="ISSUES CACHED" value={formatNumber(health?.issueCachedCount || 0)} valueColor="#0F172A" loading={healthLoading} />
-        <HealthBox label="VERSIONS CACHED" value={formatNumber(health?.versionCachedCount || 0)} valueColor="#0F172A" loading={healthLoading} />
-        <HealthBox label="PROJECTS" value={String(health?.projectCount || 0)} valueColor="#0F172A" loading={healthLoading} />
+        <HealthBox label="LAST SYNC" value={health?.lastSync ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true }) : '—'} valueColor="var(--wh-tx, #0F172A)" loading={healthLoading} />
+        <HealthBox label="ISSUES CACHED" value={formatNumber(health?.issueCachedCount || 0)} valueColor="var(--wh-tx, #0F172A)" loading={healthLoading} />
+        <HealthBox label="VERSIONS CACHED" value={formatNumber(health?.versionCachedCount || 0)} valueColor="var(--wh-tx, #0F172A)" loading={healthLoading} />
+        <HealthBox label="PROJECTS" value={String(health?.projectCount || 0)} valueColor="var(--wh-tx, #0F172A)" loading={healthLoading} />
       </div>
 
       {/* Error Banner */}
@@ -485,8 +485,8 @@ function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (m
 
   return (
     <div
-      style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '10px 20px', borderBottom: '1px solid #F1F5F9', alignItems: 'center', fontSize: '12px' }}
-      onMouseOver={(e) => (e.currentTarget.style.background = '#F8FAFC')}
+      style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '10px 20px', borderBottom: '1px solid var(--wh-bdr, #F1F5F9)', alignItems: 'center', fontSize: '12px' }}
+      onMouseOver={(e) => (e.currentTarget.style.background = 'var(--wh-sf, #F8FAFC)')}
       onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
     >
       <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: 'var(--fg-3, #64748B)' }}>{timestamp}</span>

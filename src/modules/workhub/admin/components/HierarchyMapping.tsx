@@ -183,7 +183,7 @@ export function HierarchyMapping() {
                       padding: '5px 12px', borderRadius: 6, fontSize: 11, border: '1px solid',
                       cursor: 'pointer', transition: 'all .15s', fontWeight: isOn ? 600 : 400,
                       background: isOn ? '#EFF6FF' : '#fff',
-                      borderColor: isOn ? '#BFDBFE' : '#E2E8F0',
+                      borderColor: isOn ? 'var(--wh-pri-bdr, #BFDBFE)' : 'var(--wh-bdr, #E2E8F0)',
                       color: isOn ? '#1D4ED8' : '#334155',
                     }}
                   >

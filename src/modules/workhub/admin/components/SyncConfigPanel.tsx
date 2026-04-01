@@ -541,7 +541,7 @@ function SyncProgressPanel({
         </span>
       </div>
       {/* Overall progress bar */}
-      <div style={{ height: 8, borderRadius: 4, background: '#E2E8F0', overflow: 'hidden', marginBottom: 14 }}>
+      <div style={{ height: 8, borderRadius: 4, background: 'var(--wh-bdr, #E2E8F0)', overflow: 'hidden', marginBottom: 14 }}>
         <div style={{
           height: '100%', borderRadius: 4, transition: 'width 0.5s ease',
           width: `${progressPct}%`,
@@ -571,7 +571,7 @@ function SyncProgressPanel({
             <span style={{ fontSize: 11, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)', flex: 1 }}>
               {p.name !== p.key ? p.name : ''}
             </span>
-            <div style={{ flex: 1, maxWidth: 120, height: 4, borderRadius: 2, background: '#E2E8F0', overflow: 'hidden' }}>
+            <div style={{ flex: 1, maxWidth: 120, height: 4, borderRadius: 2, background: 'var(--wh-bdr, #E2E8F0)', overflow: 'hidden' }}>
               <div style={{
                 height: '100%', borderRadius: 2, transition: 'width 0.4s ease',
                 width: p.status === 'done' || p.status === 'error' ? '100%' : p.status === 'syncing' ? '50%' : '0%',

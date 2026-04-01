@@ -212,7 +212,7 @@ export function UserMapping() {
   }
 
   const cardBg = '#fff'
-  const borderColor = '#E2E8F0'
+  const borderColor = 'var(--wh-bdr, #E2E8F0)'
 
   // Available (unmapped) Jira users for manual dropdown
   const availableJiraUsers = jiraUsers.filter(j => !Object.values(localMappings).includes(j.id) || !localMappings[j.id])
@@ -326,7 +326,7 @@ export function UserMapping() {
           ))}
         </select>
 
-        <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
+        <div style={{ width: 1, height: 24, background: 'var(--wh-bdr, #E2E8F0)', margin: '0 4px' }} />
 
         {/* View mode toggle */}
         <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden', border: `1px solid ${borderColor}` }}>
@@ -349,7 +349,7 @@ export function UserMapping() {
           ))}
         </div>
 
-        <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
+        <div style={{ width: 1, height: 24, background: 'var(--wh-bdr, #E2E8F0)', margin: '0 4px' }} />
 
         <input
           type="text"
@@ -411,7 +411,7 @@ export function UserMapping() {
 
                 return (
                   <tr key={profile.id} style={{
-                    borderBottom: '1px solid #F1F5F9',
+                    borderBottom: '1px solid var(--wh-bdr, #F1F5F9)',
                     background: isMapped ? '#fff' : '#FEFCE8',
                   }}>
                     {/* # */}

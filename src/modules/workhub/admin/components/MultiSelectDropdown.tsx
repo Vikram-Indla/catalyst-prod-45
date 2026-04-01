@@ -129,7 +129,7 @@ export function MultiSelectDropdown({
             boxShadow: '0 8px 24px rgba(0,0,0,.12)', zIndex: 9999, overflow: 'hidden',
           }}>
             {/* Search */}
-            <div style={{ padding: '8px 10px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--wh-bdr, #F1F5F9)', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Search size={13} style={{ color: 'var(--fg-4, #94A3B8)', flexShrink: 0 }} />
               <input
                 ref={searchRef}
@@ -145,7 +145,7 @@ export function MultiSelectDropdown({
             </div>
 
             {/* Select All / Deselect All */}
-            <div style={{ padding: '6px 10px', borderBottom: '1px solid #F1F5F9', display: 'flex', gap: '12px' }}>
+            <div style={{ padding: '6px 10px', borderBottom: '1px solid var(--wh-bdr, #F1F5F9)', display: 'flex', gap: '12px' }}>
               <button
                 onClick={() => onChange(filtered.map(o => o.value))}
                 style={{ fontSize: '10px', color: accentColor, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
@@ -183,7 +183,7 @@ export function MultiSelectDropdown({
                         background: isSelected ? accentBg : 'transparent',
                         transition: 'background .1s',
                       }}
-                      onMouseOver={(e) => { if (!isSelected) e.currentTarget.style.background = '#F8FAFC' }}
+                      onMouseOver={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--wh-sf, #F8FAFC)' }}
                       onMouseOut={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent' }}
                     >
                       <div style={{

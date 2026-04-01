@@ -155,7 +155,7 @@ export function DataScope() {
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '10px 16px', borderRadius: 8, border: '1px solid', cursor: 'pointer',
                   background: isOn ? '#EFF6FF' : '#fff',
-                  borderColor: isOn ? '#BFDBFE' : '#E2E8F0',
+                  borderColor: isOn ? 'var(--wh-pri-bdr, #BFDBFE)' : 'var(--wh-bdr, #E2E8F0)',
                   opacity: isOn ? 1 : 0.5,
                   transition: 'all .15s',
                 }}
