@@ -374,7 +374,7 @@ export function GoalsTreeView({
                     <div><OwnerAvatar name={goal.owner_name} size={28} /></div>
                     <div>
                       {goal.ai_health_score != null ? (
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600, color: isDark ? '#93C5FD' : '#2563EB', background: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF', padding: '2px 6px', borderRadius: 4 }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600, color: isDark ? '#93C5FD' : 'var(--cp-blue)', background: isDark ? 'rgba(59,130,246,0.12)' : 'var(--cp-blue-wash)', padding: '2px 6px', borderRadius: 4 }}>
                           <Sparkles size={10} />
                           {goal.ai_health_score}
                         </span>
