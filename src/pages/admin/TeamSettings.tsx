@@ -28,8 +28,8 @@ export default function TeamSettings() {
         .in('key', ['team_point_system', 'team_points_per_week']);
       if (error) throw error;
       const settings = new Map((data || []).map((s: any) => [s.key, s.value]));
-      if (settings.has('team_point_system')) setPointSystem(settings.get('team_point_system'));
-      if (settings.has('team_points_per_week')) setPointsPerWeek(settings.get('team_points_per_week'));
+      if (settings.has('team_point_system')) setPointSystem(settings.get('team_point_system') as string);
+      if (settings.has('team_points_per_week')) setPointsPerWeek(settings.get('team_points_per_week') as string);
       return data;
     },
   });
