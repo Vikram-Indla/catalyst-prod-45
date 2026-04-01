@@ -149,6 +149,9 @@ const INPUT_CLS = "w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:
 
 /* ── Main Component ── */
 export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCreated }: CreateInitiativeDrawerProps) {
+  const { isDark } = useTheme();
+  T = isDark ? T_DARK : T_LIGHT;
+
   const { data: nextKey } = useNextInitiativeKey();
   const createMutation = useCreateInitiative();
   const { data: departmentOptions } = useDepartmentOptions();
