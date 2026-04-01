@@ -117,8 +117,8 @@ export async function createWorkItem(input: CreateWorkItemInput) {
         project_key: mapping?.jira_project_key ?? null,
       };
 
-      await supabase
-        .from('jira_write_back_queue')
+      await (supabase
+        .from('jira_write_back_queue') as any)
         .insert({
           ph_work_item_id: data.id,
           operation: 'create',
@@ -126,8 +126,8 @@ export async function createWorkItem(input: CreateWorkItemInput) {
           status: 'pending',
         });
 
-      await supabase
-        .from('ph_work_items')
+      await (supabase
+        .from('ph_work_items') as any)
         .update({ jira_sync_status: 'pending' } as any)
         .eq('id', data.id);
     }
