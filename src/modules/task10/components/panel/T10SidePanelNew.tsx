@@ -139,7 +139,6 @@ export function T10SidePanelNew({
   const handleStatusToggle = async () => {
     if (item) {
       await toggleStatus.mutateAsync(item);
-      console.log('[T10] Status toggled via panel');
       refetch();
       onUpdated?.();
     }
@@ -149,7 +148,6 @@ export function T10SidePanelNew({
   const handleAssigneeChange = async (userId: string | null) => {
     if (item) {
       await updateItem.mutateAsync({ id: item.id, assignee_id: userId });
-      console.log('[T10] Assignee changed:', userId);
       refetch();
       onUpdated?.();
     }
@@ -159,7 +157,6 @@ export function T10SidePanelNew({
   const handleDateChange = async (date: string | null) => {
     if (item) {
       await updateItem.mutateAsync({ id: item.id, due_date: date });
-      console.log('[T10] Due date changed:', date);
       refetch();
       onUpdated?.();
     }
@@ -169,7 +166,6 @@ export function T10SidePanelNew({
   const handleLabelsChange = async (labelIds: string[]) => {
     if (item) {
       await updateLabels.mutateAsync({ item_id: item.id, label_ids: labelIds });
-      console.log('[T10] Labels changed:', labelIds.length);
       refetch();
       onUpdated?.();
     }
@@ -189,7 +185,6 @@ export function T10SidePanelNew({
         variant: 'destructive',
       });
       
-      console.log('[T10] Item deleted via panel');
       onDeleted?.();
       setTimeout(() => handleClose(), 300);
     } catch (error) {
@@ -208,7 +203,6 @@ export function T10SidePanelNew({
       navigator.clipboard.writeText(item.taskhub_key);
       setCopiedKey(true);
       setTimeout(() => setCopiedKey(false), 2000);
-      console.log('[T10] Key copied:', item.taskhub_key);
     }
   };
 
@@ -216,7 +210,6 @@ export function T10SidePanelNew({
   const handleExternalLink = () => {
     if (item?.taskhub_key) {
       window.open(`/taskhub/${item.taskhub_key}`, '_blank');
-      console.log('[T10] External link clicked:', item.taskhub_key);
     }
   };
 
