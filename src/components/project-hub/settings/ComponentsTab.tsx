@@ -58,7 +58,7 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
 
   const inputStyle: React.CSSProperties = {
     height: 36, padding: '0 12px', fontSize: 13,
-    color: '#0F172A', background: '#FFFFFF', border: '1px solid #E2E8F0',
+    color: 'var(--fg-1)', background: 'var(--cp-float)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
     flex: 1, minWidth: 0,
     transition: 'border-color 150ms, box-shadow 150ms',

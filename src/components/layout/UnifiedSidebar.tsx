@@ -301,7 +301,7 @@ export function UnifiedSidebar({
                 }}
                 onMouseLeave={(e) => { 
                   e.currentTarget.style.background = active ? 'rgba(37, 99, 235, 0.12)' : 'transparent';
-                  e.currentTarget.style.color = active ? '#2563eb' : 'var(--text-2, #334155)';
+                  e.currentTarget.style.color = active ? 'var(--cp-blue)' : 'var(--text-2)';
                 }}
               >
                 {/* V10: Left indicator bar for active state - 3px */}

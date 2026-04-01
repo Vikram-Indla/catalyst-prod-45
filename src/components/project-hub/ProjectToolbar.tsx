@@ -30,11 +30,11 @@ export function ProjectToolbar({
     return () => clearTimeout(t);
   }, [localSearch, onSearchChange]);
 
-  const borderColor = isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0';
+  const borderColor = isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)';
   const surfaceBg = isDark ? 'transparent' : '#FFFFFF';
-  const textColor = isDark ? 'rgba(248,244,240,0.92)' : '#0F172A';
-  const mutedColor = isDark ? 'rgba(248,244,240,0.40)' : '#94A3B8';
-  const subtleColor = isDark ? 'rgba(248,244,240,0.60)' : '#64748B';
+  const textColor = isDark ? 'rgba(248,244,240,0.92)' : 'var(--fg-1)';
+  const mutedColor = isDark ? 'rgba(248,244,240,0.40)' : 'var(--fg-4)';
+  const subtleColor = isDark ? 'rgba(248,244,240,0.60)' : 'var(--fg-3)';
 
   return (
     <div>
