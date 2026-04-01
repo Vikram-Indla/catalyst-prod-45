@@ -90,7 +90,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
 
       {/* Title */}
       <div className="px-6 pb-3">
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', lineHeight: 1.35, margin: 0, fontFamily: 'Inter, sans-serif' }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', lineHeight: 1.35, margin: 0, fontFamily: 'Inter, sans-serif' }}>
           {item.title}
         </h2>
       </div>
@@ -103,7 +103,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
             <span style={{ fontSize: 12, fontWeight: 600, color: hubColor }}>{item.hub}</span>
           </PropertyRow>
           <PropertyRow label="Project">
-            <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{item.project_name ?? '—'}</span>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)' }}>{item.project_name ?? '—'}</span>
           </PropertyRow>
           <PropertyRow label="Reported By">
             <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{item.assigner_name ?? '—'}</span>

@@ -353,7 +353,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 <div style={{ flex: 1, height: 6, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? 'var(--sem-success)' : 'var(--cp-blue)', borderRadius: 3, transition: 'width 300ms ease' }} />
                 </div>
-                <span style={{ fontSize: 12, color: '#64748B', fontVariantNumeric: 'tabular-nums' }}>
+                <span style={{ fontSize: 12, color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>
                   {item.stats.completedCount}/{item.stats.totalDescendants}
                 </span>
               </div>
@@ -378,8 +378,8 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
                   {child.issueType && <JiraIssueTypeIcon type={child.issueType} size={12} />}
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', flexShrink: 0 }}>{child.key}</span>
-                  <span style={{ fontSize: 12, color: '#0F172A', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.title}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', flexShrink: 0 }}>{child.key}</span>
+                  <span style={{ fontSize: 12, color: 'var(--fg-1)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.title}</span>
                   <StatusBadge status={child.status.name} mini />
                   {child.assignee && (
                     <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

@@ -94,13 +94,13 @@ export function WorkItemRow({
         ) : (
           <span className="w-4 shrink-0" />
         )}
-        <span className="text-[12px] font-semibold truncate" style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--wh-primary, #2563eb)' }}>
+        <span className="text-[12px] font-semibold truncate" style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--cp-blue)' }}>
           {item.issue_key}
         </span>
       </div>
 
       {/* 4. Summary */}
-      <span className="text-[13px] truncate pr-2" style={{ fontWeight: depth === 0 ? 700 : depth === 1 ? 500 : 400, color: 'var(--wh-text-primary, #0f172a)' }}>
+      <span className="text-[13px] truncate pr-2" style={{ fontWeight: depth === 0 ? 700 : depth === 1 ? 500 : 400, color: 'var(--fg-1)' }}>
         {item.summary}
       </span>
 

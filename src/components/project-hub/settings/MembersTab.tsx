@@ -121,17 +121,17 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
       <div className="relative mb-4">
         <div
           className="flex items-center gap-2 rounded-md"
-          style={{ height: 40, padding: '0 12px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, transition: 'border-color 150ms, box-shadow 150ms' }}
-          onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = '#2563EB'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
-          onBlur={e => { (e.currentTarget as HTMLElement).style.borderColor = '#E2E8F0'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
+          style={{ height: 40, padding: '0 12px', background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 6, transition: 'border-color 150ms, box-shadow 150ms' }}
+          onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--cp-blue)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+          onBlur={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--divider)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
         >
-          <Search size={14} color="#94A3B8" strokeWidth={2} />
+          <Search size={14} color="var(--fg-4)" strokeWidth={2} />
           <input
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search by name or email to add..."
             className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: 13, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}
+            style={{ fontSize: 13, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}
           />
         </div>
 
