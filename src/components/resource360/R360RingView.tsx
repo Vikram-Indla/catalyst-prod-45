@@ -137,11 +137,11 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       <div style={{
         position: 'relative', width: '100%', height: '720px', overflow: 'hidden',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%)',
-        borderRadius: 12, border: '1px solid #E2E8F0',
+        background: 'radial-gradient(circle at center, #fff 0%, var(--bg-1) 55%, var(--bg-3) 100%)',
+        borderRadius: 12, border: '1px solid var(--divider)',
       }}>
-        <div style={{ textAlign: 'center', color: '#64748B' }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No active items</div>
+        <div style={{ textAlign: 'center', color: 'var(--fg-3)' }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No active items</div>
           <div style={{ fontSize: 13 }}>Assigned work items will orbit here.</div>
         </div>
       </div>

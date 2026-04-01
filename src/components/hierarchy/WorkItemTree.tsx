@@ -26,13 +26,13 @@ export function TreeSkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)' }}>
       <div style={{ height: 32, background: '#FAFAFA', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', padding: '0 12px' }}>
-        <div style={{ width: 100, height: 10, background: '#E2E8F0', borderRadius: 4 }} />
+        <div style={{ width: 100, height: 10, background: 'var(--divider)', borderRadius: 4 }} />
       </div>
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} style={{ height: 44, maxHeight: 44, display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 12 + (i % 3) * 20, paddingRight: 12, borderBottom: '1px solid var(--divider)' }}>
           <div style={{ width: 20, height: 20, borderRadius: 4, background: '#F1F5F9' }} className="hi-shimmer" />
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#E2E8F0' }} className="hi-shimmer" />
-          <div style={{ width: 48, height: 12, borderRadius: 4, background: '#E2E8F0' }} className="hi-shimmer" />
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--divider)' }} className="hi-shimmer" />
+          <div style={{ width: 48, height: 12, borderRadius: 4, background: 'var(--divider)' }} className="hi-shimmer" />
           <div style={{ flex: 1, height: 12, borderRadius: 4, background: '#F1F5F9', maxWidth: 200 }} className="hi-shimmer" />
           <div style={{ width: 60, height: 22, borderRadius: 9999, background: '#F1F5F9' }} className="hi-shimmer" />
           <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#F1F5F9' }} className="hi-shimmer" />
@@ -100,8 +100,8 @@ function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
   if (stats.totalDescendants === 0) return null;
   const pct = Math.round((stats.completedCount / stats.totalDescendants) * 100);
   const isComplete = pct === 100;
-  const fillColor = isComplete ? '#16A34A' : '#2563EB';
-  const textColor = isComplete ? '#15803D' : '#2563EB';
+  const fillColor = isComplete ? 'var(--sem-success)' : 'var(--cp-blue)';
+  const textColor = isComplete ? '#15803D' : 'var(--cp-blue)';
   return (
     <div style={{ width: 64, display: 'flex', flexDirection: 'column', gap: 2, justifyContent: 'center' }}>
       <div style={{ height: 4, background: '#F1F5F9', borderRadius: 2, overflow: 'hidden' }}>

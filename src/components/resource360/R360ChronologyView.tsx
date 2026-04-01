@@ -199,12 +199,12 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, marginTop: '2px' }}>
                         <div style={{
                           width: '20px', height: '20px', borderRadius: '50%', overflow: 'hidden',
-                          background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: '8px', fontWeight: 700, color: '#334155', flexShrink: 0,
+                          background: 'var(--divider)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: '8px', fontWeight: 700, color: 'var(--fg-2)', flexShrink: 0,
                         }}>
                           {getInitials(item.assigner_name)}
                         </div>
-                        <span style={{ fontSize: '12.5px', fontWeight: 500, color: '#334155', whiteSpace: 'nowrap', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--fg-2)', whiteSpace: 'nowrap', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {item.assigner_name ? item.assigner_name.split(' ')[0] : 'Unassigned'}
                         </span>
                         <StatusLozenge status={item.status_name || item.status || ''} statusCategory={item.status_category} />

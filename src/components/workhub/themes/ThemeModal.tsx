@@ -85,16 +85,16 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
       {/* Modal */}
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-        background: '#fff', borderRadius: 12, width: 480, maxWidth: '95vw',
+        background: 'var(--cp-float)', borderRadius: 12, width: 480, maxWidth: '95vw',
         boxShadow: '0 20px 60px rgba(0,0,0,.2)', zIndex: 9999,
         fontFamily: 'var(--wh-font-sans, Inter, sans-serif)',
       }}>
         {/* Header */}
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '16px 20px', borderBottom: '1px solid #e2e8f0',
+          padding: '16px 20px', borderBottom: '1px solid var(--divider)',
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0, color: 'var(--wh-text-primary, #0f172a)' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0, color: 'var(--fg-1)' }}>
             {isEdit ? 'Edit Theme' : 'New Theme'}
           </h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
