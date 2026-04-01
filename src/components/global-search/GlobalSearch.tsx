@@ -337,6 +337,11 @@ export function GlobalSearch() {
                   ))}
                 </>
               )}
+              {recents.length === 0 && (
+                <div style={{ padding: '32px', textAlign: 'center', color: '#94A3B8', fontSize: '13px' }}>
+                  Start typing to search across all hubs
+                </div>
+              )}
             </>
           ) : (
             <>
