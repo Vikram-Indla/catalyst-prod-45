@@ -93,6 +93,48 @@ export async function createWorkItem(input: CreateWorkItemInput) {
     );
   }
 
+  // ── Jira write-back enqueue (non-blocking) ──
+  try {
+    const { data: connection } = await supabase
+      .from('jira_connections')
+      .select('id')
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (connection && data) {
+      const { data: mapping } = await (supabase
+        .from('jira_project_mappings') as any)
+        .select('jira_project_key')
+        .eq('catalyst_project_id', input.project_id)
+        .eq('sync_enabled', true)
+        .maybeSingle();
+
+      const payload = {
+        title: input.title,
+        description: input.description ?? '',
+        priority: input.priority ?? 'medium',
+        assignee_account_id: null,
+        project_key: mapping?.jira_project_key ?? null,
+      };
+
+      await (supabase
+        .from('jira_write_back_queue') as any)
+        .insert({
+          ph_work_item_id: data.id,
+          operation: 'create',
+          operation_payload: payload,
+          status: 'pending',
+        });
+
+      await (supabase
+        .from('ph_work_items') as any)
+        .update({ jira_sync_status: 'pending' } as any)
+        .eq('id', data.id);
+    }
+  } catch (jiraErr) {
+    console.error('Jira write-back enqueue failed:', jiraErr);
+  }
+
   return data;
 }
 
