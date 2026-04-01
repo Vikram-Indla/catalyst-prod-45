@@ -34,7 +34,7 @@ export interface WriteBackRow {
   field_name: string;
   new_value: string;
   queued_at: string;
-  push_status: string | null;
+  status: string | null;
 }
 
 export interface SyncSummaryRow {
