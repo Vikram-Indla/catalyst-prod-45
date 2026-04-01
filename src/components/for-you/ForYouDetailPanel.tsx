@@ -68,6 +68,7 @@ function getPri(T: Tokens): Record<number, { label: string; color: string }> {
 
 // --- Linkify utility: detect URLs, special-case Figma ---
 function Linkify({ text }: { text: string }) {
+  const T = useT();
   if (!text) return null;
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const parts = text.split(urlRegex);
@@ -110,11 +111,13 @@ function Linkify({ text }: { text: string }) {
 }
 
 function StatusPill({ status }: { status: string }) {
+  const T = useT();
   return <StatusLozenge status={status} />;
 }
 
 function HubBadge({ hub }: { hub: string }) {
-  const h = HUB_CFG[hub] || HUB_CFG.Task;
+  const T = useT();
+  const HUB_CFG = getHubCfg(T); const h = HUB_CFG[hub] || HUB_CFG.Task;
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: h.bg, color: h.color, borderLeft: `3px solid ${h.border}` }}>
       {hub}
@@ -123,19 +126,21 @@ function HubBadge({ hub }: { hub: string }) {
 }
 
 function PriorityBars({ level = 3, showLabel = false }: { level?: number; showLabel?: boolean }) {
+  const T = useT();
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: showLabel ? 8 : 2 }}>
       <div style={{ display: 'flex', gap: 2 }}>
         {[1,2,3,4].map(i => (
-          <div key={i} style={{ width: showLabel ? 5 : 4, height: showLabel ? 16 : 14, borderRadius: 1, background: i <= level ? (showLabel ? (PRI[level]?.color || T.inkMuted) : T.inkMuted) : T.border }} />
+          <div key={i} style={{ width: showLabel ? 5 : 4, height: showLabel ? 16 : 14, borderRadius: 1, background: i <= level ? (showLabel ? (getPri(T)[level]?.color || T.inkMuted) : T.inkMuted) : T.border }} />
         ))}
       </div>
-      {showLabel && <span style={{ fontSize: 13, fontWeight: 500, color: T.ink }}>{PRI[level]?.label || 'Medium'}</span>}
+      {showLabel && <span style={{ fontSize: 13, fontWeight: 500, color: T.ink }}>{getPri(T)[level]?.label || 'Medium'}</span>}
     </div>
   );
 }
 
 function Avatar({ name, size = 24 }: { name: string; size?: number }) {
+  const T = useT();
   const nameAvatarMap = useProfileAvatarsByName();
   const avatarUrl = nameAvatarMap.get(name.toLowerCase());
   const ini = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -148,6 +153,7 @@ function Avatar({ name, size = 24 }: { name: string; size?: number }) {
 }
 
 function FieldRow({ icon, label, children, last }: { icon: React.ReactNode; label: string; children: React.ReactNode; last?: boolean }) {
+  const T = useT();
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '152px 1fr', borderBottom: last ? 'none' : `1px solid ${T.border}`, minHeight: 38 }}>
       <div style={{ padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 7, fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.06em', background: T.surfaceSecondary, borderRight: `1px solid ${T.border}` }}>
@@ -384,7 +390,7 @@ function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; 
 }
 
 // Convert SubTaskItem to a WorkItem-like shape for the panel to render
-function subTaskToWorkItem(st: SubTaskItem): WorkItem {
+function subTaskToWorkItem(st: SubTaskItem, T: Tokens): WorkItem {
   return {
     id: st.key,
     key: st.key,
@@ -420,6 +426,7 @@ interface ForYouDetailPanelProps {
 }
 
 export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
+  const T = useT();
   const [tab, setTab] = useState('details');
   const [attachments, setAttachments] = useState<any[]>([]);
   const [attachmentsLoading, setAttachmentsLoading] = useState(false);
@@ -517,7 +524,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
 
   // Navigation handlers
   const handleSubTaskClick = (st: SubTaskItem) => {
-    const workItem = subTaskToWorkItem(st);
+    const workItem = subTaskToWorkItem(st, T);
     setPanelStack(prev => {
       if (prev.length === 0) return [item, workItem];
       return [...prev, workItem];
