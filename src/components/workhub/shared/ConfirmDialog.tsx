@@ -29,8 +29,8 @@ export function ConfirmDialog({
   if (!isOpen) return null;
 
   const iconBg = variant === 'danger' ? '#fee2e2' : '#fef3c7';
-  const iconColor = variant === 'danger' ? '#ef4444' : '#d97706';
-  const btnBg = variant === 'danger' ? '#ef4444' : '#d97706';
+  const iconColor = variant === 'danger' ? 'var(--sem-danger)' : 'var(--sem-warning)';
+  const btnBg = variant === 'danger' ? 'var(--sem-danger)' : 'var(--sem-warning)';
 
   return (
     <div style={{
@@ -78,7 +78,7 @@ export function ConfirmDialog({
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onClose} style={{
             height: 36, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
-            border: '1px solid var(--wh-border, #e2e8f0)', background: 'var(--cp-float)',
+            border: '1px solid var(--divider)', background: 'var(--cp-float)',
             fontSize: 13, fontWeight: 500, color: 'var(--fg-1)',
             cursor: 'pointer',
           }}>
