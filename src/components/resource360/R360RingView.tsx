@@ -199,13 +199,13 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           />
           <div style={{
             width: '100%', height: '100%', display: 'none', alignItems: 'center', justifyContent: 'center',
-            background: 'linear-gradient(135deg, #2563EB, #0D9488)', fontSize: '32px', fontWeight: 700, color: 'white',
+            background: 'linear-gradient(135deg, var(--cp-blue), var(--sem-success))', fontSize: '32px', fontWeight: 700, color: 'white',
           }}>
             {getInitials(memberName)}
           </div>
         </div>
-        <div style={{ fontSize: '13px', fontWeight: 600, color: '#020617' }}>{memberName}</div>
-        <div style={{ fontSize: '11px', fontWeight: 500, color: '#334155' }}>{memberRole}</div>
+        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--fg-1)' }}>{memberName}</div>
+        <div style={{ fontSize: '11px', fontWeight: 500, color: 'var(--fg-2)' }}>{memberRole}</div>
       </div>
 
       {/* ORBITAL CARDS */}
@@ -216,7 +216,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
         return (
           <div key={item.id || item.item_key} onClick={() => onItemClick(item)} style={{
             position: 'absolute', left: `${pos.x}%`, top: `${pos.y}%`, width: '195px',
-            background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px',
+            background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: '8px',
             padding: '10px 12px 10px 15px', cursor: 'pointer', zIndex: 3,
             boxShadow: '0 1px 3px rgba(15,23,42,.05)', fontFamily: "'Inter', system-ui, sans-serif",
             transition: 'border-color .15s, box-shadow .15s',

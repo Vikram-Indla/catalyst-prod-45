@@ -119,7 +119,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
                 boxSizing: 'border-box',
               }}
               onFocus={e => e.target.style.borderColor = 'var(--cp-blue)'}
-              onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+              onBlur={e => e.target.style.borderColor = 'var(--divider)'}
             />
           </div>
 
@@ -139,7 +139,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
                 resize: 'vertical', boxSizing: 'border-box',
               }}
               onFocus={e => e.target.style.borderColor = 'var(--cp-blue)'}
-              onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+              onBlur={e => e.target.style.borderColor = 'var(--divider)'}
             />
           </div>
 
@@ -154,7 +154,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
               style={{
                 width: '100%', padding: '8px 12px', borderRadius: 8,
                 border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
-                background: '#fff', boxSizing: 'border-box',
+                background: 'var(--cp-float)', boxSizing: 'border-box',
               }}
             >
               {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
