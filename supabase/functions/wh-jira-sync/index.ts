@@ -96,7 +96,7 @@ async function jiraSearchPaginated(
   let total = 0;
 
   while (true) {
-    const url = `${siteUrl}rest/api/3/search?jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${maxResults}&fields=${fields}&expand=changelog`;
+    const url = `${siteUrl}rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${maxResults}&fields=${fields}&expand=changelog`;
     const resp = await fetch(url, {
       headers: {
         Authorization: `Basic ${btoa(`${authEmail}:${authToken}`)}`,
