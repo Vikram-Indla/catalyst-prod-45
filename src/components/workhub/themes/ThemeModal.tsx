@@ -98,7 +98,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
             {isEdit ? 'Edit Theme' : 'New Theme'}
           </h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X size={18} color="#64748b" />
+            <X size={18} color="var(--fg-3)" />
           </button>
         </div>
 
@@ -106,7 +106,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
         <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Name */}
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
               Theme Name *
             </label>
             <input
@@ -115,17 +115,17 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
               placeholder="e.g. Digital Maturity"
               style={{
                 width: '100%', padding: '8px 12px', borderRadius: 8,
-                border: '1px solid #e2e8f0', fontSize: 13, outline: 'none',
+                border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
                 boxSizing: 'border-box',
               }}
-              onFocus={e => e.target.style.borderColor = '#2563eb'}
+              onFocus={e => e.target.style.borderColor = 'var(--cp-blue)'}
               onBlur={e => e.target.style.borderColor = '#e2e8f0'}
             />
           </div>
 
           {/* Description */}
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
               Description
             </label>
             <textarea
@@ -135,17 +135,17 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
               placeholder="Brief description of this theme..."
               style={{
                 width: '100%', padding: '8px 12px', borderRadius: 8,
-                border: '1px solid #e2e8f0', fontSize: 13, outline: 'none',
+                border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
                 resize: 'vertical', boxSizing: 'border-box',
               }}
-              onFocus={e => e.target.style.borderColor = '#2563eb'}
+              onFocus={e => e.target.style.borderColor = 'var(--cp-blue)'}
               onBlur={e => e.target.style.borderColor = '#e2e8f0'}
             />
           </div>
 
           {/* Status */}
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
               Status
             </label>
             <select
@@ -153,7 +153,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
               onChange={e => setStatus(e.target.value)}
               style={{
                 width: '100%', padding: '8px 12px', borderRadius: 8,
-                border: '1px solid #e2e8f0', fontSize: 13, outline: 'none',
+                border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
                 background: '#fff', boxSizing: 'border-box',
               }}
             >
@@ -186,7 +186,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
           {/* Dates */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
                 Start Date
               </label>
               <input
@@ -195,13 +195,13 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
                 onChange={e => setStartDate(e.target.value)}
                 style={{
                   width: '100%', padding: '8px 12px', borderRadius: 8,
-                  border: '1px solid #e2e8f0', fontSize: 13, outline: 'none',
+                  border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
                   boxSizing: 'border-box',
                 }}
               />
             </div>
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
                 End Date
               </label>
               <input
@@ -210,7 +210,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
                 onChange={e => setEndDate(e.target.value)}
                 style={{
                   width: '100%', padding: '8px 12px', borderRadius: 8,
-                  border: '1px solid #e2e8f0', fontSize: 13, outline: 'none',
+                  border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
                   boxSizing: 'border-box',
                 }}
               />
@@ -229,7 +229,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
           padding: '12px 20px', borderTop: '1px solid #e2e8f0',
         }}>
           <button onClick={onClose} style={{
-            padding: '8px 16px', borderRadius: 8, border: '1px solid #e2e8f0',
+            padding: '8px 16px', borderRadius: 8, border: '1px solid var(--divider)',
             background: '#fff', fontSize: 13, fontWeight: 500, cursor: 'pointer',
             color: '#64748b',
           }}>

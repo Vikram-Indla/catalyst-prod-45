@@ -177,8 +177,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           <div key={`label-${i}`} style={{
             position: 'absolute', left: `${mx}%`, top: `${my}%`,
             transform: 'translate(-50%, -50%)', zIndex: 4, pointerEvents: 'none',
-            fontSize: '11px', fontWeight: 600, color: '#334155', background: '#F8FAFC',
-            padding: '2px 8px', borderRadius: '10px', border: '1px solid #E2E8F0',
+            fontSize: '11px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-1)',
+            padding: '2px 8px', borderRadius: '10px', border: '1px solid var(--divider)',
             whiteSpace: 'nowrap', fontFamily: "'Inter', system-ui, sans-serif",
             fontVariantNumeric: 'tabular-nums',
           }}>
@@ -190,8 +190,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       {/* CENTER AVATAR */}
       <div style={{ position: 'absolute', left: '50%', top: `${centerTopPct}%`, transform: 'translate(-50%, -50%)', textAlign: 'center', zIndex: 5 }}>
         <div style={{
-          width: '96px', height: '96px', borderRadius: '50%', border: '3px solid #2563EB',
-          overflow: 'hidden', margin: '0 auto 6px', boxShadow: '0 0 0 6px rgba(37,99,235,.12)', background: '#FFFFFF',
+          width: '96px', height: '96px', borderRadius: '50%', border: '3px solid var(--cp-blue)',
+          overflow: 'hidden', margin: '0 auto 6px', boxShadow: '0 0 0 6px rgba(37,99,235,.12)', background: 'var(--bg-app)',
         }}>
           <img src={member?.avatar_url || `/admin/users/${avatarSlug}/avatar`} alt={memberName}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
