@@ -357,7 +357,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
               </button>
               {assigneeOpen && (
                 <FixedDropdown maxHeight={220} onClick={e => e.stopPropagation()}>
-                  <div className="px-2 py-1.5" style={{ borderBottom: '1px solid #F1F5F9' }}>
+                  <div className="px-2 py-1.5" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
                     <div className="relative">
                       <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
                       <input
@@ -365,7 +365,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                         onChange={e => setAssigneeSearch(e.target.value)}
                         placeholder="Search..."
                         className="w-full pl-7 pr-2 py-1 text-[11px] rounded border focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
-                        style={{ borderColor: '#E2E8F0', height: 28 }}
+                        style={{ borderColor: 'var(--divider)', height: 28 }}
                         autoFocus
                       />
                     </div>
@@ -397,13 +397,13 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
 
           {/* Labels (multi-select chips) */}
           <div className="relative">
-            <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>Labels</label>
+            <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Labels</label>
             <button
               onClick={e => { e.stopPropagation(); closeDropdowns(); setLabelsOpen(!labelsOpen); }}
               className="w-full flex items-center gap-1.5 flex-wrap min-h-[36px] rounded-md border px-2.5 py-1.5 text-[12px] hover:border-[#94A3B8] transition-colors"
-              style={{ borderColor: '#E2E8F0' }}
+              style={{ borderColor: 'var(--divider)' }}
             >
-              {selectedLabels.length === 0 && <span style={{ color: '#94A3B8' }}>Select labels…</span>}
+              {selectedLabels.length === 0 && <span style={{ color: 'var(--fg-4)' }}>Select labels...</span>}
               {selectedLabels.map(lid => {
                 const lb = labels.find(l => l.id === lid);
                 if (!lb) return null;
@@ -411,7 +411,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                   <span
                     key={lid}
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
-                    style={{ background: '#DBEAFE', color: '#2563EB' }}
+                    style={{ background: 'var(--cp-primary-20)', color: 'var(--cp-blue)' }}
                   >
                     {lb.name}
                     <span
@@ -432,14 +432,14 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                       <button
                         key={lb.id}
                         className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[#F1F5F9]"
-                        style={{ color: '#334155' }}
+                        style={{ color: 'var(--fg-2)' }}
                         onClick={() => {
                           setSelectedLabels(prev =>
                             checked ? prev.filter(l => l !== lb.id) : [...prev, lb.id]
                           );
                         }}
                       >
-                        <div className="w-3.5 h-3.5 rounded border flex items-center justify-center" style={{ borderColor: checked ? '#2563EB' : '#CBD5E1', background: checked ? '#2563EB' : '#fff' }}>
+                        <div className="w-3.5 h-3.5 rounded border flex items-center justify-center" style={{ borderColor: checked ? 'var(--cp-blue)' : '#CBD5E1', background: checked ? 'var(--cp-blue)' : 'var(--bg-app)' }}>
                           {checked && <span className="text-white text-[9px]">✓</span>}
                         </div>
                         <span className="w-2 h-2 rounded-full" style={{ background: lb.color }} />
@@ -455,7 +455,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
           {/* Due date + Release */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>Due Date</label>
+              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Due Date</label>
               <div className="relative">
                 <Calendar size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
                 <input
@@ -463,18 +463,18 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                   value={dueDate}
                   onChange={e => setDueDate(e.target.value)}
                   className="w-full rounded-md border pl-8 pr-2.5 text-[12px] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB] transition-shadow"
-                  style={{ height: 36, borderColor: '#E2E8F0', color: '#334155', fontFamily: 'JetBrains Mono, monospace' }}
+                  style={{ height: 36, borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'JetBrains Mono, monospace' }}
                 />
               </div>
             </div>
 
             {/* Release */}
             <div className="relative">
-              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>Release</label>
+              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Release</label>
               <button
                 onClick={e => { e.stopPropagation(); closeDropdowns(); setReleaseOpen(!releaseOpen); }}
                 className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[#94A3B8] transition-colors"
-                style={{ height: 36, borderColor: '#E2E8F0', color: selectedRelease ? '#334155' : '#94A3B8' }}
+                style={{ height: 36, borderColor: 'var(--divider)', color: selectedRelease ? 'var(--fg-2)' : 'var(--fg-4)' }}
               >
                 <span className="truncate">
                   {selectedRelease ? selectedRelease.name : 'None'}

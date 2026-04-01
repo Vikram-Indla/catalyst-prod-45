@@ -138,7 +138,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
       {/* Panel */}
       <div ref={panelRef} style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '460px',
-        background: '#FFF', borderLeft: '1px solid #E2E8F0', zIndex: 201,
+        background: 'var(--cp-float)', borderLeft: '1px solid var(--divider)', zIndex: 201,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
         boxShadow: '-4px 0 20px rgba(15,23,42,.08)',
         fontFamily: "'Inter', system-ui, -apple-system, sans-serif",

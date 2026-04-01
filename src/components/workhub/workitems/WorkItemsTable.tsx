@@ -179,9 +179,9 @@ export function WorkItemsTable({
   if (error) {
     return (
       <div className="rounded-xl border p-12 text-center" style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--cp-float)' }}>
-        <AlertCircle className="w-8 h-8 mx-auto mb-3" style={{ color: '#dc2626' }} />
-        <p className="text-sm font-medium mb-2" style={{ color: 'var(--wh-text-primary, #0f172a)' }}>Failed to load work items</p>
-        <p className="text-xs mb-4" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>{error.message}</p>
+        <AlertCircle className="w-8 h-8 mx-auto mb-3" style={{ color: 'var(--sem-danger)' }} />
+        <p className="text-sm font-medium mb-2" style={{ color: 'var(--fg-1)' }}>Failed to load work items</p>
+        <p className="text-xs mb-4" style={{ color: 'var(--fg-4)' }}>{error.message}</p>
         {onRetry && (
           <button onClick={onRetry} className="px-4 py-1.5 text-xs font-medium rounded-lg text-white" style={{ backgroundColor: 'var(--wh-primary, #2563eb)' }}>
             Retry
@@ -194,9 +194,9 @@ export function WorkItemsTable({
   if (!items.length) {
     return (
       <div className="rounded-xl border p-12 text-center" style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--cp-float)' }}>
-        <FileStack className="w-8 h-8 mx-auto mb-3" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }} />
-        <p className="text-sm font-medium mb-1" style={{ color: 'var(--wh-text-primary, #0f172a)' }}>No work items found</p>
-        <p className="text-xs" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>Try adjusting your filters or run a Jira sync</p>
+        <FileStack className="w-8 h-8 mx-auto mb-3" style={{ color: 'var(--fg-4)' }} />
+        <p className="text-sm font-medium mb-1" style={{ color: 'var(--fg-1)' }}>No work items found</p>
+        <p className="text-xs" style={{ color: 'var(--fg-4)' }}>Try adjusting your filters or run a Jira sync</p>
       </div>
     );
   }
@@ -226,7 +226,7 @@ export function WorkItemsTable({
             />
           </div>
           {HEADER_COLS.map(col => (
-            <span key={col} className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+            <span key={col} className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--fg-4)' }}>
               {col}
             </span>
           ))}

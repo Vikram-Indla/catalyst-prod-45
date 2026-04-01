@@ -69,14 +69,14 @@ export function HierarchyContextMenu({
 
   const menuStyle: React.CSSProperties = {
     position: 'fixed', zIndex: 99999,
-    width: 220, background: '#FFFFFF', border: '1px solid #E2E8F0',
+    width: 220, background: 'var(--cp-float)', border: '1px solid var(--divider)',
     borderRadius: 6, boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
     fontFamily: "'Inter', sans-serif", paddingBlock: 4,
   };
 
   const itemStyle: React.CSSProperties = {
     width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-    padding: '6px 12px', fontSize: 13, color: '#334155',
+    padding: '6px 12px', fontSize: 13, color: 'var(--fg-2)',
     background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
   };
 
@@ -225,7 +225,7 @@ function MenuItem({ icon: Icon, label, onClick }: {
   return (
     <button onClick={onClick} style={{
       width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-      padding: '6px 12px', fontSize: 13, color: '#334155',
+      padding: '6px 12px', fontSize: 13, color: 'var(--fg-2)',
       background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
     }}
       onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}

@@ -196,7 +196,7 @@ function PropertyRow({
         borderBottom: isLast ? 'none' : '1px solid #F5F5F7',
       }}
     >
-      <span style={{ fontSize: 11, fontWeight: 500, color: '#94A3B8', minWidth: 80, flexShrink: 0 }}>
+      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-4)', minWidth: 80, flexShrink: 0 }}>
         {label}
       </span>
       <div style={{ textAlign: 'right' }}>
