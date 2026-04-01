@@ -226,6 +226,13 @@ export default function JiraIntegrationConfig() {
                                 : 'Never synced'}
                             </div>
                           </div>
+                          <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                            <Switch
+                              checked={conn.is_active}
+                              onCheckedChange={(val) => toggleMutation.mutate({ id: conn.id, is_active: val })}
+                            />
+                            <span className="text-xs text-muted-foreground">Active</span>
+                          </div>
                           {getStatusBadge(conn.last_test_status)}
                           <Button
                             variant="outline"
