@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Settings, Map, RefreshCw, Link as LinkIcon } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { AdminGuard } from "@/components/admin/AdminGuard";
 import { ConnectionFormDialog } from "@/components/admin/jira/ConnectionFormDialog";
 import { FieldMappingDialog } from "@/components/admin/jira/FieldMappingDialog";
