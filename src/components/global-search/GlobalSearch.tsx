@@ -553,6 +553,7 @@ export function GlobalSearch() {
                         <ResultRow
                           key={`${item.id}-${startIdx + relIdx}`}
                           item={item}
+                          avatarMap={nameAvatarMap}
                           isSelected={selectedIdx === startIdx + relIdx}
                           onHover={() => setSelectedIdx(startIdx + relIdx)}
                           onClick={() => handleSelect(item)}
