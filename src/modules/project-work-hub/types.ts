@@ -43,6 +43,10 @@ export interface WorkItem {
   incidentCount?: number;
   // Acceptance criteria for stories
   acceptanceCriteria?: AcceptanceCriterion[];
+  // Jira sync fields
+  jiraKey?: string | null;
+  jiraSyncStatus?: string | null;
+  jiraPushedAt?: string | null;
 }
 
 export interface AcceptanceCriterion {
