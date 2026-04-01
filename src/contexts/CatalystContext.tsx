@@ -188,7 +188,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     setSearchParams(params, { replace: true });
   }, [portfolioId, programId, projectId, teamIds, piIds, snapshotId]);
   
-  const value: CatalystContextState = {
+  const value = useMemo<CatalystContextState>(() => ({
     tier,
     setTier,
     workspaceType,
@@ -216,8 +216,12 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     setProgramName,
     projectName,
     setProjectName,
-  };
-  
+  }), [
+    tier, workspaceType, sidebarExpanded, portfolioId, programId,
+    projectId, productId, teamIds, piIds, selectedQuarter, snapshotId,
+    industryFilters, programName, projectName,
+  ]);
+
   return (
     <CatalystContext.Provider value={value}>
       {children}

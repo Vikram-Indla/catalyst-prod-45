@@ -4,7 +4,7 @@
  * Dropdowns match CreateTaskModal V10 styling
  */
 
-import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback, memo } from 'react';
 import { Lock, MoreHorizontal, ExternalLink, Copy, Trash2, Check, Plus, Tag, Search, Loader2, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -988,7 +988,7 @@ interface TaskListRowV3Props {
   labels?: Label[];
 }
 
-export function TaskListRowV3({
+export const TaskListRowV3 = memo(function TaskListRowV3({
   task,
   index,
   isSelected,
@@ -1346,4 +1346,4 @@ export function TaskListRowV3({
       )}
     </tr>
   );
-}
+});

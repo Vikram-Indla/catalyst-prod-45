@@ -40,24 +40,26 @@ export function useExpiringContracts(departmentId?: string | null, days = 90) {
       const { data: resources, error } = await query;
       if (error) throw error;
       if (!resources || resources.length === 0) return [];
-      
-      // Fetch countries for location mapping
-      const { data: countries } = await supabase
-        .from('resource_countries')
-        .select('id, code, name')
-        .eq('is_active', true);
-      
-      const countryMap = new Map(countries?.map(c => [c.id, { code: c.code || '', name: c.name }]) || []);
-      
-      // Fetch allocations for utilization
+
+      // Fetch countries and allocations in parallel instead of sequentially
       const resourceIds = resources.map(r => r.id);
-      const { data: allocations } = await supabase
-        .from('resource_allocations')
-        .select('resource_id, allocation_percent')
-        .in('resource_id', resourceIds)
-        .lte('start_date', todayStr)
-        .gte('end_date', todayStr)
-        .eq('status', 'active');
+      const [countriesResult, allocationsResult] = await Promise.all([
+        supabase
+          .from('resource_countries')
+          .select('id, code, name')
+          .eq('is_active', true),
+        supabase
+          .from('resource_allocations')
+          .select('resource_id, allocation_percent')
+          .in('resource_id', resourceIds)
+          .lte('start_date', todayStr)
+          .gte('end_date', todayStr)
+          .eq('status', 'active'),
+      ]);
+
+      const countries = countriesResult.data;
+      const allocations = allocationsResult.data;
+      const countryMap = new Map(countries?.map(c => [c.id, { code: c.code || '', name: c.name }]) || []);
       
       return resources.map(resource => {
         const resourceAllocs = allocations?.filter(a => a.resource_id === resource.id) || [];

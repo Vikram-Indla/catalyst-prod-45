@@ -195,47 +195,45 @@ export function useWorkItemLinks(workItemType: WorkItemType, workItemId: string)
       
       if (inError) throw inError;
 
-      // Enrich with linked item names
+      // Enrich with linked item names — batch by type
       const allLinks = [...(outgoing || []), ...(incoming || [])];
-      const enrichedLinks: WorkItemLink[] = [];
 
+      // Group linked IDs by type for batch fetching
+      const idsByType: Record<string, Set<string>> = { epic: new Set(), feature: new Set(), story: new Set() };
       for (const link of allLinks) {
         const isOutgoing = link.from_work_item_id === workItemId;
         const linkedId = isOutgoing ? link.to_work_item_id : link.from_work_item_id;
         const linkedType = isOutgoing ? link.to_work_item_type : link.from_work_item_type;
-        
-        let linkedItemName = 'Unknown';
-        let linkedItemKey = '';
-
-        // Fetch linked item name based on type
-        if (linkedType === 'epic') {
-          const { data } = await supabase.from('epics').select('name, epic_key').eq('id', linkedId).single();
-          if (data) {
-            linkedItemName = data.name;
-            linkedItemKey = data.epic_key || '';
-          }
-        } else if (linkedType === 'feature') {
-          const { data } = await supabase.from('features').select('name, display_id').eq('id', linkedId).single();
-          if (data) {
-            linkedItemName = data.name;
-            linkedItemKey = data.display_id || '';
-          }
-        } else if (linkedType === 'story') {
-          const { data } = await supabase.from('stories').select('name, story_key').eq('id', linkedId).single();
-          if (data) {
-            linkedItemName = data.name;
-            linkedItemKey = data.story_key || '';
-          }
-        }
-
-        enrichedLinks.push({
-          ...link,
-          linked_item_name: linkedItemName,
-          linked_item_key: linkedItemKey,
-        });
+        if (idsByType[linkedType]) idsByType[linkedType].add(linkedId);
       }
 
-      return enrichedLinks;
+      // Batch fetch all linked items in parallel
+      const nameMap = new Map<string, { name: string; key: string }>();
+      const [epics, features, stories] = await Promise.all([
+        idsByType.epic.size > 0
+          ? supabase.from('epics').select('id, name, epic_key').in('id', [...idsByType.epic])
+          : { data: [] },
+        idsByType.feature.size > 0
+          ? supabase.from('features').select('id, name, display_id').in('id', [...idsByType.feature])
+          : { data: [] },
+        idsByType.story.size > 0
+          ? supabase.from('stories').select('id, name, story_key').in('id', [...idsByType.story])
+          : { data: [] },
+      ]);
+      for (const e of epics.data || []) nameMap.set(e.id, { name: e.name, key: e.epic_key || '' });
+      for (const f of features.data || []) nameMap.set(f.id, { name: f.name, key: f.display_id || '' });
+      for (const s of stories.data || []) nameMap.set(s.id, { name: s.name, key: s.story_key || '' });
+
+      return allLinks.map(link => {
+        const isOutgoing = link.from_work_item_id === workItemId;
+        const linkedId = isOutgoing ? link.to_work_item_id : link.from_work_item_id;
+        const info = nameMap.get(linkedId);
+        return {
+          ...link,
+          linked_item_name: info?.name || 'Unknown',
+          linked_item_key: info?.key || '',
+        } as WorkItemLink;
+      });
     },
     enabled: !!workItemId,
   });

@@ -195,14 +195,14 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
     { value: 'Freelance', label: 'Freelance' },
   ];
 
-  // Get unique values for filter dropdowns
-  const allRoles = [...new Set(users.flatMap(u => u.roles.map(r => r.role_name)))];
-  const uniqueVendors = [...new Set(users.map(u => u.vendor).filter(Boolean))];
-  const uniqueCountries = [...new Set(users.map(u => u.country).filter(Boolean))];
-  const uniqueLocations = [...new Set(users.map(u => u.location).filter(Boolean))];
-  const uniqueDepartments = [...new Set(users.map(u => u.department_name).filter(Boolean))];
-  const uniqueAssignments = [...new Set(users.map(u => u.assignment_name).filter(Boolean))];
-  const uniqueResourceTypes = [...new Set(users.map(u => u.resource_type).filter(Boolean))];
+  // Get unique values for filter dropdowns — memoized to avoid recomputing on every render
+  const allRoles = useMemo(() => [...new Set(users.flatMap(u => u.roles.map(r => r.role_name)))], [users]);
+  const uniqueVendors = useMemo(() => [...new Set(users.map(u => u.vendor).filter(Boolean))], [users]);
+  const uniqueCountries = useMemo(() => [...new Set(users.map(u => u.country).filter(Boolean))], [users]);
+  const uniqueLocations = useMemo(() => [...new Set(users.map(u => u.location).filter(Boolean))], [users]);
+  const uniqueDepartments = useMemo(() => [...new Set(users.map(u => u.department_name).filter(Boolean))], [users]);
+  const uniqueAssignments = useMemo(() => [...new Set(users.map(u => u.assignment_name).filter(Boolean))], [users]);
+  const uniqueResourceTypes = useMemo(() => [...new Set(users.map(u => u.resource_type).filter(Boolean))], [users]);
 
   const filteredUsers = useMemo(() => {
     return users.filter(user => {

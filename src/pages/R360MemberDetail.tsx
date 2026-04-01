@@ -1408,9 +1408,9 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
     return Array.from(map.entries()).sort(([a], [b]) => b.localeCompare(a));
   }, [activeItems]);
 
-  // Split out Today's group from the rest
-  const todayGroup = groups.find(([k]) => k === todayStr);
-  const otherGroups = groups.filter(([k]) => k !== todayStr);
+  // Split out Today's group from the rest — memoized
+  const todayGroup = useMemo(() => groups.find(([k]) => k === todayStr), [groups, todayStr]);
+  const otherGroups = useMemo(() => groups.filter(([k]) => k !== todayStr), [groups, todayStr]);
 
   // D-19: No auto-scroll — Chronology renders Today first at the top.
   // The tab-switch handler already scrolls to top on view change.

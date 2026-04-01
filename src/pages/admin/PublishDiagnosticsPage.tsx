@@ -60,6 +60,7 @@ const HEAVY_DEPS = [
 
 const CORE_BUNDLE_KB = 650;
 const PUBLISH_LIMIT_KB = 3500;
+const TOTAL_STUBBED_KB = TOTAL_STUBBED_KB;
 
 type DiagnosticStatus = 'pass' | 'warn' | 'fail' | 'info';
 
@@ -111,7 +112,7 @@ export default function PublishDiagnosticsPage() {
     });
 
     // 3. Stubbed module count
-    const totalStubbedKB = STUBBED_MODULES.reduce((s, m) => s + m.estimatedKB, 0);
+    const totalStubbedKB = TOTAL_STUBBED_KB;
     results.push({
       id: 'stub-count',
       label: `Vite plugin stubs (${STUBBED_MODULES.length} modules)`,
@@ -233,7 +234,7 @@ export default function PublishDiagnosticsPage() {
         <StatCard icon={Skull} label="Blockers" value={blockers.length} color={blockers.length > 0 ? 'text-red-600' : 'text-emerald-600'} />
         <StatCard icon={Flame} label="Stubbed Modules" value={STUBBED_MODULES.length} color="text-blue-600" />
         <StatCard icon={Cpu} label="Est. Build" value={`${(CORE_BUNDLE_KB / 1024).toFixed(1)}MB`} color="text-foreground" />
-        <StatCard icon={MemoryStick} label="Eliminated" value={`${(STUBBED_MODULES.reduce((s, m) => s + m.estimatedKB, 0) / 1024).toFixed(1)}MB`} color="text-emerald-600" />
+        <StatCard icon={MemoryStick} label="Eliminated" value={`${(TOTAL_STUBBED_KB / 1024).toFixed(1)}MB`} color="text-emerald-600" />
       </div>
 
       {/* Blockers Section */}

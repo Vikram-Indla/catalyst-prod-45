@@ -30,34 +30,29 @@ export function useWorkItemComments(entityType: string, entityId: string) {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
+      if (!data || data.length === 0) return [];
 
-      // Enrich with user profiles
-      const enrichedComments: Comment[] = [];
-      for (const comment of data || []) {
-        let userName = 'Unknown User';
-        let userEmail = '';
-        
-        if (comment.user_id) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('full_name, email')
-            .eq('id', comment.user_id)
-            .single();
-          
-          if (profile) {
-            userName = profile.full_name || profile.email || 'Unknown User';
-            userEmail = profile.email || '';
-          }
+      // Batch fetch all user profiles in a single query
+      const userIds = [...new Set(data.map(c => c.user_id).filter(Boolean))];
+      const profileMap = new Map<string, { full_name: string | null; email: string | null }>();
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', userIds);
+        for (const p of profiles || []) {
+          profileMap.set(p.id, { full_name: p.full_name, email: p.email });
         }
-
-        enrichedComments.push({
-          ...comment,
-          user_name: userName,
-          user_email: userEmail,
-        });
       }
 
-      return enrichedComments;
+      return data.map(comment => {
+        const profile = profileMap.get(comment.user_id);
+        return {
+          ...comment,
+          user_name: profile?.full_name || profile?.email || 'Unknown User',
+          user_email: profile?.email || '',
+        } as Comment;
+      });
     },
     enabled: !!entityId,
   });
@@ -153,26 +148,26 @@ function extractMentions(content: string): string[] {
   return matches ? matches.map(m => m.slice(1)) : [];
 }
 
-// Save mentions to database
+// Save mentions to database — batch lookup + batch insert
 async function saveMentions(commentId: string, usernames: string[]) {
-  // Look up user IDs by username/email
-  for (const username of usernames) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('id')
-      .or(`full_name.ilike.%${username}%,email.ilike.%${username}%`)
-      .limit(1)
-      .single();
-    
-    if (profile) {
-      await (supabase as any)
-        .from('comment_mentions')
-        .insert({
-          comment_id: commentId,
-          mentioned_user_id: profile.id,
-        })
-        .select();
-    }
+  if (usernames.length === 0) return;
+
+  // Batch lookup all mentioned users in a single query
+  const orConditions = usernames.map(u => `full_name.ilike.%${u}%,email.ilike.%${u}%`).join(',');
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id')
+    .or(orConditions);
+
+  if (profiles && profiles.length > 0) {
+    const mentions = profiles.map(p => ({
+      comment_id: commentId,
+      mentioned_user_id: p.id,
+    }));
+    await (supabase as any)
+      .from('comment_mentions')
+      .insert(mentions)
+      .select();
   }
 }
 

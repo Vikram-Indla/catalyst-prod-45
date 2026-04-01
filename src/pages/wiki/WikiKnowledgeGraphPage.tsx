@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronRight } from 'lucide-react';
-import * as d3 from 'd3';
+import type * as D3Type from 'd3';
 
 const DOMAIN_COLORS: Record<string, string> = {
   D1: '#2563EB', D2: '#0D9488', D3: '#D97706', D4: '#16A34A',
   D5: '#DC2626', D6: '#0891B2', D7: '#64748B', D8: '#4F46E5', D9: '#CA8A04',
 };
 
-interface GNode extends d3.SimulationNodeDatum {
+interface GNode extends D3Type.SimulationNodeDatum {
   id: string; title: string; slug: string; domain_code: string; view_count: number;
 }
 interface GLink extends d3.SimulationLinkDatum<GNode> {
@@ -54,7 +54,11 @@ export default function WikiKnowledgeGraphPage() {
   useEffect(() => {
     if (!svgRef.current || !articles?.length) return;
 
-    const svg = d3.select(svgRef.current);
+    let cancelled = false;
+    import('d3').then(d3 => {
+    if (cancelled) return;
+
+    const svg = d3.select(svgRef.current!);
     svg.selectAll('*').remove();
 
     const width = svgRef.current.clientWidth;
@@ -144,6 +148,9 @@ export default function WikiKnowledgeGraphPage() {
     });
 
     return () => { simulation.stop(); };
+    }); // end import('d3').then
+
+    return () => { cancelled = true; };
   }, [articles, relations, navigate]);
 
   return (

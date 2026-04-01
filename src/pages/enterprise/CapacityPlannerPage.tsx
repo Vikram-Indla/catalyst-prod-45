@@ -439,6 +439,40 @@ export default function CapacityPlannerPage() {
     });
   }, [metrics.resources, searchQuery]);
 
+  const ganttResourcesMemo = useMemo(() => allGanttResources.map(r => ({
+    id: r.id,
+    name: r.name,
+    role: r.role,
+    department: r.department,
+    allocation: r.allocation,
+    contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
+    assignmentName: r.assignmentName,
+    country_flag_svg: (r as any).country_flag_svg || null,
+  })), [allGanttResources]);
+
+  const projectAssignmentsMemo = useMemo(() => resourceAssignments.map(a => ({
+    id: a.id,
+    name: a.name,
+    color: '#3b82f6',
+    required_fte: 1,
+  })), [resourceAssignments]);
+
+  const projectAllocationsMemo = useMemo(() => allocations.map(a => ({
+    id: a.id,
+    resource_id: a.resource_id,
+    profile_id: a.profile_id,
+    resource_name: (a as any).resource_inventory?.name || (a as any).resource_name,
+    profile_name: (a as any).profile_name,
+    role_name: (a as any).resource_inventory?.role_name || (a as any).role_name,
+    assignment_id: a.assignment_id,
+    assignment_name: (a as any).resource_assignments?.name || (a as any).assignment_name,
+    allocation_percent: a.allocation_percent,
+    allocation_type: (a as any).allocation_type || 'committed',
+    start_date: a.start_date,
+    end_date: a.end_date,
+    department: (a as any).department_name || (a as any).department,
+  })), [allocations]);
+
   // Get unique departments for filter dropdown
   const uniqueDepartments = useMemo(() => {
     const depts = new Set(metrics.resources.map(r => r.department).filter(Boolean));
@@ -1004,16 +1038,7 @@ export default function CapacityPlannerPage() {
                   className="flex-1 min-h-0 flex flex-col"
                 >
                   <CapacityPlannerGantt 
-                    resources={allGanttResources.map(r => ({
-                      id: r.id,
-                      name: r.name,
-                      role: r.role,
-                      department: r.department,
-                      allocation: r.allocation,
-                      contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
-                      assignmentName: r.assignmentName,
-                      country_flag_svg: (r as any).country_flag_svg || null,
-                    }))}
+                    resources={ganttResourcesMemo}
                     allocations={allocations}
                     year={2026}
                     departmentFilter={departmentFilter}
@@ -1056,27 +1081,8 @@ export default function CapacityPlannerPage() {
               transition={{ duration: 0.2 }}
             >
               <ProjectCapacityView
-                assignments={resourceAssignments.map(a => ({
-                  id: a.id,
-                  name: a.name,
-                  color: '#3b82f6', // Default blue color
-                  required_fte: 1 // Default requirement
-                }))}
-                allocations={allocations.map(a => ({
-                  id: a.id,
-                  resource_id: a.resource_id,
-                  profile_id: a.profile_id,
-                  resource_name: (a as any).resource_inventory?.name || (a as any).resource_name,
-                  profile_name: (a as any).profile_name,
-                  role_name: (a as any).resource_inventory?.role_name || (a as any).role_name,
-                  assignment_id: a.assignment_id,
-                  assignment_name: (a as any).resource_assignments?.name || (a as any).assignment_name,
-                  allocation_percent: a.allocation_percent,
-                  allocation_type: (a as any).allocation_type || 'committed',
-                  start_date: a.start_date,
-                  end_date: a.end_date,
-                  department: (a as any).department_name || (a as any).department
-                }))}
+                assignments={projectAssignmentsMemo}
+                allocations={projectAllocationsMemo}
                 periodType={projectPeriodType}
                 periodRange={projectPeriodRange}
                 searchQuery={searchQuery}
@@ -1714,16 +1720,7 @@ export default function CapacityPlannerPage() {
               {primaryView === 'resources' && resourceView === 'timeline' && (
                 <div className="flex-1 min-h-0 flex flex-col">
                   <CapacityPlannerGantt 
-                    resources={allGanttResources.map(r => ({
-                      id: r.id,
-                      name: r.name,
-                      role: r.role,
-                      department: r.department,
-                      allocation: r.allocation,
-                      contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
-                      assignmentName: r.assignmentName,
-                      country_flag_svg: (r as any).country_flag_svg || null,
-                    }))}
+                    resources={ganttResourcesMemo}
                     allocations={allocations}
                     year={2026}
                     departmentFilter={departmentFilter}

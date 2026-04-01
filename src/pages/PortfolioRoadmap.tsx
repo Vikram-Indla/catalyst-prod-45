@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigation } from '@/contexts/NavigationContext';
@@ -124,6 +124,16 @@ export default function PortfolioRoadmap() {
 
     return groups;
   };
+
+  const featureSwimlanes = useMemo(
+    () => Object.entries(groupBySwimlane(features || [], 'feature')),
+    [features, swimlaneBy]
+  );
+
+  const epicSwimlanes = useMemo(
+    () => Object.entries(groupBySwimlane(epics || [], 'epic')),
+    [epics, swimlaneBy]
+  );
 
   const renderItemBar = (item: any, type: 'epic' | 'feature') => {
     const position = getTimelinePosition(
@@ -323,7 +333,7 @@ export default function PortfolioRoadmap() {
                     </div>
 
                     {/* Swimlanes with responsive spacing */}
-                    {Object.entries(groupBySwimlane(features || [], 'feature')).map(([swimlane, items]) => (
+                    {featureSwimlanes.map(([swimlane, items]) => (
                       <div key={swimlane} className="space-y-[var(--s2)]">
                         <div className="flex items-center gap-[var(--s2)] sticky left-0 bg-card">
                           <div className="text-sm font-semibold text-muted-foreground min-w-[200px]">
@@ -401,7 +411,7 @@ export default function PortfolioRoadmap() {
                     </div>
 
                     {/* Swimlanes */}
-                    {Object.entries(groupBySwimlane(epics || [], 'epic')).map(([swimlane, items]) => (
+                    {epicSwimlanes.map(([swimlane, items]) => (
                       <div key={swimlane} className="space-y-2">
                         <div className="flex items-center gap-2 sticky left-0 bg-card">
                           <div className="text-sm font-semibold text-muted-foreground min-w-[200px]">
