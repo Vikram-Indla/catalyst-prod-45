@@ -66,11 +66,12 @@ export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicSt
     queryFn: async (): Promise<ThemeData | null> => {
       // First try direct theme_id
       if (themeId) {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('strategic_themes')
           .select('id, name, status, color_tag')
           .eq('id', themeId)
           .maybeSingle();
+        if (error) throw error;
         if (data) return data;
       }
 
