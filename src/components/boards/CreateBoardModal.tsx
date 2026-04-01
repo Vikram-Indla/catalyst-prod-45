@@ -148,10 +148,10 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
               }}>
                 <RadioCircle selected={swimlane === opt.value} />
                 <div>
-                  <div style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
+                  <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
                     {opt.label}
                   </div>
-                  <div style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>
+                  <div style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>
                     {opt.desc}
                   </div>
                 </div>
@@ -185,7 +185,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
                 <RadioCircle selected={visibility === opt.value} />
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
                       {opt.label}
                     </span>
                     {opt.warning && (
@@ -194,7 +194,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
                       </span>
                     )}
                   </div>
-                  <div style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>
+                  <div style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>
                     {opt.desc}
                   </div>
                 </div>

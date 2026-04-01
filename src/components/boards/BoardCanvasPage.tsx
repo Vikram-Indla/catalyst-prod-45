@@ -230,7 +230,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#2563EB' }} />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--cp-blue)' }} />
       </div>
     );
   }
@@ -403,7 +403,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                     height: 20, padding: '0 8px', borderRadius: 10,
                     background: 'var(--cp-bd-zone)', border: '0.75px solid rgba(15,23,42,0.10)',
                   }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0D9488' }} />
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--sem-success)' }} />
                     <span style={{
                       fontSize: 12, fontWeight: 600, color: 'var(--fg-1)',
                       fontFamily: "'JetBrains Mono', monospace",

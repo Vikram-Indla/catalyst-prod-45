@@ -159,7 +159,7 @@ export function BoardIssueDetailDrawer({ issueId, onClose }: BoardIssueDetailDra
                 {/* Type badge */}
                 <div className="idp-type-badge" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <JiraIssueTypeIcon type={issue.issue_type?.toLowerCase() || 'task'} size={16} />
-                  <span className="idp-type-label" style={{ color: '#334155' }}>
+                  <span className="idp-type-label" style={{ color: 'var(--fg-2)' }}>
                     {issue.issue_type || 'Task'}
                   </span>
                 </div>

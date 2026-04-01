@@ -151,7 +151,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
         {isLoading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#2563EB' }} />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--cp-blue)' }} />
           </div>
         ) : (
           <>
