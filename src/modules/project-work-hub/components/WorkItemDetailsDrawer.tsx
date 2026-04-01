@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { X, Edit2, Save, Loader2, Archive } from 'lucide-react';
 import { WorkItem, PRIORITY_CONFIG } from '../types';
@@ -46,7 +47,21 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
   const [editedStatus, setEditedStatus] = useState('');
   const [comment, setComment] = useState('');
 
-  // Sync state when item changes
+  // Fetch Jira sync fields for current work item
+  const { data: jiraData } = useQuery({
+    queryKey: ['work-item-jira-sync', item?.id],
+    queryFn: async () => {
+      if (!item?.id) return null;
+      const { data } = await (supabase.from('ph_work_items') as any)
+        .select('jira_key, jira_sync_status, jira_pushed_at')
+        .eq('id', item.id)
+        .maybeSingle();
+      return data as { jira_key: string | null; jira_sync_status: string | null; jira_pushed_at: string | null } | null;
+    },
+    enabled: !!item?.id,
+  });
+
+
   useEffect(() => {
     if (item) {
       setEditedSummary(item.summary);
@@ -450,6 +465,54 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
               <span>Updated: {formatDate(item.updatedAt)}</span>
             </div>
           </div>
+
+          {/* Jira Sync Status — only when jira_key exists */}
+          {jiraData?.jira_key && (
+            <div className="border-t border-[#E2E8F0] dark:border-[#2C2820] pt-4 mt-4">
+              <label className="block text-[11px] font-semibold text-[#6B7280] dark:text-[#9C8E7E] uppercase mb-3" style={{ fontWeight: 650 }}>
+                Jira Sync
+              </label>
+              <div className="space-y-2.5">
+                {/* Row 1: Jira Key */}
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-[#6B7280] dark:text-[#9C8E7E]">Jira Issue</span>
+                  <span
+                    className="font-mono text-[12px] px-2 py-0.5 rounded bg-[#F1F5F9] text-[#1E293B] dark:bg-[#2C2820] dark:text-[#E2D5C3]"
+                    style={{ borderRadius: 4 }}
+                  >
+                    {jiraData.jira_key}
+                  </span>
+                </div>
+                {/* Row 2: Sync Status */}
+                {jiraData.jira_sync_status && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-[#6B7280] dark:text-[#9C8E7E]">Sync Status</span>
+                    <span
+                      className="inline-flex items-center justify-center uppercase text-[11px] font-bold px-2"
+                      style={{
+                        height: 20,
+                        borderRadius: 3,
+                        letterSpacing: '0.05em',
+                        backgroundColor: jiraData.jira_sync_status === 'completed' ? '#E3FCEF' : '#DFE1E6',
+                        color: jiraData.jira_sync_status === 'completed' ? '#006644' : '#253858',
+                      }}
+                    >
+                      {jiraData.jira_sync_status}
+                    </span>
+                  </div>
+                )}
+                {/* Row 3: Last Pushed */}
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-[#6B7280] dark:text-[#9C8E7E]">Last Synced</span>
+                  <span className="text-[12px] text-[#334155] dark:text-[#E2D5C3]">
+                    {jiraData.jira_pushed_at
+                      ? format(new Date(jiraData.jira_pushed_at), 'MMM d, yyyy, hh:mm a')
+                      : '—'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="activity" className="flex-1 overflow-y-auto p-4">
