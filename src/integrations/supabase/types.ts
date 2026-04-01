@@ -15516,6 +15516,75 @@ export type Database = {
         }
         Relationships: []
       }
+      jira_deleted_items: {
+        Row: {
+          catalyst_item_id: string
+          catalyst_item_key: string
+          deleted_at: string
+          deleted_by: string | null
+          id: string
+          is_recoverable: boolean | null
+          item_snapshot: Json
+          item_type: string
+          jira_issue_id: string | null
+          jira_key: string | null
+          jira_transition_error: string | null
+          jira_transition_status: string | null
+          project_id: string | null
+          recovered_at: string | null
+          recovered_by: string | null
+        }
+        Insert: {
+          catalyst_item_id: string
+          catalyst_item_key: string
+          deleted_at?: string
+          deleted_by?: string | null
+          id?: string
+          is_recoverable?: boolean | null
+          item_snapshot: Json
+          item_type: string
+          jira_issue_id?: string | null
+          jira_key?: string | null
+          jira_transition_error?: string | null
+          jira_transition_status?: string | null
+          project_id?: string | null
+          recovered_at?: string | null
+          recovered_by?: string | null
+        }
+        Update: {
+          catalyst_item_id?: string
+          catalyst_item_key?: string
+          deleted_at?: string
+          deleted_by?: string | null
+          id?: string
+          is_recoverable?: boolean | null
+          item_snapshot?: Json
+          item_type?: string
+          jira_issue_id?: string | null
+          jira_key?: string | null
+          jira_transition_error?: string | null
+          jira_transition_status?: string | null
+          project_id?: string | null
+          recovered_at?: string | null
+          recovered_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_deleted_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_deleted_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_sync_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       jira_field_mappings: {
         Row: {
           catalyst_entity: string
@@ -15958,6 +16027,38 @@ export type Database = {
         }
         Relationships: []
       }
+      jira_sync_lock: {
+        Row: {
+          id: string
+          jira_issue_key: string
+          locked_at: string
+          locked_by_queue_id: string | null
+          unlock_after: string
+        }
+        Insert: {
+          id?: string
+          jira_issue_key: string
+          locked_at?: string
+          locked_by_queue_id?: string | null
+          unlock_after?: string
+        }
+        Update: {
+          id?: string
+          jira_issue_key?: string
+          locked_at?: string
+          locked_by_queue_id?: string | null
+          unlock_after?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_sync_lock_locked_by_queue_id_fkey"
+            columns: ["locked_by_queue_id"]
+            isOneToOne: false
+            referencedRelation: "jira_write_back_queue"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jira_sync_logs: {
         Row: {
           completed_at: string | null
@@ -16051,6 +16152,42 @@ export type Database = {
             referencedColumns: ["project_id"]
           },
         ]
+      }
+      jira_transitions_cache: {
+        Row: {
+          cached_at: string | null
+          expires_at: string | null
+          id: string
+          jira_issue_type: string
+          jira_project_key: string
+          to_status: string
+          to_status_category: string
+          transition_id: string
+          transition_name: string
+        }
+        Insert: {
+          cached_at?: string | null
+          expires_at?: string | null
+          id?: string
+          jira_issue_type: string
+          jira_project_key: string
+          to_status: string
+          to_status_category: string
+          transition_id: string
+          transition_name: string
+        }
+        Update: {
+          cached_at?: string | null
+          expires_at?: string | null
+          id?: string
+          jira_issue_type?: string
+          jira_project_key?: string
+          to_status?: string
+          to_status_category?: string
+          transition_id?: string
+          transition_name?: string
+        }
+        Relationships: []
       }
       jira_user_preferences: {
         Row: {
@@ -16234,11 +16371,19 @@ export type Database = {
           created_by: string | null
           field_name: string
           id: string
+          jira_response_id: string | null
+          jira_response_key: string | null
+          last_error: string | null
           new_value: string
+          operation: string | null
+          operation_payload: Json | null
           ph_issue_id: string
+          ph_work_item_id: string | null
+          push_attempted_at: string | null
           push_status: string | null
           pushed_at: string | null
           queued_at: string
+          retry_count: number | null
           updated_at: string
           updated_by: string | null
         }
@@ -16249,11 +16394,19 @@ export type Database = {
           created_by?: string | null
           field_name: string
           id?: string
+          jira_response_id?: string | null
+          jira_response_key?: string | null
+          last_error?: string | null
           new_value: string
+          operation?: string | null
+          operation_payload?: Json | null
           ph_issue_id: string
+          ph_work_item_id?: string | null
+          push_attempted_at?: string | null
           push_status?: string | null
           pushed_at?: string | null
           queued_at?: string
+          retry_count?: number | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -16264,11 +16417,19 @@ export type Database = {
           created_by?: string | null
           field_name?: string
           id?: string
+          jira_response_id?: string | null
+          jira_response_key?: string | null
+          last_error?: string | null
           new_value?: string
+          operation?: string | null
+          operation_payload?: Json | null
           ph_issue_id?: string
+          ph_work_item_id?: string | null
+          push_attempted_at?: string | null
           push_status?: string | null
           pushed_at?: string | null
           queued_at?: string
+          retry_count?: number | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -16285,6 +16446,48 @@ export type Database = {
             columns: ["ph_issue_id"]
             isOneToOne: false
             referencedRelation: "workhub_items_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_write_back_queue_ph_work_item_id_fkey"
+            columns: ["ph_work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_write_back_queue_ph_work_item_id_fkey"
+            columns: ["ph_work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_write_back_queue_ph_work_item_id_fkey"
+            columns: ["ph_work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_write_back_queue_ph_work_item_id_fkey"
+            columns: ["ph_work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "jira_write_back_queue_ph_work_item_id_fkey"
+            columns: ["ph_work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
+          },
+          {
+            foreignKeyName: "jira_write_back_queue_ph_work_item_id_fkey"
+            columns: ["ph_work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
             referencedColumns: ["id"]
           },
         ]
@@ -26089,13 +26292,17 @@ export type Database = {
           item_key: string
           item_type: string
           jira_issue_id: string | null
+          jira_key: string | null
           jira_labels: string[] | null
           jira_priority: string | null
           jira_project_id: string | null
+          jira_pushed_at: string | null
           jira_removed_at: string | null
           jira_sprint: string | null
           jira_status: string | null
           jira_story_points: number | null
+          jira_sync_error: string | null
+          jira_sync_status: string | null
           jira_url: string | null
           labels: string[] | null
           last_synced_at: string | null
@@ -26155,13 +26362,17 @@ export type Database = {
           item_key: string
           item_type: string
           jira_issue_id?: string | null
+          jira_key?: string | null
           jira_labels?: string[] | null
           jira_priority?: string | null
           jira_project_id?: string | null
+          jira_pushed_at?: string | null
           jira_removed_at?: string | null
           jira_sprint?: string | null
           jira_status?: string | null
           jira_story_points?: number | null
+          jira_sync_error?: string | null
+          jira_sync_status?: string | null
           jira_url?: string | null
           labels?: string[] | null
           last_synced_at?: string | null
@@ -26221,13 +26432,17 @@ export type Database = {
           item_key?: string
           item_type?: string
           jira_issue_id?: string | null
+          jira_key?: string | null
           jira_labels?: string[] | null
           jira_priority?: string | null
           jira_project_id?: string | null
+          jira_pushed_at?: string | null
           jira_removed_at?: string | null
           jira_sprint?: string | null
           jira_status?: string | null
           jira_story_points?: number | null
+          jira_sync_error?: string | null
+          jira_sync_status?: string | null
           jira_url?: string | null
           labels?: string[] | null
           last_synced_at?: string | null
@@ -30518,6 +30733,8 @@ export type Database = {
           failed_login_count: number | null
           full_name: string | null
           id: string
+          jira_account_id: string | null
+          jira_display_name: string | null
           last_login: string | null
           last_login_at: string | null
           last_signup_attempt_at: string | null
@@ -30555,6 +30772,8 @@ export type Database = {
           failed_login_count?: number | null
           full_name?: string | null
           id: string
+          jira_account_id?: string | null
+          jira_display_name?: string | null
           last_login?: string | null
           last_login_at?: string | null
           last_signup_attempt_at?: string | null
@@ -30592,6 +30811,8 @@ export type Database = {
           failed_login_count?: number | null
           full_name?: string | null
           id?: string
+          jira_account_id?: string | null
+          jira_display_name?: string | null
           last_login?: string | null
           last_login_at?: string | null
           last_signup_attempt_at?: string | null
