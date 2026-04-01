@@ -117,8 +117,8 @@ export default function ForYouPage() {
   ];
 
   return (
-    <div className="fy-page" style={{ fontFamily: "'Inter', system-ui", minHeight: 0, flex: 1, background: 'var(--cp-bg)', color: 'var(--cp-t1)' }}>
-      <main style={{ width: '100%', padding: '16px 32px 48px', boxSizing: 'border-box' }}>
+    <div className="fy-page" style={{ fontFamily: "'Inter', system-ui", minHeight: 0, flex: 1, background: 'var(--cp-bg)', color: 'var(--cp-t1)', overflow: 'hidden' }}>
+      <main style={{ width: '100%', padding: '16px 24px 48px', boxSizing: 'border-box', overflow: 'hidden' }}>
         <ForYouHeader />
 
         {/* Tabs */}
