@@ -201,11 +201,12 @@ function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
 }
 
 /* ── FilterChip with dropdown ── */
-function FilterChip({ label, items, selected, onSelect }: {
+function FilterChip({ label, items, selected, onSelect, avatarMap }: {
   label: string;
   items: { value: string; display: string; svg?: string; color?: string }[];
   selected: string | null;
   onSelect: (v: string | null) => void;
+  avatarMap?: Map<string, string>;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
