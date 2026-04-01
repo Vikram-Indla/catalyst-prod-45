@@ -136,6 +136,12 @@ function ResultRow({ item, query, onClick }: { item: SearchResult; query: string
               {item.project_name}
             </>
           )}
+          {item.assignee_name && (
+            <>
+              <span style={dotStyle} />
+              {item.assignee_name}
+            </>
+          )}
         </div>
       </div>
       {/* time */}
