@@ -10,6 +10,7 @@ import {
 } from "@/hooks/useGlobalSearch";
 import { useNavigate } from "react-router-dom";
 import type { SearchResult, ActiveFilters, SearchHub, WorkItemType } from "@/types/global-search";
+import { useProfileAvatarsByName } from "@/hooks/useProfileAvatars";
 
 /* ─── CANONICAL WORK ITEM SVG ICONS (16×14 inline) ─── */
 const WORK_ICONS: Record<string, { label: string; svg: string }> = {
@@ -119,8 +120,9 @@ function getAvatarColor(name: string): string {
 }
 
 /* ── ResultRow ── */
-function ResultRow({ item, isSelected, onHover, onClick }: {
+function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
   item: SearchResult; isSelected: boolean; onHover: () => void; onClick: () => void;
+  avatarMap: Map<string, string>;
 }) {
   const typeKey = mapType(item.item_type);
   const icon = WORK_ICONS[typeKey] ?? WORK_ICONS.task;
@@ -166,13 +168,23 @@ function ResultRow({ item, isSelected, onHover, onClick }: {
         {item.project_name && <span style={{ color: "#C1C7D0" }}>·</span>}
         {item.assignee_name && (
           <>
-            <span style={{
-              width: 20, height: 20, borderRadius: "50%", fontSize: 9, fontWeight: 600,
-              color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center",
-              backgroundColor: getAvatarColor(item.assignee_name), flexShrink: 0,
-            }}>
-              {getInitials(item.assignee_name)}
-            </span>
+            {(() => {
+              const avatarUrl = avatarMap.get(item.assignee_name!.toLowerCase());
+              const ini = getInitials(item.assignee_name!);
+              const clr = getAvatarColor(item.assignee_name!);
+              return avatarUrl ? (
+                <img src={avatarUrl} alt={item.assignee_name!}
+                  style={{ width: 22, height: 22, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+              ) : (
+                <span style={{
+                  width: 22, height: 22, borderRadius: "50%", fontSize: 9, fontWeight: 600,
+                  color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  backgroundColor: clr, flexShrink: 0,
+                }}>
+                  {ini}
+                </span>
+              );
+            })()}
             <span style={{ color: "#C1C7D0" }}>·</span>
           </>
         )}
@@ -327,6 +339,7 @@ export function GlobalSearch() {
   const { data: results = [], isLoading } = useSearchResults(debouncedQuery, filters);
   const trackView = useTrackView();
   const saveSearch = useSaveSearch();
+  const nameAvatarMap = useProfileAvatarsByName();
 
   // Derive unique assignees from recents
   const assigneeOptions = Array.from(
@@ -541,6 +554,7 @@ export function GlobalSearch() {
                         <ResultRow
                           key={`${item.id}-${startIdx + relIdx}`}
                           item={item}
+                          avatarMap={nameAvatarMap}
                           isSelected={selectedIdx === startIdx + relIdx}
                           onHover={() => setSelectedIdx(startIdx + relIdx)}
                           onClick={() => handleSelect(item)}
@@ -598,6 +612,7 @@ export function GlobalSearch() {
                     <ResultRow
                       key={`${item.id}-${idx}`}
                       item={item}
+                      avatarMap={nameAvatarMap}
                       isSelected={selectedIdx === idx}
                       onHover={() => setSelectedIdx(idx)}
                       onClick={() => handleSelect(item)}
