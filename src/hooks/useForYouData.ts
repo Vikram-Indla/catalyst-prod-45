@@ -344,9 +344,9 @@ export function useForYouData() {
         }
 
         setAssignedItems([...jiraAssigned, ...plannerMapped]);
-        const fourteenDaysAgo2 = new Date();
-        fourteenDaysAgo2.setDate(fourteenDaysAgo2.getDate() - 14);
-        const recentPlannerTasks = plannerMapped.filter(t => t.jira_updated_at && new Date(t.jira_updated_at) >= fourteenDaysAgo2);
+        const ninetyDaysAgo2 = new Date();
+        ninetyDaysAgo2.setDate(ninetyDaysAgo2.getDate() - 90);
+        const recentPlannerTasks = plannerMapped.filter(t => t.jira_updated_at && new Date(t.jira_updated_at) >= ninetyDaysAgo2);
         setWorkedOnItems([...jiraWorked, ...recentPlannerTasks]);
 
         // Starred
