@@ -20,12 +20,12 @@ export function useActivities(limit: number = 10, projectId?: string) {
           .select('id, status, created_at, test_case_id, executed_by')
           .not('executed_by', 'is', null)
           .order('created_at', { ascending: false })
-          .limit(limit) as Promise<{ data: any[] | null; error: any }>,
+          .limit(limit) as unknown as Promise<{ data: any[] | null; error: any }>,
         supabase
           .from('tm_defects')
           .select('id, defect_key, title, created_at')
           .order('created_at', { ascending: false })
-          .limit(5) as Promise<{ data: any[] | null; error: any }>,
+          .limit(5) as unknown as Promise<{ data: any[] | null; error: any }>,
       ]);
 
       if (runsResult.error) throw runsResult.error;
