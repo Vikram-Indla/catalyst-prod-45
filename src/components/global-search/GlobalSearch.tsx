@@ -43,6 +43,7 @@ const WORK_ITEM_ICONS: Record<string, string> = {
   incident: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M8.829,12 L7.923,15 L16.077,15 L15.171,12 Z M9.433,10 L14.567,10 L12.957,4.668 C12.289,4 11.043,4.668 9.433,10 Z M17,17 L7,17 L6,17 C5.448,17 5,17.448 5,18 L5,20 L19,20 L19,18 C19,17.448 18.552,17 18,17 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
   new_feature: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M13,11 L13,5 C13,4.448 12.552,4 12,4 C11.448,4 11,4.448 11,5 L11,11 L5,11 C4.448,11 4,11.448 4,12 C4,12.552 4.448,13 5,13 L11,13 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 L13,13 L19,13 C19.552,13 20,12.552 20,12 C20,11.448 19.552,11 19,11 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
   improvement: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M13,7.422 L16.284,10.707 C16.674,11.098 17.307,11.098 17.698,10.707 C18.088,10.317 18.088,9.684 17.698,9.293 L12.7,4.293 C12.31,3.902 11.676,3.902 11.286,4.293 L6.288,9.293 C5.897,9.684 5.897,10.317 6.288,10.707 C6.679,11.098 7.312,11.098 7.702,10.707 L11,7.408 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
+  subtask: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z"/></svg>`,
 };
 
 function relativeTime(dateStr: string): string {
@@ -69,13 +70,41 @@ function highlightMatch(text: string, query: string) {
   );
 }
 
-/* ━━━ ResultRow ━━━ */
+/* FIX 1 — Icon type mapper */
+function mapToIconType(raw: string | null | undefined): string {
+  if (!raw) return 'task';
+  const val = raw.toLowerCase().replace(/[\s_-]/g, '');
+  if (val.includes('bug') || val.includes('qa')) return 'bug';
+  if (val.includes('story')) return 'story';
+  if (val.includes('epic')) return 'epic';
+  if (val.includes('incident')) return 'incident';
+  if (val.includes('feature')) return 'new_feature';
+  if (val.includes('improvement')) return 'improvement';
+  if (val.includes('subtask') || val.includes('sub')) return 'subtask';
+  if (val.includes('change')) return 'changes';
+  if (val.includes('question')) return 'question';
+  return 'task';
+}
+
+/* Section label style (FIX 6) */
+const sectionLabelStyle: React.CSSProperties = {
+  textTransform: 'uppercase', fontSize: 11, fontWeight: 600,
+  letterSpacing: '0.08em', color: '#5E6C84', padding: '8px 12px 4px',
+};
+
+/* Dot separator style (FIX 2) */
+const dotStyle: React.CSSProperties = {
+  width: 2, height: 2, borderRadius: '50%', background: '#C1C7D0',
+  display: 'inline-block', margin: '0 4px', verticalAlign: 'middle',
+};
+
+/* ━━━ ResultRow (FIX 2) ━━━ */
 function ResultRow({ item, query, onClick }: { item: SearchResult; query: string; onClick: () => void }) {
   return (
     <div
       onClick={onClick}
       style={{
-        height: 50, display: 'flex', alignItems: 'center', padding: '0 12px',
+        height: 44, display: 'flex', alignItems: 'center', padding: '0 12px',
         gap: 10, cursor: 'pointer',
       }}
       onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
@@ -83,34 +112,34 @@ function ResultRow({ item, query, onClick }: { item: SearchResult; query: string
     >
       {/* icon */}
       <span
-        style={{ width: 28, height: 28, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[item.item_type] ?? WORK_ITEM_ICONS.task }}
+        style={{ width: 32, height: 44, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[mapToIconType(item.item_type)] ?? WORK_ITEM_ICONS.task }}
       />
       {/* content */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          fontSize: 13, color: '#172B4D', whiteSpace: 'nowrap',
+          fontSize: 13, color: '#172B4D', fontWeight: 400, whiteSpace: 'nowrap',
           overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
-          <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#0052CC', marginRight: 4 }}>
+          <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#0052CC', marginRight: 6, fontWeight: 500 }}>
             {item.item_key}
           </span>
           {highlightMatch(item.title, query)}
         </div>
-        <div style={{ fontSize: 11, color: '#6B778C', display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div style={{ fontSize: 11, color: '#6B778C', lineHeight: 1.3, display: 'flex', alignItems: 'center' }}>
           Catalyst
-          <span style={{ width: 2, height: 2, borderRadius: '50%', background: '#94A3B8' }} />
+          <span style={dotStyle} />
           {item.item_type.replace('_', ' ')}
           {item.project_name && (
             <>
-              <span style={{ width: 2, height: 2, borderRadius: '50%', background: '#94A3B8' }} />
+              <span style={dotStyle} />
               {item.project_name}
             </>
           )}
         </div>
       </div>
       {/* time */}
-      <span style={{ fontSize: 11, color: '#6B778C', flexShrink: 0 }}>
+      <span style={{ fontSize: 11, color: '#6B778C', flexShrink: 0, whiteSpace: 'nowrap', paddingLeft: 12 }}>
         {relativeTime(item.viewed_at)}
       </span>
     </div>
@@ -134,7 +163,6 @@ export function GlobalSearch() {
   const trackView = useTrackView();
   const saveSearch = useSaveSearch();
 
-  // Focus input on open
   useEffect(() => {
     if (isOpen) {
       const t = setTimeout(() => inputRef.current?.focus(), 50);
@@ -142,7 +170,6 @@ export function GlobalSearch() {
     }
   }, [isOpen]);
 
-  // Reset on close
   useEffect(() => {
     if (!isOpen) {
       setQuery('');
@@ -151,7 +178,6 @@ export function GlobalSearch() {
     }
   }, [isOpen]);
 
-  // Global Cmd+K
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -176,11 +202,12 @@ export function GlobalSearch() {
     close();
   }, [debouncedQuery, navigate, close, trackView, saveSearch]);
 
-  const chipStyle = (active: boolean) => ({
-    height: 28, padding: '0 10px', border: `1px solid ${active ? '#93C5FD' : '#E2E8F0'}`,
-    borderRadius: 6, fontSize: 12, color: active ? '#1D4ED8' : '#334155',
-    background: active ? '#EFF6FF' : 'white', cursor: 'pointer', gap: 5,
-    flexShrink: 0 as const, display: 'flex' as const, alignItems: 'center' as const,
+  /* FIX 5 — chip style */
+  const chipStyle = (active: boolean): React.CSSProperties => ({
+    height: 24, padding: '0 8px', border: `1px solid ${active ? '#93C5FD' : '#DFE1E6'}`,
+    borderRadius: 4, fontSize: 11, color: active ? '#1D4ED8' : '#42526E',
+    background: active ? '#EFF6FF' : '#FAFAFA', cursor: 'pointer', gap: 4,
+    flexShrink: 0, display: 'flex', alignItems: 'center',
   });
 
   const HUB_OPTIONS = ['All Hubs', 'StrategyHub', 'ProductHub', 'ProjectHub', 'ReleaseHub', 'TestHub', 'IncidentHub', 'TaskHub', 'PlanHub'];
@@ -201,13 +228,13 @@ export function GlobalSearch() {
         }}
         className="!p-0 !bg-white"
       >
-        {/* LAYER 1 — Search row */}
+        {/* LAYER 1 — Search row (FIX 4) */}
         <div style={{
-          height: 48, borderBottom: '1px solid #E2E8F0', padding: '0 14px',
+          height: 44, borderBottom: '1px solid #E2E8F0', padding: '0 14px',
           gap: 10, display: 'flex', alignItems: 'center', flexShrink: 0,
           backgroundColor: '#ffffff',
         }}>
-          <Search size={16} color="#64748B" />
+          <Search size={15} color="#94A3B8" />
           <input
             ref={inputRef}
             value={query}
@@ -216,7 +243,7 @@ export function GlobalSearch() {
             placeholder="Search Catalyst..."
             style={{
               border: 'none', outline: 'none', fontFamily: 'Inter, sans-serif',
-              fontSize: 14, color: '#0F172A', flex: 1, background: 'transparent',
+              fontSize: 14, color: '#172B4D', flex: 1, background: 'transparent',
             }}
           />
           {query && (
@@ -233,30 +260,31 @@ export function GlobalSearch() {
           }}>ESC</kbd>
         </div>
 
-        {/* LAYER 2 — Filter row */}
+        {/* LAYER 2 — Filter row (FIX 5) */}
         <div style={{
-          padding: '7px 12px', borderBottom: '1px solid #F1F5F9', flexShrink: 0,
+          height: 36, padding: '0 12px', borderBottom: '1px solid #F1F5F9', flexShrink: 0,
           gap: 6, display: 'flex', alignItems: 'center',
           backgroundColor: '#ffffff',
         }}>
           <button style={{
-            width: 28, height: 28, border: '1px solid #E2E8F0', borderRadius: 6,
-            background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            width: 24, height: 24, border: '1px solid #DFE1E6', borderRadius: 4,
+            background: '#FAFAFA', cursor: 'pointer', display: 'flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
           }}>
-            <SlidersHorizontal size={14} color="#64748B" />
+            <SlidersHorizontal size={12} color="#64748B" />
           </button>
+
           {/* Hub filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button style={chipStyle(!!filters.hub)}>
                 {filters.hub ?? 'Hub'}
-                <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
+                <ChevronRight size={8} style={{ transform: 'rotate(90deg)' }} />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent style={{ backgroundColor: '#ffffff', zIndex: 9999 }}>
               {HUB_OPTIONS.map(h => (
-                <DropdownMenuItem key={h} onClick={() => setFilters(f => ({ ...f, hub: h === 'All Hubs' ? null : h as any }))}>
+                <DropdownMenuItem key={h} onClick={() => setFilters(f => ({ ...f, hub: h === 'All Hubs' ? null : h as SearchHub }))}>
                   {h}
                 </DropdownMenuItem>
               ))}
@@ -266,26 +294,26 @@ export function GlobalSearch() {
           {/* Project filter (clear only) */}
           <button style={chipStyle(!!filters.project)} onClick={() => setFilters(f => ({ ...f, project: null }))}>
             {filters.project ?? 'Project'}
-            <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
+            <ChevronRight size={8} style={{ transform: 'rotate(90deg)' }} />
           </button>
 
           {/* Assignee filter (clear only) */}
           <button style={chipStyle(!!filters.assignee)} onClick={() => setFilters(f => ({ ...f, assignee: null }))}>
             {filters.assignee ?? 'Assignee'}
-            <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
+            <ChevronRight size={8} style={{ transform: 'rotate(90deg)' }} />
           </button>
 
           {/* Type filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button style={chipStyle(!!filters.type)}>
-                {filters.type?.replace('_', ' ') ?? 'Type'}
-                <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
+                {filters.type ? filters.type.replace('_', ' ') : 'Type'}
+                <ChevronRight size={8} style={{ transform: 'rotate(90deg)' }} />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent style={{ backgroundColor: '#ffffff', zIndex: 9999 }}>
               {TYPE_OPTIONS.map(t => (
-                <DropdownMenuItem key={t} onClick={() => setFilters(f => ({ ...f, type: t === 'All Types' ? null : t as any }))}>
+                <DropdownMenuItem key={t} onClick={() => setFilters(f => ({ ...f, type: t === 'All Types' ? null : t as WorkItemType }))}>
                   {t === 'All Types' ? t : t.replace('_', ' ')}
                 </DropdownMenuItem>
               ))}
@@ -296,9 +324,8 @@ export function GlobalSearch() {
         {/* LAYER 3 — Scroll body */}
         <div style={{ overflowY: 'auto', flex: 1, backgroundColor: '#ffffff' }}>
           {isLoading && hasQuery ? (
-            // Skeleton
             Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} style={{ height: 50, display: 'flex', alignItems: 'center', padding: '0 12px', gap: 10 }}>
+              <div key={i} style={{ height: 44, display: 'flex', alignItems: 'center', padding: '0 12px', gap: 10 }}>
                 <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#F1F5F9' }} />
                 <div style={{ flex: 1 }}>
                   <div style={{ height: 11, width: '60%', background: '#F1F5F9', borderRadius: 3, marginBottom: 6 }} />
@@ -308,7 +335,7 @@ export function GlobalSearch() {
             ))
           ) : !hasQuery ? (
             <>
-              {/* Suggestions */}
+              {/* Suggestions (FIX 3) */}
               {recents.slice(0, 2).map(item => (
                 <div
                   key={`sug-${item.id}`}
@@ -320,17 +347,19 @@ export function GlobalSearch() {
                   <Search size={14} color="#64748B" />
                   <div style={{ flex: 1, fontSize: 13, color: '#172B4D', display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
                     <span style={{
-                      width: 16, height: 16, borderRadius: 3,
-                      background: HUB_COLORS[item.hub] ?? '#64748B', color: 'white',
-                      fontSize: 8, fontWeight: 700, display: 'inline-flex',
-                      alignItems: 'center', justifyContent: 'center',
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      width: 14, height: 14, borderRadius: 3,
+                      background: HUB_COLORS[item.hub] ?? '#64748B', color: '#ffffff',
+                      fontSize: 8, fontWeight: 700, flexShrink: 0,
+                      verticalAlign: 'middle', marginRight: 2,
                     }}>
                       {item.hub?.[0] ?? 'C'}
                     </span>
                     {item.hub} items in {item.project_name ?? item.hub}
                     <span style={{
-                      background: '#F5F3FF', color: '#7C3AED', fontSize: 10, fontWeight: 600,
-                      borderRadius: 3, padding: '1px 5px', marginLeft: 4,
+                      display: 'inline-flex', alignItems: 'center', gap: 2,
+                      fontSize: 10, fontWeight: 600, color: '#7C3AED', background: '#F5F3FF',
+                      borderRadius: 3, padding: '1px 5px', marginLeft: 6,
                     }}>★ AI</span>
                   </div>
                   <span style={{ fontSize: 11, color: '#6B778C' }}>Suggestion</span>
@@ -352,15 +381,10 @@ export function GlobalSearch() {
                 </div>
               ))}
 
-              {/* Recent items */}
+              {/* Recent items (FIX 6 label) */}
               {recents.length > 0 && (
                 <>
-                  <div style={{
-                    textTransform: 'uppercase', fontSize: 11, fontWeight: 600,
-                    letterSpacing: '0.06em', color: '#6B778C', padding: '10px 12px 4px',
-                  }}>
-                    Recent
-                  </div>
+                  <div style={sectionLabelStyle}>Recent</div>
                   {recents.map(item => (
                     <ResultRow key={item.id} item={item} query="" onClick={() => onResultClick(item)} />
                   ))}
@@ -374,15 +398,10 @@ export function GlobalSearch() {
             </>
           ) : (
             <>
-              <div style={{
-                textTransform: 'uppercase', fontSize: 11, fontWeight: 600,
-                letterSpacing: '0.06em', color: '#6B778C', padding: '10px 12px 4px',
-              }}>
-                Results
-              </div>
+              <div style={sectionLabelStyle}>Results</div>
               {results.length === 0 ? (
                 <div style={{ padding: 32, textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>
-                  No results for "{debouncedQuery}"
+                  No results for &ldquo;{debouncedQuery}&rdquo;
                 </div>
               ) : (
                 results.map(item => (
@@ -393,13 +412,13 @@ export function GlobalSearch() {
           )}
         </div>
 
-        {/* LAYER 4 — Bottom tab bar */}
+        {/* LAYER 4 — Bottom tab bar (FIX 7) */}
         <div style={{
-          height: 40, borderTop: '1px solid #E2E8F0', background: '#FAFAFA',
+          height: 36, borderTop: '1px solid #E2E8F0', background: '#FAFAFA',
           padding: '0 8px', display: 'flex', alignItems: 'center', flexShrink: 0, gap: 0,
         }}>
-          <ChevronRight size={14} color="#94A3B8" style={{ marginRight: 4 }} />
-          <div style={{ width: 1, height: 18, background: '#E2E8F0', margin: '0 4px' }} />
+          <ChevronRight size={12} color="#94A3B8" style={{ marginRight: 4 }} />
+          <div style={{ width: 1, height: 16, background: '#E2E8F0', margin: '0 4px' }} />
           {[
             { label: 'Boards', icon: LayoutGrid, path: '/project-hub' },
             { label: 'Hubs', icon: Home, path: '/' },
@@ -411,7 +430,7 @@ export function GlobalSearch() {
               key={tab.label}
               onClick={() => { navigate(tab.path); close(); }}
               style={{
-                height: 40, padding: '0 11px', fontSize: 12, color: '#6B778C',
+                height: 36, padding: '0 10px', fontSize: 11, color: '#6B778C',
                 background: 'none', border: 'none', borderBottom: '2px solid transparent',
                 cursor: 'pointer', gap: 5, display: 'flex', alignItems: 'center',
               }}
@@ -424,7 +443,7 @@ export function GlobalSearch() {
                 e.currentTarget.style.color = '#6B778C';
               }}
             >
-              <tab.icon size={14} />
+              <tab.icon size={12} />
               {tab.label}
             </button>
           ))}
