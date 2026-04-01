@@ -13,7 +13,7 @@ export function AttentionSection({ items, onItemClick }: { items: AttentionItem[
   return (
     <div style={{ marginBottom: 24 }}>
       <span style={{
-        fontSize: 10, fontWeight: 700, color: '#8B8FA3',
+        fontSize: 10, fontWeight: 700, color: 'var(--fg-3)',
         textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: F.inter,
       }}>
         YOUR ATTENTION NEEDED

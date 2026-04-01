@@ -32,23 +32,23 @@ function Greeting({ userCtx }: { userCtx: UserContext }) {
 
   return (
     <div style={{ marginBottom: 20 }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, color: '#1A1D23', letterSpacing: '-0.02em', margin: 0, fontFamily: F.sora }}>
+      <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--fg-1)', letterSpacing: '-0.02em', margin: 0, fontFamily: F.sora }}>
         {greeting}, {firstName}
       </h1>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 12, fontWeight: 500, color: '#5E6270', fontFamily: F.inter }}>
+        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', fontFamily: F.inter }}>
           {effectiveRole}
         </span>
-        <span style={{ width: 1, height: 12, background: '#ECEEF2' }} />
+        <span style={{ width: 1, height: 12, background: 'var(--divider)' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {topProjects.map(pk => (
-            <span key={pk} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#5E6270', fontFamily: F.inter }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: PROJECT_COLORS[pk] || '#8B8FA3', flexShrink: 0 }} />
+            <span key={pk} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: 'var(--fg-2)', fontFamily: F.inter }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: PROJECT_COLORS[pk] || 'var(--fg-3)', flexShrink: 0 }} />
               {pk}
             </span>
           ))}
           {userCtx.projectKeys.length > 4 && (
-            <span style={{ fontSize: 11, color: '#8B8FA3', fontFamily: F.inter }}>
+            <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: F.inter }}>
               +{userCtx.projectKeys.length - 4} more
             </span>
           )}
@@ -64,24 +64,24 @@ function ProjectCard({ project, onItemClick }: { project: ProjectGroup; onItemCl
 
   return (
     <div style={{
-      border: '1px solid #ECEEF2', borderRadius: 10, background: '#FFFFFF',
+      border: '1px solid var(--divider)', borderRadius: 10, background: 'var(--cp-float)',
       borderLeft: `3px solid ${project.projectColor}`, marginBottom: 10,
       overflow: 'hidden',
     }}>
       {/* Project header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 14px', borderBottom: '1px solid #F4F5F7',
+        padding: '10px 14px', borderBottom: '1px solid var(--bg-2)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: project.projectColor, flexShrink: 0 }} />
-          <span style={{ fontSize: 13, fontWeight: 650, color: '#1A1D23', fontFamily: F.inter }}>
+          <span style={{ fontSize: 13, fontWeight: 650, color: 'var(--fg-1)', fontFamily: F.inter }}>
             {project.projectKey}
           </span>
           {project.hasIncident && (
             <span style={{
-              fontSize: 10, fontWeight: 700, color: '#CF1322',
-              background: '#FFF1F0', border: '1px solid #FFD6D6',
+              fontSize: 10, fontWeight: 700, color: 'var(--sem-danger)',
+              background: 'var(--sem-danger-bg)', border: '1px solid var(--sem-danger-light)',
               padding: '1px 6px', borderRadius: 3, textTransform: 'uppercase',
               letterSpacing: '0.04em', fontFamily: F.inter,
             }}>
@@ -89,7 +89,7 @@ function ProjectCard({ project, onItemClick }: { project: ProjectGroup; onItemCl
             </span>
           )}
         </div>
-        <span style={{ fontSize: 11, color: '#8B8FA3', fontFamily: F.mono }}>
+        <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: F.mono }}>
           {totalItems} item{totalItems !== 1 ? 's' : ''}
         </span>
       </div>
@@ -109,7 +109,7 @@ function ProjectCard({ project, onItemClick }: { project: ProjectGroup; onItemCl
 
 // ═══ INDIVIDUAL ITEM ROW (Tier 1-4) ═══
 function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isFirst: boolean; onClick: (key: string) => void }) {
-  const dayColor = item.daysSinceUpdate <= 1 ? '#52C41A' : item.daysSinceUpdate <= 3 ? '#5E6270' : item.daysSinceUpdate <= 7 ? '#FA8C16' : '#CF1322';
+  const dayColor = item.daysSinceUpdate <= 1 ? 'var(--sem-success)' : item.daysSinceUpdate <= 3 ? 'var(--fg-2)' : item.daysSinceUpdate <= 7 ? 'var(--sem-warning)' : 'var(--sem-danger)';
 
   // Items in backlog/to-do that surfaced in the current week = "moved to current week"
   const statusLower = (item.status || '').toLowerCase();
@@ -123,13 +123,13 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
       style={{
         display: 'flex', flexDirection: 'column', gap: 4, width: '100%',
         padding: '10px 14px', background: 'transparent',
-        borderBottom: '1px solid #F4F5F7', border: 'none',
+        borderBottom: '1px solid var(--bg-2)', border: 'none',
         cursor: 'pointer', textAlign: 'left',
         transition: 'background 80ms',
         position: 'relative',
         zIndex: 0,
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = '#F7F8FA'; e.currentTarget.style.zIndex = '10'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; e.currentTarget.style.zIndex = '10'; }}
       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.zIndex = '0'; }}
     >
       {/* Type label + key + day counter */}
@@ -140,13 +140,13 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
         }}>
           {item.tierLabel}
         </span>
-        <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 650, color: '#4C6EF5' }}>
+        <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 650, color: 'var(--cp-blue)' }}>
           {item.itemKey}
         </span>
         {showMovedTag && (
           <span style={{
             fontSize: 9, fontWeight: 700, color: '#FFFFFF',
-            background: '#0C66E4', padding: '1px 6px', borderRadius: 3,
+            background: 'var(--cp-blue)', padding: '1px 6px', borderRadius: 3,
             textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: F.inter,
             whiteSpace: 'nowrap',
           }}>
@@ -161,14 +161,14 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
 
       {/* Title */}
       <span style={{
-        fontSize: 13, fontWeight: 500, color: '#1A1D23', fontFamily: F.inter,
+        fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: F.inter,
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       }}>
         {item.title}
       </span>
 
       {/* Metadata line */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#8B8FA3', fontFamily: F.inter }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--fg-3)', fontFamily: F.inter }}>
         <span>{item.involvement}</span>
         {item.assignee && (
           <>
@@ -182,7 +182,7 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
             <span style={{
               fontSize: 10, fontWeight: 600, textTransform: 'uppercase',
               padding: '1px 5px', borderRadius: 3,
-              background: '#DFE1E6', color: '#44546F',
+              background: 'var(--cp-lz-gy-bg)', color: 'var(--cp-lz-gy-t)',
             }}>
               {item.status}
             </span>
@@ -204,40 +204,40 @@ function CollapsedGroupRow({ group, onItemClick }: { group: CollapsedGroup; onIt
         style={{
           display: 'flex', alignItems: 'center', gap: 8, width: '100%',
           padding: '8px 14px', background: 'transparent',
-          borderBottom: '1px solid #F4F5F7', border: 'none',
+          borderBottom: '1px solid var(--bg-2)', border: 'none',
           cursor: 'pointer', textAlign: 'left',
           transition: 'background 80ms',
         }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#F7F8FA'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         <span style={{ fontSize: 10, fontWeight: 700, color: group.tierColor, textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: F.inter }}>
           {group.tierLabel}
         </span>
         <span style={{
-          fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: '#1A1D23',
-          background: '#F0F1F3', padding: '1px 6px', borderRadius: 3, minWidth: 20, textAlign: 'center',
+          fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: 'var(--fg-1)',
+          background: 'var(--bg-2)', padding: '1px 6px', borderRadius: 3, minWidth: 20, textAlign: 'center',
         }}>
           {group.count}
         </span>
         <span style={{
-          fontSize: 12, color: '#5E6270', fontFamily: F.inter, flex: 1,
+          fontSize: 12, color: 'var(--fg-2)', fontFamily: F.inter, flex: 1,
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {group.titleSummary}
         </span>
-        <span style={{ fontSize: 11, color: '#8B8FA3', fontFamily: F.inter, flexShrink: 0 }}>
+        <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: F.inter, flexShrink: 0 }}>
           {group.assignees.length > 0 ? group.assignees[0] : 'Unassigned'}
           {group.assignees.length > 1 ? ` +${group.assignees.length - 1}` : ''}
         </span>
         {expanded
-          ? <ChevronDown size={14} color="#8B8FA3" />
-          : <ChevronRight size={14} color="#8B8FA3" />
+          ? <ChevronDown size={14} color="var(--fg-3)" />
+          : <ChevronRight size={14} color="var(--fg-3)" />
         }
       </button>
 
       {expanded && (
-        <div style={{ background: '#FAFBFC' }}>
+        <div style={{ background: 'var(--bg-1)' }}>
           {group.items.map(item => (
             <button
               key={item.itemKey}
@@ -245,22 +245,22 @@ function CollapsedGroupRow({ group, onItemClick }: { group: CollapsedGroup; onIt
               style={{
                 display: 'flex', alignItems: 'center', gap: 8, width: '100%',
                 padding: '6px 14px 6px 32px', background: 'transparent',
-                borderBottom: '1px solid #F4F5F7', border: 'none',
+                borderBottom: '1px solid var(--bg-2)', border: 'none',
                 cursor: 'pointer', textAlign: 'left', transition: 'background 80ms',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#F0F1F3'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-2)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 600, color: '#4C6EF5', minWidth: 70 }}>
+              <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', minWidth: 70 }}>
                 {item.itemKey}
               </span>
               <span style={{
-                fontSize: 12, color: '#5E6270', fontFamily: F.inter, flex: 1,
+                fontSize: 12, color: 'var(--fg-2)', fontFamily: F.inter, flex: 1,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {item.title}
               </span>
-              <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 600, color: '#8B8FA3', flexShrink: 0 }}>
+              <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', flexShrink: 0 }}>
                 {item.daysSinceUpdate}d
               </span>
             </button>
@@ -286,22 +286,22 @@ function WeekNarrativeCard({ narrative, userCtx }: { narrative: WeekNarrative; u
 
   return (
     <div style={{
-      padding: '14px 16px', border: '1px solid #ECEEF2', borderRadius: 8, background: '#FFFFFF',
+      padding: '14px 16px', border: '1px solid var(--divider)', borderRadius: 8, background: 'var(--cp-float)',
     }}>
       {narrative.myTotal > 0 ? (
-        <p style={{ fontSize: 13, color: '#5E6270', lineHeight: '20px', margin: '0 0 8px', fontFamily: F.inter }}>
-          You closed <strong style={{ color: '#1A1D23', fontWeight: 600 }}>{narrative.myTotal} items</strong> this week.
+        <p style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: '20px', margin: '0 0 8px', fontFamily: F.inter }}>
+          You closed <strong style={{ color: 'var(--fg-1)', fontWeight: 600 }}>{narrative.myTotal} items</strong> this week.
         </p>
       ) : (
-        <p style={{ fontSize: 13, color: '#5E6270', lineHeight: '20px', margin: '0 0 8px', fontFamily: F.inter }}>
+        <p style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: '20px', margin: '0 0 8px', fontFamily: F.inter }}>
           No items closed by you this week yet.
         </p>
       )}
 
       {narrative.teamTotal > 0 && (
-        <p style={{ fontSize: 13, color: '#5E6270', lineHeight: '20px', margin: 0, fontFamily: F.inter }}>
+        <p style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: '20px', margin: 0, fontFamily: F.inter }}>
           Your team delivered{' '}
-          <strong style={{ color: '#1A1D23', fontWeight: 600 }}>{closedNarrative}</strong>
+          <strong style={{ color: 'var(--fg-1)', fontWeight: 600 }}>{closedNarrative}</strong>
           {' '}across{' '}
           {Object.entries(narrative.projectBreakdown)
             .sort((a, b) => b[1] - a[1])
@@ -310,8 +310,8 @@ function WeekNarrativeCard({ narrative, userCtx }: { narrative: WeekNarrative; u
                 {i > 0 && i < arr.length - 1 ? ', ' : ''}
                 {i > 0 && i === arr.length - 1 ? ' and ' : ''}
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: PROJECT_COLORS[proj] || '#8B8FA3', display: 'inline-block' }} />
-                  <strong style={{ color: '#1A1D23', fontWeight: 600 }}>{proj}</strong>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: PROJECT_COLORS[proj] || 'var(--fg-3)', display: 'inline-block' }} />
+                  <strong style={{ color: 'var(--fg-1)', fontWeight: 600 }}>{proj}</strong>
                 </span>
                 {' '}({count})
               </span>
@@ -328,12 +328,12 @@ function EmptyState({ userCtx }: { userCtx: UserContext }) {
   return (
     <div style={{
       padding: '32px 20px', textAlign: 'center',
-      border: '1px solid #ECEEF2', borderRadius: 8, background: '#FFFFFF',
+      border: '1px solid var(--divider)', borderRadius: 8, background: 'var(--cp-float)',
     }}>
-      <p style={{ fontSize: 14, fontWeight: 600, color: '#1A1D23', margin: '0 0 6px', fontFamily: F.inter }}>
+      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: '0 0 6px', fontFamily: F.inter }}>
         All clear across your projects
       </p>
-      <p style={{ fontSize: 13, color: '#8B8FA3', margin: 0, fontFamily: F.inter }}>
+      <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: 0, fontFamily: F.inter }}>
         No items with recent activity in {userCtx.projectKeys.slice(0, 4).join(', ')}.
         Try asking me about specific items or projects below.
       </p>
@@ -349,7 +349,7 @@ function BriefingSkeleton() {
       <Skeleton className="h-4 w-40 mb-6 rounded" />
       <Skeleton className="h-4 w-28 mb-3 rounded" />
       {[1, 2, 3].map(i => (
-        <div key={i} style={{ border: '1px solid #ECEEF2', borderRadius: 10, padding: 14, marginBottom: 10 }}>
+        <div key={i} style={{ border: '1px solid var(--divider)', borderRadius: 10, padding: 14, marginBottom: 10 }}>
           <Skeleton className="h-4 w-24 mb-3 rounded" />
           <Skeleton className="h-3.5 w-full mb-2 rounded" />
           <Skeleton className="h-3.5 w-3/4 mb-2 rounded" />
@@ -372,20 +372,20 @@ function QuickActionsBar({ role, onPresetClick }: { role: string; onPresetClick:
           key={preset.query}
           onClick={() => onPresetClick(preset.query)}
           style={{
-            fontSize: 12, fontWeight: 500, color: '#1A1D23',
-            background: '#FFFFFF', border: '1px solid #DFE1E6',
+            fontSize: 12, fontWeight: 500, color: 'var(--fg-1)',
+            background: 'var(--cp-float)', border: '1px solid var(--divider)',
             padding: '7px 14px', borderRadius: 20, cursor: 'pointer',
             transition: 'all 0.15s', fontFamily: F.inter, whiteSpace: 'nowrap',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background = '#EDF2FF';
-            e.currentTarget.style.borderColor = '#4C6EF540';
-            e.currentTarget.style.color = '#4C6EF5';
+            e.currentTarget.style.background = 'var(--cp-blue-wash)';
+            e.currentTarget.style.borderColor = 'var(--cp-blue)';
+            e.currentTarget.style.color = 'var(--cp-blue)';
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background = '#FFFFFF';
-            e.currentTarget.style.borderColor = '#DFE1E6';
-            e.currentTarget.style.color = '#1A1D23';
+            e.currentTarget.style.background = 'var(--cp-float)';
+            e.currentTarget.style.borderColor = 'var(--divider)';
+            e.currentTarget.style.color = 'var(--fg-1)';
           }}
         >
           {preset.label}
@@ -399,7 +399,7 @@ function QuickActionsBar({ role, onPresetClick }: { role: string; onPresetClick:
 function SectionLabel({ text }: { text: string }) {
   return (
     <span style={{
-      fontSize: 10, fontWeight: 700, color: '#8B8FA3',
+      fontSize: 10, fontWeight: 700, color: 'var(--fg-3)',
       textTransform: 'uppercase', letterSpacing: '0.08em',
       fontFamily: F.inter, display: 'block', marginBottom: 10,
     }}>
