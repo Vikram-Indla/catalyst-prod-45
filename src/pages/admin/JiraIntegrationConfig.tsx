@@ -37,6 +37,7 @@ interface JiraConnection {
 
 export default function JiraIntegrationConfig() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [selectedConnection, setSelectedConnection] = useState<string | null>(null);
   const [showConnectionDialog, setShowConnectionDialog] = useState(false);
   const [showFieldMapping, setShowFieldMapping] = useState(false);
