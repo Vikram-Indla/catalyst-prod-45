@@ -116,7 +116,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
             <button
               onClick={onRetry}
               className="ph-focus-ring"
-              style={{ fontSize: 11, fontWeight: 600, color: dark ? '#60A5FA' : '#2563EB', background: dark ? 'rgba(37,99,235,0.15)' : '#EFF6FF', border: dark ? '1px solid rgba(37,99,235,0.3)' : '1px solid #BFDBFE', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}
+              style={{ fontSize: 11, fontWeight: 600, color: dark ? '#60A5FA' : 'var(--cp-blue)', background: dark ? 'rgba(37,99,235,0.15)' : 'var(--cp-blue-wash)', border: dark ? '1px solid rgba(37,99,235,0.3)' : '1px solid var(--cp-primary-20)', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}
             >
               Retry
             </button>
@@ -130,7 +130,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
 
       <style>{`
         .ph-widget-card:hover { box-shadow: ${dark ? 'none' : '0 4px 12px rgba(0,0,0,.1)'} !important; }
-        .ph-focus-ring:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; border-radius: 4px; }
+        .ph-focus-ring:focus-visible { outline: 2px solid var(--cp-blue); outline-offset: 2px; border-radius: 4px; }
       `}</style>
     </div>
   );

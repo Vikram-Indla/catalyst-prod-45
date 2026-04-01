@@ -93,10 +93,10 @@ function Section({ title, count, defaultOpen = true, children }: { title: string
           background: 'none', border: 'none', borderBottom: '1px solid var(--divider)', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
         }}
       >
-        {open ? <ChevronDown size={14} color="#64748B" /> : <ChevronRight size={14} color="#64748B" />}
-        <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.06em' }}>{title}</span>
+        {open ? <ChevronDown size={14} color="var(--fg-3)" /> : <ChevronRight size={14} color="var(--fg-3)" />}
+        <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>{title}</span>
         {count !== undefined && (
-          <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B', background: '#F1F5F9', borderRadius: 9999, padding: '1px 6px' }}>{count}</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-3)', background: '#F1F5F9', borderRadius: 9999, padding: '1px 6px' }}>{count}</span>
         )}
       </button>
       {open && children}
@@ -140,8 +140,8 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200,
-        background: '#F8FAFC', border: '1px dashed #E2E8F0', borderRadius: 8,
-        color: '#64748B', fontSize: 13, fontFamily: "'Inter', sans-serif",
+        background: 'var(--bg-1)', border: '1px dashed var(--divider)', borderRadius: 8,
+        color: 'var(--fg-3)', fontSize: 13, fontFamily: "'Inter', sans-serif",
       }}>
         Select a work item to view details
       </div>

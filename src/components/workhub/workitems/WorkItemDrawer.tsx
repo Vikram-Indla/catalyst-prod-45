@@ -185,7 +185,7 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
                   {item.parent_key}
                 </span>
                 {item.parent_summary && (
-                  <span className="text-[12px] truncate" style={{ color: '#475569' }}>— {item.parent_summary}</span>
+                  <span className="text-[12px] truncate" style={{ color: 'var(--fg-2)' }}>— {item.parent_summary}</span>
                 )}
               </div>
             )}
@@ -196,10 +196,10 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
               <DetailRow label="Priority">
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full" style={{
-                    backgroundColor: item.priority === 'Highest' ? '#dc2626' :
+                    backgroundColor: item.priority === 'Highest' ? 'var(--sem-danger)' :
                       item.priority === 'High' ? '#ea580c' :
-                      item.priority === 'Medium' ? '#d97706' :
-                      item.priority === 'Low' ? '#2563eb' : '#64748b'
+                      item.priority === 'Medium' ? 'var(--sem-warning)' :
+                      item.priority === 'Low' ? 'var(--cp-blue)' : 'var(--fg-3)'
                   }} />
                   {item.priority}
                 </div>

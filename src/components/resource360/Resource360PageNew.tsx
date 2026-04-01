@@ -86,15 +86,15 @@ export default function Resource360PageNew() {
   if (isInitialLoad) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: "'Inter', sans-serif" }}>
-        <div style={{ height: 66, display: 'flex', alignItems: 'center', gap: 14, padding: '0 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
-          <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#E2E8F0' }} />
+        <div style={{ height: 66, display: 'flex', alignItems: 'center', gap: 14, padding: '0 20px', background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)' }}>
+          <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--divider)' }} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{ width: 120, height: 14, borderRadius: 4, background: '#E2E8F0' }} />
-            <div style={{ width: 180, height: 10, borderRadius: 4, background: '#F1F5F9' }} />
+            <div style={{ width: 120, height: 14, borderRadius: 4, background: 'var(--divider)' }} />
+            <div style={{ width: 180, height: 10, borderRadius: 4, background: 'var(--bg-3)' }} />
           </div>
         </div>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC' }}>
-          <div style={{ textAlign: 'center', color: '#64748B', fontSize: 13 }}>Loading Resource 360°...</div>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-1)' }}>
+          <div style={{ textAlign: 'center', color: 'var(--fg-3)', fontSize: 13 }}>Loading Resource 360°...</div>
         </div>
       </div>
     );
