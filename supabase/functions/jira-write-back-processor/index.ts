@@ -36,8 +36,8 @@ Deno.serve(async (req) => {
     // Mark abandoned items (retry_count >= 3)
     await supabase
       .from("jira_write_back_queue")
-      .update({ push_status: "abandoned", push_attempted_at: new Date().toISOString() })
-      .eq("push_status", "approved")
+      .update({ status: "abandoned", push_attempted_at: new Date().toISOString() })
+      .eq("status", "approved")
       .gte("retry_count", 3);
 
     // 1. Fetch approved queue items
