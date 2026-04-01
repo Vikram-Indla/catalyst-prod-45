@@ -64,12 +64,12 @@ export function ConfirmDialog({
           </div>
           <div>
             <h3 style={{
-              fontSize: 18, fontWeight: 600, color: 'var(--wh-text-primary, #0f172a)',
+              fontSize: 18, fontWeight: 600, color: 'var(--fg-1)',
               fontFamily: 'var(--wh-font-display, Sora)', margin: 0,
             }}>
               {title}
             </h3>
-            <p style={{ fontSize: 14, color: 'var(--wh-text-secondary, #64748b)', marginTop: 8, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 14, color: 'var(--fg-3)', marginTop: 8, lineHeight: 1.5 }}>
               {message}
             </p>
           </div>
@@ -79,7 +79,7 @@ export function ConfirmDialog({
           <button onClick={onClose} style={{
             height: 36, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
             border: '1px solid var(--wh-border, #e2e8f0)', background: 'var(--cp-float)',
-            fontSize: 13, fontWeight: 500, color: 'var(--wh-text-primary, #0f172a)',
+            fontSize: 13, fontWeight: 500, color: 'var(--fg-1)',
             cursor: 'pointer',
           }}>
             Cancel
