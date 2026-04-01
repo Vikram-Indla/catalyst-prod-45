@@ -57,7 +57,7 @@ export function StackedProgressBar({
           flex: 1,
           height,
           borderRadius: 'var(--wh-radius-full, 9999px)',
-          background: 'var(--wh-border-light, #f1f5f9)',
+          background: 'var(--bg-1)',
           position: 'relative',
           overflow: 'hidden',
         }}>

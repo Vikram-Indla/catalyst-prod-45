@@ -86,7 +86,7 @@ export function ConfirmDialog({
           </button>
           <button onClick={onConfirm} disabled={isLoading} style={{
             height: 36, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
-            border: 'none', background: btnBg, color: '#fff',
+            border: 'none', background: btnBg, color: 'var(--bg-app)',
             fontSize: 13, fontWeight: 600, cursor: isLoading ? 'wait' : 'pointer',
             opacity: isLoading ? 0.7 : 1,
           }}>

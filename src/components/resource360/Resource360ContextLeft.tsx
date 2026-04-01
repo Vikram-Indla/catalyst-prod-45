@@ -16,7 +16,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
   const dueDate = new Date(dueStr);
   const today = new Date();
   const daysLeft = Math.ceil((dueDate.getTime() - today.getTime()) / 86400000);
-  const dueColor = daysLeft < 0 ? '#EF4444' : daysLeft <= 7 ? '#D97706' : '#059669';
+  const dueColor = daysLeft < 0 ? 'var(--sem-danger)' : daysLeft <= 7 ? 'var(--sem-warning)' : '#059669';
   const dueText = daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : `${daysLeft}d left`;
 
   const transitions: { status: string; days: number }[] = Array.isArray(item.status_transitions)
