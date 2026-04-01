@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     const { data: queueItems, error: qErr } = await supabase
       .from("jira_write_back_queue")
       .select("*")
-      .eq("push_status", "approved")
+      .eq("status", "approved")
       .lt("retry_count", 3)
       .order("created_at", { ascending: true })
       .limit(10);
