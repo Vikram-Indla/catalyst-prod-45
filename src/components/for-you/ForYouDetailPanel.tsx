@@ -426,7 +426,9 @@ interface ForYouDetailPanelProps {
 }
 
 export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
-  const T = useT();
+  const isDark = useIsDark();
+  const tokens = isDark ? TD : TL;
+  const T = tokens;
   const [tab, setTab] = useState('details');
   const [attachments, setAttachments] = useState<any[]>([]);
   const [attachmentsLoading, setAttachmentsLoading] = useState(false);
