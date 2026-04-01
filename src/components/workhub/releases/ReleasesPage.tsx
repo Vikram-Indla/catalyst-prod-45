@@ -50,7 +50,7 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           padding: '6px 12px', borderRadius: 8,
-          border: '1px solid var(--wh-border, #e2e8f0)',
+          border: '1px solid var(--divider)',
           background: selected.length > 0 ? '#eff6ff' : 'var(--wh-surface, #fff)',
           fontSize: 13, fontWeight: 500, cursor: 'pointer',
           color: selected.length > 0 ? '#2563eb' : 'var(--wh-text-secondary, #64748b)',

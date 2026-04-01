@@ -213,7 +213,7 @@ export function AdvancedFilterPanel({
           </button>
           <button onClick={onApply}
             className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            style={{ backgroundColor: 'var(--cp-blue)', color: '#fff' }}>
+            style={{ backgroundColor: 'var(--cp-blue)', color: 'var(--bg-app)' }}>
             Apply {conditions.length > 0 ? `${conditions.length} Condition${conditions.length > 1 ? 's' : ''}` : ''}
           </button>
         </div>

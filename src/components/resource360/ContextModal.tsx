@@ -105,15 +105,15 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
             {/* Parent breadcrumb */}
             {item.parent_item_key && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                <span style={{ fontSize: 11, fontFamily: 'monospace', color: '#2563EB', fontWeight: 600 }}>
+                <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--cp-blue)', fontWeight: 600 }}>
                   {item.parent_item_key}
                 </span>
                 {item.parent_summary && (
-                  <span style={{ fontSize: 11, color: '#64748B' }}>
+                  <span style={{ fontSize: 11, color: 'var(--fg-3)' }}>
                     {item.parent_summary}
                   </span>
                 )}
-                <span style={{ fontSize: 10, color: '#94A3B8' }}>›</span>
+                <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>›</span>
               </div>
             )}
 
@@ -121,10 +121,10 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 15, fontWeight: 900, fontFamily: 'monospace', color: '#0F172A' }}>
+                  <span style={{ fontSize: 15, fontWeight: 900, fontFamily: 'monospace', color: 'var(--fg-1)' }}>
                     {item.item_key}
                   </span>
-                  <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: 0 }}>{item.title}</h2>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>{item.title}</h2>
                 </div>
                 <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {/* WIT badge */}

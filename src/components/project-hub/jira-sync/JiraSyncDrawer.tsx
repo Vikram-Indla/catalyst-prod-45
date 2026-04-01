@@ -147,7 +147,7 @@ export function JiraSyncDrawer({
               className="inline-flex items-center gap-1.5"
               style={{
                 height: 32, padding: '0 14px', borderRadius: 4,
-                background: isSyncing ? '#93C5FD' : '#2563EB',
+                background: isSyncing ? '#93C5FD' : 'var(--cp-blue)',
                 color: '#FFFFFF', border: 'none',
                 fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif',
                 cursor: isSyncing ? 'not-allowed' : 'pointer',
@@ -163,13 +163,13 @@ export function JiraSyncDrawer({
 
           {/* Recent Sync Runs */}
           <div style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
               Recent Sync Runs
             </div>
             {syncLogs.length === 0 ? (
               <div className="flex flex-col items-center py-6">
                 <Inbox size={24} style={{ color: '#CBD5E1', marginBottom: 6 }} />
-                <span style={{ fontSize: 12, color: '#94A3B8' }}>No sync runs yet</span>
+                <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>No sync runs yet</span>
               </div>
             ) : (
               syncLogs.map(log => (
@@ -178,10 +178,10 @@ export function JiraSyncDrawer({
                   className="flex items-center gap-3"
                   style={{ height: 36, borderBottom: '0.75px solid var(--cp-border-subtle, rgba(15,23,42,0.07))' }}
                 >
-                  {log.status === 'completed' ? <CheckCircle2 size={14} style={{ color: '#16A34A', flexShrink: 0 }} />
-                    : log.status === 'failed' ? <AlertCircle size={14} style={{ color: '#DC2626', flexShrink: 0 }} />
-                    : <Clock size={14} style={{ color: '#2563EB', flexShrink: 0 }} />}
-                  <span style={{ fontSize: 11, color: '#475569', fontFamily: 'JetBrains Mono, monospace', minWidth: 90 }}>
+                  {log.status === 'completed' ? <CheckCircle2 size={14} style={{ color: 'var(--sem-success)', flexShrink: 0 }} />
+                    : log.status === 'failed' ? <AlertCircle size={14} style={{ color: 'var(--sem-danger)', flexShrink: 0 }} />
+                    : <Clock size={14} style={{ color: 'var(--cp-blue)', flexShrink: 0 }} />}
+                  <span style={{ fontSize: 11, color: 'var(--fg-2)', fontFamily: 'JetBrains Mono, monospace', minWidth: 90 }}>
                     {formatDate(log.startedAt)}
                   </span>
                   <span style={{ fontSize: 11, color: '#64748B', flex: 1 }}>
