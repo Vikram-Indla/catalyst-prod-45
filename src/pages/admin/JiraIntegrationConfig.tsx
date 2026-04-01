@@ -373,6 +373,60 @@ export default function JiraIntegrationConfig() {
               </CardContent>
             </Card>
 
+            {/* Recent Sync Activity */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Last Sync Activity</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {(recentLogs ?? []).map((log: any) => {
+                    const statusColors: Record<string, { bg: string; text: string }> = {
+                      success: { bg: '#E3FCEF', text: '#006644' },
+                      completed: { bg: '#E3FCEF', text: '#006644' },
+                      error: { bg: '#DFE1E6', text: '#253858' },
+                      failed: { bg: '#DFE1E6', text: '#253858' },
+                      skipped: { bg: '#DFE1E6', text: '#253858' },
+                      abandoned: { bg: '#DFE1E6', text: '#253858' },
+                      pending: { bg: '#DEEBFF', text: '#0747A6' },
+                      processing: { bg: '#DEEBFF', text: '#0747A6' },
+                      approved: { bg: '#DEEBFF', text: '#0747A6' },
+                    };
+                    const sc = statusColors[log.status] || statusColors.skipped;
+                    return (
+                      <div key={log.id} className="flex items-center gap-2 text-sm">
+                        <span
+                          className="inline-block whitespace-nowrap"
+                          style={{
+                            height: 20, lineHeight: '20px', fontSize: 11, fontWeight: 700,
+                            textTransform: 'uppercase', letterSpacing: '0.05em',
+                            borderRadius: 3, padding: '0 8px', background: sc.bg, color: sc.text,
+                          }}
+                        >
+                          {log.status}
+                        </span>
+                        <span className="text-foreground">{log.event_type}</span>
+                        <span className="text-muted-foreground">·</span>
+                        <span className="text-muted-foreground font-medium">{log.jira_key || '—'}</span>
+                        <span className="ml-auto text-xs text-muted-foreground">
+                          {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  {(recentLogs ?? []).length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-4">No sync events yet</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => navigate('/admin/jira-sync-log')}
+                  className="mt-3 text-[13px] text-[#2563EB] underline hover:text-[#1D4ED8] transition-colors"
+                >
+                  View Full Audit Log →
+                </button>
+              </CardContent>
+            </Card>
+
             {!connections || connections.length === 0 ? (
               <JiraSetupGuide hasConnections={false} />
             ) : null}
