@@ -341,53 +341,7 @@ export function GlobalSearch() {
             ))
           ) : !hasQuery ? (
             <>
-              {/* Suggestions (FIX 3) */}
-              {recents.slice(0, 2).map(item => (
-                <div
-                  key={`sug-${item.id}`}
-                  onClick={() => onResultClick(item)}
-                  style={{ height: 42, display: 'flex', alignItems: 'center', padding: '0 12px', gap: 10, cursor: 'pointer' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                >
-                  <Search size={14} color="#64748B" />
-                  <div style={{ flex: 1, fontSize: 13, color: '#172B4D', display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
-                    <span style={{
-                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      width: 14, height: 14, borderRadius: 3,
-                      background: HUB_COLORS[item.hub] ?? '#64748B', color: '#ffffff',
-                      fontSize: 8, fontWeight: 700, flexShrink: 0,
-                      verticalAlign: 'middle', marginRight: 2,
-                    }}>
-                      {item.hub?.[0] ?? 'C'}
-                    </span>
-                    {item.hub} items in {item.project_name ?? item.hub}
-                    <span style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 2,
-                      fontSize: 10, fontWeight: 600, color: '#7C3AED', background: '#F5F3FF',
-                      borderRadius: 3, padding: '1px 5px', marginLeft: 6,
-                    }}>★ AI</span>
-                  </div>
-                  <span style={{ fontSize: 11, color: '#6B778C' }}>Suggestion</span>
-                </div>
-              ))}
-
-              {/* Recent searches */}
-              {searches.map(s => (
-                <div
-                  key={s.id}
-                  onClick={() => { setQuery(s.query); setDebouncedQuery(s.query); }}
-                  style={{ height: 42, display: 'flex', alignItems: 'center', padding: '0 12px', gap: 10, cursor: 'pointer' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                >
-                  <Clock size={14} color="#94A3B8" />
-                  <span style={{ flex: 1, fontSize: 13, color: '#334155' }}>{s.query}</span>
-                  <span style={{ fontSize: 11, color: '#6B778C' }}>Recent search</span>
-                </div>
-              ))}
-
-              {/* Recent items (FIX 6 label) */}
+              {/* Recent items */}
               {recents.length > 0 && (
                 <>
                   <div style={sectionLabelStyle}>Recent</div>
