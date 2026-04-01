@@ -141,7 +141,7 @@ export default function IdeasBoardPage() {
 function BoardCard({ idea, isConverted, onClick, isDark, dk }: { idea: IdeaRow; isConverted: boolean; onClick: () => void; isDark: boolean; dk: typeof DK }) {
   return (
     <div onClick={onClick} style={{
-      background: isDark ? '#1A1714' : '#FFFFFF',
+      background: isDark ? '#181A1E' : '#FFFFFF',
       border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : dk.border}`,
       borderLeft: isConverted ? '3px solid #16A34A' : `1px solid ${dk.border}`,
       borderRadius: '6px',

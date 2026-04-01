@@ -15,8 +15,8 @@ const DK = {
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
-  border: 'rgba(248,244,240,0.10)',
-  borderSubtle: 'rgba(248,244,240,0.08)',
+  border: 'rgba(235,238,245,0.10)',
+  borderSubtle: 'rgba(235,238,245,0.08)',
 };
 
 const QUARTERS = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026'];
@@ -163,7 +163,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
       })}
 
       <style>{`
-        .heatmap-row:hover { background: ${isDark ? 'rgba(248,244,240,0.02)' : '#FAFBFE'}; }
+        .heatmap-row:hover { background: ${isDark ? 'rgba(235,238,245,0.02)' : '#FAFBFE'}; }
         .heatmap-cell:hover { outline: 2px solid #2563EB; outline-offset: -2px; border-radius: 4px; }
         @media (max-width: 767px) { .heatmap-scroll { overflow-x: auto; } .heatmap-scroll > div { min-width: 700px; } }
       `}</style>

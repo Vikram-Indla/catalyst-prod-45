@@ -107,7 +107,7 @@ export default function StrategicThemesPage() {
         <CommandCenterHeader title="Strategic Themes" />
         <div className="p-6 space-y-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="rounded-lg animate-pulse" style={{ height: 48, background: isDark ? 'rgba(248,244,240,0.04)' : 'hsl(var(--muted))' }} />
+            <div key={i} className="rounded-lg animate-pulse" style={{ height: 48, background: isDark ? 'rgba(235,238,245,0.04)' : 'hsl(var(--muted))' }} />
           ))}
         </div>
       </PageChrome>

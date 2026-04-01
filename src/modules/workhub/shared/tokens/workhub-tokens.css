@@ -50,18 +50,18 @@
 
 /* ═══ ECLIPSE NOCTURNE — WORKHUB DARK MODE ═══ */
 .dark, [data-theme="dark"] {
-  /* Surfaces — ONE surface #1A1714 */
-  --wh-bg: #1A1714;
-  --wh-sf: #1A1714;
-  --wh-sf2: #232019;
-  --wh-sf3: #2C2823;
-  --wh-bdr: rgba(248,244,240,0.10);
+  /* Surfaces — ONE surface #181A1E */
+  --wh-bg: #181A1E;
+  --wh-sf: #181A1E;
+  --wh-sf2: #1F2128;
+  --wh-sf3: #1F2128;
+  --wh-bdr: rgba(235,238,245,0.10);
 
-  /* Text — warm white ladder */
-  --wh-tx: rgba(248,244,240,0.92);
-  --wh-tx2: rgba(248,244,240,0.72);
-  --wh-tx3: rgba(248,244,240,0.55);
-  --wh-tx4: rgba(248,244,240,0.30);
+  /* Text — cool white ladder */
+  --wh-tx: rgba(235,238,245,0.92);
+  --wh-tx2: rgba(235,238,245,0.72);
+  --wh-tx3: rgba(235,238,245,0.55);
+  --wh-tx4: rgba(235,238,245,0.30);
 
   /* Primary */
   --wh-pri: #3B82F6;

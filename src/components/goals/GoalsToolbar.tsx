@@ -27,9 +27,9 @@ const DK = {
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
-  border: 'rgba(248,244,240,0.10)',
-  hover: 'rgba(248,244,240,0.03)',
-  float: '#232019',
+  border: 'rgba(235,238,245,0.10)',
+  hover: 'rgba(235,238,245,0.03)',
+  float: '#1F2128',
 };
 
 const viewButtons: { key: 'tree' | 'list' | 'heatmap'; label: string; icon: typeof List }[] = [
@@ -97,7 +97,7 @@ function FilterDropdown({
             const isSelected = selected.includes(opt.id);
             return (
               <label key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 12, color: isDark ? DK.t1 : 'var(--fg-1)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(248,244,240,0.05)' : 'var(--cp-bd-zone)')}
+                onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(235,238,245,0.05)' : 'var(--cp-bd-zone)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <input type="checkbox" checked={isSelected} onChange={() => onToggle(opt.id)} style={{ accentColor: 'var(--cp-blue)' }} />
@@ -161,7 +161,7 @@ export function GoalsToolbar({
 
         {/* Search */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: isDark ? 'transparent' : 'var(--bg-app)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8, padding: '5px 10px', minWidth: 220 }}>
-          <Search size={14} color={isDark ? 'rgba(248,244,240,0.35)' : '#94A3B8'} />
+          <Search size={14} color={isDark ? 'rgba(235,238,245,0.35)' : '#94A3B8'} />
           <input
             type="text" placeholder="Search goals or KRs..."
             value={searchQuery} onChange={e => onSearch(e.target.value)}
@@ -169,7 +169,7 @@ export function GoalsToolbar({
           />
           {searchQuery && (
             <button onClick={() => onSearch('')} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
-              <X size={12} color={isDark ? 'rgba(248,244,240,0.35)' : '#94A3B8'} />
+              <X size={12} color={isDark ? 'rgba(235,238,245,0.35)' : '#94A3B8'} />
             </button>
           )}
         </div>

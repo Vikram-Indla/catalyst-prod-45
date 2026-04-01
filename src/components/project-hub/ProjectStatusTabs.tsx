@@ -40,7 +40,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
               padding: '0 12px',
               fontSize: 13,
               fontWeight: isActive ? 600 : 500,
-              color: isActive ? (isDark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : (isDark ? 'rgba(248,244,240,0.60)' : 'var(--fg-3)'),
+              color: isActive ? (isDark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : (isDark ? 'rgba(235,238,245,0.60)' : 'var(--fg-3)'),
               background: isActive ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : 'transparent',
               border: isActive ? `1px solid ${isDark ? 'rgba(59,130,246,0.25)' : 'var(--cp-primary-20)'}` : '1px solid transparent',
               cursor: 'pointer',
@@ -52,7 +52,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 size={13}
                 strokeWidth={2}
                 fill={isActive ? 'var(--sem-star)' : 'none'}
-                color={isActive ? 'var(--sem-star)' : (isDark ? 'rgba(248,244,240,0.40)' : 'var(--fg-4)')}
+                color={isActive ? 'var(--sem-star)' : (isDark ? 'rgba(235,238,245,0.40)' : 'var(--fg-4)')}
               />
             )}
             {tab.label}
@@ -65,7 +65,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 fontSize: 11,
                 fontWeight: 600,
                 background: isActive ? 'var(--cp-blue)' : (isDark ? 'rgba(255,255,255,0.08)' : 'var(--divider)'),
-                color: isActive ? 'var(--cp-float)' : (isDark ? 'rgba(248,244,240,0.60)' : 'var(--fg-3)'),
+                color: isActive ? 'var(--cp-float)' : (isDark ? 'rgba(235,238,245,0.60)' : 'var(--fg-3)'),
                 fontFamily: "'Inter', sans-serif",
               }}
             >
