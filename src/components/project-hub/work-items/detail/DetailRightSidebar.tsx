@@ -122,7 +122,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
   return (
     <div
       className="shrink-0 overflow-y-auto"
-      style={{ width: 280, borderLeft: '1px solid var(--divider)', padding: '14px 16px', background: '#FAFBFC' }}
+      style={{ width: 280, borderLeft: '1px solid var(--divider)', padding: '14px 16px', background: 'var(--bg-1)' }}
       onClick={closeAll}
     >
       {/* STATUS BUTTON */}
@@ -130,7 +130,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
         <button
           onClick={e => { e.stopPropagation(); setStatusOpen(!statusOpen); setPriorityOpen(false); }}
           className="w-full py-2 rounded-md text-white text-[11px] font-bold uppercase tracking-wider text-center transition-colors"
-          style={{ background: STATUS_BG[item.status_category] || '#44546F' }}
+          style={{ background: STATUS_BG[item.status_category] || 'var(--fg-2)' }}
         >
           {item.status_name}
         </button>
@@ -149,7 +149,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
       <button
         onClick={() => toast('AI analyzing...', { icon: '✨' })}
         className="w-full py-2 rounded-md text-[12px] font-semibold flex items-center justify-center gap-1.5 mb-4 transition-colors hover:bg-[#F5F3FF]"
-        style={{ border: '1px solid var(--divider)', color: '#7C3AED' }}
+        style={{ border: '1px solid var(--divider)', color: 'var(--cp-purple)' }}
       >
         <Sparkles size={14} /> Improve Story with AI
       </button>
@@ -214,7 +214,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
         <div className="flex flex-col gap-3">
           <SidebarField label="Components">
             {itemComponents.length > 0 ? (
-              <div className="flex flex-wrap gap-1">{itemComponents.map((c: any) => (<span key={c.id} className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: '#CCFBF1', color: 'var(--sem-success)' }}>{c.name}</span>))}</div>
+              <div className="flex flex-wrap gap-1">{itemComponents.map((c: any) => (<span key={c.id} className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: 'var(--sem-success-bg)', color: 'var(--sem-success)' }}>{c.name}</span>))}</div>
             ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
@@ -226,7 +226,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
 
           <SidebarField label="Release">
             {release ? (
-              <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold" style={{ background: '#CCFBF1', color: 'var(--sem-success)' }}>{release.name || release.title}</span>
+              <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold" style={{ background: 'var(--sem-success-bg)', color: 'var(--sem-success)' }}>{release.name || release.title}</span>
             ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
@@ -316,7 +316,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
 function SidebarField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <span className="text-[11px] font-semibold block mb-1" style={{ color: '#44546F' }}>{label}</span>
+      <span className="text-[11px] font-semibold block mb-1" style={{ color: 'var(--fg-2)' }}>{label}</span>
       {children}
     </div>
   );

@@ -497,7 +497,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                       style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setReleaseId(r.id); setReleaseOpen(false); }}
                     >
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold" style={{ background: '#F0FDFA', color: 'var(--sem-success)' }}>
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold" style={{ background: 'var(--sem-success-bg)', color: 'var(--sem-success)' }}>
                         {r.status === 'released' ? '✓' : r.status === 'in_progress' ? '►' : '○'}
                       </span>
                       {r.name}

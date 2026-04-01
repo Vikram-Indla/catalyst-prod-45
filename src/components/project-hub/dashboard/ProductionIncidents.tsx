@@ -40,7 +40,7 @@ export default function ProductionIncidents({ projectId, releaseMap }: Props) {
       headerRight={
         <div style={{ display: 'flex', gap: 4 }}>
           <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', background: 'var(--sem-danger)', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P1: {p1}</span>
-          <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', background: '#F59E0B', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P2: {p2}</span>
+          <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', background: 'var(--sem-warning)', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P2: {p2}</span>
           <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', background: 'var(--fg-3)', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P3: {p3}</span>
         </div>
       }
@@ -64,9 +64,9 @@ export default function ProductionIncidents({ projectId, releaseMap }: Props) {
                 const ps = PRIORITY_BADGE[item.priority] || PRIORITY_BADGE.P3;
                 const resolved = item.status === 'resolved' || item.status === 'closed';
                 return (
-                  <tr key={item.id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', opacity: resolved ? 0.6 : 1, background: idx % 2 === 1 ? '#FAFBFC' : undefined }} className="ph-table-row">
+                  <tr key={item.id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', opacity: resolved ? 0.6 : 1, background: idx % 2 === 1 ? 'var(--bg-1)' : undefined }} className="ph-table-row">
                     <td style={{ padding: '0 6px' }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: '#0F766E', background: '#F0FDFA', padding: '2px 7px', borderRadius: 4, border: '1px solid #99F6E4' }}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: 'var(--sem-success-fg)', background: 'var(--sem-success-bg)', padding: '2px 7px', borderRadius: 4, border: '1px solid var(--sem-success-accent)' }}>
                         {releaseMap[item.release_id] || '—'}
                       </span>
                     </td>

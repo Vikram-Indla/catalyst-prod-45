@@ -33,7 +33,7 @@ export function ForYouStatsBar({ hubCounts, projectCount, reporterCount }: ForYo
       gap: 24,
       padding: '10px 0',
       marginBottom: 12,
-      borderBottom: '1px solid #E4E4E7',
+      borderBottom: '1px solid var(--divider)',
     }}>
       {entries.map(([hub, count]) => (
         <div key={hub} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
@@ -42,18 +42,18 @@ export function ForYouStatsBar({ hubCounts, projectCount, reporterCount }: ForYo
             background: HUB_DOT_COLORS[hub] || '#71717A',
             flexShrink: 0, alignSelf: 'center',
           }} />
-          <span style={{ fontFamily: "'Sora', system-ui", fontSize: 16, fontWeight: 700, color: '#09090B' }}>{count}</span>
-          <span style={{ fontSize: 12, fontWeight: 500, color: '#71717A' }}>{hub}</span>
+          <span style={{ fontFamily: "'Sora', system-ui", fontSize: 16, fontWeight: 700, color: 'var(--fg-1)' }}>{count}</span>
+          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)' }}>{hub}</span>
         </div>
       ))}
-      <span style={{ color: '#D4D4D8' }}>|</span>
+      <span style={{ color: 'var(--fg-4)' }}>|</span>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-        <span style={{ fontFamily: "'Sora', system-ui", fontSize: 14, fontWeight: 700, color: '#09090B' }}>{projectCount}</span>
-        <span style={{ fontSize: 12, fontWeight: 500, color: '#71717A' }}>projects</span>
+        <span style={{ fontFamily: "'Sora', system-ui", fontSize: 14, fontWeight: 700, color: 'var(--fg-1)' }}>{projectCount}</span>
+        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)' }}>projects</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-        <span style={{ fontFamily: "'Sora', system-ui", fontSize: 14, fontWeight: 700, color: '#09090B' }}>{reporterCount}</span>
-        <span style={{ fontSize: 12, fontWeight: 500, color: '#71717A' }}>reporters</span>
+        <span style={{ fontFamily: "'Sora', system-ui", fontSize: 14, fontWeight: 700, color: 'var(--fg-1)' }}>{reporterCount}</span>
+        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)' }}>reporters</span>
       </div>
     </div>
   );

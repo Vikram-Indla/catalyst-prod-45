@@ -137,7 +137,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
             className="rounded-md transition-opacity hover:opacity-90 disabled:opacity-40"
             style={{
               height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
-              color: '#FFFFFF', background: '#2563EB', border: 'none',
+              color: '#FFFFFF', background: 'var(--cp-blue)', border: 'none',
               borderRadius: 6, cursor: canNext && !submitting ? 'pointer' : 'default',
             }}
           >

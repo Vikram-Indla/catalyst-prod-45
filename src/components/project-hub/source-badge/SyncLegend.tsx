@@ -22,7 +22,7 @@ export function SyncLegend({ visible }: SyncLegendProps) {
     <div
       className="flex items-center w-full"
       style={{
-        background: 'var(--cp-bg-sunken, #F1F5F9)',
+        background: 'var(--cp-bg-sunken, var(--cp-bd-zone))',
         borderBottom: '0.75px solid var(--cp-border-subtle, rgba(15,23,42,0.07))',
         padding: '8px 28px',
         fontFamily: 'Inter, sans-serif',

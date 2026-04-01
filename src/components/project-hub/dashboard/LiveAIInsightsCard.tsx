@@ -21,7 +21,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
         </div>
         <div style={{ display: 'flex', gap: 16 }}>
           {[1, 2, 3].map((i) => (
-            <div key={i} style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
+            <div key={i} style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
               <div style={{ height: 14, background: 'var(--divider)', borderRadius: 4, width: '60%', marginBottom: 12 }} className="ph-skeleton" />
               <div style={{ height: 20, background: 'var(--divider)', borderRadius: 4, width: '80%', marginBottom: 8 }} className="ph-skeleton" />
               <div style={{ height: 12, background: 'var(--divider)', borderRadius: 4, width: '50%' }} className="ph-skeleton" />
@@ -41,14 +41,14 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
             <Sparkles size={16} color="#7c3aed" />
             <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 600, color: 'var(--fg-1)' }}>AI Insights</span>
           </div>
-          <button onClick={refresh} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#7c3aed', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>
+          <button onClick={refresh} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--cp-purple)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>
             <RefreshCw size={12} /> Retry
           </button>
         </div>
         <div style={{ textAlign: 'center', padding: '20px 0' }}>
           <AlertTriangle size={24} color="var(--sem-warning)" style={{ margin: '0 auto 8px' }} />
           <p style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 8 }}>Unable to generate insights right now.</p>
-          <button onClick={refresh} style={{ fontSize: 12, color: '#7c3aed', background: '#f5f3ff', border: 'none', borderRadius: 6, padding: '6px 16px', cursor: 'pointer', fontWeight: 500 }}>
+          <button onClick={refresh} style={{ fontSize: 12, color: 'var(--cp-purple)', background: 'var(--cp-purple-wash)', border: 'none', borderRadius: 6, padding: '6px 16px', cursor: 'pointer', fontWeight: 500 }}>
             Try again
           </button>
         </div>
@@ -85,12 +85,12 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
           <button
             onClick={refresh}
             disabled={loading}
-            style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#7c3aed', background: 'none', border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 500, opacity: loading ? 0.6 : 1 }}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--cp-purple)', background: 'none', border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 500, opacity: loading ? 0.6 : 1 }}
           >
             <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
             {loading ? 'Refreshing...' : 'Refresh'}
           </button>
-          <span style={{ fontSize: 11, fontWeight: 500, color: '#7c3aed', background: '#f3e8ff', borderRadius: 9999, padding: '2px 10px' }}>
+          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-purple)', background: 'var(--cp-purple-wash)', borderRadius: 9999, padding: '2px 10px' }}>
             Powered by AI
           </span>
         </div>
@@ -99,7 +99,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
       {/* THREE SUB-CARDS */}
       <div style={{ display: 'flex', gap: 16 }}>
         {/* Completion Forecast */}
-        <div style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
+        <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <Target size={15} color="#7c3aed" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Completion Forecast</span>
@@ -120,7 +120,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
         </div>
 
         {/* Blockers Summary */}
-        <div style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
+        <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <AlertTriangle size={15} color="#D97706" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Blockers Summary</span>
@@ -141,7 +141,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
         </div>
 
         {/* Team Workload */}
-        <div style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
+        <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <TrendingUp size={15} color="#0D9488" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Team Workload</span>
@@ -166,7 +166,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
       </div>
 
       {/* SUGGESTION BANNER */}
-      <div style={{ marginTop: 16, background: '#F5F3FF', borderLeft: '3px solid #7c3aed', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+      <div style={{ marginTop: 16, background: 'var(--cp-purple-wash)', borderLeft: '3px solid var(--cp-purple)', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
         <Lightbulb size={15} color="#7c3aed" style={{ flexShrink: 0, marginTop: 1 }} />
         <div>
           <div style={{ fontSize: 13, color: 'var(--fg-2)' }}>

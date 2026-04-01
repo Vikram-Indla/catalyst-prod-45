@@ -405,7 +405,7 @@ function ItemDetailPanel({
                 { label: 'Days Sitting', value: `${daysSitting}d` },
                 ...(detail.releaseName ? [{ label: 'Release', value: detail.releaseName }] : []),
                 ...(detail.dueDate ? [{ label: 'Due Date', value: new Date(detail.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }] : []),
-                ...(detail.sprintName ? [{ label: 'Sprint', value: detail.sprintName }] : []),
+                ...(detail.sprintName ? [{ label: 'Release', value: detail.sprintName }] : []),
                 ...(detail.resolution ? [{ label: 'Resolution', value: detail.resolution }] : []),
               ].map((row, i, arr) => (
                 <div key={i} style={{

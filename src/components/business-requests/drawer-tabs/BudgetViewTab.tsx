@@ -207,8 +207,8 @@ function POTagsInput({
             key={index}
             className={cn(
               "inline-flex items-center gap-1 px-2 py-1 rounded text-sm font-medium",
-              "bg-accent/10 text-[hsl(var(--secondary-bronze))]",
-              "dark:bg-accent/20 dark:text-[hsl(var(--secondary-champagne))]"
+              "bg-accent/10 text-[var(--secondary-bronze)]",
+              "dark:bg-accent/20 dark:text-[var(--secondary-champagne)]"
             )}
           >
             {tag}
@@ -254,7 +254,7 @@ function FormSection({
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <div className="py-3">
         <CollapsibleTrigger className="w-full flex items-center justify-between pb-3 border-b border-border">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-[hsl(var(--secondary-green))]">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--secondary-green)]">
             {title}
           </h3>
           <ChevronDown className={cn(

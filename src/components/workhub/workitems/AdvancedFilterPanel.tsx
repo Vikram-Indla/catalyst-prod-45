@@ -21,7 +21,7 @@ const FIELD_OPTIONS = [
   { value: 'project_key', label: 'Project' },
   { value: 'due_date', label: 'Due Date' },
   { value: 'story_points', label: 'Story Points' },
-  { value: 'sprint_name', label: 'Sprint' },
+  { value: 'sprint_name', label: 'Release' },
   { value: 'resolution', label: 'Resolution' },
   { value: 'status_category', label: 'Status Category' },
 ];

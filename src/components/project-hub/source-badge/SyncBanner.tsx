@@ -43,18 +43,18 @@ export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onS
     <div
       className="flex items-center w-full"
       style={{
-        background: '#FFFBEB',
+        background: 'var(--sem-warning-bg)',
         borderBottom: '0.75px solid #FDE68A',
         padding: '8px 28px',
         fontFamily: 'Inter, sans-serif',
         fontSize: 12,
-        color: '#92400E',
+        color: 'var(--sem-warning-fg)',
         opacity: fading ? 0 : 1,
         transition: 'opacity 200ms ease',
       }}
     >
       <div className="flex items-center gap-2 min-w-0">
-        <AlertTriangle size={14} style={{ color: '#92400E', flexShrink: 0 }} />
+        <AlertTriangle size={14} style={{ color: 'var(--sem-warning-fg)', flexShrink: 0 }} />
         <span>
           <strong>{conflictCount}</strong> Jira issue{conflictCount > 1 ? 's have' : ' has'} conflicts — local edits differ from Jira.
           {' '}Last full sync: {relativeTime(lastSyncedAt)}
@@ -64,9 +64,9 @@ export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onS
         <button
           onClick={onReviewConflicts}
           style={{
-            border: '0.75px solid #F59E0B',
+            border: '0.75px solid var(--sem-warning)',
             background: 'none',
-            color: '#92400E',
+            color: 'var(--sem-warning-fg)',
             borderRadius: 4,
             height: 26,
             padding: '0 10px',
@@ -81,9 +81,9 @@ export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onS
         <button
           onClick={onSyncNow}
           style={{
-            border: '0.75px solid #F59E0B',
+            border: '0.75px solid var(--sem-warning)',
             background: 'none',
-            color: '#92400E',
+            color: 'var(--sem-warning-fg)',
             borderRadius: 4,
             height: 26,
             padding: '0 10px',
@@ -100,7 +100,7 @@ export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onS
           style={{
             background: 'none',
             border: 'none',
-            color: '#B45309',
+            color: 'var(--sem-warning-fg)',
             fontSize: 12,
             fontWeight: 500,
             fontFamily: 'Inter, sans-serif',

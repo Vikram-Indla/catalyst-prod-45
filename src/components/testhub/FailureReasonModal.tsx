@@ -15,7 +15,7 @@ interface FailureReasonModalProps {
 
 const FAILURE_REASONS = [
   { id: 'bug', label: 'Bug / Defect', description: 'Application defect found', icon: Bug, color: 'var(--sem-danger)' },
-  { id: 'environment', label: 'Environment Issue', description: 'Environment or configuration problem', icon: Server, color: '#7C3AED' },
+  { id: 'environment', label: 'Environment Issue', description: 'Environment or configuration problem', icon: Server, color: '#2563EB' },
   { id: 'test_data', label: 'Test Data Issue', description: 'Invalid or missing test data', icon: Database, color: '#0891B2' },
   { id: 'test_script', label: 'Test Script Error', description: 'Error in the test case itself', icon: FileWarning, color: '#EA580C' },
   { id: 'timeout', label: 'Timeout', description: 'Operation timed out', icon: Clock, color: '#CA8A04' },

@@ -86,7 +86,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
         style={{
           width: 460,
           background: '#fff',
-          borderLeft: '1px solid #E2E8F0',
+          borderLeft: '1px solid var(--divider)',
           boxShadow: '-8px 0 30px rgba(15,23,42,.1)',
           animation: 'phSlideInRight 200ms ease',
           fontFamily: "'Inter', sans-serif",
@@ -116,10 +116,10 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                 padding: '8px 14px',
                 fontSize: 12,
                 fontWeight: activeTab === t.key ? 600 : 500,
-                color: activeTab === t.key ? '#2563EB' : '#64748B',
+                color: activeTab === t.key ? 'var(--cp-blue)' : 'var(--fg-3)',
                 background: 'transparent',
                 border: 'none',
-                borderBottom: `2px solid ${activeTab === t.key ? '#2563EB' : 'transparent'}`,
+                borderBottom: `2px solid ${activeTab === t.key ? 'var(--cp-blue)' : 'transparent'}`,
                 cursor: 'pointer',
                 fontFamily: "'Inter', sans-serif",
                 transition: 'color 120ms ease',
@@ -140,7 +140,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                   <div
                     key={i}
                     className="flex items-center gap-2 p-3 rounded-lg border"
-                    style={{ borderColor: 'var(--divider)', background: '#FAFBFC' }}
+                    style={{ borderColor: 'var(--divider)', background: 'var(--bg-1)' }}
                   >
                     <GripVertical size={14} color="#D1D5DB" className="cursor-grab flex-shrink-0" />
                     <span className="rounded-full flex-shrink-0" style={{ width: 8, height: 8, background: col.color }} />
@@ -151,7 +151,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                         return (
                           <span key={s} className="rounded-full" style={{
                             fontSize: 9, fontWeight: 600, padding: '1px 6px',
-                            background: cfg?.bg ?? '#F1F5F9', color: cfg?.color ?? '#64748B',
+                            background: cfg?.bg ?? 'var(--cp-bd-zone)', color: cfg?.color ?? 'var(--fg-3)',
                           }}>
                             {cfg?.label ?? s}
                           </span>
@@ -259,12 +259,12 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                 placeholder="type = bug AND priority = urgent"
                 className="w-full rounded-md p-3"
                 style={{
-                  border: '1px solid #E2E8F0',
+                  border: '1px solid var(--divider)',
                   fontSize: 12,
                   fontFamily: "'JetBrains Mono', monospace",
                   resize: 'vertical',
                   minHeight: 80,
-                  color: '#334155',
+                  color: 'var(--fg-2)',
                 }}
               />
             </div>
@@ -290,7 +290,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                 </button>
                 <button
                   className="px-4 py-2 rounded-md transition-colors"
-                  style={{ fontSize: 12, fontWeight: 500, border: '1px solid #FCA5A5', background: 'var(--sem-danger-bg)', color: 'var(--sem-danger)', cursor: 'pointer' }}
+                  style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--sem-danger-accent)', background: 'var(--sem-danger-bg)', color: 'var(--sem-danger)', cursor: 'pointer' }}
                 >
                   Delete Board
                 </button>

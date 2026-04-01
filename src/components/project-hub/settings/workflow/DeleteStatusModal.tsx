@@ -64,7 +64,7 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
               className="rounded-lg mb-4"
               style={{ borderLeft: '4px solid var(--sem-warning)', background: 'var(--sem-warning-bg)', padding: '12px 16px' }}
             >
-              <p style={{ fontSize: 13, color: '#92400E' }}>
+              <p style={{ fontSize: 13, color: 'var(--sem-warning-fg)' }}>
                 <strong>{itemCount} items</strong> are in this status. Move them to another status before deleting.
               </p>
             </div>

@@ -67,7 +67,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
       {/* Release Sidebar */}
       <div
         className="flex-shrink-0 border-r overflow-y-auto"
-        style={{ width: 180, borderColor: 'var(--divider)', background: '#FAFBFC' }}
+        style={{ width: 180, borderColor: 'var(--divider)', background: 'var(--bg-1)' }}
       >
         <div className="p-2">
           <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '4px 8px', marginBottom: 4 }}>
@@ -142,7 +142,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                     style={{
                       width: 20, height: 20,
                       fontSize: 10, fontWeight: 600,
-                      background: '#F1F5F9', color: '#64748B',
+                      background: 'var(--cp-bd-zone)', color: 'var(--fg-3)',
                       fontFamily: "'JetBrains Mono', monospace",
                     }}
                   >
@@ -173,7 +173,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                           className="flex items-center gap-2 px-3 cursor-pointer group"
                           style={{
                             height: 44, maxHeight: 44,
-                            borderBottom: '1px solid #F1F5F9',
+                            borderBottom: '1px solid var(--cp-bd-zone)',
                             borderLeft: `3px solid ${accentColor}`,
                             background: isHovered ? 'rgba(37,99,235,.03)' : undefined,
                             fontFamily: "'Inter', sans-serif",
@@ -208,9 +208,9 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                             className="rounded-full inline-flex items-center justify-center flex-shrink-0"
                             style={{
                               width: 22, height: 22,
-                              background: issue.assignee_id ? '#E2E8F0' : 'transparent',
-                              border: issue.assignee_id ? 'none' : '1.5px dashed #CBD5E1',
-                              fontSize: 9, fontWeight: 700, color: '#64748B',
+                              background: issue.assignee_id ? 'var(--divider)' : 'transparent',
+                              border: issue.assignee_id ? 'none' : '1.5px dashed var(--divider)',
+                              fontSize: 9, fontWeight: 700, color: 'var(--fg-3)',
                             }}
                           >
                             {issue.assignee_id ? '👤' : ''}
@@ -241,9 +241,9 @@ function SidebarButton({ label, count, progress, isActive, onClick }: {
         padding: '6px 10px',
         fontSize: 12,
         fontWeight: isActive ? 600 : 500,
-        color: isActive ? '#2563EB' : '#334155',
-        background: isActive ? '#EFF6FF' : 'transparent',
-        border: isActive ? '1px solid #BFDBFE' : '1px solid transparent',
+        color: isActive ? 'var(--cp-blue)' : 'var(--fg-2)',
+        background: isActive ? 'var(--cp-blue-wash)' : 'transparent',
+        border: isActive ? '1px solid var(--cp-primary-20)' : '1px solid transparent',
         cursor: 'pointer',
         fontFamily: "'Inter', sans-serif",
       }}

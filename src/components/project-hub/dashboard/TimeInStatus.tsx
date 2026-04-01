@@ -126,7 +126,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                   <tr key={item.work_item_id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', background: rowBg }} className="ph-table-row">
                     {/* Release */}
                     <td style={{ padding: '0 8px', position: 'sticky', left: 0, background: rowBg, zIndex: 1 }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: '#0F766E', background: '#F0FDFA', padding: '2px 7px', borderRadius: 4, border: '1px solid #99F6E4' }}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: 'var(--sem-success-fg)', background: 'var(--sem-success-bg)', padding: '2px 7px', borderRadius: 4, border: '1px solid var(--sem-success-accent)' }}>
                         {releaseMap[item.release_key] || '—'}
                       </span>
                     </td>
@@ -171,7 +171,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                             <div style={{
                               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                               padding: '3px 2px', borderRadius: 6, minHeight: 40,
-                              background: bn ? '#FEF3C7' : getStatusCellBg(status),
+                              background: bn ? 'var(--sem-warning-bg)' : getStatusCellBg(status),
                               border: bn ? '1px solid #FDE68A' : undefined,
                               outline: isCurrent ? '2px solid var(--cp-blue)' : undefined,
                               outlineOffset: isCurrent ? -1 : undefined,
@@ -180,7 +180,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--fg-2)' }}>
                                 {entry.entered_at ? format(new Date(entry.entered_at), 'MMM d') : ''}
                               </span>
-                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: bn ? 12 : 11, fontWeight: 800, color: bn ? '#92400E' : getDaysColor(days) }}>
+                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: bn ? 12 : 11, fontWeight: 800, color: bn ? 'var(--sem-warning-fg)' : getDaysColor(days) }}>
                                 {formatDuration(entry.duration_days)}
                               </span>
                               {isCurrent && (
@@ -201,7 +201,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                     <td style={{
                       padding: '0 12px', textAlign: 'right',
                       fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 800, color: 'var(--fg-1)',
-                      background: rowBg === '#FAFBFC' ? 'var(--cp-bd-zone)' : 'var(--bg-1)', borderLeft: '2px solid var(--divider)',
+                      background: rowBg === 'var(--bg-1)' ? 'var(--cp-bd-zone)' : 'var(--bg-1)', borderLeft: '2px solid var(--divider)',
                       position: 'sticky', right: 0, zIndex: 2,
                       boxShadow: '-4px 0 8px rgba(0,0,0,0.06)',
                     }}>
@@ -234,7 +234,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
             <div style={{
               position: 'fixed', left: tooltip.x, top: tooltip.y,
               transform: 'translate(-50%, -100%)',
-              background: '#1E293B', color: '#F8FAFC', fontSize: 10, padding: '6px 10px',
+              background: 'var(--fg-1)', color: 'var(--bg-1)', fontSize: 10, padding: '6px 10px',
               borderRadius: 6, whiteSpace: 'nowrap', zIndex: 50,
               boxShadow: '0 4px 12px rgba(0,0,0,.2)',
               pointerEvents: 'none', fontFamily: "'Inter', sans-serif",

@@ -209,7 +209,7 @@ export function SidebarProjectNav({
             AI Intelligence
           </div>
         )}
-        <NavItem icon={Rocket} label="Sprint Predictor" isActive={isPathActive('sprint-predictor')} onClick={() => navigate(`${basePath}/sprint-predictor`)} collapsed={collapsed} badge="AI" />
+        <NavItem icon={Rocket} label="Release Predictor" isActive={isPathActive('sprint-predictor')} onClick={() => navigate(`${basePath}/sprint-predictor`)} collapsed={collapsed} badge="AI" />
         <NavItem icon={AlertTriangle} label="Risk Scanner" isActive={isPathActive('risk-scanner')} onClick={() => navigate(`${basePath}/risk-scanner`)} collapsed={collapsed} badge="AI" />
       </div>
 

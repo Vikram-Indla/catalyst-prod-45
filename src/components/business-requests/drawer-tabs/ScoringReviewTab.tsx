@@ -76,7 +76,7 @@ export function ScoringReviewTab({ data, onChange, onDirtyChange, requestId }: S
       {/* Business Score Section */}
       <CollapsibleSection
         title="Business Score"
-        icon={<Calculator className="w-4 h-4 text-[hsl(var(--secondary-bronze))]" />}
+        icon={<Calculator className="w-4 h-4 text-[var(--secondary-bronze)]" />}
         defaultOpen={true}
         status={businessScoreStatus}
       >
@@ -91,7 +91,7 @@ export function ScoringReviewTab({ data, onChange, onDirtyChange, requestId }: S
       {/* EA Review Section */}
       <CollapsibleSection
         title="EA Review"
-        icon={<ClipboardCheck className="w-4 h-4 text-[hsl(var(--secondary-olive))]" />}
+        icon={<ClipboardCheck className="w-4 h-4 text-[var(--secondary-olive)]" />}
         defaultOpen={false}
         status={eaReviewStatus}
       >

@@ -49,7 +49,7 @@ export function DangerZone({ projectId, projectName }: DangerZoneProps) {
           className="mt-4 transition-all"
           style={{
             height: 34, padding: '0 14px', fontSize: 13, fontWeight: 500,
-            color: '#DC2626', border: '1px solid #DC2626', borderRadius: 6,
+            color: 'var(--sem-danger)', border: '1px solid var(--sem-danger)', borderRadius: 6,
             background: 'transparent', cursor: 'pointer',
           }}
           onMouseEnter={e => { e.currentTarget.style.background = '#FEF2F2'; }}

@@ -107,7 +107,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
                   style={{
                     backgroundColor: a.color,
                     zIndex: 3 - i,
-                    border: isActive ? '2px solid #2563EB' : '2px solid white',
+                    border: isActive ? '2px solid var(--cp-blue)' : '2px solid white',
                     boxShadow: isActive ? '0 0 0 2px rgba(37,99,235,0.3)' : undefined,
                   }}
                   title={a.name}
@@ -132,10 +132,10 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
               onClick={() => setFilterOpen(!filterOpen)}
               className="h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[#F1F5F9] transition-colors"
               style={{
-                borderColor: hasActiveFilters ? '#2563EB' : '#E2E8F0',
-                color: hasActiveFilters ? '#2563EB' : '#475569',
+                borderColor: hasActiveFilters ? 'var(--cp-blue)' : 'var(--divider)',
+                color: hasActiveFilters ? 'var(--cp-blue)' : 'var(--fg-2)',
                 fontFamily: 'Inter, sans-serif',
-                background: hasActiveFilters ? '#EFF6FF' : undefined,
+                background: hasActiveFilters ? 'var(--cp-blue-wash)' : undefined,
               }}
             >
               <Filter size={13} />
@@ -215,7 +215,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
             <span
               key={chip.key}
               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
-              style={{ background: '#E9F2FF', color: 'var(--cp-blue)', border: '1px solid var(--cp-primary-20)' }}
+              style={{ background: 'var(--cp-blue-wash)', color: 'var(--cp-blue)', border: '1px solid var(--cp-primary-20)' }}
             >
               {chip.label}: {chip.value}
               <button onClick={chip.remove} className="hover:text-[#DC2626]"><X size={9} /></button>

@@ -36,8 +36,8 @@ export default function ReleaseDropdown({ projectId }: { projectId: string | nul
         <button
           style={{
             height: 34, padding: '0 14px', borderRadius: 8,
-            border: '1px solid #CBD5E1', background: '#FFFFFF', cursor: 'pointer',
-            fontSize: 13, fontWeight: 600, color: '#334155',
+            border: '1px solid var(--divider)', background: '#FFFFFF', cursor: 'pointer',
+            fontSize: 13, fontWeight: 600, color: 'var(--fg-2)',
             display: 'flex', alignItems: 'center', gap: 6,
             transition: 'border-color 150ms, box-shadow 150ms',
           }}

@@ -156,8 +156,8 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
       <div
         className="relative rounded-md text-center cursor-pointer transition-colors"
         style={{
-          border: dragOver ? '2px dashed #2563EB' : '2px dashed #DFE1E6',
-          background: dragOver ? '#E9F2FF' : '#FAFBFC',
+          border: dragOver ? '2px dashed var(--cp-blue)' : '2px dashed var(--divider)',
+          background: dragOver ? 'var(--cp-blue-wash)' : 'var(--bg-1)',
           padding: '14px 12px',
         }}
         onDragOver={e => { e.preventDefault(); setDragOver(true); }}
@@ -170,7 +170,7 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
         ) : (
           <>
             <Upload size={16} className="mx-auto mb-1" style={{ color: 'var(--fg-4)' }} />
-            <div className="text-[12px]" style={{ color: '#626F86' }}>Drop files or click to upload</div>
+            <div className="text-[12px]" style={{ color: 'var(--fg-3)' }}>Drop files or click to upload</div>
           </>
         )}
         <input

@@ -701,7 +701,7 @@ export function ViewTestCaseModal({
           <div>
             {renderLinkSection('Requirements', requirements, 'requirement', ClipboardList, 'var(--cp-blue)', 'color-mix(in srgb, var(--cp-blue) 8%, transparent)')}
             {renderLinkSection('Defects', defects, 'defect', Bug, 'var(--sem-danger)', '#FEF2F2')}
-            {renderLinkSection('Stories', stories, 'story', BookOpen, '#8B5CF6', '#F5F3FF')}
+            {renderLinkSection('Stories', stories, 'story', BookOpen, '#2563EB', '#EFF6FF')}
           </div>
         );
 

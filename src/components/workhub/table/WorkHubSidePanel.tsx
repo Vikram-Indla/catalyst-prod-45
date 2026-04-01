@@ -264,7 +264,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                         {item.story_points != null ? item.story_points : '— Set points'}
                       </span>
                     </DetailRow>
-                    <DetailRow label="Sprint">
+                    <DetailRow label="Release">
                       <span style={{ fontSize: 14, color: item.sprint_name ? 'var(--fg-1)' : 'var(--fg-4)' }}>
                         {item.sprint_name || '—'}
                       </span>

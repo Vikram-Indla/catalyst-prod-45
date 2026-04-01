@@ -234,7 +234,7 @@ export function WorkItemsTable({
       />
 
       <div className="border rounded-t-md overflow-hidden" style={{
-        borderColor: '#E2E8F0', background: '#FFFFFF',
+        borderColor: 'var(--divider)', background: '#FFFFFF',
         borderTopLeftRadius: selectedIds.size > 0 ? 0 : undefined,
         borderTopRightRadius: selectedIds.size > 0 ? 0 : undefined,
       }}>
@@ -249,9 +249,9 @@ export function WorkItemsTable({
                     className="text-left px-1 select-none"
                     style={{
                       width: col.width ?? undefined,
-                      fontSize: 11, fontWeight: 700, color: '#94A3B8', letterSpacing: '0.06em',
+                      fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', letterSpacing: '0.06em',
                       textTransform: 'uppercase', fontFamily: 'Inter, sans-serif',
-                      borderBottom: '1px solid #E2E8F0',
+                      borderBottom: '1px solid var(--divider)',
                       cursor: col.sortable ? 'pointer' : 'default',
                     }}
                     onClick={col.key === 'checkbox'

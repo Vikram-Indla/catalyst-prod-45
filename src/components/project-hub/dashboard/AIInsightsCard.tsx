@@ -6,7 +6,7 @@ export function AIInsightsCard() {
       style={{
         gridColumn: '1 / -1',
         background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        border: '1px solid var(--divider)',
         borderRadius: 8,
         padding: 20,
         boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)',
@@ -18,7 +18,7 @@ export function AIInsightsCard() {
           <Sparkles size={16} color="#7c3aed" />
           <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 600, color: 'var(--fg-1)' }}>AI Insights</span>
         </div>
-        <span style={{ fontSize: 11, fontWeight: 500, color: '#7c3aed', background: '#f3e8ff', borderRadius: 9999, padding: '2px 10px' }}>
+        <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-purple)', background: 'var(--cp-purple-wash)', borderRadius: 9999, padding: '2px 10px' }}>
           Powered by AI
         </span>
       </div>
@@ -26,7 +26,7 @@ export function AIInsightsCard() {
       {/* 3 Sub-cards */}
       <div style={{ display: 'flex', gap: 16 }}>
         {/* Completion Forecast */}
-        <div style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
+        <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <Target size={15} color="#7c3aed" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Completion Forecast</span>
@@ -37,7 +37,7 @@ export function AIInsightsCard() {
         </div>
 
         {/* Risk Alert */}
-        <div style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
+        <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <AlertTriangle size={15} color="#D97706" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Risk Alert</span>
@@ -45,11 +45,11 @@ export function AIInsightsCard() {
           <div style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5 }}>
             3 blocked items may delay completion by ~5 days if not resolved this week
           </div>
-          <span style={{ fontSize: 12, color: 'var(--sem-warning)', background: '#FEF3C7', borderRadius: 9999, padding: '2px 8px', marginTop: 8, display: 'inline-block' }}>Impact: Medium</span>
+          <span style={{ fontSize: 12, color: 'var(--sem-warning)', background: 'var(--sem-warning-bg)', borderRadius: 9999, padding: '2px 8px', marginTop: 8, display: 'inline-block' }}>Impact: Medium</span>
         </div>
 
         {/* Velocity */}
-        <div style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
+        <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <TrendingUp size={15} color="#0D9488" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Velocity</span>
@@ -61,7 +61,7 @@ export function AIInsightsCard() {
       </div>
 
       {/* Suggestion Banner */}
-      <div style={{ marginTop: 16, background: '#F5F3FF', borderLeft: '3px solid #7c3aed', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+      <div style={{ marginTop: 16, background: 'var(--cp-purple-wash)', borderLeft: '3px solid var(--cp-purple)', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
         <Lightbulb size={15} color="#7c3aed" style={{ flexShrink: 0, marginTop: 1 }} />
         <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>
           <strong>Suggestion:</strong> Reassign{' '}

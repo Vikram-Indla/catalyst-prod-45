@@ -124,10 +124,10 @@ export function PlannerFilterDrawer({
         />
       </div>
 
-      {/* Ready for Sprint Toggle */}
+      {/* Ready for Release Toggle */}
       <div className="flex items-center justify-between">
         <div>
-          <Label className="text-sm text-[var(--text-1)]">Ready for sprint</Label>
+          <Label className="text-sm text-[var(--text-1)]">Ready for release</Label>
           <p className="text-xs text-[var(--text-3)]">Tasks ready to start</p>
         </div>
         <Switch

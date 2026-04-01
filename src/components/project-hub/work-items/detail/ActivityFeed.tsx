@@ -34,7 +34,7 @@ export function ActivityFeed({ workItemId }: Props) {
       <h3 className="text-[16px] font-semibold mb-3" style={{ color: 'var(--fg-1)' }}>Activity</h3>
 
       {/* Tabs */}
-      <div className="flex" style={{ borderBottom: '2px solid #DFE1E6', marginBottom: 16 }}>
+      <div className="flex" style={{ borderBottom: '2px solid var(--divider)', marginBottom: 16 }}>
         {(['all', 'comments', 'history'] as Tab[]).map(t => {
           const isActive = tab === t;
           return (
@@ -44,9 +44,9 @@ export function ActivityFeed({ workItemId }: Props) {
               className="px-3 py-1.5 text-[13px] capitalize transition-colors"
               style={{
                 fontWeight: isActive ? 600 : 400,
-                color: isActive ? '#0C66E4' : '#44546F',
+                color: isActive ? '#0C66E4' : 'var(--fg-2)',
                 borderBottom: isActive ? '2px solid #0C66E4' : '2px solid transparent',
-                background: isActive ? '#E9F2FF' : 'transparent',
+                background: isActive ? 'var(--cp-blue-wash)' : 'transparent',
                 borderRadius: isActive ? '3px 3px 0 0' : 0,
                 marginBottom: -2,
               }}
@@ -68,7 +68,7 @@ export function ActivityFeed({ workItemId }: Props) {
             placeholder="Add a comment..."
             className="w-full rounded text-[14px] resize-none focus:outline-none transition-colors"
             style={{
-              border: '1px solid #DFE1E6',
+              border: '1px solid var(--divider)',
               padding: '10px 12px',
               minHeight: 40,
               background: 'var(--bg-1)',
@@ -83,7 +83,7 @@ export function ActivityFeed({ workItemId }: Props) {
                   <button
                     key={q}
                     className="text-[12px] px-2.5 py-0.5 rounded-full hover:bg-[#F1F5F9]"
-                    style={{ border: '1px solid #DFE1E6', color: '#44546F' }}
+                    style={{ border: '1px solid var(--divider)', color: 'var(--fg-2)' }}
                     onClick={() => setCommentText(q.replace('...', ''))}
                   >
                     {q}
@@ -147,7 +147,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
       <div className="flex items-center justify-between">
         <div className="text-[14px]">
           <strong style={{ color: 'var(--fg-1)' }}>{entry.actor_name}</strong>
-          <span style={{ color: '#44546F' }}> added a comment</span>
+          <span style={{ color: 'var(--fg-2)' }}> added a comment</span>
         </div>
         <button
           onClick={onDelete}
@@ -157,10 +157,10 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
           <Trash2 size={12} className="text-[#DC2626]" />
         </button>
       </div>
-      <div className="text-[12px] mb-1" style={{ color: '#626F86' }}>{entry.relative_time}</div>
+      <div className="text-[12px] mb-1" style={{ color: 'var(--fg-3)' }}>{entry.relative_time}</div>
       <div
         className="rounded text-[13px]"
-        style={{ padding: 8, background: '#F7F8F9', borderRadius: 4, lineHeight: '20px', color: 'var(--fg-1)' }}
+        style={{ padding: 8, background: 'var(--bg-1)', borderRadius: 4, lineHeight: '20px', color: 'var(--fg-1)' }}
       >
         {entry.body}
       </div>
@@ -173,9 +173,9 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
             onClick={() => onToggleReaction(r.emoji)}
             className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] transition-colors"
             style={{
-              border: r.reacted_by_me ? '1px solid var(--cp-blue)' : '1px solid #DFE1E6',
-              background: r.reacted_by_me ? '#E9F2FF' : 'var(--bg-app)',
-              color: r.reacted_by_me ? 'var(--cp-blue)' : '#44546F',
+              border: r.reacted_by_me ? '1px solid var(--cp-blue)' : '1px solid var(--divider)',
+              background: r.reacted_by_me ? 'var(--cp-blue-wash)' : 'var(--bg-app)',
+              color: r.reacted_by_me ? 'var(--cp-blue)' : 'var(--fg-2)',
             }}
           >
             {r.emoji} {r.count}
@@ -192,7 +192,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
           {pickerOpen && (
             <div
               className="absolute left-0 bottom-full mb-1 flex gap-0.5 rounded-md p-1"
-              style={{ background: '#FFF', border: '1px solid #DFE1E6', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }}
+              style={{ background: '#FFF', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }}
             >
               {EMOJI_OPTIONS.map(e => (
                 <button
@@ -219,13 +219,13 @@ function HistoryEntry({ entry }: { entry: ActivityEntry }) {
     <>
       <div className="text-[14px]">
         <strong style={{ color: 'var(--fg-1)' }}>{entry.actor_name}</strong>
-        <span style={{ color: '#44546F' }}> changed the {formatFieldName(entry.field_name)}</span>
+        <span style={{ color: 'var(--fg-2)' }}> changed the {formatFieldName(entry.field_name)}</span>
       </div>
-      <div className="text-[12px] mb-0.5" style={{ color: '#626F86' }}>{entry.relative_time}</div>
+      <div className="text-[12px] mb-0.5" style={{ color: 'var(--fg-3)' }}>{entry.relative_time}</div>
       {(entry.old_value || entry.new_value) && (
         <div className="flex items-center gap-2 mt-0.5">
           <ChangePill value={entry.old_value} />
-          <span className="text-[12px]" style={{ color: '#97A0AF' }}>→</span>
+          <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>→</span>
           <ChangePill value={entry.new_value} />
         </div>
       )}
@@ -237,7 +237,7 @@ function ChangePill({ value }: { value?: string | null }) {
   return (
     <span
       className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase"
-      style={{ background: '#F1F2F4', border: '1px solid #DFE1E6', color: '#44546F' }}
+      style={{ background: 'var(--divider)', border: '1px solid var(--divider)', color: 'var(--fg-2)' }}
     >
       {value || '—'}
     </span>

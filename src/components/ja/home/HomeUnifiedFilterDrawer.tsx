@@ -230,10 +230,10 @@ export function HomeUnifiedFilterDrawer({
             />
           </div>
 
-          {/* Ready for Sprint */}
+          {/* Ready for Release */}
           <div className="flex items-center justify-between py-2">
             <Label className="text-xs font-medium text-[var(--text-2)]">
-              Ready for sprint
+              Ready for release
             </Label>
             <Switch
               checked={filters.readyForSprint === true}

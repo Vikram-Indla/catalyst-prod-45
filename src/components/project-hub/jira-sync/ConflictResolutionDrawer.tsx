@@ -94,7 +94,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
             style={{
               width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
               borderRadius: 4, border: 'none', background: 'none', cursor: 'pointer',
-              color: '#64748B',
+              color: 'var(--fg-3)',
             }}
           >
             <X size={16} />
@@ -117,7 +117,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                   <div className="flex items-center gap-2" style={{
                     padding: '12px 16px', borderRadius: 6,
                     border: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
-                    background: '#F8FAFC',
+                    background: 'var(--bg-1)',
                   }}>
                     <AlertCircle size={14} style={{ color: 'var(--fg-4)', flexShrink: 0 }} />
                     <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>
@@ -138,10 +138,10 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                       </div>
                     </div>
                     {/* Jira side */}
-                    <div style={{ flex: 1, background: '#FFF7ED', borderLeft: '0.75px solid #FED7AA', padding: 16 }}>
+                    <div style={{ flex: 1, background: 'var(--sem-warning-bg)', borderLeft: '0.75px solid var(--sem-warning-accent)', padding: 16 }}>
                       <div className="flex items-center gap-[5px]" style={{ marginBottom: 8 }}>
                         <span className="flex items-center" dangerouslySetInnerHTML={{ __html: JIRA_DIAMOND_SVG }} />
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#9A3412', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Jira Version</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--sem-warning-fg)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Jira Version</span>
                         <span style={{ fontSize: 10, color: 'var(--fg-3)', marginLeft: 4 }}>From Jira</span>
                       </div>
                       <div style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500, padding: '8px 12px', background: 'rgba(154,52,18,0.06)', borderRadius: 4 }}>
@@ -161,7 +161,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                         onClick={() => onResolve(conflict.id, 'keep_catalyst')}
                         style={{
                           height: 32, padding: '0 14px', borderRadius: 4,
-                          background: '#EFF6FF', color: '#2563EB', border: '0.75px solid #BFDBFE',
+                          background: 'var(--cp-blue-wash)', color: 'var(--cp-blue)', border: '0.75px solid var(--cp-primary-20)',
                           fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif', cursor: 'pointer',
                         }}
                       >
@@ -171,7 +171,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                         onClick={() => onResolve(conflict.id, 'keep_jira')}
                         style={{
                           height: 32, padding: '0 14px', borderRadius: 4,
-                          background: '#FFF7ED', color: '#9A3412', border: '0.75px solid #FED7AA',
+                          background: 'var(--sem-warning-bg)', color: 'var(--sem-warning-fg)', border: '0.75px solid var(--sem-warning-accent)',
                           fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif', cursor: 'pointer',
                         }}
                       >

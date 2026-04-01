@@ -79,14 +79,14 @@ export default function WorkloadDrawer() {
 
                 {/* Sibling discovery */}
                 {item.siblings && item.siblings.length > 0 && (
-                  <div style={{ marginTop: 8, background: '#FEFCE8', border: '1px solid #FEF08A', borderRadius: 6, padding: '8px 10px' }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#92400E', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>Working with (same parent):</div>
+                  <div style={{ marginTop: 8, background: 'var(--sem-warning-bg)', border: '1px solid var(--sem-warning-accent)', borderRadius: 6, padding: '8px 10px' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--sem-warning-fg)', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>Working with (same parent):</div>
                     {item.siblings.map((sib: any) => (
                       <div
                         key={sib.id}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 6, padding: '3px 0',
-                          borderLeft: sib.assignee_id === drawerPayload.userId ? '2px solid #2563EB' : '2px solid transparent',
+                          borderLeft: sib.assignee_id === drawerPayload.userId ? '2px solid var(--cp-blue)' : '2px solid transparent',
                           paddingLeft: 6,
                         }}
                       >

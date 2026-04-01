@@ -126,7 +126,7 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
               width: 44, height: 44, borderRadius: 10,
-              background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+              background: 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}><Plus size={22} style={{ color: '#FFFFFF' }} /></div>
             <div>
@@ -164,7 +164,7 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
           {isLoading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
-              <RefreshCw size={24} style={{ animation: 'spin 1s linear infinite', color: '#7C3AED' }} />
+              <RefreshCw size={24} style={{ animation: 'spin 1s linear infinite', color: '#2563EB' }} />
             </div>
           ) : filteredCycles.length === 0 ? (
             <div style={{ textAlign: 'center', padding: 40, color: 'var(--fg-4)' }}>
@@ -183,13 +183,13 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
                 return (
                   <div key={cycle.id} onClick={() => toggleSelect(cycle.id)} style={{
                     display: 'flex', alignItems: 'center', gap: 14, padding: 14,
-                    backgroundColor: isSelected ? '#F5F3FF' : 'var(--bg-1)', borderRadius: 10,
-                    border: `2px solid ${isSelected ? '#7C3AED' : 'transparent'}`, cursor: 'pointer', transition: 'all 0.15s',
+                    backgroundColor: isSelected ? '#EFF6FF' : 'var(--bg-1)', borderRadius: 10,
+                    border: `2px solid ${isSelected ? '#2563EB' : 'transparent'}`, cursor: 'pointer', transition: 'all 0.15s',
                   }}>
                     <div style={{
                       width: 22, height: 22, borderRadius: 6,
-                      border: `2px solid ${isSelected ? '#7C3AED' : 'var(--divider)'}`,
-                      backgroundColor: isSelected ? '#7C3AED' : 'var(--cp-float)',
+                      border: `2px solid ${isSelected ? '#2563EB' : 'var(--divider)'}`,
+                      backgroundColor: isSelected ? '#2563EB' : 'var(--cp-float)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                     }}>{isSelected && <CheckCircle2 size={14} style={{ color: '#FFF' }} />}</div>
                     <div style={{ flex: 1 }}>
@@ -209,7 +209,7 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
                       <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: 0 }}>tests</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: '#7C3AED', margin: 0 }}>{cycle.progress_percent}%</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#2563EB', margin: 0 }}>{cycle.progress_percent}%</p>
                       <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: 0 }}>done</p>
                     </div>
                   </div>
@@ -227,7 +227,7 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting || selectedIds.size === 0} style={{
             height: 44, padding: '0 24px',
-            background: selectedIds.size === 0 ? 'var(--divider)' : 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+            background: selectedIds.size === 0 ? 'var(--divider)' : 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
             border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
             cursor: selectedIds.size === 0 || isSubmitting ? 'not-allowed' : 'pointer',
             opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8,

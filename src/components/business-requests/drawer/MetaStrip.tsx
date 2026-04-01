@@ -66,9 +66,9 @@ export function MetaStrip({
   // Chip base styles - light gray background with gray border
   const chipBase = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium cursor-pointer transition-colors border";
   const chipDefaultStyle = {
-    background: 'hsl(var(--muted) / 0.5)',
-    borderColor: 'hsl(var(--border))',
-    color: 'hsl(var(--foreground))',
+    background: 'color-mix(in srgb, var(--bg-2) 50%, transparent)',
+    borderColor: 'var(--divider)',
+    color: 'var(--fg-1)',
   };
 
   // Score chip uses champagne background

@@ -114,7 +114,7 @@ function ProjectRow({
       onClick={() => onSelect(project.key)}
       className="flex items-center gap-2.5 w-full px-3 py-1.5 transition-colors"
       style={{
-        background: isCurrent ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : undefined,
+        background: isCurrent ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : undefined,
         border: 'none',
         cursor: 'pointer',
       }}

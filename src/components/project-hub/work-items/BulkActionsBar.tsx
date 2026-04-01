@@ -33,7 +33,7 @@ export function BulkActionsBar({
     <div
       className="flex items-center gap-2 px-4"
       style={{
-        height: 40, background: '#2563EB', borderRadius: '6px 6px 0 0',
+        height: 40, background: 'var(--cp-blue)', borderRadius: '6px 6px 0 0',
         fontFamily: 'Inter, sans-serif',
       }}
     >

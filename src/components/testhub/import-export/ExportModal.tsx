@@ -16,7 +16,7 @@ const EXPORT_TYPES = [
   { value: 'test_cases', label: 'Test Cases', icon: FileText, color: 'var(--cp-blue)', table: 'th_test_cases' },
   { value: 'defects', label: 'Defects', icon: Bug, color: 'var(--sem-danger)', table: 'th_defects' },
   { value: 'requirements', label: 'Requirements', icon: FileCheck, color: 'var(--sem-success)', table: 'th_requirements' },
-  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: '#7C3AED', table: 'th_shared_steps' },
+  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: '#2563EB', table: 'th_shared_steps' },
   { value: 'cycles', label: 'Test Cycles', icon: RefreshCcw, color: '#0891B2', table: 'th_test_cycles' },
   { value: 'tags', label: 'Tags', icon: Tags, color: '#EC4899', table: 'th_tags' },
 ];

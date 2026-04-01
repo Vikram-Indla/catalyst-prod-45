@@ -88,8 +88,8 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
               className="inline-flex items-center gap-2 rounded-full transition-colors hover:opacity-80"
               style={{
                 padding: '4px 10px 4px 12px',
-                background: '#F1F5F9',
-                border: '1px solid #E2E8F0',
+                background: 'var(--cp-bd-zone)',
+                border: '1px solid var(--divider)',
               }}
             >
               <span style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500 }}>{c.name}</span>
@@ -123,7 +123,7 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
           className="flex-shrink-0 transition-all disabled:opacity-40"
           style={{
             height: 36, padding: '0 14px', fontSize: 13, fontWeight: 500,
-            color: '#334155', border: '1px solid #E2E8F0', borderRadius: 6,
+            color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
             background: 'transparent', cursor: !newName.trim() || atMax ? 'default' : 'pointer',
           }}
           onMouseEnter={e => { if (newName.trim() && !atMax) e.currentTarget.style.background = '#F8FAFC'; }}

@@ -50,7 +50,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
       aria-label={title}
       className="ph-widget-card"
       style={{
-        background: dark ? '#1A1714' : 'var(--bg-app)',
+        background: dark ? 'var(--bg-dark)' : 'var(--bg-app)',
         border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid var(--divider)',
         borderRadius: 10,
         borderLeft: leftBorder ? `3px solid ${leftBorder}` : undefined,
@@ -101,7 +101,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
             <button
               onClick={onAction}
               className="ph-focus-ring"
-              style={{ fontSize: 12, color: dark ? '#60A5FA' : 'var(--cp-blue)', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 12, color: dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               {actionLabel}
             </button>
@@ -116,7 +116,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
             <button
               onClick={onRetry}
               className="ph-focus-ring"
-              style={{ fontSize: 11, fontWeight: 600, color: dark ? '#60A5FA' : 'var(--cp-blue)', background: dark ? 'rgba(37,99,235,0.15)' : 'var(--cp-blue-wash)', border: dark ? '1px solid rgba(37,99,235,0.3)' : '1px solid var(--cp-primary-20)', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}
+              style={{ fontSize: 11, fontWeight: 600, color: dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)', background: dark ? 'rgba(37,99,235,0.15)' : 'var(--cp-blue-wash)', border: dark ? '1px solid rgba(37,99,235,0.3)' : '1px solid var(--cp-primary-20)', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}
             >
               Retry
             </button>

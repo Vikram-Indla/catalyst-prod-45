@@ -38,9 +38,9 @@ export default function QADefects({ projectId, releaseMap }: Props) {
       onRetry={() => refetch()}
       headerRight={
         <div style={{ display: 'flex', gap: 4 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#991B1B', background: 'var(--sem-danger-bg)', border: '1px solid #FCA5A5', padding: '2px 6px', borderRadius: 9999 }}>Crit: {crit}</span>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#92400E', background: 'var(--sem-warning-bg)', border: '1px solid #FCD34D', padding: '2px 6px', borderRadius: 9999 }}>High: {high}</span>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#075985', background: '#F0F9FF', border: '1px solid #7DD3FC', padding: '2px 6px', borderRadius: 9999 }}>Med: {med}</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--sem-danger-fg)', background: 'var(--sem-danger-bg)', border: '1px solid var(--sem-danger-accent)', padding: '2px 6px', borderRadius: 9999 }}>Crit: {crit}</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--sem-warning-fg)', background: 'var(--sem-warning-bg)', border: '1px solid var(--sem-warning-accent)', padding: '2px 6px', borderRadius: 9999 }}>High: {high}</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--sem-info-fg)', background: 'var(--sem-info-bg)', border: '1px solid var(--sem-info-accent)', padding: '2px 6px', borderRadius: 9999 }}>Med: {med}</span>
         </div>
       }
     >
@@ -61,9 +61,9 @@ export default function QADefects({ projectId, releaseMap }: Props) {
             {items.map((item: any, idx: number) => {
               const ss = SEV_STYLE[item.severity] || SEV_STYLE.medium;
               return (
-                <tr key={item.id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', background: idx % 2 === 1 ? '#FAFBFC' : undefined }} className="ph-table-row">
+                <tr key={item.id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', background: idx % 2 === 1 ? 'var(--bg-1)' : undefined }} className="ph-table-row">
                   <td style={{ padding: '0 6px' }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: '#0F766E', background: '#F0FDFA', padding: '2px 7px', borderRadius: 4, border: '1px solid #99F6E4' }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: 'var(--sem-success-fg)', background: 'var(--sem-success-bg)', padding: '2px 7px', borderRadius: 4, border: '1px solid var(--sem-success-accent)' }}>
                       {releaseMap[item.release_id] || '—'}
                     </span>
                   </td>

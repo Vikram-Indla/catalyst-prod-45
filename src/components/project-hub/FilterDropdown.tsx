@@ -50,7 +50,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
           padding: '0 12px',
           border: hasFilters ? '1px solid var(--cp-blue)' : `1px solid ${dark ? 'rgba(255,255,255,0.12)' : 'var(--divider)'}`,
           background: hasFilters ? (dark ? 'rgba(37,99,235,0.15)' : 'var(--cp-blue-wash)') : (dark ? 'transparent' : 'var(--bg-app)'),
-          color: hasFilters ? (dark ? '#60A5FA' : 'var(--cp-blue)') : (dark ? 'rgba(248,244,240,0.72)' : 'var(--fg-2)'),
+          color: hasFilters ? (dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : (dark ? 'rgba(248,244,240,0.72)' : 'var(--fg-2)'),
           fontSize: 13,
           fontWeight: 500,
           cursor: 'pointer',
@@ -226,7 +226,7 @@ export function FilterChips({
             fontWeight: 500,
             padding: '2px 8px 2px 10px',
             background: dark ? 'rgba(37,99,235,0.15)' : 'var(--cp-blue-wash)',
-            color: dark ? '#60A5FA' : 'var(--cp-blue)',
+            color: dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)',
           }}
         >
           {c.label}

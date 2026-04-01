@@ -78,7 +78,7 @@ export function RoadmapLegend({ isVisible, onToggle, isRTL = false }: RoadmapLeg
               <div className="flex items-center gap-3">
                 <div 
                   className="w-14 h-4 rounded-full"
-                  style={{ background: 'linear-gradient(90deg, hsl(35, 46%, 60%), hsl(35, 42%, 75%))' }}
+                  style={{ background: 'linear-gradient(90deg, #B8944F, #C9B584)' }}
                 />
                 <span className="text-xs" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
                   {isRTL ? 'شريط الجدول' : 'Timeline Bar'}

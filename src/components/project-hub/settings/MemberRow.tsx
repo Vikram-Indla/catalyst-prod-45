@@ -84,7 +84,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
           <div
             className="absolute right-0 top-full mt-1 z-10"
             style={{
-              width: 120, background: '#FFFFFF', border: '1px solid #E2E8F0',
+              width: 120, background: '#FFFFFF', border: '1px solid var(--divider)',
               borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',
               overflow: 'hidden',
             }}
@@ -96,7 +96,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
                 className="w-full text-left px-3 py-2 hover:bg-[#F8FAFC] transition-colors"
                 style={{
                   fontSize: 12, fontWeight: r === role ? 600 : 400,
-                  color: r === role ? '#2563EB' : '#334155',
+                  color: r === role ? 'var(--cp-blue)' : 'var(--fg-2)',
                   border: 'none', background: 'transparent', cursor: 'pointer',
                   display: 'block',
                 }}

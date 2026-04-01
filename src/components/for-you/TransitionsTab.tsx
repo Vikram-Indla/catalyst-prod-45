@@ -260,7 +260,7 @@ function PersonAvatar({ name, avatarUrl, size = 24 }: { name: string; avatarUrl?
   if (resolvedUrl) {
     return <img src={resolvedUrl} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: `1px solid ${T.border}` }} />;
   }
-  return <div style={{ width: size, height: size, borderRadius: '50%', background: clr, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.38, fontWeight: 700, flexShrink: 0 }}>{ini}</div>;
+  return <div style={{ width: size, height: size, borderRadius: '50%', background: clr, color: 'var(--bg-app)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.38, fontWeight: 700, flexShrink: 0 }}>{ini}</div>;
 }
 
 // --- Sub-components ---
@@ -288,8 +288,8 @@ function CycleSummary({ steps }: { steps: TransitionStep[] }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 20 }}>
       <SummaryCard label="Cycle Time" value={formatDuration(totalMs)} sub={`${transitionCount} transition${transitionCount !== 1 ? 's' : ''}`} color={T.primary} />
-      <SummaryCard label="Active Time" value={formatDuration(activeMs)} sub={`${progressSteps.length} statuses`} color="#0065FF" />
-      <SummaryCard label="Wait Time" value={formatDuration(waitMs)} sub={`${todoSteps.length} statuses`} color="#D97706" />
+      <SummaryCard label="Active Time" value={formatDuration(activeMs)} sub={`${progressSteps.length} statuses`} color="var(--cp-blue)" />
+      <SummaryCard label="Wait Time" value={formatDuration(waitMs)} sub={`${todoSteps.length} statuses`} color="var(--sem-warning)" />
       <SummaryCard label="People" value={`${uniquePeople}`} sub={`${steps.filter(s => s.isHandoff).length} handoffs`} color="#7C3AED" />
     </div>
   );
@@ -298,7 +298,7 @@ function CycleSummary({ steps }: { steps: TransitionStep[] }) {
 function HandoffConnector({ from, to, isRework }: { from: PersonInfo; to: PersonInfo; isRework: boolean }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px 0', marginLeft: 15 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 12px', borderRadius: 20, background: isRework ? T.warningBg : T.surfaceTertiary, border: `1px solid ${isRework ? '#FCD34D' : T.border}`, fontSize: 11, fontWeight: 600, color: isRework ? T.warning : T.inkMuted }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 12px', borderRadius: 20, background: isRework ? T.warningBg : T.surfaceTertiary, border: `1px solid ${isRework ? 'var(--sem-warning)' : T.border}`, fontSize: 11, fontWeight: 600, color: isRework ? T.warning : T.inkMuted }}>
         <PersonAvatar name={from.name} avatarUrl={from.avatarUrl} size={18} />
         <span>{isRework ? 'returned to' : 'handed off to'}</span>
         <span style={{ fontSize: 14 }}>{isRework ? '↩' : '→'}</span>
@@ -325,7 +325,7 @@ function StepCard({ step, index }: { step: TransitionStep; index: number }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           animation: step.isCurrent ? 'fy-pulse 2s ease infinite' : 'none',
         }}>
-          {category === 'done' ? <CheckCircle2 size={14} color="#00875A" /> : category === 'inprogress' ? <Timer size={14} color="#0065FF" /> : <Circle size={14} color="#A5ADBA" />}
+          {category === 'done' ? <CheckCircle2 size={14} color="#00875A" /> : category === 'inprogress' ? <Timer size={14} color="var(--cp-blue)" /> : <Circle size={14} color="#A5ADBA" />}
         </div>
       </div>
 

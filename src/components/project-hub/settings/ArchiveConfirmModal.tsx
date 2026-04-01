@@ -57,7 +57,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
             onClick={onClose}
             style={{
               height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500,
-              color: '#334155', border: '1px solid #E2E8F0', borderRadius: 6,
+              color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
               background: '#FFFFFF', cursor: 'pointer',
             }}
           >
@@ -69,7 +69,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
             className="hover:opacity-90 transition-opacity disabled:opacity-50"
             style={{
               height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600,
-              color: '#FFFFFF', background: '#DC2626', border: 'none', borderRadius: 6,
+              color: '#FFFFFF', background: 'var(--sem-danger)', border: 'none', borderRadius: 6,
               cursor: loading ? 'default' : 'pointer',
             }}
           >

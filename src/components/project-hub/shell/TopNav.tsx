@@ -67,11 +67,11 @@ export function TopNav({ onCreateClick }: TopNavProps) {
                 padding: '0 10px',
                 fontSize: 13,
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? '#2563EB' : (isDark ? 'rgba(248,244,240,0.72)' : '#334155'),
+                color: isActive ? 'var(--cp-blue)' : (isDark ? 'rgba(248,244,240,0.72)' : 'var(--fg-2)'),
                 fontFamily: "'Inter', sans-serif",
                 background: 'transparent',
                 border: 'none',
-                borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
+                borderBottom: isActive ? '2px solid var(--cp-blue)' : '2px solid transparent',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
               }}
@@ -93,7 +93,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
           style={{
             height: 32,
             padding: '0 12px',
-            background: '#2563EB',
+            background: 'var(--cp-blue)',
             color: '#FFFFFF',
             border: 'none',
             borderRadius: 6,

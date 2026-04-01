@@ -108,8 +108,8 @@ export function AvatarStack({ count }: { count: number }) {
           style={{
             width: 24,
             height: 24,
-            background: '#F1F5F9',
-            color: '#64748B',
+            background: 'var(--cp-bd-zone)',
+            color: 'var(--fg-3)',
             fontSize: 9,
             fontWeight: 600,
             border: '2px solid #FFFFFF',

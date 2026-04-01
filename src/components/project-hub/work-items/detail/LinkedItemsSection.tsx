@@ -49,7 +49,7 @@ export function LinkedItemsSection({ workItemId, projectId, linkedItems, onNavig
       {/* Grouped links */}
       {linkedItems.length > 0 && groupLinks(linkedItems).map(([type, links]) => (
         <div key={type} className="mb-2">
-          <span className="text-[12px] font-semibold mb-1 block" style={{ color: '#626F86' }}>
+          <span className="text-[12px] font-semibold mb-1 block" style={{ color: 'var(--fg-3)' }}>
             {formatLinkType(type)}
           </span>
           {links.map(link => (
@@ -175,7 +175,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
 
         <div className="px-5 py-4 flex-1 overflow-y-auto">
           {/* Link type */}
-          <label className="text-[12px] font-medium block mb-1.5" style={{ color: '#44546F' }}>Link type</label>
+          <label className="text-[12px] font-medium block mb-1.5" style={{ color: 'var(--fg-2)' }}>Link type</label>
           <select
             value={linkType}
             onChange={e => setLinkType(e.target.value)}
@@ -188,7 +188,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
           </select>
 
           {/* Search */}
-          <label className="text-[12px] font-medium block mb-1.5" style={{ color: '#44546F' }}>Search work item</label>
+          <label className="text-[12px] font-medium block mb-1.5" style={{ color: 'var(--fg-2)' }}>Search work item</label>
           <div className="flex items-center gap-1.5 px-3 py-2 rounded mb-2" style={{ border: '1px solid var(--divider)' }}>
             <Search size={13} className="text-[#94A3B8]" />
             <input
@@ -207,7 +207,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
                 key={item.id}
                 onClick={() => setSelectedId(item.id)}
                 className="w-full flex items-center gap-2 px-3 py-2 rounded hover:bg-[#F8FAFC] text-left transition-colors"
-                style={{ background: selectedId === item.id ? '#E9F2FF' : undefined }}
+                style={{ background: selectedId === item.id ? 'var(--cp-blue-wash)' : undefined }}
               >
                 <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: TYPE_COLORS[item.type_name] || item.type_color }} />
                 <span className="text-[10px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{item.item_key}</span>
@@ -224,7 +224,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
 
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--cp-bd-zone)' }}>
-          <button onClick={onClose} className="px-3 py-1.5 text-[12px] font-medium rounded hover:bg-[var(--cp-bd-zone)]" style={{ color: '#44546F' }}>
+          <button onClick={onClose} className="px-3 py-1.5 text-[12px] font-medium rounded hover:bg-[var(--cp-bd-zone)]" style={{ color: 'var(--fg-2)' }}>
             Cancel
           </button>
           <button

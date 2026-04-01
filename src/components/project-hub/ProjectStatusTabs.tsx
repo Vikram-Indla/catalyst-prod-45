@@ -40,9 +40,9 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
               padding: '0 12px',
               fontSize: 13,
               fontWeight: isActive ? 600 : 500,
-              color: isActive ? (isDark ? '#60A5FA' : '#2563EB') : (isDark ? 'rgba(248,244,240,0.60)' : '#64748B'),
-              background: isActive ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : 'transparent',
-              border: isActive ? `1px solid ${isDark ? 'rgba(59,130,246,0.25)' : '#BFDBFE'}` : '1px solid transparent',
+              color: isActive ? (isDark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : (isDark ? 'rgba(248,244,240,0.60)' : 'var(--fg-3)'),
+              background: isActive ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : 'transparent',
+              border: isActive ? `1px solid ${isDark ? 'rgba(59,130,246,0.25)' : 'var(--cp-primary-20)'}` : '1px solid transparent',
               cursor: 'pointer',
               fontFamily: "'Inter', sans-serif",
             }}
@@ -64,8 +64,8 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 padding: '0 5px',
                 fontSize: 11,
                 fontWeight: 600,
-                background: isActive ? '#2563EB' : (isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'),
-                color: isActive ? '#FFFFFF' : (isDark ? 'rgba(248,244,240,0.60)' : '#64748B'),
+                background: isActive ? 'var(--cp-blue)' : (isDark ? 'rgba(255,255,255,0.08)' : 'var(--divider)'),
+                color: isActive ? '#FFFFFF' : (isDark ? 'rgba(248,244,240,0.60)' : 'var(--fg-3)'),
                 fontFamily: "'Inter', sans-serif",
               }}
             >

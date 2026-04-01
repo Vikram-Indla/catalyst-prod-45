@@ -107,17 +107,17 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
             </span>
           </div>
           <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
-            <X size={18} color="#64748B" />
+            <X size={18} color="var(--fg-3)" />
           </button>
         </div>
 
         {/* Body */}
         <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
           {/* Current state */}
-          <div style={{ background: '#F8FAFC', borderRadius: 8, padding: '10px 14px' }}>
-            <div style={{ fontSize: 12, color: '#64748B', marginBottom: 4 }}>
-              Current: <span style={{ fontWeight: 700, color: '#0F172A' }}>{kr?.current_value ?? 0}</span>
-              {' / '}Target: <span style={{ fontWeight: 700, color: '#0F172A' }}>{kr?.target ?? 0}</span>
+          <div style={{ background: 'var(--bg-1)', borderRadius: 8, padding: '10px 14px' }}>
+            <div style={{ fontSize: 12, color: 'var(--fg-3)', marginBottom: 4 }}>
+              Current: <span style={{ fontWeight: 700, color: 'var(--fg-1)' }}>{kr?.current_value ?? 0}</span>
+              {' / '}Target: <span style={{ fontWeight: 700, color: 'var(--fg-1)' }}>{kr?.target ?? 0}</span>
               {' '}({currentPct}%)
             </div>
             {progressBar(currentPct)}
@@ -129,8 +129,8 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
             <input
               type="number" value={newValue} onChange={e => setNewValue(e.target.value)}
               style={inputStyle}
-              onFocus={e => { e.target.style.borderColor = '#2563EB'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
-              onBlur={e => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'none'; }}
+              onFocus={e => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+              onBlur={e => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
             />
           </div>
 
@@ -147,15 +147,15 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
               value={note} onChange={e => setNote(e.target.value)}
               placeholder="What changed since last check-in?"
               style={{ ...inputStyle, minHeight: 60, resize: 'vertical', fontFamily: 'inherit' }}
-              onFocus={e => { e.target.style.borderColor = '#2563EB'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
-              onBlur={e => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'none'; }}
+              onFocus={e => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+              onBlur={e => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', borderTop: '1px solid #E2E8F0' }}>
-          <button onClick={onClose} style={{ padding: '7px 16px', fontSize: 13, fontWeight: 500, color: '#64748B', background: 'none', border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', borderTop: '1px solid var(--divider)' }}>
+          <button onClick={onClose} style={{ padding: '7px 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>
             Cancel
           </button>
           <button
@@ -163,7 +163,7 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
             disabled={createCheckin.isPending}
             style={{
               padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF',
-              background: createCheckin.isPending ? '#93C5FD' : '#2563EB',
+              background: createCheckin.isPending ? '#93C5FD' : 'var(--cp-blue)',
               border: 'none', borderRadius: 6, cursor: createCheckin.isPending ? 'not-allowed' : 'pointer',
             }}
           >

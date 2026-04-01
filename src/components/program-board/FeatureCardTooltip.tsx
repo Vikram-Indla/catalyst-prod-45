@@ -23,7 +23,7 @@ export function FeatureCardTooltip({ feature }: FeatureCardTooltipProps) {
     planningIssues.push("No team assigned");
   }
   if (!feature.team_target_completion_sprint_id) {
-    planningIssues.push("No sprint assigned");
+    planningIssues.push("No release assigned");
   }
 
   return (

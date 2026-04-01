@@ -43,8 +43,8 @@ export function IconColorPicker({ icon, color, onIconChange, onColorChange }: Ic
               style={{
                 width: 36,
                 height: 36,
-                background: icon === name ? '#EFF6FF' : '#F8FAFC',
-                border: icon === name ? '2px solid #2563EB' : '1px solid #E2E8F0',
+                background: icon === name ? 'var(--cp-blue-wash)' : 'var(--bg-1)',
+                border: icon === name ? '2px solid var(--cp-blue)' : '1px solid var(--divider)',
                 cursor: 'pointer',
               }}
             >
@@ -70,7 +70,7 @@ export function IconColorPicker({ icon, color, onIconChange, onColorChange }: Ic
                 width: 28,
                 height: 28,
                 background: c,
-                border: color === c ? '3px solid #0F172A' : '2px solid transparent',
+                border: color === c ? '3px solid var(--fg-1)' : '2px solid transparent',
                 cursor: 'pointer',
                 boxShadow: color === c ? `inset 0 0 0 3px #FFFFFF` : undefined,
               }}

@@ -17,7 +17,7 @@ const IMPORT_TYPES = [
   { value: 'test_cases', label: 'Test Cases', icon: FileText, color: 'var(--cp-blue)' },
   { value: 'defects', label: 'Defects', icon: Bug, color: 'var(--sem-danger)' },
   { value: 'requirements', label: 'Requirements', icon: FileCheck, color: 'var(--sem-success)' },
-  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: '#7C3AED' },
+  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: '#2563EB' },
   { value: 'tags', label: 'Tags', icon: Tags, color: '#EC4899' },
 ];
 

@@ -149,7 +149,7 @@ export function WorkItemTableRow({
           <td key={col.key} style={{ width: 70, padding: '0 4px' }}>
             <span style={{
               fontSize: 10, fontFamily: 'JetBrains Mono, monospace',
-              color: isDone ? '#94A3B8' : '#64748B',
+              color: isDone ? 'var(--fg-4)' : 'var(--fg-3)',
               textDecoration: isDone ? 'line-through' : 'none',
               whiteSpace: 'nowrap',
             }}>
@@ -170,7 +170,7 @@ export function WorkItemTableRow({
               <div className="flex items-center gap-1.5 min-w-0">
                 <span className="truncate" style={{
                   fontSize: 12, fontWeight: 500, fontFamily: 'Inter, sans-serif',
-                  color: isDone ? '#94A3B8' : '#0F172A',
+                  color: isDone ? 'var(--fg-4)' : 'var(--fg-1)',
                   textDecoration: isDone ? 'line-through' : 'none',
                 }} title={item.title || item.summary}>
                   {item.title || item.summary}
@@ -221,9 +221,9 @@ export function WorkItemTableRow({
               <span style={{
                 display: 'inline-block', height: 18, lineHeight: '18px',
                 padding: '0 6px', borderRadius: 3,
-                background: 'var(--cp-bg-sunken, #F1F5F9)',
+                background: 'var(--cp-bg-sunken, var(--cp-bd-zone))',
                 border: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
-                fontSize: 10.5, fontWeight: 500, color: 'var(--cp-text-secondary, #475569)',
+                fontSize: 10.5, fontWeight: 500, color: 'var(--cp-text-secondary, var(--fg-2))',
                 fontFamily: 'Inter, sans-serif', whiteSpace: 'nowrap',
               }}>
                 {releaseLabel}
@@ -264,7 +264,7 @@ export function WorkItemTableRow({
                   <Calendar size={11} style={{ color: overdue ? 'var(--sem-danger)' : 'var(--fg-4)' }} />
                   <span style={{
                     fontSize: 10, fontFamily: 'JetBrains Mono, monospace',
-                    color: overdue ? '#DC2626' : '#64748B', fontWeight: overdue ? 600 : 400,
+                    color: overdue ? 'var(--sem-danger)' : 'var(--fg-3)', fontWeight: overdue ? 600 : 400,
                   }}>{formatDue(item.due_date)}</span>
                 </div>
               ) : (

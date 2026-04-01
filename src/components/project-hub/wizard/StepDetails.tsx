@@ -147,7 +147,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           style={{
             ...inputStyle,
             cursor: 'pointer',
-            color: data.department ? '#0F172A' : '#94A3B8',
+            color: data.department ? 'var(--fg-1)' : 'var(--fg-4)',
           }}
         >
           <option value="" disabled>Select department</option>

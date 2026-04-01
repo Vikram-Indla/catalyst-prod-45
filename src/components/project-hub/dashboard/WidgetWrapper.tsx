@@ -73,7 +73,7 @@ export default function WidgetWrapper({
       className="overflow-hidden flex flex-col"
       style={{
         gridColumn: `span ${span}`,
-        background: dark ? '#1A1714' : 'var(--cp-bg-page)',
+        background: dark ? 'var(--bg-dark)' : 'var(--cp-bg-page)',
         border: dark ? '1px solid rgba(255,255,255,0.12)' : '0.75px solid var(--cp-border-default)',
         borderRadius: 'var(--cp-radius-default)',
         boxShadow: dark ? 'none' : undefined,
@@ -127,7 +127,7 @@ export default function WidgetWrapper({
 
       {/* Body */}
       {!collapsed && (
-        <div className="flex-1" style={{ padding: flushBody ? 0 : 14, background: dark ? '#1A1714' : 'var(--cp-bg-page)' }}>
+        <div className="flex-1" style={{ padding: flushBody ? 0 : 14, background: dark ? 'var(--bg-dark)' : 'var(--cp-bg-page)' }}>
           <WidgetErrorBoundary title={title}>
             {children}
           </WidgetErrorBoundary>
@@ -140,7 +140,7 @@ export default function WidgetWrapper({
           style={{
             borderTop: dark ? '1px solid rgba(255,255,255,0.08)' : '0.75px solid var(--cp-border-subtle)',
             padding: '8px 14px',
-            background: dark ? '#1A1714' : 'var(--cp-bg-page)',
+            background: dark ? 'var(--bg-dark)' : 'var(--cp-bg-page)',
           }}
         >
           {footer}

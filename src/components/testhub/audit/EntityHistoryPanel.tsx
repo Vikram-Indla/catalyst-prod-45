@@ -104,7 +104,7 @@ export function EntityHistoryPanel({ entityType, entityId, maxEntries = 20 }: En
   if (isLoading) {
     return (
       <div style={{ padding: 24, display: 'flex', justifyContent: 'center' }}>
-        <RefreshCw size={20} style={{ animation: 'spin 1s linear infinite', color: '#8B5CF6' }} />
+        <RefreshCw size={20} style={{ animation: 'spin 1s linear infinite', color: '#2563EB' }} />
       </div>
     );
   }
@@ -122,7 +122,7 @@ export function EntityHistoryPanel({ entityType, entityId, maxEntries = 20 }: En
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--divider)' }}>
         <h4 style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <History size={16} style={{ color: '#8B5CF6' }} />
+          <History size={16} style={{ color: '#2563EB' }} />
           History ({history.length})
         </h4>
       </div>

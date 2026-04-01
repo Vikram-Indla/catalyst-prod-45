@@ -39,7 +39,7 @@ function FixedDropdown({ anchorRef, children, onClose, width = 180 }: {
       id="inline-dropdown-portal"
       style={{
         position: 'fixed', top: pos.top, left: pos.left, width,
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6,
+        background: '#FFFFFF', border: '1px solid var(--divider)', borderRadius: 6,
         boxShadow: '0 12px 32px rgba(0,0,0,0.18)', zIndex: 9999,
         maxHeight: 280, overflowY: 'auto',
       }}

@@ -23,8 +23,8 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                 style={{
                   width: 28,
                   height: 28,
-                  background: isDone ? '#16A34A' : isActive ? '#2563EB' : 'transparent',
-                  border: isUpcoming ? '2px solid #CBD5E1' : 'none',
+                  background: isDone ? 'var(--sem-success)' : isActive ? 'var(--cp-blue)' : 'transparent',
+                  border: isUpcoming ? '2px solid var(--divider)' : 'none',
                   color: '#FFFFFF',
                   fontSize: 12,
                   fontWeight: 600,
@@ -41,7 +41,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                 style={{
                   fontSize: 11,
                   fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#0F172A' : isDone ? '#16A34A' : '#94A3B8',
+                  color: isActive ? 'var(--fg-1)' : isDone ? 'var(--sem-success)' : 'var(--fg-4)',
                   marginTop: 4,
                   whiteSpace: 'nowrap',
                   fontFamily: "'Inter', sans-serif",
@@ -57,7 +57,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                 style={{
                   width: 60,
                   height: 2,
-                  background: i < current ? '#16A34A' : '#E2E8F0',
+                  background: i < current ? 'var(--sem-success)' : 'var(--divider)',
                   marginLeft: 8,
                   marginRight: 8,
                   marginBottom: 18,

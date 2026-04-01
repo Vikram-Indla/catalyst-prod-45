@@ -42,7 +42,7 @@ export function SourceBadge({ source }: SourceBadgeProps) {
             width: 10,
             height: 10,
             borderRadius: 2,
-            background: '#2563EB',
+            background: 'var(--cp-blue)',
             color: '#FFFFFF',
             fontSize: 7,
             fontWeight: 700,

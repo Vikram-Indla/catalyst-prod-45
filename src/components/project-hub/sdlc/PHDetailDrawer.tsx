@@ -152,7 +152,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
           {/* Aside */}
           <div
             className="flex-shrink-0 border-l overflow-y-auto"
-            style={{ width: 200, borderColor: 'var(--divider)', background: '#FAFBFC', padding: 16 }}
+            style={{ width: 200, borderColor: 'var(--divider)', background: 'var(--bg-1)', padding: 16 }}
           >
             {/* Status — custom dropdown, NO native select */}
             <AsideField label="Status">
@@ -173,7 +173,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
                   style={{
                     width: 20, height: 20,
                     background: issue.assignee_id ? 'var(--bg-3)' : 'transparent',
-                    border: issue.assignee_id ? 'none' : '1.5px dashed #CBD5E1',
+                    border: issue.assignee_id ? 'none' : '1.5px dashed var(--divider)',
                     fontSize: 8, color: 'var(--fg-3)',
                   }}
                 >

@@ -26,7 +26,7 @@ export function NotificationsTab() {
             <div
               className="flex-shrink-0 rounded-full"
               style={{
-                width: 40, height: 22, borderRadius: 11, background: '#E2E8F0',
+                width: 40, height: 22, borderRadius: 11, background: 'var(--divider)',
                 position: 'relative', cursor: 'not-allowed',
                 pointerEvents: 'none',
                 opacity: 0.5,

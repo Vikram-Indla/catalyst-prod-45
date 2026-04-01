@@ -19,8 +19,8 @@ export function PHSourceTag({ source }: Props) {
         padding: '1px 5px',
         borderRadius: 3,
         letterSpacing: '0.5px',
-        background: isJira ? '#EFF6FF' : '#F0FDFA',
-        color: isJira ? '#2563EB' : '#0D9488',
+        background: isJira ? 'var(--cp-blue-wash)' : 'var(--sem-success-bg)',
+        color: isJira ? 'var(--cp-blue)' : 'var(--sem-success)',
       }}
     >
       {isJira ? 'JIRA' : 'CAT'}

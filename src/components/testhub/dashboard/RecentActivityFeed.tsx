@@ -38,7 +38,7 @@ export function RecentActivityFeed({ activities }: Props) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
         <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'hsl(250 91% 96%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Activity size={18} color="#7C3AED" />
+          <Activity size={18} color="#2563EB" />
         </div>
         <div>
           <p style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))', margin: 0 }}>Recent Activity</p>

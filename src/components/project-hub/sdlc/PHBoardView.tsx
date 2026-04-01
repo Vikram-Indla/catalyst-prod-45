@@ -324,7 +324,7 @@ function BoardCard({
               style={{
                 width: 20, height: 20,
                 background: issue.assignee_id ? 'var(--bg-3)' : 'transparent',
-                border: issue.assignee_id ? 'none' : '1.5px dashed #CBD5E1',
+                border: issue.assignee_id ? 'none' : '1.5px dashed var(--divider)',
                 fontSize: 8,
                 fontWeight: 700,
                 color: 'var(--fg-3)',

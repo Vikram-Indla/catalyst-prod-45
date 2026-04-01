@@ -46,7 +46,7 @@ export function ProjectToolbar({
           style={{
             height: 34,
             padding: '0 14px',
-            background: '#2563EB',
+            background: 'var(--cp-blue)',
             color: '#FFFFFF',
             border: 'none',
             borderRadius: 6,
@@ -98,8 +98,8 @@ export function ProjectToolbar({
             style={{
               width: 34,
               height: 32,
-              background: view === 'table' ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : surfaceBg,
-              color: view === 'table' ? (isDark ? '#60A5FA' : '#2563EB') : subtleColor,
+              background: view === 'table' ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : surfaceBg,
+              color: view === 'table' ? (isDark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : subtleColor,
               border: 'none',
               cursor: 'pointer',
             }}
@@ -113,8 +113,8 @@ export function ProjectToolbar({
             style={{
               width: 34,
               height: 32,
-              background: view === 'card' ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : surfaceBg,
-              color: view === 'card' ? (isDark ? '#60A5FA' : '#2563EB') : subtleColor,
+              background: view === 'card' ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : surfaceBg,
+              color: view === 'card' ? (isDark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : subtleColor,
               border: 'none',
               borderLeft: `1px solid ${borderColor}`,
               cursor: 'pointer',

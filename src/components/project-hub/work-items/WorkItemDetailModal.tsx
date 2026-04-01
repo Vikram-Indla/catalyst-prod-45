@@ -229,7 +229,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                       </div>
                       <span className="text-[11px] font-medium shrink-0" style={{ color: 'var(--fg-3)' }}>{doneCount}/{totalChildren} · {progressPct}%</span>
                     </div>
-                    <div className="grid gap-2 px-2 py-1.5" style={{ gridTemplateColumns: '1fr 80px 100px 90px', fontSize: 11, fontWeight: 600, color: '#626F86', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '2px solid var(--divider)' }}>
+                    <div className="grid gap-2 px-2 py-1.5" style={{ gridTemplateColumns: '1fr 80px 100px 90px', fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '2px solid var(--divider)' }}>
                       <span>Work</span><span>Priority</span><span>Assignee</span><span>Status</span>
                     </div>
                     {item.children.map(child => (
@@ -285,7 +285,7 @@ function HeaderBtn({ title, onClick, children }: { title: string; onClick?: () =
 }
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
-  return <span className="text-[12px] font-medium self-center" style={{ color: '#44546F' }}>{children}</span>;
+  return <span className="text-[12px] font-medium self-center" style={{ color: 'var(--fg-2)' }}>{children}</span>;
 }
 
 function SubtaskRow({ child, statuses, onStatusChange, onClick }: { child: ChildItem; statuses: { id: string; name: string; category: string }[]; onStatusChange: (id: string) => void; onClick: () => void }) {

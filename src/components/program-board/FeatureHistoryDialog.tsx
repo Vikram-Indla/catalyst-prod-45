@@ -193,8 +193,8 @@ export function FeatureHistoryDialog({
                     <th className="text-left p-3 text-sm font-medium">Feature ID</th>
                     <th className="text-left p-3 text-sm font-medium">Feature Name</th>
                     <th className="text-left p-3 text-sm font-medium">Changed By</th>
-                    <th className="text-left p-3 text-sm font-medium">Start Sprint</th>
-                    <th className="text-left p-3 text-sm font-medium">End Sprint</th>
+                    <th className="text-left p-3 text-sm font-medium">Start Release</th>
+                    <th className="text-left p-3 text-sm font-medium">End Release</th>
                     <th className="text-left p-3 text-sm font-medium">Changed At</th>
                   </tr>
                 </thead>

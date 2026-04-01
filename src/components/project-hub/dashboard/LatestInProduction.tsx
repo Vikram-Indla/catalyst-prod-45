@@ -53,9 +53,9 @@ export default function LatestInProduction({ projectId, releaseMap }: Props) {
                   ? Math.ceil((Date.now() - new Date(deployDate).getTime()) / 86400000)
                   : 0;
                 return (
-                  <tr key={item.id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', background: idx % 2 === 1 ? '#FAFBFC' : undefined }} className="ph-table-row">
+                  <tr key={item.id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', background: idx % 2 === 1 ? 'var(--bg-1)' : undefined }} className="ph-table-row">
                     <td style={{ padding: '0 8px' }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: '#0F766E', background: '#F0FDFA', padding: '2px 7px', borderRadius: 4, border: '1px solid #99F6E4' }}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: 'var(--sem-success-fg)', background: 'var(--sem-success-bg)', padding: '2px 7px', borderRadius: 4, border: '1px solid var(--sem-success-accent)' }}>
                         {releaseMap[item.release_id] || '—'}
                       </span>
                     </td>
@@ -73,7 +73,7 @@ export default function LatestInProduction({ projectId, releaseMap }: Props) {
                     <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: 'var(--fg-2)', fontWeight: 500 }}>
                       {deployDate ? format(new Date(deployDate), 'MMM d') : '—'}
                     </td>
-                    <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: '#15803D' }}>
+                    <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: 'var(--sem-success-fg)' }}>
                       {daysSince}d
                     </td>
                   </tr>
