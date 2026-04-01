@@ -343,8 +343,25 @@ export function GlobalSearch() {
     value: t.key, display: t.label, svg: WORK_ICONS[t.key]?.svg,
   }));
 
+  const [visibleCount, setVisibleCount] = useState(8);
+
   const showSearch = debouncedQuery.length >= 2;
-  const displayItems = showSearch ? results : recents.slice(0, 10);
+
+  // Filter recents by active filters
+  const filteredRecents = recents.filter(item => {
+    if (filters.hub) {
+      const itemHub = (item.hub || "").trim();
+      const filterHub = (filters.hub || "").trim();
+      if (itemHub !== filterHub) return false;
+    }
+    if (filters.assignee && item.assignee_name !== filters.assignee) return false;
+    if (filters.type && mapType(item.item_type) !== filters.type) return false;
+    return true;
+  });
+
+  const allResults = showSearch ? results : filteredRecents;
+  const visibleResults = allResults.slice(0, visibleCount);
+  const hasMore = allResults.length > visibleCount;
 
   // Focus on open
   useEffect(() => {
