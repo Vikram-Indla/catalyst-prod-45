@@ -28,8 +28,8 @@
   --wh-warn-bg: #FFFBEB;
   --wh-dng: #EF4444;
   --wh-dng-bg: #FEF2F2;
-  --wh-pur: #7C3AED;
-  --wh-pur-bg: #F5F3FF;
+  --wh-pur: #3B82F6;
+  --wh-pur-bg: #EFF6FF;
 
   /* Typography */
   --wh-fh: 'Sora', sans-serif;
@@ -46,6 +46,42 @@
   /* Shadows */
   --wh-sh: 0 1px 2px rgba(0,0,0,0.06);
   --wh-shm: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ═══ ECLIPSE NOCTURNE — WORKHUB DARK MODE ═══ */
+.dark, [data-theme="dark"] {
+  /* Surfaces — ONE surface #1A1714 */
+  --wh-bg: #1A1714;
+  --wh-sf: #1A1714;
+  --wh-sf2: #232019;
+  --wh-sf3: #2C2823;
+  --wh-bdr: rgba(248,244,240,0.10);
+
+  /* Text — warm white ladder */
+  --wh-tx: rgba(248,244,240,0.92);
+  --wh-tx2: rgba(248,244,240,0.72);
+  --wh-tx3: rgba(248,244,240,0.55);
+  --wh-tx4: rgba(248,244,240,0.30);
+
+  /* Primary */
+  --wh-pri: #3B82F6;
+  --wh-pri2: #2563EB;
+  --wh-pri-bg: rgba(59,130,246,0.10);
+  --wh-pri-bdr: rgba(59,130,246,0.20);
+
+  /* Semantic */
+  --wh-suc: #4ADE80;
+  --wh-suc-bg: rgba(74,222,128,0.10);
+  --wh-warn: #FDE68A;
+  --wh-warn-bg: rgba(253,230,138,0.10);
+  --wh-dng: #FCA5A5;
+  --wh-dng-bg: rgba(252,165,165,0.10);
+  --wh-pur: #3B82F6;
+  --wh-pur-bg: rgba(59,130,246,0.10);
+
+  /* Shadows — subtle in dark mode */
+  --wh-sh: none;
+  --wh-shm: 0 8px 24px rgba(0,0,0,0.50);
 }
 
 /* ═══ STATUS BADGES ═══ */
@@ -149,7 +185,6 @@
   background: var(--wh-bg);
   border: 1px solid var(--wh-bdr);
   border-radius: var(--wh-rad2);
-  box-shadow: var(--wh-sh);
 }
 
 /* ═══ PAGE ═══ */

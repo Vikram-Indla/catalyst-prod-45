@@ -12,7 +12,7 @@ import '../../shared/tokens/workhub-tokens.css';
 
 const WORKSTREAM_COLORS: Record<string, string> = {
   software: '#2563EB',
-  business: '#7C3AED',
+  business: '#3B82F6',
   service_desk: '#F59E0B',
 };
 
