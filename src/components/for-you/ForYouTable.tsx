@@ -223,7 +223,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Updated */}
-                    <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', width: 100 }}>
+                    <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', width: 90 }}>
                       {item.updatedAt}
                     </td>
 
