@@ -1,531 +1,561 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Search, X, SlidersHorizontal, LayoutGrid, Home, Filter, FileEdit, Users2, ChevronRight } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
+import { Search, Settings2, ChevronDown, X } from "lucide-react";
+import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import {
-  DropdownMenu, DropdownMenuTrigger,
-  DropdownMenuContent, DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
-import { useGlobalSearchStore } from '@/store/globalSearchStore';
-import { useRecentItems, useSearchResults, useTrackView, useSaveSearch } from '@/hooks/useGlobalSearch';
-import type { SearchResult, ActiveFilters, SearchHub, WorkItemType } from '@/types/global-search';
+  useRecentItems,
+  useSearchResults,
+  useTrackView,
+  useSaveSearch,
+} from "@/hooks/useGlobalSearch";
+import { useNavigate } from "react-router-dom";
+import type { SearchResult, ActiveFilters, SearchHub, WorkItemType } from "@/types/global-search";
 
-const ICONS: Record<string, string> = {
-  bug: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#E5493A" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,17 C14.761,17 17,14.761 17,12 C17,9.239 14.761,7 12,7 C9.239,7 7,9.239 7,12 C7,14.761 9.239,17 12,17 Z"/></svg>`,
-  task: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#4BADE8" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z"/></svg>`,
-  story: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#63BA3C" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M15.647,19.515 L16.937,17.987 L12,13.82 L7.061,17.987 L7,18.153 L7,6.688 C7,6.348 7.412,6 8,6 L16,6 C16.587,6 17,6.349 17,6.688 L17,18.153 Z"/></svg>`,
-  epic: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#904EE2" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M18.188,9.4 L15.125,9.4 L15.125,4.8 C15.125,3.803 14.31,3 13.313,3 L5,12.8 C5,13.81 5.819,14.399 6.77,14.56 L9.875,14.574 L9.875,19.2 C9.875,20.197 10.69,21 11.688,21 L20,11.2 C20,10.203 19.185,9.4 18.188,9.4 Z"/></svg>`,
-  incident: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#E5493A" fill-rule="evenodd" d="M8.829,12 L7.923,15 L16.077,15 L15.171,12 Z M9.433,10 L14.567,10 L12.957,4.668 C12.289,4 11.043,4.668 9.433,10 Z M17,17 L7,17 L6,17 C5.448,17 5,17.448 5,18 L5,20 L19,20 L19,18 C19,17.448 18.552,17 18,17 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
-  new_feature: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#63BA3C" fill-rule="evenodd" d="M13,11 L13,5 C13,4.448 12.552,4 12,4 C11.448,4 11,4.448 11,5 L11,11 L5,11 C4.448,11 4,11.448 4,12 C4,12.552 4.448,13 5,13 L11,13 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 L13,13 L19,13 C19.552,13 20,12.552 20,12 C20,11.448 19.552,11 19,11 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
-  improvement: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#4BADE8" fill-rule="evenodd" d="M13,7.422 L16.284,10.707 C16.674,11.098 17.307,11.098 17.698,10.707 C18.088,10.317 18.088,9.684 17.698,9.293 L12.7,4.293 C12.31,3.902 11.676,3.902 11.286,4.293 L6.288,9.293 C5.897,9.684 5.897,10.317 6.288,10.707 C6.679,11.098 7.312,11.098 7.702,10.707 L11,7.408 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
+/* ─── CANONICAL WORK ITEM SVG ICONS (16×14 inline) ─── */
+const WORK_ICONS: Record<string, { label: string; svg: string }> = {
+  bug: {
+    label: "Bug",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#E5493A" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,17 C14.761,17 17,14.761 17,12 C17,9.239 14.761,7 12,7 C9.239,7 7,9.239 7,12 C7,14.761 9.239,17 12,17 Z"/></svg>`,
+  },
+  task: {
+    label: "Task",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#4BADE8" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z"/></svg>`,
+  },
+  story: {
+    label: "Story",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#63BA3C" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M15.647,19.515 L16.937,17.987 L12,13.82 L7.061,17.987 L7,18.153 L7,6.688 C7,6.348 7.412,6 8,6 L16,6 C16.587,6 17,6.349 17,6.688 L17,18.153 Z"/></svg>`,
+  },
+  epic: {
+    label: "Epic",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#904EE2" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M18.188,9.4 L15.125,9.4 L15.125,4.8 C15.125,3.803 14.31,3 13.313,3 L5,12.8 C5,13.81 5.819,14.399 6.77,14.56 L9.875,14.574 L9.875,19.2 C9.875,20.197 10.69,21 11.688,21 L20,11.2 C20,10.203 19.185,9.4 18.188,9.4 Z"/></svg>`,
+  },
+  subtask: {
+    label: "Subtask",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#4BADE8" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z"/></svg>`,
+  },
+  incident: {
+    label: "Incident",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#E5493A" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M12,4 C11.448,4 11,4.448 11,5 L11,14 C11,14.552 11.448,15 12,15 C12.552,15 13,14.552 13,14 L13,5 C13,4.448 12.552,4 12,4 Z M12,17 C11.448,17 11,17.448 11,18 C11,18.552 11.448,19 12,19 C12.552,19 13,18.552 13,18 C13,17.448 12.552,17 12,17 Z"/></svg>`,
+  },
+  new_feature: {
+    label: "New Feature",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#63BA3C" fill-rule="evenodd" d="M13,11 L13,5 C13,4.448 12.552,4 12,4 C11.448,4 11,4.448 11,5 L11,11 L5,11 C4.448,11 4,11.448 4,12 C4,12.552 4.448,13 5,13 L11,13 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 L13,13 L19,13 C19.552,13 20,12.552 20,12 C20,11.448 19.552,11 19,11 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
+  },
+  improvement: {
+    label: "Improvement",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="#4BADE8" fill-rule="evenodd" d="M13,7.422 L16.284,10.707 C16.674,11.098 17.307,11.098 17.698,10.707 C18.088,10.317 18.088,9.684 17.698,9.293 L12.7,4.293 C12.31,3.902 11.676,3.902 11.286,4.293 L6.288,9.293 C5.897,9.684 5.897,10.317 6.288,10.707 C6.679,11.098 7.312,11.098 7.702,10.707 L11,7.408 L11,19 C11,19.552 11.448,20 12,20 C12.552,20 13,19.552 13,19 Z M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z"/></svg>`,
+  },
 };
 
 const HUB_COLORS: Record<string, string> = {
-  StrategyHub: '#7C3AED', ProductHub: '#3F3F46', ProjectHub: '#2563EB',
-  ReleaseHub: '#0D9488', TestHub: '#16A34A', IncidentHub: '#DC2626',
-  TaskHub: '#64748B', PlanHub: '#D97706',
+  StrategyHub: "#15803D", ProductHub: "#3F3F46", ProjectHub: "#2563EB",
+  ReleaseHub: "#7C3AED", TestHub: "#0D9488", IncidentHub: "#DC2626",
+  TaskHub: "#525252", PlanHub: "#0284C7",
 };
 
 const HUB_ROUTES: Record<string, string> = {
-  StrategyHub: '/strategy-hub', ProductHub: '/product-hub', ProjectHub: '/project-hub',
-  ReleaseHub: '/release-hub', TestHub: '/test-hub', IncidentHub: '/incident-hub',
-  TaskHub: '/task-hub', PlanHub: '/plan-hub',
+  StrategyHub: "/strategy-hub", ProductHub: "/product-hub", ProjectHub: "/project-hub",
+  ReleaseHub: "/release-hub", TestHub: "/test-hub", IncidentHub: "/incident-hub",
+  TaskHub: "/task-hub", PlanHub: "/plan-hub",
 };
 
+const ALL_HUBS: SearchHub[] = ["StrategyHub","ProductHub","ProjectHub","ReleaseHub","TestHub","IncidentHub","TaskHub","PlanHub"];
+const ALL_TYPES: { key: string; label: string }[] = Object.entries(WORK_ICONS).map(([k, v]) => ({ key: k, label: v.label }));
+
 function mapType(raw: string | null | undefined): string {
-  if (!raw) return 'task';
-  const v = raw.toLowerCase().replace(/[\s_-]/g, '');
-  if (v.includes('bug') || v.includes('qa')) return 'bug';
-  if (v.includes('story')) return 'story';
-  if (v.includes('epic')) return 'epic';
-  if (v.includes('incident')) return 'incident';
-  if (v.includes('feature')) return 'new_feature';
-  if (v.includes('improve')) return 'improvement';
-  return 'task';
+  if (!raw) return "task";
+  const v = raw.toLowerCase().replace(/[\s_-]/g, "");
+  if (v.includes("bug") || v.includes("qa")) return "bug";
+  if (v.includes("story")) return "story";
+  if (v.includes("epic")) return "epic";
+  if (v.includes("incident")) return "incident";
+  if (v.includes("feature")) return "new_feature";
+  if (v.includes("improve")) return "improvement";
+  if (v.includes("subtask")) return "subtask";
+  return "task";
 }
 
 function timeAgo(d: string): string {
   const s = Math.floor((Date.now() - new Date(d).getTime()) / 1000);
+  if (s < 60) return `${s}s ago`;
   if (s < 3600) return `${Math.floor(s / 60)}m ago`;
   if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-  if (s < 604800) return `${Math.floor(s / 86400)}d ago`;
-  return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  return `${Math.floor(s / 86400)}d ago`;
 }
 
-function hlText(text: string, q: string) {
-  if (!q) return <>{text}</>;
-  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-  return <>{text.split(re).map((p, i) =>
-    re.test(p) ? <mark key={i} style={{ background: '#FFF0B3', color: '#172B4D', borderRadius: 2, padding: '0 1px' }}>{p}</mark> : p
-  )}</>;
+function getInitials(name: string): string {
+  return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 }
 
-const DOT = <span style={{ margin: '0 4px', color: '#C1C7D0', fontSize: 10 }}>·</span>;
+function getAvatarColor(name: string): string {
+  const colors = ["#2563EB","#7C3AED","#0D9488","#DC2626","#D97706","#059669"];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return colors[Math.abs(hash) % colors.length];
+}
 
-/* ── Row ─────────────────────────────────────────────────── */
-function Row({ item, query, onClick }: { item: SearchResult; query: string; onClick: () => void }) {
-  const [hov, setHov] = useState(false);
-  const icon = ICONS[mapType(item.item_type)] ?? ICONS.task;
-  const meta = [
-    item.project_name ?? item.hub,
-    item.item_type?.replace(/_/g, ' ') ?? 'task',
-    item.assignee_name,
-    timeAgo(item.viewed_at),
-  ].filter(Boolean);
+/* ── ResultRow ── */
+function ResultRow({ item, isSelected, onHover, onClick }: {
+  item: SearchResult; isSelected: boolean; onHover: () => void; onClick: () => void;
+}) {
+  const typeKey = mapType(item.item_type);
+  const icon = WORK_ICONS[typeKey] ?? WORK_ICONS.task;
+  const hubColor = HUB_COLORS[item.hub] || "#525252";
+  const hubShort = item.hub.replace("Hub", "");
 
   return (
     <div
       onClick={onClick}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
+      onMouseEnter={onHover}
       style={{
-        display: 'flex', alignItems: 'center', height: 40,
-        padding: '0 14px', gap: 10, cursor: 'pointer',
-        background: hov ? '#F4F5F7' : '#fff',
-        borderBottom: '1px solid #F4F5F7', flexShrink: 0,
+        display: "flex", alignItems: "center", height: 44,
+        padding: "0 16px", gap: 10, cursor: "pointer",
+        backgroundColor: isSelected ? "rgba(37,99,235,0.06)" : "transparent",
+        borderBottom: "0.75px solid rgba(15,23,42,0.06)",
       }}
     >
-      <span style={{ width: 24, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        dangerouslySetInnerHTML={{ __html: icon }} />
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, overflow: 'hidden' }}>
-          <span style={{
-            fontFamily: "'SFMono-Regular',Consolas,monospace",
-            fontSize: 11, fontWeight: 600, color: '#0052CC', flexShrink: 0,
-          }}>{item.item_key}</span>
-          <span style={{
-            fontSize: 12, color: '#172B4D', fontWeight: 400,
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
-          }}>{hlText(item.title, query)}</span>
-        </div>
-        <div style={{
-          fontSize: 11, color: '#6B778C', whiteSpace: 'nowrap',
-          overflow: 'hidden', textOverflow: 'ellipsis',
-        }}>
-          {meta.map((seg, i) => (
-            <span key={i}>
-              {i > 0 && DOT}
-              {seg}
+      <span
+        style={{ flexShrink: 0, width: 14, height: 14 }}
+        dangerouslySetInnerHTML={{ __html: icon.svg }}
+      />
+      <span style={{
+        fontFamily: "JetBrains Mono, monospace", fontSize: 11,
+        color: "#2563EB", fontWeight: 500, flexShrink: 0, minWidth: 70,
+      }}>
+        {item.item_key}
+      </span>
+      <span style={{
+        flex: 1, fontSize: 13, color: "#171717", fontFamily: "Inter, sans-serif",
+        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+      }}>
+        {item.title}
+      </span>
+      <div style={{
+        display: "flex", alignItems: "center", gap: 8, flexShrink: 0,
+        fontSize: 11, color: "#6B778C", fontFamily: "Inter, sans-serif",
+      }}>
+        {item.project_name && (
+          <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {item.project_name}
+          </span>
+        )}
+        {item.project_name && <span style={{ color: "#C1C7D0" }}>·</span>}
+        {item.assignee_name && (
+          <>
+            <span style={{
+              width: 20, height: 20, borderRadius: "50%", fontSize: 9, fontWeight: 600,
+              color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: getAvatarColor(item.assignee_name), flexShrink: 0,
+            }}>
+              {getInitials(item.assignee_name)}
             </span>
-          ))}
-        </div>
+            <span style={{ color: "#C1C7D0" }}>·</span>
+          </>
+        )}
+        <span>{timeAgo(item.viewed_at)}</span>
+        <span style={{
+          fontSize: 10, fontWeight: 600, color: "#fff", backgroundColor: hubColor,
+          borderRadius: 3, padding: "1px 6px", letterSpacing: "0.02em",
+        }}>
+          {hubShort}
+        </span>
       </div>
     </div>
   );
 }
 
-/* ── SectionLabel ──────────────────────────────────────── */
-function SectionLabel({ text }: { text: string }) {
-  return (
-    <div style={{
-      textTransform: 'uppercase', fontSize: 11, fontWeight: 600,
-      letterSpacing: '0.08em', color: '#5E6C84', padding: '6px 14px 3px',
-      background: '#fff',
-    }}>{text}</div>
-  );
-}
+/* ── FilterChip with dropdown ── */
+function FilterChip({ label, items, selected, onSelect }: {
+  label: string;
+  items: { value: string; display: string; svg?: string; color?: string }[];
+  selected: string | null;
+  onSelect: (v: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
-/* ── SuggestionRow ─────────────────────────────────────── */
-function SuggestionRow({ text, onClick }: { text: string; onClick: () => void }) {
-  const [hov, setHov] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  const activeLabel = selected
+    ? items.find(i => i.value === selected)?.display || selected
+    : null;
+
   return (
-    <div
-      onClick={onClick}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      style={{
-        display: 'flex', alignItems: 'center', height: 36,
-        padding: '0 14px', gap: 10, cursor: 'pointer',
-        background: hov ? '#F4F5F7' : '#fff',
-        borderBottom: '1px solid #F4F5F7',
-      }}
-    >
-      <Search size={13} color="#94A3B8" />
-      <span style={{ flex: 1, fontSize: 13, color: '#172B4D', display: 'flex', alignItems: 'center' }}>
-        {text}
-        <span style={{
-          marginLeft: 6, fontSize: 10, fontWeight: 600,
-          color: '#7C3AED', background: '#F5F3FF',
-          borderRadius: 3, padding: '1px 5px',
-          display: 'inline-flex', alignItems: 'center',
-        }}>✦ AI</span>
-      </span>
-      <span style={{ fontSize: 11, color: '#97A0AF' }}>Suggestion</span>
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          display: "flex", alignItems: "center", gap: 4, height: 28,
+          padding: "0 10px", fontSize: 12, fontFamily: "Inter, sans-serif",
+          color: selected ? "#2563EB" : "#525252", fontWeight: selected ? 500 : 400,
+          backgroundColor: selected ? "#EFF6FF" : "#F8FAFC",
+          border: `1px solid ${selected ? "#BFDBFE" : "#E2E8F0"}`,
+          borderRadius: 4, cursor: "pointer", whiteSpace: "nowrap",
+        }}
+      >
+        {activeLabel || label}
+        <ChevronDown size={12} />
+      </button>
+      {open && (
+        <div style={{
+          position: "absolute", top: 32, left: 0, zIndex: 100,
+          backgroundColor: "#fff", border: "1px solid #E2E8F0",
+          borderRadius: 6, boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+          minWidth: 200, maxHeight: 280, overflowY: "auto",
+        }}>
+          {selected && (
+            <div
+              onClick={() => { onSelect(null); setOpen(false); }}
+              style={{
+                padding: "0 12px", height: 36, display: "flex", alignItems: "center",
+                fontSize: 12, color: "#EF4444", cursor: "pointer",
+                borderBottom: "0.75px solid rgba(15,23,42,0.08)",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(239,68,68,0.06)")}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+            >
+              Clear filter
+            </div>
+          )}
+          {items.map(item => (
+            <div
+              key={item.value}
+              onClick={() => { onSelect(item.value); setOpen(false); }}
+              style={{
+                padding: "0 12px", height: 36, display: "flex", alignItems: "center", gap: 8,
+                fontSize: 13, color: selected === item.value ? "#2563EB" : "#262626",
+                fontFamily: "Inter, sans-serif", cursor: "pointer",
+                backgroundColor: selected === item.value ? "#EFF6FF" : "transparent",
+                fontWeight: selected === item.value ? 500 : 400,
+              }}
+              onMouseEnter={e => {
+                if (selected !== item.value) e.currentTarget.style.backgroundColor = "rgba(15,23,42,0.04)";
+              }}
+              onMouseLeave={e => {
+                if (selected !== item.value) e.currentTarget.style.backgroundColor = "transparent";
+              }}
+            >
+              {item.svg && (
+                <span style={{ flexShrink: 0, width: 14, height: 14 }}
+                  dangerouslySetInnerHTML={{ __html: item.svg }} />
+              )}
+              {item.color && !item.svg && (
+                <span style={{
+                  width: 8, height: 8, borderRadius: "50%",
+                  backgroundColor: item.color, flexShrink: 0,
+                }} />
+              )}
+              {item.display}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-/* ── Main ──────────────────────────────────────────────── */
+/* ── KBD shortcut display ── */
+function Kbd({ children }: { children: string }) {
+  return (
+    <kbd style={{
+      display: "inline-flex", alignItems: "center", justifyContent: "center",
+      height: 20, minWidth: 20, padding: "0 5px",
+      fontSize: 11, fontFamily: "JetBrains Mono, monospace",
+      color: "#525252", backgroundColor: "#F1F5F9",
+      border: "1px solid #E2E8F0", borderRadius: 3,
+    }}>
+      {children}
+    </kbd>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN — GlobalSearch
+   ═══════════════════════════════════════════════════════════ */
+
 export function GlobalSearch() {
   const { isOpen, close } = useGlobalSearchStore();
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
-  const debRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const [query, setQuery] = useState('');
-  const [dq, setDq] = useState('');
-  const [visible, setVisible] = useState(10);
-  const [activeTab, setActiveTab] = useState('boards');
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [selectedIdx, setSelectedIdx] = useState(0);
   const [filters, setFilters] = useState<ActiveFilters>({
     hub: null, project: null, assignee: null, type: null,
   });
 
+  const debRef = useRef<ReturnType<typeof setTimeout>>();
+
   const { data: recents = [] } = useRecentItems();
-  const { data: results = [], isLoading } = useSearchResults(dq, filters);
+  const { data: results = [], isLoading } = useSearchResults(debouncedQuery, filters);
   const trackView = useTrackView();
   const saveSearch = useSaveSearch();
 
+  // Derive unique assignees from recents
+  const assigneeOptions = Array.from(
+    new Set(recents.filter(r => r.assignee_name).map(r => r.assignee_name!))
+  ).map(name => ({ value: name, display: name, color: getAvatarColor(name) }));
+
+  // Derive unique hubs from recents
+  const hubOptions = ALL_HUBS.map(h => ({
+    value: h, display: h.replace("Hub", "") + " Hub", color: HUB_COLORS[h],
+  }));
+
+  // Type options with SVG icons
+  const typeOptions = ALL_TYPES.map(t => ({
+    value: t.key, display: t.label, svg: WORK_ICONS[t.key]?.svg,
+  }));
+
+  const showSearch = debouncedQuery.length >= 2;
+  const displayItems = showSearch ? results : recents.slice(0, 10);
+
+  // Focus on open
   useEffect(() => {
-    if (isOpen) setTimeout(() => inputRef.current?.focus(), 40);
-    else { setQuery(''); setDq(''); setVisible(10); setFilters({ hub: null, project: null, assignee: null, type: null }); }
+    if (isOpen) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+      setQuery(""); setDebouncedQuery(""); setSelectedIdx(0);
+      setFilters({ hub: null, project: null, assignee: null, type: null });
+    }
   }, [isOpen]);
 
+  // Debounce
   const onInput = useCallback((v: string) => {
     setQuery(v);
+    setSelectedIdx(0);
     clearTimeout(debRef.current);
-    debRef.current = setTimeout(() => setDq(v), 220);
+    debRef.current = setTimeout(() => setDebouncedQuery(v), 220);
   }, []);
 
-  const onResultClick = useCallback((item: SearchResult) => {
+  // Keyboard nav
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { close(); return; }
+      if (e.key === "ArrowDown") { e.preventDefault(); setSelectedIdx(i => Math.min(i + 1, displayItems.length - 1)); }
+      if (e.key === "ArrowUp") { e.preventDefault(); setSelectedIdx(i => Math.max(i - 1, 0)); }
+      if (e.key === "Enter" && displayItems[selectedIdx]) { handleSelect(displayItems[selectedIdx]); }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [isOpen, displayItems, selectedIdx]);
+
+  const handleSelect = useCallback((item: SearchResult) => {
     trackView.mutate(item);
-    if (dq) saveSearch.mutate(dq);
-    navigate(`${HUB_ROUTES[item.hub] ?? '/'}?openItem=${item.id}`);
+    if (debouncedQuery) saveSearch.mutate(debouncedQuery);
+    const route = HUB_ROUTES[item.hub] || "/";
+    navigate(`${route}?openItem=${item.item_key}`);
     close();
-  }, [dq, trackView, saveSearch, navigate, close]);
+  }, [debouncedQuery, navigate, close, trackView, saveSearch]);
 
   const setFilter = useCallback(<K extends keyof ActiveFilters>(k: K, v: ActiveFilters[K]) => {
-    setFilters(p => ({ ...p, [k]: p[k] === v ? null : v }));
+    setFilters(prev => ({ ...prev, [k]: v }));
   }, []);
 
-  const suggestions = useMemo(() => {
-    if (!recents.length) return [];
-    const bugCount = recents.filter(i => mapType(i.item_type) === 'bug').length;
-    const projMap: Record<string, number> = {};
-    const asnMap: Record<string, number> = {};
-    recents.forEach(i => {
-      const p = i.project_name ?? i.hub;
-      projMap[p] = (projMap[p] ?? 0) + 1;
-      if (i.assignee_name) asnMap[i.assignee_name] = (asnMap[i.assignee_name] ?? 0) + 1;
-    });
-    const topP = Object.entries(projMap).sort((a, b) => b[1] - a[1])[0]?.[0];
-    const topA = Object.entries(asnMap).sort((a, b) => b[1] - a[1])[0]?.[0];
-    const s: string[] = [];
-    if (bugCount > 0 && topP) s.push(`Open bugs in ${topP}`);
-    if (topA && topP) s.push(`Items assigned to ${topA} in ${topP}`);
-    return s.slice(0, 2);
-  }, [recents]);
+  if (!isOpen) return null;
 
-  const showSearch = dq.length >= 2;
-  const HUBS: SearchHub[] = ['StrategyHub', 'ProductHub', 'ProjectHub', 'ReleaseHub', 'TestHub', 'IncidentHub', 'TaskHub', 'PlanHub'];
-  const TYPES: WorkItemType[] = ['bug', 'task', 'story', 'epic', 'incident', 'new_feature', 'improvement'];
-  const TABS = [
-    { id: 'boards', label: 'Boards', icon: <LayoutGrid size={12} /> },
-    { id: 'hubs', label: 'Hubs', icon: <Home size={12} /> },
-    { id: 'filters', label: 'Filters', icon: <Filter size={12} /> },
-    { id: 'projects', label: 'Projects', icon: <FileEdit size={12} /> },
-    { id: 'teams', label: 'Teams', icon: <Users2 size={12} /> },
-  ];
-  const TAB_ROUTES: Record<string, string> = {
-    boards: '/project-hub', hubs: '/', filters: '/project-hub',
-    projects: '/project-hub', teams: '/',
-  };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={o => !o && close()}>
-      <DialogContent
-        className="!p-0 !bg-white"
+  return createPortal(
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={close}
         style={{
-          padding: 0, width: 680, maxWidth: '92vw', borderRadius: 12,
-          border: 'none', display: 'flex', flexDirection: 'column',
-          maxHeight: 600, gap: 0, overflow: 'hidden',
-          backgroundColor: '#ffffff', color: '#0F172A',
-          boxShadow: '0 8px 40px rgba(15,23,42,0.15), 0 2px 8px rgba(15,23,42,0.08)',
-          position: 'fixed', top: '15%', left: '50%', transform: 'translateX(-50%)',
+          position: "fixed", inset: 0, zIndex: 9998,
+          backgroundColor: "rgba(0,0,0,0.4)",
+          backdropFilter: "blur(2px)",
         }}
-      >
-        {/* ROW 1 — Search input */}
+      />
+
+      {/* Modal */}
+      <div style={{
+        position: "fixed", top: "15%", left: "50%", transform: "translateX(-50%)",
+        zIndex: 9999, width: 680, maxHeight: 640,
+        backgroundColor: "#ffffff", borderRadius: 8,
+        boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+        display: "flex", flexDirection: "column",
+        overflow: "hidden",
+      }}>
+
+        {/* ── SEARCH BAR (56px) ── */}
         <div style={{
-          display: 'flex', alignItems: 'center', height: 44,
-          padding: '0 14px', gap: 8, borderBottom: '1px solid #E2E8F0',
-          backgroundColor: '#ffffff', flexShrink: 0,
+          display: "flex", alignItems: "center", height: 56,
+          padding: "0 16px", gap: 10,
+          borderBottom: "1px solid rgba(15,23,42,0.08)",
         }}>
-          <Search size={15} color="#94A3B8" />
+          <Search size={18} color="#97A0AF" style={{ flexShrink: 0 }} />
           <input
             ref={inputRef}
             value={query}
             onChange={e => onInput(e.target.value)}
-            onKeyDown={e => e.key === 'Escape' && close()}
             placeholder="Search Catalyst..."
             style={{
-              flex: 1, border: 'none', outline: 'none',
-              fontSize: 14, fontFamily: 'Inter,sans-serif',
-              color: '#172B4D', background: 'transparent',
-              caretColor: '#2563EB',
+              flex: 1, border: "none", outline: "none",
+              fontSize: 15, fontFamily: "Inter, sans-serif",
+              color: "#171717", backgroundColor: "transparent",
             }}
           />
-          {query && (
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            <kbd style={{
+              fontSize: 11, fontFamily: "JetBrains Mono, monospace",
+              color: "#97A0AF", backgroundColor: "#F1F5F9",
+              border: "1px solid #E2E8F0", borderRadius: 3,
+              padding: "2px 6px",
+            }}>⌘K</kbd>
             <button
-              onClick={() => onInput('')}
+              onClick={close}
               style={{
-                width: 20, height: 20, borderRadius: 3, border: 'none',
-                background: 'transparent', display: 'flex',
-                alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', color: '#97A0AF', flexShrink: 0,
+                width: 28, height: 28, borderRadius: 4,
+                border: "none", backgroundColor: "transparent",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", color: "#97A0AF",
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; e.currentTarget.style.color = '#172B4D'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#97A0AF'; }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = "rgba(15,23,42,0.06)"; e.currentTarget.style.color = "#171717"; }}
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#97A0AF"; }}
             >
-              <X size={12} />
+              <X size={16} />
             </button>
-          )}
-          <button
-            onClick={close}
-            style={{
-              width: 24, height: 24, borderRadius: 4, border: 'none',
-              background: 'transparent', display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: '#97A0AF', flexShrink: 0,
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; e.currentTarget.style.color = '#172B4D'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#97A0AF'; }}
-          >
-            <X size={14} />
-          </button>
+          </div>
         </div>
 
-        {/* ROW 2 — Filter chips */}
+        {/* ── FILTER BAR (40px) ── */}
         <div style={{
-          display: 'flex', alignItems: 'center', height: 36,
-          padding: '0 12px', gap: 6, borderBottom: '1px solid #F1F5F9',
-          backgroundColor: '#ffffff', flexShrink: 0,
+          display: "flex", alignItems: "center", height: 40,
+          padding: "0 16px", gap: 8,
+          borderBottom: "1px solid rgba(15,23,42,0.08)",
+          backgroundColor: "#FAFBFC",
         }}>
-          <button style={{
-            width: 22, height: 22, border: '1px solid #DFE1E6', borderRadius: 3,
-            background: '#FAFAFA', cursor: 'pointer', display: 'flex',
-            alignItems: 'center', justifyContent: 'center', padding: 0,
-          }}>
-            <SlidersHorizontal size={11} color="#64748B" />
-          </button>
-
-          {/* Hub */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button style={{
-                height: 22, padding: '0 8px', border: `1px solid ${filters.hub ? '#93C5FD' : '#DFE1E6'}`,
-                borderRadius: 3, fontSize: 11, color: filters.hub ? '#1D4ED8' : '#42526E',
-                background: filters.hub ? '#EFF6FF' : '#FAFAFA', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 4,
-              }}>
-                {filters.hub ?? 'Hub'}
-                <ChevronRight size={8} style={{ transform: 'rotate(90deg)' }} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent style={{ backgroundColor: '#ffffff', zIndex: 9999 }}>
-              <DropdownMenuItem onClick={() => setFilter('hub', null as any)}>All Hubs</DropdownMenuItem>
-              {HUBS.map(h => (
-                <DropdownMenuItem key={h} onClick={() => setFilter('hub', h)}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ width: 8, height: 8, borderRadius: 2, background: HUB_COLORS[h] }} />
-                    {h}
-                  </span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Type */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button style={{
-                height: 22, padding: '0 8px', border: `1px solid ${filters.type ? '#93C5FD' : '#DFE1E6'}`,
-                borderRadius: 3, fontSize: 11, color: filters.type ? '#1D4ED8' : '#42526E',
-                background: filters.type ? '#EFF6FF' : '#FAFAFA', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 4,
-              }}>
-                {filters.type ? filters.type.replace(/_/g, ' ') : 'Type'}
-                <ChevronRight size={8} style={{ transform: 'rotate(90deg)' }} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent style={{ backgroundColor: '#ffffff', zIndex: 9999 }}>
-              <DropdownMenuItem onClick={() => setFilter('type', null as any)}>All Types</DropdownMenuItem>
-              {TYPES.map(t => (
-                <DropdownMenuItem key={t} onClick={() => setFilter('type', t)}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ width: 14, height: 14 }} dangerouslySetInnerHTML={{ __html: ICONS[t] ?? ICONS.task }} />
-                    {t.replace(/_/g, ' ')}
-                  </span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button style={{
-                height: 22, padding: '0 8px', border: `1px solid ${filters.project ? '#93C5FD' : '#DFE1E6'}`,
-                borderRadius: 3, fontSize: 11, color: filters.project ? '#1D4ED8' : '#42526E',
-                background: filters.project ? '#EFF6FF' : '#FAFAFA', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 4,
-              }}>
-                {filters.project ?? 'Project'}
-                <ChevronRight size={8} style={{ transform: 'rotate(90deg)' }} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent style={{ backgroundColor: '#ffffff', zIndex: 9999 }}>
-              <DropdownMenuItem onClick={() => setFilter('project', null as any)}>All Projects</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button style={{
-                height: 22, padding: '0 8px', border: `1px solid ${filters.assignee ? '#93C5FD' : '#DFE1E6'}`,
-                borderRadius: 3, fontSize: 11, color: filters.assignee ? '#1D4ED8' : '#42526E',
-                background: filters.assignee ? '#EFF6FF' : '#FAFAFA', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 4,
-              }}>
-                {filters.assignee ?? 'Assignee'}
-                <ChevronRight size={8} style={{ transform: 'rotate(90deg)' }} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent style={{ backgroundColor: '#ffffff', zIndex: 9999 }}>
-              <DropdownMenuItem onClick={() => setFilter('assignee', null as any)}>All Assignees</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Settings2 size={14} color="#97A0AF" style={{ flexShrink: 0, marginRight: 4 }} />
+          <FilterChip label="Hub" items={hubOptions} selected={filters.hub} onSelect={v => setFilter("hub", v as any)} />
+          <FilterChip label="Assignee" items={assigneeOptions} selected={filters.assignee} onSelect={v => setFilter("assignee", v)} />
+          <FilterChip label="Type" items={typeOptions} selected={filters.type} onSelect={v => setFilter("type", v as any)} />
         </div>
 
-        {/* ROW 3 — Scroll body */}
-        <div style={{ overflowY: 'auto', flex: 1, backgroundColor: '#ffffff', maxHeight: 'calc(600px - 44px - 36px - 36px)' }}>
-
-          {!showSearch && (
-            <>
-              {/* Suggestions */}
-              {suggestions.map((s, i) => (
-                <SuggestionRow key={`sug-${i}`} text={s} onClick={() => { setQuery(s); setDq(s); }} />
-              ))}
-
-              {/* Recent items */}
-              {recents.length > 0 && (
-                <>
-                  <SectionLabel text="Recent" />
-                  {recents.slice(0, visible).map(item => (
-                    <Row key={item.id} item={item} query="" onClick={() => onResultClick(item)} />
-                  ))}
-                  {recents.length > visible && (
-                    <button
-                      onClick={() => setVisible(v => v + 10)}
-                      style={{
-                        width: '100%', height: 34, border: 'none',
-                        borderTop: '1px solid #F4F5F7', background: '#fff',
-                        fontSize: 12, color: '#0052CC', fontWeight: 500,
-                        fontFamily: 'Inter,sans-serif', cursor: 'pointer',
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                      onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
-                    >
-                      Show more results
-                    </button>
-                  )}
-                </>
-              )}
-
-              {!recents.length && !suggestions.length && (
-                <div style={{ padding: 32, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>
-                  Start typing to search across all hubs
-                </div>
-              )}
-            </>
-          )}
-
-          {showSearch && (
-            <>
-              <SectionLabel text="Results" />
-              {isLoading && [1, 2, 3, 4].map(i => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', height: 40, padding: '0 14px', gap: 10, borderBottom: '1px solid #F4F5F7' }}>
-                  <div style={{ width: 14, height: 14, borderRadius: '50%', background: '#F1F5F9' }} />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ height: 10, width: '60%', background: '#F1F5F9', borderRadius: 3, marginBottom: 4 }} />
-                    <div style={{ height: 8, width: '40%', background: '#F8FAFC', borderRadius: 3 }} />
-                  </div>
-                </div>
-              ))}
-              {!isLoading && results.length === 0 && (
-                <div style={{ padding: 32, textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>
-                  No results for &ldquo;{dq}&rdquo;
-                </div>
-              )}
-              {!isLoading && results.map(item => (
-                <Row key={item.id} item={item} query={dq} onClick={() => onResultClick(item)} />
-              ))}
-            </>
-          )}
-        </div>
-
-        {/* ROW 4 — Bottom tabs */}
+        {/* ── RESULTS BODY ── */}
         <div style={{
-          display: 'flex', alignItems: 'center', height: 36,
-          borderTop: '1px solid #E2E8F0', backgroundColor: '#FAFAFA',
-          padding: '0 10px', gap: 0, flexShrink: 0,
+          flex: 1, overflowY: "auto",
+          maxHeight: "calc(640px - 56px - 40px - 36px)",
         }}>
-          <span style={{ flex: 1 }} />
-          {TABS.map(t => (
-            <button
-              key={t.id}
-              onClick={() => { setActiveTab(t.id); navigate(TAB_ROUTES[t.id]); close(); }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                height: 34, padding: '0 10px', fontSize: 11,
-                fontFamily: 'Inter,sans-serif', color: activeTab === t.id ? '#172B4D' : '#6B778C',
-                background: 'none', border: 'none',
-                borderBottom: activeTab === t.id ? '2px solid #172B4D' : '2px solid transparent',
-                cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
-            >
-              {t.icon}{t.label}
-            </button>
+          {/* Section label */}
+          {displayItems.length > 0 && (
+            <div style={{
+              padding: "10px 16px 4px", fontSize: 11, fontWeight: 600,
+              color: "#5E6C84", textTransform: "uppercase", letterSpacing: "0.06em",
+              fontFamily: "Inter, sans-serif",
+            }}>
+              {showSearch ? `Results (${results.length})` : "Recent Items"}
+            </div>
+          )}
+
+          {/* Loading skeleton */}
+          {showSearch && isLoading && [1,2,3,4].map(i => (
+            <div key={i} style={{
+              display: "flex", alignItems: "center", height: 44, padding: "0 16px", gap: 10,
+            }}>
+              <div style={{ width: 14, height: 14, borderRadius: 3, backgroundColor: "#F1F5F9" }} />
+              <div style={{ width: 60, height: 12, borderRadius: 3, backgroundColor: "#F1F5F9" }} />
+              <div style={{ flex: 1, height: 12, borderRadius: 3, backgroundColor: "#F1F5F9" }} />
+            </div>
+          ))}
+
+          {/* Empty state */}
+          {!isLoading && displayItems.length === 0 && (
+            <div style={{
+              padding: "48px 16px", textAlign: "center",
+              color: "#97A0AF", fontSize: 13, fontFamily: "Inter, sans-serif",
+            }}>
+              <Search size={32} color="#E2E8F0" style={{ margin: "0 auto 12px" }} />
+              <div>{showSearch ? `No results for "${debouncedQuery}"` : "Start searching across all hubs"}</div>
+            </div>
+          )}
+
+          {/* Rows */}
+          {!isLoading && displayItems.map((item, idx) => (
+            <ResultRow
+              key={item.id}
+              item={item}
+              isSelected={idx === selectedIdx}
+              onHover={() => setSelectedIdx(idx)}
+              onClick={() => handleSelect(item)}
+            />
           ))}
         </div>
-      </DialogContent>
-    </Dialog>
+
+        {/* ── FOOTER (36px) ── */}
+        <div style={{
+          display: "flex", alignItems: "center", height: 36,
+          padding: "0 16px", gap: 16,
+          borderTop: "1px solid rgba(15,23,42,0.08)",
+          backgroundColor: "#F8FAFC",
+          fontSize: 11, fontFamily: "Inter, sans-serif", color: "#6B778C",
+        }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <Kbd>↑</Kbd><Kbd>↓</Kbd> <span>Navigate</span>
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <Kbd>↵</Kbd> <span>Open</span>
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <Kbd>Esc</Kbd> <span>Close</span>
+          </span>
+          <span style={{ marginLeft: "auto", color: "#C1C7D0", fontSize: 10 }}>
+            Catalyst Search
+          </span>
+        </div>
+      </div>
+    </>,
+    document.body
   );
 }
 
-/* ── Trigger ───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   TRIGGER — Nav bar button
+   ═══════════════════════════════════════════════════════════ */
+
 export function GlobalSearchTrigger() {
   const { open } = useGlobalSearchStore();
 
   useEffect(() => {
-    const kb = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); open(); } };
+    const kb = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); open(); }
+    };
     const ce = () => open();
-    document.addEventListener('keydown', kb);
-    window.addEventListener('open-global-search', ce);
-    return () => { document.removeEventListener('keydown', kb); window.removeEventListener('open-global-search', ce); };
+    document.addEventListener("keydown", kb);
+    window.addEventListener("open-global-search", ce);
+    return () => { document.removeEventListener("keydown", kb); window.removeEventListener("open-global-search", ce); };
   }, [open]);
 
   return (
-    <div
+    <button
       onClick={open}
       style={{
-        height: 32, minWidth: 200, padding: '0 10px',
-        border: '1px solid #DFE1E6', borderRadius: 6,
-        background: '#F4F5F7', cursor: 'pointer',
-        display: 'flex', alignItems: 'center', gap: 8,
+        display: "flex", alignItems: "center", gap: 8,
+        height: 32, padding: "0 12px",
+        backgroundColor: "#F4F5F7", border: "1px solid #DFE1E6",
+        borderRadius: 6, cursor: "pointer",
+        fontSize: 13, fontFamily: "Inter, sans-serif", color: "#6B778C",
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; e.currentTarget.style.borderColor = '#C1C7D0'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.borderColor = '#DFE1E6'; }}
+      onMouseEnter={e => { e.currentTarget.style.backgroundColor = "#EBECF0"; e.currentTarget.style.borderColor = "#C1C7D0"; }}
+      onMouseLeave={e => { e.currentTarget.style.backgroundColor = "#F4F5F7"; e.currentTarget.style.borderColor = "#DFE1E6"; }}
     >
-      <Search size={13} color="#94A3B8" />
-      <span style={{ flex: 1, fontSize: 12, color: '#94A3B8', fontFamily: 'Inter,sans-serif' }}>Search...</span>
-      <div style={{ display: 'flex', gap: 3 }}>
-        {['⌘', 'K'].map(k => (
+      <Search size={14} />
+      <span>Search...</span>
+      <span style={{ display: "flex", gap: 2, marginLeft: 4 }}>
+        {["⌘","K"].map(k => (
           <kbd key={k} style={{
-            fontSize: 10, background: '#E4E7EB', border: '1px solid #D5D9E0',
-            borderRadius: 3, padding: '1px 4px', fontFamily: 'monospace', color: '#626F86',
+            fontSize: 10, fontFamily: "JetBrains Mono, monospace",
+            color: "#97A0AF", backgroundColor: "#fff",
+            border: "1px solid #DFE1E6", borderRadius: 3,
+            padding: "1px 4px",
           }}>{k}</kbd>
         ))}
-      </div>
-    </div>
+      </span>
+    </button>
   );
 }
