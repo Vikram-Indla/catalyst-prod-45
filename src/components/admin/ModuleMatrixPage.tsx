@@ -47,7 +47,7 @@ function StatsCards({ roleCode }: { roleCode: string | null }) {
     { label: 'Full Access', value: stats?.full_count ?? 0, color: 'border-l-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
     { label: 'View Only', value: stats?.view_count ?? 0, color: 'border-l-amber-500', bg: 'bg-amber-50 dark:bg-amber-950/30' },
     { label: 'Hidden', value: stats?.hidden_count ?? 0, color: 'border-l-gray-400', bg: 'bg-gray-50 dark:bg-gray-900/30' },
-    { label: 'Total Roles', value: stats?.total_roles ?? 0, color: 'border-l-purple-500', bg: 'bg-purple-50 dark:bg-purple-950/30' },
+    { label: 'Total Roles', value: stats?.total_roles ?? 0, color: 'border-l-blue-500', bg: 'bg-blue-50 dark:bg-blue-950/30' },
   ];
 
   return (

@@ -200,7 +200,7 @@ export function AIGenerateTestCasesDialog({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-400 rounded-lg">
               <Wand2 className="w-5 h-5 text-white" />
             </div>
             AI Test Case Generator
@@ -344,7 +344,7 @@ export function AIGenerateTestCasesDialog({
                 <Button
                   onClick={handleGenerate}
                   disabled={isGenerating || !prompt.trim()}
-                  className="min-w-[140px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  className="min-w-[140px] bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
                 >
                   {isGenerating ? (
                     <>
@@ -368,7 +368,7 @@ export function AIGenerateTestCasesDialog({
                   className="p-4 bg-muted/50 rounded-lg space-y-3"
                 >
                   <div className="flex items-center gap-2 text-sm">
-                    <Sparkles className="w-4 h-4 text-purple-500 animate-pulse" />
+                    <Sparkles className="w-4 h-4 text-blue-500 animate-pulse" />
                     <span>AI is analyzing your requirements and generating test cases...</span>
                   </div>
                   <Progress value={45} className="h-1" />
@@ -401,7 +401,7 @@ export function AIGenerateTestCasesDialog({
               className="flex-1 min-h-0 flex flex-col gap-4 overflow-hidden"
             >
               {/* Summary */}
-              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-lg border shrink-0">
+              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-500/10 to-blue-400/10 rounded-lg border shrink-0">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
                     <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -598,7 +598,7 @@ export function AIGenerateTestCasesDialog({
                   <Button
                     onClick={handleAddSelected}
                     disabled={selectedTestCases.size === 0}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Selected Test Cases

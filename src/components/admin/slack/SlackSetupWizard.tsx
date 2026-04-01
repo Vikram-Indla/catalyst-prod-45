@@ -161,7 +161,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                       className={cn(
                         'w-10 h-10 rounded-full flex items-center justify-center transition-colors',
                         isCompleted && 'bg-green-500 text-white',
-                        isActive && 'bg-purple-600 text-white',
+                        isActive && 'bg-blue-600 text-white',
                         !isCompleted && !isActive && 'bg-slate-100 text-slate-400'
                       )}
                     >
@@ -174,7 +174,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                     <span
                       className={cn(
                         'text-xs mt-2 font-medium',
-                        isActive ? 'text-purple-600' : 'text-slate-500'
+                        isActive ? 'text-blue-600' : 'text-slate-500'
                       )}
                     >
                       {step.title}
@@ -202,8 +202,8 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           {currentStep === 1 && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center mx-auto mb-4">
-                  <SlackIcon className="w-8 h-8 text-purple-600" />
+                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                  <SlackIcon className="w-8 h-8 text-blue-600" />
                 </div>
                 <h2 className="text-xl font-semibold text-slate-900">Create a Slack App</h2>
                 <p className="text-slate-500 mt-2">
@@ -215,19 +215,19 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                 <h3 className="font-medium text-slate-900">Follow these steps:</h3>
                 <ol className="space-y-3 text-sm text-slate-600">
                   <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
-                    <span>Go to <a href="https://api.slack.com/apps" target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline font-medium">api.slack.com/apps</a></span>
+                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+                    <span>Go to <a href="https://api.slack.com/apps" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">api.slack.com/apps</a></span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
                     <span>Click <strong>"Create New App"</strong> → <strong>"From scratch"</strong></span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
                     <span>Enter app name (e.g., "Catalyst Notifications") and select your workspace</span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
+                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
                     <span>Click <strong>"Create App"</strong></span>
                   </li>
                 </ol>
@@ -257,8 +257,8 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           {currentStep === 2 && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center mx-auto mb-4">
-                  <Key className="w-8 h-8 text-purple-600" />
+                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                  <Key className="w-8 h-8 text-blue-600" />
                 </div>
                 <h2 className="text-xl font-semibold text-slate-900">Enter App Credentials</h2>
                 <p className="text-slate-500 mt-2">
@@ -345,8 +345,8 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           {currentStep === 3 && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center mx-auto mb-4">
-                  <Settings className="w-8 h-8 text-purple-600" />
+                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                  <Settings className="w-8 h-8 text-blue-600" />
                 </div>
                 <h2 className="text-xl font-semibold text-slate-900">Configure OAuth Scopes</h2>
                 <p className="text-slate-500 mt-2">
@@ -362,7 +362,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                       key={scope.id}
                       className={cn(
                         'flex items-center justify-between p-4 rounded-lg border transition-colors',
-                        isSelected ? 'border-purple-200 bg-purple-50' : 'border-slate-200'
+                        isSelected ? 'border-blue-200 bg-blue-50' : 'border-slate-200'
                       )}
                     >
                       <div className="flex items-center gap-3">
@@ -430,8 +430,8 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           {currentStep === 4 && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center mx-auto mb-4">
-                  <Link2 className="w-8 h-8 text-purple-600" />
+                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                  <Link2 className="w-8 h-8 text-blue-600" />
                 </div>
                 <h2 className="text-xl font-semibold text-slate-900">Set Redirect URL</h2>
                 <p className="text-slate-500 mt-2">
@@ -460,19 +460,19 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                 <h3 className="font-medium text-slate-900">In Slack App Console:</h3>
                 <ol className="space-y-2 text-sm text-slate-600">
                   <li className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
                     <span>Go to <strong>OAuth & Permissions</strong></span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
                     <span>Scroll to <strong>Redirect URLs</strong></span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
                     <span>Click <strong>Add New Redirect URL</strong></span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
                     <span>Paste the URL above and click <strong>Save URLs</strong></span>
                   </li>
                 </ol>
@@ -500,8 +500,8 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           {currentStep === 5 && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center mx-auto mb-4">
-                  <Zap className="w-8 h-8 text-purple-600" />
+                <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                  <Zap className="w-8 h-8 text-blue-600" />
                 </div>
                 <h2 className="text-xl font-semibold text-slate-900">Install to Workspace</h2>
                 <p className="text-slate-500 mt-2">
@@ -509,8 +509,8 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-8 text-center">
-                <SlackIcon className="w-12 h-12 mx-auto mb-4 text-purple-600" />
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 text-center">
+                <SlackIcon className="w-12 h-12 mx-auto mb-4 text-blue-600" />
                 <p className="text-slate-600 mb-6">
                   Click below to authorize Catalyst to send notifications to your Slack workspace.
                   You'll be redirected to Slack to approve the permissions.

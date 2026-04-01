@@ -43,7 +43,7 @@ interface Attachment {
 }
 
 const itemTypeConfig: Record<string, { icon: typeof BookOpen; className: string }> = {
-  story: { icon: FileText, className: 'text-purple-600 bg-purple-50 dark:bg-purple-900/30 dark:text-purple-400' },
+  story: { icon: FileText, className: 'text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400' },
   epic: { icon: BookOpen, className: 'text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400' },
   feature: { icon: FileText, className: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 dark:text-indigo-400' },
   business_request: { icon: FileText, className: 'text-amber-600 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400' },

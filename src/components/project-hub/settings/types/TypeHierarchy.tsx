@@ -37,7 +37,7 @@ export function TypeHierarchy({ featureLayerEnabled }: TypeHierarchyProps) {
   const connectorStyle: React.CSSProperties = {
     fontFamily: "'JetBrains Mono', monospace",
     fontSize: 13,
-    color: '#CBD5E1',
+    color: 'var(--divider)',
     userSelect: 'none',
   };
 

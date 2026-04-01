@@ -179,12 +179,12 @@ export function BudgetExecutiveSummaryView({ data, currentDept, onDeptChange, pe
         <div 
           className={cn(
             'bg-white border rounded-xl p-5 cursor-pointer transition-all hover:shadow-md',
-            execTypeFilter === 'outsourced' ? 'border-purple-500 ring-2 ring-purple-100' : 'border-slate-200'
+            execTypeFilter === 'outsourced' ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200'
           )}
           onClick={() => setExecTypeFilter(execTypeFilter === 'outsourced' ? null : 'outsourced')}
         >
           <h4 className="text-sm font-semibold text-slate-600 mb-2">Outsourced</h4>
-          <div className="text-2xl font-bold text-purple-600 font-mono">{formatCurrency(budget.outsourced)}</div>
+          <div className="text-2xl font-bold text-blue-600 font-mono">{formatCurrency(budget.outsourced)}</div>
           <div className="text-xs text-slate-500 mt-1">Fixed Contract</div>
           <div className="mt-3 space-y-1">
             {outsourcedAssignments.slice(0, 3).map(a => (
@@ -228,7 +228,7 @@ export function BudgetExecutiveSummaryView({ data, currentDept, onDeptChange, pe
                   >
                     {pI > 0 && <div style={{ width: `${pI}%` }} className="bg-blue-500" />}
                     {pC > 0 && <div style={{ width: `${pC}%` }} className="bg-teal-500" />}
-                    {pO > 0 && <div style={{ width: `${pO}%` }} className="bg-purple-500" />}
+                    {pO > 0 && <div style={{ width: `${pO}%` }} className="bg-blue-500" />}
                   </div>
                 </div>
                 <span className="w-[100px] text-right font-bold font-mono text-sm">{formatCurrency(b.total)}</span>

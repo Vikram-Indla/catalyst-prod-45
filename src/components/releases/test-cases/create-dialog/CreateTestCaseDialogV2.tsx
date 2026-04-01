@@ -659,8 +659,8 @@ export function CreateTestCaseDialogV2({
         <DialogContent className="max-w-lg">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-violet-600" />
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-blue-600" />
               </div>
               <div>
                 <h2 className="text-lg font-semibold">AI Generate Steps</h2>
@@ -683,7 +683,7 @@ export function CreateTestCaseDialogV2({
                 Cancel
               </Button>
               <Button 
-                className="bg-violet-600 hover:bg-violet-700"
+                className="bg-blue-600 hover:bg-blue-700"
                 onClick={handleAIGenerateSteps}
                 disabled={isGeneratingSteps || !aiPrompt.trim()}
               >

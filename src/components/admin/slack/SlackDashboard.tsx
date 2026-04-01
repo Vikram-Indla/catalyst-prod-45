@@ -100,7 +100,7 @@ function StatCard({
   color?: 'purple' | 'green' | 'blue' | 'amber' | 'red';
 }) {
   const colors = {
-    purple: { bg: 'bg-purple-50', icon: 'text-purple-600' },
+    purple: { bg: 'bg-blue-50', icon: 'text-blue-600' },
     green: { bg: 'bg-green-50', icon: 'text-green-600' },
     blue: { bg: 'bg-blue-50', icon: 'text-blue-600' },
     amber: { bg: 'bg-amber-50', icon: 'text-amber-600' },
@@ -167,9 +167,9 @@ const getActionIcon = (action: string, status: string) => {
   if (status === 'failed') return <XCircle className="w-4 h-4 text-red-500" />;
   
   const icons: Record<string, React.ReactNode> = {
-    config_created: <Settings className="w-4 h-4 text-purple-500" />,
-    config_updated: <Settings className="w-4 h-4 text-purple-500" />,
-    workspace_installed: <SlackIcon className="w-4 h-4 text-purple-500" />,
+    config_created: <Settings className="w-4 h-4 text-blue-500" />,
+    config_updated: <Settings className="w-4 h-4 text-blue-500" />,
+    workspace_installed: <SlackIcon className="w-4 h-4 text-blue-500" />,
     user_connected: <Users className="w-4 h-4 text-green-500" />,
     user_disconnected: <Unlink className="w-4 h-4 text-amber-500" />,
     test_sent: <TestTube className="w-4 h-4 text-blue-500" />,

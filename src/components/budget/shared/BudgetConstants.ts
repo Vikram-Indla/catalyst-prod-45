@@ -126,14 +126,14 @@ export const BUDGET_TYPE_COLORS = {
     gradient: 'from-amber-600 to-amber-500',
   },
   licenses: {
-    text: 'text-violet-600 dark:text-violet-400',
-    textDark: 'text-violet-700 dark:text-violet-300',
-    bg: 'bg-violet-100 dark:bg-violet-900/30',
-    bgLight: 'bg-violet-50 dark:bg-violet-950/30',
-    border: 'border-violet-500',
-    borderLight: 'border-violet-300',
-    accent: 'border-l-violet-500',
-    gradient: 'from-violet-600 to-violet-500',
+    text: 'text-blue-600 dark:text-blue-400',
+    textDark: 'text-blue-700 dark:text-blue-300',
+    bg: 'bg-blue-100 dark:bg-blue-900/30',
+    bgLight: 'bg-blue-50 dark:bg-blue-950/30',
+    border: 'border-blue-500',
+    borderLight: 'border-blue-300',
+    accent: 'border-l-blue-500',
+    gradient: 'from-blue-600 to-blue-500',
   },
 } as const;
 
