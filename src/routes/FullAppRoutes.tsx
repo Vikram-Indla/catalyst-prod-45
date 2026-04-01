@@ -236,6 +236,7 @@ const BoardConfig = lazy(() => import("../pages/admin/BoardConfig"));
 const Permissions = lazy(() => import("../pages/admin/Permissions"));
 const Integrations = lazy(() => import("../pages/admin/Integrations"));
 const JiraIntegrationConfig = lazy(() => import("../pages/admin/JiraIntegrationConfig"));
+const JiraSyncAuditLog = lazy(() => import("../pages/admin/JiraSyncAuditLog"));
 const StoriesPage = lazy(() => import('../pages/stories/StoriesPage').then(m => ({ default: m.StoriesPage })));
 const Activity = lazy(() => import("../pages/admin/Activity"));
 const Changes = lazy(() => import("../pages/admin/Changes"));
