@@ -25038,6 +25038,33 @@ export type Database = {
           },
         ]
       }
+      ph_project_sync_cursor: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_issue_count: number | null
+          last_synced_at: string
+          project_key: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_issue_count?: number | null
+          last_synced_at?: string
+          project_key: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_issue_count?: number | null
+          last_synced_at?: string
+          project_key?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       ph_projects: {
         Row: {
           ai_assist: boolean | null
