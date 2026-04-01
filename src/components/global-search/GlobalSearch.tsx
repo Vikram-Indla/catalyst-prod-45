@@ -385,13 +385,13 @@ export function GlobalSearch() {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") { close(); return; }
-      if (e.key === "ArrowDown") { e.preventDefault(); setSelectedIdx(i => Math.min(i + 1, displayItems.length - 1)); }
+      if (e.key === "ArrowDown") { e.preventDefault(); setSelectedIdx(i => Math.min(i + 1, visibleResults.length - 1)); }
       if (e.key === "ArrowUp") { e.preventDefault(); setSelectedIdx(i => Math.max(i - 1, 0)); }
-      if (e.key === "Enter" && displayItems[selectedIdx]) { handleSelect(displayItems[selectedIdx]); }
+      if (e.key === "Enter" && visibleResults[selectedIdx]) { handleSelect(visibleResults[selectedIdx]); }
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [isOpen, displayItems, selectedIdx]);
+  }, [isOpen, visibleResults, selectedIdx]);
 
   const handleSelect = useCallback((item: SearchResult) => {
     trackView.mutate(item);
