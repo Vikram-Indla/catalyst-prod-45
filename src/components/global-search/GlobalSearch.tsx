@@ -611,6 +611,7 @@ export function GlobalSearch() {
                     <ResultRow
                       key={`${item.id}-${idx}`}
                       item={item}
+                      avatarMap={nameAvatarMap}
                       isSelected={selectedIdx === idx}
                       onHover={() => setSelectedIdx(idx)}
                       onClick={() => handleSelect(item)}
