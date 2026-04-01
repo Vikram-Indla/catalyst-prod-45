@@ -1080,3 +1080,18 @@
 .workstreams-enterprise-clean tbody td:first-child:empty {
   display: none !important;
 }
+
+/* ═══ COOL STEEL v3 — DARK MODE ═══ */
+.dark .workstreams-enterprise-clean,
+[data-theme="dark"] .workstreams-enterprise-clean {
+  --ws-surface-page: #181A1E;
+  --ws-surface-card: #181A1E;
+  --ws-surface-hover: rgba(235,238,245,0.03);
+  --ws-surface-selected: rgba(59,130,246,0.10);
+  --ws-border-default: rgba(235,238,245,0.10);
+  --ws-border-subtle: rgba(235,238,245,0.06);
+  --ws-text-primary: rgba(235,238,245,0.92);
+  --ws-text-secondary: rgba(235,238,245,0.55);
+  --ws-text-muted: rgba(235,238,245,0.30);
+  --ws-text-light: rgba(235,238,245,0.20);
+}

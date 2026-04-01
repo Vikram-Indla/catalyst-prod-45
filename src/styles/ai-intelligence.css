@@ -979,3 +979,17 @@
 .rai-crossfade-active {
   opacity: 1;
 }
+
+/* ═══ COOL STEEL v3 — DARK MODE ═══ */
+.dark [data-module="ai-intelligence"],
+[data-theme="dark"] [data-module="ai-intelligence"] {
+  --rai-ink: rgba(235,238,245,0.92);
+  --rai-ink-secondary: rgba(235,238,245,0.72);
+  --rai-ink-tertiary: rgba(235,238,245,0.55);
+  --rai-ink-muted: rgba(235,238,245,0.30);
+  --rai-surface: #181A1E;
+  --rai-surface-secondary: rgba(235,238,245,0.03);
+  --rai-surface-tertiary: rgba(235,238,245,0.06);
+  --rai-border: rgba(235,238,245,0.10);
+  --rai-border-strong: rgba(235,238,245,0.18);
+}

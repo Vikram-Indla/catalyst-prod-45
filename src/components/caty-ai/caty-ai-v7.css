@@ -1358,3 +1358,21 @@
 @media (max-width: 540px) {
   .caty-panel { max-width: 100%; height: 100vh; max-height: 100vh; border-radius: 0; border: none; }
 }
+
+/* ═══ COOL STEEL v3 — DARK MODE ═══ */
+.dark .caty-widget,
+[data-theme="dark"] .caty-widget {
+  --caty-text-primary: rgba(235,238,245,0.92);
+  --caty-text-secondary: rgba(235,238,245,0.55);
+  --caty-text-muted: rgba(235,238,245,0.30);
+  --caty-text-light: rgba(235,238,245,0.20);
+  --caty-bg-panel: #181A1E;
+  --caty-bg-muted: rgba(235,238,245,0.06);
+  --caty-bg-subtle: rgba(235,238,245,0.03);
+  --caty-bg-skeleton: rgba(235,238,245,0.06);
+  --caty-border-light: rgba(235,238,245,0.10);
+  --caty-border-default: rgba(235,238,245,0.18);
+  --caty-shadow-sm: none;
+  --caty-shadow-md: none;
+  --caty-shadow-lg: none;
+}
