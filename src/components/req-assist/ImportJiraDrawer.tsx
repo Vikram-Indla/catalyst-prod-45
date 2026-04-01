@@ -225,7 +225,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 16, fontWeight: 650, color: '#111827', fontFamily: "'Sora', sans-serif" }}>Import from Jira</span>
             <span style={{ flex: 1 }} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#7C3AED', background: '#F3E8FF', borderRadius: 3, padding: '2px 8px' }}>AI-Assisted Import</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#2563EB', background: '#EFF6FF', borderRadius: 3, padding: '2px 8px' }}>AI-Assisted Import</span>
             <span style={{ fontSize: 12, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Step {step} of 2</span>
             <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#6B7280' }}>
               <X size={16} />

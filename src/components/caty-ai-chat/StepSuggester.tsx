@@ -69,11 +69,11 @@ export function StepSuggester({
   if (!isActive || !showSuggestion || !suggestion) return null;
 
   return (
-    <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/30 dark:to-blue-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-3 mt-2 animate-in slide-in-from-top-2">
+    <div className="bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-950/30 dark:to-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-2 animate-in slide-in-from-top-2">
       <div className="flex items-start gap-2">
-        <Sparkles className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
+        <Sparkles className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-purple-700 dark:text-purple-300 mb-1">
+          <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">
             CATY suggests Step {currentStepNumber}:
           </p>
           <div className="text-sm space-y-1">
@@ -110,7 +110,7 @@ export function StepSuggester({
           </Button>
         </div>
       </div>
-      <p className="text-xs text-purple-600 dark:text-purple-400 mt-2">
+      <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
         Press Tab to accept • Esc to dismiss
       </p>
     </div>

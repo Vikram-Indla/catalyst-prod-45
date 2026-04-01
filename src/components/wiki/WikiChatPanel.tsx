@@ -72,7 +72,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
         padding: '14px 16px', borderBottom: '0.75px solid rgba(0,0,0,0.06)',
         display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0,
       }}>
-        <div style={{ width: 28, height: 28, borderRadius: 6, background: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 28, height: 28, borderRadius: 6, background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <MessageCircle size={14} style={{ color: '#FFFFFF' }} />
         </div>
         <div style={{ flex: 1 }}>

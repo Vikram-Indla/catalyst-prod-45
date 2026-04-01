@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 interface Props { onAction: (action: string) => void; }
 
 const actions = [
-  { id: 'generate', label: 'Generate Tests', icon: FileText, color: 'text-purple-600' },
+  { id: 'generate', label: 'Generate Tests', icon: FileText, color: 'text-blue-600' },
   { id: 'coverage', label: 'Analyze Coverage', icon: Search, color: 'text-blue-600' },
   { id: 'prioritize', label: 'Prioritize', icon: Zap, color: 'text-orange-600' },
   { id: 'query', label: 'Query Data', icon: BarChart3, color: 'text-green-600' },

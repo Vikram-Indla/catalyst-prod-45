@@ -358,7 +358,7 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
             <FilterChip key={`p-${pk}`} label={pk} color="#2563eb" bgColor="#eff6ff" borderColor="#bfdbfe" onRemove={() => removeChip('project_keys', pk)} />
           ))}
           {selectedTypes.map(t => (
-            <FilterChip key={`t-${t}`} label={t} color="#7c3aed" bgColor="#f5f3ff" borderColor="#ddd6fe" onRemove={() => removeChip('types', t)} />
+            <FilterChip key={`t-${t}`} label={t} color="#2563EB" bgColor="#EFF6FF" borderColor="#BFDBFE" onRemove={() => removeChip('types', t)} />
           ))}
           {selectedStatuses.map(s => (
             <FilterChip key={`s-${s}`} label={s} color="#0891b2" bgColor="#ecfeff" borderColor="#a5f3fc" onRemove={() => removeChip('statuses', s)} />

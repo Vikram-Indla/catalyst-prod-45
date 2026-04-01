@@ -109,7 +109,7 @@ export function GenerationOverlay({ document, onComplete }: GenerationOverlayPro
             className="h-full rounded-sm transition-all duration-600 ease-out"
             style={{
               width: `${progressPct}%`,
-              background: 'linear-gradient(90deg, #2563EB, #7C3AED)',
+              background: 'linear-gradient(90deg, #2563EB, #1D4ED8)',
             }}
           />
         </div>
