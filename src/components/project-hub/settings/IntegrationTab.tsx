@@ -40,12 +40,12 @@ export function IntegrationTab() {
   const { data: connection, isLoading: connLoading } = useQuery({
     queryKey: ['jira-connection-status'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('jira_connections')
+      const { data } = await (supabase
+        .from('jira_connections') as any)
         .select('id, name, base_url, is_active')
         .eq('is_active', true)
         .maybeSingle();
-      return data;
+      return data as { id: string; name: string; base_url: string; is_active: boolean } | null;
     },
   });
 
