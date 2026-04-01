@@ -34,7 +34,7 @@ export interface WriteBackRow {
   field_name: string;
   new_value: string;
   queued_at: string;
-  push_status: string | null;
+  status: string | null;
 }
 
 export interface SyncSummaryRow {
@@ -200,8 +200,8 @@ export const jiraSyncService = {
 
     const { data, error } = await supabase
       .from('jira_write_back_queue')
-      .select('id, ph_issue_id, field_name, new_value, queued_at, push_status')
-      .eq('push_status', 'queued')
+      .select('id, ph_issue_id, field_name, new_value, queued_at, status')
+      .eq('status', 'queued')
       .order('queued_at', { ascending: false });
     if (error) throw error;
     if (!data || data.length === 0) return [];
@@ -244,7 +244,7 @@ export const jiraSyncService = {
     const { error } = await supabase
       .from('jira_write_back_queue')
       .update({
-        push_status: 'approved',
+        status: 'approved',
         approved_at: new Date().toISOString(),
         approved_by: userId,
         updated_by: userId,

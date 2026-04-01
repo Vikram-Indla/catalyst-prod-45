@@ -36,15 +36,15 @@ Deno.serve(async (req) => {
     // Mark abandoned items (retry_count >= 3)
     await supabase
       .from("jira_write_back_queue")
-      .update({ push_status: "abandoned", push_attempted_at: new Date().toISOString() })
-      .eq("push_status", "approved")
+      .update({ status: "abandoned", push_attempted_at: new Date().toISOString() })
+      .eq("status", "approved")
       .gte("retry_count", 3);
 
     // 1. Fetch approved queue items
     const { data: queueItems, error: qErr } = await supabase
       .from("jira_write_back_queue")
       .select("*")
-      .eq("push_status", "approved")
+      .eq("status", "approved")
       .lt("retry_count", 3)
       .order("created_at", { ascending: true })
       .limit(10);
@@ -209,7 +209,7 @@ Deno.serve(async (req) => {
           await supabase
             .from("jira_write_back_queue")
             .update({
-              push_status: "completed",
+              status: "completed",
               jira_response_key: responseBody.key || null,
               jira_response_id: responseBody.id?.toString() || null,
               push_attempted_at: new Date().toISOString(),
@@ -247,7 +247,7 @@ Deno.serve(async (req) => {
         await supabase
           .from("jira_write_back_queue")
           .update({
-            push_status: "failed",
+            status: "failed",
             retry_count: (item.retry_count || 0) + 1,
             last_error: errMsg.substring(0, 1000),
             push_attempted_at: new Date().toISOString(),

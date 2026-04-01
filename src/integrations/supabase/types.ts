@@ -16380,10 +16380,10 @@ export type Database = {
           ph_issue_id: string
           ph_work_item_id: string | null
           push_attempted_at: string | null
-          push_status: string | null
           pushed_at: string | null
           queued_at: string
           retry_count: number | null
+          status: string | null
           updated_at: string
           updated_by: string | null
         }
@@ -16403,10 +16403,10 @@ export type Database = {
           ph_issue_id: string
           ph_work_item_id?: string | null
           push_attempted_at?: string | null
-          push_status?: string | null
           pushed_at?: string | null
           queued_at?: string
           retry_count?: number | null
+          status?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -16426,10 +16426,10 @@ export type Database = {
           ph_issue_id?: string
           ph_work_item_id?: string | null
           push_attempted_at?: string | null
-          push_status?: string | null
           pushed_at?: string | null
           queued_at?: string
           retry_count?: number | null
+          status?: string | null
           updated_at?: string
           updated_by?: string | null
         }
