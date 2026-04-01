@@ -336,13 +336,13 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
           </FieldRow>
 
           <FieldRow label="Created">
-            <span style={{ fontSize: 12, color: '#94A3B8' }}>
+            <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>
               {item.createdAt ? new Date(item.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
             </span>
           </FieldRow>
 
           <FieldRow label="Updated">
-            <span style={{ fontSize: 12, color: '#94A3B8' }}>
+            <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>
               {item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
             </span>
           </FieldRow>
@@ -446,7 +446,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 }}
               />
             </div>
-            <p style={{ fontSize: 12, color: '#94A3B8', margin: '8px 0 0', textAlign: 'center' }}>
+            <p style={{ fontSize: 12, color: 'var(--fg-4)', margin: '8px 0 0', textAlign: 'center' }}>
               Comments and activity will appear here.
             </p>
           </div>

@@ -98,7 +98,7 @@ export function MoveToFolderModal({
             borderRadius: 6,
             cursor: isCurrent ? 'not-allowed' : 'pointer',
             backgroundColor: isSelected ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent',
-            border: isSelected ? '1px solid #BFDBFE' : '1px solid transparent',
+            border: isSelected ? '1px solid color-mix(in srgb, var(--cp-blue) 25%, transparent)' : '1px solid transparent',
             opacity: isCurrent ? 0.5 : 1,
             transition: 'all 0.1s',
           }}

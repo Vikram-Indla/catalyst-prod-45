@@ -315,11 +315,11 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
           <div className="grid grid-cols-2 gap-3">
             {/* Priority */}
             <div className="relative">
-              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>Priority</label>
+              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Priority</label>
               <button
                 onClick={e => { e.stopPropagation(); closeDropdowns(); setPriorityOpen(!priorityOpen); }}
                 className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[#94A3B8] transition-colors"
-                style={{ height: 36, borderColor: '#E2E8F0', color: '#334155' }}
+                style={{ height: 36, borderColor: 'var(--divider)', color: 'var(--fg-2)' }}
               >
                 <span className="flex items-center gap-1.5">
                   <span style={{ color: pri?.color }}>{pri?.icon}</span>
@@ -333,7 +333,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                     <button
                       key={p.value}
                       className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[#F1F5F9] transition-colors"
-                      style={{ color: '#334155' }}
+                      style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setPriority(p.value); setPriorityOpen(false); }}
                     >
                       <span style={{ color: p.color }}>{p.icon}</span>
@@ -346,11 +346,11 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
 
             {/* Assignee */}
             <div className="relative">
-              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>Assignee</label>
+              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Assignee</label>
               <button
                 onClick={e => { e.stopPropagation(); closeDropdowns(); setAssigneeOpen(!assigneeOpen); }}
                 className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[#94A3B8] transition-colors"
-                style={{ height: 36, borderColor: '#E2E8F0', color: selectedAssignee ? '#334155' : '#94A3B8' }}
+                style={{ height: 36, borderColor: 'var(--divider)', color: selectedAssignee ? 'var(--fg-2)' : 'var(--fg-4)' }}
               >
                 <span className="truncate">{selectedAssignee ? selectedAssignee.full_name : 'Unassigned'}</span>
                 <ChevronDown size={14} className="text-[#94A3B8] shrink-0" />

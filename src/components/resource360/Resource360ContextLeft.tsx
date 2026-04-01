@@ -157,10 +157,10 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
 
         {transitions.length === 0 && (
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: '#94A3B8', textTransform: 'uppercase' as const, marginBottom: 8 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--fg-4)', textTransform: 'uppercase' as const, marginBottom: 8 }}>
               Status Timeline
             </div>
-            <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
+            <div style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>
               No transition history available
             </div>
           </div>
@@ -168,10 +168,10 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
 
         {/* Cycle time */}
         <div className="flex items-center gap-2" style={{ marginTop: 8 }}>
-          <span style={{ fontSize: 28, fontWeight: 800, color: '#0F172A', fontFamily: "'Inter', sans-serif", lineHeight: 1 }}>
+          <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif", lineHeight: 1 }}>
             {totalCycle}
           </span>
-          <span style={{ fontSize: 11, fontWeight: 500, color: '#94A3B8', lineHeight: 1.2 }}>
+          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-4)', lineHeight: 1.2 }}>
             days<br />cycle time
           </span>
         </div>
