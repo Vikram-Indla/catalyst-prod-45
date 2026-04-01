@@ -47,7 +47,21 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
   const [editedStatus, setEditedStatus] = useState('');
   const [comment, setComment] = useState('');
 
-  // Sync state when item changes
+  // Fetch Jira sync fields for current work item
+  const { data: jiraData } = useQuery({
+    queryKey: ['work-item-jira-sync', item?.id],
+    queryFn: async () => {
+      if (!item?.id) return null;
+      const { data } = await (supabase.from('ph_work_items') as any)
+        .select('jira_key, jira_sync_status, jira_pushed_at')
+        .eq('id', item.id)
+        .maybeSingle();
+      return data as { jira_key: string | null; jira_sync_status: string | null; jira_pushed_at: string | null } | null;
+    },
+    enabled: !!item?.id,
+  });
+
+
   useEffect(() => {
     if (item) {
       setEditedSummary(item.summary);
