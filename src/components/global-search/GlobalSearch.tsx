@@ -265,7 +265,7 @@ export function GlobalSearch() {
         </div>
 
         {/* LAYER 3 — Scroll body */}
-        <div style={{ overflowY: 'auto', flex: 1 }}>
+        <div style={{ overflowY: 'auto', flex: 1, backgroundColor: '#ffffff' }}>
           {isLoading && hasQuery ? (
             // Skeleton
             Array.from({ length: 3 }).map((_, i) => (
