@@ -2,7 +2,7 @@
  * R360 Profile Drawer — 700px inline split-pane intelligence view
  * V12 Hybrid Precision · No portal, no fixed, no overlay
  */
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { ChevronLeft, X, AlertTriangle, Info, BookOpen, ChevronRight, ChevronLeft as ChevronLeftIcon, RefreshCw, CalendarX, Inbox } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -467,7 +467,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'items', label: 'Work Items' },
 ];
 
-export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDrawerProps) {
+const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDrawerProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [panelStack, setPanelStack] = useState<PanelView[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
@@ -856,7 +856,7 @@ export default function R360ProfileDrawer({ resourceId, onClose }: R360ProfileDr
       </div>
     </div>
   );
-}
+});
 
 // ══════════════════════════════════════════
 // OVERVIEW TAB
@@ -1829,3 +1829,5 @@ function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOffset, se
     </>
   );
 }
+
+export default R360ProfileDrawer;

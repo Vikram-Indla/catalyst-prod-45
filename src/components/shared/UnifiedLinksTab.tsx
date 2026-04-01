@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo, memo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
@@ -102,7 +102,7 @@ function getTableConfig(entityType: LinkableEntityType) {
   }
 }
 
-export function UnifiedLinksTab({ entityType, entityId, hideTiles = [] }: UnifiedLinksTabProps) {
+export const UnifiedLinksTab = memo(function UnifiedLinksTab({ entityType, entityId, hideTiles = [] }: UnifiedLinksTabProps) {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tableConfig = getTableConfig(entityType);
@@ -1084,4 +1084,4 @@ export function UnifiedLinksTab({ entityType, entityId, hideTiles = [] }: Unifie
       </div>
     </div>
   );
-}
+});

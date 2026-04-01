@@ -135,10 +135,46 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
   return useQuery({
     queryKey: ['objectives', filters],
     queryFn: async () => {
-      // Fetch key results data separately for all objectives using key_results_v2
-      const { data: allKeyResults } = await supabase
-        .from('key_results_v2')
-        .select('id, objective_id, baseline_value, current_value, goal_value, summary, metric_type');
+      // Fetch all independent data in parallel
+      const [
+        { data: allKeyResults },
+        { data: allFeatureLinks },
+        { data: allWorkAlignments },
+        { data: allFeatures },
+        { data: allStories },
+        { data: portfoliosData },
+        { data: programsData },
+      ] = await Promise.all([
+        // Fetch key results data separately for all objectives using key_results_v2
+        supabase
+          .from('key_results_v2')
+          .select('id, objective_id, baseline_value, current_value, goal_value, summary, metric_type'),
+        // Fetch objective_feature_links
+        supabase
+          .from('objective_feature_links')
+          .select('id, objective_id, feature_id'),
+        // Fetch objective_work_item_alignments
+        supabase
+          .from('objective_work_item_alignments')
+          .select('id, objective_id, work_item_id, work_item_type'),
+        // Fetch all features for status lookup
+        supabase
+          .from('features')
+          .select('id, status')
+          .limit(5000),
+        // Fetch all stories for status lookup
+        supabase
+          .from('stories')
+          .select('id, status')
+          .limit(5000),
+        // Fetch portfolio and program names for context display (now 'programs' and 'projects' tables)
+        supabase
+          .from('programs')
+          .select('id, name'),
+        supabase
+          .from('projects')
+          .select('id, name'),
+      ]);
 
       const keyResultsByObjective = new Map<string, any[]>();
       allKeyResults?.forEach(kr => {
@@ -151,12 +187,7 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
       // ============================================
       // PHASE 5: Fetch work alignment data for work progress calculation
       // ============================================
-      
-      // Fetch objective_feature_links
-      const { data: allFeatureLinks } = await supabase
-        .from('objective_feature_links')
-        .select('id, objective_id, feature_id');
-      
+
       const featureLinksByObjective = new Map<string, any[]>();
       allFeatureLinks?.forEach(link => {
         if (!featureLinksByObjective.has(link.objective_id)) {
@@ -164,12 +195,7 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
         }
         featureLinksByObjective.get(link.objective_id)!.push(link);
       });
-      
-      // Fetch objective_work_item_alignments
-      const { data: allWorkAlignments } = await supabase
-        .from('objective_work_item_alignments')
-        .select('id, objective_id, work_item_id, work_item_type');
-      
+
       const workItemAlignmentsByObjective = new Map<string, any[]>();
       allWorkAlignments?.forEach(alignment => {
         if (!workItemAlignmentsByObjective.has(alignment.objective_id)) {
@@ -177,28 +203,13 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
         }
         workItemAlignmentsByObjective.get(alignment.objective_id)!.push(alignment);
       });
-      
-      // Fetch all features for status lookup
-      const { data: allFeatures } = await supabase
-        .from('features')
-        .select('id, status');
+
       const featuresById = new Map(allFeatures?.map(f => [f.id, f]) || []);
-      
-      // Fetch all stories for status lookup
-      const { data: allStories } = await supabase
-        .from('stories')
-        .select('id, status');
+
       const storiesById = new Map(allStories?.map(s => [s.id, s]) || []);
 
-      // Fetch portfolio and program names for context display (now 'programs' and 'projects' tables)
-      const { data: portfoliosData } = await supabase
-        .from('programs')
-        .select('id, name');
       const portfolioMap = new Map(portfoliosData?.map(p => [p.id, p.name]) || []);
 
-      const { data: programsData } = await supabase
-        .from('projects')
-        .select('id, name');
       const programMap = new Map(programsData?.map(p => [p.id, p.name]) || []);
 
       // Handle hierarchical filtering by fetching related entity IDs

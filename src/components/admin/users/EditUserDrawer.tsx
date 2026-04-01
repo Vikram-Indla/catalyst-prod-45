@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -48,7 +48,7 @@ interface EditUserDrawerProps {
   user: UserProfile | null;
 }
 
-export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
+export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     full_name: '',
@@ -978,4 +978,4 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       </SheetContent>
     </Sheet>
   );
-}
+});

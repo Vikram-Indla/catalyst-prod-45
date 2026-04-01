@@ -13,24 +13,27 @@ export function useActivities(limit: number = 10, projectId?: string) {
   const query = useQuery({
     queryKey: ['command-center-activities', limit, projectId],
     queryFn: async (): Promise<ActivityItem[]> => {
+      // Fetch test runs and defects in parallel
+      const [runsResult, defectsResult] = await Promise.all([
+        supabase
+          .from('tm_test_runs')
+          .select('id, status, created_at, test_case_id, executed_by')
+          .not('executed_by', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(limit) as Promise<{ data: any[] | null; error: any }>,
+        supabase
+          .from('tm_defects')
+          .select('id, defect_key, title, created_at')
+          .order('created_at', { ascending: false })
+          .limit(5) as Promise<{ data: any[] | null; error: any }>,
+      ]);
+
+      if (runsResult.error) throw runsResult.error;
+      if (defectsResult.error) throw defectsResult.error;
+
       const activities: ActivityItem[] = [];
 
-      // Fetch recent test runs
-      const { data: recentRuns, error: runsError } = await supabase
-        .from('tm_test_runs')
-        .select(`
-          id,
-          status,
-          created_at,
-          test_case_id,
-          executed_by
-        `)
-        .not('executed_by', 'is', null)
-        .order('created_at', { ascending: false })
-        .limit(limit) as { data: any[] | null; error: any };
-      if (runsError) throw runsError;
-
-      for (const run of recentRuns || []) {
+      for (const run of runsResult.data || []) {
         let activityType: ActivityType = 'passed';
         if (run.status === 'failed') activityType = 'failed';
         else if (run.status === 'blocked') activityType = 'blocked';
@@ -47,20 +50,7 @@ export function useActivities(limit: number = 10, projectId?: string) {
         });
       }
 
-      // Fetch recent defects
-      const { data: recentDefects, error: defectsError } = await supabase
-        .from('tm_defects')
-        .select(`
-          id,
-          defect_key,
-          title,
-          created_at
-        `)
-        .order('created_at', { ascending: false })
-        .limit(5) as { data: any[] | null; error: any };
-      if (defectsError) throw defectsError;
-
-      for (const defect of recentDefects || []) {
+      for (const defect of defectsResult.data || []) {
         activities.push({
           id: defect.id,
           type: 'defect',
@@ -78,8 +68,7 @@ export function useActivities(limit: number = 10, projectId?: string) {
         .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
         .slice(0, limit);
     },
-    refetchInterval: 15000, // Refresh every 15 seconds
-    staleTime: 10000,
+    staleTime: 30000, // Realtime subscription handles updates
   });
 
   // Set up real-time subscription

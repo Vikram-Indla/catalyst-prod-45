@@ -31,34 +31,24 @@ export function useResourceUtilization(departmentId?: string | null) {
       if (error) throw error;
       if (!resources || resources.length === 0) return [];
       
-      // Fetch countries for country name
-      const { data: countries, error: countryErr } = await supabase
-        .from('resource_countries')
-        .select('id, code, name')
-        .eq('is_active', true);
-      if (countryErr) throw countryErr;
-
-      const countryMap = new Map(countries?.map(c => [c.id, { code: c.code || '', name: c.name }]) || []);
-
-      // Fetch locations for On-Site/Off-Shore determination
-      const { data: locations, error: locErr } = await supabase
-        .from('resource_locations')
-        .select('id, name')
-        .eq('is_active', true);
-      if (locErr) throw locErr;
-
-      const locationMap = new Map(locations?.map(l => [l.id, l.name]) || []);
-
-      // Fetch allocations for the current period - include all valid statuses
+      // Fetch countries, locations, and allocations in parallel
       const resourceIds = resources.map(r => r.id);
-      const { data: allocations, error: allocErr } = await supabase
-        .from('resource_allocations')
-        .select('resource_id, allocation_percent')
-        .in('resource_id', resourceIds)
-        .lte('start_date', today)
-        .gte('end_date', today)
-        .in('status', ['active', 'committed', 'forecast']);
-      if (allocErr) throw allocErr;
+      const [countriesRes, locationsRes, allocationsRes] = await Promise.all([
+        supabase.from('resource_countries').select('id, code, name').eq('is_active', true),
+        supabase.from('resource_locations').select('id, name').eq('is_active', true),
+        supabase.from('resource_allocations').select('resource_id, allocation_percent')
+          .in('resource_id', resourceIds)
+          .lte('start_date', today)
+          .gte('end_date', today)
+          .in('status', ['active', 'committed', 'forecast']),
+      ]);
+      if (countriesRes.error) throw countriesRes.error;
+      if (locationsRes.error) throw locationsRes.error;
+      if (allocationsRes.error) throw allocationsRes.error;
+
+      const countryMap = new Map(countriesRes.data?.map(c => [c.id, { code: c.code || '', name: c.name }]) || []);
+      const locationMap = new Map(locationsRes.data?.map(l => [l.id, l.name]) || []);
+      const allocations = allocationsRes.data;
 
       return resources.map(resource => {
         const resourceAllocs = allocations?.filter(a => a.resource_id === resource.id) || [];

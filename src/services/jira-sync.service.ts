@@ -81,7 +81,8 @@ export const jiraSyncService = {
         detected_at, resolved_at, resolved_by, resolution
       `)
       .is('resolved_at', null)
-      .order('detected_at', { ascending: false });
+      .order('detected_at', { ascending: false })
+      .limit(500);
     if (error) throw error;
 
     // Filter to only conflicts whose ph_issue belongs to this project
@@ -202,7 +203,8 @@ export const jiraSyncService = {
       .from('jira_write_back_queue')
       .select('id, ph_issue_id, field_name, new_value, queued_at, status')
       .eq('status', 'queued')
-      .order('queued_at', { ascending: false });
+      .order('queued_at', { ascending: false })
+      .limit(500);
     if (error) throw error;
     if (!data || data.length === 0) return [];
 

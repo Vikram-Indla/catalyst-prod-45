@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import { UserAvatar } from './UserAvatar';
 import { Card, CardHeader, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -57,7 +57,7 @@ interface UsersTableProps {
   onEditPermissions?: (userId: string) => void;
 }
 
-export function UsersTable({ users, isLoading }: UsersTableProps) {
+export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [approvalFilter, setApprovalFilter] = useState('all');
@@ -1306,4 +1306,4 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
       />
     </Card>
   );
-}
+});

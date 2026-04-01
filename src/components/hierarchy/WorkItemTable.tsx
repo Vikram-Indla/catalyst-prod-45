@@ -5,7 +5,7 @@
  * F8-F11: New columns  F12: Column management  F15+F16: Context menu
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import { ChevronRight, ChevronDown, MoreHorizontal, ArrowUp, ArrowDown } from 'lucide-react';
 import type { WorkItem } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -274,7 +274,7 @@ interface ContextMenuState {
   item: WorkItem;
 }
 
-export function WorkItemTable({ items, search, onSelect, selectedId, projectKey, allStatuses, onCreateClick, onRefresh, onAddChild }: WorkItemTableProps) {
+export const WorkItemTable = memo(function WorkItemTable({ items, search, onSelect, selectedId, projectKey, allStatuses, onCreateClick, onRefresh, onAddChild }: WorkItemTableProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey] = useState<SortKey>('work');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
@@ -761,4 +761,4 @@ export function WorkItemTable({ items, search, onSelect, selectedId, projectKey,
       `}</style>
     </div>
   );
-}
+});

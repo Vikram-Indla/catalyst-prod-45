@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { ChevronUp, ChevronDown, Filter, Check, X, Pencil, MoreHorizontal, Trash2, Copy, Save, Undo } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -541,7 +541,7 @@ function RowActionsMenu({
 // ============================================================================
 // MAIN ENTERPRISE TABLE COMPONENT
 // ============================================================================
-export function EnterpriseTable<T extends { id: string }>({
+function EnterpriseTableInner<T extends { id: string }>({
   data,
   columns,
   onRowUpdate,
@@ -898,6 +898,8 @@ export function EnterpriseTable<T extends { id: string }>({
   );
 }
 
+export const EnterpriseTable = memo(EnterpriseTableInner) as typeof EnterpriseTableInner;
+
 // ============================================================================
 // USAGE EXAMPLE
 // ============================================================================
@@ -972,3 +974,4 @@ function MyPage() {
 */
 
 export default EnterpriseTable;
+
