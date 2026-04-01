@@ -206,7 +206,7 @@ export function HierarchyContextMenu({
           }}>No</button>
         </div>
       ) : (
-        <button style={{ ...itemStyle, color: '#DC2626' }}
+        <button style={{ ...itemStyle, color: 'var(--sem-danger)' }}
           onClick={() => setConfirmDelete(true)}
           onMouseEnter={e => (e.currentTarget.style.background = '#FEF2F2')}
           onMouseLeave={e => (e.currentTarget.style.background = '')}>
@@ -239,7 +239,7 @@ function PriorityBarsInline({ level }: { level: number }) {
   return (
     <div style={{ display: 'flex', gap: 1, alignItems: 'center' }}>
       {[1, 2, 3, 4].map(i => (
-        <div key={i} style={{ width: 8, height: 3, borderRadius: 1, background: i <= level ? '#64748B' : '#E2E8F0' }} />
+        <div key={i} style={{ width: 8, height: 3, borderRadius: 1, background: i <= level ? 'var(--fg-3)' : 'var(--divider)' }} />
       ))}
     </div>
   );

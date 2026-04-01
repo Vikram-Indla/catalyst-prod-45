@@ -179,13 +179,13 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
 
         <SidebarField label="Priority">
           <div className="relative">
-            <button onClick={e => { e.stopPropagation(); setPriorityOpen(!priorityOpen); setStatusOpen(false); }} className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: '#334155' }}>
+            <button onClick={e => { e.stopPropagation(); setPriorityOpen(!priorityOpen); setStatusOpen(false); }} className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: 'var(--fg-2)' }}>
               <span style={{ color: PRIORITIES.find(p => p.value === item.priority)?.color }}>{PRIORITIES.find(p => p.value === item.priority)?.icon}</span>
               {item.priority}
               <ChevronDown size={12} className="text-[#94A3B8]" />
             </button>
             {priorityOpen && (
-              <div className="absolute left-0 top-full mt-1 rounded-md overflow-hidden" style={{ width: 160, background: '#FFF', border: '1px solid #E2E8F0', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }} onClick={e => e.stopPropagation()}>
+              <div className="absolute left-0 top-full mt-1 rounded-md overflow-hidden" style={{ width: 160, background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }} onClick={e => e.stopPropagation()}>
                 {PRIORITIES.map(p => (
                   <button key={p.value} className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[#F1F5F9]" onClick={() => { onUpdate('priority', p.value); setPriorityOpen(false); }}>
                     <span style={{ color: p.color }}>{p.icon}</span>{p.value}
@@ -198,8 +198,8 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
 
         <SidebarField label="Due Date">
           <div className="flex items-center gap-1">
-            <span className="text-[13px]" style={{ fontFamily: 'JetBrains Mono, monospace', color: item.due_date && new Date(item.due_date) < new Date() ? '#DC2626' : '#334155' }}>
-              {item.due_date ? new Date(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : <span style={{ color: '#94A3B8' }}>None</span>}
+            <span className="text-[13px]" style={{ fontFamily: 'JetBrains Mono, monospace', color: item.due_date && new Date(item.due_date) < new Date() ? 'var(--sem-danger)' : 'var(--fg-2)' }}>
+              {item.due_date ? new Date(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : <span style={{ color: 'var(--fg-4)' }}>None</span>}
             </span>
             {item.due_date && new Date(item.due_date) < new Date() && (
               <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ background: '#FEF2F2', color: '#DC2626' }}>Overdue</span>

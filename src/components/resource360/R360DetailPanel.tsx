@@ -234,12 +234,12 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             {item.parent_key ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {/* Parent */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px', borderRadius: '6px', border: '1px solid #E2E8F0', background: '#FFFFFF' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--divider)', background: 'var(--bg-app)' }}>
                   {getJiraIcon(item.parent_type || 'epic')}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#64748B', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.parent_key}</span>
-                  <span style={{ fontSize: '12px', color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--fg-3)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.parent_key}</span>
+                  <span style={{ fontSize: '12px', color: 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
                 </div>
-                <div style={{ paddingLeft: '20px', color: '#64748B', fontSize: '11px', margin: '2px 0' }}>↳</div>
+                <div style={{ paddingLeft: '20px', color: 'var(--fg-3)', fontSize: '11px', margin: '2px 0' }}>↳</div>
                 {/* Current */}
                 <div style={{
                   display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 8px',
