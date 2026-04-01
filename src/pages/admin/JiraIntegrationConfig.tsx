@@ -104,6 +104,29 @@ export default function JiraIntegrationConfig() {
     },
   });
 
+  const toggleMutation = useMutation({
+    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+      await (supabase.from('jira_connections') as any)
+        .update({ is_active })
+        .eq('id', id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jira-connection-status'] });
+      queryClient.invalidateQueries({ queryKey: ['jira-connections'] });
+    },
+  });
+
+  const { data: recentLogs } = useQuery({
+    queryKey: ['jira-sync-recent'],
+    queryFn: async () => {
+      const { data } = await (supabase.from('jira_sync_logs') as any)
+        .select('id, event_type, jira_key, status, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5);
+      return (data ?? []) as any[];
+    },
+  });
+
   const handleSync = (connectionId: string) => {
     setSyncingConnection(connectionId);
     syncMutation.mutate(connectionId);
