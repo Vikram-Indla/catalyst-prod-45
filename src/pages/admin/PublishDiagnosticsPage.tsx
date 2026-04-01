@@ -60,7 +60,7 @@ const HEAVY_DEPS = [
 
 const CORE_BUNDLE_KB = 650;
 const PUBLISH_LIMIT_KB = 3500;
-const TOTAL_STUBBED_KB = STUB_DEPS.reduce((sum, d) => sum + d.sizeKB, 0);
+const TOTAL_STUBBED_KB = STUBBED_MODULES.reduce((sum, d) => sum + d.estimatedKB, 0) + HEAVY_DEPS.reduce((sum, d) => sum + d.sizeKB, 0);
 
 type DiagnosticStatus = 'pass' | 'warn' | 'fail' | 'info';
 
