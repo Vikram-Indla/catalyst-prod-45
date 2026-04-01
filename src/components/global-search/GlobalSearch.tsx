@@ -176,28 +176,15 @@ export function GlobalSearch() {
     close();
   }, [debouncedQuery, navigate, close, trackView, saveSearch]);
 
-  const toggleFilter = useCallback((key: keyof ActiveFilters) => {
-    setFilters(f => ({ ...f, [key]: f[key] ? null : f[key] }));
-  }, []);
+  const chipStyle = (active: boolean) => ({
+    height: 28, padding: '0 10px', border: `1px solid ${active ? '#93C5FD' : '#E2E8F0'}`,
+    borderRadius: 6, fontSize: 12, color: active ? '#1D4ED8' : '#334155',
+    background: active ? '#EFF6FF' : 'white', cursor: 'pointer', gap: 5,
+    flexShrink: 0 as const, display: 'flex' as const, alignItems: 'center' as const,
+  });
 
-  const filterChip = (label: string, key: keyof ActiveFilters) => {
-    const active = !!filters[key];
-    return (
-      <button
-        key={key}
-        onClick={() => setFilters(f => ({ ...f, [key]: null }))}
-        style={{
-          height: 28, padding: '0 10px', border: `1px solid ${active ? '#93C5FD' : '#E2E8F0'}`,
-          borderRadius: 6, fontSize: 12, color: active ? '#1D4ED8' : '#334155',
-          background: active ? '#EFF6FF' : 'white', cursor: 'pointer', gap: 5,
-          flexShrink: 0, display: 'flex', alignItems: 'center',
-        }}
-      >
-        {filters[key] ? String(filters[key]) : label}
-        <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
-      </button>
-    );
-  };
+  const HUB_OPTIONS = ['All Hubs', 'StrategyHub', 'ProductHub', 'ProjectHub', 'ReleaseHub', 'TestHub', 'IncidentHub', 'TaskHub', 'PlanHub'];
+  const TYPE_OPTIONS = ['All Types', 'bug', 'task', 'story', 'epic', 'incident', 'new_feature', 'improvement'];
 
   const recents = recentItems.data ?? [];
   const searches = recentSearches.data ?? [];
