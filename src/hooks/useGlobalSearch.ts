@@ -25,7 +25,7 @@ export function useRecentItems() {
         .from('ph_issues')
         .select(SEARCH_SELECT)
         .order('jira_updated_at', { ascending: false })
-        .limit(20);
+        .limit(100);
       if (error) throw error;
       return (data ?? []).map(mapIssueToSearchResult);
     },
