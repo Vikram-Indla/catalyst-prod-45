@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Search, ChevronDown, LogOut, Settings, Bell, User } from "lucide-react";
+import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -45,6 +46,8 @@ import catalystLogoMark2 from "@/assets/catalyst-logo-mark-2.svg";
 export function CatalystHeader() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
