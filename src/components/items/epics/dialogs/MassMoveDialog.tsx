@@ -29,7 +29,8 @@ export function MassMoveDialog({
   const { data: programs } = useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
-      const { data } = await supabase.from('programs').select('*').order('name');
+      const { data, error } = await supabase.from('programs').select('*').order('name');
+      if (error) throw error;
       return data || [];
     },
     enabled: open,
@@ -38,7 +39,8 @@ export function MassMoveDialog({
   const { data: programIncrements } = useQuery({
     queryKey: ['program-increments'],
     queryFn: async () => {
-      const { data } = await supabase.from('program_increments').select('*').order('name');
+      const { data, error } = await supabase.from('program_increments').select('*').order('name');
+      if (error) throw error;
       return data || [];
     },
     enabled: open,

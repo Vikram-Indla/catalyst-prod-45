@@ -73,7 +73,8 @@ export function EpicOverviewTab({ epic }: EpicOverviewTabProps) {
   const { data: processSteps } = useQuery({
     queryKey: ['process-steps'],
     queryFn: async () => {
-      const { data } = await supabase.from('process_steps').select('id, name, sort_order').order('sort_order');
+      const { data, error } = await supabase.from('process_steps').select('id, name, sort_order').order('sort_order');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -81,11 +82,12 @@ export function EpicOverviewTab({ epic }: EpicOverviewTabProps) {
   const { data: users } = useQuery({
     queryKey: ['users-for-dropdown'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email')
         .eq('approval_status', 'APPROVED')
         .order('full_name');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -94,12 +96,13 @@ export function EpicOverviewTab({ epic }: EpicOverviewTabProps) {
   const { data: technicalScore } = useQuery({
     queryKey: ['epic-technical-score', epic.id],
     queryFn: async () => {
-      const { data } = await (supabase as any)
+      const { data, error } = await (supabase as any)
         .from('epic_wsjf')
         .select('business_value, time_value, rroe_value, job_size')
         .eq('epic_id', epic.id)
         .maybeSingle();
-      
+      if (error) throw error;
+
       if (!data) return null;
       const wsjfData = data as { business_value?: number; time_value?: number; rroe_value?: number; job_size?: number };
       const { business_value, time_value, rroe_value, job_size } = wsjfData;

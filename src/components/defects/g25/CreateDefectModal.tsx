@@ -18,7 +18,7 @@ export function CreateDefectModalG25({ open, onClose, linkedTestCaseId, linkedEx
   const create = useCreateDefectG25();
   const { data: users } = useQuery({
     queryKey: ['profiles-list'],
-    queryFn: async () => { const { data } = await supabase.from('profiles').select('id, full_name').order('full_name'); return data || []; },
+    queryFn: async () => { const { data, error } = await supabase.from('profiles').select('id, full_name').order('full_name'); if (error) throw error; return data || []; },
   });
 
   const form = useForm<DefectFormValues>({

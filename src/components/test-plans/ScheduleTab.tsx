@@ -12,7 +12,8 @@ export function ScheduleTab({ plan, onUpdate }: Props) {
   const { data: releases } = useQuery({
     queryKey: ['releases-for-plans'],
     queryFn: async () => {
-      const { data } = await supabase.from('releases').select('id, name').order('name');
+      const { data, error } = await supabase.from('releases').select('id, name').order('name');
+      if (error) throw error;
       return data || [];
     },
   });

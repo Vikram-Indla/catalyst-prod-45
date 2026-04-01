@@ -102,7 +102,7 @@ function AddApproverModal({ open, onClose, planId, existing }: { open: boolean; 
   const requestApproval = useRequestApproval();
   const { data: users } = useQuery({
     queryKey: ['profiles-list'],
-    queryFn: async () => { const { data } = await supabase.from('profiles').select('id, full_name').order('full_name'); return data || []; },
+    queryFn: async () => { const { data, error } = await supabase.from('profiles').select('id, full_name').order('full_name'); if (error) throw error; return data || []; },
   });
   const available = users?.filter(u => !existing.includes(u.id)) || [];
 

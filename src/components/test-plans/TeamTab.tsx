@@ -24,7 +24,7 @@ export function TeamTab({ planId }: { planId: string }) {
 
   const { data: allUsers } = useQuery({
     queryKey: ['profiles-list'],
-    queryFn: async () => { const { data } = await supabase.from('profiles').select('id, full_name, avatar_url').order('full_name'); return data || []; },
+    queryFn: async () => { const { data, error } = await supabase.from('profiles').select('id, full_name, avatar_url').order('full_name'); if (error) throw error; return data || []; },
   });
 
   const existingIds = new Set(team?.map(t => t.user_id));
