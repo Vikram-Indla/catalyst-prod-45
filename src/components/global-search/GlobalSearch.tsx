@@ -83,6 +83,30 @@ function timeAgo(d: string): string {
   return `${Math.floor(s / 86400)}d ago`;
 }
 
+type DateGroup = "Today" | "Yesterday" | "This Week" | "Earlier";
+
+function getDateGroup(dateStr: string): DateGroup {
+  const now = new Date();
+  const then = new Date(dateStr);
+  const diffMs = now.getTime() - then.getTime();
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+  if (diffDays < 1 && now.getDate() === then.getDate()) return "Today";
+  if (diffDays < 2) return "Yesterday";
+  if (diffDays < 7) return "This Week";
+  return "Earlier";
+}
+
+function groupRecentItems(items: SearchResult[]): { group: DateGroup; items: SearchResult[] }[] {
+  const ORDER: DateGroup[] = ["Today", "Yesterday", "This Week", "Earlier"];
+  const map: Record<string, SearchResult[]> = {};
+  for (const item of items) {
+    const g = getDateGroup(item.viewed_at);
+    if (!map[g]) map[g] = [];
+    map[g].push(item);
+  }
+  return ORDER.filter(g => map[g]?.length > 0).map(g => ({ group: g, items: map[g] }));
+}
+
 function getInitials(name: string): string {
   return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 }
