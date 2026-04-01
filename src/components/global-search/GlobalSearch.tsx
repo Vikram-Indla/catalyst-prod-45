@@ -502,7 +502,7 @@ export function GlobalSearch() {
         }}>
           <Settings2 size={14} color="#97A0AF" style={{ flexShrink: 0, marginRight: 4 }} />
           <FilterChip label="Hub" items={hubOptions} selected={filters.hub} onSelect={v => setFilter("hub", v as any)} />
-          <FilterChip label="Assignee" items={assigneeOptions} selected={filters.assignee} onSelect={v => setFilter("assignee", v)} />
+          <FilterChip label="Assignee" items={assigneeOptions} selected={filters.assignee} onSelect={v => setFilter("assignee", v)} avatarMap={nameAvatarMap} />
           <FilterChip label="Type" items={typeOptions} selected={filters.type} onSelect={v => setFilter("type", v as any)} />
         </div>
 
