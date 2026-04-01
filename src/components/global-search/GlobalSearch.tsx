@@ -249,6 +249,7 @@ export function GlobalSearch() {
         <div style={{
           padding: '7px 12px', borderBottom: '1px solid #F1F5F9', flexShrink: 0,
           gap: 6, display: 'flex', alignItems: 'center',
+          backgroundColor: '#ffffff',
         }}>
           <button style={{
             width: 28, height: 28, border: '1px solid #E2E8F0', borderRadius: 6,
