@@ -62,7 +62,7 @@ export function PassRateTrendChart({ data }: Props) {
             <XAxis dataKey="cycle_key" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
             <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `${v}%`} />
             <Tooltip content={<CustomTooltip />} />
-            <Line type="monotone" dataKey="pass_rate" stroke=""var(--cp-blue)" strokeWidth={2.5} dot={{ r: 4, fill: 'var(--cp-blue)', strokeWidth: 2, stroke: '#FFF' }} activeDot={{ r: 6, fill: 'var(--cp-blue)' }} />
+            <Line type="monotone" dataKey="pass_rate" stroke="var(--cp-blue)" strokeWidth={2.5} dot={{ r: 4, fill: 'var(--cp-blue)', strokeWidth: 2, stroke: '#FFF' }} activeDot={{ r: 6, fill: 'var(--cp-blue)' }} />
           </LineChart>
         </ResponsiveContainer>
       ) : (

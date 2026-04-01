@@ -106,10 +106,10 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
             <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)' }}>{item.project_name ?? '—'}</span>
           </PropertyRow>
           <PropertyRow label="Reported By">
-            <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{item.assigner_name ?? '—'}</span>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)' }}>{item.assigner_name ?? '—'}</span>
           </PropertyRow>
           <PropertyRow label="Assigned">
-            <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{item.assigned_at?.slice(0, 10) ?? '—'}</span>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)' }}>{item.assigned_at?.slice(0, 10) ?? '—'}</span>
           </PropertyRow>
           <PropertyRow label="Release">
             <div className="flex flex-col">

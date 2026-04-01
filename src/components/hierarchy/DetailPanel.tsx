@@ -382,7 +382,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                   <span style={{ fontSize: 12, color: 'var(--fg-1)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.title}</span>
                   <StatusBadge status={child.status.name} mini />
                   {child.assignee && (
-                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <span style={{ fontSize: 8, fontWeight: 700, color: '#FFFFFF' }}>
                         {child.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                       </span>
@@ -392,7 +392,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
               ))}
             </div>
           ) : (
-            <div style={{ padding: '12px 20px', fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
+            <div style={{ padding: '12px 20px', fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>
               No subtasks
             </div>
           )}

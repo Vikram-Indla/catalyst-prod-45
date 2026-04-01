@@ -121,7 +121,7 @@ export function WorkItemRow({
             {item.fix_versions.length > 1 && ` +${item.fix_versions.length - 1}`}
           </span>
         ) : (
-          <span className="text-[10.5px] italic" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>—</span>
+          <span className="text-[10.5px] italic" style={{ color: 'var(--fg-4)' }}>—</span>
         )}
       </div>
 
@@ -129,11 +129,11 @@ export function WorkItemRow({
       <div className="flex items-center gap-1.5 min-w-0">
         {themeName ? (
           <>
-            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: themeColor || '#94a3b8' }} />
-            <span className="text-[11px] truncate" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>{themeName}</span>
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: themeColor || 'var(--fg-4)' }} />
+            <span className="text-[11px] truncate" style={{ color: 'var(--fg-3)' }}>{themeName}</span>
           </>
         ) : (
-          <span className="text-[10.5px] italic" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>—</span>
+          <span className="text-[10.5px] italic" style={{ color: 'var(--fg-4)' }}>—</span>
         )}
       </div>
 
