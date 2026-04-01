@@ -5,6 +5,7 @@ import {
   Filter, FileEdit, Users2, ChevronRight, X
 } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import {
   useRecentItems, useRecentSearches, useSearchResults,
