@@ -418,7 +418,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                     </div>
                   )}
                 </>
-
+              )}
               {activeTab === 'comments' && (
                 <CommentsPane comments={comments} isLoading={commentsLoading} />
               )}
