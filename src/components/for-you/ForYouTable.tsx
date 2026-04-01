@@ -108,8 +108,8 @@ export function ForYouTable({
   };
 
   return (
-    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '1px solid var(--cp-bd)', borderRadius: 6, overflow: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: 1100 }}>
+    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '1px solid var(--cp-bd)', borderRadius: 6, overflowX: 'auto', overflowY: 'hidden' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
         <thead>
           <tr>
             <th style={{ ...thStyle, width: 36 }}>
