@@ -27,7 +27,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
 
   return (
     <div style={{
-      position: 'fixed', inset: 0, zIndex: 9999, background: '#0F172A',
+      position: 'fixed', inset: 0, zIndex: 9999, background: 'var(--fg-1)',
       display: 'flex', flexDirection: 'column', fontFamily: "'Inter', sans-serif",
     }}>
       {/* Top bar */}
@@ -39,13 +39,13 @@ export function PresentationModal({ ideas, onClose }: Props) {
         <div style={{
           width: 36, height: 24, borderRadius: 4, background: '#0D2242',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#FFFFFF', fontSize: 9, fontWeight: 800,
+          color: 'var(--bg-app)', fontSize: 9, fontWeight: 800,
         }}>MIM</div>
         <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.1)' }} />
-        <span style={{ color: '#E2E8F0', fontSize: 14, fontWeight: 600, flex: 1 }}>
+        <span style={{ color: 'var(--divider)', fontSize: 14, fontWeight: 600, flex: 1 }}>
           {slide === 0 ? 'Ideas Roadmap — FY 2026' : `${QUARTERS[slide - 1]} 2026 — Delivery Plan`}
         </span>
-        <span style={{ color: '#94A3B8', fontSize: 12 }}>
+        <span style={{ color: 'var(--fg-4)', fontSize: 12 }}>
           {slide === 0 ? 'Overview' : QUARTERS[slide - 1]}
         </span>
       </div>
@@ -53,7 +53,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Progress bar */}
       <div style={{ height: 2, background: 'rgba(255,255,255,0.05)', flexShrink: 0 }}>
         <div style={{
-          height: '100%', background: '#0D9488', transition: 'width 300ms',
+          height: '100%', background: 'var(--sem-success)', transition: 'width 300ms',
           width: `${((slide + 1) / TOTAL_SLIDES) * 100}%`,
         }} />
       </div>
@@ -82,7 +82,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
           {Array.from({ length: TOTAL_SLIDES }, (_, i) => (
             <div key={i} onClick={() => setSlide(i)} style={{
               width: 6, height: 6, borderRadius: '50%', cursor: 'pointer',
-              background: i === slide ? '#0D9488' : 'rgba(255,255,255,0.2)',
+              background: i === slide ? 'var(--sem-success)' : 'rgba(255,255,255,0.2)',
               transform: i === slide ? 'scale(1.4)' : 'scale(1)',
               transition: 'all 200ms',
             }} />
@@ -94,7 +94,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
             border: 'none', color: '#fff', cursor: 'pointer', opacity: slide === TOTAL_SLIDES - 1 ? 0.3 : 1,
             fontSize: 14,
           }}>→</button>
-        <span style={{ color: '#64748B', fontSize: 11, marginLeft: 8, fontFamily: "'JetBrains Mono', monospace" }}>
+        <span style={{ color: 'var(--fg-3)', fontSize: 11, marginLeft: 8, fontFamily: "'JetBrains Mono', monospace" }}>
           {slide + 1} / {TOTAL_SLIDES}
         </span>
       </div>
@@ -102,7 +102,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
       {/* Close button */}
       <button onClick={onClose} style={{
         position: 'absolute', top: 10, right: 16, background: 'none', border: 'none',
-        color: '#94A3B8', fontSize: 22, cursor: 'pointer', zIndex: 1,
+        color: 'var(--fg-4)', fontSize: 22, cursor: 'pointer', zIndex: 1,
       }}>✕</button>
     </div>
   );
@@ -117,16 +117,16 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
     <div style={{ display: 'flex', gap: 60, alignItems: 'center', maxWidth: 1200, width: '100%' }}>
       {/* Left */}
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16 }}>
           Ministry of Industry & Mineral Resources
         </div>
-        <div style={{ fontSize: 48, fontWeight: 800, color: '#FFFFFF', fontFamily: "'Sora', sans-serif", lineHeight: 1.1, marginBottom: 8 }}>
+        <div style={{ fontSize: 48, fontWeight: 800, color: 'var(--bg-app)', fontFamily: "'Sora', sans-serif", lineHeight: 1.1, marginBottom: 8 }}>
           MIM Digital
         </div>
-        <div style={{ fontSize: 48, fontWeight: 800, color: '#0D9488', fontFamily: "'Sora', sans-serif", lineHeight: 1.1, marginBottom: 24 }}>
+        <div style={{ fontSize: 48, fontWeight: 800, color: 'var(--sem-success)', fontFamily: "'Sora', sans-serif", lineHeight: 1.1, marginBottom: 24 }}>
           Transformation Roadmap
         </div>
-        <div style={{ width: 40, height: 4, background: '#0D9488', borderRadius: 2, marginBottom: 24 }} />
+        <div style={{ width: 40, height: 4, background: 'var(--sem-success)', borderRadius: 2, marginBottom: 24 }} />
         <div style={{ display: 'flex', gap: 16 }}>
           {[
             { label: 'COMMITTED IDEAS', value: String(committed.length), sub: `of ${ideas.length} total` },
@@ -136,9 +136,9 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
               background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: 8, padding: '16px 20px', minWidth: 140,
             }}>
-              <div style={{ fontSize: 9, fontWeight: 700, color: '#64748B', letterSpacing: '0.1em', marginBottom: 6 }}>{s.label}</div>
-              <div style={{ fontSize: 32, fontWeight: 800, color: '#FFFFFF', fontFamily: "'Sora', sans-serif" }}>{s.value}</div>
-              <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2 }}>{s.sub}</div>
+              <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 6 }}>{s.label}</div>
+              <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bg-app)', fontFamily: "'Sora', sans-serif" }}>{s.value}</div>
+              <div style={{ fontSize: 11, color: 'var(--fg-4)', marginTop: 2 }}>{s.sub}</div>
             </div>
           ))}
         </div>
@@ -146,7 +146,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
 
       {/* Right — Q breakdown */}
       <div>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', letterSpacing: '0.1em', marginBottom: 16 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 16 }}>
           DELIVERY BY QUARTER
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -155,9 +155,9 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
               background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
               borderRadius: 8, padding: '16px 20px', borderTop: `3px solid ${qColors[i]}`, minWidth: 140,
             }}>
-              <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', marginBottom: 8 }}>{q} {Q_LABELS[q]}</div>
+              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', marginBottom: 8 }}>{q} {Q_LABELS[q]}</div>
               <div style={{ fontSize: 36, fontWeight: 800, color: qColors[i], fontFamily: "'Sora', sans-serif" }}>{qs[q]}</div>
-              <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>committed ideas</div>
+              <div style={{ fontSize: 11, color: 'var(--fg-3)', marginTop: 2 }}>committed ideas</div>
             </div>
           ))}
         </div>
@@ -173,7 +173,7 @@ function QuarterSlide({ quarter, ideas, color }: { quarter: string; ideas: Roadm
 
   if (!qIdeas.length) {
     return (
-      <div style={{ color: '#64748B', fontSize: 18, textAlign: 'center' }}>
+      <div style={{ color: 'var(--fg-3)', fontSize: 18, textAlign: 'center' }}>
         No committed ideas in {quarter} 2026
       </div>
     );
@@ -183,12 +183,12 @@ function QuarterSlide({ quarter, ideas, color }: { quarter: string; ideas: Roadm
     <div style={{ width: '100%', maxWidth: 1200 }}>
       {/* Header */}
       <div style={{ display: 'flex', marginBottom: 16, borderBottom: `2px solid ${color}`, paddingBottom: 8 }}>
-        <div style={{ width: 240, fontSize: 11, fontWeight: 700, color: '#94A3B8', letterSpacing: '0.06em' }}>
+        <div style={{ width: 240, fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', letterSpacing: '0.06em' }}>
           IDEA
         </div>
         <div style={{ flex: 1, display: 'flex' }}>
           {months.map(m => (
-            <div key={m} style={{ flex: 1, textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#94A3B8', letterSpacing: '0.06em' }}>
+            <div key={m} style={{ flex: 1, textAlign: 'center', fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', letterSpacing: '0.06em' }}>
               {m.toUpperCase()}
             </div>
           ))}
@@ -205,8 +205,8 @@ function QuarterSlide({ quarter, ideas, color }: { quarter: string; ideas: Roadm
             borderBottom: '1px solid rgba(255,255,255,0.04)',
           }}>
             <div style={{ width: 240, paddingRight: 16 }}>
-              <div style={{ fontSize: 10, color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>{idea.ideaKey}</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#E2E8F0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t}</div>
+              <div style={{ fontSize: 10, color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>{idea.ideaKey}</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--divider)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t}</div>
             </div>
             <div style={{ flex: 1, display: 'flex', position: 'relative', height: '100%', alignItems: 'center' }}>
               {months.map((m, mi) => (
@@ -224,7 +224,7 @@ function QuarterSlide({ quarter, ideas, color }: { quarter: string; ideas: Roadm
                   {/* Show a diamond if DEV date falls in this month */}
                   {idea.milestones.dev && new Date(idea.milestones.dev + 'T00:00:00').toLocaleString('en', { month: 'short' }) === m && !idea.milestones.prod?.startsWith(idea.milestones.dev?.slice(0, 7) || '___') && (
                     <div style={{
-                      width: 8, height: 8, background: '#64748B', transform: 'rotate(45deg)',
+                      width: 8, height: 8, background: 'var(--fg-3)', transform: 'rotate(45deg)',
                     }} />
                   )}
                 </div>

@@ -52,8 +52,8 @@ function CustomCheckbox({ checked, indeterminate, onChange }: { checked: boolean
       onClick={(e) => { e.stopPropagation(); onChange(e); }}
       className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-all duration-100"
       style={{
-        border: checked || indeterminate ? '1.5px solid #2563eb' : '1.5px solid #d4d4d8',
-        background: checked || indeterminate ? '#2563eb' : 'transparent',
+        border: checked || indeterminate ? '1.5px solid var(--cp-blue)' : '1.5px solid #d4d4d8',
+        background: checked || indeterminate ? 'var(--cp-blue)' : 'transparent',
         cursor: 'pointer',
       }}
     >

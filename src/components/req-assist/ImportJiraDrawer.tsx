@@ -214,7 +214,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
               flexDirection: 'column',
               borderLeft: '0.75px solid #E5E7EB',
               boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
-              background: '#FFFFFF',
+              background: 'var(--bg-app)',
               outline: 'none',
             }}
           >
@@ -225,13 +225,13 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 16, fontWeight: 650, color: '#111827', fontFamily: "'Sora', sans-serif" }}>Import from Jira</span>
             <span style={{ flex: 1 }} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#2563EB', background: '#EFF6FF', borderRadius: 3, padding: '2px 8px' }}>AI-Assisted Import</span>
-            <span style={{ fontSize: 12, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Step {step} of 2</span>
-            <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#6B7280' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', borderRadius: 3, padding: '2px 8px' }}>AI-Assisted Import</span>
+            <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Step {step} of 2</span>
+            <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--fg-3)' }}>
               <X size={16} />
             </button>
           </div>
-          <span style={{ fontSize: 13, color: '#6B7280', fontFamily: "'Inter', sans-serif", marginTop: 2 }}>Connected via Catalyst integration</span>
+          <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 2 }}>Connected via Catalyst integration</span>
         </div>
 
         {/* BODY */}
@@ -274,12 +274,12 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
         <div style={{ height: 64, borderTop: '0.75px solid #E5E7EB', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           {step === 1 ? (
             <>
-              <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Cancel</button>
+              <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Cancel</button>
               <button
                 onClick={() => { if (selectedProject) { setStep(2); setSelectedTickets([]); } }}
                 disabled={!selectedProject}
                 style={{
-                  background: selectedProject ? '#2563EB' : '#93C5FD', color: '#FFFFFF',
+                  background: selectedProject ? 'var(--cp-blue)' : '#93C5FD', color: 'var(--bg-app)',
                   border: 'none', borderRadius: 6, padding: '0 16px', height: 36,
                   fontSize: 13, fontWeight: 600, cursor: selectedProject ? 'pointer' : 'not-allowed',
                   fontFamily: "'Inter', sans-serif", opacity: selectedProject ? 1 : 0.6,
@@ -288,12 +288,12 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
             </>
           ) : (
             <>
-              <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>← Back</button>
+              <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>← Back</button>
               <button
                 onClick={handleImport}
                 disabled={selectedTickets.length === 0 || importMutation.isPending}
                 style={{
-                  background: selectedTickets.length > 0 ? '#2563EB' : '#93C5FD', color: '#FFFFFF',
+                  background: selectedTickets.length > 0 ? 'var(--cp-blue)' : '#93C5FD', color: 'var(--bg-app)',
                   border: 'none', borderRadius: 6, padding: '0 16px', height: 36,
                   fontSize: 13, fontWeight: 600,
                   cursor: selectedTickets.length > 0 ? 'pointer' : 'not-allowed',
@@ -340,9 +340,9 @@ function Step1({
     <>
       {/* Section label */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <span style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: "'Inter', sans-serif" }}>SELECT PROJECT</span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: "'Inter', sans-serif" }}>SELECT PROJECT</span>
         {projects.length > 0 && (
-          <button onClick={onSyncAll} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>
+          <button onClick={onSyncAll} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>
             <RefreshCw size={14} className={syncingKey ? 'animate-spin' : ''} />
             Sync All
           </button>
@@ -352,13 +352,13 @@ function Step1({
       {/* Project cards or empty state */}
       {loadingProjects ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 48 }}>
-          <Loader2 size={20} className="animate-spin" style={{ color: '#9CA3AF' }} />
+          <Loader2 size={20} className="animate-spin" style={{ color: 'var(--fg-4)' }} />
         </div>
       ) : projects.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
-          <Inbox size={32} style={{ color: '#9CA3AF' }} />
+          <Inbox size={32} style={{ color: 'var(--fg-4)' }} />
           <span style={{ fontSize: 14, fontWeight: 600, color: '#374151', marginTop: 12, fontFamily: "'Inter', sans-serif" }}>No projects connected yet</span>
-          <span style={{ fontSize: 13, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Add your first Jira project below</span>
+          <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Add your first Jira project below</span>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -369,8 +369,8 @@ function Step1({
                 key={p.project_key}
                 onClick={() => onSelect(p.project_key)}
                 style={{
-                  height: 48, border: selected ? '1.5px solid #2563EB' : '0.75px solid #E5E7EB',
-                  borderRadius: 6, background: selected ? 'rgba(37,99,235,0.04)' : '#FFFFFF',
+                  height: 48, border: selected ? '1.5px solid var(--cp-blue)' : '0.75px solid #E5E7EB',
+                  borderRadius: 6, background: selected ? 'rgba(37,99,235,0.04)' : 'var(--bg-app)',
                   padding: '0 12px', display: 'flex', alignItems: 'center', gap: 12,
                   cursor: 'pointer', width: '100%', textAlign: 'left',
                   transition: 'background 0.1s',
@@ -381,17 +381,17 @@ function Step1({
                 {/* Avatar */}
                 <div style={{
                   width: 32, height: 32, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: getAvatarColor(p.project_key), color: '#FFFFFF', fontSize: 13, fontWeight: 700, fontFamily: "'Inter', sans-serif",
+                  background: getAvatarColor(p.project_key), color: 'var(--bg-app)', fontSize: 13, fontWeight: 700, fontFamily: "'Inter', sans-serif",
                 }}>
                   {p.project_key.slice(0, 2)}
                 </div>
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#111827', fontFamily: "'Inter', sans-serif", flex: 1 }}>
-                  {p.project_name} <span style={{ fontSize: 12, color: '#6B7280', fontWeight: 400 }}>({p.project_key})</span>
+                  {p.project_name} <span style={{ fontSize: 12, color: 'var(--fg-3)', fontWeight: 400 }}>({p.project_key})</span>
                 </span>
                 <ProjectTicketCountBadge projectKey={p.project_key} />
                 <button
                   onClick={e => { e.stopPropagation(); onSyncOne(p.project_key); }}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#6B7280' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--fg-3)' }}
                 >
                   <RefreshCw size={12} className={syncingKey === p.project_key ? 'animate-spin' : ''} />
                 </button>
@@ -405,7 +405,7 @@ function Step1({
       <div style={{ marginTop: 24, position: 'relative' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
           <div style={{ flex: 1, height: '0.75px', background: '#F3F4F6' }} />
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', fontFamily: "'Inter', sans-serif", background: '#FFFFFF', padding: '0 8px' }}>ADD PROJECT</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', textTransform: 'uppercase', fontFamily: "'Inter', sans-serif", background: 'var(--bg-app)', padding: '0 8px' }}>ADD PROJECT</span>
           <div style={{ flex: 1, height: '0.75px', background: '#F3F4F6' }} />
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -424,7 +424,7 @@ function Step1({
             onClick={onVerify}
             disabled={!addInput.trim() || verifyState === 'loading'}
             style={{
-              background: addInput.trim() ? '#2563EB' : '#93C5FD', color: '#FFFFFF',
+              background: addInput.trim() ? 'var(--cp-blue)' : '#93C5FD', color: 'var(--bg-app)',
               border: 'none', borderRadius: 6, padding: '0 16px', height: 36,
               fontSize: 13, fontWeight: 600, cursor: addInput.trim() ? 'pointer' : 'not-allowed',
               fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6,
@@ -439,28 +439,28 @@ function Step1({
         <div style={{ marginTop: 8 }}>
           {verifyState === 'loading' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Loader2 size={14} className="animate-spin" style={{ color: '#6B7280' }} />
-              <span style={{ fontSize: 13, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Verifying with Jira...</span>
+              <Loader2 size={14} className="animate-spin" style={{ color: 'var(--fg-3)' }} />
+              <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Verifying with Jira...</span>
             </div>
           )}
           {verifyState === 'success' && verifyResult && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <CheckCircle size={14} style={{ color: '#16A34A' }} />
-              <span style={{ fontSize: 13, color: '#16A34A', fontFamily: "'Inter', sans-serif" }}>{verifyResult.project_name} found · {verifyResult.count} tickets</span>
+              <CheckCircle size={14} style={{ color: 'var(--sem-success)' }} />
+              <span style={{ fontSize: 13, color: 'var(--sem-success)', fontFamily: "'Inter', sans-serif" }}>{verifyResult.project_name} found · {verifyResult.count} tickets</span>
             </div>
           )}
           {verifyState === 'not_found' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <XCircle size={14} style={{ color: '#DC2626' }} />
-              <span style={{ fontSize: 13, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>Project not found. Check the key and try again.</span>
+              <XCircle size={14} style={{ color: 'var(--sem-danger)' }} />
+              <span style={{ fontSize: 13, color: 'var(--sem-danger)', fontFamily: "'Inter', sans-serif" }}>Project not found. Check the key and try again.</span>
             </div>
           )}
           {verifyState === 'not_configured' && (
-            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: '#FEF3C7', border: '0.75px solid #D97706', borderRadius: 6, padding: '10px 12px', marginTop: 4 }}>
-              <AlertTriangle size={14} style={{ color: '#D97706', flexShrink: 0, marginTop: 2 }} />
+            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: '#FEF3C7', border: '0.75px solid var(--sem-warning)', borderRadius: 6, padding: '10px 12px', marginTop: 4 }}>
+              <AlertTriangle size={14} style={{ color: 'var(--sem-warning)', flexShrink: 0, marginTop: 2 }} />
               <div>
                 <span style={{ fontSize: 13, color: '#92400E', fontFamily: "'Inter', sans-serif" }}>Jira integration not configured. Go to Settings → Integrations. </span>
-                <a href="/settings/integrations" style={{ fontSize: 13, color: '#2563EB', textDecoration: 'underline', fontFamily: "'Inter', sans-serif" }}>Go to Settings →</a>
+                <a href="/settings/integrations" style={{ fontSize: 13, color: 'var(--cp-blue)', textDecoration: 'underline', fontFamily: "'Inter', sans-serif" }}>Go to Settings →</a>
               </div>
             </div>
           )}
@@ -503,20 +503,20 @@ function Step2({
 
   return (
     <>
-      <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
         {projectName} · Showing tickets with attachments only
       </div>
-      <div style={{ fontSize: 12, color: '#64748B', margin: '8px 0 4px 0', fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ fontSize: 12, color: 'var(--fg-3)', margin: '8px 0 4px 0', fontFamily: "'Inter', sans-serif" }}>
         Showing {pdfIssueCount} of {totalIssueCount} issues — PDF attachments only
       </div>
-      <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 16, fontFamily: "'JetBrains Mono', monospace" }}>
+      <div style={{ fontSize: 11, color: 'var(--fg-4)', marginBottom: 16, fontFamily: "'JetBrains Mono', monospace" }}>
         {syncLabel}
       </div>
 
       {/* Filter bar */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
         <div style={{ flex: 1, position: 'relative' }}>
-          <Search size={14} style={{ position: 'absolute', left: 12, top: 11, color: '#9CA3AF' }} />
+          <Search size={14} style={{ position: 'absolute', left: 12, top: 11, color: 'var(--fg-4)' }} />
           <input
             value={search}
             onChange={e => onSearch(e.target.value)}
@@ -534,11 +534,11 @@ function Step2({
             height: 36, borderRadius: 6, padding: '0 12px', fontSize: 13, fontWeight: 600,
             cursor: 'pointer', fontFamily: "'Inter', sans-serif",
             background: pdfOnly ? '#0C66E4' : '#F3F4F6',
-            color: pdfOnly ? '#FFFFFF' : '#374151',
+            color: pdfOnly ? 'var(--bg-app)' : '#374151',
             border: `0.75px solid ${pdfOnly ? '#BFDBFE' : '#E5E7EB'}`,
           }}
         >PDF Only</button>
-        <button onClick={onSync} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#6B7280' }}>
+        <button onClick={onSync} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--fg-3)' }}>
           <RefreshCw size={14} className={syncing ? 'animate-spin' : ''} />
         </button>
       </div>
@@ -552,9 +552,9 @@ function Step2({
         </div>
       ) : tickets.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
-          <RefreshCw size={32} style={{ color: '#6B7280' }} />
+          <RefreshCw size={32} style={{ color: 'var(--fg-3)' }} />
           <span style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginTop: 12, fontFamily: "'Inter', sans-serif" }}>No tickets found</span>
-          <span style={{ fontSize: 13, color: '#6B7280', fontFamily: "'Inter', sans-serif", textAlign: 'center', maxWidth: 280, marginTop: 4 }}>
+          <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", textAlign: 'center', maxWidth: 280, marginTop: 4 }}>
             No Jira tickets with attachments were found for this project. Tickets must have at least one attachment to appear here.
           </span>
           <button
@@ -563,7 +563,7 @@ function Step2({
             style={{
               marginTop: 12, height: 32, borderRadius: 6, padding: '0 16px',
               fontSize: 13, fontWeight: 600, fontFamily: "'Inter', sans-serif",
-              color: '#2563EB', background: 'transparent', border: '1px solid #2563EB',
+              color: 'var(--cp-blue)', background: 'transparent', border: '1px solid var(--cp-blue)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
             }}
           >
@@ -580,7 +580,7 @@ function Step2({
                 type="checkbox"
                 checked={selectedTickets.length === tickets.length && tickets.length > 0}
                 onChange={e => onToggleAll(e.target.checked)}
-                style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#2563EB' }}
+                style={{ width: 16, height: 16, cursor: 'pointer', accentColor: 'var(--cp-blue)' }}
               />
             </div>
             {[
@@ -592,7 +592,7 @@ function Step2({
             ].map(col => (
               <div key={col.label} style={{
                 width: col.w, flex: col.w ? undefined : 1,
-                padding: '10px 12px', fontSize: 11, fontWeight: 700, color: '#6B7280',
+                padding: '10px 12px', fontSize: 11, fontWeight: 700, color: 'var(--fg-3)',
                 textTransform: 'uppercase', fontFamily: "'Inter', sans-serif",
               }}>{col.label}</div>
             ))}
@@ -624,30 +624,30 @@ function Step2({
                     type="checkbox"
                     checked={checked}
                     onChange={e => { e.stopPropagation(); onToggle(t.ticket_key); }}
-                    style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#2563EB', opacity: 1 }}
+                    style={{ width: 16, height: 16, cursor: 'pointer', accentColor: 'var(--cp-blue)', opacity: 1 }}
                   />
                 </div>
-                <div style={{ width: 96, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: muted ? '#9CA3AF' : '#374151', fontFamily: "'JetBrains Mono', monospace" }}>{t.ticket_key}</div>
-                <div dir="auto" style={{ flex: 1, padding: '8px 12px', fontSize: 13, color: muted ? '#9CA3AF' : '#111827', fontFamily: "'Inter', sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
+                <div style={{ width: 96, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: muted ? 'var(--fg-4)' : '#374151', fontFamily: "'JetBrains Mono', monospace" }}>{t.ticket_key}</div>
+                <div dir="auto" style={{ flex: 1, padding: '8px 12px', fontSize: 13, color: muted ? 'var(--fg-4)' : '#111827', fontFamily: "'Inter', sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
                 <div style={{ width: 88, padding: '8px 12px', opacity: muted ? 0.4 : 1 }}>
                   <Lozenge label={t.priority || 'MEDIUM'} styles={PRIORITY_STYLES} />
                 </div>
                 <div style={{ width: 48, padding: '8px 12px', display: 'flex', alignItems: 'center', opacity: muted ? 0.4 : 1 }}>
-                  {t.has_pdf && <FileText size={14} style={{ color: '#2563EB' }} />}
+                  {t.has_pdf && <FileText size={14} style={{ color: 'var(--cp-blue)' }} />}
                 </div>
                 <div style={{ minWidth: 140, width: 140, padding: '8px 12px', opacity: muted ? 0.5 : 1 }} title={t.status || 'Open'}>
                   <Lozenge label={t.status || 'Open'} styles={STATUS_STYLES} />
                 </div>
                 <div style={{ width: 100, padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                   {reActivated ? (
-                    <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 3, background: '#0C66E4', color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>Re-import</span>
+                    <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 3, background: '#0C66E4', color: 'var(--bg-app)', fontFamily: "'Inter', sans-serif" }}>Re-import</span>
                   ) : imported ? (
                     <>
-                      <span className="group-hover:hidden" style={{ fontSize: 11, padding: '2px 6px', borderRadius: 3, background: '#F3F4F6', color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Imported</span>
+                      <span className="group-hover:hidden" style={{ fontSize: 11, padding: '2px 6px', borderRadius: 3, background: '#F3F4F6', color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Imported</span>
                       <button
                         className="hidden group-hover:inline-flex"
                         onClick={(e) => { e.stopPropagation(); onReImport(t.ticket_key); }}
-                        style={{ fontSize: 12, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}
+                        style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}
                         onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                         onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                       >↻ Re-import</button>
@@ -659,7 +659,7 @@ function Step2({
           })}
 
           {/* Footer */}
-          <div style={{ padding: '8px 0', marginTop: 8, fontSize: 13, color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>
+          <div style={{ padding: '8px 0', marginTop: 8, fontSize: 13, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>
             {selectedTickets.length} of {tickets.length} tickets selected
           </div>
         </>

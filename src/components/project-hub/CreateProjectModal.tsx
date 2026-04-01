@@ -98,7 +98,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-0">
-          <h2 className="text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]" style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>
+          <h2 className="text-[var(--fg-1)] dark:text-[rgba(248,244,240,0.92)]" style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>
             Create New Project
           </h2>
           <button

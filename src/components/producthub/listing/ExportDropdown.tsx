@@ -104,7 +104,7 @@ export function ExportDropdown({ data, anchorRef, isOpen, onClose }: ExportDropd
         border: '1px solid #e4e4e7',
         boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
         zIndex: 500,
-        background: '#ffffff',
+        background: 'var(--bg-app)',
       }}
     >
       <button

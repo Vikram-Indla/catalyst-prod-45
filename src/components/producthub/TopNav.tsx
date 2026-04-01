@@ -36,7 +36,7 @@ export function TopNav() {
         style={{
           position: 'fixed', top: 0, left: 0, right: 0,
           height: 48, zIndex: 50,
-          background: '#0F172A',
+          background: 'var(--fg-1)',
           display: 'flex', alignItems: 'center',
           padding: '0 16px', gap: 0,
           fontFamily: "'Inter', sans-serif",
@@ -52,7 +52,7 @@ export function TopNav() {
           }}
         >
           <span style={{
-            fontSize: 14, fontWeight: 700, color: '#FFFFFF',
+            fontSize: 14, fontWeight: 700, color: 'var(--bg-app)',
             letterSpacing: '-0.02em',
           }}>
             Catalyst<span style={{ fontSize: 9, fontWeight: 400, verticalAlign: 'super', marginLeft: 1, opacity: 0.6 }}>™</span>

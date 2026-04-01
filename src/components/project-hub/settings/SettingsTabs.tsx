@@ -24,7 +24,7 @@ export function SettingsTabs({ active, onChange }: SettingsTabsProps) {
     <div
       ref={containerRef}
       className="flex overflow-x-auto"
-      style={{ borderBottom: '1px solid #E2E8F0', gap: 0 }}
+      style={{ borderBottom: '1px solid var(--divider)', gap: 0 }}
     >
       {TABS.map(tab => {
         const isActive = tab === active;

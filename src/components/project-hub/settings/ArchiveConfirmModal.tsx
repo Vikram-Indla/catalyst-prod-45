@@ -35,7 +35,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <AlertTriangle size={18} color="#DC2626" strokeWidth={2} />
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>
               Archive Project
             </h3>
           </div>
@@ -48,7 +48,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
           </button>
         </div>
 
-        <p style={{ fontSize: 13, color: '#334155', lineHeight: 1.6 }}>
+        <p style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.6 }}>
           Are you sure you want to archive <strong>{projectName}</strong>? This will hide it from the project list but it can be restored later.
         </p>
 

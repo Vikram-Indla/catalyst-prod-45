@@ -439,7 +439,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                           );
                         }}
                       >
-                        <div className="w-3.5 h-3.5 rounded border flex items-center justify-center" style={{ borderColor: checked ? 'var(--cp-blue)' : '#CBD5E1', background: checked ? 'var(--cp-blue)' : 'var(--bg-app)' }}>
+                        <div className="w-3.5 h-3.5 rounded border flex items-center justify-center" style={{ borderColor: checked ? 'var(--cp-blue)' : 'var(--divider)', background: checked ? 'var(--cp-blue)' : 'var(--bg-app)' }}>
                           {checked && <span className="text-white text-[9px]">✓</span>}
                         </div>
                         <span className="w-2 h-2 rounded-full" style={{ background: lb.color }} />

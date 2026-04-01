@@ -101,7 +101,7 @@ function renderInline(text: string): React.ReactNode[] {
       parts.push(
         <code key={key++} style={{
           fontFamily: F.mono,
-          color: '#2563EB', background: '#EFF6FF', border: '1px solid #DBEAFE',
+          color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE',
           borderRadius: 4, padding: '1px 6px', fontSize: 12, fontWeight: 600,
         }}>{match[1]}</code>
       );
@@ -126,7 +126,7 @@ function renderSmartCell(cellText: string, colIndex: number): React.ReactNode {
   if (key) {
     return (
       <span style={{
-        fontSize: 12, fontWeight: 500, color: '#2563EB', fontFamily: F.mono,
+        fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', fontFamily: F.mono,
         cursor: 'pointer', whiteSpace: 'nowrap',
       }}>{key}</span>
     );
@@ -152,7 +152,7 @@ function renderSmartCell(cellText: string, colIndex: number): React.ReactNode {
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: age.color, flexShrink: 0 }} />
-        <span style={{ fontSize: 12, fontFamily: F.mono, color: '#64748B', fontVariantNumeric: 'tabular-nums' }}>{age.value}</span>
+        <span style={{ fontSize: 12, fontFamily: F.mono, color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>{age.value}</span>
       </span>
     );
   }
@@ -171,12 +171,12 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
 }) {
   return (
     <div style={{
-      padding: '12px 20px', background: '#F8FAFC',
+      padding: '12px 20px', background: 'var(--bg-1)',
       borderTop: '0.75px solid rgba(15,23,42,0.06)',
       display: 'flex', flexDirection: 'column', gap: 8,
     }}>
       {/* Scope label */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748B' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--fg-3)' }}>
         <Clock size={14} strokeWidth={2} color="#64748B" />
         <span>Showing {totalShown} of {totalAvailable} · {scopeLabel}</span>
       </div>
@@ -187,7 +187,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
           onClick={onExtend}
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
-            padding: '10px 14px', background: '#FFFFFF',
+            padding: '10px 14px', background: 'var(--bg-app)',
             border: '1.5px solid rgba(15,23,42,0.08)', borderRadius: 8,
             cursor: 'pointer', transition: 'all 150ms',
             width: '100%', textAlign: 'left',
@@ -204,14 +204,14 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
           }}
         >
           <div style={{
-            width: 32, height: 32, minWidth: 32, background: '#EFF6FF',
+            width: 32, height: 32, minWidth: 32, background: 'var(--cp-blue-wash)',
             borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <ArrowUpRight size={16} strokeWidth={2} color="#2563EB" />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <span style={{ fontSize: 13, fontWeight: 500, color: '#1D4ED8' }}>{extendLabel}</span>
-            {extendHint && <span style={{ fontSize: 11, color: '#64748B' }}>{extendHint}</span>}
+            {extendHint && <span style={{ fontSize: 11, color: 'var(--fg-3)' }}>{extendHint}</span>}
           </div>
         </button>
       )}
@@ -285,7 +285,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
                           <th key={ci} style={{
                             padding: '10px 12px', fontSize: 11, fontWeight: 650,
                             textTransform: 'uppercase', letterSpacing: '0.06em',
-                            color: '#64748B', fontFamily: F.inter, textAlign: 'left',
+                            color: 'var(--fg-3)', fontFamily: F.inter, textAlign: 'left',
                             whiteSpace: 'nowrap',
                             borderBottom: '1.5px solid rgba(15,23,42,0.12)',
                           }}>{cell}</th>
@@ -293,7 +293,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
                       }
                       return (
                         <td key={ci} style={{
-                          padding: '8px 12px', fontSize: 13, color: '#0F172A',
+                          padding: '8px 12px', fontSize: 13, color: 'var(--fg-1)',
                           fontFamily: F.inter, overflow: 'hidden',
                           textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           verticalAlign: 'middle',
@@ -317,13 +317,13 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
                 {tableRows.map((row, ri) => (
                   <tr key={ri} style={{
                     borderBottom: '1px solid #F4F4F5',
-                    background: ri % 2 === 0 ? '#FAFAFA' : '#FFFFFF',
+                    background: ri % 2 === 0 ? '#FAFAFA' : 'var(--bg-app)',
                   }}>
                     {row.map((cell, ci) => (
                       <td key={ci} style={{
                         padding: '6px 10px', verticalAlign: 'top',
                         whiteSpace: ci === 0 ? 'nowrap' : 'normal',
-                        color: ci === 0 ? '#2563EB' : '#374151',
+                        color: ci === 0 ? 'var(--cp-blue)' : '#374151',
                         fontFamily: ci === 0 ? F.mono : 'inherit',
                         fontWeight: ci === 0 ? 600 : 400,
                         fontSize: ci === 0 ? 11.5 : 12.5,
@@ -347,10 +347,10 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
       lastHeaderDanger = danger;
       elements.push(
         <div key={idx} style={{ marginTop: 20, marginBottom: 6 }}>
-          <div style={{ width: 24, height: 2, background: danger ? '#DC2626' : '#2563EB', borderRadius: 1, marginBottom: 8 }} />
+          <div style={{ width: 24, height: 2, background: danger ? 'var(--sem-danger)' : 'var(--cp-blue)', borderRadius: 1, marginBottom: 8 }} />
           <h4 style={{
             fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px',
-            color: danger ? '#DC2626' : '#2563EB', margin: 0,
+            color: danger ? 'var(--sem-danger)' : 'var(--cp-blue)', margin: 0,
             fontFamily: "system-ui, -apple-system, sans-serif",
           }}>{label}</h4>
         </div>
@@ -364,10 +364,10 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
       const label = trimmed.replace(/^#{1,4}\s*/, '').trim();
       elements.push(
         <div key={idx} style={{ marginTop: 16, marginBottom: 6 }}>
-          <div style={{ width: 24, height: 2, background: '#2563EB', borderRadius: 1, marginBottom: 8 }} />
+          <div style={{ width: 24, height: 2, background: 'var(--cp-blue)', borderRadius: 1, marginBottom: 8 }} />
           <h4 style={{
             fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px',
-            color: '#2563EB', margin: 0, fontFamily: "system-ui, -apple-system, sans-serif",
+            color: 'var(--cp-blue)', margin: 0, fontFamily: "system-ui, -apple-system, sans-serif",
           }}>{label}</h4>
         </div>
       );
@@ -378,7 +378,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
       const content = trimmed.slice(2);
       elements.push(
         <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 4, fontSize: 13.5, lineHeight: 1.7 }}>
-          <span style={{ width: 4, height: 4, borderRadius: '50%', background: lastHeaderDanger ? '#DC2626' : '#2563EB', flexShrink: 0, marginTop: 9 }} />
+          <span style={{ width: 4, height: 4, borderRadius: '50%', background: lastHeaderDanger ? 'var(--sem-danger)' : 'var(--cp-blue)', flexShrink: 0, marginTop: 9 }} />
           <span style={{ color: '#374151' }}>{renderInline(content)}</span>
         </div>
       );
@@ -455,7 +455,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
             </>
           )}
         </div>
-        <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: F.inter }}>
+        <span style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: F.inter }}>
           {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </span>
       </div>

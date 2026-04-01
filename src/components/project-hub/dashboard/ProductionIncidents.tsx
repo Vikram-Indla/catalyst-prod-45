@@ -53,7 +53,7 @@ export default function ProductionIncidents({ projectId, releaseMap }: Props) {
         <>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
-              <tr style={{ borderBottom: '2px solid #CBD5E1' }}>
+              <tr style={{ borderBottom: '2px solid var(--divider)' }}>
                 {['Rel', 'Key', 'Pri', 'Title', 'Open', 'Reported', 'Assigned'].map(h => (
                   <th key={h} style={{ padding: '6px 6px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.08em', fontFamily: "'Inter', sans-serif" }}>{h}</th>
                 ))}
@@ -70,7 +70,7 @@ export default function ProductionIncidents({ projectId, releaseMap }: Props) {
                         {releaseMap[item.release_id] || '—'}
                       </span>
                     </td>
-                    <td style={{ padding: '0 6px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#1D4ED8', fontWeight: 700, cursor: 'pointer' }}>
+                    <td style={{ padding: '0 6px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--cp-primary-70)', fontWeight: 700, cursor: 'pointer' }}>
                       {item.key}
                     </td>
                     <td style={{ padding: '0 6px' }}>

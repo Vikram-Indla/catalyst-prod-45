@@ -107,7 +107,7 @@ export function SidebarProjectNav({
                 style={{ border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
               >
                 <div className="min-w-0">
-                  <div className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 10, fontWeight: 500 }}>{projectKey}</div>
+                  <div className="text-[var(--fg-3)] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 10, fontWeight: 500 }}>{projectKey}</div>
                   <div
                     className="truncate text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]"
                     style={{ fontSize: 13, fontWeight: 600, fontFamily: "'Sora', sans-serif" }}
@@ -187,7 +187,7 @@ export function SidebarProjectNav({
         ))}
 
         {!collapsed && (
-          <div className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '8px 10px 4px' }}>
+          <div className="text-[var(--fg-3)] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '8px 10px 4px' }}>
             Planning
           </div>
         )}
@@ -196,7 +196,7 @@ export function SidebarProjectNav({
         ))}
 
         {!collapsed && (
-          <div className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '12px 10px 4px' }}>
+          <div className="text-[var(--fg-3)] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '12px 10px 4px' }}>
             Tracking
           </div>
         )}
@@ -205,7 +205,7 @@ export function SidebarProjectNav({
         ))}
 
         {!collapsed && (
-          <div className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '12px 10px 4px' }}>
+          <div className="text-[var(--fg-3)] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '12px 10px 4px' }}>
             AI Intelligence
           </div>
         )}
@@ -214,7 +214,7 @@ export function SidebarProjectNav({
       </div>
 
       {/* Settings pinned to bottom */}
-      <div className="border-t border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)]" style={{ padding: '8px 6px' }}>
+      <div className="border-t border-[var(--divider)] dark:border-[rgba(248,244,240,0.10)]" style={{ padding: '8px 6px' }}>
         <NavItem icon={Settings} label="Settings" isActive={isPathActive('settings')} onClick={() => navigate(`${basePath}/settings`)} collapsed={collapsed} />
       </div>
     </div>

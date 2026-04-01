@@ -143,12 +143,12 @@ function ChangesTab({ changes }: { changes: any[] }) {
       </thead>
       <tbody>
         {changes.map((c: any) => (
-          <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ height: 36, background: '#FFFFFF' }}>
-            <td className="px-3 py-2"><span className="font-medium text-[#2563EB]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span></td>
+          <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ height: 36, background: 'var(--bg-app)' }}>
+            <td className="px-3 py-2"><span className="font-medium text-[var(--cp-blue)]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span></td>
             <td className="px-3 py-2 truncate max-w-[200px]" title={c.title}>{c.title}</td>
             <td className="px-3 py-2"><StatusLozenge status={c.status} /></td>
             <td className="px-3 py-2"><span className="text-[11px] font-bold uppercase text-[#475569]">{c.risk_level}</span></td>
-            <td className="px-3 py-2 text-[#64748B]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>{c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</td>
+            <td className="px-3 py-2 text-[var(--fg-3)]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>{c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</td>
           </tr>
         ))}
       </tbody>
@@ -187,7 +187,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
               <span className="text-[11px] text-[#64748B]">{passCount}/{totalCases} cases</span>
             </div>
             <div className="w-full h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
-              <div className="h-full bg-[#16A34A] rounded-full" style={{ width: `${passRate}%` }} />
+              <div className="h-full bg-[var(--sem-success)] rounded-full" style={{ width: `${passRate}%` }} />
             </div>
             {atRisk && <CatalystAIChip label="test cycle at risk — recommend pause release" className="mt-2" />}
           </div>
@@ -243,7 +243,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
               {stageSignoffs.filter((so: any) => so.status === 'pending').map((so: any) => {
                 const waitHours = so.wait_started_at ? differenceInHours(new Date(), new Date(so.wait_started_at)) : 0;
                 return (
-                  <span key={so.id} className="ml-2 text-[11px] font-bold" style={{ color: waitHours > 48 ? '#DC2626' : waitHours > 24 ? '#2563EB' : '#94A3B8' }}>
+                  <span key={so.id} className="ml-2 text-[11px] font-bold" style={{ color: waitHours > 48 ? 'var(--sem-danger)' : waitHours > 24 ? 'var(--cp-blue)' : 'var(--fg-4)' }}>
                     {getSignoffWaitTime(so.wait_started_at)}
                   </span>
                 );

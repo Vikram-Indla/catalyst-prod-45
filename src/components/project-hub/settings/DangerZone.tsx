@@ -36,12 +36,12 @@ export function DangerZone({ projectId, projectName }: DangerZoneProps) {
     <>
       <div
         className="ph-card"
-        style={{ borderLeft: '4px solid #DC2626' }}
+        style={{ borderLeft: '4px solid var(--sem-danger)' }}
       >
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: '#DC2626', fontFamily: "'Sora', sans-serif", paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid #F1F5F9' }}>
+        <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--sem-danger)', fontFamily: "'Sora', sans-serif", paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
           Danger Zone
         </h3>
-        <p style={{ fontSize: 13, color: '#64748B', maxWidth: 520 }}>
+        <p style={{ fontSize: 13, color: 'var(--fg-3)', maxWidth: 520 }}>
           Archive this project. Archived projects are hidden from the project list but can be restored.
         </p>
         <button

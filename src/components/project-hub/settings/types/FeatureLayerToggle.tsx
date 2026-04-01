@@ -38,8 +38,8 @@ export function FeatureLayerToggle({ projectId, enabled, onToggled }: FeatureLay
   };
 
   return (
-    <div className="flex items-center gap-3 mt-5 pt-4" style={{ borderTop: '1px solid #E2E8F0' }}>
-      <span style={{ fontSize: 13, fontWeight: 500, color: '#334155' }}>Feature Layer:</span>
+    <div className="flex items-center gap-3 mt-5 pt-4" style={{ borderTop: '1px solid var(--divider)' }}>
+      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-2)' }}>Feature Layer:</span>
       <span
         className="rounded-full"
         style={{

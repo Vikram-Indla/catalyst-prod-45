@@ -30,7 +30,7 @@ export function IconColorPicker({ icon, color, onIconChange, onColorChange }: Ic
     <div className="space-y-4">
       {/* Icon picker */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: '#334155', display: 'block', marginBottom: 6 }}>
+        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
           Icon
         </label>
         <div className="flex items-center gap-2 flex-wrap">
@@ -56,7 +56,7 @@ export function IconColorPicker({ icon, color, onIconChange, onColorChange }: Ic
 
       {/* Color picker */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: '#334155', display: 'block', marginBottom: 6 }}>
+        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
           Color
         </label>
         <div className="flex items-center gap-2 flex-wrap">

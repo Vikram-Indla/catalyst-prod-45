@@ -15,8 +15,8 @@ export function CategoryLegend() {
           <div key={cat.name} className="flex items-start gap-3">
             <div className="flex-shrink-0 rounded-full mt-1" style={{ width: 10, height: 10, background: cat.color }} />
             <div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{cat.name}</div>
-              <div style={{ fontSize: 12, color: '#64748B', marginTop: 1 }}>{cat.description}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>{cat.name}</div>
+              <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 1 }}>{cat.description}</div>
             </div>
           </div>
         ))}

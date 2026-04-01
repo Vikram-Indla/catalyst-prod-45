@@ -90,8 +90,8 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
     <div className="space-y-4">
       {/* Name */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: '#334155', display: 'block', marginBottom: 4 }}>
-          Project Name <span style={{ color: '#EF4444' }}>*</span>
+        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+          Project Name <span style={{ color: 'var(--sem-danger)' }}>*</span>
         </label>
         <input
           value={data.name}
@@ -103,8 +103,8 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
       {/* Key */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: '#334155', display: 'block', marginBottom: 4 }}>
-          Project Key <span style={{ color: '#EF4444' }}>*</span>
+        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+          Project Key <span style={{ color: 'var(--sem-danger)' }}>*</span>
         </label>
         <div className="relative">
           <input
@@ -123,14 +123,14 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
             {keyStatus === 'checking' && (
-              <div className="animate-spin rounded-full" style={{ width: 14, height: 14, border: '2px solid #E2E8F0', borderTopColor: '#2563EB' }} />
+              <div className="animate-spin rounded-full" style={{ width: 14, height: 14, border: '2px solid var(--divider)', borderTopColor: 'var(--cp-blue)' }} />
             )}
             {keyStatus === 'available' && <Check size={16} color="#16A34A" strokeWidth={2.5} />}
             {keyStatus === 'taken' && <X size={16} color="#EF4444" strokeWidth={2.5} />}
           </div>
         </div>
         {keyStatus === 'taken' && (
-          <span style={{ fontSize: 11, color: '#EF4444', marginTop: 2, display: 'block' }}>
+          <span style={{ fontSize: 11, color: 'var(--sem-danger)', marginTop: 2, display: 'block' }}>
             This key is already in use
           </span>
         )}
@@ -138,8 +138,8 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
       {/* Department */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: '#334155', display: 'block', marginBottom: 4 }}>
-          Department <span style={{ color: '#EF4444' }}>*</span>
+        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+          Department <span style={{ color: 'var(--sem-danger)' }}>*</span>
         </label>
         <select
           value={data.department}
@@ -159,7 +159,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
       {/* Description */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: '#334155', display: 'block', marginBottom: 4 }}>
+        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
           Description
         </label>
         <textarea

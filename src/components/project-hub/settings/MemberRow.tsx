@@ -57,13 +57,13 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
 
       {/* Name + Email */}
       <div className="flex-1 min-w-0">
-        <div className="truncate" style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
+        <div className="truncate" style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-1)' }}>
           {name}
           {isCurrentUser && (
-            <span style={{ fontSize: 11, color: '#64748B', fontWeight: 400, marginLeft: 6 }}>(you)</span>
+            <span style={{ fontSize: 11, color: 'var(--fg-3)', fontWeight: 400, marginLeft: 6 }}>(you)</span>
           )}
         </div>
-        <div className="truncate" style={{ fontSize: 13, color: '#64748B' }}>{email}</div>
+        <div className="truncate" style={{ fontSize: 13, color: 'var(--fg-3)' }}>{email}</div>
       </div>
 
       {/* Role pill */}

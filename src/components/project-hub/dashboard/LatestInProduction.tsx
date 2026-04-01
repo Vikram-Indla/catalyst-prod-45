@@ -38,9 +38,9 @@ export default function LatestInProduction({ projectId, releaseMap }: Props) {
         <>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
-              <tr style={{ borderBottom: '2px solid #CBD5E1' }}>
+              <tr style={{ borderBottom: '2px solid var(--divider)' }}>
                 {['Release', 'Key', 'Type', 'Title', 'Deployed', 'Since'].map(h => (
-                  <th key={h} style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '.08em', fontFamily: "'Inter', sans-serif" }}>
+                  <th key={h} style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.08em', fontFamily: "'Inter', sans-serif" }}>
                     {h}
                   </th>
                 ))}
@@ -53,24 +53,24 @@ export default function LatestInProduction({ projectId, releaseMap }: Props) {
                   ? Math.ceil((Date.now() - new Date(deployDate).getTime()) / 86400000)
                   : 0;
                 return (
-                  <tr key={item.id} style={{ height: 44, borderBottom: '1px solid #F1F5F9', background: idx % 2 === 1 ? '#FAFBFC' : undefined }} className="ph-table-row">
+                  <tr key={item.id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', background: idx % 2 === 1 ? '#FAFBFC' : undefined }} className="ph-table-row">
                     <td style={{ padding: '0 8px' }}>
                       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: '#0F766E', background: '#F0FDFA', padding: '2px 7px', borderRadius: 4, border: '1px solid #99F6E4' }}>
                         {releaseMap[item.release_id] || '—'}
                       </span>
                     </td>
                     <td style={{ padding: '0 8px' }}>
-                      <button onClick={() => openLifecycle(item.id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#1D4ED8', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>
+                      <button onClick={() => openLifecycle(item.id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--cp-primary-70)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>
                         {item.item_key}
                       </button>
                     </td>
                     <td style={{ padding: '0 8px' }}>
                       <TypeBadge type={item.item_type} />
                     </td>
-                    <td style={{ padding: '0 8px', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#1E293B', fontWeight: 500, fontFamily: "'Inter', sans-serif" }} title={item.displayTitle}>
+                    <td style={{ padding: '0 8px', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--fg-1)', fontWeight: 500, fontFamily: "'Inter', sans-serif" }} title={item.displayTitle}>
                       {item.displayTitle}
                     </td>
-                    <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: '#475569', fontWeight: 500 }}>
+                    <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: 'var(--fg-2)', fontWeight: 500 }}>
                       {deployDate ? format(new Date(deployDate), 'MMM d') : '—'}
                     </td>
                     <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: '#15803D' }}>
@@ -81,7 +81,7 @@ export default function LatestInProduction({ projectId, releaseMap }: Props) {
               })}
             </tbody>
           </table>
-          <div style={{ padding: '8px 16px', fontSize: 11, color: '#16A34A', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4, borderTop: '1px solid #F1F5F9' }}>
+          <div style={{ padding: '8px 16px', fontSize: 11, color: 'var(--sem-success)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4, borderTop: '1px solid var(--cp-bd-zone)' }}>
             <CheckCircle size={12} /> All deployments stable
           </div>
         </>

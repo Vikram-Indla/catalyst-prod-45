@@ -16,7 +16,7 @@ interface CheckinModalProps {
 function progressBar(pct: number) {
   const color = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
   return (
-    <div style={{ width: '100%', height: 6, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
+    <div style={{ width: '100%', height: 6, background: 'var(--cp-bd-zone)', borderRadius: 3, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 3, transition: 'width 300ms' }} />
     </div>
   );
@@ -80,8 +80,8 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
 
   if (!isOpen) return null;
 
-  const inputStyle: React.CSSProperties = { width: '100%', padding: '7px 10px', fontSize: 13, border: '1px solid #E2E8F0', borderRadius: 6, outline: 'none', color: '#0F172A', background: '#FFFFFF' };
-  const labelStyle: React.CSSProperties = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 4, display: 'block' };
+  const inputStyle: React.CSSProperties = { width: '100%', padding: '7px 10px', fontSize: 13, border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', color: 'var(--fg-1)', background: 'var(--bg-app)' };
+  const labelStyle: React.CSSProperties = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)', marginBottom: 4, display: 'block' };
 
   return (
     <>
@@ -92,17 +92,17 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 480, zIndex: 1001,
-        background: '#FFFFFF', borderRadius: 16,
+        background: 'var(--cp-float)', borderRadius: 16,
         boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
         animation: 'scaleIn 200ms ease-out',
       }}>
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid var(--divider)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ClipboardCheck size={14} color="#2563EB" />
+              <ClipboardCheck size={14} color="var(--cp-blue)" />
             </div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               Check-in: {kr?.kr_key} — {kr?.title || ''}
             </span>
           </div>

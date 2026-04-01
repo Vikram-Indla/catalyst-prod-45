@@ -112,7 +112,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
             }}
           >
             {exactDateTime(lastSyncedAt)}
-            <Tooltip.Arrow style={{ fill: '#0F172A' }} />
+            <Tooltip.Arrow style={{ fill: 'var(--fg-1)' }} />
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>

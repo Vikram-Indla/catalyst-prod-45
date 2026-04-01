@@ -116,7 +116,7 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
           <div style={{
             height: '100%',
             width: `${Math.min(initiative.progress, 100)}%`,
-            background: '#2563EB',
+            background: 'var(--cp-blue)',
             borderRadius: 2,
             border: 'none',
             transition: 'width 0.3s ease',

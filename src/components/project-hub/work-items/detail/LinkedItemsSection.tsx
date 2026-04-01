@@ -59,8 +59,8 @@ export function LinkedItemsSection({ workItemId, projectId, linkedItems, onNavig
               onClick={() => onNavigate?.(link.id)}
             >
               <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: TYPE_COLORS[link.type_name] || link.type_color }} />
-              <span className="text-[10px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B' }}>{link.item_key}</span>
-              <span className="text-[13px] font-medium truncate" style={{ color: '#0F172A' }}>{link.title}</span>
+              <span className="text-[10px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{link.item_key}</span>
+              <span className="text-[13px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>{link.title}</span>
               <StatusLozenge name={link.status_name} category={link.status_category} />
             </button>
           ))}
@@ -71,7 +71,7 @@ export function LinkedItemsSection({ workItemId, projectId, linkedItems, onNavig
       <button
         onClick={() => setModalOpen(true)}
         className="flex items-center gap-1.5 mt-2 text-[11px] font-medium hover:bg-[#F8FAFC] px-2 py-1.5 rounded transition-colors"
-        style={{ color: '#94A3B8' }}
+        style={{ color: 'var(--fg-4)' }}
       >
         <Plus size={13} /> Link work item
       </button>
@@ -163,10 +163,10 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid #F1F5F9' }}>
+        <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div className="flex items-center gap-2">
             <LinkIcon size={16} className="text-[#94A3B8]" />
-            <span className="text-[14px] font-semibold" style={{ color: '#0F172A' }}>Link Work Item</span>
+            <span className="text-[14px] font-semibold" style={{ color: 'var(--fg-1)' }}>Link Work Item</span>
           </div>
           <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#F1F5F9]">
             <X size={14} className="text-[#94A3B8]" />
@@ -180,7 +180,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
             value={linkType}
             onChange={e => setLinkType(e.target.value)}
             className="w-full text-[13px] px-3 py-2 rounded mb-4 focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
-            style={{ border: '1px solid #E2E8F0', background: '#FFF' }}
+            style={{ border: '1px solid var(--divider)', background: '#FFF' }}
           >
             {LINK_TYPES.map(t => (
               <option key={t.value} value={t.value}>{t.label}</option>
@@ -189,7 +189,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
 
           {/* Search */}
           <label className="text-[12px] font-medium block mb-1.5" style={{ color: '#44546F' }}>Search work item</label>
-          <div className="flex items-center gap-1.5 px-3 py-2 rounded mb-2" style={{ border: '1px solid #E2E8F0' }}>
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded mb-2" style={{ border: '1px solid var(--divider)' }}>
             <Search size={13} className="text-[#94A3B8]" />
             <input
               autoFocus
@@ -210,28 +210,28 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
                 style={{ background: selectedId === item.id ? '#E9F2FF' : undefined }}
               >
                 <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: TYPE_COLORS[item.type_name] || item.type_color }} />
-                <span className="text-[10px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B' }}>{item.item_key}</span>
-                <span className="text-[13px] font-medium truncate" style={{ color: '#0F172A' }}>{item.title}</span>
+                <span className="text-[10px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{item.item_key}</span>
+                <span className="text-[13px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>{item.title}</span>
                 <StatusLozenge name={item.status_name} category={item.status_category} />
                 {selectedId === item.id && <Check size={13} className="ml-auto text-[#2563EB]" />}
               </button>
             ))}
             {search.length >= 2 && searchResults.length === 0 && (
-              <div className="text-center py-4 text-[12px]" style={{ color: '#94A3B8' }}>No items found</div>
+              <div className="text-center py-4 text-[12px]" style={{ color: 'var(--fg-4)' }}>No items found</div>
             )}
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid #F1F5F9' }}>
-          <button onClick={onClose} className="px-3 py-1.5 text-[12px] font-medium rounded hover:bg-[#F1F5F9]" style={{ color: '#44546F' }}>
+        <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--cp-bd-zone)' }}>
+          <button onClick={onClose} className="px-3 py-1.5 text-[12px] font-medium rounded hover:bg-[var(--cp-bd-zone)]" style={{ color: '#44546F' }}>
             Cancel
           </button>
           <button
             onClick={handleCreate}
             disabled={!selectedId || submitting}
             className="px-4 py-1.5 text-[12px] font-semibold rounded text-white disabled:opacity-50"
-            style={{ background: '#2563EB' }}
+            style={{ background: 'var(--cp-blue)' }}
           >
             {submitting ? '…' : 'Link'}
           </button>

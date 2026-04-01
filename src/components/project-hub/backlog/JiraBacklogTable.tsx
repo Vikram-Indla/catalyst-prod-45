@@ -143,7 +143,7 @@ export function JiraBacklogTable({ issues, title, showParent = false }: Props) {
                     </span>
                   </td>
                   <td className="px-3 py-1.5">
-                    <span className="text-xs font-medium" style={{ color: PRIORITY_COLORS[issue.priority] || '#64748B' }}>
+                    <span className="text-xs font-medium" style={{ color: PRIORITY_COLORS[issue.priority] || 'var(--fg-3)' }}>
                       {issue.priority}
                     </span>
                   </td>

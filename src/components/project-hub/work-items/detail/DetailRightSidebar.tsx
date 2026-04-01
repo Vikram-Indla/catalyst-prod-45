@@ -260,7 +260,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
               <div className="flex items-center gap-1.5">
                 <Flag size={12} style={{ color: 'var(--sem-danger)' }} />
                 <span className="text-[12px] font-medium" style={{ color: 'var(--sem-danger)' }}>{item.flag_reason || 'Flagged'}</span>
-                <button onClick={() => onUpdate('is_flagged', false)} className="ml-auto p-0.5 rounded hover:bg-[#FEF2F2]" title="Unflag"><X size={10} style={{ color: 'var(--sem-danger)' }} /></button>
+                <button onClick={() => onUpdate('is_flagged', false)} className="ml-auto p-0.5 rounded hover:bg-[var(--sem-danger-bg)]" title="Unflag"><X size={10} style={{ color: 'var(--sem-danger)' }} /></button>
               </div>
             ) : (
               <button onClick={() => onUpdate('is_flagged', true)} className="text-[12px] font-medium hover:underline" style={{ color: 'var(--fg-4)' }}>None — click to flag</button>

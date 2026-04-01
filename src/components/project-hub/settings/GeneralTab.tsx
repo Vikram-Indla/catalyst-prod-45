@@ -193,7 +193,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               <button
                 onClick={() => setForm(f => ({ ...f, feature_layer: !f.feature_layer }))}
                 className="flex-shrink-0 rounded-full transition-colors"
-                style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', background: form.feature_layer ? 'var(--cp-blue)' : '#CBD5E1', position: 'relative' }}
+                style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', background: form.feature_layer ? 'var(--cp-blue)' : 'var(--divider)', position: 'relative' }}
               >
                 <span className="rounded-full" style={{ width: 16, height: 16, background: 'var(--bg-app)', borderRadius: '50%', position: 'absolute', top: 3, left: form.feature_layer ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
               </button>
@@ -208,7 +208,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               <button
                 onClick={() => setForm(f => ({ ...f, ai_assist: !f.ai_assist }))}
                 className="flex-shrink-0 rounded-full transition-colors"
-                style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', background: form.ai_assist ? 'var(--cp-blue)' : '#CBD5E1', position: 'relative' }}
+                style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', background: form.ai_assist ? 'var(--cp-blue)' : 'var(--divider)', position: 'relative' }}
               >
                 <span className="rounded-full" style={{ width: 16, height: 16, background: 'var(--bg-app)', borderRadius: '50%', position: 'absolute', top: 3, left: form.ai_assist ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
               </button>

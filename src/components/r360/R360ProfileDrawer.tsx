@@ -217,7 +217,7 @@ function R360StatusLozenge({ status }: { status: string }) {
 function Skeleton({ h = 20, w = '100%', r = 4 }: { h?: number; w?: string | number; r?: number }) {
   return (
     <div style={{
-      height: h, width: w, borderRadius: r, background: '#E2E8F0',
+      height: h, width: w, borderRadius: r, background: 'var(--divider)',
       animation: 'pulse 1.5s ease-in-out infinite',
     }} />
   );
@@ -262,7 +262,7 @@ function FilteredListPanel({
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div style={{
-        height: 48, flexShrink: 0, borderBottom: '0.75px solid #E2E8F0',
+        height: 48, flexShrink: 0, borderBottom: '0.75px solid var(--divider)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px',
       }}>
         <button onClick={onBack} style={{
@@ -298,8 +298,8 @@ function FilteredListPanel({
               onClick={() => onItemClick(item)}
               style={{
                 display: 'flex', alignItems: 'center', height: 36, padding: '0 12px', gap: 8,
-                borderBottom: idx < items.length - 1 ? '0.75px solid #E2E8F0' : 'none',
-                background: '#FFFFFF', cursor: 'pointer', transition: 'background 120ms',
+                borderBottom: idx < items.length - 1 ? '0.75px solid var(--divider)' : 'none',
+                background: 'var(--bg-app)', cursor: 'pointer', transition: 'background 120ms',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
@@ -353,7 +353,7 @@ function ItemDetailPanel({
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div style={{
-        height: 48, flexShrink: 0, borderBottom: '0.75px solid #E2E8F0',
+        height: 48, flexShrink: 0, borderBottom: '0.75px solid var(--divider)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px',
       }}>
         <button onClick={onBack} style={{
@@ -397,7 +397,7 @@ function ItemDetailPanel({
             </div>
 
             {/* Metadata grid */}
-            <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+            <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden' }}>
               {[
                 { label: 'Project', value: detail.projectName },
                 { label: 'Assignee', value: detail.assigneeName },
@@ -411,7 +411,7 @@ function ItemDetailPanel({
                 <div key={i} style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   height: 36, padding: '0 14px',
-                  borderBottom: i < arr.length - 1 ? '0.75px solid #E2E8F0' : 'none',
+                  borderBottom: i < arr.length - 1 ? '0.75px solid var(--divider)' : 'none',
                 }}>
                   <span style={{ fontSize: 12, color: INK4 }}>{row.label}</span>
                   <span style={{ fontSize: 12, fontWeight: 500, color: INK1 }}>{row.value}</span>
@@ -421,7 +421,7 @@ function ItemDetailPanel({
 
             {/* Parent */}
             {detail.parentKey && (
-              <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, padding: '10px 14px' }}>
+              <div style={{ border: '1px solid var(--divider)', borderRadius: 8, padding: '10px 14px' }}>
                 <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 6 }}>PARENT</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK4 }}>{detail.parentKey}</span>
@@ -433,7 +433,7 @@ function ItemDetailPanel({
             {/* Days Sitting Progress */}
             <div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 6 }}>TIME IN ASSIGNMENT</div>
-              <div style={{ height: 6, borderRadius: 3, background: '#E2E8F0', overflow: 'hidden' }}>
+              <div style={{ height: 6, borderRadius: 3, background: 'var(--divider)', overflow: 'hidden' }}>
                 <div style={{
                   height: '100%', borderRadius: 3,
                   width: `${Math.min((daysSitting / 30) * 100, 100)}%`,
@@ -693,7 +693,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
           onClick={onClose}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            background: BRAND, color: '#FFFFFF',
+            background: BRAND, color: 'var(--bg-app)',
             fontFamily: "'Inter', system-ui, sans-serif", fontSize: 12, fontWeight: 600,
             padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer',
             transition: 'background 100ms',
@@ -736,9 +736,9 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
             ) : null}
             <div style={{
               width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
-              background: 'linear-gradient(135deg, #475569, #334155)',
+              background: 'linear-gradient(135deg, var(--fg-2), var(--fg-2))',
               display: resource?.avatar_url ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#FFFFFF', fontFamily: "'Sora', sans-serif", fontSize: 17, fontWeight: 700,
+              color: 'var(--bg-app)', fontFamily: "'Sora', sans-serif", fontSize: 17, fontWeight: 700,
             }}>
               {getInitials(resourceName || '?')}
             </div>
@@ -748,7 +748,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
                 <span>{resourceRole || '—'}</span>
                 {deptName && <><span>·</span><span>{deptName}</span></>}
                 {resourceRid && <><span>·</span><span style={{
-                  background: '#EFF6FF', border: '1px solid #DBEAFE', borderRadius: 3,
+                  background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE', borderRadius: 3,
                   padding: '2px 7px', fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 11, fontWeight: 700, color: BRAND,
                 }}>{resourceRid}</span></>}
@@ -759,8 +759,8 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
                   {(resource.skills as string[]).map((skill: string) => (
                     <span key={skill} style={{
                       fontSize: 11, fontWeight: 500,
-                      background: '#F1F5F9', color: '#334155',
-                      border: '0.75px solid #E2E8F0',
+                      background: '#F1F5F9', color: 'var(--fg-2)',
+                      border: '0.75px solid var(--divider)',
                       borderRadius: 4, padding: '2px 6px',
                     }}>
                       {skill}
@@ -832,7 +832,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
         {/* ━━ STACKED DETAIL PANEL ━━ */}
         <div style={{
           position: 'absolute', top: 0, right: 0, width: '100%', height: '100%',
-          background: '#FFFFFF', zIndex: 10,
+          background: 'var(--bg-app)', zIndex: 10,
           transform: currentPanel ? 'translateX(0%)' : 'translateX(100%)',
           transition: currentPanel ? 'transform 200ms ease-out' : 'transform 150ms ease-in',
           pointerEvents: currentPanel ? 'auto' : 'none',
@@ -961,14 +961,14 @@ function OverviewTab({
         </div>
         {statsLoading ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden' }}>
-            {[1,2,3,4].map(i => <div key={i} style={{ background: '#FFFFFF', padding: '12px 14px' }}><Skeleton h={28} w="40%" /><Skeleton h={12} w="60%" /></div>)}
+            {[1,2,3,4].map(i => <div key={i} style={{ background: 'var(--bg-app)', padding: '12px 14px' }}><Skeleton h={28} w="40%" /><Skeleton h={12} w="60%" /></div>)}
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: BORDER, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden' }}>
             {/* Total Open — CLICKABLE */}
             <div
               onClick={() => showFilteredList('Total Open', (i: any) => i.status_category !== 'done')}
-              style={{ background: '#FFFFFF', padding: '12px 14px', cursor: 'pointer', transition: 'background 120ms' }}
+              style={{ background: 'var(--bg-app)', padding: '12px 14px', cursor: 'pointer', transition: 'background 120ms' }}
               onMouseEnter={e => clickableTileHover(e, true)}
               onMouseLeave={e => clickableTileHover(e, false)}
             >
@@ -983,7 +983,7 @@ function OverviewTab({
                 const u = new Date(i.updated_at);
                 return u >= weekStart && u <= weekEnd;
               })}
-              style={{ background: '#FFFFFF', padding: '12px 14px', cursor: 'pointer', transition: 'background 120ms' }}
+              style={{ background: 'var(--bg-app)', padding: '12px 14px', cursor: 'pointer', transition: 'background 120ms' }}
               onMouseEnter={e => clickableTileHover(e, true)}
               onMouseLeave={e => clickableTileHover(e, false)}
             >
@@ -997,7 +997,7 @@ function OverviewTab({
             {/* In Review — CLICKABLE */}
             <div
               onClick={() => showFilteredList('In Review', (i: any) => (i.status_category || '').toLowerCase() === 'in_review')}
-              style={{ background: '#FFFFFF', padding: '12px 14px', cursor: 'pointer', transition: 'background 120ms' }}
+              style={{ background: 'var(--bg-app)', padding: '12px 14px', cursor: 'pointer', transition: 'background 120ms' }}
               onMouseEnter={e => clickableTileHover(e, true)}
               onMouseLeave={e => clickableTileHover(e, false)}
             >
@@ -1006,7 +1006,7 @@ function OverviewTab({
               <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>{inReview === 0 ? 'None pending' : `${inReview} awaiting`}</div>
             </div>
             {/* Pickup Speed — color-coded */}
-            <div style={{ background: '#FFFFFF', padding: '12px 14px' }}>
+            <div style={{ background: 'var(--bg-app)', padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
                 {pickupHours > 0 ? (
                   <>
@@ -1196,11 +1196,11 @@ function OverviewTab({
               >
                 <JiraIssueTypeIcon type={row.type} size={16} />
                 <span style={{ fontSize: 12, color: INK2, width: 72, flexShrink: 0 }}>{row.type}</span>
-                <div style={{ flex: 1, height: 18, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ flex: 1, height: 18, background: 'var(--divider)', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{
                     height: '100%', borderRadius: 3,
                     width: `${row.pct}%`,
-                    background: row.pct > 0 ? '#0D9488' : 'transparent',
+                    background: row.pct > 0 ? 'var(--sem-success)' : 'transparent',
                     transition: 'width 300ms ease',
                   }} />
                 </div>
@@ -1211,7 +1211,7 @@ function OverviewTab({
         </div>
         {showBugInsight && (
           <div style={{
-            marginTop: 10, background: '#EFF6FF', border: '1px solid #DBEAFE', borderRadius: 4,
+            marginTop: 10, background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE', borderRadius: 4,
             padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 6,
           }}>
             <Info size={14} color={BRAND} />
@@ -1234,7 +1234,7 @@ function OverviewTab({
           onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
         >
           <div style={{
-            width: 32, height: 32, flexShrink: 0, background: '#EFF6FF', border: '1px solid #DBEAFE',
+            width: 32, height: 32, flexShrink: 0, background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE',
             borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <BookOpen size={16} color={INK4} />
@@ -1245,7 +1245,7 @@ function OverviewTab({
               &ldquo;Focus on incident resolution and QA throughput&rdquo;
             </div>
             <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#64748B' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--fg-3)' }} />
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
             </div>
@@ -1267,7 +1267,7 @@ function OverviewTab({
           ].map((tile, i) => (
             <div key={i}
               onClick={tile.onClick}
-              style={{ background: '#FFFFFF', padding: '10px 12px', cursor: 'pointer', transition: 'background 120ms' }}
+              style={{ background: 'var(--bg-app)', padding: '10px 12px', cursor: 'pointer', transition: 'background 120ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
             >
@@ -1296,7 +1296,7 @@ function OverviewTab({
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
                   width: 8, height: 8, borderRadius: '50%',
-                  backgroundColor: hub.isIncident ? DANGER : '#0D9488',
+                  backgroundColor: hub.isIncident ? DANGER : 'var(--sem-success)',
                 }} />
                 <span style={{ fontSize: 12, fontWeight: 600, color: INK1 }}>
                   {hub.hub === 'incident' ? 'IncidentHub' : hub.hub === 'bau' || hub.hub === 'BAU' ? 'BAU / ProjectHub' : hub.hub}
@@ -1427,7 +1427,7 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
                   <span style={{ fontSize: isPeak ? 12 : 12, fontWeight: isPeak ? 600 : 400, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? '#1D4ED8' : '#374151' }}>{val}</span>
                   <div style={{
                     width: '100%', maxWidth: 40, height: barH, borderRadius: 3,
-                    backgroundColor: isPeak ? '#1D4ED8' : '#3B82F6',
+                    backgroundColor: isPeak ? '#1D4ED8' : 'var(--cp-blue)',
                     transition: 'height 300ms ease, background-color 0ms',
                   }} />
                   <span style={{ fontSize: 11, color: INK4, fontWeight: 500 }}>{DAY_ABBRS[idx]}</span>
@@ -1455,7 +1455,7 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
             <div key={i}
               onClick={tile.onClick}
               style={{
-                border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
+                border: '1px solid var(--divider)', borderRadius: 8, padding: '12px 14px', background: 'var(--bg-app)',
                 cursor: tile.onClick ? 'pointer' : 'default', transition: 'background 150ms',
               }}
               onMouseEnter={e => { if (tile.onClick) e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
@@ -1472,7 +1472,7 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
       {/* §3 Execution Style */}
       <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
         <SectionTitle>EXECUTION STYLE</SectionTitle>
-        <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+        <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden' }}>
           {[
             { label: 'Avg cycle time', value: execStyle.avgCycleLabel, onClick: undefined as (() => void) | undefined },
             { label: 'Items closed', value: String(execStyle.itemsClosed), onClick: () => showFilteredList('All Closed Items', (i: any) => (i.status_category || '').toLowerCase() === 'done') },
@@ -1484,7 +1484,7 @@ function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd, weekL
               style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 height: 36, padding: '0 14px',
-                borderBottom: i < arr.length - 1 ? '0.75px solid #E2E8F0' : 'none',
+                borderBottom: i < arr.length - 1 ? '0.75px solid var(--divider)' : 'none',
                 cursor: row.onClick ? 'pointer' : 'default', transition: 'background 150ms',
               }}
               onMouseEnter={e => { if (row.onClick) e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
@@ -1592,7 +1592,7 @@ function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekStart, wee
       {/* §1 Week Headline */}
       <div style={{ padding: 16, borderBottom: `1px solid ${BORDER_LIGHT}` }}>
         <div style={{
-          border: '1px solid #E2E8F0', borderRadius: 8, padding: 16, background: '#FFFFFF',
+          border: '1px solid var(--divider)', borderRadius: 8, padding: 16, background: 'var(--bg-app)',
         }}>
           <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 8 }}>
             {weekLabel}
@@ -1606,20 +1606,20 @@ function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekStart, wee
         <SectionTitle>THIS WEEK'S ACTIVITY</SectionTitle>
         {timelineItems.length === 0 ? (
           <div style={{
-            border: '1px solid #E2E8F0', borderRadius: 8, padding: '24px 16px',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, background: '#FFFFFF',
+            border: '1px solid var(--divider)', borderRadius: 8, padding: '24px 16px',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, background: 'var(--bg-app)',
           }}>
             <CalendarX size={20} color={MUTED} />
             <span style={{ fontSize: 13, color: INK4 }}>No activity recorded this week</span>
             <span style={{ fontSize: 12, color: MUTED }}>Items will appear as work progresses</span>
           </div>
         ) : (
-          <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+          <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden' }}>
             {timelineItems.map((item: any, idx: number) => (
               <div key={item.id || idx} style={{
                 display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px',
                 minHeight: 36,
-                borderBottom: idx < timelineItems.length - 1 ? '0.75px solid #E2E8F0' : 'none',
+                borderBottom: idx < timelineItems.length - 1 ? '0.75px solid var(--divider)' : 'none',
               }}>
                 <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
                 <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK4, flexShrink: 0 }}>{item.item_key}</span>
@@ -1657,7 +1657,7 @@ function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekStart, wee
             <div key={i}
               onClick={tile.onClick}
               style={{
-                border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', background: '#FFFFFF',
+                border: '1px solid var(--divider)', borderRadius: 8, padding: '12px 14px', background: 'var(--bg-app)',
                 cursor: 'pointer', transition: 'background 150ms',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
@@ -1715,7 +1715,7 @@ function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOffset, se
     <>
       {/* Toolbar */}
       <div style={{
-        height: 40, flexShrink: 0, borderBottom: '0.75px solid #E2E8F0',
+        height: 40, flexShrink: 0, borderBottom: '0.75px solid var(--divider)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 12px', gap: 8,
       }}>
@@ -1785,7 +1785,7 @@ function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOffset, se
           {/* Header */}
           <div style={{
             display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
-            borderBottom: '0.75px solid #E2E8F0', background: '#FFFFFF',
+            borderBottom: '0.75px solid var(--divider)', background: 'var(--bg-app)',
           }}>
             <span style={{ width: 40, textAlign: 'center' as const, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em' }}>TYPE</span>
             <span style={{ width: 100, fontSize: 10.5, fontWeight: 500, textTransform: 'uppercase', color: INK4, letterSpacing: '0.04em', paddingLeft: 8 }}>KEY</span>
@@ -1799,8 +1799,8 @@ function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOffset, se
               key={item.id || idx}
               style={{
                 display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
-                borderBottom: idx < display.length - 1 ? '0.75px solid #E2E8F0' : 'none',
-                background: '#FFFFFF', transition: 'background 80ms',
+                borderBottom: idx < display.length - 1 ? '0.75px solid var(--divider)' : 'none',
+                background: 'var(--bg-app)', transition: 'background 80ms',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}

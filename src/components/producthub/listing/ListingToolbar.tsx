@@ -230,7 +230,7 @@ export function ListingToolbar({
             width: 180,
             border: '1px solid #d4d4d8',
             boxShadow: '0 8px 24px rgba(0,0,0,0.14)',
-            background: '#ffffff',
+            background: 'var(--bg-app)',
             zIndex: 500,
           }}
         >
@@ -241,8 +241,8 @@ export function ListingToolbar({
               onClick={() => { onGroupByChange(opt.id); setGroupDropdownOpen(false); }}
               className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] rounded-sm transition-colors text-left"
               style={{
-                color: groupBy === opt.id ? '#2563eb' : '#3f3f46',
-                background: groupBy === opt.id ? '#eff6ff' : 'transparent',
+                color: groupBy === opt.id ? 'var(--cp-blue)' : '#3f3f46',
+                background: groupBy === opt.id ? 'var(--cp-blue-wash)' : 'transparent',
               }}
               onMouseEnter={(e) => { if (groupBy !== opt.id) (e.currentTarget).style.background = '#f4f4f5'; }}
               onMouseLeave={(e) => { if (groupBy !== opt.id) (e.currentTarget).style.background = 'transparent'; }}

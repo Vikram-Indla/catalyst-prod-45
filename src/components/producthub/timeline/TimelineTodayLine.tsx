@@ -23,7 +23,7 @@ export const TimelineTodayLine: React.FC<TimelineTodayLineProps> = ({ granularit
       <div
         className="absolute inset-y-0 w-0"
         style={{
-          borderLeft: '1.5px dashed #EF4444',
+          borderLeft: '1.5px dashed var(--sem-danger)',
         }}
       />
       {/* Today badge */}

@@ -168,7 +168,7 @@ export function JiraSyncDrawer({
             </div>
             {syncLogs.length === 0 ? (
               <div className="flex flex-col items-center py-6">
-                <Inbox size={24} style={{ color: '#CBD5E1', marginBottom: 6 }} />
+                <Inbox size={24} style={{ color: 'var(--divider)', marginBottom: 6 }} />
                 <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>No sync runs yet</span>
               </div>
             ) : (
@@ -204,7 +204,7 @@ export function JiraSyncDrawer({
             </div>
             {writeBackQueue.length === 0 ? (
               <div className="flex flex-col items-center py-6">
-                <Inbox size={24} style={{ color: '#CBD5E1', marginBottom: 6 }} />
+                <Inbox size={24} style={{ color: 'var(--divider)', marginBottom: 6 }} />
                 <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>No pending write-backs</span>
               </div>
             ) : (

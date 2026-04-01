@@ -41,7 +41,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
       onClick={() => onSelectIdea(idea)}
       title={idea.title.length > 60 ? idea.title : undefined}
       style={{
-        background: isDark ? 'transparent' : '#FFFFFF',
+        background: isDark ? 'transparent' : 'var(--bg-app)',
         border: `1px solid ${dk.border}`,
         borderRadius: 8,
         padding: 12, cursor: 'grab', position: 'relative',
@@ -74,7 +74,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
               className="move-btn"
               style={{
                 width: 22, height: 18, borderRadius: 4, border: `1px solid ${dk.border}`,
-                background: isDark ? 'transparent' : '#FFFFFF', cursor: 'pointer',
+                background: isDark ? 'transparent' : 'var(--bg-app)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 opacity: 0, transition: 'opacity 150ms',
               }}
@@ -84,7 +84,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             {moveOpen && (
               <div style={{
                 position: 'absolute', top: 22, right: 0, zIndex: 20,
-                background: isDark ? '#232019' : '#FFFFFF',
+                background: isDark ? '#232019' : 'var(--bg-app)',
                 border: `1px solid ${dk.border}`, borderRadius: 6,
                 boxShadow: isDark ? 'none' : '0 4px 12px rgba(0,0,0,.12)',
                 minWidth: 140, padding: 4,
@@ -118,13 +118,13 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             title={idea.isCommitted ? 'Uncommit' : 'Commit'}
             style={{
               width: 32, height: 18, borderRadius: 9, border: 'none', cursor: 'pointer',
-              background: idea.isCommitted ? '#0D9488' : (isDark ? 'rgba(255,255,255,0.20)' : '#CBD5E1'),
+              background: idea.isCommitted ? 'var(--sem-success)' : (isDark ? 'rgba(255,255,255,0.20)' : '#CBD5E1'),
               position: 'relative', transition: 'background 150ms',
             }}
           >
             <span style={{
               position: 'absolute', top: 3, width: 12, height: 12, borderRadius: 6,
-              background: '#FFFFFF', transition: 'left 150ms',
+              background: 'var(--bg-app)', transition: 'left 150ms',
               left: idea.isCommitted ? 17 : 3,
             }} />
           </button>
@@ -194,7 +194,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           display: 'inline-flex', alignItems: 'center', height: 24, padding: '0 8px',
           borderRadius: 4,
           background: isDark ? 'rgba(22,163,74,0.12)' : '#1B7F37',
-          color: isDark ? '#86EFAC' : '#FFFFFF',
+          color: isDark ? '#86EFAC' : 'var(--bg-app)',
           border: `1px solid ${isDark ? 'rgba(22,163,74,0.25)' : '#B7EBD1'}`,
           fontSize: 10, fontWeight: 700,
           fontFamily: "'Inter', sans-serif",
@@ -207,7 +207,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           style={{
             height: 24, padding: '0 8px', borderRadius: 4,
             border: `1px solid ${dk.border}`,
-            background: isDark ? 'transparent' : '#FFFFFF',
+            background: isDark ? 'transparent' : 'var(--bg-app)',
             color: dk.t3, fontSize: 10, fontWeight: 600,
             fontFamily: "'Inter', sans-serif", cursor: 'pointer',
             transition: 'all 120ms',

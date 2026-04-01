@@ -26,7 +26,7 @@ export function WorkItemTag({ workItemKey, title, type, status, onClick }: Props
       style={{ fontFamily: RH.fontBody }}
     >
       <WorkItemTypeIcon type={type} size={12} />
-      <span className="text-[11px] font-bold text-[#0D9488] shrink-0" style={{ fontFamily: RH.fontMono }}>
+      <span className="text-[11px] font-bold text-[var(--sem-success)] shrink-0" style={{ fontFamily: RH.fontMono }}>
         {workItemKey}
       </span>
       <span className="text-[11px] text-[#475569] truncate">{title}</span>

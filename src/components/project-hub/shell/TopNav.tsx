@@ -41,13 +41,13 @@ export function TopNav({ onCreateClick }: TopNavProps) {
       >
         <div
           className="flex items-center justify-center rounded-full flex-shrink-0"
-          style={{ width: 28, height: 28, background: '#2563EB' }}
+          style={{ width: 28, height: 28, background: 'var(--cp-blue)' }}
         >
-          <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>C</span>
+          <span style={{ color: 'var(--bg-app)', fontSize: 13, fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>C</span>
         </div>
-        <span className="text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]" style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 700 }}>
+        <span className="text-[var(--fg-1)] dark:text-[rgba(248,244,240,0.92)]" style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 700 }}>
           atalyst
-          <span className="text-[#94A3B8] dark:text-[rgba(248,244,240,0.40)]" style={{ fontSize: 9, verticalAlign: 'super', fontWeight: 500 }}>™</span>
+          <span className="text-[var(--fg-4)] dark:text-[rgba(248,244,240,0.40)]" style={{ fontSize: 9, verticalAlign: 'super', fontWeight: 500 }}>™</span>
         </span>
       </button>
 
@@ -118,7 +118,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
           }}
         >
           <Search size={14} className="text-[#94A3B8] dark:text-[rgba(248,244,240,0.40)]" strokeWidth={2} />
-          <span className="text-[#94A3B8] dark:text-[rgba(248,244,240,0.40)]" style={{ fontSize: 12, userSelect: 'none', whiteSpace: 'nowrap' }}>
+          <span className="text-[var(--fg-4)] dark:text-[rgba(248,244,240,0.40)]" style={{ fontSize: 12, userSelect: 'none', whiteSpace: 'nowrap' }}>
             Search anything...
           </span>
           <kbd

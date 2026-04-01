@@ -67,7 +67,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
         disabled={disabled}
         className="w-full flex items-center justify-between px-3 py-2.5 bg-white border rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
-          borderColor: open ? '#2563EB' : '#E2E8F0',
+          borderColor: open ? 'var(--cp-blue)' : 'var(--divider)',
           boxShadow: open ? '0 0 0 3px rgba(37,99,235,0.1)' : 'none',
           color: selected ? '#09090B' : '#71717A',
           fontWeight: 500,
@@ -88,14 +88,14 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
         <div
           className="absolute z-50 mt-1 w-full bg-white border rounded-lg overflow-hidden max-h-72 overflow-y-auto"
           style={{
-            borderColor: '#E2E8F0',
+            borderColor: 'var(--divider)',
             boxShadow: '0 12px 40px rgba(0,0,0,0.14)',
             borderRadius: 8,
           }}
         >
           {STATUS_GROUPS.map((group, gi) => (
             <div key={group.group}>
-              {gi > 0 && <div style={{ borderTop: '1px solid #E2E8F0' }} />}
+              {gi > 0 && <div style={{ borderTop: '1px solid var(--divider)' }} />}
               <div
                 style={{
                   padding: '8px 12px 4px',
@@ -103,7 +103,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
-                  color: '#2563EB',
+                  color: 'var(--cp-blue)',
                 }}
               >
                 {group.group}
@@ -118,8 +118,8 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
                     padding: '7px 12px',
                     fontSize: 13,
                     fontWeight: value === option.value ? 600 : 500,
-                    color: value === option.value ? '#2563EB' : '#09090B',
-                    background: value === option.value ? '#EFF6FF' : 'transparent',
+                    color: value === option.value ? 'var(--cp-blue)' : '#09090B',
+                    background: value === option.value ? 'var(--cp-blue-wash)' : 'transparent',
                     border: 'none',
                     cursor: 'pointer',
                   }}
@@ -135,7 +135,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
                     style={{ backgroundColor: option.color }}
                   />
                   <span className="flex-1">{option.label}</span>
-                  {value === option.value && <Check className="w-3.5 h-3.5 shrink-0" style={{ color: '#2563EB' }} />}
+                  {value === option.value && <Check className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--cp-blue)' }} />}
                 </button>
               ))}
             </div>

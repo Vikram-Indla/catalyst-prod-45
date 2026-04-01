@@ -72,10 +72,10 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                 <td style={cellStyle}>
                   <span style={{
                     fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
-                    color: '#94A3B8', textTransform: 'uppercase',
+                    color: 'var(--fg-4)', textTransform: 'uppercase',
                   }}>{idea.ideaKey}</span>
                 </td>
-                <td style={{ ...cellStyle, fontSize: 13, fontWeight: 650, color: '#0F172A' }}>
+                <td style={{ ...cellStyle, fontSize: 13, fontWeight: 650, color: 'var(--fg-1)' }}>
                   <div
                     title={idea.title.length > 50 ? idea.title : undefined}
                     style={{
@@ -87,7 +87,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                   {idea.team ? (
                     <span style={{
                       fontSize: 10, fontWeight: 600, background: '#F1F5F9',
-                      color: '#475569', padding: '2px 6px', borderRadius: 4,
+                      color: 'var(--fg-2)', padding: '2px 6px', borderRadius: 4,
                     }}>{idea.team}</span>
                   ) : <span style={{ color: '#CBD5E1' }}>—</span>}
                 </td>
@@ -105,7 +105,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                   <td key={m.key} style={cellStyle}>
                     <span style={{
                       fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
-                      color: idea.milestones[m.key] ? '#334155' : '#CBD5E1',
+                      color: idea.milestones[m.key] ? 'var(--fg-2)' : '#CBD5E1',
                       fontVariantNumeric: 'tabular-nums',
                     }}>{formatDate(idea.milestones[m.key])}</span>
                   </td>
@@ -116,20 +116,20 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                     disabled={isMutating}
                     style={{
                       width: 32, height: 18, borderRadius: 9, border: 'none', cursor: 'pointer',
-                      background: idea.isCommitted ? '#0D9488' : '#CBD5E1', position: 'relative',
+                      background: idea.isCommitted ? 'var(--sem-success)' : '#CBD5E1', position: 'relative',
                       transition: 'background 150ms',
                     }}
                   >
                     <span style={{
                       position: 'absolute', top: 3, width: 12, height: 12, borderRadius: 6,
-                      background: '#FFFFFF', left: idea.isCommitted ? 17 : 3, transition: 'left 150ms',
+                      background: 'var(--bg-app)', left: idea.isCommitted ? 17 : 3, transition: 'left 150ms',
                     }} />
                   </button>
                 </td>
                 <td style={cellStyle}>
                   {isConverted(idea.status) ? (
                     <span style={{
-                      fontSize: 10, fontWeight: 700, background: '#1B7F37', color: '#FFFFFF',
+                      fontSize: 10, fontWeight: 700, background: '#1B7F37', color: 'var(--bg-app)',
                       border: '1px solid #B7EBD1', padding: '2px 6px', borderRadius: 4,
                     }}>✓</span>
                   ) : idea.isCommitted ? (
@@ -137,8 +137,8 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                       onClick={e => { e.stopPropagation(); onSelectIdea(idea); }}
                       style={{
                         height: 22, padding: '0 6px', borderRadius: 4,
-                        border: '1px solid #E2E8F0', background: '#FFFFFF',
-                        color: '#64748B', fontSize: 10, fontWeight: 600, cursor: 'pointer',
+                        border: '1px solid var(--divider)', background: 'var(--bg-app)',
+                        color: 'var(--fg-3)', fontSize: 10, fontWeight: 600, cursor: 'pointer',
                         transition: 'all 150ms',
                       }}
                     >→ Init</button>

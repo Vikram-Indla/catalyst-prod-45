@@ -36,7 +36,7 @@ export function InitiativeTypeSelect({ value, onChange, disabled }: InitiativeTy
         disabled={disabled}
         className="w-full flex items-center justify-between px-3 py-2.5 bg-white border rounded-lg text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
-          borderColor: open ? '#2563EB' : '#E2E8F0',
+          borderColor: open ? 'var(--cp-blue)' : 'var(--divider)',
           boxShadow: open ? '0 0 0 3px rgba(37,99,235,0.1)' : 'none',
           color: selected ? '#09090B' : '#71717A',
           fontWeight: 500,
@@ -51,7 +51,7 @@ export function InitiativeTypeSelect({ value, onChange, disabled }: InitiativeTy
         <div
           className="absolute z-50 mt-1 w-full bg-white border overflow-hidden py-1"
           style={{
-            borderColor: '#E2E8F0',
+            borderColor: 'var(--divider)',
             borderRadius: 8,
             boxShadow: '0 12px 40px rgba(0,0,0,0.14)',
           }}
@@ -66,8 +66,8 @@ export function InitiativeTypeSelect({ value, onChange, disabled }: InitiativeTy
                 padding: '7px 12px',
                 fontSize: 13,
                 fontWeight: value === option.key ? 600 : 500,
-                color: value === option.key ? '#2563EB' : '#09090B',
-                background: value === option.key ? '#EFF6FF' : 'transparent',
+                color: value === option.key ? 'var(--cp-blue)' : '#09090B',
+                background: value === option.key ? 'var(--cp-blue-wash)' : 'transparent',
                 border: 'none',
                 cursor: 'pointer',
               }}
@@ -79,7 +79,7 @@ export function InitiativeTypeSelect({ value, onChange, disabled }: InitiativeTy
               }}
             >
               <span className="flex-1">{option.label}</span>
-              {value === option.key && <Check className="w-3.5 h-3.5 shrink-0" style={{ color: '#2563EB' }} />}
+              {value === option.key && <Check className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--cp-blue)' }} />}
             </button>
           ))}
         </div>

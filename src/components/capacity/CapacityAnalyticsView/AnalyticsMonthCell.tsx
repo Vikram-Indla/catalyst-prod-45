@@ -66,10 +66,10 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: '8px',
-            backgroundImage: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #f1f5f9 4px, #f1f5f9 8px)',
+            backgroundImage: 'repeating-linear-gradient(-45deg, var(--bg-1), var(--bg-1) 4px, #f1f5f9 4px, #f1f5f9 8px)',
           }}
         >
-          <span style={{ fontSize: '10px', fontWeight: 600, color: '#94a3b8', background: 'rgba(255,255,255,0.9)', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
+          <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--fg-4)', background: 'rgba(255,255,255,0.9)', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
         </div>
       </td>
     );
@@ -87,10 +87,10 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             justifyContent: 'center',
             borderRadius: '8px',
             border: '1px dashed #cbd5e1',
-            backgroundImage: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #f1f5f9 4px, #f1f5f9 8px)',
+            backgroundImage: 'repeating-linear-gradient(-45deg, var(--bg-1), var(--bg-1) 4px, #f1f5f9 4px, #f1f5f9 8px)',
           }}
         >
-          <span style={{ fontSize: '10px', fontWeight: 600, color: '#94a3b8', background: 'rgba(255,255,255,0.9)', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
+          <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--fg-4)', background: 'rgba(255,255,255,0.9)', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
         </div>
       </td>
     );
@@ -106,10 +106,10 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: '8px',
-          background: '#ffffff',
-          border: '1px solid #e2e8f0',
+          background: 'var(--bg-app)',
+          border: '1px solid var(--divider)',
         }}>
-          <span style={{ fontSize: '12px', fontWeight: 500, color: '#94a3b8' }}>Available</span>
+          <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--fg-4)' }}>Available</span>
         </div>
       </td>
     );
@@ -156,8 +156,8 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: '8px',
-              background: '#ffffff',
-              border: isOverAllocated ? '1px solid #fca5a5' : '1px solid #e2e8f0',
+              background: 'var(--bg-app)',
+              border: isOverAllocated ? '1px solid #fca5a5' : '1px solid var(--divider)',
               boxShadow: isOverAllocated ? '0 0 0 1px #fca5a5' : '0 1px 3px rgba(0,0,0,0.04)',
               cursor: 'default',
               transition: 'all 150ms ease, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1)',
@@ -167,7 +167,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             <span className="alloc-percent" style={{
               fontSize: '14px',
               fontWeight: 700,
-              color: isOverAllocated ? '#dc2626' : '#1e293b',
+              color: isOverAllocated ? 'var(--sem-danger)' : '#1e293b',
               letterSpacing: '-0.01em',
               zIndex: 10,
             }}>
@@ -177,7 +177,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             <span className="alloc-project" style={{
               fontSize: '11px',
               fontWeight: 500,
-              color: '#64748b',
+              color: 'var(--fg-3)',
               maxWidth: '100px',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -201,7 +201,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
                 height: '5px',
                 borderRadius: '2.5px',
                 // Track color is ring-fenced by CSS; keep a safe fallback.
-                background: 'var(--ra-bar-track, #e2e8f0)',
+                background: 'var(--ra-bar-track, var(--divider))',
                 display: 'block',
                 overflow: 'hidden',
                 zIndex: 2,

@@ -31,19 +31,19 @@ export default function RecentActivity({ projectId }: Props) {
           {items.map((item: any, i: number) => {
             const name = properCase(item.user_name || 'System');
             return (
-              <div key={item.id || i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '9px 16px', borderBottom: i < items.length - 1 ? '1px solid #F1F5F9' : undefined }} className="ph-table-row">
+              <div key={item.id || i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '9px 16px', borderBottom: i < items.length - 1 ? '1px solid var(--cp-bd-zone)' : undefined }} className="ph-table-row">
                 <PersonAvatar name={name} size={20} />
-                <div style={{ flex: 1, fontSize: 12, color: '#1E293B', minWidth: 0, fontFamily: "'Inter', sans-serif", lineHeight: 1.5, fontWeight: 500 }}>
+                <div style={{ flex: 1, fontSize: 12, color: 'var(--fg-1)', minWidth: 0, fontFamily: "'Inter', sans-serif", lineHeight: 1.5, fontWeight: 500 }}>
                   <span style={{ fontWeight: 700 }}>{name.split(' ')[0]}</span>{' '}{item.action}
                 </div>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#475569', whiteSpace: 'nowrap', flexShrink: 0, fontWeight: 500 }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: 'var(--fg-2)', whiteSpace: 'nowrap', flexShrink: 0, fontWeight: 500 }}>
                   {item.created_at ? format(new Date(item.created_at), 'MMM d · h:mm a') : ''}
                 </span>
               </div>
             );
           })}
-          <div style={{ padding: '8px 16px', borderTop: '1px solid #F1F5F9' }}>
-            <button className="ph-focus-ring" style={{ fontSize: 11, fontWeight: 700, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}>View all activity →</button>
+          <div style={{ padding: '8px 16px', borderTop: '1px solid var(--cp-bd-zone)' }}>
+            <button className="ph-focus-ring" style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer' }}>View all activity →</button>
           </div>
         </div>
       )}

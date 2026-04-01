@@ -81,7 +81,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
         <div className="ph-tis-scroll" style={{ position: 'relative', maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, minWidth: 900 }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 4, background: 'var(--bg-app)' }}>
-              <tr style={{ borderBottom: '2px solid #CBD5E1' }}>
+              <tr style={{ borderBottom: '2px solid var(--divider)' }}>
                 {['Release', 'Key', 'Type', 'Title', 'Current'].map((h, i) => (
                   <th key={h} style={{
                     padding: '8px 8px', textAlign: 'left',
@@ -132,7 +132,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                     </td>
                     {/* Key */}
                     <td style={{ padding: '0 8px', background: rowBg }}>
-                      <button onClick={() => openLifecycle(item.work_item_id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#1D4ED8', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>
+                      <button onClick={() => openLifecycle(item.work_item_id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--cp-primary-70)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>
                         {item.work_item_key}
                       </button>
                     </td>
@@ -192,7 +192,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                               )}
                             </div>
                           ) : (
-                            <span style={{ color: '#CBD5E1', fontSize: 10 }}>—</span>
+                            <span style={{ color: 'var(--divider)', fontSize: 10 }}>—</span>
                           )}
                         </td>
                       );

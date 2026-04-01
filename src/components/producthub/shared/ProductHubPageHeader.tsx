@@ -25,7 +25,7 @@ export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPag
         justifyContent: 'space-between',
         padding: '24px 28px 16px',
         borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.06)'}`,
-        background: isDark ? 'transparent' : '#FFFFFF',
+        background: isDark ? 'transparent' : 'var(--bg-app)',
       }}
     >
       <div>

@@ -83,7 +83,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
               value={search}
               onChange={e => onSearchChange(e.target.value)}
               className="h-[30px] w-[160px] pl-8 pr-7 text-[11px] rounded-md border focus:outline-none focus:ring-1 focus:ring-[#2563EB] placeholder:text-[#94A3B8]"
-              style={{ borderColor: '#E2E8F0', fontFamily: 'Inter, sans-serif' }}
+              style={{ borderColor: 'var(--divider)', fontFamily: 'Inter, sans-serif' }}
             />
             {search && (
               <button
@@ -119,7 +119,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
             {extra > 0 && (
               <div
                 className="w-[22px] h-[22px] rounded-full border-2 border-white flex items-center justify-center text-[8px] font-semibold"
-                style={{ background: '#E2E8F0', color: '#64748B', zIndex: 0 }}
+                style={{ background: 'var(--divider)', color: 'var(--fg-3)', zIndex: 0 }}
               >
                 +{extra}
               </div>
@@ -166,7 +166,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
             <button
               onClick={() => setGroupOpen(!groupOpen)}
               className="h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[#F1F5F9] transition-colors"
-              style={{ borderColor: '#E2E8F0', color: '#475569', fontFamily: 'Inter, sans-serif' }}
+              style={{ borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'Inter, sans-serif' }}
             >
               Group: {GROUP_OPTIONS.find(o => o.value === groupBy)?.label}
               <ChevronDown size={11} />
@@ -174,14 +174,14 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
             {groupOpen && (
               <div
                 className="absolute right-0 top-full mt-1 rounded-md py-1"
-                style={{ width: 160, background: '#FFF', border: '1px solid #E2E8F0', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 9999 }}
+                style={{ width: 160, background: '#FFF', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 9999 }}
               >
                 {GROUP_OPTIONS.map(o => (
                   <button
                     key={o.value}
                     onClick={() => { onGroupByChange(o.value); setGroupOpen(false); }}
                     className="w-full text-left px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] transition-colors flex items-center justify-between"
-                    style={{ color: '#0F172A', fontWeight: groupBy === o.value ? 600 : 400 }}
+                    style={{ color: 'var(--fg-1)', fontWeight: groupBy === o.value ? 600 : 400 }}
                   >
                     {o.label}
                     {groupBy === o.value && <span className="text-[#2563EB]">✓</span>}
@@ -196,7 +196,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
             <button
               onClick={() => setColSettingsOpen(!colSettingsOpen)}
               className="h-[30px] w-[30px] flex items-center justify-center rounded-md border hover:bg-[#F1F5F9] transition-colors"
-              style={{ borderColor: '#E2E8F0', color: '#64748B' }}
+              style={{ borderColor: 'var(--divider)', color: 'var(--fg-3)' }}
               title="Column settings"
             >
               <SlidersHorizontal size={14} />
@@ -215,7 +215,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
             <span
               key={chip.key}
               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
-              style={{ background: '#E9F2FF', color: '#2563EB', border: '1px solid #BFDBFE' }}
+              style={{ background: '#E9F2FF', color: 'var(--cp-blue)', border: '1px solid var(--cp-primary-20)' }}
             >
               {chip.label}: {chip.value}
               <button onClick={chip.remove} className="hover:text-[#DC2626]"><X size={9} /></button>
@@ -224,7 +224,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
           <button
             onClick={onClearAllFilters}
             className="text-[10px] font-medium px-1.5 py-0.5 hover:underline"
-            style={{ color: '#64748B' }}
+            style={{ color: 'var(--fg-3)' }}
           >
             Clear all
           </button>
@@ -249,7 +249,7 @@ function FilterDropdown({ filters, onChange, statuses, priorities, types, assign
   return (
     <div
       className="absolute left-0 top-full mt-1 rounded-lg overflow-y-auto"
-      style={{ width: 240, maxHeight: 420, background: '#FFF', border: '1px solid #E2E8F0', boxShadow: '0 12px 32px rgba(0,0,0,0.15)', zIndex: 9999 }}
+      style={{ width: 240, maxHeight: 420, background: '#FFF', border: '1px solid var(--divider)', boxShadow: '0 12px 32px rgba(0,0,0,0.15)', zIndex: 9999 }}
     >
       {/* Status */}
       <FilterSection title="Status">
@@ -294,7 +294,7 @@ function FilterDropdown({ filters, onChange, statuses, priorities, types, assign
               onChange={() => onChange({ ...filters, flagged: v })}
               className="accent-[#2563EB]"
             />
-            <span className="text-[11px] capitalize" style={{ color: '#334155' }}>{v}</span>
+            <span className="text-[11px] capitalize" style={{ color: 'var(--fg-2)' }}>{v}</span>
           </label>
         ))}
       </FilterSection>
@@ -314,7 +314,7 @@ function FilterDropdown({ filters, onChange, statuses, priorities, types, assign
               onChange={() => onChange({ ...filters, dueDate: o.value })}
               className="accent-[#2563EB]"
             />
-            <span className="text-[11px]" style={{ color: '#334155' }}>{o.label}</span>
+            <span className="text-[11px]" style={{ color: 'var(--fg-2)' }}>{o.label}</span>
           </label>
         ))}
       </FilterSection>
@@ -324,8 +324,8 @@ function FilterDropdown({ filters, onChange, statuses, priorities, types, assign
 
 function FilterSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ borderBottom: '1px solid #F1F5F9' }}>
-      <div className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase" style={{ color: '#94A3B8', letterSpacing: '0.06em' }}>
+    <div style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
+      <div className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase" style={{ color: 'var(--fg-4)', letterSpacing: '0.06em' }}>
         {title}
       </div>
       {children}
@@ -337,7 +337,7 @@ function CheckboxItem({ label, checked, onChange }: { label: string; checked: bo
   return (
     <label className="flex items-center gap-2 px-3 py-1 cursor-pointer hover:bg-[#F8FAFC]">
       <input type="checkbox" checked={checked} onChange={onChange} className="w-3.5 h-3.5 rounded accent-[#2563EB]" />
-      <span className="text-[11px]" style={{ color: '#334155' }}>{label}</span>
+      <span className="text-[11px]" style={{ color: 'var(--fg-2)' }}>{label}</span>
     </label>
   );
 }
@@ -370,9 +370,9 @@ function ColumnSettingsDropdown({ columns, onChange }: { columns: ColumnDef[]; o
   return (
     <div
       className="absolute right-0 top-full mt-1 rounded-lg py-2"
-      style={{ width: 200, background: '#FFF', border: '1px solid #E2E8F0', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 9999 }}
+      style={{ width: 200, background: '#FFF', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 9999 }}
     >
-      <div className="px-3 pb-1.5 text-[10px] font-semibold uppercase" style={{ color: '#94A3B8', letterSpacing: '0.06em' }}>
+      <div className="px-3 pb-1.5 text-[10px] font-semibold uppercase" style={{ color: 'var(--fg-4)', letterSpacing: '0.06em' }}>
         Columns
       </div>
       {toggleable.map((col, i) => (
@@ -392,7 +392,7 @@ function ColumnSettingsDropdown({ columns, onChange }: { columns: ColumnDef[]; o
               onChange={() => toggleVisibility(col.key)}
               className="w-3.5 h-3.5 rounded accent-[#2563EB]"
             />
-            <span className="text-[11px]" style={{ color: '#334155' }}>{col.label || col.key}</span>
+            <span className="text-[11px]" style={{ color: 'var(--fg-2)' }}>{col.label || col.key}</span>
           </label>
         </div>
       ))}

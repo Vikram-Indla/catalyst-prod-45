@@ -708,7 +708,7 @@ export function AllocationBookingModal({
                     key={i} 
                     className="flex-1 text-center text-sm font-semibold"
                     style={{ 
-                      color: mt.total > 100 ? '#d97706' : mt.total === 100 ? '#2563eb' : '#0d9488'
+                      color: mt.total > 100 ? 'var(--sem-warning)' : mt.total === 100 ? 'var(--cp-blue)' : 'var(--sem-success)'
                     }}
                   >
                     {mt.total}%
@@ -1101,7 +1101,7 @@ export function AllocationBookingModal({
                         key={i} 
                         className="flex-1 text-center text-sm font-semibold"
                         style={{ 
-                          color: total > 100 ? '#d97706' : total === 100 ? '#60a5fa' : '#2dd4bf'
+                          color: total > 100 ? 'var(--sem-warning)' : total === 100 ? '#60a5fa' : '#2dd4bf'
                         }}
                       >
                         {total}%

@@ -37,9 +37,9 @@ export const KanbanFilterBar: React.FC<KanbanFilterBarProps> = ({
             onClick={() => onFilterChange(chip.key)}
             className="pk-chip"
             style={{
-              background: isActive ? '#EFF6FF' : '#FFFFFF',
-              color: isActive ? '#2563EB' : '#3F3F46',
-              border: isActive ? '1px solid #2563EB' : '1px solid #E4E4E7',
+              background: isActive ? 'var(--cp-blue-wash)' : 'var(--bg-app)',
+              color: isActive ? 'var(--cp-blue)' : '#3F3F46',
+              border: isActive ? '1px solid var(--cp-blue)' : '1px solid #E4E4E7',
               fontWeight: isActive ? 600 : 500,
             }}
           >

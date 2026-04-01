@@ -30,7 +30,7 @@ export function SyncLegend({ visible }: SyncLegendProps) {
         gap: 16,
       }}
     >
-      <span style={{ fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>
+      <span style={{ fontWeight: 600, color: 'var(--fg-1)' }}>
         Jira sync status:
       </span>
       {LEGEND_ITEMS.map(item => (
@@ -45,10 +45,10 @@ export function SyncLegend({ visible }: SyncLegendProps) {
               display: 'inline-block',
             }}
           />
-          <span style={{ color: 'var(--cp-text-secondary, #475569)' }}>{item.label}</span>
+          <span style={{ color: 'var(--fg-2)' }}>{item.label}</span>
         </span>
       ))}
-      <span className="ml-auto" style={{ color: 'var(--cp-text-tertiary, #94A3B8)' }}>
+      <span className="ml-auto" style={{ color: 'var(--fg-4)' }}>
         Only shown on Jira-sourced items
       </span>
     </div>

@@ -29,7 +29,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
         left: `${position.x}px`,
         top: `${position.y}px`,
         zIndex: 9999,
-        background: '#ffffff',
+        background: 'var(--bg-app)',
         border: '1px solid #e4e4e7',
         borderRadius: '10px',
         boxShadow: '0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)',
@@ -52,7 +52,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
               fontWeight: 500,
               fontFamily: "'JetBrains Mono', monospace",
               backgroundColor: 'rgba(59,130,246,0.1)',
-              color: '#2563eb',
+              color: 'var(--cp-blue)',
             }}
           >
             {initiative.initiative_key}
@@ -158,7 +158,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
                     justifyContent: 'center',
                     fontSize: '8px',
                     fontWeight: 600,
-                    color: '#ffffff',
+                    color: 'var(--bg-app)',
                     flexShrink: 0,
                     backgroundColor: hashColor(initiative.assignee_name || initiative.initiative_key),
                   }}

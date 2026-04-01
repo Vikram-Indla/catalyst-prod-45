@@ -71,7 +71,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
       <div className="flex-shrink-0 rounded-full" style={{ width: 12, height: 12, background: color }} />
 
       {/* Name */}
-      <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
+      <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-1)' }}>
         {name}
       </span>
 
@@ -86,7 +86,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
       {/* Item count */}
       <span
         className="flex-shrink-0 text-right"
-        style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'JetBrains Mono', monospace", minWidth: 24 }}
+        style={{ fontSize: 12, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace", minWidth: 24 }}
       >
         {itemCount}
       </span>
@@ -113,7 +113,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
             <button
               onClick={() => { onEdit(); setMenuOpen(false); }}
               className="w-full text-left px-3 py-2 hover:bg-[#F8FAFC] transition-colors"
-              style={{ fontSize: 12, color: '#334155', border: 'none', background: 'transparent', cursor: 'pointer', display: 'block' }}
+              style={{ fontSize: 12, color: 'var(--fg-2)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'block' }}
             >
               Edit
             </button>
@@ -121,7 +121,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
               <button
                 onClick={() => { onDelete(); setMenuOpen(false); }}
                 className="w-full text-left px-3 py-2 hover:bg-[#FEF2F2] transition-colors"
-                style={{ fontSize: 12, color: '#DC2626', border: 'none', background: 'transparent', cursor: 'pointer', display: 'block' }}
+                style={{ fontSize: 12, color: 'var(--sem-danger)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'block' }}
               >
                 Delete
               </button>

@@ -11,20 +11,20 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   // LOADING STATE
   if (loading && !insights) {
     return (
-      <div style={{ gridColumn: '1 / -1', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid #F1F5F9' }}>
+      <div style={{ gridColumn: '1 / -1', background: '#FFFFFF', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Sparkles size={16} color="#7c3aed" />
-            <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 600, color: '#0F172A' }}>AI Insights</span>
+            <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 600, color: 'var(--fg-1)' }}>AI Insights</span>
           </div>
-          <span style={{ fontSize: 12, color: '#64748B' }}>Analyzing project data...</span>
+          <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>Analyzing project data...</span>
         </div>
         <div style={{ display: 'flex', gap: 16 }}>
           {[1, 2, 3].map((i) => (
             <div key={i} style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
-              <div style={{ height: 14, background: '#E2E8F0', borderRadius: 4, width: '60%', marginBottom: 12 }} className="ph-skeleton" />
-              <div style={{ height: 20, background: '#E2E8F0', borderRadius: 4, width: '80%', marginBottom: 8 }} className="ph-skeleton" />
-              <div style={{ height: 12, background: '#E2E8F0', borderRadius: 4, width: '50%' }} className="ph-skeleton" />
+              <div style={{ height: 14, background: 'var(--divider)', borderRadius: 4, width: '60%', marginBottom: 12 }} className="ph-skeleton" />
+              <div style={{ height: 20, background: 'var(--divider)', borderRadius: 4, width: '80%', marginBottom: 8 }} className="ph-skeleton" />
+              <div style={{ height: 12, background: 'var(--divider)', borderRadius: 4, width: '50%' }} className="ph-skeleton" />
             </div>
           ))}
         </div>
@@ -35,19 +35,19 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   // ERROR STATE
   if (error && !insights) {
     return (
-      <div style={{ gridColumn: '1 / -1', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid #F1F5F9' }}>
+      <div style={{ gridColumn: '1 / -1', background: '#FFFFFF', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Sparkles size={16} color="#7c3aed" />
-            <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 600, color: '#0F172A' }}>AI Insights</span>
+            <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 600, color: 'var(--fg-1)' }}>AI Insights</span>
           </div>
           <button onClick={refresh} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#7c3aed', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>
             <RefreshCw size={12} /> Retry
           </button>
         </div>
         <div style={{ textAlign: 'center', padding: '20px 0' }}>
-          <AlertTriangle size={24} color="#D97706" style={{ margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 13, color: '#64748B', marginBottom: 8 }}>Unable to generate insights right now.</p>
+          <AlertTriangle size={24} color="var(--sem-warning)" style={{ margin: '0 auto 8px' }} />
+          <p style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 8 }}>Unable to generate insights right now.</p>
           <button onClick={refresh} style={{ fontSize: 12, color: '#7c3aed', background: '#f5f3ff', border: 'none', borderRadius: 6, padding: '6px 16px', cursor: 'pointer', fontWeight: 500 }}>
             Try again
           </button>
@@ -68,14 +68,14 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   const balance = balanceColors[data.teamWorkload?.balance] || balanceColors.Balanced;
 
   return (
-    <div style={{ gridColumn: '1 / -1', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
+    <div style={{ gridColumn: '1 / -1', background: '#FFFFFF', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
       {/* HEADER */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid #F1F5F9' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Sparkles size={16} color="#7c3aed" />
-          <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 600, color: '#0F172A' }}>AI Insights</span>
+          <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 600, color: 'var(--fg-1)' }}>AI Insights</span>
           {lastGenerated && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#94A3B8', marginLeft: 8 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--fg-4)', marginLeft: 8 }}>
               <Clock size={10} />
               Generated {new Date(lastGenerated).toLocaleTimeString()}
             </span>
@@ -102,19 +102,19 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
         <div style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <Target size={15} color="#7c3aed" />
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Completion Forecast</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Completion Forecast</span>
           </div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 4 }}>
             Projected: {new Date(data.completionForecast.projectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </div>
-          <div style={{ fontSize: 13, color: '#64748B', marginBottom: 8 }}>
+          <div style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 8 }}>
             {data.completionForecast.daysFromTarget > 0
               ? `${data.completionForecast.daysFromTarget} days after target`
               : data.completionForecast.daysFromTarget < 0
               ? `${Math.abs(data.completionForecast.daysFromTarget)} days ahead of target`
               : 'On target'}
           </div>
-          <span style={{ fontSize: 12, color: '#64748B', background: '#F1F5F9', borderRadius: 9999, padding: '2px 8px' }}>
+          <span style={{ fontSize: 12, color: 'var(--fg-3)', background: 'var(--cp-bd-zone)', borderRadius: 9999, padding: '2px 8px' }}>
             Confidence: {data.completionForecast.confidence}%
           </span>
         </div>
@@ -123,16 +123,16 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
         <div style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <AlertTriangle size={15} color="#D97706" />
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Blockers Summary</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Blockers Summary</span>
           </div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 4 }}>
             {data.blockersSummary?.totalBlocked || 0} blocked item{(data.blockersSummary?.totalBlocked || 0) !== 1 ? 's' : ''}
           </div>
-          <div style={{ fontSize: 13, color: '#334155', lineHeight: 1.5 }}>
+          <div style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5 }}>
             {data.blockersSummary?.summary || 'No blocked items.'}
           </div>
           {data.blockersSummary?.topBlockers?.length > 0 && (
-            <div style={{ marginTop: 6, fontSize: 12, color: '#64748B' }}>
+            <div style={{ marginTop: 6, fontSize: 12, color: 'var(--fg-3)' }}>
               {data.blockersSummary.topBlockers.slice(0, 2).map((b: string, i: number) => (
                 <div key={i} style={{ marginBottom: 2 }}>• {b}</div>
               ))}
@@ -144,12 +144,12 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
         <div style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <TrendingUp size={15} color="#0D9488" />
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Team Workload</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Team Workload</span>
           </div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 4 }}>
             {data.teamWorkload?.totalAssigned || 0} items assigned
           </div>
-          <div style={{ fontSize: 13, color: '#334155', marginBottom: 4 }}>
+          <div style={{ fontSize: 13, color: 'var(--fg-2)', marginBottom: 4 }}>
             Busiest: {data.teamWorkload?.busiestMember || 'N/A'}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -157,7 +157,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
               {data.teamWorkload?.balance || 'Balanced'}
             </span>
             {(data.teamWorkload?.unassignedCount || 0) > 0 && (
-              <span style={{ fontSize: 12, color: '#D97706' }}>
+              <span style={{ fontSize: 12, color: 'var(--sem-warning)' }}>
                 {data.teamWorkload.unassignedCount} unassigned
               </span>
             )}
@@ -169,16 +169,16 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
       <div style={{ marginTop: 16, background: '#F5F3FF', borderLeft: '3px solid #7c3aed', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
         <Lightbulb size={15} color="#7c3aed" style={{ flexShrink: 0, marginTop: 1 }} />
         <div>
-          <div style={{ fontSize: 13, color: '#334155' }}>
+          <div style={{ fontSize: 13, color: 'var(--fg-2)' }}>
             <strong>Suggestion:</strong> {data.suggestion.action}
           </div>
-          <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{data.suggestion.reason}</div>
+          <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 2 }}>{data.suggestion.reason}</div>
         </div>
       </div>
 
       {/* META INFO */}
       {data._meta && (
-        <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#94A3B8' }}>
+        <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--fg-4)' }}>
           <span>{data._meta.model}</span>
           <span>·</span>
           <span>{data._meta.durationMs}ms</span>

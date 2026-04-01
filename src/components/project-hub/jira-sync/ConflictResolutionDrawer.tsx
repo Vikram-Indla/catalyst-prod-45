@@ -82,10 +82,10 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
           display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
         }}>
           <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', fontFamily: 'Sora, sans-serif', margin: 0 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'Sora, sans-serif', margin: 0 }}>
               Resolve Conflict — {itemKey}
             </h2>
-            <p style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>
+            <p style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 4 }}>
               Choose which version to keep. The rejected version will be discarded.
             </p>
           </div>
@@ -108,7 +108,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
 
             return (
               <div key={conflict.id} style={{ marginBottom: 24, padding: '0 24px' }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
                   Field: {conflict.field}
                 </div>
 
@@ -119,21 +119,21 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                     border: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
                     background: '#F8FAFC',
                   }}>
-                    <AlertCircle size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
-                    <span style={{ fontSize: 12, color: '#64748B' }}>
-                      No difference detected — both versions have the same value: <strong style={{ color: '#0F172A' }}>{conflict.catalystValue}</strong>
+                    <AlertCircle size={14} style={{ color: 'var(--fg-4)', flexShrink: 0 }} />
+                    <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>
+                      No difference detected — both versions have the same value: <strong style={{ color: 'var(--fg-1)' }}>{conflict.catalystValue}</strong>
                     </span>
                   </div>
                 ) : (
                   <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden', border: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))' }}>
                     {/* Catalyst side */}
-                    <div style={{ flex: 1, background: '#EFF6FF', borderRight: '0.75px solid #BFDBFE', padding: 16 }}>
+                    <div style={{ flex: 1, background: 'var(--cp-blue-wash)', borderRight: '0.75px solid var(--cp-primary-20)', padding: 16 }}>
                       <div className="flex items-center gap-[5px]" style={{ marginBottom: 8 }}>
-                        <span style={{ width: 10, height: 10, borderRadius: 2, background: '#2563EB', color: '#FFF', fontSize: 7, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>C</span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#2563EB', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Catalyst Version</span>
-                        <span style={{ fontSize: 10, color: '#64748B', marginLeft: 4 }}>Your edit</span>
+                        <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--cp-blue)', color: '#FFF', fontSize: 7, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>C</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Catalyst Version</span>
+                        <span style={{ fontSize: 10, color: 'var(--fg-3)', marginLeft: 4 }}>Your edit</span>
                       </div>
-                      <div style={{ fontSize: 13, color: '#0F172A', fontWeight: 500, padding: '8px 12px', background: 'rgba(37,99,235,0.06)', borderRadius: 4 }}>
+                      <div style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500, padding: '8px 12px', background: 'rgba(37,99,235,0.06)', borderRadius: 4 }}>
                         {conflict.catalystValue}
                       </div>
                     </div>
@@ -142,9 +142,9 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                       <div className="flex items-center gap-[5px]" style={{ marginBottom: 8 }}>
                         <span className="flex items-center" dangerouslySetInnerHTML={{ __html: JIRA_DIAMOND_SVG }} />
                         <span style={{ fontSize: 11, fontWeight: 700, color: '#9A3412', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Jira Version</span>
-                        <span style={{ fontSize: 10, color: '#64748B', marginLeft: 4 }}>From Jira</span>
+                        <span style={{ fontSize: 10, color: 'var(--fg-3)', marginLeft: 4 }}>From Jira</span>
                       </div>
-                      <div style={{ fontSize: 13, color: '#0F172A', fontWeight: 500, padding: '8px 12px', background: 'rgba(154,52,18,0.06)', borderRadius: 4 }}>
+                      <div style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500, padding: '8px 12px', background: 'rgba(154,52,18,0.06)', borderRadius: 4 }}>
                         {conflict.jiraValue}
                       </div>
                     </div>
@@ -152,7 +152,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                 )}
                 {/* Footer per conflict */}
                 <div className="flex items-center justify-between" style={{ marginTop: 10 }}>
-                  <span style={{ fontSize: 11, color: '#94A3B8' }}>
+                  <span style={{ fontSize: 11, color: 'var(--fg-4)' }}>
                     Detected {relativeTime(conflict.detectedAt)}
                   </span>
                   {!isIdentical && (
@@ -185,8 +185,8 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
           })}
           {conflicts.length === 0 && (
             <div className="flex flex-col items-center justify-center" style={{ padding: 40 }}>
-              <AlertCircle size={32} style={{ color: '#94A3B8', marginBottom: 8 }} />
-              <p style={{ color: '#94A3B8', fontSize: 13 }}>No conflicts to resolve</p>
+              <AlertCircle size={32} style={{ color: 'var(--fg-4)', marginBottom: 8 }} />
+              <p style={{ color: 'var(--fg-4)', fontSize: 13 }}>No conflicts to resolve</p>
             </div>
           )}
         </div>

@@ -54,14 +54,14 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
       {/* Work Types List */}
       <div className="ph-card">
         <h3 className="ph-card-title">Work Types</h3>
-        <p style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>
+        <p style={{ fontSize: 12, color: 'var(--fg-3)', marginBottom: 16 }}>
           Types define the hierarchy and field layout of work items.
         </p>
 
         {isLoading ? (
-          <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>Loading...</div>
+          <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>Loading...</div>
         ) : types.length === 0 ? (
-          <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>No work types configured</div>
+          <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>No work types configured</div>
         ) : (
           <div className="space-y-0.5">
             {types.map(t => (

@@ -67,10 +67,10 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
       {/* Release Sidebar */}
       <div
         className="flex-shrink-0 border-r overflow-y-auto"
-        style={{ width: 180, borderColor: '#E2E8F0', background: '#FAFBFC' }}
+        style={{ width: 180, borderColor: 'var(--divider)', background: '#FAFBFC' }}
       >
         <div className="p-2">
-          <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '4px 8px', marginBottom: 4 }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '4px 8px', marginBottom: 4 }}>
             Releases
           </div>
           {/* All */}
@@ -110,7 +110,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
         {loading ? (
           <div className="p-4"><SkeletonTable rows={8} /></div>
         ) : Object.keys(groups).length === 0 ? (
-          <div className="flex items-center justify-center" style={{ padding: 60, color: '#94A3B8', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>
+          <div className="flex items-center justify-center" style={{ padding: 60, color: 'var(--fg-4)', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>
             No items in this release
           </div>
         ) : (
@@ -121,12 +121,12 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
               <div
                 key={groupId}
                 className="mb-3 rounded-xl border"
-                style={{ borderColor: '#E2E8F0', background: '#fff' }}
+                style={{ borderColor: 'var(--divider)', background: '#fff' }}
               >
                 {/* Group Header */}
                 <div
                   className="flex items-center gap-2 px-3 cursor-pointer transition-colors rounded-t-xl"
-                  style={{ height: 40, borderBottom: isCollapsed ? 'none' : '1px solid #E2E8F0' }}
+                  style={{ height: 40, borderBottom: isCollapsed ? 'none' : '1px solid var(--divider)' }}
                   onClick={() => toggleCollapse(groupId)}
                   onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
@@ -134,7 +134,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                   {isCollapsed
                     ? <ChevronRight size={14} color="#64748B" />
                     : <ChevronDown size={14} color="#64748B" />}
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
                     {getReleaseName(groupId)}
                   </span>
                   <span
@@ -150,10 +150,10 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                   </span>
                   <div className="flex-1" />
                   <div className="flex items-center gap-1.5">
-                    <div className="rounded-full overflow-hidden" style={{ width: 60, height: 4, background: '#E2E8F0' }}>
-                      <div className="rounded-full" style={{ width: `${progress}%`, height: '100%', background: '#16A34A', transition: 'width 200ms ease' }} />
+                    <div className="rounded-full overflow-hidden" style={{ width: 60, height: 4, background: 'var(--divider)' }}>
+                      <div className="rounded-full" style={{ width: `${progress}%`, height: '100%', background: 'var(--sem-success)', transition: 'width 200ms ease' }} />
                     </div>
-                    <span style={{ fontSize: 10, color: '#94A3B8' }}>{progress}%</span>
+                    <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>{progress}%</span>
                   </div>
                 </div>
 
@@ -161,7 +161,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                 {!isCollapsed && (
                   <div>
                     {groupIssues.length === 0 ? (
-                      <div style={{ padding: '20px 16px', color: '#94A3B8', fontSize: 12, textAlign: 'center' }}>
+                      <div style={{ padding: '20px 16px', color: 'var(--fg-4)', fontSize: 12, textAlign: 'center' }}>
                         No items in this release
                       </div>
                     ) : groupIssues.map(issue => {
@@ -193,13 +193,13 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                             }}
                           />
                           <PHIssueTypeIcon type={issue.type} size={16} />
-                          <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>
                             {getDisplayKey(issue)}
                           </span>
                           <PHSourceTag source={issue.source} />
                           <span
                             className="truncate flex-1"
-                            style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}
+                            style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}
                           >
                             {issue.title}
                           </span>
@@ -250,13 +250,13 @@ function SidebarButton({ label, count, progress, isActive, onClick }: {
     >
       <div className="flex items-center justify-between mb-1">
         <span>{label}</span>
-        <span style={{ fontSize: 10, color: '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
+        <span style={{ fontSize: 10, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace" }}>
           {count}
         </span>
       </div>
       {progress !== undefined && (
-        <div className="rounded-full overflow-hidden" style={{ width: '100%', height: 3, background: '#E2E8F0' }}>
-          <div className="rounded-full" style={{ width: `${progress}%`, height: '100%', background: '#16A34A', transition: 'width 200ms ease' }} />
+        <div className="rounded-full overflow-hidden" style={{ width: '100%', height: 3, background: 'var(--divider)' }}>
+          <div className="rounded-full" style={{ width: `${progress}%`, height: '100%', background: 'var(--sem-success)', transition: 'width 200ms ease' }} />
         </div>
       )}
     </button>

@@ -9,7 +9,7 @@ export const HubIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="catalystBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style={{stopColor:'#3b82f6'}}/>
+        <stop offset="0%" style={{stopColor:'var(--cp-blue)'}}/>
         <stop offset="100%" style={{stopColor:'#1d4ed8'}}/>
       </linearGradient>
     </defs>

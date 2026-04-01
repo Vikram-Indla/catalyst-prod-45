@@ -65,8 +65,8 @@ export function CapacityAvatar({
           styles.avatar
         )}
         style={{
-          backgroundColor: avatarUrl ? 'transparent' : '#eff6ff',
-          color: '#3b82f6',
+          backgroundColor: avatarUrl ? 'transparent' : 'var(--cp-blue-wash)',
+          color: 'var(--cp-blue)',
           border: '2px solid #93c5fd',
           boxShadow: '0 1px 3px rgba(59, 130, 246, 0.1)',
         }}

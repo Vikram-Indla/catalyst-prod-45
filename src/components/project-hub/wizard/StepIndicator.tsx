@@ -34,7 +34,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                 {isDone ? (
                   <Check size={14} strokeWidth={2.5} />
                 ) : (
-                  <span style={{ color: isActive ? '#FFFFFF' : '#94A3B8' }}>{i + 1}</span>
+                  <span style={{ color: isActive ? 'var(--bg-app)' : 'var(--fg-4)' }}>{i + 1}</span>
                 )}
               </div>
               <span

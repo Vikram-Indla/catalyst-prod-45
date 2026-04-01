@@ -92,7 +92,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
         <div style={{ width: '100%', height: 4, backgroundColor: config.color, borderRadius: '2px 2px 0 0', flexShrink: 0 }} />
         <span className="pk-column-collapsed-name">{config.label}</span>
         <span className="pk-column-collapsed-count">{items.length}</span>
-        <ChevronRight size={14} style={{ color: '#94A3B8', marginTop: 8 }} />
+        <ChevronRight size={14} style={{ color: 'var(--fg-4)', marginTop: 8 }} />
       </button>
     );
   }

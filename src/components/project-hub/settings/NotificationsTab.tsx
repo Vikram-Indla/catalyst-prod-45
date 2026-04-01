@@ -20,7 +20,7 @@ export function NotificationsTab() {
             className="flex items-center justify-between px-3 rounded-lg"
             style={{ height: 44, opacity: 0.6 }}
           >
-            <span style={{ fontSize: 13, color: '#94A3B8' }}>{label}</span>
+            <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>{label}</span>
 
             {/* Disabled toggle — not clickable */}
             <div
@@ -45,9 +45,9 @@ export function NotificationsTab() {
         ))}
       </div>
 
-      <div className="flex items-center gap-2 mt-4 pt-4" style={{ borderTop: '1px solid #E2E8F0' }}>
+      <div className="flex items-center gap-2 mt-4 pt-4" style={{ borderTop: '1px solid var(--divider)' }}>
         <Bell size={14} color="#94A3B8" />
-        <p style={{ fontSize: 12, color: '#94A3B8' }}>
+        <p style={{ fontSize: 12, color: 'var(--fg-4)' }}>
           Email and in-app notifications. Coming soon.
         </p>
       </div>

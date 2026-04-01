@@ -72,7 +72,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
       <div className="max-h-[320px] overflow-y-auto py-1">
         {pinned.length > 0 && (
           <>
-            <div className="px-3 pt-2 pb-1 text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
               <Star size={10} className="inline mr-1" /> Pinned
             </div>
             {pinned.map(p => (
@@ -81,11 +81,11 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
           </>
         )}
 
-        <div className="px-3 pt-2 pb-1 text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+        <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
           {pinned.length > 0 ? 'Recent' : 'All Projects'}
         </div>
         {recent.length === 0 ? (
-          <div className="px-3 py-3 text-center text-[#94A3B8] dark:text-[rgba(248,244,240,0.40)]" style={{ fontSize: 12 }}>
+          <div className="px-3 py-3 text-center text-[var(--fg-4)] dark:text-[rgba(248,244,240,0.40)]" style={{ fontSize: 12 }}>
             No projects found
           </div>
         ) : (
@@ -128,10 +128,10 @@ function ProjectRow({
         {project.key.slice(0, 2)}
       </div>
       <div className="flex flex-col items-start min-w-0">
-        <span className="truncate w-full text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]" style={{ fontSize: 12, fontWeight: 500 }}>
+        <span className="truncate w-full text-[var(--fg-1)] dark:text-[rgba(248,244,240,0.92)]" style={{ fontSize: 12, fontWeight: 500 }}>
           {project.name}
         </span>
-        <span className="text-[#94A3B8] dark:text-[rgba(248,244,240,0.40)]" style={{ fontSize: 10 }}>{project.key}</span>
+        <span className="text-[var(--fg-4)] dark:text-[rgba(248,244,240,0.40)]" style={{ fontSize: 10 }}>{project.key}</span>
       </div>
     </button>
   );

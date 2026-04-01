@@ -86,7 +86,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
             {pill.icon === 'jira' && (
               <span
                 className="flex items-center"
-                style={{ color: isActive ? 'var(--src-jira-text)' : '#94A3B8' }}
+                style={{ color: isActive ? 'var(--src-jira-text)' : 'var(--fg-4)' }}
                 dangerouslySetInnerHTML={{ __html: JIRA_DIAMOND_SVG_SMALL }}
               />
             )}

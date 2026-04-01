@@ -459,8 +459,8 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
       <button
         onClick={() => { setOpen(o => !o); setGenState('idle'); }}
         style={{
-          background: '#FFFFFF', color: '#334155',
-          border: '1.5px solid #E2E8F0', borderRadius: '8px',
+          background: 'var(--bg-app)', color: 'var(--fg-2)',
+          border: '1.5px solid var(--divider)', borderRadius: '8px',
           padding: '8px 14px', fontSize: '13px', fontWeight: 600,
           cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
           transition: 'border-color 150ms',
@@ -485,7 +485,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
         }}>
           {/* Header */}
           <div style={{
-            background: 'linear-gradient(135deg, #1d4ed8, #2563EB)', padding: '14px 16px',
+            background: 'linear-gradient(135deg, #1d4ed8, var(--cp-blue))', padding: '14px 16px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#D6E4F0" strokeWidth="2" /><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" fill="#D6E4F0" /></svg>
@@ -510,7 +510,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                     padding: '8px 10px', borderRadius: 8, marginBottom: 4,
                     cursor: 'pointer', transition: 'background 100ms',
                     background: checked ? '#F0FDF4' : 'transparent',
-                    border: `1.5px solid ${checked ? '#16A34A' : 'transparent'}`,
+                    border: `1.5px solid ${checked ? 'var(--sem-success)' : 'transparent'}`,
                   }}
                   onMouseEnter={e => { if (!checked) e.currentTarget.style.background = '#f8f9fa'; }}
                   onMouseLeave={e => { if (!checked) e.currentTarget.style.background = 'transparent'; }}
@@ -523,7 +523,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                   />
                   <div style={{
                     width: 18, height: 18, borderRadius: 4,
-                    border: `2px solid ${checked ? '#16A34A' : '#cbd5e1'}`,
+                    border: `2px solid ${checked ? 'var(--sem-success)' : '#cbd5e1'}`,
                     background: checked ? '#DCFCE7' : '#fff',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0, transition: 'all 150ms',
@@ -534,7 +534,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                   {opt.isCurrent && (
                     <span style={{
                       fontSize: 10, fontWeight: 700, color: '#fff',
-                      background: '#2563EB', borderRadius: 4, padding: '2px 7px',
+                      background: 'var(--cp-blue)', borderRadius: 4, padding: '2px 7px',
                     }}>CURRENT</span>
                   )}
                   {opt.isFuture && (
@@ -561,11 +561,11 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 transition: 'all 200ms',
                 background: genState === 'done'
-                  ? 'linear-gradient(135deg, #15803D, #16A34A)'
+                  ? 'linear-gradient(135deg, #15803D, var(--sem-success))'
                   : totalSelected > 0
-                    ? 'linear-gradient(135deg, #1d4ed8, #2563EB)'
-                    : '#E2E8F0',
-                ...(totalSelected === 0 ? { color: '#94A3B8' } : {}),
+                    ? 'linear-gradient(135deg, #1d4ed8, var(--cp-blue))'
+                    : 'var(--divider)',
+                ...(totalSelected === 0 ? { color: 'var(--fg-4)' } : {}),
               }}
             >
               {genState === 'generating' ? (

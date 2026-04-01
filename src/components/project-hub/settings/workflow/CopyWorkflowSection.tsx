@@ -82,9 +82,9 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
 
   return (
     <>
-      <div className="pt-4 mt-4" style={{ borderTop: '1px solid #E2E8F0' }}>
+      <div className="pt-4 mt-4" style={{ borderTop: '1px solid var(--divider)' }}>
         <div className="flex items-center gap-3 flex-wrap">
-          <label style={{ fontSize: 12, fontWeight: 500, color: '#334155', flexShrink: 0 }}>Copy from:</label>
+          <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', flexShrink: 0 }}>Copy from:</label>
           <select
             value={sourceProjectId}
             onChange={e => setSourceProjectId(e.target.value)}
@@ -118,21 +118,21 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
         >
           <div style={{ width: 440, background: '#FFFFFF', borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: "'Inter', sans-serif" }}>
             <div className="flex items-center justify-between mb-4">
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>Copy Workflow</h3>
-              <button onClick={() => setConfirmOpen(false)} className="flex items-center justify-center rounded-md hover:bg-[#F1F5F9] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>Copy Workflow</h3>
+              <button onClick={() => setConfirmOpen(false)} className="flex items-center justify-center rounded-md hover:bg-[var(--cp-bd-zone)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
                 <X size={16} color="#64748B" />
               </button>
             </div>
-            <p style={{ fontSize: 13, color: '#334155', lineHeight: 1.6 }}>
+            <p style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.6 }}>
               This will replace your current workflow with the workflow from <strong>{selectedProject?.name}</strong>. Continue?
             </p>
             <div className="flex justify-end gap-2 mt-6">
-              <button onClick={() => setConfirmOpen(false)} style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, color: '#334155', border: '1px solid #E2E8F0', borderRadius: 6, background: '#FFFFFF', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => setConfirmOpen(false)} style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, background: '#FFFFFF', cursor: 'pointer' }}>Cancel</button>
               <button
                 onClick={handleCopy}
                 disabled={loading}
                 className="hover:opacity-90 transition-opacity disabled:opacity-50"
-                style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: '#2563EB', border: 'none', borderRadius: 6, cursor: loading ? 'default' : 'pointer' }}
+                style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: loading ? 'default' : 'pointer' }}
               >
                 {loading ? 'Copying...' : 'Copy Workflow'}
               </button>

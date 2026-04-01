@@ -176,7 +176,7 @@ function MetricTile({ icon: Icon, value, label, variant, showProgress, progressP
     >
       <div style={styles.metricHeader}>
         <Icon size={14} style={{ color: colors.accent, flexShrink: 0 }} />
-        <span style={{ ...styles.metricLabel, color: '#64748b' }}>{label}</span>
+        <span style={{ ...styles.metricLabel, color: 'var(--fg-3)' }}>{label}</span>
       </div>
       <div style={{ ...styles.metricValue, color: colors.text }}>
         {value}
@@ -284,7 +284,7 @@ function IssueTile({ question, accentColor, onClick }: IssueTileProps) {
       </div>
       
       {/* Chevron */}
-      <ChevronRight size={16} style={{ color: '#94a3b8', flexShrink: 0 }} />
+      <ChevronRight size={16} style={{ color: 'var(--fg-4)', flexShrink: 0 }} />
     </button>
   );
 }
@@ -312,16 +312,16 @@ function ViewportSkeleton() {
     <div style={styles.viewport}>
       <div style={styles.metricsGrid}>
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} style={{ ...styles.metricTile, background: '#f8fafc', borderColor: '#e2e8f0' }}>
-            <div style={{ height: 14, width: '60%', background: '#e2e8f0', borderRadius: 4, marginBottom: 8 }} />
-            <div style={{ height: 28, width: '40%', background: '#e2e8f0', borderRadius: 4 }} />
+          <div key={i} style={{ ...styles.metricTile, background: 'var(--bg-1)', borderColor: 'var(--divider)' }}>
+            <div style={{ height: 14, width: '60%', background: 'var(--divider)', borderRadius: 4, marginBottom: 8 }} />
+            <div style={{ height: 28, width: '40%', background: 'var(--divider)', borderRadius: 4 }} />
           </div>
         ))}
       </div>
       <div style={styles.issuesContainer}>
-        <div style={{ height: 16, width: '30%', background: '#e2e8f0', borderRadius: 4, marginBottom: 16 }} />
+        <div style={{ height: 16, width: '30%', background: 'var(--divider)', borderRadius: 4, marginBottom: 16 }} />
         {[1, 2].map((i) => (
-          <div key={i} style={{ height: 60, background: '#f8fafc', borderRadius: 8, marginBottom: 8, border: '1px solid #e2e8f0' }} />
+          <div key={i} style={{ height: 60, background: 'var(--bg-1)', borderRadius: 8, marginBottom: 8, border: '1px solid var(--divider)' }} />
         ))}
       </div>
     </div>

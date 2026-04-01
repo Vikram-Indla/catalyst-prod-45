@@ -15,8 +15,8 @@ export function RoadmapBadge({ onRoadmap }: Props) {
         <span
           className="inline-flex items-center justify-center w-[18px] h-[18px] rounded-[4px] flex-shrink-0"
           style={{
-            background: onRoadmap ? '#EFF6FF' : 'transparent',
-            color: onRoadmap ? '#2563EB' : '#94A3B8',
+            background: onRoadmap ? 'var(--cp-blue-wash)' : 'transparent',
+            color: onRoadmap ? 'var(--cp-blue)' : 'var(--fg-4)',
             opacity: onRoadmap ? 1 : 0.3,
           }}
         >

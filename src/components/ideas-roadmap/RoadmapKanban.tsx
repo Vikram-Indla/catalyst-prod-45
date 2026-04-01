@@ -78,10 +78,10 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
               display: 'flex', flexDirection: 'column', borderRadius: 8,
               background: isDark
                 ? 'transparent'
-                : (col.dashed ? '#F8FAFC' : '#FFFFFF'),
+                : (col.dashed ? 'var(--bg-1)' : 'var(--bg-app)'),
               border: col.dashed
-                ? `1.5px dashed ${isOver ? '#2563EB' : dk.border}`
-                : `1px solid ${isOver ? '#2563EB' : dk.border}`,
+                ? `1.5px dashed ${isOver ? 'var(--cp-blue)' : dk.border}`
+                : `1px solid ${isOver ? 'var(--cp-blue)' : dk.border}`,
               borderTop: col.dashed ? undefined : `2px solid ${col.accent}`,
               transition: 'border-color 150ms, background 150ms',
               ...(isOver && !col.dashed ? { background: isDark ? 'rgba(37,99,235,0.06)' : 'rgba(37,99,235,0.04)' } : {}),

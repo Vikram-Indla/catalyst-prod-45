@@ -28,7 +28,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
       >
         <div
           className="flex items-center justify-center rounded-full flex-shrink-0"
-          style={{ width: 28, height: 28, background: '#2563EB', color: '#FFFFFF', fontSize: 11, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}
+          style={{ width: 28, height: 28, background: 'var(--cp-blue)', color: '#FFFFFF', fontSize: 11, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}
         >
           PH
         </div>
@@ -61,7 +61,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         {/* Resource 360° Section */}
         {!collapsed && (
           <div className="pt-3 pb-1">
-            <div className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
+            <div className="text-[var(--fg-3)] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
               Resource 360°
             </div>
           </div>
@@ -76,10 +76,10 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         {/* Favorites section */}
         {!collapsed && (
           <div className="pt-3">
-            <div className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
+            <div className="text-[var(--fg-3)] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
               Favorites
             </div>
-            <div className="flex items-center gap-2 px-[10px] py-2 text-[#94A3B8] dark:text-[rgba(248,244,240,0.40)]" style={{ fontSize: 12 }}>
+            <div className="flex items-center gap-2 px-[10px] py-2 text-[var(--fg-4)] dark:text-[rgba(248,244,240,0.40)]" style={{ fontSize: 12 }}>
               <Star size={14} />
               <span>No starred projects</span>
             </div>

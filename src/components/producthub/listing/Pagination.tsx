@@ -53,7 +53,7 @@ export function Pagination({ total, page, pageSize, onPageChange, onPageSizeChan
                 borderRadius: 'var(--pb-r-sm)', fontSize: 12, fontWeight: 500,
                 fontVariantNumeric: 'tabular-nums', border: 'none', cursor: 'pointer',
                 background: p === page ? 'var(--pb-primary)' : 'none',
-                color: p === page ? '#FFFFFF' : 'var(--pb-ink-tertiary)',
+                color: p === page ? 'var(--bg-app)' : 'var(--pb-ink-tertiary)',
               }}
             >
               {p}

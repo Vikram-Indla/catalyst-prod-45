@@ -60,7 +60,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
           <div className="sticky top-0 bg-white z-10 border-b border-[rgba(15,23,42,0.12)] px-6 py-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-[16px] font-black text-[#2563EB]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
+                <span className="text-[16px] font-black text-[var(--cp-blue)]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                 <RiskBadge risk={mapRisk(c.risk_level)} />
                 <SourceBadge source={c.source} />
               </div>
@@ -70,7 +70,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
             <div className="flex items-center gap-2 mb-4">
               <StatusLozenge status={c.status} />
               {c.category && <span className="text-[12px] text-[#64748B]">{c.category}</span>}
-              {c.deployment_date && <span className="text-[12px] text-[#64748B]" style={{ fontFamily: RH.fontMono }}>Planned: {new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
+              {c.deployment_date && <span className="text-[12px] text-[var(--fg-3)]" style={{ fontFamily: RH.fontMono }}>Planned: {new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
               {nextStatus && (
                 <button onClick={() => handleAdvanceStatus(nextStatus)}
                   disabled={updateStatus.isPending}
@@ -99,7 +99,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
             </div>
             <div className="flex justify-between mt-1">
               {CHG_STATUS_ORDER.map(s => (
-                <span key={s} className="text-[9px] font-medium text-[#94A3B8] text-center" style={{ width: 60 }}>{CHG_STATUS_LABELS[s]}</span>
+                <span key={s} className="text-[9px] font-medium text-[var(--fg-4)] text-center" style={{ width: 60 }}>{CHG_STATUS_LABELS[s]}</span>
               ))}
             </div>
           </div>
@@ -159,12 +159,12 @@ function OverviewTab({ change: c }: { change: any }) {
         <h3 className="text-[13px] font-bold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Details</h3>
         <div className="grid grid-cols-2 gap-3">
           {fields.map(f => (
-            <div key={f.label} className="rounded-lg p-3" style={{ background: '#F8FAFC' }}>
-              <p className="text-[11px] font-bold uppercase text-[#64748B] mb-1" style={{ letterSpacing: '0.06em' }}>{f.label}</p>
+            <div key={f.label} className="rounded-lg p-3" style={{ background: 'var(--bg-1)' }}>
+              <p className="text-[11px] font-bold uppercase text-[var(--fg-3)] mb-1" style={{ letterSpacing: '0.06em' }}>{f.label}</p>
               <p className="text-[13px] font-medium"
                 style={{
                   fontFamily: f.mono ? RH.fontMono : RH.fontBody,
-                  color: f.link ? '#2563EB' : (f.value && f.value !== '—' ? RH.ink2 : '#94A3B8'),
+                  color: f.link ? 'var(--cp-blue)' : (f.value && f.value !== '—' ? RH.ink2 : 'var(--fg-4)'),
                 }}>
                 {f.value || '—'}
               </p>
@@ -175,8 +175,8 @@ function OverviewTab({ change: c }: { change: any }) {
 
       {/* Work Items count */}
       {(c.work_item_count > 0 || (c.rh_change_work_items?.length > 0)) && (
-        <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: '#EFF6FF', border: '1px solid #DBEAFE' }}>
-          <span className="text-[12px] font-bold" style={{ color: '#2563EB' }}>
+        <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE' }}>
+          <span className="text-[12px] font-bold" style={{ color: 'var(--cp-blue)' }}>
             {c.work_item_count || c.rh_change_work_items?.length || 0} work items linked
           </span>
         </div>
@@ -185,7 +185,7 @@ function OverviewTab({ change: c }: { change: any }) {
       {/* Pending sign-offs */}
       {c.pending_signoffs > 0 && (
         <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: '#FEF2F2', border: '1px solid #FCA5A5' }}>
-          <span className="text-[12px] font-bold" style={{ color: '#DC2626' }}>
+          <span className="text-[12px] font-bold" style={{ color: 'var(--sem-danger)' }}>
             {c.pending_signoffs} sign-off{c.pending_signoffs > 1 ? 's' : ''} pending
           </span>
         </div>
@@ -270,7 +270,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
             <div className="flex-1">
               <span className="text-[13px] font-medium" style={{ color: RH.ink2 }}>{s.stage}</span>
               {signoff && status === 'pending' && waitHours > 0 && (
-                <span className="ml-2 text-[11px] font-bold" style={{ color: waitHours > 48 ? '#DC2626' : waitHours > 24 ? '#2563EB' : '#94A3B8' }}>
+                <span className="ml-2 text-[11px] font-bold" style={{ color: waitHours > 48 ? 'var(--sem-danger)' : waitHours > 24 ? 'var(--cp-blue)' : 'var(--fg-4)' }}>
                   {getSignoffWaitTime(signoff.wait_started_at)}
                 </span>
               )}
