@@ -107,9 +107,9 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                 ))}
                 <th style={{
                   padding: '8px 12px', textAlign: 'right',
-                  fontSize: 10, fontWeight: 700, color: '#475569',
+                  fontSize: 10, fontWeight: 700, color: 'var(--fg-2)',
                   textTransform: 'uppercase', fontFamily: "'Inter', sans-serif",
-                  borderLeft: '2px solid #E2E8F0', background: '#F8FAFC',
+                  borderLeft: '2px solid var(--divider)', background: 'var(--bg-1)',
                   position: 'sticky', right: 0, zIndex: 5,
                   boxShadow: '-4px 0 8px rgba(0,0,0,0.06)',
                 }}>Total</th>
@@ -121,9 +121,9 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                 for (const s of item.statuses ?? []) {
                   statusMap[s.status] = s;
                 }
-                const rowBg = idx % 2 === 1 ? '#FAFBFC' : '#FFFFFF';
+                const rowBg = idx % 2 === 1 ? '#FAFBFC' : 'var(--bg-app)';
                 return (
-                  <tr key={item.work_item_id} style={{ height: 44, borderBottom: '1px solid #F1F5F9', background: rowBg }} className="ph-table-row">
+                  <tr key={item.work_item_id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', background: rowBg }} className="ph-table-row">
                     {/* Release */}
                     <td style={{ padding: '0 8px', position: 'sticky', left: 0, background: rowBg, zIndex: 1 }}>
                       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: '#0F766E', background: '#F0FDFA', padding: '2px 7px', borderRadius: 4, border: '1px solid #99F6E4' }}>
@@ -141,7 +141,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                       <TypeBadge type={item.work_item_type} />
                     </td>
                     {/* Title */}
-                    <td style={{ padding: '0 8px', maxWidth: 130, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#1E293B', fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif" }} title={item.work_item_title}>
+                    <td style={{ padding: '0 8px', maxWidth: 130, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--fg-1)', fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif" }} title={item.work_item_title}>
                       {item.work_item_title}
                     </td>
                     {/* Current Status */}
@@ -173,11 +173,11 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                               padding: '3px 2px', borderRadius: 6, minHeight: 40,
                               background: bn ? '#FEF3C7' : getStatusCellBg(status),
                               border: bn ? '1px solid #FDE68A' : undefined,
-                              outline: isCurrent ? '2px solid #2563EB' : undefined,
+                              outline: isCurrent ? '2px solid var(--cp-blue)' : undefined,
                               outlineOffset: isCurrent ? -1 : undefined,
                               position: 'relative',
                             }}>
-                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: '#475569' }}>
+                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: 'var(--fg-2)' }}>
                                 {entry.entered_at ? format(new Date(entry.entered_at), 'MMM d') : ''}
                               </span>
                               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: bn ? 12 : 11, fontWeight: 800, color: bn ? '#92400E' : getDaysColor(days) }}>
@@ -187,7 +187,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                                 <span className="ph-pulse-dot" style={{
                                   position: 'absolute', top: 3, right: 3,
                                   width: 5, height: 5, borderRadius: '50%',
-                                  background: '#2563EB',
+                                  background: 'var(--cp-blue)',
                                 }} />
                               )}
                             </div>
@@ -200,8 +200,8 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                     {/* Total */}
                     <td style={{
                       padding: '0 12px', textAlign: 'right',
-                      fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 800, color: '#0F172A',
-                      background: rowBg === '#FAFBFC' ? '#F1F5F9' : '#F8FAFC', borderLeft: '2px solid #E2E8F0',
+                      fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 800, color: 'var(--fg-1)',
+                      background: rowBg === '#FAFBFC' ? 'var(--cp-bd-zone)' : 'var(--bg-1)', borderLeft: '2px solid var(--divider)',
                       position: 'sticky', right: 0, zIndex: 2,
                       boxShadow: '-4px 0 8px rgba(0,0,0,0.06)',
                     }}>
@@ -215,15 +215,15 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
 
           {/* Show all toggle */}
           {allItems.length > INITIAL_SHOW && !showAll && (
-            <div style={{ padding: '10px 16px', borderTop: '1px solid #F1F5F9', textAlign: 'center' }}>
-              <button onClick={() => setShowAll(true)} className="ph-focus-ring" style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}>
+            <div style={{ padding: '10px 16px', borderTop: '1px solid var(--cp-bd-zone)', textAlign: 'center' }}>
+              <button onClick={() => setShowAll(true)} className="ph-focus-ring" style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer' }}>
                 Show all {allItems.length} items
               </button>
             </div>
           )}
           {showAll && allItems.length > INITIAL_SHOW && (
-            <div style={{ padding: '10px 16px', borderTop: '1px solid #F1F5F9', textAlign: 'center' }}>
-              <button onClick={() => setShowAll(false)} className="ph-focus-ring" style={{ fontSize: 11, fontWeight: 600, color: '#64748B', background: 'none', border: 'none', cursor: 'pointer' }}>
+            <div style={{ padding: '10px 16px', borderTop: '1px solid var(--cp-bd-zone)', textAlign: 'center' }}>
+              <button onClick={() => setShowAll(false)} className="ph-focus-ring" style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', background: 'none', border: 'none', cursor: 'pointer' }}>
                 Show less
               </button>
             </div>

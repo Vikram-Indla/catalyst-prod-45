@@ -19,11 +19,11 @@ interface WorkItemDrawerProps {
 
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-3 py-2 border-b" style={{ borderColor: '#f1f5f9' }}>
-      <span className="text-[12px] font-medium shrink-0" style={{ width: '110px', color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+    <div className="flex items-start gap-3 py-2 border-b" style={{ borderColor: 'var(--bg-1)' }}>
+      <span className="text-[12px] font-medium shrink-0" style={{ width: '110px', color: 'var(--fg-4)' }}>
         {label}
       </span>
-      <div className="flex-1 text-[13px]" style={{ color: 'var(--wh-text-primary, #0f172a)' }}>{children}</div>
+      <div className="flex-1 text-[13px]" style={{ color: 'var(--fg-1)' }}>{children}</div>
     </div>
   );
 }
@@ -68,15 +68,15 @@ function ThemeSelector({ issueKey, currentThemeId }: { issueKey: string; current
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-slate-50 transition-colors text-[13px]"
-        style={{ color: 'var(--wh-text-primary, #0f172a)' }}
+        style={{ color: 'var(--fg-1)' }}
       >
         {current ? (
           <>
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: current.color || '#94a3b8' }} />
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: current.color || 'var(--fg-4)' }} />
             {current.name}
           </>
         ) : (
-          <span className="italic text-[12px]" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+          <span className="italic text-[12px]" style={{ color: 'var(--fg-4)' }}>
             Assign theme…
           </span>
         )}
@@ -89,17 +89,17 @@ function ThemeSelector({ issueKey, currentThemeId }: { issueKey: string; current
             minWidth: '220px',
             maxHeight: '240px',
             boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)',
-            borderColor: 'var(--wh-border, #e2e8f0)',
+            borderColor: 'var(--divider)',
           }}
         >
           {/* None option */}
           <button
             onClick={() => handleSelect(null)}
             className="w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-            style={{ color: 'var(--wh-text-secondary, #64748b)' }}
+            style={{ color: 'var(--fg-3)' }}
           >
             <span className="italic">None</span>
-            {!currentThemeId && <Check className="w-3.5 h-3.5" style={{ color: 'var(--wh-primary, #2563eb)' }} />}
+            {!currentThemeId && <Check className="w-3.5 h-3.5" style={{ color: 'var(--cp-blue)' }} />}
           </button>
 
           {(themes ?? []).map(t => (
@@ -107,13 +107,13 @@ function ThemeSelector({ issueKey, currentThemeId }: { issueKey: string; current
               key={t.id}
               onClick={() => handleSelect(t.id)}
               className="w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-              style={{ color: 'var(--wh-text-primary, #0f172a)' }}
+              style={{ color: 'var(--fg-1)' }}
             >
               <span className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: t.color || '#94a3b8' }} />
+                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: t.color || 'var(--fg-4)' }} />
                 {t.name}
               </span>
-              {currentThemeId === t.id && <Check className="w-3.5 h-3.5" style={{ color: 'var(--wh-primary, #2563eb)' }} />}
+              {currentThemeId === t.id && <Check className="w-3.5 h-3.5" style={{ color: 'var(--cp-blue)' }} />}
             </button>
           ))}
         </div>
@@ -145,24 +145,24 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
         {/* Header */}
         <div
           className="flex items-center justify-between px-5 py-3.5 border-b shrink-0"
-          style={{ borderColor: 'var(--wh-border, #e2e8f0)' }}
+          style={{ borderColor: 'var(--divider)' }}
         >
           <div className="flex items-center gap-2.5 min-w-0">
             <span
               className="text-sm font-bold"
-              style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--wh-primary, #2563eb)' }}
+              style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--cp-blue)' }}
             >
               {item.issue_key}
             </span>
             <span
               className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold"
-              style={{ backgroundColor: '#dbeafe', color: '#2563eb' }}
+              style={{ backgroundColor: 'var(--cp-primary-20)', color: 'var(--cp-blue)' }}
             >
               {item.status}
             </span>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-md hover:bg-slate-100 transition-colors">
-            <X className="w-4 h-4" style={{ color: '#64748b' }} />
+            <X className="w-4 h-4" style={{ color: 'var(--fg-3)' }} />
           </button>
         </div>
 

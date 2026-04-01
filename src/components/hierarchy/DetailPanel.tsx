@@ -30,9 +30,9 @@ interface DetailPanelProps {
 /* ── Skeleton ── */
 export function DetailPanelSkeleton() {
   return (
-    <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, position: 'sticky', top: 24 }}>
+    <div style={{ background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 8, position: 'sticky', top: 24 }}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0' }}>
+        <div key={i} style={{ padding: '8px 20px', borderBottom: '1px solid var(--divider)' }}>
           <div style={{ width: 60, height: 10, borderRadius: 4, background: '#F1F5F9', marginBottom: 6 }} className="hi-shimmer" />
           <div style={{ width: '60%', height: 12, borderRadius: 4, background: '#F1F5F9' }} className="hi-shimmer" />
         </div>
@@ -49,7 +49,7 @@ function PriorityBars({ level }: { level: number }) {
   return (
     <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} style={{ width: 12, height: 4, borderRadius: 1, background: i <= level ? '#64748B' : '#E2E8F0' }} />
+        <div key={i} style={{ width: 12, height: 4, borderRadius: 1, background: i <= level ? 'var(--fg-3)' : 'var(--divider)' }} />
       ))}
     </div>
   );
@@ -68,10 +68,10 @@ function priorityToLevel(name?: string): number {
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ padding: '8px 20px', borderBottom: '1px solid #F1F5F9' }}>
-      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.06em', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
         {label}
       </div>
-      <div style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
         {children}
       </div>
     </div>

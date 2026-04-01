@@ -63,7 +63,7 @@ export function Resource360List({ items, onItemClick }: Props) {
   }, [sorted]);
 
   if (items.length === 0) {
-    return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300 }}><p style={{ fontSize: 14, fontWeight: 600, color: '#9CA3AF' }}>No items to display</p></div>;
+    return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300 }}><p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-4)' }}>No items to display</p></div>;
   }
 
   const headerLabels = ['', 'Key', 'Type', 'Title', 'Hub', 'Status', 'Priority', 'Assigner', 'Age', 'Assigned'];
@@ -72,10 +72,10 @@ export function Resource360List({ items, onItemClick }: Props) {
   return (
     <div style={{ overflow: 'auto', fontFamily: "'Inter', sans-serif" }}>
       {/* Search */}
-      <div style={{ padding: '10px 12px', borderBottom: '1px solid #D9D2C9', background: '#FFFFFF' }}>
+      <div style={{ padding: '10px 12px', borderBottom: '1px solid #D9D2C9', background: 'var(--bg-app)' }}>
         <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search key, title, parent…"
-          style={{ width: 220, fontSize: 11, fontWeight: 500, padding: '5px 10px', borderRadius: 5, border: '1px solid #C5BDB3', background: '#FFFFFF', color: '#0A0A0A', outline: 'none' }} />
-        <span style={{ marginLeft: 12, fontSize: 11, color: '#6B6B80' }}>{filtered.length} / {items.length}</span>
+          style={{ width: 220, fontSize: 11, fontWeight: 500, padding: '5px 10px', borderRadius: 5, border: '1px solid var(--divider)', background: 'var(--bg-app)', color: 'var(--fg-1)', outline: 'none' }} />
+        <span style={{ marginLeft: 12, fontSize: 11, color: 'var(--fg-3)' }}>{filtered.length} / {items.length}</span>
       </div>
 
       {/* Header — STICKY */}
@@ -88,7 +88,7 @@ export function Resource360List({ items, onItemClick }: Props) {
           const key = headerKeys[idx];
           return (
             <div key={idx} onClick={key ? () => handleSort(key) : undefined}
-              style={{ color: key && sortKey === key ? '#2563EB' : '#6B6B80', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', cursor: key ? 'pointer' : 'default', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
+              style={{ color: key && sortKey === key ? 'var(--cp-blue)' : 'var(--fg-3)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', cursor: key ? 'pointer' : 'default', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
               {label}
               {key && sortKey === key && <span style={{ fontSize: 8 }}>{sortDir === 'asc' ? '▲' : '▼'}</span>}
             </div>
@@ -106,9 +106,9 @@ export function Resource360List({ items, onItemClick }: Props) {
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', cursor: 'pointer',
               background: '#F3F4F6', borderBottom: '1px solid #D9D2C9', borderLeft: `3px solid ${hubColor}`,
             }}>
-              <span style={{ fontSize: 11, color: '#6B7280', transition: 'transform .15s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0)', display: 'inline-block' }}>▼</span>
+              <span style={{ fontSize: 11, color: 'var(--fg-3)', transition: 'transform .15s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0)', display: 'inline-block' }}>▼</span>
               <span style={{ fontSize: 9, fontWeight: 800, color: '#fff', padding: '2px 7px', borderRadius: 4, background: hubColor }}>{hub}</span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#374151' }}>{hubItems.length} items</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-2)' }}>{hubItems.length} items</span>
             </div>
 
             {!collapsed && hubItems.map((item, rowIdx) => {
@@ -131,9 +131,9 @@ export function Resource360List({ items, onItemClick }: Props) {
                     onMouseEnter={e => { e.currentTarget.style.background = '#EFF6FF'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = rowIdx % 2 === 1 ? '#FAFBFC' : 'transparent'; }}>
                     <ExpandChevron expanded={isExpanded} onClick={e => { e.stopPropagation(); toggleExpand(item.work_item_id); }} />
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}><HighlightText text={item.item_key} query={searchTerm} /></span>
-                    <span style={{ fontSize: 10, color: '#6B7280' }}>{item.item_type}</span>
-                    <span style={{ fontSize: 11, color: '#374151', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><HighlightText text={item.title} query={searchTerm} /></span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}><HighlightText text={item.item_key} query={searchTerm} /></span>
+                    <span style={{ fontSize: 10, color: 'var(--fg-3)' }}>{item.item_type}</span>
+                    <span style={{ fontSize: 11, color: 'var(--fg-2)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><HighlightText text={item.title} query={searchTerm} /></span>
                     <span style={{ fontSize: 9, fontWeight: 600, color: hubColor }}>{WH_HUB_SHORT[item.hub] ?? item.hub}</span>
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 9, fontWeight: 600,
@@ -144,12 +144,12 @@ export function Resource360List({ items, onItemClick }: Props) {
                       {item.status.length > 16 ? item.status.slice(0, 14) + '…' : item.status}
                     </span>
                     <span style={{ fontSize: 10, color: priColor }}>{priIcon} {item.priority}</span>
-                    <span style={{ fontSize: 10, color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.assigner_name ?? '—'}</span>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: item.age_days > 14 ? '#EF4444' : '#6B7280', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                    <span style={{ fontSize: 10, color: 'var(--fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.assigner_name ?? '—'}</span>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: item.age_days > 14 ? 'var(--sem-danger)' : 'var(--fg-3)', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
                       {item.age_days}d
                       {stale && <span title={stale.label} style={{ fontSize: 10 }}>{stale.icon}</span>}
                     </span>
-                    <span style={{ fontSize: 10, color: '#9CA3AF' }}>{item.assigned_at?.slice(0, 10)}</span>
+                    <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>{item.assigned_at?.slice(0, 10)}</span>
                   </div>
                   {isExpanded && <InlineExpansionPanel item={item} onOpenDetail={() => onItemClick(item)} />}
                 </React.Fragment>
