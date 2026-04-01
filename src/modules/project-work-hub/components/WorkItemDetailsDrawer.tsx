@@ -53,10 +53,10 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
     queryFn: async () => {
       if (!item?.id) return null;
       const { data } = await (supabase.from('ph_work_items') as any)
-        .select('jira_key, jira_sync_status, jira_pushed_at')
+        .select('jira_key, jira_sync_status, jira_pushed_at, sync_source, item_key, last_synced_at')
         .eq('id', item.id)
         .maybeSingle();
-      return data as { jira_key: string | null; jira_sync_status: string | null; jira_pushed_at: string | null } | null;
+      return data as { jira_key: string | null; jira_sync_status: string | null; jira_pushed_at: string | null; sync_source: string | null; item_key: string | null; last_synced_at: string | null } | null;
     },
     enabled: !!item?.id,
   });
