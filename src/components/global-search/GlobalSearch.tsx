@@ -246,10 +246,51 @@ export function GlobalSearch() {
           }}>
             <SlidersHorizontal size={14} color="#64748B" />
           </button>
-          {filterChip('Hub', 'hub')}
-          {filterChip('Project', 'project')}
-          {filterChip('Assignee', 'assignee')}
-          {filterChip('Type', 'type')}
+          {/* Hub filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button style={chipStyle(!!filters.hub)}>
+                {filters.hub ?? 'Hub'}
+                <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent style={{ backgroundColor: '#ffffff', zIndex: 9999 }}>
+              {HUB_OPTIONS.map(h => (
+                <DropdownMenuItem key={h} onClick={() => setFilters(f => ({ ...f, hub: h === 'All Hubs' ? null : h as any }))}>
+                  {h}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Project filter (clear only) */}
+          <button style={chipStyle(!!filters.project)} onClick={() => setFilters(f => ({ ...f, project: null }))}>
+            {filters.project ?? 'Project'}
+            <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
+          </button>
+
+          {/* Assignee filter (clear only) */}
+          <button style={chipStyle(!!filters.assignee)} onClick={() => setFilters(f => ({ ...f, assignee: null }))}>
+            {filters.assignee ?? 'Assignee'}
+            <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
+          </button>
+
+          {/* Type filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button style={chipStyle(!!filters.type)}>
+                {filters.type?.replace('_', ' ') ?? 'Type'}
+                <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent style={{ backgroundColor: '#ffffff', zIndex: 9999 }}>
+              {TYPE_OPTIONS.map(t => (
+                <DropdownMenuItem key={t} onClick={() => setFilters(f => ({ ...f, type: t === 'All Types' ? null : t as any }))}>
+                  {t === 'All Types' ? t : t.replace('_', ' ')}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* LAYER 3 — Scroll body */}
