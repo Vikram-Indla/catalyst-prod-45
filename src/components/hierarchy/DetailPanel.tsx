@@ -79,7 +79,7 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
 }
 
 function EmptyValue() {
-  return <span style={{ color: '#94A3B8', fontWeight: 400 }}>—</span>;
+  return <span style={{ color: 'var(--fg-4)', fontWeight: 400 }}>—</span>;
 }
 
 function Section({ title, count, defaultOpen = true, children }: { title: string; count?: number; defaultOpen?: boolean; children: React.ReactNode }) {
@@ -90,7 +90,7 @@ function Section({ title, count, defaultOpen = true, children }: { title: string
         onClick={() => setOpen(o => !o)}
         style={{
           width: '100%', display: 'flex', alignItems: 'center', gap: 6, padding: '10px 20px',
-          background: 'none', border: 'none', borderBottom: '1px solid #E2E8F0', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+          background: 'none', border: 'none', borderBottom: '1px solid var(--divider)', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
         }}
       >
         {open ? <ChevronDown size={14} color="#64748B" /> : <ChevronRight size={14} color="#64748B" />}

@@ -170,7 +170,7 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
         <div className="flex-1 min-h-0 overflow-y-auto">
           <div className="p-5 space-y-5">
             {/* Title */}
-            <h2 className="text-lg font-semibold leading-snug" style={{ color: 'var(--wh-text-primary, #0f172a)' }}>
+            <h2 className="text-lg font-semibold leading-snug" style={{ color: 'var(--fg-1)' }}>
               {item.summary}
             </h2>
 
@@ -178,10 +178,10 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
             {item.parent_key && (
               <div
                 className="flex items-center gap-2 px-3 py-2 rounded-lg border"
-                style={{ borderColor: '#e2e8f0', backgroundColor: '#f8fafc' }}
+                style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--bg-1)' }}
               >
-                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#94a3b8' }}>Parent</span>
-                <span className="text-[12px] font-bold" style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--wh-primary, #2563eb)' }}>
+                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--fg-4)' }}>Parent</span>
+                <span className="text-[12px] font-bold" style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--cp-blue)' }}>
                   {item.parent_key}
                 </span>
                 {item.parent_summary && (

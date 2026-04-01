@@ -50,8 +50,8 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
       aria-label={title}
       className="ph-widget-card"
       style={{
-        background: dark ? '#1A1714' : '#FFFFFF',
-        border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid #E2E8F0',
+        background: dark ? '#1A1714' : 'var(--bg-app)',
+        border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid var(--divider)',
         borderRadius: 10,
         borderLeft: leftBorder ? `3px solid ${leftBorder}` : undefined,
         overflow: 'hidden',
@@ -67,12 +67,12 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #F1F5F9',
+          borderBottom: dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-bd-zone)',
           flexShrink: 0,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: dark ? 'rgba(248,244,240,0.92)' : '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: dark ? 'rgba(248,244,240,0.92)' : 'var(--fg-1)', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
             {title}
           </span>
           {count !== undefined && (
@@ -93,7 +93,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
               {count}
             </span>
           )}
-          {subtitle && <span style={{ fontSize: 11, color: dark ? 'rgba(248,244,240,0.50)' : '#64748B', fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>{subtitle}</span>}
+          {subtitle && <span style={{ fontSize: 11, color: dark ? 'rgba(248,244,240,0.50)' : 'var(--fg-3)', fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>{subtitle}</span>}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {headerRight}
@@ -101,7 +101,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
             <button
               onClick={onAction}
               className="ph-focus-ring"
-              style={{ fontSize: 12, color: dark ? '#60A5FA' : '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 12, color: dark ? '#60A5FA' : 'var(--cp-blue)', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               {actionLabel}
             </button>
@@ -111,7 +111,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
 
       {error ? (
         <div style={{ padding: '24px 16px', textAlign: 'center' }}>
-          <div style={{ fontSize: 12, color: '#EF4444', fontWeight: 600, marginBottom: 8 }}>Failed to load</div>
+          <div style={{ fontSize: 12, color: 'var(--sem-danger)', fontWeight: 600, marginBottom: 8 }}>Failed to load</div>
           {onRetry && (
             <button
               onClick={onRetry}

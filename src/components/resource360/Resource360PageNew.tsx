@@ -75,8 +75,8 @@ export default function Resource360PageNew() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: "'Inter', sans-serif" }}>
         <div style={{ textAlign: 'center' }}>
           <p style={{ fontSize: 40, marginBottom: 8 }}>👤</p>
-          <p style={{ fontSize: 16, fontWeight: 600, color: '#374151' }}>No resource selected</p>
-          <p style={{ fontSize: 13, color: '#9CA3AF', marginTop: 4 }}>Select a team member to view their 360° workload</p>
+          <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-2)' }}>No resource selected</p>
+          <p style={{ fontSize: 13, color: 'var(--fg-4)', marginTop: 4 }}>Select a team member to view their 360° workload</p>
         </div>
       </div>
     );
