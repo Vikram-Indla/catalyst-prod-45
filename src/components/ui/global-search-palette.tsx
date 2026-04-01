@@ -164,8 +164,8 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
         // Search ph_work_items (ProjectHub)
         const { data: phItems, error: phErr } = await (supabase as any)
           .from('ph_work_items')
-          .select('id, item_key, summary, item_type, project_id, updated_at')
-          .or(`item_key.ilike.${searchTerm},summary.ilike.${searchTerm}`)
+          .select('id, item_key, jira_key, summary, item_type, project_id, updated_at')
+          .or(`item_key.ilike.${searchTerm},summary.ilike.${searchTerm},jira_key.ilike.${searchTerm}`)
           .is('deleted_at', null)
           .limit(10);
         if (!phErr && phItems) {
@@ -178,7 +178,7 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
               t === 'epic' ? 'epic' : 'story';
             searchResults.push({
               id: wi.id,
-              key: wi.item_key || '',
+              key: wi.jira_key || wi.item_key || '',
               summary: wi.summary || '',
               type: mappedType,
               scopeName: `ProjectHub · ${wi.item_type || 'Item'}`,
