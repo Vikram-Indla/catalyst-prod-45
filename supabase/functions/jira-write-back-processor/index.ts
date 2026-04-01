@@ -209,7 +209,7 @@ Deno.serve(async (req) => {
           await supabase
             .from("jira_write_back_queue")
             .update({
-              push_status: "completed",
+              status: "completed",
               jira_response_key: responseBody.key || null,
               jira_response_id: responseBody.id?.toString() || null,
               push_attempted_at: new Date().toISOString(),
