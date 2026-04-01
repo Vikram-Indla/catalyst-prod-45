@@ -10,6 +10,7 @@ import {
 } from "@/hooks/useGlobalSearch";
 import { useNavigate } from "react-router-dom";
 import type { SearchResult, ActiveFilters, SearchHub, WorkItemType } from "@/types/global-search";
+import { useProfileAvatarsByName } from "@/hooks/useProfileAvatars";
 
 /* ─── CANONICAL WORK ITEM SVG ICONS (16×14 inline) ─── */
 const WORK_ICONS: Record<string, { label: string; svg: string }> = {
