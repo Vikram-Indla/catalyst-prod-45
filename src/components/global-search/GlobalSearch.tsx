@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { Search, Settings2, ChevronDown, X } from "lucide-react";
+import { Search, Settings2, ChevronDown, X, Clock } from "lucide-react";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import {
   useRecentItems,
