@@ -933,3 +933,14 @@
   animation: planner-shimmer 1.5s ease-in-out infinite;
   border-radius: var(--planner-radius-sm);
 }
+
+/* ═══ COOL STEEL v3 — DARK MODE ═══ */
+.dark, [data-theme="dark"] {
+  --planner-slate-50: #181A1E;
+  --planner-slate-100: rgba(235,238,245,0.06);
+  --planner-slate-200: rgba(235,238,245,0.10);
+  --planner-slate-300: rgba(235,238,245,0.18);
+  --planner-shadow-sm: none;
+  --planner-shadow-md: none;
+  --planner-shadow-lg: none;
+}

@@ -1,6 +1,6 @@
 /**
  * WidgetWrapper — V12 Hybrid Precision widget chrome
- * Dark mode: Nocturne #1A1714 surface, flush with page
+ * Dark mode: Nocturne #181A1E surface, flush with page
  */
 import { ChevronDown } from 'lucide-react';
 import { Component, type ReactNode, type ErrorInfo } from 'react';
@@ -97,7 +97,7 @@ export default function WidgetWrapper({
             style={{
               fontSize: 13,
               fontWeight: 650,
-              color: dark ? 'rgba(248,244,240,0.92)' : 'var(--cp-text-primary)',
+              color: dark ? 'rgba(235,238,245,0.92)' : 'var(--cp-text-primary)',
               fontFamily: 'var(--cp-font-heading)',
             }}
           >
@@ -106,7 +106,7 @@ export default function WidgetWrapper({
           {subtitle && (
             <span
               className="hidden sm:inline truncate"
-              style={{ fontSize: 12, color: dark ? 'rgba(248,244,240,0.50)' : 'var(--cp-text-tertiary)', fontFamily: 'var(--cp-font-body)' }}
+              style={{ fontSize: 12, color: dark ? 'rgba(235,238,245,0.50)' : 'var(--cp-text-tertiary)', fontFamily: 'var(--cp-font-body)' }}
             >
               · {subtitle}
             </span>
@@ -117,7 +117,7 @@ export default function WidgetWrapper({
           <ChevronDown
             size={14}
             style={{
-              color: dark ? 'rgba(248,244,240,0.40)' : 'var(--cp-text-tertiary)',
+              color: dark ? 'rgba(235,238,245,0.40)' : 'var(--cp-text-tertiary)',
               transition: 'transform 200ms ease',
               transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
             }}

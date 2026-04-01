@@ -414,21 +414,21 @@ export default function TestHubDocsPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--surface-subtle, #F8FAFC)' }}>
       {/* Header */}
       <div style={{
         padding: '24px 32px',
-        backgroundColor: '#FFFFFF',
-        borderBottom: '1px solid #E2E8F0',
+        backgroundColor: 'var(--bg-app, #FFFFFF)',
+        borderBottom: '1px solid var(--divider, #E2E8F0)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: 'Inter, sans-serif' }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0, fontFamily: 'Inter, sans-serif' }}>
             📘 TestHub Functional Flow Guide
           </h1>
-          <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0', fontFamily: 'Inter, sans-serif' }}>
+          <p style={{ fontSize: 14, color: 'var(--fg-3, #64748B)', margin: '4px 0 0', fontFamily: 'Inter, sans-serif' }}>
             Complete dependency map, step-by-step testing flow, database schema, and business rules
           </p>
         </div>
@@ -458,13 +458,13 @@ export default function TestHubDocsPage() {
       <div style={{ flex: 1, overflow: 'auto', padding: '24px 32px' }}>
         {/* Dependency Flow Visual */}
         <div style={{
-          backgroundColor: '#FFFFFF',
+          backgroundColor: 'var(--bg-app, #FFFFFF)',
           borderRadius: 12,
-          border: '1px solid #E2E8F0',
+          border: '1px solid var(--divider, #E2E8F0)',
           padding: 24,
           marginBottom: 24,
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: '0 0 16px', fontFamily: 'Inter, sans-serif' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: '0 0 16px', fontFamily: 'Inter, sans-serif' }}>
             Dependency Flow (Follow This Order)
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -491,7 +491,7 @@ export default function TestHubDocsPage() {
                 }}>
                   {item.label}
                 </div>
-                {i < arr.length - 1 && <ArrowRight size={16} style={{ color: '#94A3B8', flexShrink: 0 }} />}
+                {i < arr.length - 1 && <ArrowRight size={16} style={{ color: 'var(--fg-4, #94A3B8)', flexShrink: 0 }} />}
               </div>
             ))}
           </div>
@@ -506,7 +506,7 @@ export default function TestHubDocsPage() {
               <div
                 key={section.id}
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: 'var(--bg-app, #FFFFFF)',
                   borderRadius: 12,
                   border: `1px solid ${isOpen ? section.color + '40' : '#E2E8F0'}`,
                   overflow: 'hidden',
@@ -540,14 +540,14 @@ export default function TestHubDocsPage() {
                     <Icon size={18} style={{ color: section.color }} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', fontFamily: 'Inter, sans-serif' }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-1, #0F172A)', fontFamily: 'Inter, sans-serif' }}>
                       {section.title}
                     </div>
-                    <div style={{ fontSize: 13, color: '#64748B', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+                    <div style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
                       {section.summary}
                     </div>
                   </div>
-                  {isOpen ? <ChevronDown size={18} style={{ color: '#94A3B8' }} /> : <ChevronRight size={18} style={{ color: '#94A3B8' }} />}
+                  {isOpen ? <ChevronDown size={18} style={{ color: 'var(--fg-4, #94A3B8)' }} /> : <ChevronRight size={18} style={{ color: 'var(--fg-4, #94A3B8)' }} />}
                 </button>
                 {isOpen && (
                   <div style={{
@@ -558,7 +558,7 @@ export default function TestHubDocsPage() {
                     lineHeight: 1.7,
                   }}>
                     <div style={{
-                      backgroundColor: '#F8FAFC',
+                      backgroundColor: 'var(--surface-subtle, #F8FAFC)',
                       borderRadius: 8,
                       padding: 16,
                       whiteSpace: 'pre-wrap',
@@ -566,7 +566,7 @@ export default function TestHubDocsPage() {
                       fontSize: 12,
                       lineHeight: 1.6,
                       overflowX: 'auto',
-                      border: '1px solid #E2E8F0',
+                      border: '1px solid var(--divider, #E2E8F0)',
                     }}>
                       {getMarkdownSection(section.id)}
                     </div>
@@ -591,7 +591,7 @@ export default function TestHubDocsPage() {
             <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', fontFamily: 'Inter, sans-serif' }}>
               Download the full guide as Markdown
             </div>
-            <div style={{ fontSize: 13, color: '#94A3B8', fontFamily: 'Inter, sans-serif', marginTop: 4 }}>
+            <div style={{ fontSize: 13, color: 'var(--fg-4, #94A3B8)', fontFamily: 'Inter, sans-serif', marginTop: 4 }}>
               Open in any Markdown editor (VS Code, Obsidian, Notion) for the best reading experience
             </div>
           </div>
@@ -602,8 +602,8 @@ export default function TestHubDocsPage() {
               alignItems: 'center',
               gap: 8,
               padding: '10px 20px',
-              backgroundColor: '#FFFFFF',
-              color: '#0F172A',
+              backgroundColor: 'var(--bg-app, #FFFFFF)',
+              color: 'var(--fg-1, #0F172A)',
               border: 'none',
               borderRadius: 8,
               fontSize: 14,

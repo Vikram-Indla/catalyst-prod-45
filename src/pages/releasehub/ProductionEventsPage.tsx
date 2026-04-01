@@ -75,7 +75,7 @@ export default function ProductionEventsPage() {
   ];
 
   return (
-    <div style={{ background: '#FFFFFF', minHeight: '100%', padding: 24 }}>
+    <div style={{ background: 'var(--bg-app, #FFFFFF)', minHeight: '100%', padding: 24 }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -85,13 +85,13 @@ export default function ProductionEventsPage() {
           }}>
             Production Events
           </h1>
-          <p style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', marginTop: 2 }}>
             Post-deployment monitoring & event log
           </p>
         </div>
         <button
           className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5"
-          style={{ border: '0.75px solid rgba(15,23,42,0.12)', background: '#FFFFFF', color: '#475569' }}
+          style={{ border: '0.75px solid rgba(15,23,42,0.12)', background: 'var(--bg-app, #FFFFFF)', color: 'var(--fg-2, #475569)' }}
           onClick={() => {
             const next = resultFilter === 'all' ? 'SUCCESS' : 'all';
             setResultFilter(next);
@@ -152,14 +152,14 @@ export default function ProductionEventsPage() {
                     width: size,
                     height: size,
                     border: `2px solid ${borderColor}`,
-                    background: '#FFFFFF',
+                    background: 'var(--bg-app, #FFFFFF)',
                   }}
                 />
 
                 {/* Event card */}
                 <div
                   style={{
-                    background: '#FFFFFF',
+                    background: 'var(--bg-app, #FFFFFF)',
                     borderRadius: 4,
                     padding: '14px 16px',
                     border: '0.75px solid rgba(15,23,42,0.12)',
@@ -173,7 +173,7 @@ export default function ProductionEventsPage() {
                   </div>
 
                   {/* Meta row */}
-                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: '#64748B' }}>
+                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: 'var(--fg-3, #64748B)' }}>
                     {ev.change_key && <span style={{ fontFamily: RH.fontMono }}>{ev.change_key}</span>}
                     {ev.release_key && <span style={{ fontFamily: RH.fontMono }}>{ev.release_key}</span>}
                     {ev.deployed_at && <span>{formatDateTime(ev.deployed_at)}</span>}
@@ -183,7 +183,7 @@ export default function ProductionEventsPage() {
 
                   {/* Notes (if any) */}
                   {ev.notes && (
-                    <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 6 }}>{ev.notes}</p>
+                    <p style={{ fontSize: 12, color: 'var(--fg-4, #94A3B8)', marginTop: 6 }}>{ev.notes}</p>
                   )}
                 </div>
               </div>

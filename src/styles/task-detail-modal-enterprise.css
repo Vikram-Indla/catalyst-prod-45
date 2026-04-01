@@ -1152,3 +1152,23 @@
     min-width: 140px;
   }
 }
+
+/* ═══ COOL STEEL v3 — DARK MODE ═══ */
+.dark .task-modal,
+.dark .task-modal-enterprise,
+[data-theme="dark"] .task-modal,
+[data-theme="dark"] .task-modal-enterprise {
+  --tm-surface-page: #181A1E;
+  --tm-surface-card: #1F2128;
+  --tm-surface-muted: rgba(235,238,245,0.03);
+  --tm-surface-hover: rgba(235,238,245,0.06);
+  --tm-surface-selected: rgba(59,130,246,0.10);
+  --tm-border-default: rgba(235,238,245,0.10);
+  --tm-border-subtle: rgba(235,238,245,0.06);
+  --tm-border-strong: rgba(235,238,245,0.18);
+  --tm-text-primary: rgba(235,238,245,0.92);
+  --tm-text-secondary: rgba(235,238,245,0.72);
+  --tm-text-muted: rgba(235,238,245,0.55);
+  --tm-text-light: rgba(235,238,245,0.30);
+  --tm-shadow-modal: 0 25px 50px -12px rgba(0,0,0,0.5);
+}

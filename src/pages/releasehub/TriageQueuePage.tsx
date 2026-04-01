@@ -51,7 +51,7 @@ export default function TriageQueuePage() {
   };
 
   return (
-    <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px' }}>
+    <div style={{ background: 'var(--bg-app, #FFFFFF)', minHeight: '100%', padding: '24px' }}>
       <div className="mb-5">
         <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Triage Queue</h1>
         <p className="text-[13px] text-[#64748B]" style={{ fontFamily: RH.fontBody }}>
@@ -70,7 +70,7 @@ export default function TriageQueuePage() {
         <div className="bg-white rounded border border-[rgba(15,23,42,0.12)] overflow-hidden">
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
-              <tr style={{ background: '#F1F5F9' }}>
+              <tr style={{ background: 'var(--surface-muted, #F1F5F9)' }}>
                 {['KEY', 'TITLE', 'RISK', 'SOURCE', 'DATE', 'AI RECOMMENDATION', 'ACTIONS'].map(h => (
                   <th key={h} className="px-3 py-0 h-[36px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
                 ))}
@@ -80,7 +80,7 @@ export default function TriageQueuePage() {
               {unlinked.map((c: any) => {
                 const rec = getAIRecommendation(c, releases);
                 return (
-                  <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ background: '#FFFFFF' }}>
+                  <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ background: 'var(--bg-app, #FFFFFF)' }}>
                     <td className="px-3 py-2">
                       <span className="text-[13px] font-medium text-[#2563EB]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                     </td>

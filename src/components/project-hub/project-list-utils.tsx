@@ -20,7 +20,7 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   active: { bg: '#F0FDFA', color: '#0D9488' },
   on_hold: { bg: '#FFFBEB', color: '#D97706' },
   completed: { bg: '#F0FDF4', color: '#16A34A' },
-  archived: { bg: '#F1F5F9', color: '#64748B' },
+  archived: { bg: '#F1F5F9', color: 'var(--fg-3, #64748B)' },
 };
 
 export function StatusBadge({ status }: { status: string }) {

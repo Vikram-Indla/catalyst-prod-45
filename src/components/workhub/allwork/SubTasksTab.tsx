@@ -105,7 +105,7 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
       style={{
         display: 'flex', flexDirection: 'column', gap: 8,
         padding: '12px 14px', width: '100%', textAlign: 'left',
-        border: '1px solid #E4E4E7', borderRadius: 8,
+        border: '1px solid var(--divider, #E4E4E7)', borderRadius: 8,
         cursor: 'pointer', backgroundColor: 'var(--bg-app)',
         transition: 'all 0.12s ease',
       }}
@@ -198,7 +198,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
       {/* Summary bar */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 14px', backgroundColor: '#FAFAFA', borderRadius: 8, border: '1px solid #E4E4E7',
+        padding: '10px 14px', backgroundColor: '#FAFAFA', borderRadius: 8, border: '1px solid var(--divider, #E4E4E7)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}>

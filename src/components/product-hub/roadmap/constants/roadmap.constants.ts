@@ -45,7 +45,7 @@ export const PRIORITY_COLORS: Record<string, { color: string; bg: string; label:
 // ── Status Colors ──
 export const STATUS_COLORS: Record<string, { color: string; bg: string; label: string }> = {
   Active:    { color: '#16A34A', bg: '#F0FDF4', label: 'Active' },
-  Planned:   { color: '#94A3B8', bg: '#F8FAFC', label: 'Planned' },
+  Planned:   { color: 'var(--fg-4, #94A3B8)', bg: '#F8FAFC', label: 'Planned' },
   Completed: { color: '#0D9488', bg: '#F0FDFA', label: 'Completed' },
   Cancelled: { color: '#EF4444', bg: '#FEF2F2', label: 'Cancelled' },
 };
@@ -67,14 +67,14 @@ export const SURFACE = {
 
 // ── Dark Mode Variants (Nocturne One Surface Model) ──
 export const INK_DARK = {
-  1: 'rgba(248,244,240,0.92)',
-  2: 'rgba(248,244,240,0.72)',
-  3: 'rgba(248,244,240,0.60)',
-  4: 'rgba(248,244,240,0.50)',
+  1: 'rgba(235,238,245,0.92)',
+  2: 'rgba(235,238,245,0.72)',
+  3: 'rgba(235,238,245,0.60)',
+  4: 'rgba(235,238,245,0.50)',
 };
 
 export const SURFACE_DARK = {
-  page: '#1A1714',
+  page: '#181A1E',
   card: 'transparent',
   border: 'rgba(255,255,255,0.10)',
   borderLight: 'rgba(255,255,255,0.06)',

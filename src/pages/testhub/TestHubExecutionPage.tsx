@@ -78,11 +78,11 @@ interface StepStatus {
 
 // ── Status helpers ─────────────────────────────────────────────────────────
 const statusConfig: Record<string, { icon: any; color: string; bg: string; label: string }> = {
-  not_run: { icon: Clock, color: '#64748B', bg: '#F1F5F9', label: 'Not Run' },
+  not_run: { icon: Clock, color: 'var(--fg-3, #64748B)', bg: '#F1F5F9', label: 'Not Run' },
   passed: { icon: CheckCircle2, color: '#059669', bg: '#ECFDF5', label: 'Passed' },
   failed: { icon: XCircle, color: '#DC2626', bg: '#FEF2F2', label: 'Failed' },
   blocked: { icon: AlertTriangle, color: '#D97706', bg: '#FFFBEB', label: 'Blocked' },
-  skipped: { icon: SkipForward, color: '#94A3B8', bg: '#F8FAFC', label: 'Skipped' },
+  skipped: { icon: SkipForward, color: 'var(--fg-4, #94A3B8)', bg: '#F8FAFC', label: 'Skipped' },
 };
 
 const formatTime = (seconds: number) => {
@@ -797,7 +797,7 @@ export default function TestHubExecutionPage() {
                     { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: handlePass, color: '#059669', bg: '#ECFDF5', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
                     { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: handleFail, color: '#DC2626', bg: '#FEF2F2', activeBg: 'linear-gradient(135deg, #EF4444, #DC2626)' },
                     { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: handleBlocked, color: '#D97706', bg: '#FFFBEB', activeBg: 'linear-gradient(135deg, #F59E0B, #D97706)' },
-                    { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: handleSkip, color: '#64748B', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
+                    { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: handleSkip, color: 'var(--fg-3, #64748B)', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
                   ].map(btn => {
                     const Icon = btn.icon;
                     const isActive = currentTestCase.execution_status === btn.key;

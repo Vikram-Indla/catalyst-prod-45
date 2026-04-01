@@ -299,7 +299,7 @@ function getTagStyle(type: string): React.CSSProperties {
       return { background: '#faf5ff', color: '#7c3aed', borderColor: '#e9d5ff' };
     case 'count':
     default:
-      return { background: '#f1f5f9', color: '#475569', borderColor: '#e2e8f0' };
+      return { background: '#f1f5f9', color: 'var(--fg-2, #475569)', borderColor: '#e2e8f0' };
   }
 }
 
@@ -411,7 +411,7 @@ const styles: Record<string, React.CSSProperties> = {
     marginLeft: 'auto',
     fontSize: 13,
     fontWeight: 600,
-    color: '#475569',
+    color: 'var(--fg-2, #475569)',
     background: '#f1f5f9',
     padding: '4px 10px',
     borderRadius: 10,

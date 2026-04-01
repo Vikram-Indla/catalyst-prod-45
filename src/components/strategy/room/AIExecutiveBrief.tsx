@@ -36,15 +36,15 @@ const TOKENS = `
 
 /* ── DARK MODE — Nocturne overrides ── */
 [data-theme="dark"] [data-sri] {
-  --sri-ink: rgba(248,244,240,0.96);
-  --sri-ink-2: rgba(248,244,240,0.82);
-  --sri-ink-3: rgba(248,244,240,0.75);
-  --sri-ink-m: rgba(248,244,240,0.70);
-  --sri-bg: #232019;
-  --sri-bg-2: rgba(248,244,240,0.04);
-  --sri-bg-3: rgba(248,244,240,0.07);
-  --sri-bdr: rgba(248,244,240,0.10);
-  --sri-bdr-s: rgba(248,244,240,0.18);
+  --sri-ink: rgba(235,238,245,0.96);
+  --sri-ink-2: rgba(235,238,245,0.82);
+  --sri-ink-3: rgba(235,238,245,0.75);
+  --sri-ink-m: rgba(235,238,245,0.70);
+  --sri-bg: #181A1E;
+  --sri-bg-2: rgba(235,238,245,0.04);
+  --sri-bg-3: rgba(235,238,245,0.07);
+  --sri-bdr: rgba(235,238,245,0.10);
+  --sri-bdr-s: rgba(235,238,245,0.18);
   --sri-ai: #3B82F6;
   --sri-ai-d: #60A5FA;
   --sri-ai-bg: rgba(59,130,246,0.08);

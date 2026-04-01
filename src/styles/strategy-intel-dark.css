@@ -5,29 +5,29 @@
 
 /* Panel container */
 .dark .strategy-intel-panel {
-  background: #232019 !important;
+  background: #181A1E !important;
   border-color: rgba(255,255,255,0.10) !important;
-  color: rgba(248,244,240,0.92) !important;
+  color: rgba(235,238,245,0.92) !important;
 }
 
 /* Text overrides */
 .dark .strategy-intel-panel .text-slate-900,
 .dark .strategy-intel-panel .text-slate-800,
 .dark .strategy-intel-panel .text-\[15px\].font-\[700\] {
-  color: rgba(248,244,240,0.92) !important;
+  color: rgba(235,238,245,0.92) !important;
 }
 .dark .strategy-intel-panel .text-slate-700,
 .dark .strategy-intel-panel .text-slate-600 {
-  color: rgba(248,244,240,0.72) !important;
+  color: rgba(235,238,245,0.72) !important;
 }
 .dark .strategy-intel-panel .text-slate-500,
 .dark .strategy-intel-panel .text-slate-400 {
-  color: rgba(248,244,240,0.50) !important;
+  color: rgba(235,238,245,0.50) !important;
 }
 
 /* Backgrounds */
 .dark .strategy-intel-panel .bg-white {
-  background: #232019 !important;
+  background: #181A1E !important;
 }
 .dark .strategy-intel-panel .bg-slate-100,
 .dark .strategy-intel-panel .bg-slate-50 {
@@ -59,7 +59,7 @@
 
 /* Footer */
 .dark .strategy-intel-panel .shrink-0.border-t {
-  background: #232019 !important;
+  background: #181A1E !important;
 }
 
 /* Metric cards in Executive Brief tab */

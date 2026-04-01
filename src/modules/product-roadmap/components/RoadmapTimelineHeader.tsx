@@ -14,7 +14,7 @@ export function RoadmapTimelineHeader({ periods, zoom }: RoadmapTimelineHeaderPr
   const periodMinWidth = zoom === 'month' ? 120 : zoom === 'quarter' ? 200 : 280;
 
   return (
-    <div className="flex sticky top-0 z-10" style={{ background: '#FAFBFC', borderBottom: '1px solid #E2E8F0', height: 44 }}>
+    <div className="flex sticky top-0 z-10" style={{ background: 'var(--surface-subtle, #FAFBFC)', borderBottom: '1px solid var(--divider, #E2E8F0)', height: 44 }}>
       {periods.map((period, index) => {
         const isQuarterStart = zoom === 'month' && [0, 3, 6, 9].includes(new Date(period.startDate).getMonth());
         return (
@@ -32,7 +32,7 @@ export function RoadmapTimelineHeader({ periods, zoom }: RoadmapTimelineHeaderPr
               {period.label}
             </div>
             {period.sublabel && (
-              <div style={{ fontSize: 10, color: '#94A3B8' }}>{period.sublabel}</div>
+              <div style={{ fontSize: 10, color: 'var(--fg-4, #94A3B8)' }}>{period.sublabel}</div>
             )}
           </div>
         );

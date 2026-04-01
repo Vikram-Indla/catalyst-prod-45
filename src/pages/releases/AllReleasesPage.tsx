@@ -1366,7 +1366,7 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 onMouseLeave={e => { if (!selected) e.currentTarget.style.opacity = '0'; }}
               />
               <div className="flex items-center gap-1.5 mb-2">
-                <span style={{ padding: '1px 6px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>{r.version}</span>
+                <span style={{ padding: '1px 6px', background: '#f1f5f9', color: 'var(--fg-2, #475569)', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>{r.version}</span>
                 <span className="flex-1 truncate" style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{r.name}</span>
                 <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, background: hBadge.bg, color: hBadge.text, flexShrink: 0 }}>
                   {getHealthDisplay(r.health)}

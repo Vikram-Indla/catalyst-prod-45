@@ -131,6 +131,42 @@
   padding: var(--ct-space-6);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   COOL STEEL v3 — DARK MODE OVERRIDES
+   ═══════════════════════════════════════════════════════════ */
+.dark .users-module,
+[data-theme="dark"] .users-module {
+  --ct-text-primary: rgba(235,238,245, 0.92);
+  --ct-text-body: rgba(235,238,245, 0.72);
+  --ct-text-secondary: rgba(235,238,245, 0.55);
+  --ct-text-tertiary: rgba(235,238,245, 0.55);
+  --ct-text-muted: rgba(235,238,245, 0.30);
+  --ct-text-disabled: rgba(235,238,245, 0.20);
+
+  --ct-bg-page: #181A1E;
+  --ct-bg-surface: #181A1E;
+  --ct-bg-hover: rgba(235,238,245, 0.03);
+  --ct-bg-active: rgba(235,238,245, 0.06);
+  --ct-bg-muted: rgba(235,238,245, 0.06);
+
+  --ct-border: rgba(235,238,245, 0.10);
+  --ct-border-light: rgba(235,238,245, 0.06);
+  --ct-border-focus: #3B82F6;
+
+  --ct-shadow-sm: none;
+  --ct-shadow-md: none;
+  --ct-shadow-lg: none;
+  --ct-shadow-xl: none;
+
+  --ct-primary-light: rgba(59, 130, 246, 0.12);
+  --ct-primary-lighter: rgba(59, 130, 246, 0.06);
+  --ct-teal-light: rgba(13, 148, 136, 0.12);
+  --ct-violet-light: rgba(139, 92, 246, 0.12);
+  --ct-warning-light: rgba(217, 119, 6, 0.12);
+  --ct-danger-light: rgba(239, 68, 68, 0.12);
+  --ct-success-light: rgba(16, 185, 129, 0.12);
+}
+
 /* ================================================================
    2. GLOBAL FOCUS STATES (V8 Accessibility)
    ================================================================ */

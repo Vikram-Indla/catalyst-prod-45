@@ -895,3 +895,21 @@
   .searchWrapper { width: 100%; }
   .viewSwitcher { align-self: flex-end; }
 }
+
+/* ═══ COOL STEEL v3 — DARK MODE ═══ */
+.dark .releaseHub,
+[data-theme="dark"] .releaseHub {
+  --rh-bg-page: #181A1E;
+  --rh-bg-card: #181A1E;
+  --rh-bg-muted: rgba(235,238,245,0.06);
+  --rh-text-primary: rgba(235,238,245,0.92);
+  --rh-text-secondary: rgba(235,238,245,0.55);
+  --rh-text-tertiary: rgba(235,238,245,0.30);
+  --rh-text-muted: rgba(235,238,245,0.20);
+  --rh-border-subtle: rgba(235,238,245,0.06);
+  --rh-border-default: rgba(235,238,245,0.10);
+  --rh-border-strong: rgba(235,238,245,0.18);
+  --rh-shadow-xs: none;
+  --rh-shadow-sm: none;
+  --rh-shadow-md: none;
+}

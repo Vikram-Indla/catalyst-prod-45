@@ -33,13 +33,13 @@ export default function WikiDomainPage() {
   });
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: '#0F172A', background: '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
+    <div style={{ fontFamily: 'Inter, sans-serif', color: 'var(--fg-1, #0F172A)', background: 'var(--surface-subtle, #F8FAFC)', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: '#94A3B8' }} />
+        <ChevronRight size={12} style={{ color: 'var(--fg-4, #94A3B8)' }} />
         <span onClick={() => navigate('/wiki/domains')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Domains</span>
-        <ChevronRight size={12} style={{ color: '#94A3B8' }} />
-        <span style={{ fontSize: 13, color: '#64748B', fontWeight: 600 }}>{domain?.name || code}</span>
+        <ChevronRight size={12} style={{ color: 'var(--fg-4, #94A3B8)' }} />
+        <span style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', fontWeight: 600 }}>{domain?.name || code}</span>
       </nav>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
@@ -47,34 +47,34 @@ export default function WikiDomainPage() {
           <Icon size={24} style={{ color: '#2563EB' }} />
         </div>
         <div>
-          <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 22, fontWeight: 700, margin: 0, color: '#0F172A' }}>{domain?.name || code}</h1>
-          <p style={{ fontSize: 13, color: '#64748B', margin: '4px 0 0' }}>{domain?.description || ''}</p>
+          <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 22, fontWeight: 700, margin: 0, color: 'var(--fg-1, #0F172A)' }}>{domain?.name || code}</h1>
+          <p style={{ fontSize: 13, color: 'var(--fg-3, #64748B)', margin: '4px 0 0' }}>{domain?.description || ''}</p>
         </div>
       </div>
 
       <div style={{ display: 'flex', gap: 24, marginBottom: 32 }}>
         {[{ l: 'Articles', v: domain?.article_count ?? 0 }, { l: 'Views', v: domain?.view_count ?? 0 }, { l: 'Coverage', v: `${domain?.coverage_percent ?? 0}%` }, { l: 'Gaps', v: domain?.knowledge_gaps ?? 0 }].map(s => (
-          <div key={s.l} style={{ padding: '16px 24px', borderRadius: 8, background: '#FFFFFF', border: '0.75px solid rgba(0,0,0,0.06)', textAlign: 'center', minWidth: 100 }}>
-            <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 20, fontWeight: 700, color: '#0F172A' }}>{s.v}</div>
-            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: '#94A3B8', marginTop: 4 }}>{s.l}</div>
+          <div key={s.l} style={{ padding: '16px 24px', borderRadius: 8, background: 'var(--bg-app, #FFFFFF)', border: '0.75px solid rgba(0,0,0,0.06)', textAlign: 'center', minWidth: 100 }}>
+            <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 20, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>{s.v}</div>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-4, #94A3B8)', marginTop: 4 }}>{s.l}</div>
           </div>
         ))}
       </div>
 
-      <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 16 }}>Articles in this domain</h2>
-      <div style={{ borderRadius: 8, border: '0.75px solid rgba(0,0,0,0.06)', background: '#FFFFFF', overflow: 'hidden' }}>
-        {isLoading ? <div style={{ padding: 32, textAlign: 'center', color: '#64748B', fontSize: 12 }}>Loading...</div> :
-          (articles ?? []).length === 0 ? <div style={{ padding: 32, textAlign: 'center', color: '#64748B', fontSize: 12 }}>No articles in this domain yet.</div> :
+      <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', marginBottom: 16 }}>Articles in this domain</h2>
+      <div style={{ borderRadius: 8, border: '0.75px solid rgba(0,0,0,0.06)', background: 'var(--bg-app, #FFFFFF)', overflow: 'hidden' }}>
+        {isLoading ? <div style={{ padding: 32, textAlign: 'center', color: 'var(--fg-3, #64748B)', fontSize: 12 }}>Loading...</div> :
+          (articles ?? []).length === 0 ? <div style={{ padding: 32, textAlign: 'center', color: 'var(--fg-3, #64748B)', fontSize: 12 }}>No articles in this domain yet.</div> :
           (articles ?? []).map((a: any) => (
             <div key={a.id} onClick={() => navigate(`/wiki/${a.slug}`)} style={{
               display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: '0.75px solid rgba(0,0,0,0.06)', cursor: 'pointer', transition: 'background 80ms',
             }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-              <FileText size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
-              <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: '#0F172A' }}>{a.title}</span>
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#64748B' }}>
+              <FileText size={14} style={{ color: 'var(--fg-4, #94A3B8)', flexShrink: 0 }} />
+              <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--fg-1, #0F172A)' }}>{a.title}</span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'var(--fg-3, #64748B)' }}>
                 {new Date(a.updated_at).toLocaleDateString()}
               </span>
-              <ArrowRight size={12} style={{ color: '#94A3B8' }} />
+              <ArrowRight size={12} style={{ color: 'var(--fg-4, #94A3B8)' }} />
             </div>
           ))}
       </div>

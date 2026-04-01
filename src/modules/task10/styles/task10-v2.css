@@ -3426,3 +3426,21 @@
   color: #3b82f6;
   flex-shrink: 0;
 }
+
+/* ═══ COOL STEEL v3 — DARK MODE ═══ */
+.dark .t10-module-v2,
+.dark .t10-portal-wrapper,
+[data-theme="dark"] .t10-module-v2,
+[data-theme="dark"] .t10-portal-wrapper {
+  --t10-bg-page: #181A1E;
+  --t10-bg-card: #181A1E;
+  --t10-bg-subtle: rgba(235,238,245,0.06);
+  --t10-border-subtle: rgba(235,238,245,0.06);
+  --t10-border-default: rgba(235,238,245,0.10);
+  --t10-border-strong: rgba(235,238,245,0.18);
+  --t10-text-primary: rgba(235,238,245,0.92);
+  --t10-text-secondary: rgba(235,238,245,0.55);
+  --t10-text-tertiary: rgba(235,238,245,0.30);
+  --t10-shadow-sm: none;
+  --t10-shadow-md: none;
+}

@@ -438,3 +438,14 @@
   background: var(--ra-white) !important;
   border: 1px solid var(--ra-cell-border) !important;
 }
+
+/* ═══ COOL STEEL v3 — DARK MODE ═══ */
+.dark .ra-enterprise-clean,
+[data-theme="dark"] .ra-enterprise-clean {
+  --ra-white: #181A1E;
+  --ra-slate-50: #181A1E;
+  --ra-slate-100: rgba(235,238,245,0.06);
+  --ra-slate-200: rgba(235,238,245,0.10);
+  --ra-cell-bg: #181A1E;
+  --ra-cell-border: rgba(235,238,245,0.10);
+}

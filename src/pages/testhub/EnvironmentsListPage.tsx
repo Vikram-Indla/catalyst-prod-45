@@ -38,21 +38,21 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
   staging: { label: 'Staging', color: '#D97706', bg: '#FFFBEB' },
   uat: { label: 'UAT', color: '#0891B2', bg: '#ECFEFF' },
   production: { label: 'Production', color: '#DC2626', bg: '#FEF2F2' },
-  other: { label: 'Other', color: '#64748B', bg: '#F1F5F9' },
+  other: { label: 'Other', color: 'var(--fg-3, #64748B)', bg: '#F1F5F9' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   active: { label: 'Active', color: '#059669', bg: '#ECFDF5', icon: Power },
   maintenance: { label: 'Maintenance', color: '#D97706', bg: '#FFFBEB', icon: Wrench },
-  inactive: { label: 'Inactive', color: '#64748B', bg: '#F1F5F9', icon: Power },
-  deprecated: { label: 'Deprecated', color: '#94A3B8', bg: '#F8FAFC', icon: XCircle },
+  inactive: { label: 'Inactive', color: 'var(--fg-3, #64748B)', bg: '#F1F5F9', icon: Power },
+  deprecated: { label: 'Deprecated', color: 'var(--fg-4, #94A3B8)', bg: '#F8FAFC', icon: XCircle },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   healthy: { label: 'Healthy', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
   degraded: { label: 'Degraded', color: '#D97706', bg: '#FFFBEB', icon: AlertTriangle },
   down: { label: 'Down', color: '#DC2626', bg: '#FEF2F2', icon: XCircle },
-  unknown: { label: 'Unknown', color: '#64748B', bg: '#F1F5F9', icon: HelpCircle },
+  unknown: { label: 'Unknown', color: 'var(--fg-3, #64748B)', bg: '#F1F5F9', icon: HelpCircle },
 };
 
 export default function EnvironmentsListPage() {
@@ -131,7 +131,7 @@ export default function EnvironmentsListPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--surface-subtle, #F8FAFC)' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
@@ -144,8 +144,8 @@ export default function EnvironmentsListPage() {
               <Server size={24} style={{ color: '#FFFFFF' }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 24, fontWeight: 700, color: '#0F172A', margin: 0 }}>Test Environments</h1>
-              <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0' }}>Manage and monitor test environments</p>
+              <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>Test Environments</h1>
+              <p style={{ fontSize: 14, color: 'var(--fg-3, #64748B)', margin: '4px 0 0' }}>Manage and monitor test environments</p>
             </div>
           </div>
         </div>
@@ -166,11 +166,11 @@ export default function EnvironmentsListPage() {
       {/* Summary Cards */}
       {summary && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid var(--divider, #E2E8F0)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'uppercase' }}>Total</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: '#0F172A', margin: '8px 0 0' }}>{summary.total_environments}</p>
+                <p style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', margin: 0, textTransform: 'uppercase' }}>Total</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: '8px 0 0' }}>{summary.total_environments}</p>
               </div>
               <Server size={24} style={{ color: '#6366F1' }} />
             </div>
@@ -208,7 +208,7 @@ export default function EnvironmentsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4, #94A3B8)' }} />
           <input
             type="text"
             placeholder="Search environments..."
@@ -216,12 +216,12 @@ export default function EnvironmentsListPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%', height: 44, padding: '0 14px 0 44px',
-              border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFFFFF',
+              border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 10, fontSize: 14, backgroundColor: 'var(--bg-app, #FFFFFF)',
             }}
           />
         </div>
         <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}
-          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
+          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
           <option value="all">All Types</option>
           <option value="development">Development</option>
           <option value="testing">Testing</option>
@@ -231,7 +231,7 @@ export default function EnvironmentsListPage() {
           <option value="other">Other</option>
         </select>
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
+          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
           <option value="all">All Status</option>
           <option value="active">Active</option>
           <option value="maintenance">Maintenance</option>
@@ -240,7 +240,7 @@ export default function EnvironmentsListPage() {
         </select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 10, backgroundColor: '#FFF', color: '#64748B', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 10, backgroundColor: '#FFF', color: 'var(--fg-3, #64748B)', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -252,10 +252,10 @@ export default function EnvironmentsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#6366F1' }} />
         </div>
       ) : filteredEnvironments.length === 0 ? (
-        <div style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: '1px solid #E2E8F0' }}>
+        <div style={{ backgroundColor: 'var(--bg-app, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: '1px solid var(--divider, #E2E8F0)' }}>
           <Server size={48} style={{ color: '#CBD5E1', marginBottom: 16 }} />
-          <p style={{ fontSize: 16, color: '#64748B', margin: 0 }}>No environments found</p>
-          <p style={{ fontSize: 14, color: '#94A3B8', margin: '8px 0 0' }}>Add an environment to get started</p>
+          <p style={{ fontSize: 16, color: 'var(--fg-3, #64748B)', margin: 0 }}>No environments found</p>
+          <p style={{ fontSize: 14, color: 'var(--fg-4, #94A3B8)', margin: '8px 0 0' }}>Add an environment to get started</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16 }}>
@@ -271,8 +271,8 @@ export default function EnvironmentsListPage() {
                 key={env.id}
                 onClick={() => navigate(`/testhub/environments/${env.id}`)}
                 style={{
-                  backgroundColor: '#FFFFFF', borderRadius: 12, padding: 20,
-                  border: '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.15s',
+                  backgroundColor: 'var(--bg-app, #FFFFFF)', borderRadius: 12, padding: 20,
+                  border: '1px solid var(--divider, #E2E8F0)', cursor: 'pointer', transition: 'all 0.15s',
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#CBD5E1'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
@@ -286,9 +286,9 @@ export default function EnvironmentsListPage() {
                     <HealthIcon size={12} /> {health.label}
                   </div>
                 </div>
-                <h3 style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', margin: '0 0 8px' }}>{env.name}</h3>
+                <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 8px' }}>{env.name}</h3>
                 {env.url && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#64748B', marginBottom: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--fg-3, #64748B)', marginBottom: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     <ExternalLink size={14} /> {env.url}
                   </div>
                 )}
@@ -296,7 +296,7 @@ export default function EnvironmentsListPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: status.color }}>
                     <StatusIcon size={14} /> {status.label}
                   </div>
-                  <div style={{ fontSize: 12, color: '#94A3B8' }}>Checked: {formatDate(env.last_health_check)}</div>
+                  <div style={{ fontSize: 12, color: 'var(--fg-4, #94A3B8)' }}>Checked: {formatDate(env.last_health_check)}</div>
                 </div>
               </div>
             );

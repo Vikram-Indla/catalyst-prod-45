@@ -142,7 +142,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
       aria-label="AI Intelligence overlay"
       style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, left: 220,
-        zIndex: 300, background: '#FFFFFF', overflow: 'auto',
+        zIndex: 300, background: 'var(--bg-app, #FFFFFF)', overflow: 'auto',
         animation: 'slideInRight 350ms ease-out',
         fontFamily: "'Inter', sans-serif",
       }}
@@ -216,7 +216,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
             <div style={{ fontSize: 14, fontWeight: 600, color: '#3B82F6', marginBottom: 4 }}>
               Analyzing {resource?.full_name}'s work data…
             </div>
-            <div style={{ fontSize: 12, color: '#64748B' }}>
+            <div style={{ fontSize: 12, color: 'var(--fg-3, #64748B)' }}>
               Computing delivery metrics, generating behavioral patterns, and building release standings.
               <br />This may take 15-30 seconds.
             </div>
@@ -232,10 +232,10 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
         {hasInsufficientData && !generating && !refreshing && (
           <div style={{ padding: 48, textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>🤖</div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', marginBottom: 4 }}>
               No data synced yet
             </div>
-            <div style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>
+            <div style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', marginBottom: 16 }}>
               Click "Sync Data" to pull metrics from all hubs, then "Generate" for AI analysis.
             </div>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
@@ -261,10 +261,10 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
         {hasMetricsNoAI && !generating && !refreshing && (
           <div style={{ padding: 32, textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>📊</div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', marginBottom: 4 }}>
               Metrics ready — {cachedMetrics?.total_items} items across {Object.keys(cachedMetrics?.hub_distribution || {}).length} hubs
             </div>
-            <div style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>
+            <div style={{ fontSize: 12, color: 'var(--fg-3, #64748B)', marginBottom: 16 }}>
               Data synced {stalenessLabel || 'just now'}. Click "Generate" to create the AI narrative.
             </div>
             <button onClick={handleGenerate} style={{
@@ -293,11 +293,11 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
                   {initials}
                 </div>
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: '#0F172A' }}>{resource?.full_name}</div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>{resource?.full_name}</div>
                   <div style={{ fontSize: 13, color: '#334155' }}>{resource?.job_role}</div>
                   <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
                     {[resource?.r360_departments?.name, resource?.r360_vendors?.name, resource?.country].filter(Boolean).map((p, i) => (
-                      <span key={i} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: '#F1F5F9', color: '#475569' }}>{p}</span>
+                      <span key={i} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'var(--surface-muted, #F1F5F9)', color: 'var(--fg-2, #475569)' }}>{p}</span>
                     ))}
                   </div>
                 </div>
@@ -319,13 +319,13 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
                   return (
                     <div key={h.source_hub} style={{
                       padding: '10px 12px', borderRadius: 8,
-                      borderLeft: `4px solid ${hubColor}`, background: '#F8FAFC',
+                      borderLeft: `4px solid ${hubColor}`, background: 'var(--surface-subtle, #F8FAFC)',
                     }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase' }}>
                         {HUB_SHORT[h.source_hub] || h.source_hub}
                       </div>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: '#0F172A' }}>{h.hub_pct?.toFixed(0) ?? 0}%</div>
-                      <div style={{ fontSize: 10, color: '#64748B' }}>{h.hub_item_count ?? 0} items · {h.hub_closure_pct?.toFixed(0) ?? 0}% closed</div>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: 'var(--fg-1, #0F172A)' }}>{h.hub_pct?.toFixed(0) ?? 0}%</div>
+                      <div style={{ fontSize: 10, color: 'var(--fg-3, #64748B)' }}>{h.hub_item_count ?? 0} items · {h.hub_closure_pct?.toFixed(0) ?? 0}% closed</div>
                     </div>
                   );
                 })}
@@ -342,7 +342,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
               </div>
               {weeklyHistory.length > 0 && (
                 <div style={{ marginTop: 16 }}>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', marginBottom: 8 }}>Weekly Closures</div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', marginBottom: 8 }}>Weekly Closures</div>
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 60 }}>
                     {weeklyHistory.map((v: number, i: number) => (
                       <div key={i} style={{
@@ -363,20 +363,20 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
               <Section title="Role Expectation vs Actual">
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
                   <div>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', marginBottom: 8 }}>Expected Duties</div>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', marginBottom: 8 }}>Expected Duties</div>
                     <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, color: '#334155', lineHeight: 1.8 }}>
                       {(roleExp.expected || []).map((e: string, i: number) => <li key={i}>{e}</li>)}
                     </ul>
                   </div>
                   <div>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', marginBottom: 8 }}>Actual Distribution</div>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', marginBottom: 8 }}>Actual Distribution</div>
                     {(roleExp.actual_distribution || []).map((a: any, i: number) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                         <span style={{ fontSize: 11, color: '#334155', minWidth: 80 }}>{a.label}</span>
-                        <div style={{ flex: 1, height: 8, background: '#F1F5F9', borderRadius: 4 }}>
+                        <div style={{ flex: 1, height: 8, background: 'var(--surface-muted, #F1F5F9)', borderRadius: 4 }}>
                           <div style={{ width: `${a.pct}%`, height: '100%', background: '#2563EB', borderRadius: 4 }} />
                         </div>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#0F172A', minWidth: 36, textAlign: 'right' }}>{a.pct}%</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-1, #0F172A)', minWidth: 36, textAlign: 'right' }}>{a.pct}%</span>
                       </div>
                     ))}
                     {roleExp.anomalies?.length > 0 && (
@@ -441,7 +441,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
                       {standing.verdict?.replace('_', ' ')}
                     </div>
                     {standing.confidence_score != null && (
-                      <div style={{ marginTop: 4, fontSize: 10, color: '#64748B' }}>
+                      <div style={{ marginTop: 4, fontSize: 10, color: 'var(--fg-3, #64748B)' }}>
                         {standing.confidence_score === 0
                           ? 'Low confidence — insufficient data'
                           : `Confidence: ${standing.confidence_score}%`}
@@ -461,11 +461,11 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
                         {(standing.project_standings as any[]).map((ps: any, i: number) => (
                           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                             <span style={{ fontSize: 11 }}>{ps.statusEmoji || ps.status_emoji || '📊'}</span>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A', minWidth: 100 }}>{ps.project}</span>
-                            <div style={{ flex: 1, height: 6, background: '#F1F5F9', borderRadius: 3 }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-1, #0F172A)', minWidth: 100 }}>{ps.project}</span>
+                            <div style={{ flex: 1, height: 6, background: 'var(--surface-muted, #F1F5F9)', borderRadius: 3 }}>
                               <div style={{ width: `${ps.items ? (ps.done / ps.items) * 100 : 0}%`, height: '100%', background: '#059669', borderRadius: 3 }} />
                             </div>
-                            <span style={{ fontSize: 10, color: '#64748B' }}>{ps.done}/{ps.items}</span>
+                            <span style={{ fontSize: 10, color: 'var(--fg-3, #64748B)' }}>{ps.done}/{ps.items}</span>
                           </div>
                         ))}
                       </div>
@@ -484,9 +484,9 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
             {/* 9. Generation Footer */}
             <div style={{
               marginTop: 24, padding: '12px 16px', borderRadius: 8,
-              background: '#F8FAFC', border: '1px solid #E2E8F0',
+              background: 'var(--surface-subtle, #F8FAFC)', border: '1px solid var(--divider, #E2E8F0)',
               display: 'flex', alignItems: 'center', gap: 12,
-              fontSize: 11, color: '#64748B',
+              fontSize: 11, color: 'var(--fg-3, #64748B)',
             }}>
               <span>Generated: {profile.generated_at ? new Date(profile.generated_at).toLocaleString() : '—'}</span>
               <span>·</span>
@@ -528,16 +528,16 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 );
 
 const MetricCard = ({ label, value }: { label: string; value: string }) => (
-  <div style={{ padding: '10px 12px', borderRadius: 8, background: '#F8FAFC', textAlign: 'center' }}>
-    <div style={{ fontSize: 20, fontWeight: 900, color: '#0F172A' }}>{value}</div>
-    <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', color: '#64748B', marginTop: 4 }}>{label}</div>
+  <div style={{ padding: '10px 12px', borderRadius: 8, background: 'var(--surface-subtle, #F8FAFC)', textAlign: 'center' }}>
+    <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--fg-1, #0F172A)' }}>{value}</div>
+    <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-3, #64748B)', marginTop: 4 }}>{label}</div>
   </div>
 );
 
 const MiniStat = ({ label, value, color }: { label: string; value: number; color: string }) => (
-  <div style={{ textAlign: 'center', padding: '8px', borderRadius: 6, background: '#F8FAFC' }}>
+  <div style={{ textAlign: 'center', padding: '8px', borderRadius: 6, background: 'var(--surface-subtle, #F8FAFC)' }}>
     <div style={{ fontSize: 18, fontWeight: 900, color }}>{value}</div>
-    <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', color: '#64748B' }}>{label}</div>
+    <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-3, #64748B)' }}>{label}</div>
   </div>
 );
 

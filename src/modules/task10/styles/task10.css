@@ -4814,3 +4814,15 @@
   color: var(--t10-gray-500) !important;
   margin: 0 0 24px !important;
 }
+
+/* ═══ COOL STEEL v3 — DARK MODE ═══ */
+.dark .t10-module,
+[data-theme="dark"] .t10-module {
+  --t10-white: #181A1E;
+  --t10-gray-50: #181A1E;
+  --t10-gray-100: rgba(235,238,245,0.06);
+  --t10-gray-200: rgba(235,238,245,0.10);
+  --t10-gray-900: rgba(235,238,245,0.92);
+  --t10-shadow-sm: none;
+  --t10-shadow-md: none;
+}

@@ -336,7 +336,7 @@ export function SyncConfigPanel() {
           {selectedProjects.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <label style={{
-                fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase' as const,
+                fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase' as const,
                 letterSpacing: '.4px', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 6,
               }}>
                 <Settings2 size={12} />
@@ -370,7 +370,7 @@ export function SyncConfigPanel() {
                     >
                       {isExpanded
                         ? <ChevronDown size={14} style={{ color: '#2563EB', flexShrink: 0 }} />
-                        : <ChevronRight size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
+                        : <ChevronRight size={14} style={{ color: 'var(--fg-4, #94A3B8)', flexShrink: 0 }} />
                       }
                       <span style={{
                         fontFamily: 'var(--wh-mo)', fontSize: 12, fontWeight: 700,
@@ -397,7 +397,7 @@ export function SyncConfigPanel() {
                         {/* Timeline Lookback */}
                         <div>
                           <label style={{
-                            fontSize: 10, fontWeight: 600, color: '#64748B',
+                            fontSize: 10, fontWeight: 600, color: 'var(--fg-3, #64748B)',
                             textTransform: 'uppercase' as const, letterSpacing: '.4px',
                             fontFamily: 'Inter, sans-serif', display: 'block', marginBottom: 6,
                           }}>
@@ -573,7 +573,7 @@ function SyncProgressPanel({
         </span>
       </div>
       {/* Overall progress bar */}
-      <div style={{ height: 8, borderRadius: 4, background: '#E2E8F0', overflow: 'hidden', marginBottom: 14 }}>
+      <div style={{ height: 8, borderRadius: 4, background: 'var(--wh-bdr, #E2E8F0)', overflow: 'hidden', marginBottom: 14 }}>
         <div style={{
           height: '100%', borderRadius: 4, transition: 'width 0.5s ease',
           width: `${progressPct}%`,
@@ -603,7 +603,7 @@ function SyncProgressPanel({
             <span style={{ fontSize: 11, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)', flex: 1 }}>
               {p.name !== p.key ? p.name : ''}
             </span>
-            <div style={{ flex: 1, maxWidth: 120, height: 4, borderRadius: 2, background: '#E2E8F0', overflow: 'hidden' }}>
+            <div style={{ flex: 1, maxWidth: 120, height: 4, borderRadius: 2, background: 'var(--wh-bdr, #E2E8F0)', overflow: 'hidden' }}>
               <div style={{
                 height: '100%', borderRadius: 2, transition: 'width 0.4s ease',
                 width: p.status === 'done' || p.status === 'error' ? '100%' : p.status === 'syncing' ? '50%' : '0%',

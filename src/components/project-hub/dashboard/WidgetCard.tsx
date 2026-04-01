@@ -30,7 +30,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
 
   const getCountBadgeStyle = () => {
     if (!countColor) return dark
-      ? { bg: 'rgba(255,255,255,0.06)', text: 'rgba(248,244,240,0.72)', border: 'rgba(255,255,255,0.12)' }
+      ? { bg: 'rgba(255,255,255,0.06)', text: 'rgba(235,238,245,0.72)', border: 'rgba(255,255,255,0.12)' }
       : { bg: 'var(--cp-bd-zone)', text: 'var(--fg-2)', border: '#CBD5E1' };
     if (countColor === '#D97706' || countColor === '#EF4444') return dark
       ? { bg: 'rgba(220,38,38,0.15)', text: '#FCA5A5', border: 'rgba(220,38,38,0.3)' }
@@ -72,7 +72,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: dark ? 'rgba(248,244,240,0.92)' : 'var(--fg-1)', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: dark ? 'rgba(235,238,245,0.92)' : 'var(--fg-1)', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
             {title}
           </span>
           {count !== undefined && (
@@ -93,7 +93,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
               {count}
             </span>
           )}
-          {subtitle && <span style={{ fontSize: 11, color: dark ? 'rgba(248,244,240,0.50)' : 'var(--fg-3)', fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>{subtitle}</span>}
+          {subtitle && <span style={{ fontSize: 11, color: dark ? 'rgba(235,238,245,0.50)' : 'var(--fg-3)', fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>{subtitle}</span>}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {headerRight}

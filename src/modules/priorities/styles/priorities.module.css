@@ -1532,3 +1532,15 @@
     display: none;
   }
 }
+
+/* ═══ COOL STEEL v3 — DARK MODE ═══ */
+.dark .pri-root,
+[data-theme="dark"] .pri-root {
+  --pri-bg: #181A1E;
+  --pri-bg-page: #181A1E;
+  --pri-border: rgba(235,238,245,0.10);
+  --pri-border-light: rgba(235,238,245,0.06);
+  --pri-gray-900: rgba(235,238,245,0.92);
+  --pri-shadow-sm: none;
+  --pri-shadow-md: none;
+}

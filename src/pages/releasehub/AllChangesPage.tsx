@@ -91,7 +91,7 @@ export default function AllChangesPage() {
   };
 
   return (
-    <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px' }}>
+    <div style={{ background: 'var(--bg-app, #FFFFFF)', minHeight: '100%', padding: '24px' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
@@ -146,7 +146,7 @@ export default function AllChangesPage() {
         <div className="bg-white rounded border border-[rgba(15,23,42,0.12)] overflow-hidden">
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
-              <tr style={{ background: '#F1F5F9' }}>
+              <tr style={{ background: 'var(--surface-muted, #F1F5F9)' }}>
                 <th className="w-[40px] px-3 py-0 h-[36px] text-center">
                   <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleAll} className="rounded" />
                 </th>
@@ -161,7 +161,7 @@ export default function AllChangesPage() {
                 return (
                   <tr key={c.id} onClick={() => setSelectedChg(c)}
                     className="border-b border-[rgba(15,23,42,0.06)] cursor-pointer"
-                    style={{ height: 36, background: '#FFFFFF', transition: 'background 120ms' }}
+                    style={{ height: 36, background: 'var(--bg-app, #FFFFFF)', transition: 'background 120ms' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}>
                     <td className="px-3 py-0 text-center" onClick={e => e.stopPropagation()}>
@@ -211,7 +211,7 @@ function KanbanView({ changes, onSelect }: { changes: any[]; onSelect: (c: any) 
       {columns.map(col => {
         const items = changes.filter((c: any) => c.status === col.key);
         return (
-          <div key={col.key} className="rounded-lg" style={{ background: '#F1F5F9', minHeight: 200 }}>
+          <div key={col.key} className="rounded-lg" style={{ background: 'var(--surface-muted, #F1F5F9)', minHeight: 200 }}>
             <div className="px-3 py-2 flex items-center gap-2">
               <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-[#64748B]">{col.label}</span>
               <span className="text-[10px] font-bold text-[#94A3B8] bg-white rounded-full px-1.5">{items.length}</span>

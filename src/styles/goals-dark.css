@@ -6,14 +6,14 @@
 
 /* ── Goals Page Wrapper ── */
 [data-theme="dark"] [data-goals-page] {
-  background-color: #1A1714 !important;
-  color: rgba(248,244,240,0.92);
+  background-color: #181A1E !important;
+  color: rgba(235,238,245,0.92);
 }
 
 /* ── Stats Strip Cards ── */
 [data-theme="dark"] .goals-stats-grid > div {
-  background: #1A1714 !important;
-  border-color: rgba(248,244,240,0.10) !important;
+  background: #181A1E !important;
+  border-color: rgba(235,238,245,0.10) !important;
   box-shadow: none !important;
 }
 
@@ -21,48 +21,48 @@
 [data-theme="dark"] .goals-tree-container,
 [data-theme="dark"] [data-goals-page] > div > div[style*="border: 1px solid"][style*="borderRadius"],
 [data-theme="dark"] .heatmap-scroll {
-  background: #1A1714 !important;
-  border-color: rgba(248,244,240,0.10) !important;
+  background: #181A1E !important;
+  border-color: rgba(235,238,245,0.10) !important;
 }
 
 /* ── Table Header Rows ── */
 [data-theme="dark"] .goals-tree-container > div:first-child {
-  background: rgba(248,244,240,0.03) !important;
-  border-bottom-color: rgba(248,244,240,0.10) !important;
-  color: rgba(248,244,240,0.60) !important;
+  background: rgba(235,238,245,0.03) !important;
+  border-bottom-color: rgba(235,238,245,0.10) !important;
+  color: rgba(235,238,245,0.60) !important;
 }
 
 /* ── Theme Row (sunken #F1F5F9 bg) ── */
 [data-theme="dark"] .goals-tree-container div[style*="background: rgb(241, 245, 249)"],
 [data-theme="dark"] .goals-tree-container div[style*="background: #F1F5F9"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"][style*="borderLeft"] {
-  background: rgba(248,244,240,0.04) !important;
-  border-bottom-color: rgba(248,244,240,0.08) !important;
+  background: rgba(235,238,245,0.04) !important;
+  border-bottom-color: rgba(235,238,245,0.08) !important;
 }
 
 /* ── Goal Row ── */
 [data-theme="dark"] .goal-tree-row {
   background: transparent !important;
-  border-bottom-color: rgba(248,244,240,0.06) !important;
+  border-bottom-color: rgba(235,238,245,0.06) !important;
 }
 [data-theme="dark"] .goal-tree-row:hover {
-  background: rgba(248,244,240,0.03) !important;
+  background: rgba(235,238,245,0.03) !important;
 }
 
 /* ── KR Row ── */
 [data-theme="dark"] .kr-row-hover {
-  background: rgba(248,244,240,0.02) !important;
-  border-bottom-color: rgba(248,244,240,0.04) !important;
+  background: rgba(235,238,245,0.02) !important;
+  border-bottom-color: rgba(235,238,245,0.04) !important;
 }
 [data-theme="dark"] .kr-row-hover:hover {
-  background: rgba(248,244,240,0.05) !important;
+  background: rgba(235,238,245,0.05) !important;
 }
 
 /* ── Tree Footer ── */
 [data-theme="dark"] .goals-tree-container > div:last-of-type[style*="background: rgb(248, 250, 252)"],
 [data-theme="dark"] .goals-tree-container > div:last-of-type[style*="background: #F8FAFC"] {
-  background: rgba(248,244,240,0.03) !important;
-  border-top-color: rgba(248,244,240,0.10) !important;
+  background: rgba(235,238,245,0.03) !important;
+  border-top-color: rgba(235,238,245,0.10) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -74,7 +74,7 @@
 [data-theme="dark"] [data-goals-page] [style*="color: #0F172A"],
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(30, 41, 59)"],
 [data-theme="dark"] [data-goals-page] [style*="color: #1E293B"] {
-  color: rgba(248,244,240,0.92) !important;
+  color: rgba(235,238,245,0.92) !important;
 }
 
 /* Secondary text (#334155, #475569) → t2 */
@@ -82,25 +82,25 @@
 [data-theme="dark"] [data-goals-page] [style*="color: #334155"],
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(71, 85, 105)"],
 [data-theme="dark"] [data-goals-page] [style*="color: #475569"] {
-  color: rgba(248,244,240,0.72) !important;
+  color: rgba(235,238,245,0.72) !important;
 }
 
 /* Tertiary text (#64748B) → t3 */
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(100, 116, 139)"],
 [data-theme="dark"] [data-goals-page] [style*="color: #64748B"] {
-  color: rgba(248,244,240,0.60) !important;
+  color: rgba(235,238,245,0.60) !important;
 }
 
 /* Muted text (#94A3B8) → t3 */
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(148, 163, 184)"],
 [data-theme="dark"] [data-goals-page] [style*="color: #94A3B8"] {
-  color: rgba(248,244,240,0.55) !important;
+  color: rgba(235,238,245,0.55) !important;
 }
 
 /* Very muted text (#CBD5E1) → t4 */
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(203, 213, 225)"],
 [data-theme="dark"] [data-goals-page] [style*="color: #CBD5E1"] {
-  color: rgba(248,244,240,0.35) !important;
+  color: rgba(235,238,245,0.35) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -111,8 +111,8 @@
 [data-theme="dark"] [data-goals-page] button[style*="background: rgb(255, 255, 255)"],
 [data-theme="dark"] [data-goals-page] button[style*="background: #FFFFFF"] {
   background: transparent !important;
-  border-color: rgba(248,244,240,0.10) !important;
-  color: rgba(248,244,240,0.72) !important;
+  border-color: rgba(235,238,245,0.10) !important;
+  color: rgba(235,238,245,0.72) !important;
   box-shadow: none !important;
 }
 
@@ -120,46 +120,46 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="borderRadius: 10"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="borderRadius: 8"] {
   background: transparent !important;
-  border-color: rgba(248,244,240,0.10) !important;
+  border-color: rgba(235,238,245,0.10) !important;
 }
 
 /* Search/input container */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="padding: 5px 10px"] {
   background: transparent !important;
-  border-color: rgba(248,244,240,0.10) !important;
+  border-color: rgba(235,238,245,0.10) !important;
 }
 [data-theme="dark"] [data-goals-page] input {
-  color: rgba(248,244,240,0.92) !important;
+  color: rgba(235,238,245,0.92) !important;
 }
 
 /* Filter dropdown panels (float layer) */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="boxShadow"][style*="position: absolute"] {
-  background: #232019 !important;
-  border-color: rgba(248,244,240,0.10) !important;
+  background: #1F2128 !important;
+  border-color: rgba(235,238,245,0.10) !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
 }
 [data-theme="dark"] [data-goals-page] div[style*="position: absolute"] label {
-  color: rgba(248,244,240,0.92) !important;
+  color: rgba(235,238,245,0.92) !important;
 }
 [data-theme="dark"] [data-goals-page] div[style*="position: absolute"] label:hover {
-  background: rgba(248,244,240,0.06) !important;
+  background: rgba(235,238,245,0.06) !important;
 }
 
 /* View Switcher pill bar */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"][style*="borderRadius: 8"][style*="padding: 3"] {
-  background: rgba(248,244,240,0.06) !important;
+  background: rgba(235,238,245,0.06) !important;
 }
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"] button[style*="background: rgb(255, 255, 255)"] {
-  background: rgba(248,244,240,0.12) !important;
+  background: rgba(235,238,245,0.12) !important;
   box-shadow: none !important;
-  color: rgba(248,244,240,0.92) !important;
+  color: rgba(235,238,245,0.92) !important;
 }
 
 /* ── Progress bar tracks ── */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="borderRadius: 3"],
 [data-theme="dark"] [data-goals-page] div[style*="background: #E2E8F0"][style*="borderRadius: 3"],
 [data-theme="dark"] [data-goals-page] div[role="progressbar"][style*="background: rgb(226, 232, 240)"] {
-  background: rgba(248,244,240,0.08) !important;
+  background: rgba(235,238,245,0.08) !important;
 }
 
 /* ── Connector lines ── */
@@ -167,19 +167,19 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: #E2E8F0"][style*="width: 1"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="height: 1"],
 [data-theme="dark"] [data-goals-page] div[style*="background: #E2E8F0"][style*="height: 1"] {
-  background: rgba(248,244,240,0.08) !important;
+  background: rgba(235,238,245,0.08) !important;
 }
 
 /* ── Goal Key / KR Key badges (F1F5F9 bg) ── */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"][style*="fontFamily"],
 [data-theme="dark"] [data-goals-page] span[style*="background: #F1F5F9"][style*="fontFamily"] {
-  background: rgba(248,244,240,0.08) !important;
-  color: rgba(248,244,240,0.55) !important;
+  background: rgba(235,238,245,0.08) !important;
+  color: rgba(235,238,245,0.55) !important;
 }
 
 /* ── Confidence dots empty ── */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="borderRadius: 50%"] {
-  background: rgba(248,244,240,0.12) !important;
+  background: rgba(235,238,245,0.12) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -209,7 +209,7 @@
 /* Draft/Not Started/Cancelled — grey lozenges */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"][style*="borderRadius: 99"],
 [data-theme="dark"] [data-goals-page] span[style*="background: #F1F5F9"][style*="borderRadius: 99"] {
-  background: #2C2926 !important;
+  background: #262830 !important;
   color: #B8BCC8 !important;
 }
 
@@ -223,49 +223,49 @@
    ══════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="dark"] .heatmap-scroll {
-  background: #1A1714 !important;
-  border-color: rgba(248,244,240,0.10) !important;
+  background: #181A1E !important;
+  border-color: rgba(235,238,245,0.10) !important;
 }
 
 /* Heatmap header */
 [data-theme="dark"] .heatmap-scroll > div:first-child {
-  background: rgba(248,244,240,0.03) !important;
-  border-bottom-color: rgba(248,244,240,0.10) !important;
-  color: rgba(248,244,240,0.60) !important;
+  background: rgba(235,238,245,0.03) !important;
+  border-bottom-color: rgba(235,238,245,0.10) !important;
+  color: rgba(235,238,245,0.60) !important;
 }
 
 /* Heatmap row borders */
 [data-theme="dark"] .heatmap-row {
-  border-bottom-color: rgba(248,244,240,0.06) !important;
+  border-bottom-color: rgba(235,238,245,0.06) !important;
 }
 [data-theme="dark"] .heatmap-row:hover {
-  background: rgba(248,244,240,0.02) !important;
+  background: rgba(235,238,245,0.02) !important;
 }
 
 /* Heatmap theme label cell */
 [data-theme="dark"] .heatmap-row > div:first-child {
   background: transparent !important;
-  border-right-color: rgba(248,244,240,0.06) !important;
+  border-right-color: rgba(235,238,245,0.06) !important;
 }
 
 /* Heatmap empty cells */
 [data-theme="dark"] .heatmap-row div[style*="background: rgb(255, 255, 255)"] {
   background: transparent !important;
-  border-right-color: rgba(248,244,240,0.06) !important;
+  border-right-color: rgba(235,238,245,0.06) !important;
 }
 
 /* Heatmap cell borders */
 [data-theme="dark"] .heatmap-cell {
-  border-right-color: rgba(248,244,240,0.06) !important;
+  border-right-color: rgba(235,238,245,0.06) !important;
 }
 
 /* ── List view row hover ── */
 [data-theme="dark"] [data-goals-page] div[role="button"][style*="borderBottom"]:hover {
-  background: rgba(248,244,240,0.03) !important;
+  background: rgba(235,238,245,0.03) !important;
 }
 /* List view rows: override #F8FAFC hover target */
 [data-theme="dark"] [data-goals-page] div[role="button"]:hover {
-  background: rgba(248,244,240,0.03) !important;
+  background: rgba(235,238,245,0.03) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -276,8 +276,8 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: #FFFFFF"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="position: fixed"] {
-  background: #232019 !important;
-  border-color: rgba(248,244,240,0.10) !important;
+  background: #181A1E !important;
+  border-color: rgba(235,238,245,0.10) !important;
 }
 
 /* ── Border color overrides ── */
@@ -288,7 +288,7 @@
 [data-theme="dark"] [data-goals-page] [style*="borderBottom: 2px solid rgb(226, 232, 240)"],
 [data-theme="dark"] [data-goals-page] [style*="borderBottom: 2px solid #E2E8F0"],
 [data-theme="dark"] [data-goals-page] [style*="borderTop: 1px solid rgb(226, 232, 240)"] {
-  border-color: rgba(248,244,240,0.10) !important;
+  border-color: rgba(235,238,245,0.10) !important;
 }
 
 /* Shadow removal */

@@ -25,8 +25,8 @@ const TYPE_COLORS: Record<string, string> = {
 const PRIORITY_MAP: Record<string, { icon: React.ElementType; color: string }> = {
   P1: { icon: AlertOctagon, color: '#DC2626' },
   P2: { icon: ArrowUp, color: '#D97706' },
-  P3: { icon: Minus, color: '#64748B' },
-  P4: { icon: ArrowDown, color: '#94A3B8' },
+  P3: { icon: Minus, color: 'var(--fg-3, #64748B)' },
+  P4: { icon: ArrowDown, color: 'var(--fg-4, #94A3B8)' },
 };
 
 function getAge(dateStr: string): string {

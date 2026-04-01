@@ -39,10 +39,10 @@ interface TestCycle {
 }
 
 const statusConfig = {
-  draft: { label: 'Draft', color: '#64748B', bg: '#F1F5F9' },
+  draft: { label: 'Draft', color: 'var(--fg-3, #64748B)', bg: '#F1F5F9' },
   active: { label: 'Active', color: '#059669', bg: '#ECFDF5' },
   completed: { label: 'Completed', color: '#2563EB', bg: '#EFF6FF' },
-  archived: { label: 'Archived', color: '#94A3B8', bg: '#F8FAFC' },
+  archived: { label: 'Archived', color: 'var(--fg-4, #94A3B8)', bg: '#F8FAFC' },
 };
 
 export default function TestCyclesPage() {
@@ -99,10 +99,10 @@ export default function TestCyclesPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--surface-subtle, #F8FAFC)' }}>
       <TestHubPageHeader title="Test Cycles" subtitle="Plan and track test execution across sprints and releases">
             <button onClick={() => { fetchCycles(); catalystToast.success('Test cycles refreshed'); }} title="Refresh"
-              style={{ width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+              style={{ width: 40, height: 40, padding: 0, border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, backgroundColor: 'var(--bg-app, #FFFFFF)', color: 'var(--fg-3, #64748B)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               <RefreshCw size={18} />
             </button>
             <button onClick={() => setIsCreateModalOpen(true)}
@@ -112,11 +112,11 @@ export default function TestCyclesPage() {
       </TestHubPageHeader>
 
       {/* Toolbar */}
-      <div style={{ padding: '16px 32px', backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ padding: '16px 32px', backgroundColor: 'var(--bg-app, #FFFFFF)', borderBottom: '1px solid var(--divider, #E2E8F0)', display: 'flex', alignItems: 'center', gap: 12 }}>
         <div style={{ position: 'relative', flex: 1, maxWidth: 400 }}>
-          <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+          <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4, #94A3B8)' }} />
           <input type="text" placeholder="Search cycles..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: '100%', height: 40, paddingLeft: 40, paddingRight: 12, border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, color: '#0F172A', backgroundColor: '#FFFFFF' }} />
+            style={{ width: '100%', height: 40, paddingLeft: 40, paddingRight: 12, border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1, #0F172A)', backgroundColor: 'var(--bg-app, #FFFFFF)' }} />
         </div>
 
         {/* Status Filter */}
@@ -128,7 +128,7 @@ export default function TestCyclesPage() {
             <ChevronDown size={14} />
           </button>
           {isFilterOpen && (
-            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 200, backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8 }}>
+            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 200, backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 12, boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8 }}>
               {Object.entries(statusConfig).map(([key, config]) => {
                 const isChecked = statusFilter.includes(key);
                 return (
@@ -155,17 +155,17 @@ export default function TestCyclesPage() {
             <ChevronDown size={14} />
           </button>
           {isDateFilterOpen && (
-            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 260, backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 16 }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 8px' }}>Date Range</p>
+            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 260, backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 12, boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 16 }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 8px' }}>Date Range</p>
               <div style={{ marginBottom: 12 }}>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#334155', marginBottom: 4 }}>From</label>
                 <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-                  style={{ width: '100%', height: 36, padding: '0 10px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 13, color: '#0F172A' }} />
+                  style={{ width: '100%', height: 36, padding: '0 10px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, fontSize: 13, color: 'var(--fg-1, #0F172A)' }} />
               </div>
               <div style={{ marginBottom: 12 }}>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#334155', marginBottom: 4 }}>To</label>
                 <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} min={dateFrom}
-                  style={{ width: '100%', height: 36, padding: '0 10px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 13, color: '#0F172A' }} />
+                  style={{ width: '100%', height: 36, padding: '0 10px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, fontSize: 13, color: 'var(--fg-1, #0F172A)' }} />
               </div>
               {(dateFrom || dateTo) && (
                 <button onClick={() => { setDateFrom(''); setDateTo(''); }} style={{ width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 13, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>Clear dates</button>
@@ -177,11 +177,11 @@ export default function TestCyclesPage() {
         {/* Sort */}
         <div style={{ position: 'relative' }}>
           <button onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
-            style={{ height: 40, padding: '0 14px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 40, padding: '0 14px', border: '1.5px solid var(--divider, #E2E8F0)', borderRadius: 8, backgroundColor: 'var(--bg-app, #FFFFFF)', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <ArrowUpDown size={16} /> Sort <ChevronDown size={14} />
           </button>
           {isSortOpen && (
-            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 200, backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8 }}>
+            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 200, backgroundColor: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: 12, boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8 }}>
               {[
                 { field: 'start_date' as const, label: 'Start Date', defaultDir: 'desc' as const },
                 { field: 'name' as const, label: 'Name', defaultDir: 'asc' as const },
@@ -204,22 +204,22 @@ export default function TestCyclesPage() {
         </div>
 
         <div style={{ flex: 1 }} />
-        <span style={{ fontSize: 13, color: '#64748B' }}>{cycles.length} cycle{cycles.length !== 1 ? 's' : ''}</span>
+        <span style={{ fontSize: 13, color: 'var(--fg-3, #64748B)' }}>{cycles.length} cycle{cycles.length !== 1 ? 's' : ''}</span>
       </div>
 
       {/* Content */}
       <div style={{ flex: 1, padding: 32, overflowY: 'auto' }}>
         {isLoading ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300, color: '#64748B' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300, color: 'var(--fg-3, #64748B)' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ width: 32, height: 32, border: '3px solid #E2E8F0', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+              <div style={{ width: 32, height: 32, border: '3px solid var(--divider, #E2E8F0)', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
               Loading test cycles...
             </div>
           </div>
         ) : cycles.length === 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 300, color: '#94A3B8' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 300, color: 'var(--fg-4, #94A3B8)' }}>
             <Calendar size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
-            <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', color: '#64748B' }}>
+            <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', color: 'var(--fg-3, #64748B)' }}>
               {searchQuery || statusFilter.length > 0 ? 'No matching cycles' : 'No test cycles yet'}
             </p>
             <p style={{ fontSize: 14, margin: 0 }}>

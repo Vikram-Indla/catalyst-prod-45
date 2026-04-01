@@ -56,7 +56,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
           <div
             key={p.id}
             onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
-            className="rounded-lg overflow-hidden cursor-pointer transition-all duration-[120ms] bg-[#FFFFFF] dark:!bg-[#1A1714] border border-[#E2E8F0] dark:border-gray-700 hover:-translate-y-px hover:shadow-md dark:hover:shadow-none dark:shadow-none"
+            className="rounded-lg overflow-hidden cursor-pointer transition-all duration-[120ms] bg-[#FFFFFF] dark:!bg-[#181A1E] border border-[#E2E8F0] dark:border-gray-700 hover:-translate-y-px hover:shadow-md dark:hover:shadow-none dark:shadow-none"
             style={{ borderLeft: `3px solid ${accent}` }}
           >
             <div className="p-[10px_12px]">

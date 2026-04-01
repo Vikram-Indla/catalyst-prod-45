@@ -42,15 +42,15 @@
 
 /* ── Dark mode overrides ── */
 [data-theme="dark"] {
-  --di-ink: rgba(248,244,240, 0.92);
-  --di-ink-secondary: rgba(248,244,240, 0.82);
-  --di-ink-tertiary: rgba(248,244,240, 0.65);
-  --di-ink-muted: rgba(248,244,240, 0.45);
-  --di-surface: #1A1714;
-  --di-surface-secondary: #1E1B17;
-  --di-surface-tertiary: #232019;
-  --di-border: rgba(248,244,240, 0.10);
-  --di-border-strong: rgba(248,244,240, 0.16);
+  --di-ink: rgba(235,238,245, 0.92);
+  --di-ink-secondary: rgba(235,238,245, 0.82);
+  --di-ink-tertiary: rgba(235,238,245, 0.65);
+  --di-ink-muted: rgba(235,238,245, 0.45);
+  --di-surface: #181A1E;
+  --di-surface-secondary: #181A1E;
+  --di-surface-tertiary: #181A1E;
+  --di-border: rgba(235,238,245, 0.10);
+  --di-border-strong: rgba(235,238,245, 0.16);
   --di-primary: #3B82F6;
   --di-primary-hover: #60A5FA;
   --di-primary-bg: rgba(59,130,246, 0.10);
@@ -341,12 +341,12 @@
 .hub-tst { background: #EDE9FE; color: #5B21B6; }
 .hub-rel { background: #FEF3C7; color: #78350F; }
 .hub-oth { background: #F4F4F5; color: #3F3F46; }
-[data-theme="dark"] .hub-inc { background: #2E1C18; color: #FCA5A5; }
-[data-theme="dark"] .hub-prd { background: #1A2A1E; color: #86EFAC; }
-[data-theme="dark"] .hub-prj { background: #1E2636; color: #93C5FD; }
+[data-theme="dark"] .hub-inc { background: #2A1C1E; color: #FCA5A5; }
+[data-theme="dark"] .hub-prd { background: #182820; color: #86EFAC; }
+[data-theme="dark"] .hub-prj { background: #1A2030; color: #93C5FD; }
 [data-theme="dark"] .hub-tst { background: rgba(167,139,250,0.10); color: #A78BFA; }
 [data-theme="dark"] .hub-rel { background: rgba(253,230,138,0.10); color: #FDE68A; }
-[data-theme="dark"] .hub-oth { background: rgba(248,244,240,0.06); color: rgba(248,244,240,0.55); }
+[data-theme="dark"] .hub-oth { background: rgba(235,238,245,0.06); color: rgba(235,238,245,0.55); }
 
 .di-ev-content { flex: 1; }
 
@@ -401,11 +401,11 @@
 .sig-action  { background: #DBEAFE; color: #1E3A8A; }
 .sig-gap     { background: #FEF3C7; color: #78350F; }
 .sig-observe { background: #F4F4F5; color: #3F3F46; }
-[data-theme="dark"] .sig-risk    { background: #2E1C18; color: #FCA5A5; }
-[data-theme="dark"] .sig-esc     { background: #2E1C18; color: #FCA5A5; }
-[data-theme="dark"] .sig-action  { background: #1E2636; color: #93C5FD; }
-[data-theme="dark"] .sig-gap     { background: #1A2A1E; color: #86EFAC; }
-[data-theme="dark"] .sig-observe { background: rgba(248,244,240,0.06); color: rgba(248,244,240,0.55); }
+[data-theme="dark"] .sig-risk    { background: #2A1C1E; color: #FCA5A5; }
+[data-theme="dark"] .sig-esc     { background: #2A1C1E; color: #FCA5A5; }
+[data-theme="dark"] .sig-action  { background: #1A2030; color: #93C5FD; }
+[data-theme="dark"] .sig-gap     { background: #182820; color: #86EFAC; }
+[data-theme="dark"] .sig-observe { background: rgba(235,238,245,0.06); color: rgba(235,238,245,0.55); }
 
 /* ══════════════════════════════════════════════════════════
    TAB 1 — EXECUTIVE SUMMARY V5 (Role-Based)

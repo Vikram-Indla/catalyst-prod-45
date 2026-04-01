@@ -540,7 +540,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   {workstream.name}
                 </h1>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', fontSize: '13px', color: '#64748b' }}>
-                  <span style={{ fontWeight: 500, color: '#475569' }}>
+                  <span style={{ fontWeight: 500, color: 'var(--fg-2, #475569)' }}>
                     {workstream.key_prefix || workstream.code}
                   </span>
                   <span>·</span>
@@ -986,7 +986,7 @@ const primaryButtonStyle: React.CSSProperties = {
 const secondaryButtonStyle: React.CSSProperties = {
   padding: '8px 16px',
   backgroundColor: '#f1f5f9',
-  color: '#475569',
+  color: 'var(--fg-2, #475569)',
   border: '1px solid #e2e8f0',
   borderRadius: '6px',
   fontSize: '13px',

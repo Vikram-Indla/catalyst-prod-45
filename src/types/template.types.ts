@@ -198,7 +198,7 @@ export const TEMPLATE_TYPES: Record<TemplateType, TemplateTypeInfo> = {
     type: 'custom',
     label: 'Custom',
     icon: 'Settings',
-    color: '#475569',
+    color: 'var(--fg-2, #475569)',
     bgColor: '#f1f5f9',
     description: 'Custom template configuration',
     defaultMilestones: [],

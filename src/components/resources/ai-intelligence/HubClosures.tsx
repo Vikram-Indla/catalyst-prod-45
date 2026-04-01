@@ -13,7 +13,7 @@ const HUB_ICON_STYLES: Record<string, { bg: string; color: string; letter: strin
   TestHub: { bg: '#F5F3FF', color: '#7C3AED', letter: 'T' },
   ProjectHub: { bg: '#EFF6FF', color: '#2563EB', letter: 'J' },
   ReleaseHub: { bg: '#FFFBEB', color: '#D97706', letter: 'R' },
-  Other: { bg: '#F4F4F5', color: '#71717A', letter: 'O' },
+  Other: { bg: '#F4F4F5', color: 'var(--fg-3, #71717A)', letter: 'O' },
 };
 
 function getPctColor(pct: number): string {
@@ -83,7 +83,7 @@ export const HubClosures: React.FC<Props> = ({ data }) => {
             <tr className="rai-total-row">
               <td>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div className="rai-hub-icon" style={{ background: '#F4F4F5', color: '#3F3F46', fontFamily: 'var(--rai-font-heading)' }}>Σ</div>
+                  <div className="rai-hub-icon" style={{ background: 'var(--surface-muted, #F4F4F5)', color: 'var(--fg-2, #3F3F46)', fontFamily: 'var(--rai-font-heading)' }}>Σ</div>
                   <span>All Hubs</span>
                 </div>
               </td>

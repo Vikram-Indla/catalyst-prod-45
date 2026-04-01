@@ -70,10 +70,10 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
           { label: 'SIZE', value: 'Votes' },
         ].map(ctrl => (
           <div key={ctrl.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '11px', fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
+            <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--fg-4, #94A3B8)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
             <div style={{
               width: '160px', fontSize: '12px', fontWeight: 600, padding: '5px 10px',
-              background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '6px',
+              background: 'var(--surface-subtle, #F8FAFC)', border: '1px solid var(--divider, #E2E8F0)', borderRadius: '6px',
               color: '#334155', cursor: 'pointer',
             }}>
               {ctrl.value}
@@ -85,7 +85,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
       {/* Chart — V12: border-only, NO box-shadow */}
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{
-          width: '100%', height: '520px', background: '#FFFFFF', border: '1px solid #E2E8F0',
+          width: '100%', height: '520px', background: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--divider, #E2E8F0)',
           borderRadius: '6px', position: 'relative', overflow: 'hidden',
         }}>
           {/* Grid area */}
@@ -184,7 +184,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
         {[
           { color: '#16A34A', label: 'Approved / Converted' },
           { color: '#7C3AED', label: 'Under Review (AI-enriched)' },
-          { color: '#64748B', label: 'Submitted' },
+          { color: 'var(--fg-3, #64748B)', label: 'Submitted' },
           { color: '#DC2626', label: 'Rejected' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -192,7 +192,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
             <span style={{ fontSize: '12px', color: '#334155', fontWeight: 600 }}>{l.label}</span>
           </div>
         ))}
-        <span style={{ fontSize: '11px', color: '#94A3B8' }}>Dot size = Vote count</span>
+        <span style={{ fontSize: '11px', color: 'var(--fg-4, #94A3B8)' }}>Dot size = Vote count</span>
       </div>
     </div>
   );
