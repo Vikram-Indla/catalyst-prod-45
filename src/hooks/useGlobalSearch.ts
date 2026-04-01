@@ -25,7 +25,7 @@ export function useRecentItems() {
         .from('ph_issues')
         .select(SEARCH_SELECT)
         .order('jira_updated_at', { ascending: false })
-        .limit(8);
+        .limit(20);
       if (error) throw error;
       return (data ?? []).map(mapIssueToSearchResult);
     },
@@ -33,7 +33,6 @@ export function useRecentItems() {
 }
 
 export function useRecentSearches() {
-  // No search history table yet — return empty
   return useQuery({
     queryKey: ['global-search-history'],
     queryFn: async () => [] as RecentSearchEntry[],
@@ -50,7 +49,7 @@ export function useSearchResults(query: string, filters: ActiveFilters) {
         .select(SEARCH_SELECT)
         .or(`issue_key.ilike.%${query}%,summary.ilike.%${query}%`)
         .order('jira_updated_at', { ascending: false })
-        .limit(20);
+        .limit(50);
       if (filters.type) q = q.ilike('issue_type', filters.type.replace('_', ' '));
       const { data, error } = await q;
       if (error) throw error;
@@ -64,17 +63,13 @@ export function useSearchResults(query: string, filters: ActiveFilters) {
 export function useTrackView() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (_item: SearchResult) => {
-      // Track view is a no-op until recently_viewed_items table exists
-    },
+    mutationFn: async (_item: SearchResult) => {},
     onSuccess: () => qc.invalidateQueries({ queryKey: ['global-search-recents'] }),
   });
 }
 
 export function useSaveSearch() {
   return useMutation({
-    mutationFn: async (_query: string) => {
-      // Save search is a no-op until global_search_history table exists
-    },
+    mutationFn: async (_query: string) => {},
   });
 }
