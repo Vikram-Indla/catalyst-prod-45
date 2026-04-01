@@ -64,7 +64,7 @@ export function WorkItemRow({
           checked={isSelected}
           onChange={onToggleSelect}
           className="w-4 h-4 rounded cursor-pointer"
-          style={{ accentColor: 'var(--wh-primary, #2563eb)' }}
+          style={{ accentColor: 'var(--cp-blue)' }}
         />
       </div>
 
@@ -73,7 +73,7 @@ export function WorkItemRow({
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
         <div
           className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 rounded text-[10px] font-semibold whitespace-nowrap opacity-0 group-hover/type:opacity-100 pointer-events-none transition-opacity z-50"
-          style={{ backgroundColor: '#1e293b', color: '#fff' }}
+          style={{ backgroundColor: '#1e293b', color: 'var(--bg-app)' }}
         >
           {item.issue_type}
         </div>
@@ -87,8 +87,8 @@ export function WorkItemRow({
             className="w-4 h-4 flex items-center justify-center shrink-0 rounded hover:bg-slate-200 transition-colors"
           >
             {isExpanded
-              ? <ChevronDown className="w-3.5 h-3.5" style={{ color: '#64748b' }} />
-              : <ChevronRight className="w-3.5 h-3.5" style={{ color: '#94a3b8' }} />
+              ? <ChevronDown className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
+              : <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--fg-4)' }} />
             }
           </button>
         ) : (

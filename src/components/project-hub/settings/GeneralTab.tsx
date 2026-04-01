@@ -208,27 +208,27 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               <button
                 onClick={() => setForm(f => ({ ...f, ai_assist: !f.ai_assist }))}
                 className="flex-shrink-0 rounded-full transition-colors"
-                style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', background: form.ai_assist ? '#2563EB' : '#CBD5E1', position: 'relative' }}
+                style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', background: form.ai_assist ? 'var(--cp-blue)' : '#CBD5E1', position: 'relative' }}
               >
-                <span className="rounded-full" style={{ width: 16, height: 16, background: '#FFFFFF', borderRadius: '50%', position: 'absolute', top: 3, left: form.ai_assist ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
+                <span className="rounded-full" style={{ width: 16, height: 16, background: 'var(--bg-app)', borderRadius: '50%', position: 'absolute', top: 3, left: form.ai_assist ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
               </button>
             </div>
           </div>
         </div>
 
         {/* Save button — full width spanning both columns */}
-        <div className="flex justify-end mt-6 pt-4" style={{ borderTop: '1px solid #E2E8F0' }}>
+        <div className="flex justify-end mt-6 pt-4" style={{ borderTop: '1px solid var(--divider)' }}>
           <button
             onClick={handleSave}
             disabled={!isDirty || saving}
             className="transition-all disabled:opacity-40"
             style={{
               height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
-              color: '#FFFFFF', background: isDirty && !saving ? '#2563EB' : '#93B4F1', border: 'none', borderRadius: 6,
+              color: '#FFFFFF', background: isDirty && !saving ? 'var(--cp-blue)' : '#93B4F1', border: 'none', borderRadius: 6,
               cursor: isDirty && !saving ? 'pointer' : 'default',
             }}
             onMouseEnter={e => { if (isDirty && !saving) e.currentTarget.style.background = '#1D4ED8'; }}
-            onMouseLeave={e => { if (isDirty && !saving) e.currentTarget.style.background = '#2563EB'; }}
+            onMouseLeave={e => { if (isDirty && !saving) e.currentTarget.style.background = 'var(--cp-blue)'; }}
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </button>

@@ -302,7 +302,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                     <span>{item.assignee.displayName}</span>
                   </>
                 ) : <EmptyValue />}
-                <span style={{ fontSize: 8, color: '#94A3B8' }}>▾</span>
+                <span style={{ fontSize: 8, color: 'var(--fg-4)' }}>▾</span>
               </div>
               {activeDropdown === 'assignee' && (
                 <AssigneeDropdown
@@ -316,7 +316,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
           </FieldRow>
 
           <FieldRow label="Reporter">
-            <span style={{ color: '#94A3B8', fontStyle: 'italic' }}>—</span>
+            <span style={{ color: 'var(--fg-4)', fontStyle: 'italic' }}>—</span>
           </FieldRow>
 
           {item.fixVersion && (
@@ -351,7 +351,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
             <FieldRow label="Progress">
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ flex: 1, height: 6, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? '#16A34A' : '#2563EB', borderRadius: 3, transition: 'width 300ms ease' }} />
+                  <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? 'var(--sem-success)' : 'var(--cp-blue)', borderRadius: 3, transition: 'width 300ms ease' }} />
                 </div>
                 <span style={{ fontSize: 12, color: '#64748B', fontVariantNumeric: 'tabular-nums' }}>
                   {item.stats.completedCount}/{item.stats.totalDescendants}

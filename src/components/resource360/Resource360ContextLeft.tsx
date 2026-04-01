@@ -41,7 +41,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-5 pb-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#64748B', fontFamily: "'Inter', monospace" }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg-3)', fontFamily: "'Inter', monospace" }}>
             {item.item_key}
           </span>
           <span
@@ -71,7 +71,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
           style={{
             width: 28, height: 28, borderRadius: 6, border: 'none',
             background: 'transparent', cursor: 'pointer',
-            fontSize: 16, color: '#9CA3AF', display: 'flex',
+            fontSize: 16, color: 'var(--fg-4)', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
             transition: 'all 120ms',
           }}
@@ -81,7 +81,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLElement).style.background = 'transparent';
-            (e.currentTarget as HTMLElement).style.color = '#9CA3AF';
+            (e.currentTarget as HTMLElement).style.color = 'var(--fg-4)';
           }}
         >
           ✕
