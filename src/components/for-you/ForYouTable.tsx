@@ -132,7 +132,7 @@ export function ForYouTable({
             <React.Fragment key={group}>
               {/* Group header — zone borders, no fill in dark mode */}
               <tr>
-                <td colSpan={10} style={{
+                <td colSpan={11} style={{
                   height: 44, padding: '12px 12px',
                   background: 'var(--cp-bg)',
                   borderBottom: '1px solid var(--cp-bd-zone)',
