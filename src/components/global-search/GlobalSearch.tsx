@@ -120,8 +120,9 @@ function getAvatarColor(name: string): string {
 }
 
 /* ── ResultRow ── */
-function ResultRow({ item, isSelected, onHover, onClick }: {
+function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
   item: SearchResult; isSelected: boolean; onHover: () => void; onClick: () => void;
+  avatarMap: Map<string, string>;
 }) {
   const typeKey = mapType(item.item_type);
   const icon = WORK_ICONS[typeKey] ?? WORK_ICONS.task;
