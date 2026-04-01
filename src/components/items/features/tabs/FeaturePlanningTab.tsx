@@ -50,10 +50,11 @@ export function FeaturePlanningTab({ feature }: FeaturePlanningTabProps) {
   const { data: iterations } = useQuery({
     queryKey: ['iterations'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('iterations')
         .select('id, name')
         .order('start_date', { ascending: false });
+      if (error) throw error;
       return data || [];
     },
   });
@@ -61,10 +62,11 @@ export function FeaturePlanningTab({ feature }: FeaturePlanningTabProps) {
   const { data: programs } = useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('programs')
         .select('id, name')
         .order('name');
+      if (error) throw error;
       return data || [];
     },
   });
@@ -73,11 +75,12 @@ export function FeaturePlanningTab({ feature }: FeaturePlanningTabProps) {
     queryKey: ['parent-epic', feature?.epic_id],
     queryFn: async () => {
       if (!feature?.epic_id) return null;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('epics')
         .select('id, name, primary_program_id, programs:primary_program_id(id, name)')
         .eq('id', feature.epic_id)
         .single();
+      if (error && error.code !== 'PGRST116') throw error;
       return data;
     },
     enabled: !!feature?.epic_id,

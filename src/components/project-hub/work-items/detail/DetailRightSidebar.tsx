@@ -60,7 +60,8 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
   const { data: itemLabels = [] } = useQuery({
     queryKey: ['ph-item-labels', item.id],
     queryFn: async () => {
-      const { data } = await supabase.from('ph_work_item_labels').select('label_id, ph_labels(id, name, color)').eq('work_item_id', item.id);
+      const { data, error } = await supabase.from('ph_work_item_labels').select('label_id, ph_labels(id, name, color)').eq('work_item_id', item.id);
+      if (error) throw error;
       return (data || []).map((d: any) => ({ id: d.ph_labels?.id, name: d.ph_labels?.name ?? '', color: d.ph_labels?.color ?? '#2563EB' }));
     },
   });
@@ -68,7 +69,8 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
   const { data: itemComponents = [] } = useQuery({
     queryKey: ['ph-item-components', item.id],
     queryFn: async () => {
-      const { data } = await supabase.from('ph_work_item_components').select('component_id, ph_components(id, name)').eq('work_item_id', item.id);
+      const { data, error } = await supabase.from('ph_work_item_components').select('component_id, ph_components(id, name)').eq('work_item_id', item.id);
+      if (error) throw error;
       return (data || []).map((d: any) => ({ id: d.ph_components?.id, name: d.ph_components?.name ?? '' }));
     },
   });
@@ -77,7 +79,8 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
     queryKey: ['ph-release', item.release_id],
     queryFn: async () => {
       if (!item.release_id) return null;
-      const { data } = await supabase.from('ph_releases').select('id, name, title, status').eq('id', item.release_id).single();
+      const { data, error } = await supabase.from('ph_releases').select('id, name, title, status').eq('id', item.release_id).single();
+      if (error && error.code !== 'PGRST116') throw error;
       return data;
     },
     enabled: !!item.release_id,
@@ -86,10 +89,12 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
   const { data: watchers = [] } = useQuery({
     queryKey: ['ph-watchers', item.id],
     queryFn: async () => {
-      const { data } = await supabase.from('ph_watchers').select('user_id').eq('work_item_id', item.id);
+      const { data, error } = await supabase.from('ph_watchers').select('user_id').eq('work_item_id', item.id);
+      if (error) throw error;
       if (!data || data.length === 0) return [];
       const userIds = data.map(w => w.user_id);
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', userIds);
+      const { data: profiles, error: profErr } = await supabase.from('profiles').select('id, full_name').in('id', userIds);
+      if (profErr) throw profErr;
       return (profiles || []).map(p => ({ id: p.id, name: p.full_name || 'Unknown' }));
     },
   });

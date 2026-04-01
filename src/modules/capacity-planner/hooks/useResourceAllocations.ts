@@ -103,19 +103,21 @@ export function useResourceAllocations() {
 
   const ensureInventoryId = async (resourceKey: string): Promise<string> => {
     // resourceKey is usually profile_id in the UI, but some places may pass resource_inventory.id
-    const { data: byId } = await supabase
+    const { data: byId, error: byIdError } = await supabase
       .from('resource_inventory')
       .select('id')
       .eq('id', resourceKey)
       .maybeSingle();
+    if (byIdError) throw byIdError;
 
     if (byId?.id) return byId.id;
 
-    const { data: byProfile } = await supabase
+    const { data: byProfile, error: byProfileError } = await supabase
       .from('resource_inventory')
       .select('id')
       .eq('profile_id', resourceKey)
       .maybeSingle();
+    if (byProfileError) throw byProfileError;
 
     if (byProfile?.id) return byProfile.id;
 
@@ -443,12 +445,13 @@ export function useResourceAllocations() {
       const inventoryId = await ensureInventoryId(resourceId);
 
       // Get current allocation in source assignment
-      const { data: sourceAlloc } = await supabase
+      const { data: sourceAlloc, error: sourceAllocError } = await supabase
         .from('resource_allocations')
         .select('id, allocation_percent')
         .eq('resource_id', inventoryId)
         .eq('assignment_id', fromAssignmentId)
         .maybeSingle();
+      if (sourceAllocError) throw sourceAllocError;
 
       if (!sourceAlloc) {
         throw new Error('Source allocation not found');
@@ -472,12 +475,13 @@ export function useResourceAllocations() {
       }
 
       // Add or update target allocation
-      const { data: targetAlloc } = await supabase
+      const { data: targetAlloc, error: targetAllocError } = await supabase
         .from('resource_allocations')
         .select('id, allocation_percent')
         .eq('resource_id', inventoryId)
         .eq('assignment_id', toAssignmentId)
         .maybeSingle();
+      if (targetAllocError) throw targetAllocError;
 
       const today = new Date().toISOString().split('T')[0];
       const threeMonths = new Date();

@@ -432,7 +432,8 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
       if (!currentKey) return;
       setAttachmentsLoading(true);
       try {
-        const { data } = await supabase.from('ph_issue_attachments').select('*').eq('issue_key', currentKey).order('jira_created_at', { ascending: false });
+        const { data, error } = await supabase.from('ph_issue_attachments').select('*').eq('issue_key', currentKey).order('jira_created_at', { ascending: false });
+        if (error) throw error;
         if (data) setAttachments(data);
       } catch (e) { console.error('Error fetching attachments:', e); }
       finally { setAttachmentsLoading(false); }
@@ -446,7 +447,8 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
       if (!currentKey) return;
       setCommentsLoading(true);
       try {
-        const { data } = await supabase.from('jira_sync_comments').select('id, author_display_name, body, jira_created_at').eq('issue_key', currentKey).order('jira_created_at', { ascending: false });
+        const { data, error } = await supabase.from('jira_sync_comments').select('id, author_display_name, body, jira_created_at').eq('issue_key', currentKey).order('jira_created_at', { ascending: false });
+        if (error) throw error;
         if (data) setComments(data);
       } catch (e) { console.error('Error fetching comments:', e); }
       finally { setCommentsLoading(false); }
@@ -460,7 +462,8 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
       if (!currentKey) return;
       setChangelogLoading(true);
       try {
-        const { data } = await supabase.from('jira_sync_changelog').select('id, author_display_name, field_name, from_string, to_string, jira_created_at').eq('issue_key', currentKey).order('jira_created_at', { ascending: false });
+        const { data, error } = await supabase.from('jira_sync_changelog').select('id, author_display_name, field_name, from_string, to_string, jira_created_at').eq('issue_key', currentKey).order('jira_created_at', { ascending: false });
+        if (error) throw error;
         if (data) setChangelog(data);
       } catch (e) { console.error('Error fetching changelog:', e); }
       finally { setChangelogLoading(false); }
@@ -474,7 +477,8 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
       if (!currentKey) return;
       setLinksLoading(true);
       try {
-        const { data } = await supabase.from('jira_sync_issue_links').select('id, link_type, direction, source_key, target_key, target_summary, target_type, target_status').or(`source_key.eq.${currentKey},target_key.eq.${currentKey}`);
+        const { data, error } = await supabase.from('jira_sync_issue_links').select('id, link_type, direction, source_key, target_key, target_summary, target_type, target_status').or(`source_key.eq.${currentKey},target_key.eq.${currentKey}`);
+        if (error) throw error;
         if (data) setIssueLinks(data);
       } catch (e) { console.error('Error fetching links:', e); }
       finally { setLinksLoading(false); }

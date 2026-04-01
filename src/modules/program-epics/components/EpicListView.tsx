@@ -141,12 +141,13 @@ export function EpicListView({ programId }: EpicListViewProps) {
     queryFn: async () => {
       // Check if programId is a valid program
       if (programId) {
-        const { data: programCheck } = await supabase
+        const { data: programCheck, error: programCheckError } = await supabase
           .from('programs')
           .select('id')
           .eq('id', programId)
           .maybeSingle();
-        
+        if (programCheckError) throw programCheckError;
+
         if (programCheck) {
           // Valid program - filter by primary_program_id
           const { data, error } = await supabase

@@ -169,12 +169,13 @@ export function useCreateMyTask() {
   return useMutation({
     mutationFn: async (payload: CreateTaskPayload) => {
       // Generate task key
-      const { data: lastTask } = await supabase
+      const { data: lastTask, error: lastTaskError } = await supabase
         .from('planner_tasks')
         .select('task_key')
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
+      if (lastTaskError && lastTaskError.code !== 'PGRST116') throw lastTaskError;
 
       const lastNum = lastTask?.task_key 
         ? parseInt(lastTask.task_key.replace('PLN-', '')) 
@@ -221,22 +222,24 @@ export function useUpdateMyTask() {
   return useMutation({
     mutationFn: async ({ id, ...updates }: UpdateTaskPayload) => {
       // Get old values for activity log
-      const { data: oldTask } = await supabase
+      const { data: oldTask, error: oldTaskError } = await supabase
         .from('planner_tasks')
         .select('*')
         .eq('id', id)
         .single();
+      if (oldTaskError) throw oldTaskError;
 
       const updateData: Record<string, unknown> = { ...updates, updated_at: new Date().toISOString() };
       
       // If status changed to done, set completed_at
       if (updates.status_id) {
-        const { data: status } = await supabase
+        const { data: status, error: statusError } = await supabase
           .from('planner_statuses')
           .select('is_done')
           .eq('id', updates.status_id)
           .single();
-        
+        if (statusError) throw statusError;
+
         if (status?.is_done) {
           updateData.completed_at = new Date().toISOString();
         } else {
@@ -289,12 +292,13 @@ export function useBulkUpdateMyTasks() {
 
       // Handle completion status
       if (updates.status_id) {
-        const { data: status } = await supabase
+        const { data: status, error: statusError } = await supabase
           .from('planner_statuses')
           .select('is_done')
           .eq('id', updates.status_id)
           .single();
-        
+        if (statusError) throw statusError;
+
         if (status?.is_done) {
           updateData.completed_at = new Date().toISOString();
         } else {
@@ -359,11 +363,12 @@ export function useCompleteMyTask() {
   return useMutation({
     mutationFn: async (taskId: string) => {
       // Get done status
-      const { data: doneStatus } = await supabase
+      const { data: doneStatus, error: doneStatusError } = await supabase
         .from('planner_statuses')
         .select('id')
         .eq('is_done', true)
         .single();
+      if (doneStatusError) throw doneStatusError;
 
       const { data, error } = await supabase
         .from('planner_tasks')
