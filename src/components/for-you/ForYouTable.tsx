@@ -123,6 +123,7 @@ export function ForYouTable({
             <th style={{ ...thStyle, width: 95 }}>Hub</th>
             <th style={{ ...thStyle, width: 75 }}>Priority</th>
             <th style={{ ...thStyle, width: 100 }}>Updated</th>
+            <th style={{ ...thStyle, width: 170 }}>Assigned to</th>
             <th style={{ ...thStyle, width: 170 }}>Reported by</th>
           </tr>
         </thead>
