@@ -335,7 +335,7 @@ export function GlobalSearch() {
 
   // Derive unique hubs from recents
   const hubOptions = ALL_HUBS.map(h => ({
-    value: h, display: h.replace("Hub", "") + " Hub", color: HUB_COLORS[h],
+    value: h, display: h.replace(/([A-Z])/g, " $1").trim(), color: HUB_COLORS[h],
   }));
 
   // Type options with SVG icons
