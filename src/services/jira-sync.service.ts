@@ -200,8 +200,8 @@ export const jiraSyncService = {
 
     const { data, error } = await supabase
       .from('jira_write_back_queue')
-      .select('id, ph_issue_id, field_name, new_value, queued_at, push_status')
-      .eq('push_status', 'queued')
+      .select('id, ph_issue_id, field_name, new_value, queued_at, status')
+      .eq('status', 'queued')
       .order('queued_at', { ascending: false });
     if (error) throw error;
     if (!data || data.length === 0) return [];
