@@ -53,6 +53,13 @@ export default function AdminDashboard() {
       color: 'text-blue-600',
     },
     {
+      title: 'Jira Sync Log',
+      description: 'Monitor bi-directional sync activity',
+      icon: Activity,
+      path: '/admin/jira-sync-log',
+      color: 'text-blue-600',
+    },
+    {
       title: 'Security',
       description: 'Security and permission settings',
       icon: Shield,

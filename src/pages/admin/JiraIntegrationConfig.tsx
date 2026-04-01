@@ -1,11 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { formatDistanceToNow } from "date-fns";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Settings, Map, RefreshCw, Link as LinkIcon } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { AdminGuard } from "@/components/admin/AdminGuard";
 import { ConnectionFormDialog } from "@/components/admin/jira/ConnectionFormDialog";
 import { FieldMappingDialog } from "@/components/admin/jira/FieldMappingDialog";
@@ -34,6 +37,7 @@ interface JiraConnection {
 
 export default function JiraIntegrationConfig() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [selectedConnection, setSelectedConnection] = useState<string | null>(null);
   const [showConnectionDialog, setShowConnectionDialog] = useState(false);
   const [showFieldMapping, setShowFieldMapping] = useState(false);
@@ -97,6 +101,29 @@ export default function JiraIntegrationConfig() {
     },
     onError: (error: any) => {
       toast.error(`Sync failed: ${error.message}`);
+    },
+  });
+
+  const toggleMutation = useMutation({
+    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+      await (supabase.from('jira_connections') as any)
+        .update({ is_active })
+        .eq('id', id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jira-connection-status'] });
+      queryClient.invalidateQueries({ queryKey: ['jira-connections'] });
+    },
+  });
+
+  const { data: recentLogs } = useQuery({
+    queryKey: ['jira-sync-recent'],
+    queryFn: async () => {
+      const { data } = await (supabase.from('jira_sync_logs') as any)
+        .select('id, event_type, jira_key, status, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5);
+      return (data ?? []) as any[];
     },
   });
 
@@ -198,6 +225,13 @@ export default function JiraIntegrationConfig() {
                                 ? `Last synced: ${new Date(conn.last_sync_at).toLocaleString()}`
                                 : 'Never synced'}
                             </div>
+                          </div>
+                          <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                            <Switch
+                              checked={conn.is_active}
+                              onCheckedChange={(val) => toggleMutation.mutate({ id: conn.id, is_active: val })}
+                            />
+                            <span className="text-xs text-muted-foreground">Active</span>
                           </div>
                           {getStatusBadge(conn.last_test_status)}
                           <Button
@@ -336,6 +370,60 @@ export default function JiraIntegrationConfig() {
                     </p>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Recent Sync Activity */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Last Sync Activity</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {(recentLogs ?? []).map((log: any) => {
+                    const statusColors: Record<string, { bg: string; text: string }> = {
+                      success: { bg: '#E3FCEF', text: '#006644' },
+                      completed: { bg: '#E3FCEF', text: '#006644' },
+                      error: { bg: '#DFE1E6', text: '#253858' },
+                      failed: { bg: '#DFE1E6', text: '#253858' },
+                      skipped: { bg: '#DFE1E6', text: '#253858' },
+                      abandoned: { bg: '#DFE1E6', text: '#253858' },
+                      pending: { bg: '#DEEBFF', text: '#0747A6' },
+                      processing: { bg: '#DEEBFF', text: '#0747A6' },
+                      approved: { bg: '#DEEBFF', text: '#0747A6' },
+                    };
+                    const sc = statusColors[log.status] || statusColors.skipped;
+                    return (
+                      <div key={log.id} className="flex items-center gap-2 text-sm">
+                        <span
+                          className="inline-block whitespace-nowrap"
+                          style={{
+                            height: 20, lineHeight: '20px', fontSize: 11, fontWeight: 700,
+                            textTransform: 'uppercase', letterSpacing: '0.05em',
+                            borderRadius: 3, padding: '0 8px', background: sc.bg, color: sc.text,
+                          }}
+                        >
+                          {log.status}
+                        </span>
+                        <span className="text-foreground">{log.event_type}</span>
+                        <span className="text-muted-foreground">·</span>
+                        <span className="text-muted-foreground font-medium">{log.jira_key || '—'}</span>
+                        <span className="ml-auto text-xs text-muted-foreground">
+                          {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  {(recentLogs ?? []).length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-4">No sync events yet</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => navigate('/admin/jira-sync-log')}
+                  className="mt-3 text-[13px] text-[#2563EB] underline hover:text-[#1D4ED8] transition-colors"
+                >
+                  View Full Audit Log →
+                </button>
               </CardContent>
             </Card>
 
