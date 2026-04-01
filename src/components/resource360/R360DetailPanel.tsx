@@ -282,7 +282,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}
                     >
                       <span style={{ flexShrink: 0 }}>{getJiraIcon(sib.item_type || 'Task')}</span>
-                      <span style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: '#2563EB', fontWeight: 600, width: '72px', flexShrink: 0 }}>{sib.item_key}</span>
+                      <span style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: 'var(--cp-blue)', fontWeight: 600, width: '72px', flexShrink: 0 }}>{sib.item_key}</span>
                       {/* Status pill — INLINE, small */}
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: '3px',

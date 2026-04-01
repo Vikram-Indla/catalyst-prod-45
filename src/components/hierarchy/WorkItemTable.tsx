@@ -105,7 +105,7 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
         <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed #CBD5E1', flexShrink: 0 }} />
-        <span style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>Unassigned</span>
+        <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
       </div>
     );
   }
@@ -121,7 +121,7 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
           <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>
         </div>
       )}
-      <span className="hi-assignee-name" style={{ fontSize: 12, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{assignee.displayName}</span>
+      <span className="hi-assignee-name" style={{ fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{assignee.displayName}</span>
     </div>
   );
 }
@@ -141,7 +141,7 @@ function PriorityBarsCell({ level }: { level: number }) {
   return (
     <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
       {[1, 2, 3, 4].map(i => (
-        <div key={i} style={{ width: 12, height: 4, borderRadius: 1, background: i <= level ? '#64748B' : '#E2E8F0' }} />
+        <div key={i} style={{ width: 12, height: 4, borderRadius: 1, background: i <= level ? 'var(--fg-3)' : 'var(--divider)' }} />
       ))}
     </div>
   );
@@ -149,7 +149,7 @@ function PriorityBarsCell({ level }: { level: number }) {
 
 /* ── Labels pills (F9) ── */
 function LabelsPills({ labels }: { labels: string[] }) {
-  if (!labels || labels.length === 0) return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
+  if (!labels || labels.length === 0) return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
   const show = labels.slice(0, 2);
   const rest = labels.length - 2;
   return (
@@ -157,17 +157,17 @@ function LabelsPills({ labels }: { labels: string[] }) {
       {show.map(l => (
         <span key={l} style={{
           fontSize: 10, padding: '2px 8px', borderRadius: 9999,
-          background: '#F1F5F9', color: '#334155', whiteSpace: 'nowrap',
+          background: '#F1F5F9', color: 'var(--fg-2)', whiteSpace: 'nowrap',
         }}>{l}</span>
       ))}
-      {rest > 0 && <span style={{ fontSize: 10, color: '#94A3B8' }}>+{rest}</span>}
+      {rest > 0 && <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>+{rest}</span>}
     </div>
   );
 }
 
 /* ── Due date with color coding (F11) ── */
 function DueDateCell({ date }: { date?: string }) {
-  if (!date) return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
+  if (!date) return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
   const d = new Date(date);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -193,7 +193,7 @@ function ParentCell({ item, itemById, onSelect }: { item: WorkItem; itemById: Ma
   const parentKey = item.parentKey || item.parentId;
 
   if (!parentKey) {
-    return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
+    return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
   }
 
   // Look up parent by id (which is issue_key) OR by key field
@@ -252,7 +252,7 @@ function ColHeader({ label, sortKey, currentSort, currentDir, onSort, width, fle
       onClick={() => onSort(sortKey)}
       style={{
         width, flex, height: 36, display: 'flex', alignItems: 'center', padding: '0 8px',
-        fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#64748B',
+        fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)',
         letterSpacing: '0.06em', cursor: 'pointer', userSelect: 'none', minWidth: 0,
       }}
     >
@@ -466,13 +466,13 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 className="hi-expand-chevron"
                 style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', flexShrink: 0 }}
               >
-                {isExpanded ? <ChevronDown size={16} color="#94A3B8" /> : <ChevronRight size={16} color="#94A3B8" />}
+                {isExpanded ? <ChevronDown size={16} color="var(--fg-4)" /> : <ChevronRight size={16} color="var(--fg-4)" />}
               </button>
             ) : <div className="hi-expand-chevron" style={{ flexShrink: 0 }} />}
 
             <span className="hi-type-icon-wrapper">{item.issueType && <JiraIssueTypeIcon type={item.issueType} size={16} />}</span>
 
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
               {item.key}
             </span>
 
@@ -513,7 +513,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'created':
         return (
           <div style={{ padding: '0 16px 0 8px', textAlign: 'right' }}>
-            <span style={{ fontSize: 12, color: '#64748B', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: 12, color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>
               {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
             </span>
           </div>
@@ -522,10 +522,10 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
         return (
           <div style={{ padding: '0 8px', minWidth: 0 }}>
             {item.fixVersion ? (
-              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 3, background: '#F1F5F9', color: '#334155', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 3, background: '#F1F5F9', color: 'var(--fg-2)', display: 'inline-block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.fixVersion.name}
               </span>
-            ) : <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>}
+            ) : <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>}
           </div>
         );
       case 'labels':
@@ -559,7 +559,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'updated':
         return (
           <div style={{ padding: '0 8px' }}>
-            <span style={{ fontSize: 12, color: '#64748B' }}>
+            <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>
               {item.updatedAt ? new Date(item.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
             </span>
           </div>
@@ -570,7 +570,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
               onClick={(e) => { e.stopPropagation(); openDropdown('priority', item.id); }}>
               <PriorityBarsCell level={priorityToLevel(item.priority?.name)} />
-              <span style={{ fontSize: 11, color: '#64748B' }}>{item.priority?.name || '—'}</span>
+              <span style={{ fontSize: 11, color: 'var(--fg-3)' }}>{item.priority?.name || '—'}</span>
             </div>
             {activeDropdown?.type === 'priority' && activeDropdown.itemId === item.id && (
               <PriorityDropdown currentPriority={item.priority?.name}
@@ -592,7 +592,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
   }
 
   return (
-    <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF', width: '100%' }}>
+    <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)', width: '100%' }}>
       {/* Bulk action bar */}
       <BulkActionBar
         selectedCount={selectedKeys.size}
@@ -617,7 +617,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             height: 36,
             minWidth: 1100,
             background: '#F1F5F9',
-            borderBottom: '2px solid #E2E8F0',
+            borderBottom: '2px solid var(--divider)',
           }}
         >
           <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -665,7 +665,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 alignItems: 'center',
                 borderBottom: '1px solid #F1F5F9',
                 cursor: 'pointer',
-                background: isChecked ? '#EFF6FF' : isSelected ? 'rgba(37, 99, 235, 0.08)' : index % 2 === 1 ? '#FAFAFA' : '#FFFFFF',
+                background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'rgba(37, 99, 235, 0.08)' : index % 2 === 1 ? '#FAFAFA' : '#FFFFFF',
               }}
             >
               <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -690,7 +690,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                   onClick={(e) => openContextMenuFor3Dot(e, item)}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}
                 >
-                  <MoreHorizontal size={16} color="#64748B" />
+                  <MoreHorizontal size={16} color="var(--fg-3)" />
                 </button>
               </div>
             </div>
@@ -699,14 +699,14 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       </div>
 
       {/* Footer */}
-      <div style={{ height: 40, background: '#F8FAFC', borderTop: '1px solid #E2E8F0', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: 12, color: '#64748B' }}>
+      <div style={{ height: 40, background: 'var(--bg-1)', borderTop: '1px solid var(--divider)', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>
           Showing {Math.min(perPage, totalFlat)} of {totalFlat} items
         </span>
         {perPage < totalFlat && (
           <button
             onClick={() => setPerPage(p => p + 50)}
-            style={{ marginLeft: 8, background: 'none', border: 'none', padding: 0, fontSize: 12, fontWeight: 600, color: '#2563EB', cursor: 'pointer' }}
+            style={{ marginLeft: 8, background: 'none', border: 'none', padding: 0, fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', cursor: 'pointer' }}
           >
             Show more
           </button>

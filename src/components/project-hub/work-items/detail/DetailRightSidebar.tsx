@@ -284,15 +284,15 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
       </div>
 
       {/* CONFIGURE */}
-      <div style={{ borderTop: '1px solid #E2E8F0', marginTop: 12, paddingTop: 10 }}>
-        <button onClick={() => setConfigureOpen(!configureOpen)} className="flex items-center gap-1.5 text-[11px] font-medium hover:underline" style={{ color: '#94A3B8' }}>
+      <div style={{ borderTop: '1px solid var(--divider)', marginTop: 12, paddingTop: 10 }}>
+        <button onClick={() => setConfigureOpen(!configureOpen)} className="flex items-center gap-1.5 text-[11px] font-medium hover:underline" style={{ color: 'var(--fg-4)' }}>
           <Settings size={12} /> Configure fields
         </button>
         {configureOpen && (
-          <div className="mt-2 p-3 rounded-md" style={{ background: '#FFF', border: '1px solid #E2E8F0' }}>
-            <span className="text-[10px] font-bold uppercase block mb-2" style={{ color: '#64748B' }}>Visible Context Fields</span>
+          <div className="mt-2 p-3 rounded-md" style={{ background: 'var(--bg-app)', border: '1px solid var(--divider)' }}>
+            <span className="text-[10px] font-bold uppercase block mb-2" style={{ color: 'var(--fg-3)' }}>Visible Context Fields</span>
             {['Components', 'Labels', 'Release', 'Environment', 'Department', 'Team', 'Security Level', 'Flag', 'Resolution', 'Watchers'].map(f => (
-              <label key={f} className="flex items-center gap-2 py-1 text-[12px] cursor-pointer" style={{ color: '#334155' }}>
+              <label key={f} className="flex items-center gap-2 py-1 text-[12px] cursor-pointer" style={{ color: 'var(--fg-2)' }}>
                 <input type="checkbox" defaultChecked className="rounded border-[#CBD5E1]" />{f}
               </label>
             ))}
@@ -301,11 +301,11 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
       </div>
 
       {/* METADATA */}
-      <div className="mt-4 pt-3" style={{ borderTop: '1px solid #E2E8F0' }}>
-        <div className="text-[11px]" style={{ color: '#94A3B8', lineHeight: '18px' }}>
+      <div className="mt-4 pt-3" style={{ borderTop: '1px solid var(--divider)' }}>
+        <div className="text-[11px]" style={{ color: 'var(--fg-4)', lineHeight: '18px' }}>
           Created {new Date(item.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
         </div>
-        <div className="text-[11px]" style={{ color: '#94A3B8', lineHeight: '18px' }}>
+        <div className="text-[11px]" style={{ color: 'var(--fg-4)', lineHeight: '18px' }}>
           Updated {formatDistanceToNow(new Date(item.updated_at), { addSuffix: true })}
         </div>
       </div>

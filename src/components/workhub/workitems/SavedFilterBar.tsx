@@ -89,8 +89,8 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
                 onClick={() => isActive ? onDeactivate() : onApplyFilter(sf.filter_config, sf.id)}
                 className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full border transition-all whitespace-nowrap"
                 style={{
-                  backgroundColor: isActive ? 'var(--cp-blue)' : sf.is_shared ? '#eff6ff' : '#f1f5f9',
-                  color: isActive ? '#fff' : sf.is_shared ? '#1d4ed8' : 'var(--fg-1)',
+                  backgroundColor: isActive ? 'var(--cp-blue)' : sf.is_shared ? 'var(--cp-primary-5)' : 'var(--bg-1)',
+                  color: isActive ? 'var(--bg-app)' : sf.is_shared ? '#1d4ed8' : 'var(--fg-1)',
                   borderColor: isActive ? 'var(--cp-blue)' : 'var(--divider)',
                 }}
               >
@@ -122,7 +122,7 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
                     key={item.label}
                     onClick={item.action}
                     className="w-full text-left px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-                    style={{ color: (item as any).danger ? '#ef4444' : 'var(--fg-1)' }}
+                    style={{ color: (item as any).danger ? 'var(--sem-danger)' : 'var(--fg-1)' }}
                   >
                     {item.label}
                   </button>
@@ -152,7 +152,7 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
             Share
           </label>
           <button onClick={() => setShowSaveForm(false)} className="text-xs px-2 py-1 rounded-md hover:bg-slate-50" style={{ color: 'var(--fg-3)' }}>Cancel</button>
-          <button onClick={handleSave} disabled={!saveName.trim()} className="text-xs px-2 py-1 rounded-md font-medium disabled:opacity-40" style={{ backgroundColor: 'var(--cp-blue)', color: '#fff' }}>Save</button>
+          <button onClick={handleSave} disabled={!saveName.trim()} className="text-xs px-2 py-1 rounded-md font-medium disabled:opacity-40" style={{ backgroundColor: 'var(--cp-blue)', color: 'var(--bg-app)' }}>Save</button>
         </div>
       ) : (
         <button

@@ -69,7 +69,7 @@ function FilterDropdown({ label, value, options, onChange }: {
       {open && (
         <div style={{
           position: 'absolute', top: '100%', left: 0, marginTop: 4,
-          background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
+          background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 8,
           boxShadow: '0 4px 12px rgba(0,0,0,.1)', zIndex: 200,
           minWidth: 180, maxHeight: 240, overflowY: 'auto',
           padding: 4,
@@ -81,7 +81,7 @@ function FilterDropdown({ label, value, options, onChange }: {
               style={{
                 display: 'block', width: '100%', textAlign: 'left',
                 padding: '6px 10px', fontSize: 12, fontWeight: value === o.key ? 600 : 400,
-                color: value === o.key ? '#2563EB' : '#334155',
+                color: value === o.key ? 'var(--cp-blue)' : 'var(--fg-2)',
                 background: value === o.key ? '#EFF6FF' : 'transparent',
                 border: 'none', borderRadius: 4, cursor: 'pointer',
               }}
