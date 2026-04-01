@@ -122,7 +122,7 @@ function Avatar({ name, size = 24 }: { name: string; size?: number }) {
   if (avatarUrl) {
     return <img src={avatarUrl} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: `1px solid ${T.border}` }} />;
   }
-  return <div style={{ width: size, height: size, borderRadius: '50%', background: clr, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.4, fontWeight: 700, flexShrink: 0 }}>{ini}</div>;
+  return <div style={{ width: size, height: size, borderRadius: '50%', background: clr, color: 'var(--bg-app)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.4, fontWeight: 700, flexShrink: 0 }}>{ini}</div>;
 }
 
 function FieldRow({ icon, label, children, last }: { icon: React.ReactNode; label: string; children: React.ReactNode; last?: boolean }) {
@@ -348,9 +348,9 @@ function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; 
             ))}
           </div>
         </div>
-        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 3, overflow: 'hidden', backgroundColor: '#DFE1E6' }}>
-          {doneTasks.length > 0 && <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: '#00875A', transition: 'width 0.3s ease' }} />}
-          {progressTasks.length > 0 && <div style={{ width: `${(progressTasks.length / total) * 100}%`, backgroundColor: '#0065FF', transition: 'width 0.3s ease' }} />}
+        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 3, overflow: 'hidden', backgroundColor: 'var(--divider)' }}>
+          {doneTasks.length > 0 && <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: 'var(--sem-success)', transition: 'width 0.3s ease' }} />}
+          {progressTasks.length > 0 && <div style={{ width: `${(progressTasks.length / total) * 100}%`, backgroundColor: 'var(--cp-blue)', transition: 'width 0.3s ease' }} />}
         </div>
       </div>
 

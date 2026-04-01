@@ -52,7 +52,7 @@ export function DangerZone({ projectId, projectName }: DangerZoneProps) {
             color: 'var(--sem-danger)', border: '1px solid var(--sem-danger)', borderRadius: 6,
             background: 'transparent', cursor: 'pointer',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#FEF2F2'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--sem-danger-bg)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
         >
           Archive Project

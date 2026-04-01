@@ -75,7 +75,7 @@ export function ProjectHeaderCard({
               fontFamily: "'Inter', sans-serif",
               display: 'inline-flex', alignItems: 'center',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; e.currentTarget.style.borderColor = '#CBD5E1'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; e.currentTarget.style.borderColor = 'var(--divider)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; e.currentTarget.style.borderColor = 'var(--divider)'; }}
           >
             <Settings size={14} color="var(--fg-3)" strokeWidth={1.75} /> Settings

@@ -238,7 +238,7 @@ export function ForYouTable({
                           return avatarUrl ? (
                             <img src={avatarUrl} alt={reporterName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-bd)' }} />
                           ) : (
-                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: 'var(--bg-app)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                           );
                         })()}
                         <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reporter || item.assignee.name}</span>

@@ -50,11 +50,11 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
       <div style={{ width: 440, background: '#FFFFFF', borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: "'Inter', sans-serif" }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <AlertTriangle size={18} color="#DC2626" strokeWidth={2} />
+            <AlertTriangle size={18} color="var(--sem-danger)" strokeWidth={2} />
             <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>Delete Status</h3>
           </div>
           <button onClick={onClose} className="flex items-center justify-center rounded-md hover:bg-[var(--cp-bd-zone)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
-            <X size={16} color="#64748B" />
+            <X size={16} color="var(--fg-3)" />
           </button>
         </div>
 

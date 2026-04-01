@@ -24,7 +24,7 @@ export default function LatestInProduction({ projectId, releaseMap }: Props) {
     <WidgetCard
       title="Latest in Production"
       count={items.length}
-      countColor="#16A34A"
+      countColor="var(--sem-success)"
       leftBorder="#16A34A"
       maxHeight={320}
       error={error ? error.message : null}

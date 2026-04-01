@@ -41,12 +41,12 @@ export default function ReleaseDropdown({ projectId }: { projectId: string | nul
             display: 'flex', alignItems: 'center', gap: 6,
             transition: 'border-color 150ms, box-shadow 150ms',
           }}
-          onMouseEnter={e => { (e.target as HTMLElement).style.borderColor = '#93C5FD'; (e.target as HTMLElement).style.boxShadow = '0 1px 4px rgba(37,99,235,.1)'; }}
-          onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = '#CBD5E1'; (e.target as HTMLElement).style.boxShadow = 'none'; }}
+          onMouseEnter={e => { (e.target as HTMLElement).style.borderColor = 'var(--cp-primary-30)'; (e.target as HTMLElement).style.boxShadow = '0 1px 4px rgba(37,99,235,.1)'; }}
+          onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = 'var(--divider)'; (e.target as HTMLElement).style.boxShadow = 'none'; }}
         >
-          <Tag size={13} color="#0D9488" />
+          <Tag size={13} color="var(--sem-success)" />
           {activeCount === (releases?.length ?? 0) ? `All Active Releases (${activeCount})` : `${activeCount} Release${activeCount !== 1 ? 's' : ''}`}
-          <ChevronDown size={14} color="#64748B" />
+          <ChevronDown size={14} color="var(--fg-3)" />
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" sideOffset={6} style={{ width: 340, padding: 0, borderRadius: 10, border: '1px solid var(--divider)', background: '#FFFFFF', boxShadow: '0 4px 12px rgba(0,0,0,.08)' }}>

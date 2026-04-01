@@ -249,7 +249,7 @@ export function TimelineFilterPopover({
               className={cn(
                 "flex-1 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors",
                 draft.selectedYears.length > 0
-                  ? "bg-[hsl(var(--secondary-olive))] text-white hover:bg-[hsl(var(--secondary-olive)/0.9)]"
+                  ? "bg-[var(--secondary-olive)] text-white hover:bg-[color-mix(in srgb, var(--secondary-olive) 90%, transparent)]"
                   : "bg-muted text-muted-foreground cursor-not-allowed"
               )}
               onClick={handleApply}

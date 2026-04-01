@@ -18,7 +18,7 @@ export default function OnHoldItems({ projectId, releaseMap }: Props) {
   const items = data ?? [];
 
   return (
-    <WidgetCard title="On Hold" count={items.length} countColor="#EF4444" maxHeight={280} error={error ? error.message : null} onRetry={() => refetch()}>
+    <WidgetCard title="On Hold" count={items.length} countColor="var(--sem-danger)" maxHeight={280} error={error ? error.message : null} onRetry={() => refetch()}>
       {isLoading ? (
         <WidgetSkeleton rows={3} />
       ) : items.length === 0 ? (

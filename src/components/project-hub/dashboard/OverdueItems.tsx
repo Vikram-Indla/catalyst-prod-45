@@ -22,7 +22,7 @@ export default function OverdueItems({ projectId, releaseMap }: Props) {
   const visible = showAll ? items : items.slice(0, MAX_VISIBLE);
 
   return (
-    <WidgetCard title="Overdue" subtitle="Past due date" count={items.length} countColor="#D97706" maxHeight={320} error={error ? error.message : null} onRetry={() => refetch()}>
+    <WidgetCard title="Overdue" subtitle="Past due date" count={items.length} countColor="var(--sem-warning)" maxHeight={320} error={error ? error.message : null} onRetry={() => refetch()}>
       {isLoading ? (
         <WidgetSkeleton rows={3} />
       ) : items.length === 0 ? (

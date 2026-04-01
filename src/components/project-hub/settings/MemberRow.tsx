@@ -115,7 +115,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
           className="flex items-center justify-center rounded transition-colors hover:bg-[#FEE2E2]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
-          <X size={14} color="#94A3B8" />
+          <X size={14} color="var(--fg-4)" />
         </button>
       ) : (
         <div style={{ width: 28 }} />

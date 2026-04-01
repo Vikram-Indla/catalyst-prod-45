@@ -227,7 +227,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               color: '#FFFFFF', background: isDirty && !saving ? 'var(--cp-blue)' : '#93B4F1', border: 'none', borderRadius: 6,
               cursor: isDirty && !saving ? 'pointer' : 'default',
             }}
-            onMouseEnter={e => { if (isDirty && !saving) e.currentTarget.style.background = '#1D4ED8'; }}
+            onMouseEnter={e => { if (isDirty && !saving) e.currentTarget.style.background = 'var(--cp-primary-70)'; }}
             onMouseLeave={e => { if (isDirty && !saving) e.currentTarget.style.background = 'var(--cp-blue)'; }}
           >
             {saving ? 'Saving...' : 'Save Changes'}

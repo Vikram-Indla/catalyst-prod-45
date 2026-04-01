@@ -82,7 +82,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="View Fields"
         >
-          <MoreHorizontal size={16} color="#64748B" />
+          <MoreHorizontal size={16} color="var(--fg-3)" />
         </button>
       </div>
     </div>

@@ -40,13 +40,13 @@ export default function LifecycleDrawer() {
       <div role="dialog" aria-label="Lifecycle Timeline" className="ph-drawer-panel" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, background: '#FFFFFF', zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Clock size={16} color="#2563EB" />
+            <Clock size={16} color="var(--cp-blue)" />
             <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>
               Lifecycle Timeline
             </span>
           </div>
           <button onClick={closeDrawer} aria-label="Close drawer" className="ph-focus-ring" style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <X size={16} color="#94A3B8" />
+            <X size={16} color="var(--fg-4)" />
           </button>
         </div>
 

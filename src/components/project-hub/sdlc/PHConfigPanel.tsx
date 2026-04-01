@@ -99,10 +99,10 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
             onClick={handleClose}
             className="p-1.5 rounded-md transition-colors"
             style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-bd-zone)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <X size={16} color="#64748B" />
+            <X size={16} color="var(--fg-3)" />
           </button>
         </div>
 
@@ -164,10 +164,10 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                     <button
                       className="p-1 rounded transition-colors"
                       style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#FEF2F2'; }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--sem-danger-bg)'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <Trash2 size={12} color="#EF4444" />
+                      <Trash2 size={12} color="var(--sem-danger)" />
                     </button>
                   </div>
                 );
@@ -186,7 +186,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                     key={f.key}
                     className="flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer transition-colors"
                     style={{ fontSize: 13, color: 'var(--fg-2)' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     <input
@@ -243,7 +243,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                   key={f}
                   className="flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer transition-colors"
                   style={{ fontSize: 13, color: 'var(--fg-2)' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   <input type="checkbox" className="accent-blue-600" style={{ width: 14, height: 14 }} />

@@ -374,7 +374,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         return <TypeCell type="Business Request" />;
       case 'rank':
         return (
-          <span style={{ fontFamily: "'JetBrains Mono', 'SF Mono', monospace", fontSize: 12, fontWeight: 500, color: '#0F172A' }}> {/* V12 */}
+          <span style={{ fontFamily: "'JetBrains Mono', 'SF Mono', monospace", fontSize: 12, fontWeight: 500, color: 'var(--fg-1)' }}> {/* V12 */}
             {row.rank ?? '—'}
           </span>
         );
@@ -461,8 +461,8 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
           }}
         >
           <div className="flex items-center gap-3">
-            <span style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 13, fontWeight: 500, color: '#64748B' }}>
-              <strong style={{ fontWeight: 650, color: '#0F172A' }}>{totalItems}</strong> {totalItems === 1 ? 'request' : 'requests'}
+            <span style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 13, fontWeight: 500, color: 'var(--fg-3)' }}>
+              <strong style={{ fontWeight: 650, color: 'var(--fg-1)' }}>{totalItems}</strong> {totalItems === 1 ? 'request' : 'requests'}
               {totalItems > pageSize && (
                 <span className="ml-1">
                   (showing {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, totalItems)})
@@ -639,7 +639,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                                       "h-4 w-4 transition-opacity",
                                       (hoveredRowId === row.id || isFocused) ? "opacity-50 hover:opacity-100" : "opacity-0"
                                     )} 
-                                    style={{ color: '#64748B' }} /* V12 */
+                                    style={{ color: 'var(--fg-3)' }} /* V12 */
                                   />
                                 </td>
                                 
@@ -651,7 +651,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                                       fontFamily: "'Inter', -apple-system, system-ui, sans-serif", /* V12 */
                                       fontSize: 13, /* V12 */
                                       fontWeight: 400, /* V12 */
-                                      color: '#0F172A', /* V12 */
+                                      color: 'var(--fg-1)', /* V12 */
                                       whiteSpace: 'nowrap' as const, /* V12 */
                                       overflow: 'hidden',
                                       textOverflow: 'ellipsis',
@@ -682,7 +682,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                                       style={{ background: 'none' }}
                                       onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }}
                                     >
-                                      <Pencil className="h-3.5 w-3.5" style={{ color: '#64748B' }} /* V12 */ />
+                                      <Pencil className="h-3.5 w-3.5" style={{ color: 'var(--fg-3)' }} /* V12 */ />
                                     </Button>
                                   </div>
                                 </td>

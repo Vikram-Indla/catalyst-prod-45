@@ -33,13 +33,13 @@ export default function KeyMilestones({ projectId, onConfigOpen, releaseMap }: P
       title="Key Milestones"
       subtitle="Configurable status gates"
       count={items.length}
-      countColor="#2563EB"
+      countColor="var(--cp-blue)"
       maxHeight={320}
       error={error ? error.message : null}
       onRetry={() => refetch()}
       headerRight={
         <button onClick={onConfigOpen} aria-label="Configure milestones" className="ph-focus-ring" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-          <Settings size={14} color="#64748B" />
+          <Settings size={14} color="var(--fg-3)" />
         </button>
       }
     >

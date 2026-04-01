@@ -46,7 +46,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
           className="flex items-center justify-center rounded-md hover:bg-[#F1F5F9] transition-colors"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
-          <X size={14} color="#64748B" />
+          <X size={14} color="var(--fg-3)" />
         </button>
       </div>
 

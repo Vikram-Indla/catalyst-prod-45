@@ -128,12 +128,12 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                   className="flex items-center gap-2 px-3 cursor-pointer transition-colors rounded-t-xl"
                   style={{ height: 40, borderBottom: isCollapsed ? 'none' : '1px solid var(--divider)' }}
                   onClick={() => toggleCollapse(groupId)}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   {isCollapsed
-                    ? <ChevronRight size={14} color="#64748B" />
-                    : <ChevronDown size={14} color="#64748B" />}
+                    ? <ChevronRight size={14} color="var(--fg-3)" />
+                    : <ChevronDown size={14} color="var(--fg-3)" />}
                   <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
                     {getReleaseName(groupId)}
                   </span>

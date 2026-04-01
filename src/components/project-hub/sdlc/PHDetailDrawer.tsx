@@ -73,7 +73,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
             onClick={onClose}
             className="p-1.5 rounded-md transition-colors"
             style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-bd-zone)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             <X size={16} color="var(--fg-3)" />
@@ -264,7 +264,7 @@ function StatusDropdown({ value, onChange }: { value: IssueStatus; onChange: (s:
         }}
       >
         <PHStatusLozenge status={value} compact />
-        <ChevronDown size={12} color="#94A3B8" />
+        <ChevronDown size={12} color="var(--fg-4)" />
       </button>
       {open && (
         <div

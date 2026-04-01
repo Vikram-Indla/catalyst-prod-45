@@ -65,31 +65,31 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
   const gridCols = `200px repeat(${QUARTERS.length}, 1fr)`;
   const currentQ = getCurrentQuarter();
 
-  const tableBorder = isDark ? DK.border : '#E2E8F0';
-  const rowBorder = isDark ? DK.borderSubtle : '#F1F5F9';
+  const tableBorder = isDark ? DK.border : 'var(--divider)';
+  const rowBorder = isDark ? DK.borderSubtle : 'var(--cp-bd-zone)';
 
   return (
-    <div className="heatmap-scroll" style={{ borderRadius: 10, overflow: 'hidden', background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${tableBorder}` }}>
+    <div className="heatmap-scroll" style={{ borderRadius: 10, overflow: 'hidden', background: isDark ? 'transparent' : 'var(--bg-app)', border: `1px solid ${tableBorder}` }}>
       {/* Header */}
       <div style={{
         display: 'grid', gridTemplateColumns: gridCols,
         height: 40, alignItems: 'center',
-        background: isDark ? 'transparent' : '#FFFFFF', borderBottom: `2px solid ${tableBorder}`,
+        background: isDark ? 'transparent' : 'var(--bg-app)', borderBottom: `2px solid ${tableBorder}`,
         fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
-        letterSpacing: '0.05em', color: isDark ? DK.t3 : '#64748B',
+        letterSpacing: '0.05em', color: isDark ? DK.t3 : 'var(--fg-3)',
       }}>
         <span style={{ paddingLeft: 16 }}>Theme</span>
         {QUARTERS.map(q => (
           <span key={q} style={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
             {q}
-            {q === currentQ && <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2563EB', flexShrink: 0 }} />}
+            {q === currentQ && <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--cp-blue)', flexShrink: 0 }} />}
           </span>
         ))}
       </div>
 
       {/* Current quarter legend */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '4px 16px', fontSize: 11, color: isDark ? DK.t3 : '#94A3B8' }}>
-        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#2563EB', marginRight: 6 }} />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '4px 16px', fontSize: 11, color: isDark ? DK.t3 : 'var(--fg-4)' }}>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-blue)', marginRight: 6 }} />
         Current quarter
       </div>
 
@@ -112,11 +112,11 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
             {/* Theme label */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
-              padding: '0 16px', background: isDark ? 'transparent' : '#FFFFFF',
+              padding: '0 16px', background: isDark ? 'transparent' : 'var(--bg-app)',
               borderRight: `1px solid ${rowBorder}`,
             }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t1 : '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{theme.title}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{theme.title}</span>
             </div>
 
             {/* Cells */}
@@ -127,7 +127,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
                   <div key={q} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: isDark ? DK.t3 : '#CBD5E1', fontSize: 12,
-                    background: isDark ? 'transparent' : '#FFFFFF',
+                    background: isDark ? 'transparent' : 'var(--bg-app)',
                     borderRight: `1px solid ${rowBorder}`,
                   }}>
                     —
@@ -154,7 +154,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
                   }}
                 >
                   <span style={{ fontSize: 18, fontWeight: 700, color: style.text, lineHeight: 1.2 }}>{avgPct}%</span>
-                  <span style={{ fontSize: 12, color: isDark ? DK.t3 : '#94A3B8', marginTop: 2 }}>{cellGoals.length} goal{cellGoals.length !== 1 ? 's' : ''}</span>
+                  <span style={{ fontSize: 12, color: isDark ? DK.t3 : 'var(--fg-4)', marginTop: 2 }}>{cellGoals.length} goal{cellGoals.length !== 1 ? 's' : ''}</span>
                 </div>
               );
             })}

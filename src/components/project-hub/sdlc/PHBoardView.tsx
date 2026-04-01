@@ -254,7 +254,7 @@ function BoardCard({
             style={{
               border: 'none', background: 'transparent', cursor: 'pointer',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-bd-zone)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             <a.icon size={12} color="var(--fg-3)" />

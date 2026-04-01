@@ -53,10 +53,10 @@ function formatDate(iso: string): string {
 function StatusLozenge({ status }: { status: string }) {
   let bg: string, text: string;
   switch (status) {
-    case 'completed': bg = '#1B7F37'; text = '#FFFFFF'; break;
-    case 'running': bg = '#0C66E4'; text = '#FFFFFF'; break;
-    case 'failed': bg = '#FFEBE6'; text = '#BF2600'; break;
-    default: bg = '#DFE1E6'; text = '#42526E';
+    case 'completed': bg = 'var(--sem-success)'; text = '#FFFFFF'; break;
+    case 'running': bg = 'var(--cp-blue)'; text = '#FFFFFF'; break;
+    case 'failed': bg = 'var(--sem-danger-bg)'; text = 'var(--sem-danger-fg)'; break;
+    default: bg = 'var(--divider)'; text = 'var(--fg-2)';
   }
   return (
     <span style={{
@@ -147,7 +147,7 @@ export function JiraSyncDrawer({
               className="inline-flex items-center gap-1.5"
               style={{
                 height: 32, padding: '0 14px', borderRadius: 4,
-                background: isSyncing ? '#93C5FD' : 'var(--cp-blue)',
+                background: isSyncing ? 'var(--cp-primary-30)' : 'var(--cp-blue)',
                 color: '#FFFFFF', border: 'none',
                 fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif',
                 cursor: isSyncing ? 'not-allowed' : 'pointer',
@@ -224,7 +224,7 @@ export function JiraSyncDrawer({
                     style={{
                       height: 24, padding: '0 8px', borderRadius: 3,
                       border: '0.75px solid var(--divider)', background: 'none',
-                      fontSize: 10, fontWeight: 600, color: '#42526E',
+                      fontSize: 10, fontWeight: 600, color: 'var(--fg-2)',
                       fontFamily: 'Inter, sans-serif', cursor: 'pointer',
                     }}
                   >

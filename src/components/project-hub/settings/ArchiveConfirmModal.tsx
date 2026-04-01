@@ -34,7 +34,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <AlertTriangle size={18} color="#DC2626" strokeWidth={2} />
+            <AlertTriangle size={18} color="var(--sem-danger)" strokeWidth={2} />
             <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>
               Archive Project
             </h3>
@@ -44,7 +44,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
             className="flex items-center justify-center rounded-md hover:bg-[#F1F5F9] transition-colors"
             style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
-            <X size={16} color="#64748B" />
+            <X size={16} color="var(--fg-3)" />
           </button>
         </div>
 

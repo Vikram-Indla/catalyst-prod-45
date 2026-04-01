@@ -44,8 +44,8 @@ export function ActivityFeed({ workItemId }: Props) {
               className="px-3 py-1.5 text-[13px] capitalize transition-colors"
               style={{
                 fontWeight: isActive ? 600 : 400,
-                color: isActive ? '#0C66E4' : 'var(--fg-2)',
-                borderBottom: isActive ? '2px solid #0C66E4' : '2px solid transparent',
+                color: isActive ? 'var(--cp-blue)' : 'var(--fg-2)',
+                borderBottom: isActive ? '2px solid var(--cp-blue)' : '2px solid transparent',
                 background: isActive ? 'var(--cp-blue-wash)' : 'transparent',
                 borderRadius: isActive ? '3px 3px 0 0' : 0,
                 marginBottom: -2,
@@ -74,7 +74,7 @@ export function ActivityFeed({ workItemId }: Props) {
               background: 'var(--bg-1)',
             }}
             onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.background = 'var(--bg-app)'; e.currentTarget.style.minHeight = '60px'; }}
-            onBlur={e => { if (!commentText) { e.currentTarget.style.borderColor = '#DFE1E6'; e.currentTarget.style.background = 'var(--bg-1)'; e.currentTarget.style.minHeight = '40px'; } }}
+            onBlur={e => { if (!commentText) { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.background = 'var(--bg-1)'; e.currentTarget.style.minHeight = '40px'; } }}
           />
           {commentText && (
             <div className="flex items-center justify-between mt-2">

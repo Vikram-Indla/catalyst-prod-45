@@ -77,7 +77,7 @@ export function TopNav() {
                   height: '100%', display: 'flex', alignItems: 'center',
                   padding: '0 10px', fontSize: 12,
                   fontWeight: active ? 600 : 400,
-                  color: active ? (tab.label === 'Wiki' ? '#7C3AED' : '#60A5FA') : 'rgba(255,255,255,0.55)',
+                  color: active ? (tab.label === 'Wiki' ? '#3B82F6' : '#60A5FA') : 'rgba(255,255,255,0.55)',
                   background: 'none', border: 'none', cursor: 'pointer',
                   fontFamily: "'Inter', sans-serif",
                   transition: 'color 100ms',
@@ -89,12 +89,12 @@ export function TopNav() {
                 {tab.label === 'Wiki' && (
                   <span style={{
                     width: 6, height: 6, borderRadius: '50%',
-                    background: '#7C3AED',
+                    background: '#3B82F6',
                     marginInlineEnd: 4, flexShrink: 0,
                     animation: 'wiki-pulse 2s ease-in-out infinite',
                   }} />
                 )}
-                <span style={{ color: tab.label === 'Wiki' && active ? '#7C3AED' : undefined }}>
+                <span style={{ color: tab.label === 'Wiki' && active ? '#3B82F6' : undefined }}>
                   {tab.label}
                 </span>
               </button>

@@ -51,16 +51,16 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
       break;
     case 'stale':
       label = relativeTime(lastSyncedAt);
-      labelColor = '#D97706';
+      labelColor = 'var(--sem-warning)';
       break;
     case 'conflict':
       label = 'Conflict';
-      labelColor = '#DC2626';
+      labelColor = 'var(--sem-danger)';
       fontWeight = 500;
       break;
     case 'syncing':
       label = 'Syncing…';
-      labelColor = '#2563EB';
+      labelColor = 'var(--cp-blue)';
       break;
     default:
       label = 'Pending';

@@ -120,7 +120,7 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
             <div className="flex items-center justify-between mb-4">
               <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>Copy Workflow</h3>
               <button onClick={() => setConfirmOpen(false)} className="flex items-center justify-center rounded-md hover:bg-[var(--cp-bd-zone)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                <X size={16} color="#64748B" />
+                <X size={16} color="var(--fg-3)" />
               </button>
             </div>
             <p style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.6 }}>

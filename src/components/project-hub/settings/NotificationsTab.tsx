@@ -46,7 +46,7 @@ export function NotificationsTab() {
       </div>
 
       <div className="flex items-center gap-2 mt-4 pt-4" style={{ borderTop: '1px solid var(--divider)' }}>
-        <Bell size={14} color="#94A3B8" />
+        <Bell size={14} color="var(--fg-4)" />
         <p style={{ fontSize: 12, color: 'var(--fg-4)' }}>
           Email and in-app notifications. Coming soon.
         </p>

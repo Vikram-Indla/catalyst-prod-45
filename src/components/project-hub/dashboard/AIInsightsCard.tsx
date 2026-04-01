@@ -15,7 +15,7 @@ export function AIInsightsCard() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Sparkles size={16} color="#7c3aed" />
+          <Sparkles size={16} color="var(--cp-blue)" />
           <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 600, color: 'var(--fg-1)' }}>AI Insights</span>
         </div>
         <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-purple)', background: 'var(--cp-purple-wash)', borderRadius: 9999, padding: '2px 10px' }}>
@@ -28,7 +28,7 @@ export function AIInsightsCard() {
         {/* Completion Forecast */}
         <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-            <Target size={15} color="#7c3aed" />
+            <Target size={15} color="var(--cp-blue)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Completion Forecast</span>
           </div>
           <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 4 }}>Projected: Mar 22, 2026</div>
@@ -39,7 +39,7 @@ export function AIInsightsCard() {
         {/* Risk Alert */}
         <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-            <AlertTriangle size={15} color="#D97706" />
+            <AlertTriangle size={15} color="var(--sem-warning)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Risk Alert</span>
           </div>
           <div style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5 }}>
@@ -51,7 +51,7 @@ export function AIInsightsCard() {
         {/* Velocity */}
         <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-            <TrendingUp size={15} color="#0D9488" />
+            <TrendingUp size={15} color="var(--sem-success)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Velocity</span>
           </div>
           <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 4 }}>Current: 4.2 items/week</div>
@@ -62,7 +62,7 @@ export function AIInsightsCard() {
 
       {/* Suggestion Banner */}
       <div style={{ marginTop: 16, background: 'var(--cp-purple-wash)', borderLeft: '3px solid var(--cp-purple)', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-        <Lightbulb size={15} color="#7c3aed" style={{ flexShrink: 0, marginTop: 1 }} />
+        <Lightbulb size={15} color="var(--cp-blue)" style={{ flexShrink: 0, marginTop: 1 }} />
         <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>
           <strong>Suggestion:</strong> Reassign{' '}
           <a href="#" style={{ color: 'var(--cp-blue)', textDecoration: 'none', fontWeight: 500 }} onClick={e => e.preventDefault()}>DMA-12</a>

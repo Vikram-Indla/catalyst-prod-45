@@ -60,7 +60,7 @@ export function TeamDetailsTab({ team }: TeamDetailsTabProps) {
 
           {team.sprint_prefix && (
             <div>
-              <Label className="text-muted-foreground">Sprint Prefix</Label>
+              <Label className="text-muted-foreground">Release Prefix</Label>
               <p className="font-medium text-foreground">{team.sprint_prefix}</p>
             </div>
           )}

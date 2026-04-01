@@ -64,7 +64,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
         className="flex items-center justify-center cursor-grab active:cursor-grabbing"
         style={{ width: 20, height: 40, border: 'none', background: 'transparent', padding: 0 }}
       >
-        <GripVertical size={16} color="#94A3B8" />
+        <GripVertical size={16} color="var(--fg-4)" />
       </button>
 
       {/* Color dot */}
@@ -98,7 +98,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
           className="flex items-center justify-center rounded transition-colors hover:bg-[#E2E8F0]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
-          <MoreHorizontal size={16} color="#64748B" />
+          <MoreHorizontal size={16} color="var(--fg-3)" />
         </button>
 
         {menuOpen && (

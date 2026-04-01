@@ -59,7 +59,7 @@ export default function MilestoneConfigModal({ open, onClose, projectId }: Props
               <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 2 }}>Select which statuses appear. Super admin only.</div>
             </div>
             <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <X size={16} color="#94A3B8" />
+              <X size={16} color="var(--fg-4)" />
             </button>
           </div>
 

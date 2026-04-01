@@ -308,7 +308,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
             </div>
           )}
           {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
-            <div className="p-3 rounded-lg mb-3" style={{ background: '#F5F3FF', border: '1px solid #DDD6FE' }}>
+            <div className="p-3 rounded-lg mb-3" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 initiative
               </div>

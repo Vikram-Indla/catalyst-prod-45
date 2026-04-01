@@ -101,7 +101,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
                 className="flex items-center justify-center rounded-full transition-colors hover:bg-[#FEE2E2]"
                 style={{ width: 18, height: 18, border: 'none', background: 'transparent', cursor: 'pointer', marginLeft: 2 }}
               >
-                <X size={12} color="#94A3B8" />
+                <X size={12} color="var(--fg-4)" />
               </button>
             </div>
           ))}
@@ -118,8 +118,8 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
             placeholder="Label name..."
             disabled={atMax}
             style={{ ...inputStyle, opacity: atMax ? 0.5 : 1 }}
-            onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
-            onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+            onBlur={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }}
           />
           <button
             onClick={handleAdd}
@@ -130,7 +130,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
               color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
               background: 'transparent', cursor: !newName.trim() || atMax ? 'default' : 'pointer',
             }}
-            onMouseEnter={e => { if (newName.trim() && !atMax) e.currentTarget.style.background = '#F8FAFC'; }}
+            onMouseEnter={e => { if (newName.trim() && !atMax) e.currentTarget.style.background = 'var(--bg-1)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             Add

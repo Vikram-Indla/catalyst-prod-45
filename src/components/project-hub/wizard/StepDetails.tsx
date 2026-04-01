@@ -125,8 +125,8 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
             {keyStatus === 'checking' && (
               <div className="animate-spin rounded-full" style={{ width: 14, height: 14, border: '2px solid var(--divider)', borderTopColor: 'var(--cp-blue)' }} />
             )}
-            {keyStatus === 'available' && <Check size={16} color="#16A34A" strokeWidth={2.5} />}
-            {keyStatus === 'taken' && <X size={16} color="#EF4444" strokeWidth={2.5} />}
+            {keyStatus === 'available' && <Check size={16} color="var(--sem-success)" strokeWidth={2.5} />}
+            {keyStatus === 'taken' && <X size={16} color="var(--sem-danger)" strokeWidth={2.5} />}
           </div>
         </div>
         {keyStatus === 'taken' && (

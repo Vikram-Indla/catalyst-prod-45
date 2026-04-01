@@ -145,7 +145,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
                   <span className="rounded-full mr-1.5" style={{ width: 6, height: 6, background: s.color, display: 'inline-block' }} />
                   {s.name}
                 </span>
-                {i < workflowToShow.length - 1 && <ArrowRight size={12} color="#CBD5E1" />}
+                {i < workflowToShow.length - 1 && <ArrowRight size={12} color="var(--divider)" />}
               </div>
             ))}
           </div>
