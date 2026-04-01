@@ -78,7 +78,7 @@ export function ThemesPage() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '8px 16px', borderRadius: 8, border: 'none',
-              background: 'var(--cp-blue)', color: '#fff',
+              background: 'var(--cp-blue)', color: 'var(--bg-app)',
               fontSize: 13, fontWeight: 600, cursor: 'pointer',
             }}
           >
@@ -100,7 +100,7 @@ export function ThemesPage() {
               padding: '6px 16px', borderRadius: 9999, border: 'none',
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
               background: isActive ? 'var(--cp-blue)' : 'var(--bg-1)',
-              color: isActive ? '#fff' : 'var(--fg-3)',
+              color: isActive ? 'var(--bg-app)' : 'var(--fg-3)',
               transition: 'background 150ms, color 150ms',
             }}>
               {tab} ({tabCounts[tab] ?? 0})

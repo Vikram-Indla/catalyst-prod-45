@@ -42,7 +42,7 @@ export function ConfirmDialog({
 
       {/* Content */}
       <div style={{
-        position: 'relative', background: 'var(--wh-surface, #fff)',
+        position: 'relative', background: 'var(--cp-float)',
         borderRadius: 'var(--wh-radius-xl, 12px)', boxShadow: 'var(--wh-shadow-xl)',
         width: '100%', maxWidth: 420, padding: 24,
         animation: 'wh-modal-in 200ms ease-out',
@@ -50,7 +50,7 @@ export function ConfirmDialog({
         <button onClick={onClose} style={{
           position: 'absolute', top: 16, right: 16,
           background: 'none', border: 'none', cursor: 'pointer', padding: 4,
-          color: 'var(--wh-text-tertiary, #94a3b8)',
+          color: 'var(--fg-4)',
         }}>
           <X size={18} />
         </button>
@@ -78,7 +78,7 @@ export function ConfirmDialog({
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onClose} style={{
             height: 36, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
-            border: '1px solid var(--wh-border, #e2e8f0)', background: 'var(--wh-surface, #fff)',
+            border: '1px solid var(--wh-border, #e2e8f0)', background: 'var(--cp-float)',
             fontSize: 13, fontWeight: 500, color: 'var(--wh-text-primary, #0f172a)',
             cursor: 'pointer',
           }}>
