@@ -367,6 +367,7 @@ export function CatalystShell() {
   return (
     <CatalystContextProvider>
       <CatalystShellContent />
+      <GlobalSearch />
     </CatalystContextProvider>
   );
 }
