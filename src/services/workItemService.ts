@@ -300,6 +300,34 @@ export async function updateWorkItem(
 
 // ─── DELETE ────────────────────────────────────────────────
 export async function deleteWorkItem(id: string) {
+  // ── Jira write-back enqueue BEFORE delete (non-blocking) ──
+  try {
+    const { data: item } = await supabase
+      .from('ph_work_items')
+      .select('id, jira_key')
+      .eq('id', id)
+      .maybeSingle() as any;
+
+    const { data: connection } = await supabase
+      .from('jira_connections')
+      .select('id')
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (connection && item?.jira_key) {
+      await (supabase
+        .from('jira_write_back_queue') as any)
+        .insert({
+          ph_work_item_id: id,
+          operation: 'delete',
+          operation_payload: { jira_key: item.jira_key },
+          status: 'pending',
+        });
+    }
+  } catch (jiraErr) {
+    console.error('Jira delete enqueue failed:', jiraErr);
+  }
+
   const { error } = await supabase
     .from('ph_work_items')
     .delete()
