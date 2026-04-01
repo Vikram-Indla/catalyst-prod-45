@@ -4,17 +4,18 @@
  * Navigation stack for nested drill-down with breadcrumb
  */
 
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, createContext, useContext } from 'react';
 import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft, Paperclip, FileText, Image, Download, File, ListTree, Loader2, GitPullRequest } from 'lucide-react';
 import { TransitionsTab } from './TransitionsTab';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { supabase } from '@/integrations/supabase/client';
+import { useIsDark } from '@/components/strategy/themes/useIsDark';
 import type { WorkItem } from '@/hooks/useForYouData';
 
-// Design tokens (ring-fenced)
-const T = {
+// Design tokens — light mode
+const TL = {
   ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
   surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
@@ -25,6 +26,23 @@ const T = {
   warning: '#D97706', warningText: '#AF6003', warningBg: '#FFFBEB',
   danger: '#DC2626', dangerText: '#D92525', dangerBg: '#FEF2F2',
 };
+
+// Design tokens — dark mode (NOCTURNE)
+const TD = {
+  ink: '#F5F3F0', inkSecondary: 'rgba(248,244,240,0.82)', inkTertiary: 'rgba(248,244,240,0.60)',
+  inkMuted: 'rgba(248,244,240,0.45)', inkMutedStrong: 'rgba(248,244,240,0.50)',
+  surface: '#232019', surfaceSecondary: '#1A1714', surfaceTertiary: 'rgba(255,255,255,0.04)',
+  border: 'rgba(255,255,255,0.10)', borderStrong: 'rgba(255,255,255,0.18)',
+  primary: '#60A5FA', primaryHover: '#93C5FD', primaryBg: 'rgba(59,130,246,0.12)',
+  teal: '#5EEAD4', tealText: '#5EEAD4', tealBg: 'rgba(13,148,136,0.15)',
+  success: '#86EFAC', successText: '#86EFAC', successBg: 'rgba(22,163,74,0.15)',
+  warning: '#FCD34D', warningText: '#FCD34D', warningBg: 'rgba(217,119,6,0.15)',
+  danger: '#FCA5A5', dangerText: '#FCA5A5', dangerBg: 'rgba(220,38,38,0.15)',
+};
+
+type Tokens = typeof TL;
+const TokenCtx = createContext<Tokens>(TL);
+const useT = () => useContext(TokenCtx);
 
 
 const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
