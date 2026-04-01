@@ -2,36 +2,41 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { SearchResult, RecentSearchEntry, ActiveFilters } from '@/types/global-search';
 
-// Tables not yet in generated types — use untyped client until migration runs
-const db = supabase as any;
+const SEARCH_SELECT = 'id, issue_key, summary, project_name, issue_type, jira_updated_at, jira_created_at, assignee_display_name';
+
+function mapIssueToSearchResult(row: any): SearchResult {
+  return {
+    id: row.id,
+    item_key: row.issue_key || 'UNKNOWN',
+    title: row.summary || '(no title)',
+    hub: 'ProjectHub',
+    project_name: row.project_name || null,
+    item_type: (row.issue_type || 'task').toLowerCase().replace(/\s+/g, '_') as any,
+    assignee_name: row.assignee_display_name || null,
+    viewed_at: row.jira_updated_at || row.jira_created_at || new Date().toISOString(),
+  };
+}
 
 export function useRecentItems() {
   return useQuery({
     queryKey: ['global-search-recents'],
     queryFn: async () => {
-      const { data, error } = await db
-        .from('recently_viewed_items')
-        .select('*')
-        .order('viewed_at', { ascending: false })
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select(SEARCH_SELECT)
+        .order('jira_updated_at', { ascending: false })
         .limit(8);
       if (error) throw error;
-      return (data ?? []) as SearchResult[];
+      return (data ?? []).map(mapIssueToSearchResult);
     },
   });
 }
 
 export function useRecentSearches() {
+  // No search history table yet — return empty
   return useQuery({
     queryKey: ['global-search-history'],
-    queryFn: async () => {
-      const { data, error } = await db
-        .from('global_search_history')
-        .select('id, query, searched_at')
-        .order('searched_at', { ascending: false })
-        .limit(3);
-      if (error) throw error;
-      return (data ?? []) as RecentSearchEntry[];
-    },
+    queryFn: async () => [] as RecentSearchEntry[],
   });
 }
 
@@ -40,17 +45,16 @@ export function useSearchResults(query: string, filters: ActiveFilters) {
     queryKey: ['global-search-results', query, filters],
     queryFn: async () => {
       if (!query || query.length < 2) return [];
-      let q = db
-        .from('recently_viewed_items')
-        .select('*')
-        .or(`item_key.ilike.%${query}%,title.ilike.%${query}%`)
-        .order('viewed_at', { ascending: false })
+      let q = supabase
+        .from('ph_issues')
+        .select(SEARCH_SELECT)
+        .or(`issue_key.ilike.%${query}%,summary.ilike.%${query}%`)
+        .order('jira_updated_at', { ascending: false })
         .limit(20);
-      if (filters.hub) q = q.eq('hub', filters.hub);
-      if (filters.type) q = q.eq('item_type', filters.type);
+      if (filters.type) q = q.ilike('issue_type', filters.type.replace('_', ' '));
       const { data, error } = await q;
       if (error) throw error;
-      return (data ?? []) as SearchResult[];
+      return (data ?? []).map(mapIssueToSearchResult);
     },
     enabled: query.length >= 2,
     staleTime: 30000,
@@ -60,22 +64,8 @@ export function useSearchResults(query: string, filters: ActiveFilters) {
 export function useTrackView() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (item: SearchResult) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      await db.from('recently_viewed_items').upsert(
-        {
-          user_id: user.id,
-          item_key: item.item_key,
-          item_id: item.id,
-          item_type: item.item_type,
-          title: item.title,
-          hub: item.hub,
-          project_name: item.project_name,
-          viewed_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id,item_key' }
-      );
+    mutationFn: async (_item: SearchResult) => {
+      // Track view is a no-op until recently_viewed_items table exists
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['global-search-recents'] }),
   });
@@ -83,13 +73,8 @@ export function useTrackView() {
 
 export function useSaveSearch() {
   return useMutation({
-    mutationFn: async (query: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      await db.from('global_search_history').insert({
-        user_id: user.id,
-        query,
-      });
+    mutationFn: async (_query: string) => {
+      // Save search is a no-op until global_search_history table exists
     },
   });
 }

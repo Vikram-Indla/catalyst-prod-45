@@ -5,6 +5,7 @@ import {
   Filter, FileEdit, Users2, ChevronRight, X
 } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import {
   useRecentItems, useRecentSearches, useSearchResults,
@@ -175,28 +176,15 @@ export function GlobalSearch() {
     close();
   }, [debouncedQuery, navigate, close, trackView, saveSearch]);
 
-  const toggleFilter = useCallback((key: keyof ActiveFilters) => {
-    setFilters(f => ({ ...f, [key]: f[key] ? null : f[key] }));
-  }, []);
+  const chipStyle = (active: boolean) => ({
+    height: 28, padding: '0 10px', border: `1px solid ${active ? '#93C5FD' : '#E2E8F0'}`,
+    borderRadius: 6, fontSize: 12, color: active ? '#1D4ED8' : '#334155',
+    background: active ? '#EFF6FF' : 'white', cursor: 'pointer', gap: 5,
+    flexShrink: 0 as const, display: 'flex' as const, alignItems: 'center' as const,
+  });
 
-  const filterChip = (label: string, key: keyof ActiveFilters) => {
-    const active = !!filters[key];
-    return (
-      <button
-        key={key}
-        onClick={() => setFilters(f => ({ ...f, [key]: null }))}
-        style={{
-          height: 28, padding: '0 10px', border: `1px solid ${active ? '#93C5FD' : '#E2E8F0'}`,
-          borderRadius: 6, fontSize: 12, color: active ? '#1D4ED8' : '#334155',
-          background: active ? '#EFF6FF' : 'white', cursor: 'pointer', gap: 5,
-          flexShrink: 0, display: 'flex', alignItems: 'center',
-        }}
-      >
-        {filters[key] ? String(filters[key]) : label}
-        <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
-      </button>
-    );
-  };
+  const HUB_OPTIONS = ['All Hubs', 'StrategyHub', 'ProductHub', 'ProjectHub', 'ReleaseHub', 'TestHub', 'IncidentHub', 'TaskHub', 'PlanHub'];
+  const TYPE_OPTIONS = ['All Types', 'bug', 'task', 'story', 'epic', 'incident', 'new_feature', 'improvement'];
 
   const recents = recentItems.data ?? [];
   const searches = recentSearches.data ?? [];
@@ -258,10 +246,51 @@ export function GlobalSearch() {
           }}>
             <SlidersHorizontal size={14} color="#64748B" />
           </button>
-          {filterChip('Hub', 'hub')}
-          {filterChip('Project', 'project')}
-          {filterChip('Assignee', 'assignee')}
-          {filterChip('Type', 'type')}
+          {/* Hub filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button style={chipStyle(!!filters.hub)}>
+                {filters.hub ?? 'Hub'}
+                <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent style={{ backgroundColor: '#ffffff', zIndex: 9999 }}>
+              {HUB_OPTIONS.map(h => (
+                <DropdownMenuItem key={h} onClick={() => setFilters(f => ({ ...f, hub: h === 'All Hubs' ? null : h as any }))}>
+                  {h}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Project filter (clear only) */}
+          <button style={chipStyle(!!filters.project)} onClick={() => setFilters(f => ({ ...f, project: null }))}>
+            {filters.project ?? 'Project'}
+            <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
+          </button>
+
+          {/* Assignee filter (clear only) */}
+          <button style={chipStyle(!!filters.assignee)} onClick={() => setFilters(f => ({ ...f, assignee: null }))}>
+            {filters.assignee ?? 'Assignee'}
+            <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
+          </button>
+
+          {/* Type filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button style={chipStyle(!!filters.type)}>
+                {filters.type?.replace('_', ' ') ?? 'Type'}
+                <ChevronRight size={10} style={{ transform: 'rotate(90deg)' }} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent style={{ backgroundColor: '#ffffff', zIndex: 9999 }}>
+              {TYPE_OPTIONS.map(t => (
+                <DropdownMenuItem key={t} onClick={() => setFilters(f => ({ ...f, type: t === 'All Types' ? null : t as any }))}>
+                  {t === 'All Types' ? t : t.replace('_', ' ')}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* LAYER 3 — Scroll body */}
@@ -372,14 +401,15 @@ export function GlobalSearch() {
           <ChevronRight size={14} color="#94A3B8" style={{ marginRight: 4 }} />
           <div style={{ width: 1, height: 18, background: '#E2E8F0', margin: '0 4px' }} />
           {[
-            { label: 'Boards', icon: LayoutGrid },
-            { label: 'Hubs', icon: Home },
-            { label: 'Filters', icon: Filter },
-            { label: 'Projects', icon: FileEdit },
-            { label: 'Teams', icon: Users2 },
+            { label: 'Boards', icon: LayoutGrid, path: '/project-hub' },
+            { label: 'Hubs', icon: Home, path: '/' },
+            { label: 'Filters', icon: Filter, path: '/project-hub' },
+            { label: 'Projects', icon: FileEdit, path: '/project-hub' },
+            { label: 'Teams', icon: Users2, path: '/' },
           ].map(tab => (
             <button
               key={tab.label}
+              onClick={() => { navigate(tab.path); close(); }}
               style={{
                 height: 40, padding: '0 11px', fontSize: 12, color: '#6B778C',
                 background: 'none', border: 'none', borderBottom: '2px solid transparent',
