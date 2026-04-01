@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { formatDistanceToNow } from "date-fns";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Settings, Map, RefreshCw, Link as LinkIcon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminGuard } from "@/components/admin/AdminGuard";
 import { ConnectionFormDialog } from "@/components/admin/jira/ConnectionFormDialog";
 import { FieldMappingDialog } from "@/components/admin/jira/FieldMappingDialog";
@@ -22,6 +21,7 @@ import { ConflictResolutionDialog } from "@/components/admin/jira/ConflictResolu
 import { SyncHealthDashboard } from "@/components/admin/jira/SyncHealthDashboard";
 import { JiraSetupGuide } from "@/components/admin/jira/JiraSetupGuide";
 import { JiraIntegrationHelp } from "@/components/admin/jira/JiraIntegrationHelp";
+import { SyncEventsTab, WriteBackQueueTab, DeletedItemsTab } from "@/pages/admin/JiraSyncAuditLog";
 
 interface JiraConnection {
   id: string;
@@ -37,7 +37,6 @@ interface JiraConnection {
 
 export default function JiraIntegrationConfig() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const [selectedConnection, setSelectedConnection] = useState<string | null>(null);
   const [showConnectionDialog, setShowConnectionDialog] = useState(false);
   const [showFieldMapping, setShowFieldMapping] = useState(false);
@@ -59,7 +58,6 @@ export default function JiraIntegrationConfig() {
         .from("jira_connections")
         .select("*")
         .order("created_at", { ascending: false });
-      
       if (error) throw error;
       return data as JiraConnection[];
     },
@@ -71,7 +69,6 @@ export default function JiraIntegrationConfig() {
         .from("jira_connections")
         .delete()
         .eq("id", connectionId);
-      
       if (error) throw error;
     },
     onSuccess: () => {
@@ -116,17 +113,6 @@ export default function JiraIntegrationConfig() {
     },
   });
 
-  const { data: recentLogs } = useQuery({
-    queryKey: ['jira-sync-recent'],
-    queryFn: async () => {
-      const { data } = await (supabase.from('jira_sync_logs') as any)
-        .select('id, event_type, jira_key, status, created_at')
-        .order('created_at', { ascending: false })
-        .limit(5);
-      return (data ?? []) as any[];
-    },
-  });
-
   const handleSync = (connectionId: string) => {
     setSyncingConnection(connectionId);
     syncMutation.mutate(connectionId);
@@ -134,15 +120,13 @@ export default function JiraIntegrationConfig() {
 
   const getStatusBadge = (status: string | null) => {
     if (!status) return <Badge variant="outline">Not Tested</Badge>;
-    
     const variants = {
       success: "default",
       failed: "destructive",
       pending: "outline",
     } as const;
-    
     return (
-      <Badge 
+      <Badge
         variant={variants[status as keyof typeof variants] || "outline"}
         className={status === 'success' ? 'bg-brand-primary hover:bg-brand-primary-hover text-white' : ''}
       >
@@ -153,7 +137,7 @@ export default function JiraIntegrationConfig() {
 
   return (
     <AdminGuard>
-      <div className="h-full w-full flex flex-col bg-background overflow-hidden">
+      <div className="h-full w-full flex flex-col bg-background dark:bg-[#1A1714] overflow-hidden">
         <div className="h-[72px] border-b bg-card flex-shrink-0">
           <div className="h-full px-6 flex items-center justify-between">
             <div className="min-w-0">
@@ -174,276 +158,164 @@ export default function JiraIntegrationConfig() {
 
         <div className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <div>
-                  <CardTitle>Jira Connections</CardTitle>
-                  <CardDescription>
-                    Manage connections to Jira Cloud, Server, and Data Center instances
-                  </CardDescription>
-                </div>
-                <Button 
-                  className="bg-brand-primary hover:bg-brand-primary-hover text-white"
-                  onClick={() => {
-                    setEditingConnection(null);
-                    setShowConnectionDialog(true);
-                  }}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Connection
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="flex justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
-                  </div>
-                ) : connections && connections.length > 0 ? (
-                  <div className="space-y-3">
-                    {connections.map((conn) => (
-                      <div
-                        key={conn.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:border-brand-primary transition-colors cursor-pointer"
-                        onClick={() => setSelectedConnection(conn.id)}
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3">
-                            <LinkIcon className="w-4 h-4 text-brand-primary" />
-                            <div>
-                              <h3 className="font-medium">{conn.name}</h3>
-                              <p className="text-sm text-muted-foreground">{conn.jira_url}</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="text-right text-sm">
-                            <div className="text-muted-foreground">
-                              {conn.instance_type} · {conn.auth_method}
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-1">
-                              {conn.last_sync_at 
-                                ? `Last synced: ${new Date(conn.last_sync_at).toLocaleString()}`
-                                : 'Never synced'}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                            <Switch
-                              checked={conn.is_active}
-                              onCheckedChange={(val) => toggleMutation.mutate({ id: conn.id, is_active: val })}
-                            />
-                            <span className="text-xs text-muted-foreground">Active</span>
-                          </div>
-                          {getStatusBadge(conn.last_test_status)}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedConnection(conn.id);
-                              setShowSyncSettings(true);
-                            }}
-                            title="Sync Settings"
-                          >
-                            <Settings className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedConnection(conn.id);
-                              setShowFieldMapping(true);
-                            }}
-                            title="Field Mappings"
-                          >
-                            <Map className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedConnection(conn.id);
-                              setShowProjectMapping(true);
-                            }}
-                            title="Project Mappings"
-                          >
-                            <LinkIcon className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedConnection(conn.id);
-                              setShowSyncLogs(true);
-                            }}
-                            title="View Logs"
-                          >
-                            📋
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedConnection(conn.id);
-                              setShowWebhookSetup(true);
-                            }}
-                            title="Webhook Setup"
-                          >
-                            🔗
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedConnection(conn.id);
-                              setShowStatusMapping(true);
-                            }}
-                            title="Status Mapping"
-                          >
-                            🔄
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedConnection(conn.id);
-                              setShowHistoricalMigration(true);
-                            }}
-                            title="Historical Migration"
-                          >
-                            📥
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedConnection(conn.id);
-                              setShowConflictResolution(true);
-                            }}
-                            title="Resolve Conflicts"
-                          >
-                            ⚠️
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSync(conn.id);
-                            }}
-                            disabled={syncingConnection === conn.id}
-                          >
-                            {syncingConnection === conn.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <RefreshCw className="w-4 h-4" />
-                            )}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (confirm("Delete this connection?")) {
-                                deleteMutation.mutate(conn.id);
-                              }
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
-                        </div>
+            <Tabs defaultValue="connections">
+              <TabsList>
+                <TabsTrigger value="connections">Connections</TabsTrigger>
+                <TabsTrigger value="events">Sync Events</TabsTrigger>
+                <TabsTrigger value="queue">Write-back Queue</TabsTrigger>
+                <TabsTrigger value="deleted">Deleted Items</TabsTrigger>
+              </TabsList>
+
+              {/* ── TAB 1: Connections ── */}
+              <TabsContent value="connections" className="mt-4 space-y-6">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                    <div>
+                      <CardTitle>Jira Connections</CardTitle>
+                      <CardDescription>
+                        Manage connections to Jira Cloud, Server, and Data Center instances
+                      </CardDescription>
+                    </div>
+                    <Button
+                      className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+                      onClick={() => {
+                        setEditingConnection(null);
+                        setShowConnectionDialog(true);
+                      }}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Connection
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoading ? (
+                      <div className="flex justify-center py-8">
+                        <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <LinkIcon className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="font-medium mb-2">No connections configured</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Add your first Jira connection to start synchronizing work items
-                    </p>
-                  </div>
+                    ) : connections && connections.length > 0 ? (
+                      <div className="space-y-3">
+                        {connections.map((conn) => (
+                          <div
+                            key={conn.id}
+                            className="flex items-center justify-between p-4 border rounded-lg hover:border-brand-primary transition-colors cursor-pointer"
+                            onClick={() => setSelectedConnection(conn.id)}
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3">
+                                <LinkIcon className="w-4 h-4 text-brand-primary" />
+                                <div>
+                                  <h3 className="font-medium">{conn.name}</h3>
+                                  <p className="text-sm text-muted-foreground">{conn.jira_url}</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="text-right text-sm">
+                                <div className="text-muted-foreground">
+                                  {conn.instance_type} · {conn.auth_method}
+                                </div>
+                                <div className="text-xs text-muted-foreground mt-1">
+                                  {conn.last_sync_at
+                                    ? `Last synced: ${new Date(conn.last_sync_at).toLocaleString()}`
+                                    : 'Never synced'}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                                <Switch
+                                  checked={conn.is_active}
+                                  onCheckedChange={(val) => toggleMutation.mutate({ id: conn.id, is_active: val })}
+                                />
+                                <span className="text-xs text-muted-foreground">Active</span>
+                              </div>
+                              {getStatusBadge(conn.last_test_status)}
+                              <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setSelectedConnection(conn.id); setShowSyncSettings(true); }} title="Sync Settings">
+                                <Settings className="w-4 h-4" />
+                              </Button>
+                              <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setSelectedConnection(conn.id); setShowFieldMapping(true); }} title="Field Mappings">
+                                <Map className="w-4 h-4" />
+                              </Button>
+                              <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setSelectedConnection(conn.id); setShowProjectMapping(true); }} title="Project Mappings">
+                                <LinkIcon className="w-4 h-4" />
+                              </Button>
+                              <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setSelectedConnection(conn.id); setShowSyncLogs(true); }} title="View Logs">📋</Button>
+                              <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setSelectedConnection(conn.id); setShowWebhookSetup(true); }} title="Webhook Setup">🔗</Button>
+                              <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setSelectedConnection(conn.id); setShowStatusMapping(true); }} title="Status Mapping">🔄</Button>
+                              <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setSelectedConnection(conn.id); setShowHistoricalMigration(true); }} title="Historical Migration">📥</Button>
+                              <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setSelectedConnection(conn.id); setShowConflictResolution(true); }} title="Resolve Conflicts">⚠️</Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => { e.stopPropagation(); handleSync(conn.id); }}
+                                disabled={syncingConnection === conn.id}
+                              >
+                                {syncingConnection === conn.id ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <RefreshCw className="w-4 h-4" />
+                                )}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (confirm("Delete this connection?")) {
+                                    deleteMutation.mutate(conn.id);
+                                  }
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <LinkIcon className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                        <h3 className="font-medium mb-2">No connections configured</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Add your first Jira connection to start synchronizing work items
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {!connections || connections.length === 0 ? (
+                  <JiraSetupGuide hasConnections={false} />
+                ) : null}
+
+                {selectedConnection && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Sync Health & Metrics</CardTitle>
+                      <CardDescription>
+                        Real-time synchronization health and performance metrics
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <SyncHealthDashboard connectionId={selectedConnection} />
+                    </CardContent>
+                  </Card>
                 )}
-              </CardContent>
-            </Card>
+              </TabsContent>
 
-            {/* Recent Sync Activity */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Last Sync Activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {(recentLogs ?? []).map((log: any) => {
-                    const statusColors: Record<string, { bg: string; text: string }> = {
-                      success: { bg: '#E3FCEF', text: '#006644' },
-                      completed: { bg: '#E3FCEF', text: '#006644' },
-                      error: { bg: '#DFE1E6', text: '#253858' },
-                      failed: { bg: '#DFE1E6', text: '#253858' },
-                      skipped: { bg: '#DFE1E6', text: '#253858' },
-                      abandoned: { bg: '#DFE1E6', text: '#253858' },
-                      pending: { bg: '#DEEBFF', text: '#0747A6' },
-                      processing: { bg: '#DEEBFF', text: '#0747A6' },
-                      approved: { bg: '#DEEBFF', text: '#0747A6' },
-                    };
-                    const sc = statusColors[log.status] || statusColors.skipped;
-                    return (
-                      <div key={log.id} className="flex items-center gap-2 text-sm">
-                        <span
-                          className="inline-block whitespace-nowrap"
-                          style={{
-                            height: 20, lineHeight: '20px', fontSize: 11, fontWeight: 700,
-                            textTransform: 'uppercase', letterSpacing: '0.05em',
-                            borderRadius: 3, padding: '0 8px', background: sc.bg, color: sc.text,
-                          }}
-                        >
-                          {log.status}
-                        </span>
-                        <span className="text-foreground">{log.event_type}</span>
-                        <span className="text-muted-foreground">·</span>
-                        <span className="text-muted-foreground font-medium">{log.jira_key || '—'}</span>
-                        <span className="ml-auto text-xs text-muted-foreground">
-                          {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
-                        </span>
-                      </div>
-                    );
-                  })}
-                  {(recentLogs ?? []).length === 0 && (
-                    <p className="text-sm text-muted-foreground text-center py-4">No sync events yet</p>
-                  )}
-                </div>
-                <button
-                  onClick={() => navigate('/admin/jira-sync-log')}
-                  className="mt-3 text-[13px] text-[#2563EB] underline hover:text-[#1D4ED8] transition-colors"
-                >
-                  View Full Audit Log →
-                </button>
-              </CardContent>
-            </Card>
+              {/* ── TAB 2: Sync Events ── */}
+              <TabsContent value="events" className="mt-4">
+                <SyncEventsTab />
+              </TabsContent>
 
-            {!connections || connections.length === 0 ? (
-              <JiraSetupGuide hasConnections={false} />
-            ) : null}
+              {/* ── TAB 3: Write-back Queue ── */}
+              <TabsContent value="queue" className="mt-4">
+                <WriteBackQueueTab />
+              </TabsContent>
 
-            {selectedConnection && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Sync Health & Metrics</CardTitle>
-                  <CardDescription>
-                    Real-time synchronization health and performance metrics
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <SyncHealthDashboard connectionId={selectedConnection} />
-                </CardContent>
-              </Card>
-            )}
+              {/* ── TAB 4: Deleted Items ── */}
+              <TabsContent value="deleted" className="mt-4">
+                <DeletedItemsTab />
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
 
@@ -459,46 +331,14 @@ export default function JiraIntegrationConfig() {
 
         {selectedConnection && (
           <>
-            <FieldMappingDialog
-              open={showFieldMapping}
-              onOpenChange={setShowFieldMapping}
-              connectionId={selectedConnection}
-            />
-            <ProjectMappingDialog
-              open={showProjectMapping}
-              onOpenChange={setShowProjectMapping}
-              connectionId={selectedConnection}
-            />
-            <SyncLogsViewer
-              open={showSyncLogs}
-              onOpenChange={setShowSyncLogs}
-              connectionId={selectedConnection}
-            />
-            <SyncSettingsDialog
-              open={showSyncSettings}
-              onOpenChange={setShowSyncSettings}
-              connectionId={selectedConnection}
-            />
-            <WebhookSetupDialog
-              open={showWebhookSetup}
-              onOpenChange={setShowWebhookSetup}
-              connectionId={selectedConnection}
-            />
-            <StatusMappingDialog
-              open={showStatusMapping}
-              onOpenChange={setShowStatusMapping}
-              connectionId={selectedConnection}
-            />
-            <HistoricalMigrationDialog
-              open={showHistoricalMigration}
-              onOpenChange={setShowHistoricalMigration}
-              connectionId={selectedConnection}
-            />
-            <ConflictResolutionDialog
-              open={showConflictResolution}
-              onOpenChange={setShowConflictResolution}
-              connectionId={selectedConnection}
-            />
+            <FieldMappingDialog open={showFieldMapping} onOpenChange={setShowFieldMapping} connectionId={selectedConnection} />
+            <ProjectMappingDialog open={showProjectMapping} onOpenChange={setShowProjectMapping} connectionId={selectedConnection} />
+            <SyncLogsViewer open={showSyncLogs} onOpenChange={setShowSyncLogs} connectionId={selectedConnection} />
+            <SyncSettingsDialog open={showSyncSettings} onOpenChange={setShowSyncSettings} connectionId={selectedConnection} />
+            <WebhookSetupDialog open={showWebhookSetup} onOpenChange={setShowWebhookSetup} connectionId={selectedConnection} />
+            <StatusMappingDialog open={showStatusMapping} onOpenChange={setShowStatusMapping} connectionId={selectedConnection} />
+            <HistoricalMigrationDialog open={showHistoricalMigration} onOpenChange={setShowHistoricalMigration} connectionId={selectedConnection} />
+            <ConflictResolutionDialog open={showConflictResolution} onOpenChange={setShowConflictResolution} connectionId={selectedConnection} />
           </>
         )}
 

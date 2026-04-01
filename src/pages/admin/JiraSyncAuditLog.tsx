@@ -114,27 +114,22 @@ function TruncatedCell({ text, max = 40 }: { text: string | null; max?: number }
   );
 }
 
-/* ── Main Component ─────────────────────────────────────── */
-export default function JiraSyncAuditLog() {
-  const queryClient = useQueryClient();
+/* ══════════════════════════════════════════════════════════
+   EXPORTED TAB COMPONENTS — used by JiraIntegrationConfig
+   ══════════════════════════════════════════════════════════ */
 
-  // Per-tab pagination
-  const [page1, setPage1] = useState(0);
-  const [page2, setPage2] = useState(0);
-  const [page3, setPage3] = useState(0);
-
-  // Tab 1 filters
+export function SyncEventsTab() {
+  const [page, setPage] = useState(0);
   const [statusFilter, setStatusFilter] = useState('all');
   const [keyFilter, setKeyFilter] = useState('');
 
-  /* ── Tab 1: Sync Events ─── */
-  const { data: syncLogs, isLoading: l1, isError: e1, refetch: r1 } = useQuery({
-    queryKey: ['audit-sync-logs', page1],
+  const { data: syncLogs, isLoading, isError } = useQuery({
+    queryKey: ['audit-sync-logs', page],
     queryFn: async () => {
       const { data } = await (supabase.from('jira_sync_logs') as any)
         .select('id, event_type, jira_key, status, items_created, items_updated, items_deleted, items_failed, sync_duration_ms, error_message, created_at')
         .order('created_at', { ascending: false })
-        .range(page1 * PAGE_SIZE, page1 * PAGE_SIZE + PAGE_SIZE - 1);
+        .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
       return (data ?? []) as any[];
     },
   });
@@ -145,14 +140,73 @@ export default function JiraSyncAuditLog() {
     return true;
   });
 
-  /* ── Tab 2: Write-back Queue ─── */
-  const { data: queueItems, isLoading: l2, isError: e2, refetch: r2 } = useQuery({
-    queryKey: ['audit-queue', page2],
+  return (
+    <TooltipProvider>
+      <div className="bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[#2C2820] rounded-md overflow-hidden">
+        <div className="flex items-center gap-3 p-3 border-b border-[#E2E8F0] dark:border-[#2C2820]">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[140px] h-9 text-xs">
+              <SelectValue placeholder="All statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="success">Success</SelectItem>
+              <SelectItem value="error">Error</SelectItem>
+              <SelectItem value="skipped">Skipped</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input
+            placeholder="Filter by Jira Key"
+            value={keyFilter}
+            onChange={(e) => setKeyFilter(e.target.value)}
+            className="h-9 w-48 text-xs"
+          />
+        </div>
+
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b border-[#E2E8F0] dark:border-[#2C2820]">
+              {['Time', 'Event Type', 'Jira Key', 'Status', 'Items', 'Duration', 'Error'].map((h) => (
+                <th key={h} className={thClass} style={thStyle}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          {isLoading ? <SkeletonRows cols={7} /> : isError ? <ErrorRow cols={7} /> : (
+            <tbody>
+              {filteredLogs.map((log: any) => {
+                const items = (log.items_created ?? 0) + (log.items_updated ?? 0) + (log.items_deleted ?? 0);
+                return (
+                  <tr key={log.id} className="border-b border-[#E2E8F0] dark:border-[#2C2820]" style={{ height: 36, maxHeight: 36 }}>
+                    <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}</td>
+                    <td className={tdClass} style={tdStyle}>{log.event_type}</td>
+                    <td className={tdClass} style={tdStyle}>{log.jira_key || '—'}</td>
+                    <td style={tdStyle}><Lozenge status={log.status} /></td>
+                    <td className={tdClass} style={tdStyle}>{items}</td>
+                    <td className={tdClass} style={tdStyle}>{log.sync_duration_ms != null ? `${log.sync_duration_ms}ms` : '—'}</td>
+                    <td style={tdStyle}><TruncatedCell text={log.error_message} /></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          )}
+        </table>
+        {syncLogs && <PaginationBar page={page} setPage={setPage} count={syncLogs.length} />}
+      </div>
+    </TooltipProvider>
+  );
+}
+
+export function WriteBackQueueTab() {
+  const queryClient = useQueryClient();
+  const [page, setPage] = useState(0);
+
+  const { data: queueItems, isLoading, isError } = useQuery({
+    queryKey: ['audit-queue', page],
     queryFn: async () => {
       const { data } = await (supabase.from('jira_write_back_queue') as any)
         .select('id, ph_work_item_id, operation, status, retry_count, last_error, created_at, ph_work_items(title)')
         .order('created_at', { ascending: false })
-        .range(page2 * PAGE_SIZE, page2 * PAGE_SIZE + PAGE_SIZE - 1);
+        .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
       return (data ?? []) as any[];
     },
   });
@@ -169,201 +223,148 @@ export default function JiraSyncAuditLog() {
     },
   });
 
-  /* ── Tab 3: Deleted Items ─── */
-  const { data: deletedItems, isLoading: l3, isError: e3, refetch: r3 } = useQuery({
-    queryKey: ['audit-deleted', page3],
+  return (
+    <TooltipProvider>
+      <div className="bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[#2C2820] rounded-md overflow-hidden">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b border-[#E2E8F0] dark:border-[#2C2820]">
+              {['Work Item', 'Operation', 'Status', 'Retries', 'Last Error', 'Queued', 'Action'].map((h) => (
+                <th key={h} className={thClass} style={thStyle}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          {isLoading ? <SkeletonRows cols={7} /> : isError ? <ErrorRow cols={7} /> : (
+            <tbody>
+              {(queueItems ?? []).map((q: any) => (
+                <tr key={q.id} className="border-b border-[#E2E8F0] dark:border-[#2C2820]" style={{ height: 36, maxHeight: 36 }}>
+                  <td className={tdClass} style={tdStyle}>{q.ph_work_items?.title || q.ph_work_item_id}</td>
+                  <td style={tdStyle}>
+                    <span className="inline-block bg-[#F1F5F9] text-[#334155] dark:bg-[#2C2926] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 3, padding: '2px 6px', textTransform: 'uppercase' }}>
+                      {q.operation}
+                    </span>
+                  </td>
+                  <td style={tdStyle}><Lozenge status={q.status} /></td>
+                  <td className={tdClass} style={tdStyle}>{q.retry_count ?? 0}</td>
+                  <td style={tdStyle}><TruncatedCell text={q.last_error} /></td>
+                  <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(q.created_at), { addSuffix: true })}</td>
+                  <td style={tdStyle}>
+                    {q.status === 'pending' && (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="h-6 text-xs"
+                        disabled={approveMutation.isPending}
+                        onClick={() => approveMutation.mutate(q.id)}
+                      >
+                        Approve
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          )}
+        </table>
+        {queueItems && <PaginationBar page={page} setPage={setPage} count={queueItems.length} />}
+      </div>
+    </TooltipProvider>
+  );
+}
+
+export function DeletedItemsTab() {
+  const [page, setPage] = useState(0);
+
+  const { data: deletedItems, isLoading, isError } = useQuery({
+    queryKey: ['audit-deleted', page],
     queryFn: async () => {
       const { data } = await (supabase.from('jira_deleted_items') as any)
         .select('id, jira_key, catalyst_item_key, deleted_at, item_snapshot')
         .order('deleted_at', { ascending: false })
-        .range(page3 * PAGE_SIZE, page3 * PAGE_SIZE + PAGE_SIZE - 1);
+        .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
       return (data ?? []) as any[];
     },
   });
 
-  const refetchAll = () => { r1(); r2(); r3(); };
-
   return (
     <TooltipProvider>
-      <div className="p-6 space-y-6 dark:bg-[#1A1714] min-h-screen">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700 }} className="text-[#0F172A] dark:text-white">
-              Jira Sync Audit Log
-            </h1>
-            <p style={{ fontSize: 13 }} className="text-[#64748B] dark:text-gray-400 mt-1">
-              Monitor bi-directional sync activity
-            </p>
+      <div className="bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[#2C2820] rounded-md overflow-hidden">
+        {!isLoading && !isError && (!deletedItems || deletedItems.length === 0) ? (
+          <div className="flex flex-col items-center justify-center py-10 gap-2">
+            <Trash2 size={32} className="text-gray-300 dark:text-gray-600" />
+            <span style={{ fontSize: 13 }} className="text-[#94A3B8] dark:text-gray-400">No deleted items archived</span>
           </div>
-          <Button variant="outline" size="sm" onClick={refetchAll} className="border-[#E2E8F0] dark:border-[#2C2820]">
-            <RefreshCw className="w-4 h-4 mr-2" /> Refresh
-          </Button>
-        </div>
-
-        {/* Tabs */}
-        <Tabs defaultValue="events">
-          <TabsList>
-            <TabsTrigger value="events">Sync Events</TabsTrigger>
-            <TabsTrigger value="queue">Write-back Queue</TabsTrigger>
-            <TabsTrigger value="deleted">Deleted Items</TabsTrigger>
-          </TabsList>
-
-          {/* ── TAB 1: Sync Events ──────────────────── */}
-          <TabsContent value="events" className="mt-4">
-            <div className="bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[#2C2820] rounded-md overflow-hidden">
-              {/* Filters */}
-              <div className="flex items-center gap-3 p-3 border-b border-[#E2E8F0] dark:border-[#2C2820]">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[140px] h-9 text-xs">
-                    <SelectValue placeholder="All statuses" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="success">Success</SelectItem>
-                    <SelectItem value="error">Error</SelectItem>
-                    <SelectItem value="skipped">Skipped</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input
-                  placeholder="Filter by Jira Key"
-                  value={keyFilter}
-                  onChange={(e) => setKeyFilter(e.target.value)}
-                  className="h-9 w-48 text-xs"
-                />
-              </div>
-
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="border-b border-[#E2E8F0] dark:border-[#2C2820]">
-                    {['Time', 'Event Type', 'Jira Key', 'Status', 'Items', 'Duration', 'Error'].map((h) => (
-                      <th key={h} className={thClass} style={thStyle}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                {l1 ? <SkeletonRows cols={7} /> : e1 ? <ErrorRow cols={7} /> : (
-                  <tbody>
-                    {filteredLogs.map((log: any) => {
-                      const items = (log.items_created ?? 0) + (log.items_updated ?? 0) + (log.items_deleted ?? 0);
-                      return (
-                        <tr key={log.id} className="border-b border-[#E2E8F0] dark:border-[#2C2820]" style={{ height: 36, maxHeight: 36 }}>
-                          <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}</td>
-                          <td className={tdClass} style={tdStyle}>{log.event_type}</td>
-                          <td className={tdClass} style={tdStyle}>{log.jira_key || '—'}</td>
-                          <td style={tdStyle}><Lozenge status={log.status} /></td>
-                          <td className={tdClass} style={tdStyle}>{items}</td>
-                          <td className={tdClass} style={tdStyle}>{log.sync_duration_ms != null ? `${log.sync_duration_ms}ms` : '—'}</td>
-                          <td style={tdStyle}><TruncatedCell text={log.error_message} /></td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                )}
-              </table>
-              {syncLogs && <PaginationBar page={page1} setPage={setPage1} count={syncLogs.length} />}
-            </div>
-          </TabsContent>
-
-          {/* ── TAB 2: Write-back Queue ─────────────── */}
-          <TabsContent value="queue" className="mt-4">
-            <div className="bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[#2C2820] rounded-md overflow-hidden">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="border-b border-[#E2E8F0] dark:border-[#2C2820]">
-                    {['Work Item', 'Operation', 'Status', 'Retries', 'Last Error', 'Queued', 'Action'].map((h) => (
-                      <th key={h} className={thClass} style={thStyle}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                {l2 ? <SkeletonRows cols={7} /> : e2 ? <ErrorRow cols={7} /> : (
-                  <tbody>
-                    {(queueItems ?? []).map((q: any) => (
-                      <tr key={q.id} className="border-b border-[#E2E8F0] dark:border-[#2C2820]" style={{ height: 36, maxHeight: 36 }}>
-                        <td className={tdClass} style={tdStyle}>{q.ph_work_items?.title || q.ph_work_item_id}</td>
+        ) : (
+          <>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b border-[#E2E8F0] dark:border-[#2C2820]">
+                  {['Jira Key', 'Catalyst Key', 'Deleted', 'Snapshot Preview'].map((h) => (
+                    <th key={h} className={thClass} style={thStyle}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              {isLoading ? <SkeletonRows cols={4} /> : isError ? <ErrorRow cols={4} /> : (
+                <tbody>
+                  {(deletedItems ?? []).map((d: any) => {
+                    const snap = d.item_snapshot ? JSON.stringify(d.item_snapshot) : '';
+                    const preview = snap.length > 80 ? snap.substring(0, 80) + '…' : snap;
+                    return (
+                      <tr key={d.id} className="border-b border-[#E2E8F0] dark:border-[#2C2820]" style={{ height: 36, maxHeight: 36 }}>
+                        <td className={tdClass} style={tdStyle}>{d.jira_key || '—'}</td>
+                        <td className={tdClass} style={tdStyle}>{d.catalyst_item_key || '—'}</td>
+                        <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(d.deleted_at), { addSuffix: true })}</td>
                         <td style={tdStyle}>
-                          <span className="inline-block bg-[#F1F5F9] text-[#334155] dark:bg-[#2C2926] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 3, padding: '2px 6px', textTransform: 'uppercase' }}>
-                            {q.operation}
-                          </span>
-                        </td>
-                        <td style={tdStyle}><Lozenge status={q.status} /></td>
-                        <td className={tdClass} style={tdStyle}>{q.retry_count ?? 0}</td>
-                        <td style={tdStyle}><TruncatedCell text={q.last_error} /></td>
-                        <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(q.created_at), { addSuffix: true })}</td>
-                        <td style={tdStyle}>
-                          {q.status === 'pending' && (
-                            <Button
-                              variant="default"
-                              size="sm"
-                              className="h-6 text-xs"
-                              disabled={approveMutation.isPending}
-                              onClick={() => approveMutation.mutate(q.id)}
-                            >
-                              Approve
-                            </Button>
-                          )}
+                          {snap ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className={`${tdClass} cursor-help`} style={{ fontSize: 11 }}>{preview}</span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-md text-xs break-all font-mono">
+                                {snap.substring(0, 300)}
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : '—'}
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
-                )}
-              </table>
-              {queueItems && <PaginationBar page={page2} setPage={setPage2} count={queueItems.length} />}
-            </div>
-          </TabsContent>
-
-          {/* ── TAB 3: Deleted Items ────────────────── */}
-          <TabsContent value="deleted" className="mt-4">
-            <div className="bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[#2C2820] rounded-md overflow-hidden">
-              {!l3 && !e3 && (!deletedItems || deletedItems.length === 0) ? (
-                <div className="flex flex-col items-center justify-center py-10 gap-2">
-                  <Trash2 size={32} className="text-gray-300 dark:text-gray-600" />
-                  <span style={{ fontSize: 13 }} className="text-[#94A3B8] dark:text-gray-400">No deleted items archived</span>
-                </div>
-              ) : (
-                <>
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="border-b border-[#E2E8F0] dark:border-[#2C2820]">
-                        {['Jira Key', 'Catalyst Key', 'Deleted', 'Snapshot Preview'].map((h) => (
-                          <th key={h} className={thClass} style={thStyle}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    {l3 ? <SkeletonRows cols={4} /> : e3 ? <ErrorRow cols={4} /> : (
-                      <tbody>
-                        {(deletedItems ?? []).map((d: any) => {
-                          const snap = d.item_snapshot ? JSON.stringify(d.item_snapshot) : '';
-                          const preview = snap.length > 80 ? snap.substring(0, 80) + '…' : snap;
-                          return (
-                            <tr key={d.id} className="border-b border-[#E2E8F0] dark:border-[#2C2820]" style={{ height: 36, maxHeight: 36 }}>
-                              <td className={tdClass} style={tdStyle}>{d.jira_key || '—'}</td>
-                              <td className={tdClass} style={tdStyle}>{d.catalyst_item_key || '—'}</td>
-                              <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(d.deleted_at), { addSuffix: true })}</td>
-                              <td style={tdStyle}>
-                                {snap ? (
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <span className={`${tdClass} cursor-help`} style={{ fontSize: 11 }}>{preview}</span>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="top" className="max-w-md text-xs break-all font-mono">
-                                      {snap.substring(0, 300)}
-                                    </TooltipContent>
-                                  </Tooltip>
-                                ) : '—'}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    )}
-                  </table>
-                  {deletedItems && <PaginationBar page={page3} setPage={setPage3} count={deletedItems.length} />}
-                </>
+                    );
+                  })}
+                </tbody>
               )}
-            </div>
-          </TabsContent>
-        </Tabs>
+            </table>
+            {deletedItems && <PaginationBar page={page} setPage={setPage} count={deletedItems.length} />}
+          </>
+        )}
       </div>
     </TooltipProvider>
+  );
+}
+
+/* ── Main Component (standalone page — kept as default export) ── */
+export default function JiraSyncAuditLog() {
+  return (
+    <div className="p-6 space-y-6 dark:bg-[#1A1714] min-h-screen">
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700 }} className="text-[#0F172A] dark:text-white">
+            Jira Sync Audit Log
+          </h1>
+          <p style={{ fontSize: 13 }} className="text-[#64748B] dark:text-gray-400 mt-1">
+            Monitor bi-directional sync activity
+          </p>
+        </div>
+      </div>
+
+      <Tabs defaultValue="events">
+        <TabsList>
+          <TabsTrigger value="events">Sync Events</TabsTrigger>
+          <TabsTrigger value="queue">Write-back Queue</TabsTrigger>
+          <TabsTrigger value="deleted">Deleted Items</TabsTrigger>
+        </TabsList>
+        <TabsContent value="events" className="mt-4"><SyncEventsTab /></TabsContent>
+        <TabsContent value="queue" className="mt-4"><WriteBackQueueTab /></TabsContent>
+        <TabsContent value="deleted" className="mt-4"><DeletedItemsTab /></TabsContent>
+      </Tabs>
+    </div>
   );
 }
