@@ -78,7 +78,6 @@ function hierarchyLevel(issueType: string): number {
 
 // ─── Auto-Provision Helpers ───────────────────────────────────────────────────
 
-/** Ensure a project has work types; return map of name→id */
 async function ensureWorkTypes(supabase: any, projectId: string): Promise<Record<string, string>> {
   const { data: existing } = await supabase
     .from("ph_work_types")
@@ -92,7 +91,6 @@ async function ensureWorkTypes(supabase: any, projectId: string): Promise<Record
     return map;
   }
 
-  // Auto-provision default types
   const defaults = [
     { name: "Epic", icon: "Zap", color: "#904EE2", level: 1, position: 0 },
     { name: "Story", icon: "BookmarkPlus", color: "#63BA3C", level: 2, position: 1 },
@@ -112,7 +110,6 @@ async function ensureWorkTypes(supabase: any, projectId: string): Promise<Record
   return map;
 }
 
-/** Ensure a project has workflow statuses; return map of name→id */
 async function ensureWorkflowStatuses(supabase: any, projectId: string): Promise<Record<string, string>> {
   const { data: existing } = await supabase
     .from("ph_workflow_statuses")
@@ -125,7 +122,6 @@ async function ensureWorkflowStatuses(supabase: any, projectId: string): Promise
     return map;
   }
 
-  // Auto-provision default statuses
   const defaults = [
     { name: "To Do", category: "todo", position: 0, is_default: true, color: "#DFE1E6" },
     { name: "In Progress", category: "in_progress", position: 1, is_default: false, color: "#DEEBFF" },
@@ -145,7 +141,6 @@ async function ensureWorkflowStatuses(supabase: any, projectId: string): Promise
   return map;
 }
 
-/** Resolve or create a workflow status for a Jira status name */
 async function resolveStatusId(
   supabase: any, projectId: string, jiraStatusName: string,
   statusMap: Record<string, string>, statusCategory: string
@@ -153,16 +148,13 @@ async function resolveStatusId(
   const lower = jiraStatusName.toLowerCase();
   if (statusMap[lower]) return statusMap[lower];
 
-  // Try fuzzy match
   for (const [key, id] of Object.entries(statusMap)) {
     if (lower.includes(key) || key.includes(lower)) return id;
   }
 
-  // Map by category
   const catMap: Record<string, string> = { "Done": "done", "In Progress": "in_progress", "To Do": "todo" };
   const cat = catMap[statusCategory] || "todo";
   for (const [key, id] of Object.entries(statusMap)) {
-    // find any status in same category
     const { data: s } = await supabase
       .from("ph_workflow_statuses")
       .select("id, category")
@@ -171,7 +163,6 @@ async function resolveStatusId(
     if (s && s.category === cat) return id;
   }
 
-  // Create new status
   const { data: created } = await supabase
     .from("ph_workflow_statuses")
     .insert({
@@ -192,12 +183,7 @@ async function resolveStatusId(
   return null;
 }
 
-// ─── Full Sync Logic ──────────────────────────────────────────────────────────
-
-interface JiraFetchResult {
-  issues: any[];
-  total: number;
-}
+// ─── Jira API Helpers ─────────────────────────────────────────────────────────
 
 async function jiraSearchPaginated(
   siteUrl: string,
@@ -205,14 +191,14 @@ async function jiraSearchPaginated(
   authToken: string,
   jql: string,
   fields: string,
-  maxResults = 100
-): Promise<JiraFetchResult> {
+  maxResults = 200 // Increased from 100 for fewer roundtrips
+): Promise<{ issues: any[]; total: number }> {
   const allIssues: any[] = [];
   let startAt = 0;
   let total = 0;
 
   while (true) {
-    const url = `${siteUrl}rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${maxResults}&fields=${fields}&expand=changelog`;
+    const url = `${siteUrl}rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${maxResults}&fields=${fields}`;
     const resp = await fetch(url, {
       headers: {
         Authorization: `Basic ${btoa(`${authEmail}:${authToken}`)}`,
@@ -254,17 +240,19 @@ async function jiraFetchVersions(
   return await resp.json();
 }
 
+// ─── Full Sync Logic (with Delta + Batch) ─────────────────────────────────────
+
 async function handleFullSync(
   supabase: any,
   body: any
-): Promise<Response> {
+): Promise<void> {
   const startTime = Date.now();
   const syncLogId = crypto.randomUUID();
   const warnings: string[] = [];
 
   const projects: string[] = body.projects || [];
   const projectConfigs: Record<string, any> = body.project_configs || {};
-  const globalLookback = body.lookback_months || 3;
+  const forceFull = body.force_full === true; // Force full re-sync if needed
 
   // Get connection credentials
   const { data: conn, error: connErr } = await supabase
@@ -273,30 +261,26 @@ async function handleFullSync(
     .single();
 
   if (connErr || !conn) {
-    return new Response(
-      JSON.stringify({ status: "error", reason: "No Jira connection configured" }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    console.error("No Jira connection configured");
+    return;
   }
 
   const siteUrl = conn.site_url.endsWith("/") ? conn.site_url : conn.site_url + "/";
   const authEmail = conn.auth_email;
-  const authToken = conn.auth_token_encrypted; // stored as plaintext API token
+  const authToken = conn.auth_token_encrypted;
 
   if (!authEmail || !authToken) {
-    return new Response(
-      JSON.stringify({ status: "error", reason: "Missing Jira credentials" }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    console.error("Missing Jira credentials");
+    return;
   }
 
   // Insert running log entry
   await supabase.from("ph_sync_log").insert({
     id: syncLogId,
-    sync_type: "full",
+    sync_type: forceFull ? "full" : "delta",
     status: "running",
-    lookback_months: globalLookback,
-    jql_query: `Per-project JQL (${projects.length} projects)`,
+    lookback_months: 0,
+    jql_query: `Delta sync (${projects.length} projects)`,
     issues_fetched: 0,
     issues_upserted: 0,
     issues_pruned: 0,
@@ -315,22 +299,38 @@ async function handleFullSync(
     "summary", "status", "assignee", "reporter", "priority", "issuetype",
     "project", "parent", "fixVersions", "duedate", "labels", "components",
     "resolution", "created", "updated", "description", "comment",
-    "customfield_10016" // story points
+    "customfield_10016"
   ].join(",");
+
+  // ── Fetch delta cursors for all projects in one query ──
+  const { data: cursors } = await supabase
+    .from("ph_project_sync_cursor")
+    .select("project_key, last_synced_at")
+    .in("project_key", projects);
+
+  const cursorMap = new Map<string, string>();
+  for (const c of cursors || []) {
+    cursorMap.set(c.project_key, c.last_synced_at);
+  }
 
   for (const projectKey of projects) {
     try {
       const cfg = projectConfigs[projectKey] || {};
-      const lookback = cfg.lookback_months || globalLookback;
 
-      // Build JQL — enforce 2026 boundary
+      // ── DELTA: Use last_synced_at cursor if available ──
       const year2026 = "2026-01-01";
-      const lookbackDate = new Date();
-      lookbackDate.setMonth(lookbackDate.getMonth() - lookback);
-      const dateStr = lookbackDate.toISOString().split("T")[0];
-      const effectiveDate = dateStr > year2026 ? dateStr : year2026;
+      let effectiveDate = year2026;
 
-      let jql = `project = "${projectKey}" AND (created >= "${effectiveDate}" OR updated >= "${effectiveDate}")`;
+      if (!forceFull && cursorMap.has(projectKey)) {
+        const lastSync = cursorMap.get(projectKey)!;
+        // Use last sync minus 5 minutes buffer for safety
+        const bufferDate = new Date(new Date(lastSync).getTime() - 5 * 60 * 1000);
+        const bufferStr = bufferDate.toISOString().split("T")[0] + " " + 
+                          bufferDate.toISOString().split("T")[1].substring(0, 5);
+        effectiveDate = bufferStr > year2026 ? bufferStr : year2026;
+      }
+
+      let jql = `project = "${projectKey}" AND updated >= "${effectiveDate}"`;
       if (cfg.issue_types?.length) {
         jql += ` AND issuetype IN (${cfg.issue_types.map((t: string) => `"${t}"`).join(",")})`;
       }
@@ -341,6 +341,8 @@ async function handleFullSync(
         jql += ` AND statusCategory IN (${cfg.status_categories.map((s: string) => `"${s}"`).join(",")})`;
       }
       jql += " ORDER BY updated DESC";
+
+      console.log(`[${projectKey}] Delta JQL: ${jql}`);
 
       // Fetch project name
       let projectName = projectKey;
@@ -357,16 +359,15 @@ async function handleFullSync(
         }
       } catch { /* ignore */ }
 
-      // Resolve Catalyst project_id from ph_projects
+      // Resolve Catalyst project_id
       const { data: catalystProject } = await supabase
         .from("ph_projects")
-        .select("id")
+        .select("id, key, project_key")
         .eq("key", projectKey)
         .maybeSingle();
 
       const catalystProjectId = catalystProject?.id || null;
 
-      // Auto-provision work types and statuses for ph_work_items
       let workTypeMap: Record<string, string> = {};
       let statusMap: Record<string, string> = {};
       if (catalystProjectId) {
@@ -374,7 +375,6 @@ async function handleFullSync(
         statusMap = await ensureWorkflowStatuses(supabase, catalystProjectId);
       }
 
-      // Get current max sequence_num for this project
       let maxSeq = 0;
       if (catalystProjectId) {
         const { data: seqData } = await supabase
@@ -387,17 +387,12 @@ async function handleFullSync(
         maxSeq = seqData?.sequence_num || 0;
       }
 
-      // Resolve assignee mappings
-      const assigneeAccountIds = new Set<string>();
-
-      // Fetch issues
+      // ── Fetch issues from Jira ──
       const { issues } = await jiraSearchPaginated(siteUrl, authEmail, authToken, jql, jiraFields);
       totalFetched += issues.length;
+      console.log(`[${projectKey}] Fetched ${issues.length} issues (delta)`);
 
-      // Collect unique assignee account IDs for unmapped user warnings
-      const assigneeIds = new Set<string>();
-
-      // Build assignee profile map
+      // ── Build assignee profile map (batch) ──
       const allAccountIds = new Set<string>();
       for (const issue of issues) {
         const f = issue.fields || {};
@@ -417,17 +412,38 @@ async function handleFullSync(
         }
       }
 
-      // Upsert issues into ph_issues AND ph_work_items
+      // ── Pre-fetch existing work items for this batch (avoid N+1) ──
+      const jiraKeys = issues.map((i: any) => i.key);
+      const existingWIMap = new Map<string, { id: string; sequence_num: number }>();
+      if (catalystProjectId && jiraKeys.length > 0) {
+        // Fetch in chunks of 200 to avoid query limits
+        for (let c = 0; c < jiraKeys.length; c += 200) {
+          const chunk = jiraKeys.slice(c, c + 200);
+          const { data: existingItems } = await supabase
+            .from("ph_work_items")
+            .select("id, jira_key, sequence_num")
+            .in("jira_key", chunk);
+          for (const item of existingItems || []) {
+            if (item.jira_key) existingWIMap.set(item.jira_key, { id: item.id, sequence_num: item.sequence_num });
+          }
+        }
+      }
+
+      // ── Batch upsert ph_issues (chunks of 50) ──
+      const phIssueRows: any[] = [];
+      const phWIUpdates: { id: string; data: any }[] = [];
+      const phWIInserts: any[] = [];
+      const unmappedUsers = new Set<string>();
+
       for (const issue of issues) {
         const f = issue.fields || {};
         const statusCat = f.status?.statusCategory?.key;
         const catalystStatusCat = mapStatusCategory(statusCat);
         const descText = typeof f.description === "object" ? adfToPlainText(f.description) : (f.description || "");
 
-        if (f.assignee?.accountId) assigneeIds.add(f.assignee.accountId);
-        if (f.reporter?.accountId) assigneeIds.add(f.reporter.accountId);
+        if (f.assignee?.accountId && !profileMap[f.assignee.accountId]) unmappedUsers.add(f.assignee.accountId);
 
-        // ── 1. Upsert into ph_issues (legacy/sync table) ──
+        // ── ph_issues row ──
         const row: Record<string, any> = {
           issue_key: issue.key,
           project_key: projectKey,
@@ -484,109 +500,109 @@ async function handleFullSync(
           }
         }
         row.sprint_name = null;
+        phIssueRows.push(row);
 
-        // Upsert by issue_key
-        const { error: upsertErr } = await supabase
-          .from("ph_issues")
-          .upsert(row, { onConflict: "issue_key" });
-
-        if (upsertErr) {
-          console.error(`ph_issues upsert failed for ${issue.key}:`, upsertErr.message);
-        }
-
-        // ── 2. Upsert into ph_work_items (native table) ──
+        // ── ph_work_items row ──
         if (catalystProjectId) {
-          try {
-            const issueTypeName = (f.issuetype?.name || "Task").toLowerCase();
-            const typeId = workTypeMap[issueTypeName] || workTypeMap["task"] || null;
-            const jiraStatusName = f.status?.name || "To Do";
-            const statusId = await resolveStatusId(supabase, catalystProjectId, jiraStatusName, statusMap, catalystStatusCat);
+          const issueTypeName = (f.issuetype?.name || "Task").toLowerCase();
+          const typeId = workTypeMap[issueTypeName] || workTypeMap["task"] || null;
+          const jiraStatusName = f.status?.name || "To Do";
+          // Use cached status map for resolution (avoid per-issue DB call)
+          let statusId = statusMap[jiraStatusName.toLowerCase()] || null;
+          if (!statusId) {
+            // Only hit DB for truly unknown statuses
+            statusId = await resolveStatusId(supabase, catalystProjectId, jiraStatusName, statusMap, catalystStatusCat);
+          }
 
-            const assigneeId = f.assignee?.accountId ? (profileMap[f.assignee.accountId] || null) : null;
-            const reporterId = f.reporter?.accountId ? (profileMap[f.reporter.accountId] || null) : null;
+          const assigneeId = f.assignee?.accountId ? (profileMap[f.assignee.accountId] || null) : null;
+          const reporterId = f.reporter?.accountId ? (profileMap[f.reporter.accountId] || null) : null;
 
-            // Check if work item already exists
-            const { data: existingWI } = await supabase
-              .from("ph_work_items")
-              .select("id, sequence_num")
-              .eq("jira_key", issue.key)
-              .maybeSingle();
+          const wiData: Record<string, any> = {
+            jira_key: issue.key,
+            jira_issue_id: issue.id?.toString() || null,
+            title: f.summary || `Jira ${issue.key}`,
+            summary: f.summary || "",
+            item_type: f.issuetype?.name || "Task",
+            status: jiraStatusName,
+            priority: mapPriority(f.priority?.name),
+            jira_status: jiraStatusName,
+            jira_priority: f.priority?.name || "Medium",
+            jira_labels: f.labels || [],
+            jira_story_points: f.customfield_10016 || null,
+            jira_url: `${siteUrl}browse/${issue.key}`,
+            story_points: f.customfield_10016 || null,
+            due_date: f.duedate || null,
+            labels: f.labels || [],
+            resolution: f.resolution?.name || null,
+            project_id: catalystProjectId,
+            type_id: typeId,
+            status_id: statusId,
+            assignee_id: assigneeId,
+            reporter_id: reporterId,
+            sync_source: "jira",
+            jira_sync_status: "synced",
+            jira_pushed_at: new Date().toISOString(),
+            last_synced_at: new Date().toISOString(),
+            is_jira_locked: true,
+            updated_at: new Date().toISOString(),
+            deleted_at: null,
+            jira_removed_at: null,
+          };
 
-            const wiData: Record<string, any> = {
-              jira_key: issue.key,
-              jira_issue_id: issue.id?.toString() || null,
-              title: f.summary || `Jira ${issue.key}`,
-              summary: f.summary || "",
-              item_type: f.issuetype?.name || "Task",
-              status: jiraStatusName,
-              priority: mapPriority(f.priority?.name),
-              jira_status: jiraStatusName,
-              jira_priority: f.priority?.name || "Medium",
-              jira_labels: f.labels || [],
-              jira_story_points: f.customfield_10016 || null,
-              jira_url: `${siteUrl}browse/${issue.key}`,
-              story_points: f.customfield_10016 || null,
-              due_date: f.duedate || null,
-              labels: f.labels || [],
-              resolution: f.resolution?.name || null,
-              project_id: catalystProjectId,
-              type_id: typeId,
-              status_id: statusId,
-              assignee_id: assigneeId,
-              reporter_id: reporterId,
-              sync_source: "jira",
-              jira_sync_status: "synced",
-              jira_pushed_at: new Date().toISOString(),
-              last_synced_at: new Date().toISOString(),
-              is_jira_locked: true,
-              updated_at: new Date().toISOString(),
-              deleted_at: null,
-              jira_removed_at: null,
-            };
-
-            if (existingWI) {
-              // Update existing
-              await supabase
-                .from("ph_work_items")
-                .update(wiData)
-                .eq("id", existingWI.id);
-            } else {
-              // Insert new
-              maxSeq++;
-              wiData.item_key = `${projectKey}-${maxSeq}`;
-              wiData.sequence_num = maxSeq;
-              wiData.sort_order = maxSeq;
-              wiData.depth = hierarchyLevel(f.issuetype?.name || "") === 1 ? 0 : 1;
-              await supabase
-                .from("ph_work_items")
-                .insert(wiData);
-            }
-          } catch (wiErr: any) {
-            console.error(`ph_work_items upsert failed for ${issue.key}:`, wiErr.message || wiErr);
+          const existing = existingWIMap.get(issue.key);
+          if (existing) {
+            phWIUpdates.push({ id: existing.id, data: wiData });
+          } else {
+            maxSeq++;
+            phWIInserts.push({
+              ...wiData,
+              item_key: `${projectKey}-${maxSeq}`,
+              sequence_num: maxSeq,
+              sort_order: maxSeq,
+              depth: hierarchyLevel(f.issuetype?.name || "") === 1 ? 0 : 1,
+            });
           }
         }
 
         totalUpserted++;
       }
 
-      // Check for unmapped users
-      if (assigneeIds.size > 0) {
-        const { data: mappedProfiles } = await supabase
-          .from("profiles")
-          .select("jira_account_id")
-          .in("jira_account_id", Array.from(assigneeIds));
-        const mappedSet = new Set((mappedProfiles || []).map((p: any) => p.jira_account_id));
-        const unmapped = Array.from(assigneeIds).filter((id) => !mappedSet.has(id));
-        if (unmapped.length > 0) {
-          warnings.push(`${unmapped.length} unmapped Jira users`);
-        }
+      // ── Batch upsert ph_issues in chunks of 50 ──
+      for (let c = 0; c < phIssueRows.length; c += 50) {
+        const chunk = phIssueRows.slice(c, c + 50);
+        const { error: upsertErr } = await supabase
+          .from("ph_issues")
+          .upsert(chunk, { onConflict: "issue_key" });
+        if (upsertErr) console.error(`ph_issues batch upsert failed:`, upsertErr.message);
       }
 
-      // Fetch versions
+      // ── Batch insert new ph_work_items in chunks of 50 ──
+      for (let c = 0; c < phWIInserts.length; c += 50) {
+        const chunk = phWIInserts.slice(c, c + 50);
+        const { error: insertErr } = await supabase
+          .from("ph_work_items")
+          .insert(chunk);
+        if (insertErr) console.error(`ph_work_items batch insert failed:`, insertErr.message);
+      }
+
+      // ── Batch update existing ph_work_items (individually, but without extra lookups) ──
+      for (const upd of phWIUpdates) {
+        const { error: updErr } = await supabase
+          .from("ph_work_items")
+          .update(upd.data)
+          .eq("id", upd.id);
+        if (updErr) console.error(`ph_work_items update failed for ${upd.id}:`, updErr.message);
+      }
+
+      if (unmappedUsers.size > 0) {
+        warnings.push(`${unmappedUsers.size} unmapped Jira users in ${projectKey}`);
+      }
+
+      // ── Fetch versions ──
       try {
         const versions = await jiraFetchVersions(siteUrl, authEmail, authToken, projectKey);
-        for (const v of versions) {
-          const vRow = {
+        if (versions.length > 0) {
+          const vRows = versions.map((v: any) => ({
             jira_id: String(v.id),
             name: v.name,
             project_key: projectKey,
@@ -597,15 +613,26 @@ async function handleFullSync(
             released: v.released || false,
             archived: v.archived || false,
             synced_at: new Date().toISOString(),
-          };
-          await supabase.from("ph_versions").upsert(vRow, { onConflict: "jira_id" });
-          totalVersions++;
+          }));
+          await supabase.from("ph_versions").upsert(vRows, { onConflict: "jira_id" });
+          totalVersions += versions.length;
         }
       } catch (vErr) {
         console.error(`Version fetch failed for ${projectKey}:`, vErr);
       }
 
+      // ── Update delta cursor ──
+      await supabase
+        .from("ph_project_sync_cursor")
+        .upsert({
+          project_key: projectKey,
+          last_synced_at: new Date().toISOString(),
+          last_issue_count: issues.length,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "project_key" });
+
       projectsCompleted.push(projectKey);
+      console.log(`[${projectKey}] Completed: ${issues.length} issues in ${Date.now() - startTime}ms`);
     } catch (projErr: any) {
       console.error(`Sync failed for project ${projectKey}:`, projErr);
       warnings.push(`${projectKey}: ${projErr.message?.substring(0, 200)}`);
@@ -628,18 +655,7 @@ async function handleFullSync(
     })
     .eq("id", syncLogId);
 
-  return new Response(
-    JSON.stringify({
-      status: finalStatus,
-      issues_fetched: totalFetched,
-      issues_upserted: totalUpserted,
-      versions_fetched: totalVersions,
-      projects_synced: projectsCompleted,
-      warnings,
-      duration_ms: Date.now() - startTime,
-    }),
-    { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-  );
+  console.log(`Sync complete: ${totalFetched} fetched, ${totalUpserted} upserted in ${Date.now() - startTime}ms`);
 }
 
 // ─── Webhook Handler ──────────────────────────────────────────────────────────
@@ -658,9 +674,18 @@ Deno.serve(async (req) => {
     const rawBody = await req.text();
     const body = JSON.parse(rawBody);
 
-    // ── Route: Full Sync (from admin UI) ──
+    // ── Route: Full/Delta Sync (from admin UI) ──
     if (body.sync_type === "full" || body.sync_type === "incremental") {
-      return await handleFullSync(supabase, body);
+      // Return immediately, process in background
+      const response = new Response(
+        JSON.stringify({ status: "processing", message: "Sync started in background" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+
+      // Background processing — won't block the response
+      EdgeRuntime.waitUntil(handleFullSync(supabase, body));
+
+      return response;
     }
 
     // ── Route: Webhook (from Jira) ──
