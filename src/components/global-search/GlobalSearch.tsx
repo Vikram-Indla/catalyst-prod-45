@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Search, Clock, SlidersHorizontal, LayoutGrid, Home,
-  Filter, FileEdit, Users2, ChevronRight, X
+  Search, SlidersHorizontal, ChevronRight, X
 } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import {
-  useRecentItems, useRecentSearches, useSearchResults,
+  useRecentItems, useSearchResults,
   useTrackView, useSaveSearch
 } from '@/hooks/useGlobalSearch';
 import type { SearchResult, ActiveFilters, SearchHub, WorkItemType } from '@/types/global-search';
@@ -46,13 +45,17 @@ const WORK_ITEM_ICONS: Record<string, string> = {
   subtask: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M3,0 L21,0 C22.657,0 24,1.343 24,3 L24,21 C24,22.657 22.657,24 21,24 L3,24 C1.343,24 0,22.657 0,21 L0,3 C0,1.343 1.343,0 3,0 Z M6,4 C4.895,4 4,4.895 4,6 L4,18 C4,19.105 4.895,20 6,20 L18,20 C19.105,20 20,19.105 20,18 L20,6 C20,4.895 19.105,4 18,4 L6,4 Z M6,6 L18,6 L18,18 L6,18 Z"/></svg>`,
 };
 
-function relativeTime(dateStr: string): string {
+function formatTime(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const m = Math.floor(diff / 60000);
   if (m < 60) return `${m}m ago`;
   const h = Math.floor(m / 60);
   if (h < 24) return `${h}h ago`;
-  return `${Math.floor(h / 24)}d ago`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `${d}d ago`;
+  const dt = new Date(dateStr);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${dt.getDate()} ${months[dt.getMonth()]}`;
 }
 
 function highlightMatch(text: string, query: string) {
@@ -62,15 +65,14 @@ function highlightMatch(text: string, query: string) {
   return (
     <>
       {text.slice(0, idx)}
-      <span style={{ background: '#EFF6FF', color: '#1D4ED8', borderRadius: 2, padding: '0 2px' }}>
+      <mark style={{ background: '#FFF0B3', color: '#172B4D', borderRadius: 2, padding: '0 1px' }}>
         {text.slice(idx, idx + query.length)}
-      </span>
+      </mark>
       {text.slice(idx + query.length)}
     </>
   );
 }
 
-/* FIX 1 — Icon type mapper */
 function mapToIconType(raw: string | null | undefined): string {
   if (!raw) return 'task';
   const val = raw.toLowerCase().replace(/[\s_-]/g, '');
@@ -86,68 +88,58 @@ function mapToIconType(raw: string | null | undefined): string {
   return 'task';
 }
 
-/* Section label style (FIX 6) */
 const sectionLabelStyle: React.CSSProperties = {
   textTransform: 'uppercase', fontSize: 11, fontWeight: 600,
-  letterSpacing: '0.08em', color: '#5E6C84', padding: '8px 12px 4px',
+  letterSpacing: '0.08em', color: '#5E6C84', padding: '8px 16px 4px',
 };
 
-/* Dot separator style (FIX 2) */
-const dotStyle: React.CSSProperties = {
-  width: 2, height: 2, borderRadius: '50%', background: '#C1C7D0',
-  display: 'inline-block', margin: '0 4px', verticalAlign: 'middle',
-};
+const midDot = <span style={{ margin: '0 5px', color: '#C1C7D0', fontSize: 10 }}>·</span>;
 
-/* ━━━ ResultRow (FIX 2) ━━━ */
+/* ━━━ ResultRow ━━━ */
 function ResultRow({ item, query, onClick }: { item: SearchResult; query: string; onClick: () => void }) {
   return (
     <div
       onClick={onClick}
       style={{
-        height: 44, display: 'flex', alignItems: 'center', padding: '0 12px',
-        gap: 10, cursor: 'pointer',
+        height: 44, display: 'flex', alignItems: 'center', padding: '0 16px',
+        cursor: 'pointer', borderBottom: '1px solid #F4F5F7',
       }}
       onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+      onMouseDown={e => (e.currentTarget.style.background = '#EBECF0')}
+      onMouseUp={e => (e.currentTarget.style.background = '#F4F5F7')}
     >
-      {/* icon */}
       <span
-        style={{ width: 32, height: 44, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        style={{ width: 20, height: 44, flexShrink: 0, marginRight: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[mapToIconType(item.item_type)] ?? WORK_ITEM_ICONS.task }}
       />
-      {/* content */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          fontSize: 13, color: '#172B4D', fontWeight: 400, whiteSpace: 'nowrap',
-          overflow: 'hidden', textOverflow: 'ellipsis',
-        }}>
-          <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#0052CC', marginRight: 6, fontWeight: 500 }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+          <span style={{
+            fontFamily: "'SFMono-Regular', Consolas, monospace",
+            fontSize: 11, fontWeight: 600, color: '#0052CC', flexShrink: 0,
+          }}>
             {item.item_key}
           </span>
-          {highlightMatch(item.title, query)}
+          <span style={{
+            fontSize: 13, color: '#172B4D', fontWeight: 400,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>
+            {highlightMatch(item.title, query)}
+          </span>
         </div>
-        <div style={{ fontSize: 11, color: '#6B778C', lineHeight: 1.3, display: 'flex', alignItems: 'center' }}>
-          Catalyst
-          <span style={dotStyle} />
-          {item.item_type.replace('_', ' ')}
-          {item.project_name && (
-            <>
-              <span style={dotStyle} />
-              {item.project_name}
-            </>
-          )}
-          {item.assignee_name && (
-            <>
-              <span style={dotStyle} />
-              {item.assignee_name}
-            </>
-          )}
+        <div style={{
+          fontSize: 11, color: '#5E6C84', display: 'flex', alignItems: 'center',
+          flexWrap: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>
+          <span>{item.project_name ?? item.hub}</span>
+          {midDot}
+          <span>{item.item_type.replace(/_/g, ' ')}</span>
+          {item.assignee_name && <>{midDot}<span>{item.assignee_name}</span></>}
+          {midDot}
+          <span>{formatTime(item.viewed_at)}</span>
         </div>
       </div>
-      {/* time */}
-      <span style={{ fontSize: 11, color: '#6B778C', flexShrink: 0, whiteSpace: 'nowrap', paddingLeft: 12 }}>
-        {relativeTime(item.viewed_at)}
-      </span>
     </div>
   );
 }
@@ -162,9 +154,9 @@ export function GlobalSearch() {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [filters, setFilters] = useState<ActiveFilters>({ hub: null, project: null, assignee: null, type: null });
+  const [visibleCount, setVisibleCount] = useState(10);
 
   const recentItems = useRecentItems();
-  const recentSearches = useRecentSearches();
   const { data: results = [], isLoading } = useSearchResults(debouncedQuery, filters);
   const trackView = useTrackView();
   const saveSearch = useSaveSearch();
@@ -181,6 +173,7 @@ export function GlobalSearch() {
       setQuery('');
       setDebouncedQuery('');
       setFilters({ hub: null, project: null, assignee: null, type: null });
+      setVisibleCount(10);
     }
   }, [isOpen]);
 
@@ -208,7 +201,6 @@ export function GlobalSearch() {
     close();
   }, [debouncedQuery, navigate, close, trackView, saveSearch]);
 
-  /* FIX 5 — chip style */
   const chipStyle = (active: boolean): React.CSSProperties => ({
     height: 24, padding: '0 8px', border: `1px solid ${active ? '#93C5FD' : '#DFE1E6'}`,
     borderRadius: 4, fontSize: 11, color: active ? '#1D4ED8' : '#42526E',
@@ -220,21 +212,22 @@ export function GlobalSearch() {
   const TYPE_OPTIONS = ['All Types', 'bug', 'task', 'story', 'epic', 'incident', 'new_feature', 'improvement'];
 
   const recents = recentItems.data ?? [];
-  const searches = recentSearches.data ?? [];
   const hasQuery = debouncedQuery.length >= 2;
 
   return (
     <Dialog open={isOpen} onOpenChange={o => { if (!o) close(); }}>
       <DialogContent
         style={{
-          padding: 0, width: 640, maxWidth: '95vw', borderRadius: 8,
-          border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column',
-          maxHeight: '80vh', gap: 0, overflow: 'hidden',
+          padding: 0, width: 680, maxWidth: '92vw', borderRadius: 12,
+          border: 'none', display: 'flex', flexDirection: 'column',
+          maxHeight: 600, gap: 0, overflow: 'hidden',
           backgroundColor: '#ffffff', color: '#0F172A',
+          boxShadow: '0 8px 40px rgba(15,23,42,0.15), 0 2px 8px rgba(15,23,42,0.08)',
+          position: 'fixed', top: '15%', left: '50%', transform: 'translateX(-50%)',
         }}
         className="!p-0 !bg-white"
       >
-        {/* LAYER 1 — Search row (FIX 4) */}
+        {/* Search row */}
         <div style={{
           height: 44, borderBottom: '1px solid #E2E8F0', padding: '0 14px',
           gap: 10, display: 'flex', alignItems: 'center', flexShrink: 0,
@@ -266,9 +259,9 @@ export function GlobalSearch() {
           }}>ESC</kbd>
         </div>
 
-        {/* LAYER 2 — Filter row (FIX 5) */}
+        {/* Filter row */}
         <div style={{
-          height: 36, padding: '0 12px', borderBottom: '1px solid #F1F5F9', flexShrink: 0,
+          height: 42, padding: '0 12px', borderBottom: '1px solid #F1F5F9', flexShrink: 0,
           gap: 6, display: 'flex', alignItems: 'center',
           backgroundColor: '#ffffff',
         }}>
@@ -280,7 +273,6 @@ export function GlobalSearch() {
             <SlidersHorizontal size={12} color="#64748B" />
           </button>
 
-          {/* Hub filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button style={chipStyle(!!filters.hub)}>
@@ -297,19 +289,16 @@ export function GlobalSearch() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Project filter (clear only) */}
           <button style={chipStyle(!!filters.project)} onClick={() => setFilters(f => ({ ...f, project: null }))}>
             {filters.project ?? 'Project'}
             <ChevronRight size={8} style={{ transform: 'rotate(90deg)' }} />
           </button>
 
-          {/* Assignee filter (clear only) */}
           <button style={chipStyle(!!filters.assignee)} onClick={() => setFilters(f => ({ ...f, assignee: null }))}>
             {filters.assignee ?? 'Assignee'}
             <ChevronRight size={8} style={{ transform: 'rotate(90deg)' }} />
           </button>
 
-          {/* Type filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button style={chipStyle(!!filters.type)}>
@@ -327,11 +316,11 @@ export function GlobalSearch() {
           </DropdownMenu>
         </div>
 
-        {/* LAYER 3 — Scroll body */}
-        <div style={{ overflowY: 'auto', flex: 1, backgroundColor: '#ffffff' }}>
+        {/* Scroll body */}
+        <div style={{ overflowY: 'auto', flex: 1, backgroundColor: '#ffffff', maxHeight: 'calc(600px - 44px - 42px)' }}>
           {isLoading && hasQuery ? (
             Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} style={{ height: 44, display: 'flex', alignItems: 'center', padding: '0 12px', gap: 10 }}>
+              <div key={i} style={{ height: 44, display: 'flex', alignItems: 'center', padding: '0 16px', gap: 10 }}>
                 <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#F1F5F9' }} />
                 <div style={{ flex: 1 }}>
                   <div style={{ height: 11, width: '60%', background: '#F1F5F9', borderRadius: 3, marginBottom: 6 }} />
@@ -341,17 +330,66 @@ export function GlobalSearch() {
             ))
           ) : !hasQuery ? (
             <>
+              {/* AI Suggestion rows */}
+              {recents.slice(0, 2).map(item => (
+                <div
+                  key={`sug-${item.id}`}
+                  onClick={() => onResultClick(item)}
+                  style={{
+                    height: 36, padding: '0 16px', display: 'flex', alignItems: 'center',
+                    gap: 10, cursor: 'pointer', borderBottom: '1px solid #F4F5F7',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <Search size={13} color="#94A3B8" />
+                  <div style={{ flex: 1, fontSize: 13, color: '#172B4D', display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <span style={{
+                      width: 14, height: 14, borderRadius: 3,
+                      background: HUB_COLORS[item.hub] ?? '#64748B', color: '#ffffff',
+                      fontSize: 8, fontWeight: 700, flexShrink: 0,
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      {item.hub?.[0] ?? 'C'}
+                    </span>
+                    {item.hub} items in {item.project_name ?? item.hub}
+                    <span style={{
+                      marginLeft: 6, fontSize: 10, fontWeight: 600,
+                      color: '#7C3AED', background: '#F5F3FF',
+                      borderRadius: 3, padding: '1px 6px',
+                      display: 'inline-flex', alignItems: 'center',
+                    }}>✦ AI</span>
+                  </div>
+                  <span style={{ fontSize: 11, color: '#94A3B8' }}>Suggestion</span>
+                </div>
+              ))}
+
               {/* Recent items */}
               {recents.length > 0 && (
                 <>
                   <div style={sectionLabelStyle}>Recent</div>
-                  {recents.map(item => (
+                  {recents.slice(0, visibleCount).map(item => (
                     <ResultRow key={item.id} item={item} query="" onClick={() => onResultClick(item)} />
                   ))}
+                  {recents.length > visibleCount && (
+                    <button
+                      onClick={() => setVisibleCount(v => v + 10)}
+                      style={{
+                        width: '100%', height: 36, border: 'none',
+                        borderTop: '1px solid #F4F5F7', background: 'transparent',
+                        cursor: 'pointer', fontSize: 12, color: '#0052CC',
+                        fontWeight: 500, fontFamily: 'Inter, sans-serif',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      Show more results
+                    </button>
+                  )}
                 </>
               )}
               {recents.length === 0 && (
-                <div style={{ padding: '32px', textAlign: 'center', color: '#94A3B8', fontSize: '13px' }}>
+                <div style={{ padding: 32, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>
                   Start typing to search across all hubs
                 </div>
               )}
@@ -370,16 +408,6 @@ export function GlobalSearch() {
               )}
             </>
           )}
-        </div>
-
-        {/* LAYER 4 — Bottom bar */}
-        <div style={{
-          height: 32, borderTop: '1px solid #E2E8F0', background: '#FAFAFA',
-          padding: '0 12px', display: 'flex', alignItems: 'center', flexShrink: 0,
-        }}>
-          <span style={{ fontSize: 11, color: '#94A3B8' }}>
-            {hasQuery ? `${results.length} results` : `${recents.length} recent items`}
-          </span>
         </div>
       </DialogContent>
     </Dialog>
