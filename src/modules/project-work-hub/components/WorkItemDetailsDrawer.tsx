@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { X, Edit2, Save, Loader2, Archive } from 'lucide-react';
 import { WorkItem, PRIORITY_CONFIG } from '../types';
