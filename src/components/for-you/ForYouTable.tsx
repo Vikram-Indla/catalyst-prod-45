@@ -228,7 +228,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Assigned to */}
-                    <td style={{ padding: '8px 12px', width: 170 }}>
+                    <td style={{ padding: '8px 12px', width: 150 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {(() => {
                           const assigneeName = item.assignee.name;
