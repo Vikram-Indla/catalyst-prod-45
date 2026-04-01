@@ -182,7 +182,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Key */}
-                    <td style={{ padding: '8px 12px', width: 140 }}>
+                    <td style={{ padding: '8px 12px', width: 120 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <JiraIssueTypeIcon issueType={item.issueType} size={16} />
                         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: 'var(--cp-blue-link)' }}>{item.key}</span>
