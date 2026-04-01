@@ -217,6 +217,7 @@ export function GlobalSearch() {
         <div style={{
           height: 48, borderBottom: '1px solid #E2E8F0', padding: '0 14px',
           gap: 10, display: 'flex', alignItems: 'center', flexShrink: 0,
+          backgroundColor: '#ffffff',
         }}>
           <Search size={16} color="#64748B" />
           <input
