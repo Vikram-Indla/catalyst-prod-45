@@ -476,7 +476,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                         width: '17px', 
                         height: '17px', 
                         strokeWidth: 1.4,
-                        color: active ? 'var(--cp-blue)' : 'var(--nav-text-secondary, #3F3F46)',
+                        color: active ? 'var(--cp-blue)' : 'var(--nav-text-secondary)',
                       }} 
                     />
                     <span className="truncate">{pocket.label}</span>
@@ -520,7 +520,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                           width: '17px', 
                           height: '17px', 
                           strokeWidth: 1.4,
-                          color: active ? 'var(--cp-blue)' : 'var(--nav-text-secondary, #3F3F46)',
+                          color: active ? 'var(--cp-blue)' : 'var(--nav-text-secondary)',
                         }} 
                       />
                       <span className="truncate flex-1 text-left">{pocket.label}</span>

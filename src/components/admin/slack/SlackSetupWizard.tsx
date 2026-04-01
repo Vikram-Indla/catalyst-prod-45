@@ -236,7 +236,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
               <Button
                 onClick={handleNext}
                 className="w-full"
-                style={{ backgroundColor: '#4A154B' }}
+                style={{ backgroundColor: 'var(--cp-blue)' }}
               >
                 I've Created the App
                 <ChevronRight className="w-4 h-4 ml-2" />
@@ -332,7 +332,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                   onClick={handleNext}
                   disabled={!formData.client_id || !formData.client_secret}
                   className="flex-1"
-                  style={{ backgroundColor: '#4A154B' }}
+                  style={{ backgroundColor: 'var(--cp-blue)' }}
                 >
                   Continue
                   <ChevronRight className="w-4 h-4 ml-2" />
@@ -417,7 +417,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                 <Button
                   onClick={handleNext}
                   className="flex-1"
-                  style={{ backgroundColor: '#4A154B' }}
+                  style={{ backgroundColor: 'var(--cp-blue)' }}
                 >
                   I've Added the Scopes
                   <ChevronRight className="w-4 h-4 ml-2" />
@@ -487,7 +487,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                   onClick={handleSaveAndContinue}
                   disabled={saveConfig.isPending}
                   className="flex-1"
-                  style={{ backgroundColor: '#4A154B' }}
+                  style={{ backgroundColor: 'var(--cp-blue)' }}
                 >
                   {saveConfig.isPending ? 'Saving...' : 'Save & Continue'}
                   <ChevronRight className="w-4 h-4 ml-2" />
@@ -520,7 +520,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                   disabled={getInstallUrl.isPending}
                   size="lg"
                   className="px-8"
-                  style={{ backgroundColor: '#4A154B' }}
+                  style={{ backgroundColor: 'var(--cp-blue)' }}
                 >
                   {getInstallUrl.isPending ? (
                     'Preparing...'
@@ -591,7 +591,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
               <Button
                 onClick={() => window.location.reload()}
                 className="w-full"
-                style={{ backgroundColor: '#4A154B' }}
+                style={{ backgroundColor: 'var(--cp-blue)' }}
               >
                 Go to Dashboard
                 <ChevronRight className="w-4 h-4 ml-2" />

@@ -45,11 +45,11 @@ export function SyncLogsViewer({ open, onOpenChange, connectionId }: SyncLogsVie
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "success":
-        return <CheckCircle2 className="w-4 h-4 text-[#0d9488]" />;
+        return <CheckCircle2 className="w-4 h-4 text-[var(--sem-success)]" />;
       case "error":
-        return <XCircle className="w-4 h-4 text-[#ef4444]" />;
+        return <XCircle className="w-4 h-4 text-[var(--sem-danger)]" />;
       case "warning":
-        return <AlertCircle className="w-4 h-4 text-[#f59e0b]" />;
+        return <AlertCircle className="w-4 h-4 text-[var(--sem-warning)]" />;
       default:
         return <Loader2 className="w-4 h-4 text-muted-foreground" />;
     }
