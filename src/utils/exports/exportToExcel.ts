@@ -2,7 +2,7 @@
  * Excel Export Utility
  * Export data to XLSX format
  */
-const loadXLSX = () => import('xlsx');
+import { loadXLSX } from '@/lib/exportLoaders';
 import type { ExportColumn, ExcelExportOptions } from './types';
 
 export const exportToExcel = async <T extends Record<string, any>>(

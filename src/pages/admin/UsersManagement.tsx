@@ -12,7 +12,7 @@ import { useUsers, UserProfile } from '@/hooks/useUsers';
 import { UserDrawer } from './components/UserDrawer';
 import { BulkEditModal } from './components/BulkEditModal';
 import { supabase } from '@/integrations/supabase/client';
-const loadXLSX = () => import('xlsx');
+import { loadXLSX } from '@/lib/exportLoaders';
 import { toast } from 'sonner';
 import { Search, X, Download, Plus, ChevronLeft, ChevronRight, Edit3, Trash2 } from 'lucide-react';
 

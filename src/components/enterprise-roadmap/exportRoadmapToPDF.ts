@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const loadHtml2Canvas = () => import('html2canvas').then(m => m.default);
-const loadJsPDF = () => import('jspdf').then(m => m.jsPDF);
+import { loadJsPDF } from '@/lib/exportLoaders';
 
 interface ExportOptions {
   filename?: string;

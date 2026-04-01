@@ -1,4 +1,4 @@
-const loadXLSX = () => import('xlsx');
+import { loadXLSX } from '@/lib/exportLoaders';
 
 interface DefectAssignee {
   name: string;

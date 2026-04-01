@@ -4,7 +4,7 @@
  * - Sheet 1: Resources (from /admin/users)
  * - Sheet 2: Assignments (from /admin/resource-assignments)
  */
-const loadXLSX = () => import('xlsx');
+import { loadXLSX } from '@/lib/exportLoaders';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 
