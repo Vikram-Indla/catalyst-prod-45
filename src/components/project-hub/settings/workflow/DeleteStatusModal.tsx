@@ -37,7 +37,7 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
 
   const inputStyle: React.CSSProperties = {
     width: '100%', height: 40, padding: '0 12px', fontSize: 13,
-    color: '#0F172A', background: '#FFFFFF', border: '1px solid #E2E8F0',
+    color: 'var(--fg-1)', background: 'var(--cp-float)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
   };
 
