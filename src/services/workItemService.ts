@@ -254,6 +254,47 @@ export async function updateWorkItem(
     }
   }
 
+  // ── Jira write-back enqueue (non-blocking) ──
+  try {
+    const { data: item } = await supabase
+      .from('ph_work_items')
+      .select('id, jira_key, jira_sync_status')
+      .eq('id', id)
+      .maybeSingle() as any;
+
+    const { data: connection } = await supabase
+      .from('jira_connections')
+      .select('id')
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (connection && item?.jira_key) {
+      const payload: Record<string, any> = {};
+      if (changes.title !== undefined) payload.title = changes.title;
+      if (changes.description !== undefined) payload.description = changes.description;
+      if (changes.priority !== undefined) payload.priority = changes.priority;
+      if (changes.status_id !== undefined) payload.status_id = changes.status_id;
+      if (changes.assignee_id !== undefined) payload.assignee_id = changes.assignee_id;
+      payload.jira_key = item.jira_key;
+
+      await (supabase
+        .from('jira_write_back_queue') as any)
+        .insert({
+          ph_work_item_id: id,
+          operation: 'update',
+          operation_payload: payload,
+          status: 'pending',
+        });
+
+      await (supabase
+        .from('ph_work_items') as any)
+        .update({ jira_sync_status: 'pending' })
+        .eq('id', id);
+    }
+  } catch (jiraErr) {
+    console.error('Jira update enqueue failed:', jiraErr);
+  }
+
   return data;
 }
 
