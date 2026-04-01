@@ -240,7 +240,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
 
                     <div className="flex-1 min-w-0">
                       <div className="text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]" style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px' }}>{m.full_name}</div>
-                      <div style={{ fontSize: 12, color: ROLE_COLOR[m.project_role] || '#2563EB', fontWeight: 500, lineHeight: '18px' }}>
+                      <div style={{ fontSize: 12, color: ROLE_COLOR[m.project_role] || 'var(--cp-blue)', fontWeight: 500, lineHeight: '18px' }}>
                         {m.project_role || 'member'}
                       </div>
                       <div className="text-[#94A3B8] dark:text-[rgba(248,244,240,0.40)]" style={{ fontSize: 11, lineHeight: '16px' }}>

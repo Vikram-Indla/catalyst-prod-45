@@ -121,7 +121,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                 for (const s of item.statuses ?? []) {
                   statusMap[s.status] = s;
                 }
-                const rowBg = idx % 2 === 1 ? '#FAFBFC' : 'var(--bg-app)';
+                const rowBg = idx % 2 === 1 ? 'var(--bg-1)' : 'var(--bg-app)';
                 return (
                   <tr key={item.work_item_id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', background: rowBg }} className="ph-table-row">
                     {/* Release */}

@@ -59,25 +59,25 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-1)' }}>
       {error && (
-        <div style={{ background: '#FEF2F2', color: '#DC2626', padding: '8px 24px', fontSize: 12, fontFamily: "'Inter', sans-serif", borderBottom: '1px solid #FECACA' }}>
+        <div style={{ background: '#FEF2F2', color: 'var(--sem-danger)', padding: '8px 24px', fontSize: 12, fontFamily: "'Inter', sans-serif", borderBottom: '1px solid #FECACA' }}>
           ⚠ Board query error: {(error as Error).message} | projectId: {projectId}
         </div>
       )}
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0 }}>
+      <div style={{ background: 'var(--bg-app)', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0 }}>
         <div style={{ padding: '16px 24px 0' }}>
-          <div style={{ fontSize: 12, fontFamily: "'Inter', sans-serif", color: '#64748B', marginBottom: 6 }}>
+          <div style={{ fontSize: 12, fontFamily: "'Inter', sans-serif", color: 'var(--fg-3)', marginBottom: 6 }}>
             ProjectHub › Boards
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
             <div>
-              <h1 style={{ fontSize: 17, fontFamily: "'Sora', sans-serif", fontWeight: 700, color: '#0F172A', letterSpacing: '-0.4px', margin: 0 }}>Boards</h1>
-              <p style={{ fontSize: 12.5, color: '#64748B', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
+              <h1 style={{ fontSize: 17, fontFamily: "'Sora', sans-serif", fontWeight: 700, color: 'var(--fg-1)', letterSpacing: '-0.4px', margin: 0 }}>Boards</h1>
+              <p style={{ fontSize: 12.5, color: 'var(--fg-3)', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
                 {boards.length} board{boards.length !== 1 ? 's' : ''} in this project
               </p>
-              <p style={{ fontSize: 11, color: '#94A3B8', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
+              <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
                 Debug: projectId = {projectId}
               </p>
             </div>
@@ -86,7 +86,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
             {/* Search input */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6, height: 30, padding: '0 10px',
-              background: '#F8FAFC', border: `0.75px solid ${searchFocused ? '#2563EB' : 'rgba(15,23,42,0.06)'}`,
+              background: 'var(--bg-1)', border: `0.75px solid ${searchFocused ? 'var(--cp-blue)' : 'rgba(15,23,42,0.06)'}`,
               borderRadius: 4, width: 200,
               boxShadow: searchFocused ? '0 0 0 2px rgba(37,99,235,0.10)' : 'none',
               transition: 'border-color 150ms, box-shadow 150ms',
@@ -99,7 +99,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
                 placeholder="Search boards…"
                 style={{
                   border: 'none', outline: 'none', background: 'transparent', flex: 1,
-                  fontSize: 12.5, fontFamily: "'Inter', sans-serif", color: '#0F172A',
+                  fontSize: 12.5, fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)',
                   appearance: 'none' as any,
                 }}
               />
@@ -108,13 +108,13 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
               display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 12px',
               background: 'transparent', border: '0.75px solid rgba(15,23,42,0.12)',
               borderRadius: 6, cursor: 'pointer', fontSize: 12.5, fontWeight: 500,
-              color: '#334155', fontFamily: "'Inter', sans-serif",
+              color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif",
             }}>
               <SlidersHorizontal size={14} /> Filter
             </button>
             <button onClick={() => setCreateOpen(true)} style={{
               display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 14px',
-              background: '#2563EB', border: 'none', borderRadius: 6,
+              background: 'var(--cp-blue)', border: 'none', borderRadius: 6,
               cursor: 'pointer', fontSize: 12.5, fontWeight: 600, color: '#FFFFFF',
               fontFamily: "'Inter', sans-serif",
             }}>
@@ -129,16 +129,16 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
                   display: 'flex', alignItems: 'center', gap: 6, padding: '10px 16px',
                   border: 'none', background: 'transparent', cursor: 'pointer',
                   fontSize: 12.5, fontWeight: active ? 600 : 500,
-                  color: active ? '#2563EB' : '#64748B',
+                  color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
                   fontFamily: "'Inter', sans-serif",
-                  borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
+                  borderBottom: active ? '2px solid var(--cp-blue)' : '2px solid transparent',
                   marginBottom: -1,
                 }}>
                   {tab.label}
                   <span style={{
                     fontSize: 11, fontWeight: 600, padding: '1px 7px', borderRadius: 10,
-                    background: active ? 'rgba(37,99,235,0.08)' : '#F8FAFC',
-                    color: active ? '#2563EB' : '#94A3B8',
+                    background: active ? 'rgba(37,99,235,0.08)' : 'var(--bg-1)',
+                    color: active ? 'var(--cp-blue)' : 'var(--fg-4)',
                   }}>{tabCounts[tab.key]}</span>
                 </button>
               );
@@ -225,7 +225,7 @@ function SectionLabel({ label }: { label: string }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '16px 0 10px' }}>
       <span style={{
         fontSize: 11.5, fontWeight: 650, textTransform: 'uppercase' as const,
-        letterSpacing: '0.05em', color: '#94A3B8',
+        letterSpacing: '0.05em', color: 'var(--fg-4)',
         fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
       }}>{label}</span>
       <span style={{ flex: 1, height: 0.75, background: 'rgba(15,23,42,0.08)' }} />
@@ -255,20 +255,20 @@ function NewBoardCard({ onClick }: { onClick: () => void }) {
       style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         minHeight: 160, padding: 20,
-        border: `0.75px dashed ${hover ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
+        border: `0.75px dashed ${hover ? 'var(--cp-blue)' : 'rgba(15,23,42,0.12)'}`,
         borderRadius: 8, cursor: 'pointer',
-        background: hover ? '#EFF6FF' : 'transparent',
+        background: hover ? 'var(--cp-blue-wash)' : 'transparent',
         transition: 'all 150ms',
       }}
     >
       <Plus size={28} color={hover ? '#2563EB' : '#94A3B8'} strokeWidth={1.5} />
       <span style={{
         fontSize: 12.5, fontWeight: 500, marginTop: 8,
-        color: hover ? '#2563EB' : '#94A3B8',
+        color: hover ? 'var(--cp-blue)' : 'var(--fg-4)',
         fontFamily: "'Inter', sans-serif",
       }}>Create New Board</span>
       <span style={{
-        fontSize: 11.5, color: '#94A3B8', marginTop: 4,
+        fontSize: 11.5, color: 'var(--fg-4)', marginTop: 4,
         maxWidth: 220, textAlign: 'center', fontFamily: "'Inter', sans-serif",
       }}>Add a kanban board to organize and track work items</span>
     </button>

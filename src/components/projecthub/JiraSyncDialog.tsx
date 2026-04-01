@@ -380,7 +380,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                         {step.done ? <Check size={10} color="#FFF" /> :
                           progressPct > (i * 25) ? <Loader2 size={10} color="#FFF" className="animate-spin" /> : null}
                       </div>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: step.done ? '#16A34A' : '#71717A' }}>{step.label}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: step.done ? 'var(--sem-success)' : 'var(--fg-3)' }}>{step.label}</span>
                     </div>
                   ))}
                 </div>
@@ -610,7 +610,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                         }}>{p.name}</span>
                         <span style={{
                           fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
-                          color: p.issueCount > 0 ? '#71717A' : '#D4D4D8', flexShrink: 0, fontWeight: 500,
+                          color: p.issueCount > 0 ? 'var(--fg-3)' : '#D4D4D8', flexShrink: 0, fontWeight: 500,
                         }}>{p.issueCount} issues</span>
                       </label>
                     );

@@ -35,7 +35,7 @@ function statusBadge(status: string) {
     completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Completed' },
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Achieved' },
     at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
-    off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', label: 'Off Track' },
+    off_track:   { dot: 'var(--sem-danger)', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', label: 'Off Track' },
     draft:       { dot: '#94A3B8', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Draft' },
     not_started: { dot: '#94A3B8', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Not Started' },
     cancelled:   { dot: '#94A3B8', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Cancelled' },
@@ -50,7 +50,7 @@ function statusBadge(status: string) {
 }
 
 function progressBar(pct: number, height = 8) {
-  const color = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
+  const color = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : 'var(--sem-danger)';
   return (
     <div style={{ width: '100%', height, background: 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms' }} />
@@ -138,13 +138,13 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
   if (!isOpen) return null;
 
   const confPct = goal ? (typeof goal.confidence_level === 'number' ? (goal.confidence_level <= 1 ? Math.round(goal.confidence_level * 100) : Math.round(goal.confidence_level)) : 0) : 0;
-  const confColor = confPct >= 60 ? '#16A34A' : confPct >= 40 ? '#D97706' : '#EF4444';
+  const confColor = confPct >= 60 ? '#16A34A' : confPct >= 40 ? '#D97706' : 'var(--sem-danger)';
   const daysToDeadline = goal?.target_date ? Math.ceil((new Date(goal.target_date).getTime() - Date.now()) / 86400000) : null;
 
   // Status dot color
   const statusDotColor = goal ? ({
     active: '#16A34A', on_track: '#16A34A', completed: '#4F46E5',
-    at_risk: '#D97706', off_track: '#EF4444', draft: '#94A3B8',
+    at_risk: '#D97706', off_track: 'var(--sem-danger)', draft: '#94A3B8',
   }[goal.status] || '#94A3B8') : '#94A3B8';
 
   return (
@@ -389,7 +389,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
   })() : '—';
 
   const pct = Math.round(goal.progress_pct || 0);
-  const pctColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
+  const pctColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : 'var(--sem-danger)';
 
   const fields = [
     { label: 'Status', value: statusBadge(goal.status) },
@@ -444,10 +444,10 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
       <div style={{ background: '#DBEAFE', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 10, padding: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
           <Sparkles size={14} color="#2563EB" />
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Health Score</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Health Score</span>
         </div>
-        <div style={{ fontSize: 28, fontWeight: 700, color: '#2563EB', marginBottom: 6 }}>{aiScore != null ? aiScore : '—'}/100</div>
-        <div style={{ fontSize: 11, color: '#2563EB', marginBottom: 12, opacity: 0.8 }}>{aiLabel ?? 'Score not computed'}</div>
+        <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-blue)', marginBottom: 6 }}>{aiScore != null ? aiScore : '—'}/100</div>
+        <div style={{ fontSize: 11, color: 'var(--cp-blue)', marginBottom: 12, opacity: 0.8 }}>{aiLabel ?? 'Score not computed'}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {[
             { label: 'KR Velocity', value: krVelocity },
@@ -456,8 +456,8 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
             { label: 'Days to Deadline', value: daysToDeadline != null ? (daysToDeadline > 0 ? `${daysToDeadline}d` : 'Overdue') : '—' },
           ].map(f => (
             <div key={f.label} style={{ background: 'rgba(37,99,235,0.06)', borderRadius: 6, padding: '8px 10px' }}>
-              <div style={{ fontSize: 10, fontWeight: 600, color: '#2563EB', opacity: 0.7, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.label}</div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{f.value}</div>
+              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--cp-blue)', opacity: 0.7, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.label}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-blue)' }}>{f.value}</div>
             </div>
           ))}
         </div>
@@ -468,7 +468,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
 
 // ── Tab: Key Results — Fix 2: modern card layout ──
 function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loading: boolean; onCheckinClick?: (id: string) => void }) {
-  if (loading) return <div style={{ textAlign: 'center', color: '#94A3B8', padding: 40 }}>Loading key results...</div>;
+  if (loading) return <div style={{ textAlign: 'center', color: 'var(--fg-4)', padding: 40 }}>Loading key results...</div>;
   if (krs.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 20px' }}>
@@ -485,7 +485,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {krs.map(kr => {
         const pct = computeKRProgress(kr);
-        const pctColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
+        const pctColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : 'var(--sem-danger)';
         return (
           <div key={kr.id} className="kr-detail-card" style={{
             background: '#FFFFFF', border: '1px solid var(--divider)', borderRadius: 8,
@@ -531,7 +531,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
 
   const linkedIds = new Set(links.map(l => l.initiative_id));
 
-  if (isLoading) return <div style={{ textAlign: 'center', color: '#94A3B8', padding: 40 }}>Loading initiatives...</div>;
+  if (isLoading) return <div style={{ textAlign: 'center', color: 'var(--fg-4)', padding: 40 }}>Loading initiatives...</div>;
 
   return (
     <div>
@@ -591,7 +591,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
       )}
 
       {showSearch && (
-        <div style={{ marginTop: links.length > 0 ? 12 : 0, border: '1px solid var(--divider)', borderRadius: 8, padding: 12, background: '#FAFBFD' }}>
+        <div style={{ marginTop: links.length > 0 ? 12 : 0, border: '1px solid var(--divider)', borderRadius: 8, padding: 12, background: 'var(--bg-1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
             <Search size={14} color="#94A3B8" />
             <input
@@ -661,7 +661,7 @@ function CheckinsTab({ checkins, krs }: { checkins: KRCheckin[]; krs: KeyResult[
             <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', marginBottom: 4 }}>{kr?.kr_key} — {kr?.title || 'Unknown KR'}</div>
             <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 4 }}>
               {ci.previous_value} → {ci.new_value}
-              <span style={{ color: isPositive ? '#16A34A' : '#EF4444', marginLeft: 6 }}>({isPositive ? '+' : ''}{ci.delta_value})</span>
+              <span style={{ color: isPositive ? 'var(--sem-success)' : 'var(--sem-danger)', marginLeft: 6 }}>({isPositive ? '+' : ''}{ci.delta_value})</span>
             </div>
             {ci.note && <div style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.5, marginBottom: 4 }}>{ci.note}</div>}
             {ci.confidence_level != null && (

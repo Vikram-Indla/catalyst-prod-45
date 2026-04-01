@@ -224,7 +224,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
             className="transition-all disabled:opacity-40"
             style={{
               height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
-              color: '#FFFFFF', background: isDirty && !saving ? 'var(--cp-blue)' : '#93B4F1', border: 'none', borderRadius: 6,
+              color: '#FFFFFF', background: isDirty && !saving ? 'var(--cp-blue)' : 'var(--cp-blue-muted)', border: 'none', borderRadius: 6,
               cursor: isDirty && !saving ? 'pointer' : 'default',
             }}
             onMouseEnter={e => { if (isDirty && !saving) e.currentTarget.style.background = 'var(--cp-primary-70)'; }}

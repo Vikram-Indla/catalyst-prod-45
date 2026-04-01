@@ -153,7 +153,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
 
                   <button
                     className="flex items-center gap-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                    style={{ height: 28, padding: '0 10px', background: '#2563EB', border: 'none', fontSize: 11, fontWeight: 600, color: '#FFF', cursor: 'pointer' }}
+                    style={{ height: 28, padding: '0 10px', background: 'var(--cp-blue)', border: 'none', fontSize: 11, fontWeight: 600, color: '#FFF', cursor: 'pointer' }}
                     onClick={e => { e.stopPropagation(); handleAdd(u); }}
                   >
                     <UserPlus size={12} /> Add

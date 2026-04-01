@@ -77,7 +77,7 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
       <thead>
         <tr>
           <th className="h-9 w-10 border-b-2 border-border bg-muted/50 px-2 text-center dark:bg-muted/20">
-            <input type="checkbox" checked={allChecked} onChange={onToggleAll} style={{ width: 14, height: 14, accentColor: '#2563EB', cursor: 'pointer' }} />
+            <input type="checkbox" checked={allChecked} onChange={onToggleAll} style={{ width: 14, height: 14, accentColor: 'var(--cp-blue)', cursor: 'pointer' }} />
           </th>
           <th className="h-9 w-9 border-b-2 border-border bg-muted/50 px-1 dark:bg-muted/20" />
           <SortHeader label="Key" col="name" currentCol={sortCol} dir={sortDir} onSort={onSort} />
@@ -107,7 +107,7 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
                 <input
                   type="checkbox" checked={checked} onChange={() => onToggleRow(p.id)}
                   className="opacity-0 group-hover:opacity-100"
-                  style={{ width: 14, height: 14, accentColor: '#2563EB', cursor: 'pointer', ...(checked ? { opacity: 1 } : {}) }}
+                  style={{ width: 14, height: 14, accentColor: 'var(--cp-blue)', cursor: 'pointer', ...(checked ? { opacity: 1 } : {}) }}
                 />
               </td>
               <td className="px-1 text-center" onClick={e => e.stopPropagation()}>

@@ -77,7 +77,7 @@ function FilterDropdown({
         }}
       >
         {label}
-        {selected.length > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: '#2563EB', color: '#FFF', borderRadius: 99, padding: '0 5px', lineHeight: '16px' }}>{selected.length}</span>}
+        {selected.length > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: 'var(--cp-blue)', color: '#FFF', borderRadius: 99, padding: '0 5px', lineHeight: '16px' }}>{selected.length}</span>}
         <ChevronDown size={12} />
       </button>
       {open && (
@@ -100,7 +100,7 @@ function FilterDropdown({
                 onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(248,244,240,0.05)' : 'var(--cp-bd-zone)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
-                <input type="checkbox" checked={isSelected} onChange={() => onToggle(opt.id)} style={{ accentColor: '#2563EB' }} />
+                <input type="checkbox" checked={isSelected} onChange={() => onToggle(opt.id)} style={{ accentColor: 'var(--cp-blue)' }} />
                 {renderOption ? renderOption(opt) : (
                   <>
                     {opt.color && <span style={{ width: 8, height: 8, borderRadius: 2, background: opt.color, flexShrink: 0 }} />}
