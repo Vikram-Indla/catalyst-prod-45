@@ -418,41 +418,14 @@ export function GlobalSearch() {
           )}
         </div>
 
-        {/* LAYER 4 — Bottom tab bar (FIX 7) */}
+        {/* LAYER 4 — Bottom bar */}
         <div style={{
-          height: 36, borderTop: '1px solid #E2E8F0', background: '#FAFAFA',
-          padding: '0 8px', display: 'flex', alignItems: 'center', flexShrink: 0, gap: 0,
+          height: 32, borderTop: '1px solid #E2E8F0', background: '#FAFAFA',
+          padding: '0 12px', display: 'flex', alignItems: 'center', flexShrink: 0,
         }}>
-          <ChevronRight size={12} color="#94A3B8" style={{ marginRight: 4 }} />
-          <div style={{ width: 1, height: 16, background: '#E2E8F0', margin: '0 4px' }} />
-          {[
-            { label: 'Boards', icon: LayoutGrid, path: '/project-hub' },
-            { label: 'Hubs', icon: Home, path: '/' },
-            { label: 'Filters', icon: Filter, path: '/project-hub' },
-            { label: 'Projects', icon: FileEdit, path: '/project-hub' },
-            { label: 'Teams', icon: Users2, path: '/' },
-          ].map(tab => (
-            <button
-              key={tab.label}
-              onClick={() => { navigate(tab.path); close(); }}
-              style={{
-                height: 36, padding: '0 10px', fontSize: 11, color: '#6B778C',
-                background: 'none', border: 'none', borderBottom: '2px solid transparent',
-                cursor: 'pointer', gap: 5, display: 'flex', alignItems: 'center',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = '#F4F5F7';
-                e.currentTarget.style.color = '#172B4D';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'none';
-                e.currentTarget.style.color = '#6B778C';
-              }}
-            >
-              <tab.icon size={12} />
-              {tab.label}
-            </button>
-          ))}
+          <span style={{ fontSize: 11, color: '#94A3B8' }}>
+            {hasQuery ? `${results.length} results` : `${recents.length} recent items`}
+          </span>
         </div>
       </DialogContent>
     </Dialog>
