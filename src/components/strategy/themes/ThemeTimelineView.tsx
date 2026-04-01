@@ -30,7 +30,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
   const noDates = themes.filter(t => !t.start_date || !t.target_completion);
 
   return (
-    <div className="rounded-xl border overflow-hidden bg-white dark:bg-[#1A1714] border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
+    <div className="rounded-xl border overflow-hidden bg-white dark:bg-[#181A1E] border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
       {/* Header */}
       <div className="flex border-b border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
         <div className="shrink-0 flex items-center bg-slate-50 dark:bg-[rgba(255,255,255,0.03)]" style={{ width: 220, height: 36, padding: '0 12px' }}>

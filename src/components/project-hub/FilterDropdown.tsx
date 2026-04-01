@@ -50,7 +50,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
           padding: '0 12px',
           border: hasFilters ? '1px solid var(--cp-blue)' : `1px solid ${dark ? 'rgba(255,255,255,0.12)' : 'var(--divider)'}`,
           background: hasFilters ? (dark ? 'rgba(37,99,235,0.15)' : 'var(--cp-blue-wash)') : (dark ? 'transparent' : 'var(--bg-app)'),
-          color: hasFilters ? (dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : (dark ? 'rgba(248,244,240,0.72)' : 'var(--fg-2)'),
+          color: hasFilters ? (dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : (dark ? 'rgba(235,238,245,0.72)' : 'var(--fg-2)'),
           fontSize: 13,
           fontWeight: 500,
           cursor: 'pointer',
@@ -74,7 +74,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
           className="absolute top-full left-0 mt-1 z-50"
           style={{
             width: 280,
-            background: dark ? '#232019' : 'var(--bg-app)',
+            background: dark ? '#1F2128' : 'var(--bg-app)',
             border: `1px solid ${dark ? 'rgba(255,255,255,0.12)' : 'var(--divider)'}`,
             borderRadius: 8,
             boxShadow: dark ? 'none' : '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
@@ -103,7 +103,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
           <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'var(--divider)'}` }}>
             <button
               onClick={() => onChange({ statuses: [], healths: [] })}
-              style={{ fontSize: 12, color: dark ? 'rgba(248,244,240,0.50)' : 'var(--fg-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 12, color: dark ? 'rgba(235,238,245,0.50)' : 'var(--fg-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               Clear all
             </button>
@@ -152,7 +152,7 @@ function FilterSection({
         style={{
           fontSize: 10,
           fontWeight: 600,
-          color: dark ? 'rgba(248,244,240,0.50)' : 'var(--fg-3)',
+          color: dark ? 'rgba(235,238,245,0.50)' : 'var(--fg-3)',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
           marginBottom: 6,
@@ -164,7 +164,7 @@ function FilterSection({
         <label
           key={opt}
           className="flex items-center gap-2 py-1 cursor-pointer rounded px-1"
-          style={{ fontSize: 12, color: dark ? 'rgba(248,244,240,0.85)' : 'var(--fg-2)' }}
+          style={{ fontSize: 12, color: dark ? 'rgba(235,238,245,0.85)' : 'var(--fg-2)' }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = dark ? 'rgba(255,255,255,0.04)' : 'var(--bg-1)'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; }}
         >
@@ -240,7 +240,7 @@ export function FilterChips({
       ))}
       <button
         onClick={() => onChange({ statuses: [], healths: [] })}
-        style={{ fontSize: 11, color: dark ? 'rgba(248,244,240,0.50)' : 'var(--fg-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+        style={{ fontSize: 11, color: dark ? 'rgba(235,238,245,0.50)' : 'var(--fg-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
       >
         Clear all
       </button>

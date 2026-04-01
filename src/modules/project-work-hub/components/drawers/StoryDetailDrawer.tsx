@@ -390,7 +390,7 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
 
                   {/* Jira Sync Status */}
                   {jiraSyncData?.jira_key && (
-                    <div style={{ borderTop: '0.75px solid #E2E8F0', paddingTop: 16, marginTop: 16 }} className="dark:!border-[#2C2820]">
+                    <div style={{ borderTop: '0.75px solid #E2E8F0', paddingTop: 16, marginTop: 16 }} className="dark:!border-[#262830]">
                       <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 12 }}>Jira Sync</div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
