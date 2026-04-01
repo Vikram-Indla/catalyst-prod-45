@@ -95,6 +95,19 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
     enabled: !!storyId && isOpen,
   });
 
+  // Jira sync fields from ph_work_items
+  const { data: jiraSyncData } = useQuery({
+    queryKey: ['story-drawer-jira-sync', story?.issue_key],
+    queryFn: async () => {
+      if (!story?.issue_key) return null;
+      const { data } = await (supabase.from('ph_work_items') as any)
+        .select('jira_key, jira_sync_status, jira_pushed_at')
+        .eq('item_key', story.issue_key)
+        .maybeSingle();
+      return data as { jira_key: string | null; jira_sync_status: string | null; jira_pushed_at: string | null } | null;
+    },
+  });
+
   // Comments query
   const { data: comments = [], isLoading: commentsLoading } = useQuery({
     queryKey: ['story-drawer-comments', story?.issue_key],
@@ -374,9 +387,38 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                       </span>
                     </DetailRow>
                   </div>
+
+                  {/* Jira Sync Status */}
+                  {jiraSyncData?.jira_key && (
+                    <div style={{ borderTop: '0.75px solid #E2E8F0', paddingTop: 16, marginTop: 16 }} className="dark:!border-[#2C2820]">
+                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 12 }}>Jira Sync</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Jira Issue</span>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '2px 8px', borderRadius: 4, background: '#F1F5F9', color: '#1E293B' }}>{jiraSyncData.jira_key}</span>
+                        </div>
+                        {jiraSyncData.jira_sync_status && (
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Sync Status</span>
+                            <span style={{
+                              display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3,
+                              fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+                              backgroundColor: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#E3FCEF' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#DEEBFF' : '#DFE1E6',
+                              color: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#006644' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#0747A6' : '#253858',
+                            }}>{jiraSyncData.jira_sync_status}</span>
+                          </div>
+                        )}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Last Synced</span>
+                          <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
+                            {jiraSyncData.jira_pushed_at ? format(new Date(jiraSyncData.jira_pushed_at), 'MMM d, yyyy, hh:mm a') : '—'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
-
               {activeTab === 'comments' && (
                 <CommentsPane comments={comments} isLoading={commentsLoading} />
               )}
