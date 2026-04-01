@@ -159,20 +159,20 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
         <SidebarField label="Assignee">
           <div className="flex items-center gap-2">
             {item.assignee_name ? (
-              <><MiniAvatar name={item.assignee_name} size={22} /><span className="text-[13px] font-medium" style={{ color: '#1E293B' }}>{item.assignee_name}</span></>
+              <><MiniAvatar name={item.assignee_name} size={22} /><span className="text-[13px] font-medium" style={{ color: 'var(--fg-1)' }}>{item.assignee_name}</span></>
             ) : (
-              <span className="text-[13px]" style={{ color: '#94A3B8' }}>Unassigned</span>
+              <span className="text-[13px]" style={{ color: 'var(--fg-4)' }}>Unassigned</span>
             )}
           </div>
-          <button onClick={handleAssignToMe} className="text-[11px] font-medium mt-0.5 hover:underline" style={{ color: '#2563EB' }}>Assign to me</button>
+          <button onClick={handleAssignToMe} className="text-[11px] font-medium mt-0.5 hover:underline" style={{ color: 'var(--cp-blue)' }}>Assign to me</button>
         </SidebarField>
 
         <SidebarField label="Reporter">
           <div className="flex items-center gap-2">
             {item.reporter_name ? (
-              <><MiniAvatar name={item.reporter_name} size={22} /><span className="text-[13px] font-medium" style={{ color: '#1E293B' }}>{item.reporter_name}</span></>
+              <><MiniAvatar name={item.reporter_name} size={22} /><span className="text-[13px] font-medium" style={{ color: 'var(--fg-1)' }}>{item.reporter_name}</span></>
             ) : (
-              <span className="text-[13px]" style={{ color: '#94A3B8' }}>—</span>
+              <span className="text-[13px]" style={{ color: 'var(--fg-4)' }}>—</span>
             )}
           </div>
         </SidebarField>

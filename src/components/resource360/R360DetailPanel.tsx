@@ -209,7 +209,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 ) : cell.isBar ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '14px', fontWeight: 700, color: ageCol(cell.value as number), fontVariantNumeric: 'tabular-nums' }}>{cell.value}</span>
-                    <div style={{ width: '60px', height: '4px', borderRadius: '2px', background: '#F1F5F9', overflow: 'hidden' }}>
+                    <div style={{ width: '60px', height: '4px', borderRadius: '2px', background: 'var(--bg-3)', overflow: 'hidden' }}>
                       <div style={{
                         height: '100%', borderRadius: '2px',
                         width: `${Math.min((cell.value as number) / 21 * 100, 100)}%`,
@@ -230,7 +230,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
 
           {/* Hierarchy */}
           <div style={{ padding: '16px 20px', borderBottom: '1px solid #F1F5F9' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '10px' }}>Hierarchy</div>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '10px' }}>Hierarchy</div>
             {item.parent_key ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {/* Parent */}

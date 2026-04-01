@@ -199,10 +199,10 @@ export function HierarchyContextMenu({
           <span style={{ fontSize: 11, color: 'var(--sem-danger)' }}>Delete?</span>
           <button onClick={() => { onDelete(); onClose(); }} style={{
             fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 3,
-            background: '#DC2626', color: '#FFFFFF', border: 'none', cursor: 'pointer',
+            background: 'var(--sem-danger)', color: '#FFFFFF', border: 'none', cursor: 'pointer',
           }}>Yes</button>
           <button onClick={() => setConfirmDelete(false)} style={{
-            fontSize: 11, padding: '2px 8px', color: '#64748B', background: 'none', border: 'none', cursor: 'pointer',
+            fontSize: 11, padding: '2px 8px', color: 'var(--fg-3)', background: 'none', border: 'none', cursor: 'pointer',
           }}>No</button>
         </div>
       ) : (

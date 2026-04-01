@@ -262,9 +262,9 @@ export function WorkItemsPage() {
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 0}
               className="p-1.5 rounded-md border disabled:opacity-30 transition-colors"
-              style={{ borderColor: 'var(--wh-border, #e2e8f0)' }}
+              style={{ borderColor: 'var(--divider)' }}
             >
-              <ChevronLeft className="w-3.5 h-3.5" style={{ color: 'var(--wh-text-secondary, #64748b)' }} />
+              <ChevronLeft className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
             </button>
             {Array.from({ length: Math.min(totalPages, 7) }).map((_, i) => {
               let pageNum: number;
@@ -290,9 +290,9 @@ export function WorkItemsPage() {
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage >= totalPages - 1}
               className="p-1.5 rounded-md border disabled:opacity-30 transition-colors"
-              style={{ borderColor: 'var(--wh-border, #e2e8f0)' }}
+              style={{ borderColor: 'var(--divider)' }}
             >
-              <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--wh-text-secondary, #64748b)' }} />
+              <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
             </button>
           </div>
         </div>
