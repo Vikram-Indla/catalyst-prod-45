@@ -352,10 +352,12 @@ function CatalystShellContent() {
           </div>
 
         {/* Route content scroll container (single scroll parent) - workspace frame */}
-        <main data-catalyst-main className="flex-1 min-w-0 flex flex-col overflow-hidden" style={{ background: 'var(--cp-bg)' }}>
+        <main data-catalyst-main className="flex-1 min-w-0 w-full max-w-full flex flex-col overflow-hidden" style={{ background: 'var(--cp-bg)' }}>
           <Suspense fallback={null}><AnnouncementBanner /></Suspense>
-          <div className="flex-1 min-h-0 overflow-auto flex flex-col">
-            <Outlet />
+          <div className="flex-1 min-h-0 w-full max-w-full overflow-y-auto overflow-x-hidden flex flex-col">
+            <div className="w-full max-w-full">
+              <Outlet />
+            </div>
           </div>
         </main>
       </div>
