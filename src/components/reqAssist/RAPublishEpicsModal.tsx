@@ -135,7 +135,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
               border: '0.75px solid var(--divider)', borderRadius: 6,
-              padding: '0 10px', height: 36, marginBottom: 12, background: '#FFFFFF',
+              padding: '0 10px', height: 36, marginBottom: 12, background: 'var(--bg-app)',
             }}>
               <Search size={14} color="var(--fg-4)" />
               <input
@@ -177,7 +177,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={onClose} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
+                border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
               }}>Cancel</button>
             </div>
           </>
@@ -214,7 +214,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => setStep(1)} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
+                border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
               }}>Back</button>
               <button
                 onClick={handlePublish}

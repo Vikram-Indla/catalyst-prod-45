@@ -219,7 +219,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
   };
 
   const nav = useNavigate();
-  const progressColor = done ? '#16A34A' : step === -1 ? '#DC2626' : '#2563EB';
+  const progressColor = done ? 'var(--sem-success)' : step === -1 ? 'var(--sem-danger)' : 'var(--cp-blue)';
 
   return (
     <>
@@ -278,7 +278,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Close
@@ -344,7 +344,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Close
@@ -410,7 +410,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                       <div style={{
                         width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: state === 'done' ? '#DCFCE7' : state === 'active' ? '#EFF6FF' : '#F3F4F6',
+                        background: state === 'done' ? '#DCFCE7' : state === 'active' ? 'var(--cp-primary-5)' : '#F3F4F6',
                       }}>
                         {state === 'done' ? (
                           <Check size={14} color="var(--sem-success)" strokeWidth={2.5} />
@@ -423,7 +423,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                       <span style={{
                         fontSize: 13,
                         fontWeight: state === 'active' ? 600 : state === 'done' ? 500 : 400,
-                        color: state === 'done' ? '#374151' : state === 'active' ? '#2563EB' : '#9CA3AF',
+                        color: state === 'done' ? 'var(--fg-2)' : state === 'active' ? 'var(--cp-blue)' : 'var(--fg-4)',
                       }}>
                         {s}
                       </span>
@@ -431,7 +431,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                     {i < STEPS.length - 1 && (
                       <div style={{
                         width: 2, height: 10, marginLeft: 13,
-                        background: state === 'done' ? '#DCFCE7' : '#E2E8F0',
+                        background: state === 'done' ? '#DCFCE7' : 'var(--divider)',
                       }} />
                     )}
                   </div>
@@ -454,7 +454,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Stay on this page
@@ -463,7 +463,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={onClose}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                  border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
+                  border: '0.75px solid #CBD5E1', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer',
                 }}
               >
                 Leave & Notify Me When Done

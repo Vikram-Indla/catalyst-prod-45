@@ -167,7 +167,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
             <span style={{
               display: 'inline-flex', alignItems: 'center',
               padding: '1px 8px', borderRadius: 10,
-              border: '1px solid rgba(15,23,42,0.15)', background: '#FFFFFF',
+              border: '1px solid rgba(15,23,42,0.15)', background: 'var(--bg-app)',
               fontSize: 12, fontWeight: 600, color: 'var(--fg-2)',
               fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
             }}>
@@ -275,7 +275,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                       <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'flex-end' }}>
                         <button onClick={cancelEdit} style={{
                           padding: '4px 12px', fontSize: 12, fontWeight: 500, borderRadius: 5,
-                          border: '0.75px solid rgba(15,23,42,0.15)', background: '#FFFFFF',
+                          border: '0.75px solid rgba(15,23,42,0.15)', background: 'var(--bg-app)',
                           color: 'var(--fg-3)', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
                         }}>Cancel</button>
                         <button onClick={saveEdit} disabled={savingEdit} style={{
@@ -346,12 +346,12 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                               display: 'inline-flex', alignItems: 'center', gap: 4,
                               fontSize: 12, fontWeight: 500, color: 'var(--fg-3)',
                               border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 5,
-                              background: '#FFFFFF', cursor: 'pointer',
+                              background: 'var(--bg-app)', cursor: 'pointer',
                               fontFamily: "'Inter', sans-serif",
                             }}
                             onMouseEnter={e => {
                               e.currentTarget.style.background = 'rgba(220,38,38,0.04)';
-                              e.currentTarget.style.color = '#DC2626';
+                              e.currentTarget.style.color = 'var(--sem-danger)';
                             }}
                             onMouseLeave={e => {
                               e.currentTarget.style.background = 'var(--bg-app)';
@@ -390,7 +390,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                 style={{
                   flex: 1, height: 36, fontSize: 13, fontWeight: 600,
                   borderRadius: 6, border: '0.75px solid rgba(15,23,42,0.15)',
-                  background: '#FFFFFF', color: 'var(--fg-2)',
+                  background: 'var(--bg-app)', color: 'var(--fg-2)',
                   cursor: 'pointer', fontFamily: "'Inter', sans-serif",
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}

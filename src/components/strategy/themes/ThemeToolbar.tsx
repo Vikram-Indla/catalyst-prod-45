@@ -51,7 +51,7 @@ export function ThemeToolbar(props: Props) {
     >
       {/* Search */}
       <div className="relative" style={{ width: 240 }}>
-        <Search size={14} color={isDark ? 'var(--cp-t3)' : '#94A3B8'} className="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none" />
+        <Search size={14} color={isDark ? 'var(--cp-t3)' : 'var(--fg-4)'} className="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none" />
         <input
           type="text"
           placeholder="Search themes..."
@@ -77,7 +77,7 @@ export function ThemeToolbar(props: Props) {
             ...(props.statusFilter
               ? (isDark
                 ? { background: 'rgba(59,130,246,0.12)', borderColor: '#3B82F6', color: '#93C5FD' }
-                : { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' })
+                : { background: 'var(--cp-primary-5)', borderColor: 'var(--cp-blue)', color: 'var(--cp-blue)' })
               : {}),
           }}
         >
@@ -101,7 +101,7 @@ export function ThemeToolbar(props: Props) {
             ...(props.ownerFilter
               ? (isDark
                 ? { background: 'rgba(59,130,246,0.12)', borderColor: '#3B82F6', color: '#93C5FD' }
-                : { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' })
+                : { background: 'var(--cp-primary-5)', borderColor: 'var(--cp-blue)', color: 'var(--cp-blue)' })
               : {}),
           }}
         >
@@ -122,7 +122,7 @@ export function ThemeToolbar(props: Props) {
             ...(props.bscFilter
               ? (isDark
                 ? { background: 'rgba(59,130,246,0.12)', borderColor: '#3B82F6', color: '#93C5FD' }
-                : { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' })
+                : { background: 'var(--cp-primary-5)', borderColor: 'var(--cp-blue)', color: 'var(--cp-blue)' })
               : {}),
           }}
         >
@@ -146,7 +146,7 @@ export function ThemeToolbar(props: Props) {
             ...(props.fyFilter
               ? (isDark
                 ? { background: 'rgba(59,130,246,0.12)', borderColor: '#3B82F6', color: '#93C5FD' }
-                : { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' })
+                : { background: 'var(--cp-primary-5)', borderColor: 'var(--cp-blue)', color: 'var(--cp-blue)' })
               : {}),
           }}
         >
@@ -172,11 +172,11 @@ export function ThemeToolbar(props: Props) {
             style={{
               width: 34, height: 30,
               background: props.view === v.key
-                ? (isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF')
+                ? (isDark ? 'rgba(59,130,246,0.12)' : 'var(--cp-primary-5)')
                 : (isDark ? 'transparent' : 'var(--bg-app)'),
               color: props.view === v.key
-                ? (isDark ? '#93C5FD' : '#2563EB')
-                : (isDark ? 'var(--cp-t2)' : '#64748B'),
+                ? (isDark ? '#93C5FD' : 'var(--cp-blue)')
+                : (isDark ? 'var(--cp-t2)' : 'var(--fg-3)'),
               border: 'none', cursor: 'pointer',
               borderRight: `1px solid ${borderColor}`,
             }}

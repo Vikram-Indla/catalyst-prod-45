@@ -230,10 +230,10 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                 <JiraIcon type={item.item_type} />
                 <span style={{ fontSize: '10.5px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-2)' }}>{item.item_type}</span>
               </div>
-              <span style={{ fontSize: '10.5px', fontWeight: 500, color: '#64748B', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
+              <span style={{ fontSize: '10.5px', fontWeight: 500, color: 'var(--fg-3)', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', 'SF Mono', monospace" }}>{item.item_key}</span>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', 'SF Mono', monospace" }}>{item.item_key}</span>
               {item.project_key && (
                 <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', color: '#FFFFFF', background: projColor }}>{item.project_key}</span>
               )}
@@ -295,14 +295,14 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           {showDone && (
             <div style={{
               position: 'absolute', right: '64px', top: '50%', transform: 'translateY(-50%)',
-              width: '340px', maxHeight: '420px', background: '#FFFFFF',
-              border: '1px solid #E2E8F0', borderRadius: '12px',
+              width: '340px', maxHeight: '420px', background: 'var(--cp-float)',
+              border: '1px solid var(--divider)', borderRadius: '12px',
               boxShadow: '0 8px 30px rgba(15,23,42,.12), 0 2px 8px rgba(15,23,42,.06)',
               overflow: 'hidden', zIndex: 11,
             }}>
               {/* Header */}
               <div style={{
-                padding: '14px 16px', borderBottom: '1px solid #F1F5F9',
+                padding: '14px 16px', borderBottom: '1px solid var(--bg-3)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -334,7 +334,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                     style={{
                       display: 'flex', alignItems: 'flex-start', gap: '10px',
                       padding: '10px 16px', cursor: 'pointer',
-                      borderBottom: '1px solid #F8FAFC', transition: 'background .1s',
+                      borderBottom: '1px solid var(--bg-1)', transition: 'background .1s',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = '#F0FDF4')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -355,7 +355,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
                         <span style={{
-                          fontSize: '11.5px', fontWeight: 600, color: '#16A34A',
+                          fontSize: '11.5px', fontWeight: 600, color: 'var(--sem-success)',
                           fontFamily: "'JetBrains Mono', monospace",
                         }}>
                           {item.item_key}
@@ -373,13 +373,13 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                       }}>
                         {item.title}
                       </div>
-                      <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                      <div style={{ fontSize: '11px', color: 'var(--fg-3)', marginTop: '2px' }}>
                         Resolved · {formatResolvedDate(item.resolved_at || item.updated_at)}
                       </div>
                     </div>
 
                     {/* Age */}
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#16A34A', flexShrink: 0 }}>
+                    <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--sem-success)', flexShrink: 0 }}>
                       {item.age_days ?? 0}d
                     </span>
                   </div>

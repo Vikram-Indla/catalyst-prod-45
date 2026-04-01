@@ -189,7 +189,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             }}>
               <span style={{
                 width: 4, height: 4, borderRadius: '50%', flexShrink: 0,
-                background: queueRunning > 0 ? '#16A34A' : '#94A3B8',
+                background: queueRunning > 0 ? 'var(--sem-success)' : 'var(--fg-4)',
                 boxShadow: queueRunning > 0 ? '0 0 0 3px rgba(22,163,74,0.15)' : 'none',
                 animation: queueRunning > 0 ? 'ra-pulse-dot 1.2s ease-in-out infinite' : 'none',
               }} />

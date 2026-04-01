@@ -230,8 +230,8 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
         }}>
           <button onClick={onClose} style={{
             padding: '8px 16px', borderRadius: 8, border: '1px solid var(--divider)',
-            background: '#fff', fontSize: 13, fontWeight: 500, cursor: 'pointer',
-            color: '#64748b',
+            background: 'var(--cp-float)', fontSize: 13, fontWeight: 500, cursor: 'pointer',
+            color: 'var(--fg-3)',
           }}>
             Cancel
           </button>
@@ -240,7 +240,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
             disabled={isPending}
             style={{
               padding: '8px 20px', borderRadius: 8, border: 'none',
-              background: 'var(--wh-primary, #2563eb)', color: '#fff',
+              background: 'var(--cp-blue)', color: 'var(--bg-app)',
               fontSize: 13, fontWeight: 600, cursor: isPending ? 'wait' : 'pointer',
               opacity: isPending ? 0.7 : 1,
             }}

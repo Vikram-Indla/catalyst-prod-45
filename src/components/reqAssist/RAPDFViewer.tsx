@@ -53,9 +53,9 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
         {/* Toolbar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 20px', borderBottom: '1px solid rgba(15,23,42,0.06)', flexShrink: 0, background: 'var(--bg-app)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} style={{ border: '1px solid rgba(15,23,42,0.12)', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}><ChevronLeft size={14} color={page <= 1 ? '#CBD5E1' : '#334155'} /></button>
+            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} style={{ border: '1px solid rgba(15,23,42,0.12)', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}><ChevronLeft size={14} color={page <= 1 ? '#CBD5E1' : 'var(--fg-2)'} /></button>
             <span style={{ fontSize: 12, color: 'var(--fg-2)', fontFamily: "'JetBrains Mono', monospace" }}>Page {page} of {totalPages}</span>
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} style={{ border: '1px solid rgba(15,23,42,0.12)', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}><ChevronRight size={14} color={page >= totalPages ? '#CBD5E1' : '#334155'} /></button>
+            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} style={{ border: '1px solid rgba(15,23,42,0.12)', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}><ChevronRight size={14} color={page >= totalPages ? '#CBD5E1' : 'var(--fg-2)'} /></button>
             <div style={{ width: 1, height: 20, background: 'rgba(15,23,42,0.12)', margin: '0 4px' }} />
             <button onClick={() => setZoom(z => Math.max(50, z - 25))} style={{ border: '1px solid rgba(15,23,42,0.12)', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: 'pointer' }}><ZoomOut size={14} color="var(--fg-2)" /></button>
             <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace", minWidth: 36, textAlign: 'center' }}>{zoom}%</span>
@@ -88,7 +88,7 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
                 {doc.content_processed.length > 800 ? '...' : ''}
               </p>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 16px', background: '#EFF6FF', borderRadius: 'var(--ra-radius-card)', border: '1px solid #DBEAFE' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 16px', background: 'var(--cp-primary-5)', borderRadius: 'var(--ra-radius-card)', border: '1px solid #DBEAFE' }}>
                 <Info size={16} color="var(--cp-blue)" style={{ marginTop: 1, flexShrink: 0 }} />
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#1E40AF', fontFamily: "'Inter', sans-serif" }}>Content is being extracted</div>

@@ -43,7 +43,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         width: 280, height: 36, borderRadius: 6,
-        border: `0.75px solid ${focused ? '#2563EB' : 'rgba(15,23,42,0.15)'}`,
+        border: `0.75px solid ${focused ? 'var(--cp-blue)' : 'rgba(15,23,42,0.15)'}`,
         boxShadow: focused ? '0 0 0 3px rgba(37,99,235,0.12)' : 'none',
         padding: '0 12px', background: 'var(--bg-app)',
         transition: 'border-color 150ms, box-shadow 150ms',
@@ -111,7 +111,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
             padding: '0 14px', height: 36, fontSize: 13, fontWeight: 600,
             border: 'none', borderRadius: 6,
             background: syncingAll
-              ? '#94A3B8'
+              ? 'var(--fg-4)'
               : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
             boxShadow: syncingAll ? 'none' : '0 1px 3px rgba(37,99,235,0.35)',
             color: '#FFFFFF',

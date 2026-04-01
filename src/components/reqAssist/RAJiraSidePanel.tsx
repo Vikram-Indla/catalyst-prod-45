@@ -432,7 +432,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                       <div style={{
                         width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: step.state === 'complete' ? '#16A34A' : step.state === 'active' ? '#2563EB' : '#FFFFFF',
+                        background: step.state === 'complete' ? 'var(--sem-success)' : step.state === 'active' ? 'var(--cp-blue)' : 'var(--bg-app)',
                         border: step.state === 'pending' ? '1.5px solid #CBD5E1' : 'none',
                       }}>
                         {step.state === 'complete' && (
@@ -445,7 +445,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                       <span style={{
                         fontSize: 11, textAlign: 'center', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif",
                         fontWeight: step.state === 'active' ? 600 : step.state === 'complete' ? 500 : 400,
-                        color: step.state === 'complete' ? '#16A34A' : step.state === 'active' ? '#2563EB' : '#94A3B8',
+                        color: step.state === 'complete' ? 'var(--sem-success)' : step.state === 'active' ? 'var(--cp-blue)' : 'var(--fg-4)',
                       }}>{step.label}</span>
                     </div>
                     {i < stepsRaw.length - 1 && (
@@ -520,7 +520,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               </MetaRow>
               {/* D07: Domain populated */}
               <MetaRow label="Domain">
-                <span style={{ fontSize: 13, color: domain ? '#475569' : '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
+                <span style={{ fontSize: 13, color: domain ? 'var(--fg-2)' : 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>
                   {domain || (
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
@@ -863,7 +863,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
           {epicCount === 0 ? (
             <button onClick={() => onGenerate('epics')} style={{
               width: '100%', height: 40, fontSize: 14, fontWeight: 600, borderRadius: 6,
-              border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
+              border: 'none', background: 'var(--cp-blue)', color: '#FFFFFF', cursor: 'pointer',
               fontFamily: "'Inter', sans-serif", boxShadow: '0 1px 3px rgba(37,99,235,0.35)',
             }}>
               Generate Epics for this BRD
