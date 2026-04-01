@@ -168,13 +168,23 @@ function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
         {item.project_name && <span style={{ color: "#C1C7D0" }}>·</span>}
         {item.assignee_name && (
           <>
-            <span style={{
-              width: 20, height: 20, borderRadius: "50%", fontSize: 9, fontWeight: 600,
-              color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center",
-              backgroundColor: getAvatarColor(item.assignee_name), flexShrink: 0,
-            }}>
-              {getInitials(item.assignee_name)}
-            </span>
+            {(() => {
+              const avatarUrl = avatarMap.get(item.assignee_name!.toLowerCase());
+              const ini = getInitials(item.assignee_name!);
+              const clr = getAvatarColor(item.assignee_name!);
+              return avatarUrl ? (
+                <img src={avatarUrl} alt={item.assignee_name!}
+                  style={{ width: 22, height: 22, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+              ) : (
+                <span style={{
+                  width: 22, height: 22, borderRadius: "50%", fontSize: 9, fontWeight: 600,
+                  color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  backgroundColor: clr, flexShrink: 0,
+                }}>
+                  {ini}
+                </span>
+              );
+            })()}
             <span style={{ color: "#C1C7D0" }}>·</span>
           </>
         )}
