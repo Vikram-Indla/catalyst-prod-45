@@ -144,7 +144,7 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
                     {item.status}
                   </span>
                   {/* Priority */}
-                  <span style={{ fontSize: 11, color: '#475569', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                  <span style={{ fontSize: 11, color: 'var(--fg-2)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                     {PRIORITY_ICONS[item.priority] || ''} {item.priority}
                   </span>
                 </div>
@@ -158,8 +158,8 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
             aria-label="Close modal"
             style={{
               width: 32, height: 32, borderRadius: 8,
-              border: '1px solid #E2E8F0', background: '#FFFFFF',
-              cursor: 'pointer', fontSize: 16, color: '#64748B',
+              border: '1px solid var(--divider)', background: 'var(--cp-float)',
+              cursor: 'pointer', fontSize: 16, color: 'var(--fg-3)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
             }}

@@ -51,9 +51,9 @@ function MultiSelectFilter({ label, icon, options, selected, onChange }: {
           display: 'inline-flex', alignItems: 'center', gap: 6,
           padding: '6px 12px', borderRadius: 8,
           border: '1px solid var(--divider)',
-          background: selected.length > 0 ? '#eff6ff' : 'var(--wh-surface, #fff)',
+          background: selected.length > 0 ? '#eff6ff' : 'var(--cp-float)',
           fontSize: 13, fontWeight: 500, cursor: 'pointer',
-          color: selected.length > 0 ? '#2563eb' : 'var(--wh-text-secondary, #64748b)',
+          color: selected.length > 0 ? '#2563eb' : 'var(--fg-3)',
         }}
       >
         {icon}
@@ -192,7 +192,7 @@ export function ReleasesPage() {
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: '100%', color: 'var(--wh-text-secondary, #64748b)',
+        height: '100%', color: 'var(--fg-3)',
       }}>
         <Loader2 className="animate-spin" size={24} />
         <span style={{ marginLeft: 8, fontSize: 14 }}>Loading releases...</span>
@@ -238,7 +238,7 @@ export function ReleasesPage() {
               padding: '6px 16px', borderRadius: 9999, border: 'none',
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
               background: isActive ? 'var(--wh-primary, #2563eb)' : 'var(--wh-border-light, #f1f5f9)',
-              color: isActive ? '#fff' : 'var(--wh-text-secondary, #64748b)',
+              color: isActive ? '#fff' : 'var(--fg-3)',
               transition: 'background 150ms, color 150ms',
             }}>
               {tab} ({tabCounts[tab] ?? 0})
@@ -295,7 +295,7 @@ export function ReleasesPage() {
       {filtered.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '48px 0',
-          color: 'var(--wh-text-tertiary, #94a3b8)', fontSize: 14,
+          color: 'var(--fg-4)', fontSize: 14,
         }}>
           No {activeTab === 'All' ? '' : activeTab.toLowerCase() + ' '}releases found
         </div>
