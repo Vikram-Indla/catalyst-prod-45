@@ -16,16 +16,18 @@ export function OrphanObjectsDialog({ open, onOpenChange }: OrphanObjectsDialogP
   const { data: epicsWithoutPI } = useQuery({
     queryKey: ['orphan-epics-no-pi'],
     queryFn: async () => {
-      const { data: allEpics } = await supabase
+      const { data: allEpics, error: epicsErr } = await supabase
         .from('epics')
         .select('id, name, epic_key')
         .is('deleted_at', null)
         .is('parked_at', null);
-      
-      const { data: assignedEpicIds } = await supabase
+      if (epicsErr) throw epicsErr;
+
+      const { data: assignedEpicIds, error: assignErr } = await supabase
         .from('epic_program_increments')
         .select('epic_id');
-      
+      if (assignErr) throw assignErr;
+
       const assignedIds = new Set(assignedEpicIds?.map(e => e.epic_id) || []);
       return allEpics?.filter(e => !assignedIds.has(e.id)) || [];
     },
@@ -36,12 +38,13 @@ export function OrphanObjectsDialog({ open, onOpenChange }: OrphanObjectsDialogP
   const { data: epicsWithoutProgram } = useQuery({
     queryKey: ['orphan-epics-no-program'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('epics')
         .select('id, name, epic_key')
         .is('primary_program_id', null)
         .is('deleted_at', null)
         .is('parked_at', null);
+      if (error) throw error;
       return data || [];
     },
     enabled: open,
@@ -51,12 +54,13 @@ export function OrphanObjectsDialog({ open, onOpenChange }: OrphanObjectsDialogP
   const { data: epicsWithoutTheme } = useQuery({
     queryKey: ['orphan-epics-no-theme'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('epics')
         .select('id, name, epic_key')
         .is('theme_id', null)
         .is('deleted_at', null)
         .is('parked_at', null);
+      if (error) throw error;
       return data || [];
     },
     enabled: open,
@@ -66,10 +70,11 @@ export function OrphanObjectsDialog({ open, onOpenChange }: OrphanObjectsDialogP
   const { data: featuresWithoutEpic } = useQuery({
     queryKey: ['orphan-features-no-epic'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('features')
         .select('id, name')
         .is('epic_id', null);
+      if (error) throw error;
       return data || [];
     },
     enabled: open,
