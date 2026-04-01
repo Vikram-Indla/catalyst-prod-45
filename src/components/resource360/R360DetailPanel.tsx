@@ -145,14 +145,14 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
         animation: 'r3SlideIn 250ms cubic-bezier(.32,.72,0,1) forwards',
       }}>
         {/* Header */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', background: '#FFFFFF', position: 'sticky', top: 0, zIndex: 10 }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--divider)', background: 'var(--bg-app)', position: 'sticky', top: 0, zIndex: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '14px', fontWeight: 700, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
             <button onClick={onClose} style={{
-              width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '6px',
-              background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '28px', height: '28px', border: '1px solid var(--divider)', borderRadius: '6px',
+              background: 'var(--cp-float)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--fg-3)" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
             </button>
           </div>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
@@ -165,7 +165,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
               {statusLabel}
             </span>
-            <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: '#F1F5F9', color: '#334155', textTransform: 'capitalize' }}>
+            <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--bg-3)', color: 'var(--fg-2)', textTransform: 'capitalize' }}>
               {item.priority || '—'}
             </span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: '#FEF2F2', color: '#7F1D1D' }}>

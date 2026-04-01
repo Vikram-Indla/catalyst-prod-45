@@ -183,7 +183,7 @@ export function WorkItemsTable({
         <p className="text-sm font-medium mb-2" style={{ color: 'var(--fg-1)' }}>Failed to load work items</p>
         <p className="text-xs mb-4" style={{ color: 'var(--fg-4)' }}>{error.message}</p>
         {onRetry && (
-          <button onClick={onRetry} className="px-4 py-1.5 text-xs font-medium rounded-lg text-white" style={{ backgroundColor: 'var(--wh-primary, #2563eb)' }}>
+          <button onClick={onRetry} className="px-4 py-1.5 text-xs font-medium rounded-lg text-white" style={{ backgroundColor: 'var(--cp-blue)' }}>
             Retry
           </button>
         )}
@@ -210,8 +210,8 @@ export function WorkItemsTable({
           style={{
             gridTemplateColumns: GRID_COLS,
             height: '36px',
-            backgroundColor: '#f8fafc',
-            borderColor: 'var(--wh-border, #e2e8f0)',
+            backgroundColor: 'var(--bg-1)',
+            borderColor: 'var(--divider)',
             zIndex: 10,
           }}
         >
@@ -222,7 +222,7 @@ export function WorkItemsTable({
               ref={el => { if (el) el.indeterminate = selectAllState === 'some'; }}
               onChange={onSelectAll}
               className="w-4 h-4 rounded cursor-pointer"
-              style={{ accentColor: 'var(--wh-primary, #2563eb)' }}
+              style={{ accentColor: 'var(--cp-blue)' }}
             />
           </div>
           {HEADER_COLS.map(col => (

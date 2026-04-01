@@ -96,11 +96,11 @@ export function HierarchyContextMenu({
       <div style={{ position: 'relative' }}
         onMouseEnter={() => setSubMenu('status')}
         onMouseLeave={() => setSubMenu(null)}>
-        <button style={{ ...itemStyle }} onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+        <button style={{ ...itemStyle }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
           onMouseLeave={e => (e.currentTarget.style.background = '')}>
-          <ArrowRightLeft size={13} color="#94A3B8" />
+          <ArrowRightLeft size={13} color="var(--fg-4)" />
           <span style={{ flex: 1 }}>Change Status</span>
-          <ChevronRight size={12} color="#94A3B8" />
+          <ChevronRight size={12} color="var(--fg-4)" />
         </button>
         {subMenu === 'status' && (
           <div data-ctx-menu style={{
@@ -108,9 +108,9 @@ export function HierarchyContextMenu({
           }}>
             {allStatuses.map(s => (
               <button key={s} style={{ ...itemStyle, fontWeight: s === currentStatus ? 600 : 400,
-                color: s === currentStatus ? '#2563EB' : '#334155' }}
+                color: s === currentStatus ? 'var(--cp-blue)' : 'var(--fg-2)' }}
                 onClick={() => { onChangeStatus(s); onClose(); }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '')}>
                 {s === currentStatus && <span style={{ fontSize: 10 }}>✓</span>}
                 {s}
@@ -124,11 +124,11 @@ export function HierarchyContextMenu({
       <div style={{ position: 'relative' }}
         onMouseEnter={() => setSubMenu('priority')}
         onMouseLeave={() => setSubMenu(null)}>
-        <button style={{ ...itemStyle }} onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+        <button style={{ ...itemStyle }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
           onMouseLeave={e => (e.currentTarget.style.background = '')}>
-          <Flag size={13} color="#94A3B8" />
+          <Flag size={13} color="var(--fg-4)" />
           <span style={{ flex: 1 }}>Change Priority</span>
-          <ChevronRight size={12} color="#94A3B8" />
+          <ChevronRight size={12} color="var(--fg-4)" />
         </button>
         {subMenu === 'priority' && (
           <div data-ctx-menu style={{
@@ -137,7 +137,7 @@ export function HierarchyContextMenu({
             {PRIORITIES.map(p => (
               <button key={p} style={{ ...itemStyle, fontWeight: p === currentPriority ? 600 : 400 }}
                 onClick={() => { onChangePriority(p); onClose(); }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '')}>
                 <PriorityBarsInline level={priorityLevel(p)} />
                 {p}
@@ -151,11 +151,11 @@ export function HierarchyContextMenu({
       <div style={{ position: 'relative' }}
         onMouseEnter={() => setSubMenu('assignee')}
         onMouseLeave={() => setSubMenu(null)}>
-        <button style={{ ...itemStyle }} onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+        <button style={{ ...itemStyle }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
           onMouseLeave={e => (e.currentTarget.style.background = '')}>
-          <Users size={13} color="#94A3B8" />
+          <Users size={13} color="var(--fg-4)" />
           <span style={{ flex: 1 }}>Change Assignee</span>
-          <ChevronRight size={12} color="#94A3B8" />
+          <ChevronRight size={12} color="var(--fg-4)" />
         </button>
         {subMenu === 'assignee' && (
           <div data-ctx-menu style={{
@@ -163,7 +163,7 @@ export function HierarchyContextMenu({
           }}>
             <button style={{ ...itemStyle, fontStyle: 'italic', color: '#94A3B8' }}
               onClick={() => { onChangeAssignee(null); onClose(); }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
               onMouseLeave={e => (e.currentTarget.style.background = '')}>
               Unassigned
             </button>
@@ -172,7 +172,7 @@ export function HierarchyContextMenu({
                 ...itemStyle, fontWeight: a.displayName === currentAssignee ? 600 : 400,
               }}
                 onClick={() => { onChangeAssignee(a); onClose(); }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '')}>
                 <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <span style={{ fontSize: 8, fontWeight: 700, color: '#FFFFFF' }}>
@@ -228,9 +228,9 @@ function MenuItem({ icon: Icon, label, onClick }: {
       padding: '6px 12px', fontSize: 13, color: 'var(--fg-2)',
       background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
     }}
-      onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+      onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
       onMouseLeave={e => (e.currentTarget.style.background = '')}>
-      <Icon size={13} color="#94A3B8" /> {label}
+      <Icon size={13} color="var(--fg-4)" /> {label}
     </button>
   );
 }

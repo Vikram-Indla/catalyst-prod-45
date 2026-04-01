@@ -497,7 +497,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                       style={{ color: '#334155' }}
                       onClick={() => { setReleaseId(r.id); setReleaseOpen(false); }}
                     >
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold" style={{ background: '#F0FDFA', color: '#0D9488' }}>
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold" style={{ background: '#F0FDFA', color: 'var(--sem-success)' }}>
                         {r.status === 'released' ? '✓' : r.status === 'in_progress' ? '►' : '○'}
                       </span>
                       {r.name}
@@ -510,11 +510,11 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
 
           {/* Parent selector */}
           <div className="relative">
-            <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>Parent</label>
+            <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--fg-4)' }}>Parent</label>
             <button
               onClick={e => { e.stopPropagation(); closeDropdowns(); setParentOpen(!parentOpen); }}
               className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[#94A3B8] transition-colors"
-              style={{ height: 36, borderColor: '#E2E8F0', color: selectedParent ? '#334155' : '#94A3B8' }}
+              style={{ height: 36, borderColor: 'var(--divider)', color: selectedParent ? 'var(--fg-2)' : 'var(--fg-4)' }}
             >
               <span className="truncate">
                 {selectedParent ? `${selectedParent.item_key} — ${selectedParent.title || selectedParent.summary}` : 'None'}
@@ -523,7 +523,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
             </button>
             {parentOpen && (
               <FixedDropdown width={280} maxHeight={220} onClick={e => e.stopPropagation()}>
-                <div className="px-2 py-1.5" style={{ borderBottom: '1px solid #F1F5F9' }}>
+                <div className="px-2 py-1.5" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
                   <div className="relative">
                     <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
                     <input
@@ -531,7 +531,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                       onChange={e => setParentSearch(e.target.value)}
                       placeholder="Search by key or title..."
                       className="w-full pl-7 pr-2 py-1 text-[11px] rounded border focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
-                      style={{ borderColor: '#E2E8F0', height: 28 }}
+                      style={{ borderColor: 'var(--divider)', height: 28 }}
                       autoFocus
                     />
                   </div>
@@ -551,7 +551,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                       style={{ color: '#334155' }}
                       onClick={() => { setParentId(p.id); setParentOpen(false); setParentSearch(''); }}
                     >
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B', fontSize: 10 }}>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)', fontSize: 10 }}>
                         {p.item_key}
                       </span>
                       <span className="truncate">{p.title || p.summary}</span>
@@ -564,8 +564,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid #F1F5F9' }}>
-          <label className="flex items-center gap-2 text-[11px] font-medium cursor-pointer select-none" style={{ color: '#64748B' }}>
+        <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid var(--cp-bd-zone)' }}>
+          <label className="flex items-center gap-2 text-[11px] font-medium cursor-pointer select-none" style={{ color: 'var(--fg-3)' }}>
             <input
               type="checkbox"
               checked={createAnother}
@@ -578,7 +578,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
             <button
               onClick={handleClose}
               className="px-3.5 py-1.5 text-[12px] font-medium rounded-md hover:bg-[#F1F5F9] transition-colors"
-              style={{ color: '#64748B' }}
+              style={{ color: 'var(--fg-3)' }}
             >
               Cancel
             </button>
@@ -586,7 +586,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
               onClick={handleSubmit}
               disabled={!title.trim() || submitting}
               className="flex items-center justify-center rounded-md text-[13px] font-semibold transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ height: 40, padding: '0 20px', background: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}
+              style={{ height: 40, padding: '0 20px', background: 'var(--cp-blue)', color: '#FFFFFF', borderRadius: 6 }}
             >
               {submitting ? 'Creating…' : 'Create'}
             </button>
@@ -615,8 +615,8 @@ function FixedDropdown({
       style={{
         width: width || '100%',
         maxHeight: maxHeight || 'auto',
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        background: 'var(--cp-float)',
+        border: '1px solid var(--divider)',
         boxShadow: '0 8px 20px rgba(0,0,0,0.18)',
         zIndex: 9999,
       }}
