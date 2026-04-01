@@ -45,22 +45,26 @@ const TokenCtx = createContext<Tokens>(TL);
 const useT = () => useContext(TokenCtx);
 
 
-const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
-  Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
-  Product:  { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
-  Task:     { bg: T.surfaceTertiary, color: T.inkMutedStrong, border: T.borderStrong },
-  Incident: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
-  Release:  { bg: T.successBg, color: T.successText, border: T.success },
-  Test:     { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
-};
+function getHubCfg(T: Tokens): Record<string, { bg: string; color: string; border: string }> {
+  return {
+    Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
+    Product:  { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
+    Task:     { bg: T.surfaceTertiary, color: T.inkMutedStrong, border: T.borderStrong },
+    Incident: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
+    Release:  { bg: T.successBg, color: T.successText, border: T.success },
+    Test:     { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
+  };
+}
 
-const PRI: Record<number, { label: string; color: string }> = {
-  1: { label: 'Lowest', color: T.inkMuted },
-  2: { label: 'Low', color: T.inkMuted },
-  3: { label: 'Medium', color: T.warning },
-  4: { label: 'High', color: T.danger },
-  5: { label: 'Highest', color: T.danger },
-};
+function getPri(T: Tokens): Record<number, { label: string; color: string }> {
+  return {
+    1: { label: 'Lowest', color: T.inkMuted },
+    2: { label: 'Low', color: T.inkMuted },
+    3: { label: 'Medium', color: T.warning },
+    4: { label: 'High', color: T.danger },
+    5: { label: 'Highest', color: T.danger },
+  };
+}
 
 // --- Linkify utility: detect URLs, special-case Figma ---
 function Linkify({ text }: { text: string }) {
