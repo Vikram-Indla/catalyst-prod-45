@@ -48,9 +48,9 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
         style={{
           height: 34,
           padding: '0 12px',
-          border: hasFilters ? '1px solid #2563EB' : `1px solid ${dark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'}`,
-          background: hasFilters ? (dark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (dark ? 'transparent' : '#FFFFFF'),
-          color: hasFilters ? (dark ? '#60A5FA' : '#2563EB') : (dark ? 'rgba(248,244,240,0.72)' : '#334155'),
+          border: hasFilters ? '1px solid var(--cp-blue)' : `1px solid ${dark ? 'rgba(255,255,255,0.12)' : 'var(--divider)'}`,
+          background: hasFilters ? (dark ? 'rgba(37,99,235,0.15)' : 'var(--cp-blue-wash)') : (dark ? 'transparent' : 'var(--bg-app)'),
+          color: hasFilters ? (dark ? '#60A5FA' : 'var(--cp-blue)') : (dark ? 'rgba(248,244,240,0.72)' : 'var(--fg-2)'),
           fontSize: 13,
           fontWeight: 500,
           cursor: 'pointer',
@@ -62,7 +62,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
         {hasFilters && (
           <span
             className="flex items-center justify-center rounded-full"
-            style={{ width: 18, height: 18, background: '#2563EB', color: '#FFF', fontSize: 10, fontWeight: 600 }}
+            style={{ width: 18, height: 18, background: 'var(--cp-blue)', color: '#FFF', fontSize: 10, fontWeight: 600 }}
           >
             {filters.statuses.length + filters.healths.length}
           </span>
@@ -74,8 +74,8 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
           className="absolute top-full left-0 mt-1 z-50"
           style={{
             width: 280,
-            background: dark ? '#232019' : '#FFFFFF',
-            border: `1px solid ${dark ? 'rgba(255,255,255,0.12)' : '#E2E8F0'}`,
+            background: dark ? '#232019' : 'var(--bg-app)',
+            border: `1px solid ${dark ? 'rgba(255,255,255,0.12)' : 'var(--divider)'}`,
             borderRadius: 8,
             boxShadow: dark ? 'none' : '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
             fontFamily: "'Inter', sans-serif",
@@ -100,10 +100,10 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
             />
           </div>
 
-          <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}` }}>
+          <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'var(--divider)'}` }}>
             <button
               onClick={() => onChange({ statuses: [], healths: [] })}
-              style={{ fontSize: 12, color: dark ? 'rgba(248,244,240,0.50)' : '#64748B', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 12, color: dark ? 'rgba(248,244,240,0.50)' : 'var(--fg-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               Clear all
             </button>
@@ -113,7 +113,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
               style={{
                 height: 28,
                 padding: '0 12px',
-                background: '#2563EB',
+                background: 'var(--cp-blue)',
                 color: '#FFF',
                 border: 'none',
                 borderRadius: 6,
@@ -147,12 +147,12 @@ function FilterSection({
   dark: boolean;
 }) {
   return (
-    <div className="px-3 py-2" style={{ borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : '#F1F5F9'}` }}>
+    <div className="px-3 py-2" style={{ borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : 'var(--cp-bd-zone)'}` }}>
       <div
         style={{
           fontSize: 10,
           fontWeight: 600,
-          color: dark ? 'rgba(248,244,240,0.50)' : '#64748B',
+          color: dark ? 'rgba(248,244,240,0.50)' : 'var(--fg-3)',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
           marginBottom: 6,
@@ -164,8 +164,8 @@ function FilterSection({
         <label
           key={opt}
           className="flex items-center gap-2 py-1 cursor-pointer rounded px-1"
-          style={{ fontSize: 12, color: dark ? 'rgba(248,244,240,0.85)' : '#334155' }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = dark ? 'rgba(255,255,255,0.04)' : '#F8FAFC'; }}
+          style={{ fontSize: 12, color: dark ? 'rgba(248,244,240,0.85)' : 'var(--fg-2)' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = dark ? 'rgba(255,255,255,0.04)' : 'var(--bg-1)'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; }}
         >
           <input
@@ -173,7 +173,7 @@ function FilterSection({
             checked={selected.includes(opt)}
             onChange={() => onToggle(opt)}
             className="rounded"
-            style={{ accentColor: '#2563EB' }}
+            style={{ accentColor: 'var(--cp-blue)' }}
           />
           {formatLabel ? formatLabel(opt) : opt}
         </label>
@@ -225,8 +225,8 @@ export function FilterChips({
             fontSize: 11,
             fontWeight: 500,
             padding: '2px 8px 2px 10px',
-            background: dark ? 'rgba(37,99,235,0.15)' : '#EFF6FF',
-            color: dark ? '#60A5FA' : '#2563EB',
+            background: dark ? 'rgba(37,99,235,0.15)' : 'var(--cp-blue-wash)',
+            color: dark ? '#60A5FA' : 'var(--cp-blue)',
           }}
         >
           {c.label}
@@ -234,13 +234,13 @@ export function FilterChips({
             onClick={c.remove}
             style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex' }}
           >
-            <X size={12} color={dark ? '#60A5FA' : '#2563EB'} />
+            <X size={12} color={dark ? '#60A5FA' : 'var(--cp-blue)'} />
           </button>
         </span>
       ))}
       <button
         onClick={() => onChange({ statuses: [], healths: [] })}
-        style={{ fontSize: 11, color: dark ? 'rgba(248,244,240,0.50)' : '#64748B', background: 'transparent', border: 'none', cursor: 'pointer' }}
+        style={{ fontSize: 11, color: dark ? 'rgba(248,244,240,0.50)' : 'var(--fg-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
       >
         Clear all
       </button>

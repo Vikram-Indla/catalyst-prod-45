@@ -44,7 +44,7 @@ function formatDuration(days: number): string {
 function getDaysColor(days: number): string {
   if (days <= 1) return '#15803D';
   if (days <= 4) return '#B45309';
-  return '#DC2626';
+  return 'var(--sem-danger)';
 }
 
 interface Props {
@@ -80,16 +80,16 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
       ) : (
         <div className="ph-tis-scroll" style={{ position: 'relative', maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, minWidth: 900 }}>
-            <thead style={{ position: 'sticky', top: 0, zIndex: 4, background: '#FFFFFF' }}>
+            <thead style={{ position: 'sticky', top: 0, zIndex: 4, background: 'var(--bg-app)' }}>
               <tr style={{ borderBottom: '2px solid #CBD5E1' }}>
                 {['Release', 'Key', 'Type', 'Title', 'Current'].map((h, i) => (
                   <th key={h} style={{
                     padding: '8px 8px', textAlign: 'left',
-                    fontSize: 10, fontWeight: 700, color: '#475569',
+                    fontSize: 10, fontWeight: 700, color: 'var(--fg-2)',
                     textTransform: 'uppercase', letterSpacing: '.08em',
                     fontFamily: "'Inter', sans-serif",
                     position: 'sticky', left: i === 0 ? 0 : undefined,
-                    background: '#FFFFFF', zIndex: 5, whiteSpace: 'nowrap',
+                    background: 'var(--bg-app)', zIndex: 5, whiteSpace: 'nowrap',
                   }}>
                     {h}
                   </th>
@@ -97,7 +97,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                 {visibleStatuses.map(s => (
                   <th key={s} style={{
                     padding: '8px 4px', textAlign: 'center',
-                    fontSize: 9, fontWeight: 700, color: '#475569',
+                    fontSize: 9, fontWeight: 700, color: 'var(--fg-2)',
                     textTransform: 'uppercase', letterSpacing: '.1em',
                     whiteSpace: 'nowrap', minWidth: 72,
                     fontFamily: "'Inter', sans-serif",

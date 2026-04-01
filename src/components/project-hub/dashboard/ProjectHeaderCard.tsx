@@ -19,15 +19,15 @@ interface ProjectHeaderCardProps {
 }
 
 const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  active: { bg: '#F0FDFA', text: '#0D9488' },
-  on_hold: { bg: '#FFFBEB', text: '#D97706' },
-  completed: { bg: '#F0FDF4', text: '#16A34A' },
+  active: { bg: '#F0FDFA', text: 'var(--sem-success)' },
+  on_hold: { bg: 'var(--sem-warning-bg)', text: 'var(--sem-warning)' },
+  completed: { bg: 'var(--sem-success-bg)', text: 'var(--sem-success)' },
 };
 
 const HEALTH_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  green: { bg: '#F0FDF4', text: '#16A34A', label: 'On Track' },
-  yellow: { bg: '#FFFBEB', text: '#D97706', label: 'At Risk' },
-  red: { bg: '#FEF2F2', text: '#DC2626', label: 'Off Track' },
+  green: { bg: 'var(--sem-success-bg)', text: 'var(--sem-success)', label: 'On Track' },
+  yellow: { bg: 'var(--sem-warning-bg)', text: 'var(--sem-warning)', label: 'At Risk' },
+  red: { bg: 'var(--sem-danger-bg)', text: 'var(--sem-danger)', label: 'Off Track' },
 };
 
 export function ProjectHeaderCard({
@@ -48,11 +48,11 @@ export function ProjectHeaderCard({
             className="flex items-center justify-center rounded-full flex-shrink-0"
             style={{ width: 36, height: 36, background: color }}
           >
-            <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 700 }}>
+            <span style={{ color: 'var(--bg-app)', fontSize: 14, fontWeight: 700 }}>
               {projectKey.slice(0, 2)}
             </span>
           </div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>
             {name}
           </h1>
         </div>
@@ -62,31 +62,31 @@ export function ProjectHeaderCard({
             className="flex items-center justify-center rounded-md hover:bg-[#F8FAFC] transition-colors"
             style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
-            <Star size={16} color={starred ? '#EAB308' : '#94A3B8'} fill={starred ? '#EAB308' : 'none'} strokeWidth={1.75} />
+            <Star size={16} color={starred ? '#EAB308' : 'var(--fg-4)'} fill={starred ? '#EAB308' : 'none'} strokeWidth={1.75} />
           </button>
           <button
             onClick={onSettings}
             className="flex items-center justify-center rounded-md transition-all"
             style={{
               height: 32, padding: '0 10px', gap: 6,
-              border: '1px solid #E2E8F0', borderRadius: 6,
-              background: '#FFFFFF', cursor: 'pointer',
-              fontSize: 12, fontWeight: 500, color: '#334155',
+              border: '1px solid var(--divider)', borderRadius: 6,
+              background: 'var(--bg-app)', cursor: 'pointer',
+              fontSize: 12, fontWeight: 500, color: 'var(--fg-2)',
               fontFamily: "'Inter', sans-serif",
               display: 'inline-flex', alignItems: 'center',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.borderColor = '#CBD5E1'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.borderColor = '#E2E8F0'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; e.currentTarget.style.borderColor = '#CBD5E1'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; e.currentTarget.style.borderColor = 'var(--divider)'; }}
           >
-            <Settings size={14} color="#64748B" strokeWidth={1.75} /> Settings
+            <Settings size={14} color="var(--fg-3)" strokeWidth={1.75} /> Settings
           </button>
           <button
             className="flex items-center justify-center rounded-md transition-all"
-            style={{ width: 32, height: 32, border: '1px solid #E2E8F0', borderRadius: 6, background: '#FFFFFF', cursor: 'pointer' }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+            style={{ width: 32, height: 32, border: '1px solid var(--divider)', borderRadius: 6, background: 'var(--bg-app)', cursor: 'pointer' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
           >
-            <MoreHorizontal size={16} color="#64748B" strokeWidth={1.75} />
+            <MoreHorizontal size={16} color="var(--fg-3)" strokeWidth={1.75} />
           </button>
         </div>
       </div>
@@ -99,23 +99,23 @@ export function ProjectHeaderCard({
         <span className="inline-flex items-center rounded-full" style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', background: hSt.bg, color: hSt.text }}>
           {hSt.label}
         </span>
-        <span className="inline-flex items-center gap-1.5" style={{ fontSize: 12, color: '#64748B' }}>
-          <Users size={13} color="#94A3B8" strokeWidth={1.75} /> {memberCount} members
+        <span className="inline-flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--fg-3)' }}>
+          <Users size={13} color="var(--fg-4)" strokeWidth={1.75} /> {memberCount} members
         </span>
-        <span className="inline-flex items-center gap-1.5" style={{ fontSize: 12, color: '#64748B' }}>
-          <Calendar size={13} color="#94A3B8" strokeWidth={1.75} /> {dateRange}
+        <span className="inline-flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--fg-3)' }}>
+          <Calendar size={13} color="var(--fg-4)" strokeWidth={1.75} /> {dateRange}
         </span>
       </div>
 
       {/* Progress */}
       <div className="mt-5">
         <div className="flex items-center justify-between mb-1.5">
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{clamped}% complete</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>{clamped}% complete</span>
         </div>
-        <div style={{ width: '100%', height: 6, borderRadius: 3, background: '#E2E8F0' }}>
-          <div style={{ width: `${clamped}%`, height: '100%', borderRadius: 3, background: '#0D9488', transition: 'width 500ms ease' }} />
+        <div style={{ width: '100%', height: 6, borderRadius: 3, background: 'var(--bg-3)' }}>
+          <div style={{ width: `${clamped}%`, height: '100%', borderRadius: 3, background: 'var(--sem-success)', transition: 'width 500ms ease' }} />
         </div>
-        <div style={{ fontSize: 12, color: '#64748B', marginTop: 6 }}>
+        <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 6 }}>
           {doneCount} of {totalCount} items done · Est. completion: {estCompletion}
         </div>
       </div>

@@ -108,7 +108,7 @@ export function MoveToFolderModal({
           {hasChildren ? (
             <button
               onClick={(e) => { e.stopPropagation(); toggleExpanded(folder.id); }}
-              style={{ width: 16, height: 16, border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8' }}
+              style={{ width: 16, height: 16, border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--fg-4)' }}
             >
               <ChevronRight style={{ width: 14, height: 14, transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }} />
             </button>
@@ -116,15 +116,15 @@ export function MoveToFolderModal({
             <div style={{ width: 16 }} />
           )}
           {isExpanded ? (
-            <FolderOpen style={{ width: 16, height: 16, color: '#2563EB', flexShrink: 0 }} />
+            <FolderOpen style={{ width: 16, height: 16, color: 'var(--cp-blue)', flexShrink: 0 }} />
           ) : (
-            <Folder style={{ width: 16, height: 16, color: '#64748B', flexShrink: 0 }} />
+            <Folder style={{ width: 16, height: 16, color: 'var(--fg-3)', flexShrink: 0 }} />
           )}
-          <span style={{ fontSize: 13, fontWeight: isSelected ? 600 : 400, color: '#0F172A', flex: 1 }}>
+          <span style={{ fontSize: 13, fontWeight: isSelected ? 600 : 400, color: 'var(--fg-1)', flex: 1 }}>
             {folder.name}
           </span>
           {isCurrent && (
-            <span style={{ fontSize: 10, color: '#94A3B8', fontStyle: 'italic' }}>current</span>
+            <span style={{ fontSize: 10, color: 'var(--fg-4)', fontStyle: 'italic' }}>current</span>
           )}
         </div>
         {hasChildren && isExpanded && children.map(child => renderFolder(child, depth + 1))}
@@ -139,7 +139,7 @@ export function MoveToFolderModal({
       onClick={(e) => e.target === e.currentTarget && onClose()}
       style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}
     >
-      <div onClick={(e) => e.stopPropagation()} style={{ width: 420, maxWidth: '95vw', maxHeight: 'calc(100vh - 120px)', backgroundColor: '#FFFFFF', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: 420, maxWidth: '95vw', maxHeight: 'calc(100vh - 120px)', backgroundColor: 'var(--cp-float)', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>

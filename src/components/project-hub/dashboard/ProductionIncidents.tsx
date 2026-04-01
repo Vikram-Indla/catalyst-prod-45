@@ -15,9 +15,9 @@ interface Props {
 }
 
 const PRIORITY_BADGE: Record<string, { bg: string; text: string }> = {
-  P1: { bg: '#DC2626', text: '#FFFFFF' },
+  P1: { bg: 'var(--sem-danger)', text: '#FFFFFF' },
   P2: { bg: '#F59E0B', text: '#FFFFFF' },
-  P3: { bg: '#64748B', text: '#FFFFFF' },
+  P3: { bg: 'var(--fg-3)', text: '#FFFFFF' },
 };
 
 export default function ProductionIncidents({ projectId, releaseMap }: Props) {
@@ -33,15 +33,15 @@ export default function ProductionIncidents({ projectId, releaseMap }: Props) {
     <WidgetCard
       title="Production Incidents"
       subtitle={<span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>from IncidentHub <ExternalLink size={9} style={{ opacity: 0.6 }} /></span>}
-      leftBorder="#DC2626"
+      leftBorder="var(--sem-danger)"
       maxHeight={320}
       error={error ? error.message : null}
       onRetry={() => refetch()}
       headerRight={
         <div style={{ display: 'flex', gap: 4 }}>
-          <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', background: '#DC2626', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P1: {p1}</span>
+          <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', background: 'var(--sem-danger)', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P1: {p1}</span>
           <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', background: '#F59E0B', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P2: {p2}</span>
-          <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', background: '#64748B', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P3: {p3}</span>
+          <span style={{ fontSize: 10, fontWeight: 800, color: '#FFFFFF', background: 'var(--fg-3)', padding: '2px 8px', borderRadius: 9999, minWidth: 28, textAlign: 'center' }}>P3: {p3}</span>
         </div>
       }
     >
@@ -55,7 +55,7 @@ export default function ProductionIncidents({ projectId, releaseMap }: Props) {
             <thead>
               <tr style={{ borderBottom: '2px solid #CBD5E1' }}>
                 {['Rel', 'Key', 'Pri', 'Title', 'Open', 'Reported', 'Assigned'].map(h => (
-                  <th key={h} style={{ padding: '6px 6px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '.08em', fontFamily: "'Inter', sans-serif" }}>{h}</th>
+                  <th key={h} style={{ padding: '6px 6px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.08em', fontFamily: "'Inter', sans-serif" }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -64,7 +64,7 @@ export default function ProductionIncidents({ projectId, releaseMap }: Props) {
                 const ps = PRIORITY_BADGE[item.priority] || PRIORITY_BADGE.P3;
                 const resolved = item.status === 'resolved' || item.status === 'closed';
                 return (
-                  <tr key={item.id} style={{ height: 44, borderBottom: '1px solid #F1F5F9', opacity: resolved ? 0.6 : 1, background: idx % 2 === 1 ? '#FAFBFC' : undefined }} className="ph-table-row">
+                  <tr key={item.id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', opacity: resolved ? 0.6 : 1, background: idx % 2 === 1 ? '#FAFBFC' : undefined }} className="ph-table-row">
                     <td style={{ padding: '0 6px' }}>
                       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: '#0F766E', background: '#F0FDFA', padding: '2px 7px', borderRadius: 4, border: '1px solid #99F6E4' }}>
                         {releaseMap[item.release_id] || '—'}
@@ -78,35 +78,35 @@ export default function ProductionIncidents({ projectId, releaseMap }: Props) {
                         {item.priority}
                       </span>
                     </td>
-                    <td style={{ padding: '0 6px', maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#1E293B', fontWeight: 500, fontFamily: "'Inter', sans-serif" }} title={item.title}>
+                    <td style={{ padding: '0 6px', maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--fg-1)', fontWeight: 500, fontFamily: "'Inter', sans-serif" }} title={item.title}>
                       {item.title}
                     </td>
-                    <td style={{ padding: '0 6px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: resolved ? '#16A34A' : '#1E293B' }}>
+                    <td style={{ padding: '0 6px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: resolved ? 'var(--sem-success)' : 'var(--fg-1)' }}>
                       {resolved ? '✓' : `${item.days_open ?? 0}d`}
                     </td>
                     <td style={{ padding: '0 6px' }}>
                       {item.reported_by_name ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                           <PersonAvatar name={item.reported_by_name} size={16} />
-                          <span style={{ fontSize: 10, color: '#1E293B', fontWeight: 500, maxWidth: 60, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{item.reported_by_name.split(' ')[0]}</span>
+                          <span style={{ fontSize: 10, color: 'var(--fg-1)', fontWeight: 500, maxWidth: 60, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{item.reported_by_name.split(' ')[0]}</span>
                         </div>
-                      ) : <span style={{ color: '#94A3B8', fontSize: 10, fontStyle: 'italic' }}>Unknown</span>}
+                      ) : <span style={{ color: 'var(--fg-4)', fontSize: 10, fontStyle: 'italic' }}>Unknown</span>}
                     </td>
                     <td style={{ padding: '0 6px' }}>
                       {item.assigned_to_name ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                           <PersonAvatar name={item.assigned_to_name} size={16} />
-                          <span style={{ fontSize: 10, color: '#1E293B', fontWeight: 500, maxWidth: 60, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{item.assigned_to_name.split(' ')[0]}</span>
+                          <span style={{ fontSize: 10, color: 'var(--fg-1)', fontWeight: 500, maxWidth: 60, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{item.assigned_to_name.split(' ')[0]}</span>
                         </div>
-                      ) : <span style={{ color: '#94A3B8', fontSize: 10, fontStyle: 'italic' }}>Unassigned</span>}
+                      ) : <span style={{ color: 'var(--fg-4)', fontSize: 10, fontStyle: 'italic' }}>Unassigned</span>}
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-          <div style={{ padding: '8px 16px', borderTop: '1px solid #FEE2E2', background: '#FEF2F2' }}>
-            <button className="ph-focus-ring" style={{ fontSize: 11, fontWeight: 700, color: '#DC2626', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ padding: '8px 16px', borderTop: '1px solid var(--sem-danger-bg)', background: 'var(--sem-danger-bg)' }}>
+            <button className="ph-focus-ring" style={{ fontSize: 11, fontWeight: 700, color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
               View All in IncidentHub <ExternalLink size={10} />
             </button>
           </div>
