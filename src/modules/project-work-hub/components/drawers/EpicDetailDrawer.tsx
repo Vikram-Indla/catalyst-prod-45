@@ -83,6 +83,18 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
     enabled: !!epicId && isOpen,
   });
 
+  // Jira sync fields from ph_work_items
+  const { data: jiraSyncData } = useQuery({
+    queryKey: ['epic-drawer-jira-sync', epic?.issue_key],
+    queryFn: async () => {
+      if (!epic?.issue_key) return null;
+      const { data } = await (supabase.from('ph_work_items') as any)
+        .select('jira_key, jira_sync_status, jira_pushed_at')
+        .eq('item_key', epic.issue_key)
+        .maybeSingle();
+      return data as { jira_key: string | null; jira_sync_status: string | null; jira_pushed_at: string | null } | null;
+    },
+    enabled: !!epic?.issue_key && isOpen,
   const { data: comments = [], isLoading: commentsLoading } = useQuery({
     queryKey: ['epic-drawer-comments', epic?.issue_key],
     queryFn: async () => {

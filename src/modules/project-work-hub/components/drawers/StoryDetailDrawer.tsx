@@ -95,6 +95,18 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
     enabled: !!storyId && isOpen,
   });
 
+  // Jira sync fields from ph_work_items
+  const { data: jiraSyncData } = useQuery({
+    queryKey: ['story-drawer-jira-sync', story?.issue_key],
+    queryFn: async () => {
+      if (!story?.issue_key) return null;
+      const { data } = await (supabase.from('ph_work_items') as any)
+        .select('jira_key, jira_sync_status, jira_pushed_at')
+        .eq('item_key', story.issue_key)
+        .maybeSingle();
+      return data as { jira_key: string | null; jira_sync_status: string | null; jira_pushed_at: string | null } | null;
+    },
+    enabled: !!story?.issue_key && isOpen,
   // Comments query
   const { data: comments = [], isLoading: commentsLoading } = useQuery({
     queryKey: ['story-drawer-comments', story?.issue_key],
