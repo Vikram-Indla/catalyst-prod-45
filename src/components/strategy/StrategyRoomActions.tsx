@@ -54,10 +54,9 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
       {/* Density segmented control */}
       <TooltipProvider delayDuration={200}>
         <div
-          className="flex items-center rounded-md overflow-hidden"
+          className="flex items-center rounded-md overflow-hidden border border-slate-200 dark:border-[rgba(255,255,255,0.08)]"
           role="radiogroup"
           aria-label="Display density"
-          style={{ border: '1px solid var(--cp-bd, hsl(var(--border)))' }}
         >
           {densityOptions.map((opt) => {
             const isActive = density === opt.value;
@@ -69,16 +68,11 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
                     aria-checked={isActive}
                     aria-label={opt.label}
                     onClick={() => setDensity(opt.value)}
-                    className="flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      background: isActive ? 'var(--cp-blue, #2563EB)' : 'var(--cp-bg, hsl(var(--card)))',
-                      color: isActive ? '#FFFFFF' : 'var(--cp-t3, hsl(var(--muted-foreground)))',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'all 120ms ease',
-                    }}
+                    className={`flex items-center justify-center w-8 h-8 border-none cursor-pointer transition-all duration-[120ms] focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                      isActive
+                        ? 'bg-[#2563EB] text-white'
+                        : 'bg-white dark:bg-[#232019] text-slate-500 dark:text-[#A09890]'
+                    }`}
                   >
                     {opt.icon}
                   </button>
@@ -100,18 +94,7 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
 
       {/* Export button */}
       <button
-        className="flex items-center gap-1.5 rounded-md text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2"
-        style={{
-          height: '32px',
-          padding: '0 12px',
-          fontSize: '13px',
-          fontWeight: 500,
-          color: 'var(--cp-t3, hsl(var(--muted-foreground)))',
-          background: 'var(--cp-bg, hsl(var(--card)))',
-          border: '1px solid var(--cp-bd, hsl(var(--border)))',
-          borderRadius: '6px',
-          cursor: 'pointer',
-        }}
+        className="flex items-center gap-1.5 h-8 px-3 text-[13px] font-medium text-slate-500 dark:text-[#A09890] bg-white dark:bg-[#232019] border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded-md cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         <Download size={14} />
         Export

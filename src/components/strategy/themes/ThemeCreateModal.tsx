@@ -15,16 +15,8 @@ interface Props {
   initialData?: Partial<StrategicTheme>;
 }
 
-const inputStyle: React.CSSProperties = {
-  width: '100%', fontSize: 13, padding: '8px 10px',
-  border: '1px solid #E2E8F0', borderRadius: 6,
-  color: '#0F172A', outline: 'none', background: '#FFFFFF',
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 600, color: '#334155',
-  display: 'block', marginBottom: 4,
-};
+const inputCls = "w-full text-[13px] py-2 px-2.5 border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded-md text-slate-900 dark:text-[#F5F3F0] bg-white dark:bg-[#232019] outline-none";
+const labelCls = "block text-[11px] font-semibold text-slate-700 dark:text-[#A09890] mb-1";
 
 export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props) {
   const { data: themeGroups = [] } = useThemeGroups();
@@ -120,25 +112,23 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(15, 23, 42, 0.3)' }} />
 
-      <div style={{
-        position: 'fixed', top: '50%', left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 70, width: 640, maxHeight: '85vh',
-        background: '#FFFFFF', borderRadius: 12,
-        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)',
-        display: 'flex', flexDirection: 'column',
-        animation: 'modalIn 200ms ease',
-      }}>
+      <div
+        className="bg-white dark:bg-[#2C2823] rounded-xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
+        style={{
+          position: 'fixed', top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 70, width: 640, maxHeight: '85vh',
+          display: 'flex', flexDirection: 'column',
+          animation: 'modalIn 200ms ease',
+        }}
+      >
         {/* Header — sticky */}
-        <div className="flex items-center justify-between shrink-0" style={{
-          padding: '16px 24px', borderBottom: '1px solid #E2E8F0',
-          background: '#FFFFFF', borderRadius: '12px 12px 0 0', zIndex: 1,
-        }}>
-          <h2 style={{ fontSize: 16, fontWeight: 600, color: '#0F172A' }}>
+        <div className="flex items-center justify-between shrink-0 px-6 py-4 border-b border-slate-200 dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#2C2823] rounded-t-xl z-[1]">
+          <h2 className="text-base font-semibold text-slate-900 dark:text-[#F5F3F0]">
             {initialData ? 'Edit Strategic Theme' : 'Create Strategic Theme'}
           </h2>
-          <button onClick={onClose} className="rounded-md p-1 hover:bg-gray-100" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-            <X size={18} color="#64748B" />
+          <button onClick={onClose} className="rounded-md p-1 hover:bg-gray-100 dark:hover:bg-[rgba(255,255,255,0.06)] border-none bg-transparent cursor-pointer">
+            <X size={18} className="text-slate-500 dark:text-[#6B6560]" />
           </button>
         </div>
 
@@ -147,25 +137,24 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
           <div className="space-y-4">
             {/* Theme Name */}
             <div>
-              <label style={labelStyle}>Theme Name <span style={{ color: '#EF4444' }}>*</span></label>
-              <input style={inputStyle} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Digital Transformation" />
+              <label className={labelCls}>Theme Name <span className="text-red-500">*</span></label>
+              <input className={inputCls} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Digital Transformation" />
             </div>
 
 
             {/* Description */}
             <div>
-              <label style={labelStyle}>Description</label>
-              <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+              <label className={labelCls}>Description</label>
+              <textarea className={`${inputCls} min-h-[60px] resize-y`} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
             </div>
 
             {/* Color */}
             <div>
-              <label style={labelStyle}>Theme Color <span style={{ color: '#EF4444' }}>*</span></label>
+              <label className={labelCls}>Theme Color <span className="text-red-500">*</span></label>
               <div className="flex gap-2">
                 {THEME_COLORS.map(c => (
-                  <button key={c} onClick={() => setForm(f => ({ ...f, color: c }))} className="rounded-full" style={{
-                    width: 28, height: 28, background: c, border: form.color === c ? '3px solid #0F172A' : '2px solid transparent',
-                    cursor: 'pointer', transition: 'border 150ms',
+                  <button key={c} onClick={() => setForm(f => ({ ...f, color: c }))} className="rounded-full w-7 h-7 cursor-pointer transition-[border] duration-150" style={{
+                    background: c, border: form.color === c ? '3px solid var(--cp-text-primary, #0F172A)' : '2px solid transparent',
                   }} />
                 ))}
               </div>
@@ -174,7 +163,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             {/* Status + Priority */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={labelStyle}>Status <span style={{ color: '#EF4444' }}>*</span></label>
+                <label className={labelCls}>Status <span className="text-red-500">*</span></label>
                 <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v as any }))}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent className="z-[9999]">
@@ -185,7 +174,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
                 </Select>
               </div>
               <div>
-                <label style={labelStyle}>Priority <span style={{ color: '#EF4444' }}>*</span></label>
+                <label className={labelCls}>Priority <span className="text-red-500">*</span></label>
                 <Select value={form.priority} onValueChange={v => setForm(f => ({ ...f, priority: v }))}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent className="z-[9999]">
@@ -198,19 +187,19 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             {/* Dates */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={labelStyle}>Start Date</label>
-                <input type="date" style={inputStyle} value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} />
+                <label className={labelCls}>Start Date</label>
+                <input type="date" className={inputCls} value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} />
               </div>
               <div>
-                <label style={labelStyle}>Target Completion</label>
-                <input type="date" style={inputStyle} value={form.target_completion} onChange={e => setForm(f => ({ ...f, target_completion: e.target.value }))} />
+                <label className={labelCls}>Target Completion</label>
+                <input type="date" className={inputCls} value={form.target_completion} onChange={e => setForm(f => ({ ...f, target_completion: e.target.value }))} />
               </div>
             </div>
 
             {/* Owner + Fiscal Year */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={labelStyle}>Owner <span style={{ color: '#EF4444' }}>*</span></label>
+                <label className={labelCls}>Owner <span className="text-red-500">*</span></label>
                 <Select value={form.owner_id || '_none'} onValueChange={v => setForm(f => ({ ...f, owner_id: v === '_none' ? '' : v }))}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select owner..." /></SelectTrigger>
                   <SelectContent className="z-[9999]">
@@ -219,7 +208,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
                 </Select>
               </div>
               <div>
-                <label style={labelStyle}>Fiscal Year <span style={{ color: '#EF4444' }}>*</span></label>
+                <label className={labelCls}>Fiscal Year <span className="text-red-500">*</span></label>
                 <Select value={String(form.fiscal_year)} onValueChange={v => setForm(f => ({ ...f, fiscal_year: parseInt(v) }))}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent className="z-[9999]">
@@ -232,7 +221,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             {/* BSC + Budget */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={labelStyle}>BSC Perspective</label>
+                <label className={labelCls}>BSC Perspective</label>
                 <Select value={form.bsc_perspective || '_none'} onValueChange={v => setForm(f => ({ ...f, bsc_perspective: v === '_none' ? '' : v }))}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
                   <SelectContent className="z-[9999]">
@@ -242,14 +231,14 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
                 </Select>
               </div>
               <div>
-                <label style={labelStyle}>Planned Budget (SAR)</label>
-                <input type="number" style={inputStyle} value={form.planned_budget} onChange={e => setForm(f => ({ ...f, planned_budget: e.target.value }))} placeholder="e.g. 25,000,000" />
+                <label className={labelCls}>Planned Budget (SAR)</label>
+                <input type="number" className={inputCls} value={form.planned_budget} onChange={e => setForm(f => ({ ...f, planned_budget: e.target.value }))} placeholder="e.g. 25,000,000" />
               </div>
             </div>
 
             {/* Theme Group */}
             <div>
-              <label style={labelStyle}>Theme Group</label>
+              <label className={labelCls}>Theme Group</label>
               {!showNewGroup ? (
                 <Select value={form.theme_group_id || '_none'} onValueChange={v => {
                   if (v === '__new__') { setShowNewGroup(true); return; }
@@ -264,30 +253,29 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
                 </Select>
               ) : (
                 <div className="flex gap-2">
-                  <input style={{ ...inputStyle, flex: 1 }} placeholder="Group name" value={newGroupName} onChange={e => setNewGroupName(e.target.value)} autoFocus />
-                  <button onClick={handleCreateGroup} disabled={!newGroupName.trim()} style={{ fontSize: 11, fontWeight: 600, padding: '0 10px', borderRadius: 4, border: 'none', background: newGroupName.trim() ? '#2563EB' : '#94A3B8', color: '#FFF', cursor: newGroupName.trim() ? 'pointer' : 'default' }}>Create</button>
-                  <button onClick={() => { setShowNewGroup(false); setNewGroupName(''); }} style={{ fontSize: 11, padding: '0 10px', borderRadius: 4, border: '1px solid #E2E8F0', background: '#FFF', color: '#334155', cursor: 'pointer' }}>Cancel</button>
+                  <input className={`${inputCls} flex-1`} placeholder="Group name" value={newGroupName} onChange={e => setNewGroupName(e.target.value)} autoFocus />
+                  <button onClick={handleCreateGroup} disabled={!newGroupName.trim()} className={`text-[11px] font-semibold px-2.5 rounded border-none text-white cursor-pointer ${newGroupName.trim() ? 'bg-[#2563EB]' : 'bg-slate-400 dark:bg-[#6B6560] cursor-default'}`}>Create</button>
+                  <button onClick={() => { setShowNewGroup(false); setNewGroupName(''); }} className="text-[11px] px-2.5 rounded border border-slate-200 dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#232019] text-slate-700 dark:text-[#A09890] cursor-pointer">Cancel</button>
                 </div>
               )}
             </div>
 
             {/* Success Metrics */}
             <div>
-              <label style={labelStyle}>Success Metrics</label>
+              <label className={labelCls}>Success Metrics</label>
               {form.success_metrics.map((m, i) => (
                 <div key={i} className="grid grid-cols-2 gap-2 mb-2">
-                  <input style={inputStyle} value={m.name} placeholder="Metric name" onChange={e => {
+                  <input className={inputCls} value={m.name} placeholder="Metric name" onChange={e => {
                     const next = [...form.success_metrics]; next[i] = { ...next[i], name: e.target.value }; setForm(f => ({ ...f, success_metrics: next }));
                   }} />
-                  <input style={inputStyle} value={m.target} placeholder="Target value" onChange={e => {
+                  <input className={inputCls} value={m.target} placeholder="Target value" onChange={e => {
                     const next = [...form.success_metrics]; next[i] = { ...next[i], target: e.target.value }; setForm(f => ({ ...f, success_metrics: next }));
                   }} />
                 </div>
               ))}
               <button
                 onClick={() => setForm(f => ({ ...f, success_metrics: [...f.success_metrics, { name: '', target: '' }] }))}
-                className="flex items-center gap-1"
-                style={{ fontSize: 12, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500, marginTop: 4 }}
+                className="flex items-center gap-1 text-xs text-[#2563EB] dark:text-[#60A5FA] bg-transparent border-none cursor-pointer font-medium mt-1"
               >
                 <Plus size={13} /> Add Another Metric
               </button>
@@ -296,20 +284,12 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
         </div>
 
         {/* Footer — sticky */}
-        <div className="flex items-center justify-end gap-2 shrink-0" style={{
-          padding: '14px 24px', borderTop: '1px solid #E2E8F0',
-          background: '#FFFFFF', borderRadius: '0 0 12px 12px',
-        }}>
-          <button onClick={onClose} style={{ fontSize: 12, fontWeight: 500, height: 34, padding: '0 14px', border: '1px solid #E2E8F0', borderRadius: 6, background: '#FFFFFF', color: '#334155', cursor: 'pointer' }}>Cancel</button>
+        <div className="flex items-center justify-end gap-2 shrink-0 px-6 py-3.5 border-t border-slate-200 dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#2C2823] rounded-b-xl">
+          <button onClick={onClose} className="text-xs font-medium h-[34px] px-3.5 border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded-md bg-white dark:bg-[#232019] text-slate-700 dark:text-[#A09890] cursor-pointer">Cancel</button>
           {!initialData && (
-            <button onClick={() => handleSubmit('draft')} style={{ fontSize: 12, fontWeight: 500, height: 34, padding: '0 14px', border: '1px solid #E2E8F0', borderRadius: 6, background: '#FFFFFF', color: '#334155', cursor: 'pointer' }}>Save as Draft</button>
+            <button onClick={() => handleSubmit('draft')} className="text-xs font-medium h-[34px] px-3.5 border border-slate-200 dark:border-[rgba(255,255,255,0.08)] rounded-md bg-white dark:bg-[#232019] text-slate-700 dark:text-[#A09890] cursor-pointer">Save as Draft</button>
           )}
-          <button onClick={() => handleSubmit()} disabled={!form.title.trim()} style={{
-            fontSize: 12, fontWeight: 600, height: 34, padding: '0 16px',
-            border: 'none', borderRadius: 6,
-            background: form.title.trim() ? '#2563EB' : '#94A3B8',
-            color: '#FFFFFF', cursor: form.title.trim() ? 'pointer' : 'default',
-          }}>{initialData ? 'Update Theme' : 'Create Theme'}</button>
+          <button onClick={() => handleSubmit()} disabled={!form.title.trim()} className={`text-xs font-semibold h-[34px] px-4 border-none rounded-md text-white ${form.title.trim() ? 'bg-[#2563EB] cursor-pointer' : 'bg-slate-400 dark:bg-[#6B6560] cursor-default'}`}>{initialData ? 'Update Theme' : 'Create Theme'}</button>
         </div>
       </div>
 

@@ -97,7 +97,7 @@ export function AIStrategyIntelligencePanel({
             <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #7C3AED, #6D28D9)' }}>
               <Sparkles size={16} className="text-white" />
             </div>
-            <h2 className="text-[15px] font-[700]" style={{ color: '#0F172A' }}>Strategy Intelligence</h2>
+            <h2 className="text-[15px] font-[700] text-slate-900 dark:text-[#F5F3F0]">Strategy Intelligence</h2>
           </div>
           <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-md transition-colors">
             <X size={18} className="text-slate-400" />
@@ -136,19 +136,16 @@ export function AIStrategyIntelligencePanel({
         </div>
 
         {/* Tab bar */}
-        <div className="flex border-b" style={{ borderColor: '#E2E8F0' }}>
+        <div className="flex border-b border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
           {TABS.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="px-3 py-2 transition-colors relative"
-              style={{
-                color: activeTab === tab.id ? '#0F172A' : '#64748B',
-                fontWeight: activeTab === tab.id ? 700 : 500,
-                fontSize: 12,
-                letterSpacing: '0.03em',
-                textTransform: 'uppercase',
-              }}
+              className={`px-3 py-2 transition-colors relative text-xs uppercase tracking-wide ${
+                activeTab === tab.id
+                  ? 'font-bold text-slate-900 dark:text-[#F5F3F0]'
+                  : 'font-medium text-slate-500 dark:text-[#6B6560]'
+              }`}
             >
               {tab.label}
               {activeTab === tab.id && (
@@ -176,15 +173,15 @@ export function AIStrategyIntelligencePanel({
         {activeTab === 'operations' && <OperationsTab metrics={metrics} defects={defects} aiResult={aiResult} isAILoading={isAILoading} />}
       </div>
 
-      <div className="shrink-0 border-t px-7 py-2.5 flex items-center justify-between" style={{ borderColor: '#F1F5F9' }}>
-        <div className="flex items-center gap-1.5 text-[10px]" style={{ color: '#94A3B8' }}>
-          <span style={{ color: '#A78BFA' }}>✦</span> AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+      <div className="shrink-0 border-t border-slate-100 dark:border-[rgba(255,255,255,0.04)] px-7 py-2.5 flex items-center justify-between">
+        <div className="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-[#6B6560]">
+          <span className="text-[#A78BFA]">✦</span> AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500, color: '#64748B' }}>
+          <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50 text-[11px] font-medium text-slate-500 dark:text-[#6B6560]">
             Regenerate
           </button>
-          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors" style={{ fontSize: 11, fontWeight: 600, color: '#FFFFFF', background: '#1E293B' }}>
+          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold text-white bg-slate-800 dark:bg-[#2C2823] dark:border dark:border-[rgba(255,255,255,0.08)]">
             Close
           </button>
         </div>
@@ -631,7 +628,7 @@ function EpicsStoriesTab({ metrics, stories, aiResult, isAILoading }: { metrics:
                   {(m.storiesDone - m.storiesInProd) > 0 && <div style={{ width: `${(m.storiesDone - m.storiesInProd) / m.storiesTotal * 100}%`, background: '#86EFAC' }} />}
                   {m.storiesInProgress > 0 && <div style={{ width: `${m.storiesInProgress / m.storiesTotal * 100}%`, background: '#2563EB' }} />}
                   {m.storiesBlocked > 0 && <div style={{ width: `${m.storiesBlocked / m.storiesTotal * 100}%`, background: '#EF4444' }} />}
-                  {m.storiesBacklog > 0 && <div style={{ width: `${m.storiesBacklog / m.storiesTotal * 100}%`, background: '#E2E8F0' }} />}
+                  {m.storiesBacklog > 0 && <div className="bg-slate-200 dark:bg-[rgba(255,255,255,0.12)]" style={{ width: `${m.storiesBacklog / m.storiesTotal * 100}%` }} />}
                 </div>
                 <p className="text-[12px] text-slate-700">
                   <strong>{m.storiesInProd}</strong> in production · <strong>{m.storiesInProgress}</strong> in progress
