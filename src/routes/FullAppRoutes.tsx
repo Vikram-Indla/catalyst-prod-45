@@ -810,6 +810,7 @@ export default function FullAppRoutes() {
           <Route path="estimation" element={<S><Estimation /></S>} />
           <Route path="security" element={<S><Security /></S>} />
           <Route path="jira-config" element={<S><JiraIntegrationConfig /></S>} />
+          <Route path="jira-sync-log" element={<S><JiraSyncAuditLog /></S>} />
           <Route path="product-settings" element={<S><ProductSettings /></S>} />
           <Route path="import-data" element={<S><ImportData /></S>} />
           <Route path="data-hygiene" element={<S><DataHygiene /></S>} />
