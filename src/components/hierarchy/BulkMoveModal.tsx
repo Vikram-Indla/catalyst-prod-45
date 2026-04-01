@@ -150,7 +150,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
         }}>
           <button onClick={onClose} style={{
             height: 32, padding: '0 14px', fontSize: 13, fontWeight: 500,
-            color: 'var(--fg-3)', background: '#FFFFFF', border: '1px solid var(--divider)',
+            color: 'var(--fg-3)', background: 'var(--bg-app)', border: '1px solid var(--divider)',
             borderRadius: 6, cursor: 'pointer',
           }}>Cancel</button>
           <button

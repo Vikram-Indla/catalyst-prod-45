@@ -161,8 +161,8 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                       border: '1px solid var(--divider)', borderRadius: '8px', cursor: 'pointer', position: 'relative',
                       transition: 'border-color .15s, box-shadow .15s',
                     }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#94A3B8'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(15,23,42,.06)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(15,23,42,.06)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }}
                     >
                       {/* 3px ACCENT BAR */}
                       <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: accentDot }} />
@@ -175,7 +175,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                       {/* Body */}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px', flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+                          <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
                           {item.project_key && (
                             <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', color: '#FFF', background: projColor }}>{item.project_key}</span>
                           )}
@@ -187,9 +187,9 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                           {item.title}
                         </div>
                         {item.parent_key && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#334155', marginTop: '3px', fontWeight: 500 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--fg-2)', marginTop: '3px', fontWeight: 500 }}>
                             ↳
-                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, color: '#64748B' }}>{item.parent_key}</span>
+                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, color: 'var(--fg-3)' }}>{item.parent_key}</span>
                             <span>{item.parent_title && item.parent_title.length > 40 ? item.parent_title.slice(0, 40) + '…' : item.parent_title}</span>
                           </div>
                         )}

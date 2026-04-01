@@ -153,7 +153,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
               {COLOR_PRESETS.map(c => (
                 <button key={c} onClick={() => setForm(f => ({ ...f, color: c }))}
                   style={{
-                    width: 32, height: 32, borderRadius: '50%', border: form.color === c ? '2px solid #0f172a' : '2px solid transparent',
+                    width: 32, height: 32, borderRadius: '50%', border: form.color === c ? '2px solid var(--fg-1)' : '2px solid transparent',
                     background: c, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'border-color 150ms',
                   }}>
@@ -189,7 +189,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
             </button>
             <button onClick={handleSubmit} disabled={isSubmitting} style={{
               height: 36, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
-              border: 'none', background: 'var(--cp-blue)', color: '#fff',
+              border: 'none', background: 'var(--cp-blue)', color: 'var(--bg-app)',
               fontSize: 13, fontWeight: 600, cursor: isSubmitting ? 'wait' : 'pointer',
               opacity: isSubmitting ? 0.7 : 1,
             }}>
@@ -212,7 +212,7 @@ function Field({ label, required, error, children }: {
         display: 'block', fontSize: 13, fontWeight: 500,
         color: 'var(--fg-1)', marginBottom: 4,
       }}>
-        {label}{required && <span style={{ color: '#ef4444' }}> *</span>}
+        {label}{required && <span style={{ color: 'var(--sem-danger)' }}> *</span>}
       </label>
       {children}
       {error && <span style={{ fontSize: 12, color: '#ef4444', marginTop: 2, display: 'block' }}>{error}</span>}
