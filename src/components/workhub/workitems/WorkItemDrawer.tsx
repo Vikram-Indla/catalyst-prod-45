@@ -263,19 +263,19 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
               ) : (
                 <div className="space-y-2.5 max-h-[400px] overflow-y-auto">
                   {comments.map((c, i) => (
-                    <div key={c.id || i} className="rounded-lg border p-3" style={{ borderColor: '#e2e8f0', backgroundColor: '#fafbfc' }}>
+                    <div key={c.id || i} className="rounded-lg border p-3" style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--bg-1)' }}>
                       <div className="flex items-center gap-2 mb-1.5">
                         {c.authorAvatar ? (
                           <img src={c.authorAvatar} alt="" className="w-5 h-5 rounded-full" />
                         ) : (
-                          <User className="w-4 h-4" style={{ color: '#94a3b8' }} />
+                          <User className="w-4 h-4" style={{ color: 'var(--fg-4)' }} />
                         )}
-                        <span className="text-[12px] font-semibold" style={{ color: '#334155' }}>{c.author}</span>
-                        <span className="text-[10px]" style={{ color: '#94a3b8' }}>
+                        <span className="text-[12px] font-semibold" style={{ color: 'var(--fg-2)' }}>{c.author}</span>
+                        <span className="text-[10px]" style={{ color: 'var(--fg-4)' }}>
                           {c.created ? formatDistanceToNow(new Date(c.created), { addSuffix: true }) : ''}
                         </span>
                       </div>
-                      <p className="text-[12px] leading-relaxed whitespace-pre-wrap" style={{ color: '#475569' }}>{c.body}</p>
+                      <p className="text-[12px] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--fg-2)' }}>{c.body}</p>
                     </div>
                   ))}
                 </div>

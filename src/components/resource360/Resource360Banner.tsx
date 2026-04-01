@@ -56,7 +56,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 16,
-      padding: '20px 24px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+      padding: '20px 24px', background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)',
       flexShrink: 0, fontFamily: "'Inter', sans-serif",
     }}>
       {/* Avatar */}

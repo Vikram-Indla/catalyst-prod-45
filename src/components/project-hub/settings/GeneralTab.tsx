@@ -100,17 +100,17 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', height: 40, padding: '0 12px', fontSize: 13,
-    color: '#0F172A', background: '#FFFFFF', border: '1px solid #E2E8F0',
+    color: 'var(--fg-1)', background: 'var(--bg-app)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
     transition: 'border-color 150ms ease, box-shadow 150ms ease',
   };
 
   const inputFocusHandler = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    e.currentTarget.style.borderColor = '#2563EB';
+    e.currentTarget.style.borderColor = 'var(--cp-blue)';
     e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)';
   };
   const inputBlurHandler = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    e.currentTarget.style.borderColor = '#E2E8F0';
+    e.currentTarget.style.borderColor = 'var(--divider)';
     e.currentTarget.style.boxShadow = 'none';
   };
 

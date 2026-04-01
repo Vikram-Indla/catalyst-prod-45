@@ -224,7 +224,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
         </div>
 
         {/* B. Status + Type bar */}
-        <div style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
+        <div style={{ padding: '8px 20px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
           <StatusBadge
             status={item.status.name}
             onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === 'status' ? null : 'status'); }}
@@ -242,7 +242,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
         </div>
 
         {/* C. Title + Description */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--divider)' }}>
           <InlineEditTitle
             value={item.title}
             onSave={handleTitleSave}
@@ -250,7 +250,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
             fontWeight={700}
             style={{ display: 'block', whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: '1.35' }}
           />
-          <p style={{ fontSize: 13, color: '#94A3B8', margin: '8px 0 0', fontStyle: 'italic' }}>
+          <p style={{ fontSize: 13, color: 'var(--fg-4)', margin: '8px 0 0', fontStyle: 'italic' }}>
             No description
           </p>
         </div>

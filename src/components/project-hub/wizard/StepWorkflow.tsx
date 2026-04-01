@@ -137,7 +137,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
                     fontSize: 11,
                     fontWeight: 500,
                     padding: '3px 10px',
-                    background: '#FFFFFF',
+                    background: 'var(--bg-app)',
                     border: `1px solid ${s.color}`,
                     color: s.color,
                   }}
@@ -158,11 +158,11 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
           type="checkbox"
           checked={data.featureLayer}
           onChange={e => onChange({ ...data, featureLayer: e.target.checked })}
-          style={{ accentColor: '#2563EB', marginTop: 3 }}
+          style={{ accentColor: 'var(--cp-blue)', marginTop: 3 }}
         />
         <div>
-          <div style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>Enable Feature Layer</div>
-          <div style={{ fontSize: 12, color: '#64748B', marginTop: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>Enable Feature Layer</div>
+          <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 1 }}>
             Adds Feature as an intermediate level between Epic and Story/Bug/Task
           </div>
         </div>
