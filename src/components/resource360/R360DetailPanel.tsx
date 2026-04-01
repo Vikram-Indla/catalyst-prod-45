@@ -263,8 +263,8 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
           {siblings.length > 0 && (
             <div style={{ padding: '16px 20px', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '.05em' }}>Siblings</span>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#334155', background: '#F1F5F9', padding: '2px 8px', borderRadius: '10px' }}>{doneSiblings}/{siblings.length} done</span>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Siblings</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '10px' }}>{doneSiblings}/{siblings.length} done</span>
               </div>
               <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#CBD5E1 transparent', maxHeight: '320px' }}>
                 {siblings.map(sib => {
@@ -275,10 +275,10 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                     <div key={sib.id || sib.item_key} onClick={() => !isCurrent && onSiblingClick(sib)} style={{
                       display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 10px', borderRadius: '6px',
                       cursor: isCurrent ? 'default' : 'pointer', marginBottom: '2px',
-                      border: isCurrent ? '1px solid #2563EB' : '1px solid transparent',
+                      border: isCurrent ? '1px solid var(--cp-blue)' : '1px solid transparent',
                       background: isCurrent ? '#EFF6FF' : 'transparent',
                     }}
-                      onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = '#F1F5F9'; }}
+                      onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'var(--bg-3)'; }}
                       onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}
                     >
                       <span style={{ flexShrink: 0 }}>{getJiraIcon(sib.item_type || 'Task')}</span>

@@ -238,45 +238,45 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
 
           <SidebarField label="Department">
             {item.department ? (
-              <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium" style={{ background: '#F1F5F9', color: '#334155' }}>{item.department}</span>
-            ) : <span className="text-[12px]" style={{ color: '#94A3B8' }}>None</span>}
+              <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium" style={{ background: 'var(--cp-bd-zone)', color: 'var(--fg-2)' }}>{item.department}</span>
+            ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
           <SidebarField label="Team">
             {item.team ? (
-              <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium" style={{ background: '#F1F5F9', color: '#334155' }}>{item.team}</span>
-            ) : <span className="text-[12px]" style={{ color: '#94A3B8' }}>None</span>}
+              <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium" style={{ background: 'var(--cp-bd-zone)', color: 'var(--fg-2)' }}>{item.team}</span>
+            ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
           <SidebarField label="Security Level">
             <div className="flex items-center gap-1.5">
-              <Lock size={12} style={{ color: '#64748B' }} />
-              <span className="text-[12px] font-medium" style={{ color: '#334155' }}>{item.security_level || 'Standard'}</span>
+              <Lock size={12} style={{ color: 'var(--fg-3)' }} />
+              <span className="text-[12px] font-medium" style={{ color: 'var(--fg-2)' }}>{item.security_level || 'Standard'}</span>
             </div>
           </SidebarField>
 
           <SidebarField label="Flag">
             {item.is_flagged ? (
               <div className="flex items-center gap-1.5">
-                <Flag size={12} style={{ color: '#DC2626' }} />
-                <span className="text-[12px] font-medium" style={{ color: '#DC2626' }}>{item.flag_reason || 'Flagged'}</span>
-                <button onClick={() => onUpdate('is_flagged', false)} className="ml-auto p-0.5 rounded hover:bg-[#FEF2F2]" title="Unflag"><X size={10} style={{ color: '#DC2626' }} /></button>
+                <Flag size={12} style={{ color: 'var(--sem-danger)' }} />
+                <span className="text-[12px] font-medium" style={{ color: 'var(--sem-danger)' }}>{item.flag_reason || 'Flagged'}</span>
+                <button onClick={() => onUpdate('is_flagged', false)} className="ml-auto p-0.5 rounded hover:bg-[#FEF2F2]" title="Unflag"><X size={10} style={{ color: 'var(--sem-danger)' }} /></button>
               </div>
             ) : (
-              <button onClick={() => onUpdate('is_flagged', true)} className="text-[12px] font-medium hover:underline" style={{ color: '#94A3B8' }}>None — click to flag</button>
+              <button onClick={() => onUpdate('is_flagged', true)} className="text-[12px] font-medium hover:underline" style={{ color: 'var(--fg-4)' }}>None — click to flag</button>
             )}
           </SidebarField>
 
           <SidebarField label="Resolution">
-            <span className="text-[12px] font-medium" style={{ color: item.resolution ? '#334155' : '#94A3B8' }}>{item.resolution || 'Unresolved'}</span>
+            <span className="text-[12px] font-medium" style={{ color: item.resolution ? 'var(--fg-2)' : 'var(--fg-4)' }}>{item.resolution || 'Unresolved'}</span>
           </SidebarField>
 
           <SidebarField label="Watchers">
             <div className="flex items-center gap-1">
               {watchers.slice(0, 5).map((w: any) => (<MiniAvatar key={w.id} name={w.name} size={22} />))}
-              {watchers.length > 5 && <span className="text-[10px] font-bold" style={{ color: '#64748B' }}>+{watchers.length - 5}</span>}
+              {watchers.length > 5 && <span className="text-[10px] font-bold" style={{ color: 'var(--fg-3)' }}>+{watchers.length - 5}</span>}
             </div>
-            <button onClick={handleWatch} className="flex items-center gap-1 text-[11px] font-medium mt-1 hover:underline" style={{ color: '#2563EB' }}>
+            <button onClick={handleWatch} className="flex items-center gap-1 text-[11px] font-medium mt-1 hover:underline" style={{ color: 'var(--cp-blue)' }}>
               <Eye size={11} /> + Watch
             </button>
           </SidebarField>
