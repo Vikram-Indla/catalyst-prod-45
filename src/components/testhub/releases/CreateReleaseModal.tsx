@@ -60,7 +60,7 @@ export function CreateReleaseModal({ open, onClose, onCreated }: CreateReleaseMo
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)' }} onClick={onClose} />
-      <div style={{ position: 'relative', width: 560, maxHeight: '90vh', background: '#fff', borderRadius: 14, boxShadow: '0 25px 50px rgba(0,0,0,0.2)', overflow: 'auto' }}>
+      <div style={{ position: 'relative', width: 560, maxHeight: '90vh', background: 'var(--cp-float)', borderRadius: 14, boxShadow: '0 25px 50px rgba(0,0,0,0.2)', overflow: 'auto' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderBottom: '1px solid var(--divider)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -119,7 +119,7 @@ export function CreateReleaseModal({ open, onClose, onCreated }: CreateReleaseMo
 
         {/* Footer */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, padding: '16px 24px', borderTop: '1px solid var(--divider)' }}>
-          <button onClick={onClose} style={{ padding: '9px 18px', border: '1px solid var(--divider)', borderRadius: 8, background: '#fff', fontSize: 14, cursor: 'pointer', color: 'var(--fg-3)' }}>
+          <button onClick={onClose} style={{ padding: '9px 18px', border: '1px solid var(--divider)', borderRadius: 8, background: 'var(--cp-float)', fontSize: 14, cursor: 'pointer', color: 'var(--fg-3)' }}>
             Cancel
           </button>
           <button
@@ -127,7 +127,7 @@ export function CreateReleaseModal({ open, onClose, onCreated }: CreateReleaseMo
             disabled={isSaving || !name.trim() || !version.trim()}
             style={{
               padding: '9px 18px', border: 'none', borderRadius: 8,
-              background: '#2563EB', color: '#fff', fontSize: 14, fontWeight: 600,
+              background: 'var(--cp-blue)', color: 'var(--cp-float)', fontSize: 14, fontWeight: 600,
               cursor: isSaving ? 'not-allowed' : 'pointer', opacity: isSaving ? 0.6 : 1,
             }}
           >
@@ -161,5 +161,5 @@ const labelStyle: React.CSSProperties = {
 const inputStyle: React.CSSProperties = {
   width: '100%', height: 38, padding: '0 12px', border: '1px solid var(--divider)',
   borderRadius: 8, fontSize: 13, color: 'var(--fg-1)', outline: 'none',
-  background: '#fff',
+  background: 'var(--cp-float)',
 };

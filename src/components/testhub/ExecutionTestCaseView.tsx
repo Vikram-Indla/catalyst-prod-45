@@ -136,7 +136,7 @@ export function ExecutionTestCaseView({
             <button onClick={() => setIsHistoryOpen(true)} title="View Execution History" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '6px 10px', backgroundColor: 'var(--cp-bd-zone)', border: 'none', borderRadius: 6, color: 'var(--fg-3)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
               <History size={14} /> History
             </button>
-            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: elapsedTime > 0 ? '#FEF3C7' : '#F1F5F9', borderRadius: 6 }}>
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', backgroundColor: elapsedTime > 0 ? '#FEF3C7' : 'var(--cp-bd-zone)', borderRadius: 6 }}>
               <Timer size={14} style={{ color: elapsedTime > 0 ? '#D97706' : '#64748B' }} />
               <span style={{ fontSize: 14, fontWeight: 600, fontFamily: 'monospace', color: elapsedTime > 0 ? '#D97706' : '#64748B' }}>
                 {formatTime(elapsedTime)}
@@ -174,7 +174,7 @@ export function ExecutionTestCaseView({
               testCase.steps.map((step, index) => (
                 <div key={index} style={{ backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 10, overflow: 'hidden' }}>
                   <div style={{ padding: '12px 16px', backgroundColor: 'var(--bg-1)', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: 'var(--cp-blue)', color: '#FFFFFF', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: 'var(--cp-blue)', color: 'var(--cp-float)', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {step.step_number || index + 1}
                     </span>
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-2)' }}>Step {step.step_number || index + 1}</span>

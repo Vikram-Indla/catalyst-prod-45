@@ -49,7 +49,7 @@ function ContextMenuItem({ icon: Icon, children, onClick, danger }: MenuItemProp
         transition: 'background-color 0.15s',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = danger ? '#FEF2F2' : '#F8FAFC';
+        e.currentTarget.style.backgroundColor = danger ? '#FEF2F2' : 'var(--bg-1)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent';
@@ -104,7 +104,7 @@ export function TestCaseContextMenu({
         Clone
       </ContextMenuItem>
       
-      <div style={{ height: 1, background: '#E2E8F0', margin: '6px 0' }} />
+      <div style={{ height: 1, background: 'var(--divider)', margin: '6px 0' }} />
       
       <ContextMenuItem icon={FolderInput} onClick={onMove}>
         Move to...
@@ -113,7 +113,7 @@ export function TestCaseContextMenu({
         Change Status
       </ContextMenuItem>
       
-      <div style={{ height: 1, background: '#E2E8F0', margin: '6px 0' }} />
+      <div style={{ height: 1, background: 'var(--divider)', margin: '6px 0' }} />
       
       <ContextMenuItem icon={Trash2} onClick={onDelete} danger>
         Delete

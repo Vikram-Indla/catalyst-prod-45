@@ -127,7 +127,7 @@ export function SavedFilters({ entityType, currentFilters, onApplyFilter }: Save
   return (
     <div style={{ position: 'relative' }}>
       <button onClick={() => setIsExpanded(!isExpanded)}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, backgroundColor: filters.length > 0 ? '#F8FAFC' : '#FFF', color: 'var(--fg-3)', fontSize: 13, cursor: 'pointer' }}>
+        style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, backgroundColor: filters.length > 0 ? 'var(--bg-1)' : 'var(--cp-float)', color: 'var(--fg-3)', fontSize: 13, cursor: 'pointer' }}>
         <Filter size={16} /> Saved ({filters.length})
       </button>
 
@@ -137,7 +137,7 @@ export function SavedFilters({ entityType, currentFilters, onApplyFilter }: Save
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Saved Filters</span>
             {hasActiveFilters && (
               <button onClick={() => setShowSaveModal(true)}
-                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 8px', backgroundColor: 'var(--cp-blue)', border: 'none', borderRadius: 6, color: '#FFF', fontSize: 11, fontWeight: 500, cursor: 'pointer' }}>
+                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 8px', backgroundColor: 'var(--cp-blue)', border: 'none', borderRadius: 6, color: 'var(--cp-float)', fontSize: 11, fontWeight: 500, cursor: 'pointer' }}>
                 <Plus size={12} /> Save Current
               </button>
             )}
@@ -153,7 +153,7 @@ export function SavedFilters({ entityType, currentFilters, onApplyFilter }: Save
                     <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{filter.name}</span>
                   </button>
                   <button onClick={() => setAsDefault(filter.id)} title={filter.is_default ? 'Default filter' : 'Set as default'}
-                    style={{ width: 24, height: 24, padding: 0, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: filter.is_default ? '#F59E0B' : '#CBD5E1', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    style={{ width: 24, height: 24, padding: 0, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: filter.is_default ? 'var(--sem-warning)' : 'var(--divider)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Star size={14} fill={filter.is_default ? '#F59E0B' : 'none'} />
                   </button>
                   <button onClick={() => deleteFilter(filter.id)}
@@ -187,7 +187,7 @@ export function SavedFilters({ entityType, currentFilters, onApplyFilter }: Save
                 Cancel
               </button>
               <button onClick={saveCurrentFilter} disabled={isSaving}
-                style={{ padding: '10px 16px', backgroundColor: 'var(--cp-blue)', border: 'none', borderRadius: 8, color: '#FFF', fontSize: 13, fontWeight: 500, cursor: isSaving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                style={{ padding: '10px 16px', backgroundColor: 'var(--cp-blue)', border: 'none', borderRadius: 8, color: 'var(--cp-float)', fontSize: 13, fontWeight: 500, cursor: isSaving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Save size={14} /> {isSaving ? 'Saving...' : 'Save'}
               </button>
             </div>

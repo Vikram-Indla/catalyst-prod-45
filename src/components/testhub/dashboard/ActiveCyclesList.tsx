@@ -99,7 +99,7 @@ export function ActiveCyclesList({ cycles }: Props) {
             <p style={{ fontSize: 13, margin: '0 0 12px' }}>No active cycles</p>
             <button
               onClick={() => navigate('/testhub/cycles')}
-              style={{ padding: '8px 16px', border: 'none', borderRadius: 6, backgroundColor: 'var(--cp-blue)', color: '#FFF', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+              style={{ padding: '8px 16px', border: 'none', borderRadius: 6, backgroundColor: 'var(--cp-blue)', color: 'var(--cp-float)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
             >
               Create Cycle
             </button>

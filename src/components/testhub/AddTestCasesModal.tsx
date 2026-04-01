@@ -134,7 +134,7 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
             <div style={{ flex: 1, overflowY: 'auto', padding: 8 }}>
               <button onClick={() => setSelectedFolderId(null)} style={{
                 width: '100%', padding: '10px 12px', border: 'none', borderRadius: 8,
-                backgroundColor: selectedFolderId === null ? '#EFF6FF' : 'transparent',
+                backgroundColor: selectedFolderId === null ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent',
                 color: selectedFolderId === null ? '#2563EB' : '#334155',
                 fontSize: 14, fontWeight: selectedFolderId === null ? 600 : 400, cursor: 'pointer', textAlign: 'left',
                 display: 'flex', alignItems: 'center', gap: 8,
@@ -144,7 +144,7 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
               {folders.filter(f => !f.parent_id).map(folder => (
                 <button key={folder.id} onClick={() => setSelectedFolderId(folder.id)} style={{
                   width: '100%', padding: '10px 12px', border: 'none', borderRadius: 8,
-                  backgroundColor: selectedFolderId === folder.id ? '#EFF6FF' : 'transparent',
+                  backgroundColor: selectedFolderId === folder.id ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent',
                   color: selectedFolderId === folder.id ? '#2563EB' : '#334155',
                   fontSize: 14, fontWeight: selectedFolderId === folder.id ? 600 : 400, cursor: 'pointer', textAlign: 'left',
                   display: 'flex', alignItems: 'center', gap: 8,
@@ -185,9 +185,9 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
                       const isSelected = selectedIds.has(tc.id);
                       const priority = priorityConfig[tc.priority?.toLowerCase()] || priorityConfig.medium;
                       return (
-                        <tr key={tc.id} onClick={() => toggleSelection(tc.id)} style={{ borderBottom: '1px solid var(--cp-bd-zone)', cursor: 'pointer', backgroundColor: isSelected ? '#EFF6FF' : 'transparent' }}>
+                        <tr key={tc.id} onClick={() => toggleSelection(tc.id)} style={{ borderBottom: '1px solid var(--cp-bd-zone)', cursor: 'pointer', backgroundColor: isSelected ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent' }}>
                           <td style={{ padding: '12px 16px', width: 40 }}>
-                            <div style={{ width: 20, height: 20, borderRadius: 4, border: isSelected ? 'none' : '2px solid #CBD5E1', backgroundColor: isSelected ? '#2563EB' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ width: 20, height: 20, borderRadius: 4, border: isSelected ? 'none' : '2px solid #CBD5E1', backgroundColor: isSelected ? 'var(--cp-blue)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               {isSelected && <Check size={14} style={{ color: '#FFFFFF' }} />}
                             </div>
                           </td>
@@ -217,7 +217,7 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
             <button onClick={onClose} disabled={isSubmitting} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
             <button onClick={handleSubmit} disabled={isSubmitting || selectedIds.size === 0} style={{
               height: 40, padding: '0 20px',
-              background: selectedIds.size > 0 ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' : '#94A3B8',
+              background: selectedIds.size > 0 ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' : 'var(--fg-4)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
               cursor: selectedIds.size > 0 ? 'pointer' : 'not-allowed', opacity: isSubmitting ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 8,

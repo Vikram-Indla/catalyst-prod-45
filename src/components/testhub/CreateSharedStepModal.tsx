@@ -152,7 +152,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
     width: '100%', height: 40, padding: '0 12px',
-    border: `1.5px solid ${hasError ? '#EF4444' : '#E2E8F0'}`, borderRadius: 8,
+    border: `1.5px solid ${hasError ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8,
     fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter',
   });
 
@@ -226,7 +226,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
               placeholder='Describe the action to perform. Use {{username}} for variables.'
               style={{
                 width: '100%', minHeight: 100, padding: '10px 12px',
-                border: `1.5px solid ${errors.action ? '#EF4444' : '#E2E8F0'}`, borderRadius: 8,
+                border: `1.5px solid ${errors.action ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8,
                 fontSize: 14, color: 'var(--fg-1)', resize: 'vertical', fontFamily: 'Inter',
               }} />
             {errors.action && <ErrorText text={errors.action} />}

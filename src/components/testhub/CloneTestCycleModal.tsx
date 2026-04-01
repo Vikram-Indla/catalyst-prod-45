@@ -250,8 +250,8 @@ export function CloneTestCycleModal({
                 onClick={() => setIncludeTestCases(!includeTestCases)}
                 style={{
                   display: 'flex', alignItems: 'flex-start', gap: 12, padding: 16, width: '100%',
-                  backgroundColor: includeTestCases ? '#EFF6FF' : '#F8FAFC',
-                  border: `1.5px solid ${includeTestCases ? '#BFDBFE' : '#E2E8F0'}`,
+                  backgroundColor: includeTestCases ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--bg-1)',
+                  border: `1.5px solid ${includeTestCases ? 'color-mix(in srgb, var(--cp-blue) 25%, transparent)' : 'var(--divider)'}`,
                   borderRadius: 8, cursor: 'pointer', textAlign: 'left',
                 }}
               >

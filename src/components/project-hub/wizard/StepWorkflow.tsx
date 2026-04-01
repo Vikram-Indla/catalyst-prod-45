@@ -5,9 +5,9 @@ import { ArrowRight } from 'lucide-react';
 
 const DEFAULT_WORKFLOW = [
   { name: 'To Do', color: '#A3A3A3' },
-  { name: 'In Progress', color: '#2563EB' },
-  { name: 'In Review', color: '#D97706' },
-  { name: 'Done', color: '#0D9488' },
+  { name: 'In Progress', color: 'var(--cp-blue)' },
+  { name: 'In Review', color: 'var(--sem-warning)' },
+  { name: 'Done', color: 'var(--sem-success)' },
   { name: 'Cancelled', color: '#D4D4D4' },
 ];
 
@@ -61,19 +61,19 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
       <label
         className="flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors"
         style={{
-          border: data.useDefault ? '2px solid #2563EB' : '1px solid #E2E8F0',
-          background: data.useDefault ? '#F8FAFC' : '#FFFFFF',
+          border: data.useDefault ? '2px solid var(--cp-blue)' : '1px solid var(--divider)',
+          background: data.useDefault ? 'var(--bg-1)' : 'var(--bg-app)',
         }}
       >
         <input
           type="radio"
           checked={data.useDefault}
           onChange={() => onChange({ ...data, useDefault: true, copyFromProject: null })}
-          style={{ accentColor: '#2563EB', marginTop: 2 }}
+          style={{ accentColor: 'var(--cp-blue)', marginTop: 2 }}
         />
         <div className="flex-1">
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Use default workflow</div>
-          <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>Standard project workflow with common statuses</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Use default workflow</div>
+          <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 2 }}>Standard project workflow with common statuses</div>
         </div>
       </label>
 

@@ -109,7 +109,7 @@ export default function Resource360PageNew() {
       <div ref={viewTabsRef} id="r360-view-tabs" style={{
         display: 'flex', alignItems: 'center', gap: 0,
         padding: '0 20px', height: 40, flexShrink: 0,
-        background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+        background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)',
       }}>
         {VIEW_TABS.map(tab => {
           const active = activeView === tab.key;
@@ -120,9 +120,9 @@ export default function Resource360PageNew() {
               style={{
                 padding: '0 12px', height: 40, fontSize: 13,
                 fontWeight: active ? 700 : 500,
-                color: active ? '#2563EB' : '#64748B',
+                color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
                 background: 'transparent', border: 'none',
-                borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
+                borderBottom: active ? '2px solid var(--cp-blue)' : '2px solid transparent',
                 cursor: 'pointer', fontFamily: "'Inter', sans-serif",
               }}
             >{tab.label}</button>
@@ -132,9 +132,9 @@ export default function Resource360PageNew() {
 
         {/* Quarter select */}
         <select style={{
-          height: 28, fontSize: 12, border: '1px solid #E2E8F0',
+          height: 28, fontSize: 12, border: '1px solid var(--divider)',
           borderRadius: 6, padding: '0 8px', marginRight: 8,
-          background: '#FFFFFF', color: '#0F172A',
+          background: 'var(--bg-app)', color: 'var(--fg-1)',
           fontFamily: "'Inter', sans-serif", cursor: 'pointer',
         }}>
           <option>Q1-2026</option>
@@ -146,7 +146,7 @@ export default function Resource360PageNew() {
         <button
           onClick={() => setAIOpen(true)}
           style={{
-            background: '#2563EB',
+            background: 'var(--cp-blue)',
             color: '#FFFFFF', border: 'none', borderRadius: 20,
             padding: '0 16px', height: 32, fontSize: 12, fontWeight: 600,
             letterSpacing: '0.3px', cursor: 'pointer',

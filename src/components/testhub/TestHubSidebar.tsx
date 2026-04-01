@@ -124,7 +124,7 @@ export function TestHubSidebar({
                   height: 20,
                   padding: '0 6px',
                   borderRadius: 10,
-                  backgroundColor: active ? '#2563EB' : '#E2E8F0',
+                  backgroundColor: active ? 'var(--cp-blue)' : 'var(--divider)',
                   color: active ? '#FFFFFF' : '#64748B',
                   fontSize: 11,
                   fontWeight: 600,

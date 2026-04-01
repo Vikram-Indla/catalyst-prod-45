@@ -344,8 +344,8 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
                       onClick={() => setImportType(type.value)}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 12, padding: 16,
-                        border: `2px solid ${isSelected ? type.color : '#E2E8F0'}`,
-                        borderRadius: 10, backgroundColor: isSelected ? `${type.color}10` : '#FFF',
+                        border: `2px solid ${isSelected ? type.color : 'var(--divider)'}`,
+                        borderRadius: 10, backgroundColor: isSelected ? `${type.color}10` : 'var(--cp-float)',
                         cursor: 'pointer', textAlign: 'left',
                       }}
                     >
@@ -458,7 +458,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
             disabled={(step === 2 && !file) || isProcessing}
             style={{
               height: 44, padding: '0 24px',
-              background: (step === 2 && !file) ? '#CBD5E1' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
+              background: (step === 2 && !file) ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
               border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFF',
               cursor: (step === 2 && !file) || isProcessing ? 'not-allowed' : 'pointer',
             }}

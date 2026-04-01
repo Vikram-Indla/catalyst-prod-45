@@ -183,13 +183,13 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
                 return (
                   <div key={cycle.id} onClick={() => toggleSelect(cycle.id)} style={{
                     display: 'flex', alignItems: 'center', gap: 14, padding: 14,
-                    backgroundColor: isSelected ? '#F5F3FF' : '#F8FAFC', borderRadius: 10,
+                    backgroundColor: isSelected ? '#F5F3FF' : 'var(--bg-1)', borderRadius: 10,
                     border: `2px solid ${isSelected ? '#7C3AED' : 'transparent'}`, cursor: 'pointer', transition: 'all 0.15s',
                   }}>
                     <div style={{
                       width: 22, height: 22, borderRadius: 6,
-                      border: `2px solid ${isSelected ? '#7C3AED' : '#CBD5E1'}`,
-                      backgroundColor: isSelected ? '#7C3AED' : '#FFF',
+                      border: `2px solid ${isSelected ? '#7C3AED' : 'var(--divider)'}`,
+                      backgroundColor: isSelected ? '#7C3AED' : 'var(--cp-float)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                     }}>{isSelected && <CheckCircle2 size={14} style={{ color: '#FFF' }} />}</div>
                     <div style={{ flex: 1 }}>
@@ -227,7 +227,7 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting || selectedIds.size === 0} style={{
             height: 44, padding: '0 24px',
-            background: selectedIds.size === 0 ? '#CBD5E1' : 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+            background: selectedIds.size === 0 ? 'var(--divider)' : 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
             border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
             cursor: selectedIds.size === 0 || isSubmitting ? 'not-allowed' : 'pointer',
             opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8,

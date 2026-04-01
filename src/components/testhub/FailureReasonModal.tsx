@@ -129,7 +129,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
               </label>
               <textarea value={notes} onChange={(e) => { setNotes(e.target.value); setError(''); }}
                 placeholder={selectedReason === 'other' ? 'Please describe the failure reason...' : 'Add any additional details about the failure...'}
-                rows={3} style={{ width: '100%', padding: '10px 12px', border: `1.5px solid ${error && selectedReason === 'other' && !notes.trim() ? '#EF4444' : 'hsl(var(--border))'}`, borderRadius: 8, fontSize: 14, color: 'hsl(var(--foreground))', backgroundColor: 'hsl(var(--background))', resize: 'vertical', fontFamily: 'inherit' }} />
+                rows={3} style={{ width: '100%', padding: '10px 12px', border: `1.5px solid ${error && selectedReason === 'other' && !notes.trim() ? 'var(--sem-danger)' : 'hsl(var(--border))'}`, borderRadius: 8, fontSize: 14, color: 'hsl(var(--foreground))', backgroundColor: 'hsl(var(--background))', resize: 'vertical', fontFamily: 'inherit' }} />
             </div>
 
             {error && (
@@ -142,7 +142,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
           {/* Footer */}
           <div style={{ padding: '16px 24px', borderTop: '1px solid hsl(var(--border))', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
             <button onClick={handleClose} style={{ height: 40, padding: '0 20px', backgroundColor: 'hsl(var(--card))', border: '1.5px solid hsl(var(--border))', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'hsl(var(--foreground))', cursor: 'pointer' }}>Cancel</button>
-            <button onClick={handleConfirm} style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, var(--sem-danger) 0%, var(--sem-danger) 100%)', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button onClick={handleConfirm} style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, var(--sem-danger) 0%, var(--sem-danger) 100%)', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--cp-float)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
               <XCircle size={16} /> Mark as Failed
             </button>
           </div>

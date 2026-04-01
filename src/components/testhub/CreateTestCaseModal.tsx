@@ -591,7 +591,7 @@ export function CreateTestCaseModal({
                   style={{ 
                     ...selectStyle, 
                     backgroundColor: 'var(--cp-float)',
-                    borderColor: errors.folder ? '#EF4444' : '#E2E8F0',
+                    borderColor: errors.folder ? 'var(--sem-danger)' : 'var(--divider)',
                   }}
                 >
                   <option value="">Select a folder...</option>
@@ -791,7 +791,7 @@ export function CreateTestCaseModal({
             style={{
               height: 40,
               padding: '0 20px',
-              background: isSaving ? '#94A3B8' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              background: isSaving ? 'var(--fg-4)' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               border: 'none',
               borderRadius: 8,
               fontFamily: 'Inter, sans-serif',

@@ -65,7 +65,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
       {/* Info note */}
       <div
         className="flex items-center gap-2 rounded-lg"
-        style={{ padding: '8px 12px', background: '#EFF6FF', fontSize: 12, color: '#2563EB' }}
+        style={{ padding: '8px 12px', background: 'var(--cp-blue-wash)', fontSize: 12, color: 'var(--cp-blue)' }}
       >
         <span style={{ fontWeight: 500 }}>ℹ</span>
         You will be added as Admin automatically.
@@ -78,18 +78,18 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
           style={{
             height: 40,
             padding: '0 12px',
-            background: '#FFFFFF',
-            border: '1px solid #E2E8F0',
+            background: 'var(--bg-app)',
+            border: '1px solid var(--divider)',
             borderRadius: 6,
           }}
         >
-          <Search size={14} color="#94A3B8" strokeWidth={2} />
+          <Search size={14} color="var(--fg-4)" strokeWidth={2} />
           <input
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search by name or email..."
             className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: 13, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}
+            style={{ fontSize: 13, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}
           />
         </div>
 
@@ -98,8 +98,8 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
           <div
             className="absolute top-full left-0 right-0 mt-1 z-10 max-h-[200px] overflow-y-auto"
             style={{
-              background: '#FFFFFF',
-              border: '1px solid #E2E8F0',
+              background: 'var(--cp-float)',
+              border: '1px solid var(--divider)',
               borderRadius: 8,
               boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',
             }}
@@ -125,8 +125,8 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                   {user.name[0]?.toUpperCase() || '?'}
                 </div>
                 <div className="min-w-0">
-                  <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>{user.name}</div>
-                  <div className="truncate" style={{ fontSize: 11, color: '#64748B' }}>{user.email}</div>
+                  <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{user.name}</div>
+                  <div className="truncate" style={{ fontSize: 11, color: 'var(--fg-3)' }}>{user.email}</div>
                 </div>
               </button>
             ))}
@@ -141,7 +141,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
             <div
               key={member.userId}
               className="flex items-center gap-3 rounded-md px-3"
-              style={{ height: 44, background: '#F8FAFC' }}
+              style={{ height: 44, background: 'var(--bg-1)' }}
             >
               <div
                 className="flex items-center justify-center rounded-full flex-shrink-0"
@@ -157,8 +157,8 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                 {member.name[0]?.toUpperCase() || '?'}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>{member.name}</div>
-                <div className="truncate" style={{ fontSize: 11, color: '#64748B' }}>{member.email}</div>
+                <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{member.name}</div>
+                <div className="truncate" style={{ fontSize: 11, color: 'var(--fg-3)' }}>{member.email}</div>
               </div>
               <select
                 value={member.role}
@@ -168,10 +168,10 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                   padding: '0 6px',
                   fontSize: 11,
                   fontWeight: 500,
-                  border: '1px solid #E2E8F0',
+                  border: '1px solid var(--divider)',
                   borderRadius: 4,
-                  background: '#FFFFFF',
-                  color: '#334155',
+                  background: 'var(--bg-app)',
+                  color: 'var(--fg-2)',
                   cursor: 'pointer',
                 }}
               >
@@ -184,7 +184,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                 className="flex items-center justify-center rounded transition-colors hover:bg-[#E2E8F0]"
                 style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
-                <X size={14} color="#94A3B8" />
+                <X size={14} color="var(--fg-4)" />
               </button>
             </div>
           ))}
@@ -192,7 +192,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
       )}
 
       {members.length === 0 && (
-        <div style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', padding: '20px 0' }}>
+        <div style={{ fontSize: 12, color: 'var(--fg-4)', textAlign: 'center', padding: '20px 0' }}>
           No additional members added. You can add them later from project settings.
         </div>
       )}

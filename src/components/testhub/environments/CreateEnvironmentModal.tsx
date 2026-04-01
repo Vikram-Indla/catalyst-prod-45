@@ -120,7 +120,7 @@ export function CreateEnvironmentModal({ isOpen, onClose, onCreated }: CreateEnv
                 Name <span style={{ color: 'var(--sem-danger)' }}>*</span>
               </label>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g., QA Environment"
-                style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.name ? '#DC2626' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14 }} />
+                style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.name ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 10, fontSize: 14 }} />
               {errors.name && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} /> {errors.name}</p>}
             </div>
             <div>
@@ -137,7 +137,7 @@ export function CreateEnvironmentModal({ isOpen, onClose, onCreated }: CreateEnv
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Globe size={14} /> Application URL</span>
             </label>
             <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://qa.example.com"
-              style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.url ? '#DC2626' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14 }} />
+              style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.url ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 10, fontSize: 14 }} />
             {errors.url && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0' }}>{errors.url}</p>}
           </div>
 
@@ -146,7 +146,7 @@ export function CreateEnvironmentModal({ isOpen, onClose, onCreated }: CreateEnv
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Link2 size={14} /> API URL</span>
             </label>
             <input type="text" value={apiUrl} onChange={(e) => setApiUrl(e.target.value)} placeholder="https://api.qa.example.com"
-              style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.apiUrl ? '#DC2626' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14 }} />
+              style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.apiUrl ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 10, fontSize: 14 }} />
             {errors.apiUrl && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0' }}>{errors.apiUrl}</p>}
           </div>
 
@@ -185,7 +185,7 @@ export function CreateEnvironmentModal({ isOpen, onClose, onCreated }: CreateEnv
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: 'var(--cp-float)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Server size={16} /> {isSubmitting ? 'Creating...' : 'Add Environment'}
           </button>
         </div>

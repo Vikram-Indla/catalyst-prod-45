@@ -284,8 +284,8 @@ export function CloneTestCaseModal({
             >
               <div style={{
                 ...checkboxStyle,
-                backgroundColor: includeSteps ? '#2563EB' : '#FFFFFF',
-                borderColor: includeSteps ? '#2563EB' : '#CBD5E1',
+                backgroundColor: includeSteps ? 'var(--cp-blue)' : 'var(--cp-float)',
+                borderColor: includeSteps ? 'var(--cp-blue)' : 'var(--divider)',
               }}>
                 {includeSteps && (
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -302,8 +302,8 @@ export function CloneTestCaseModal({
             >
               <div style={{
                 ...checkboxStyle,
-                backgroundColor: includeAttachments ? '#2563EB' : '#FFFFFF',
-                borderColor: includeAttachments ? '#2563EB' : '#CBD5E1',
+                backgroundColor: includeAttachments ? 'var(--cp-blue)' : 'var(--cp-float)',
+                borderColor: includeAttachments ? 'var(--cp-blue)' : 'var(--divider)',
               }}>
                 {includeAttachments && (
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -345,7 +345,7 @@ export function CloneTestCaseModal({
             style={{
               height: 40,
               padding: '0 20px',
-              background: !newTitle.trim() || isSaving ? '#94A3B8' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              background: !newTitle.trim() || isSaving ? 'var(--fg-4)' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               border: 'none',
               borderRadius: 8,
               fontFamily: 'Inter, sans-serif',

@@ -109,7 +109,7 @@ export function ChangeStatusModal({
                   padding: '12px 16px',
                   borderRadius: 8,
                   border: isSelected ? `2px solid ${status.color}` : '1.5px solid #E2E8F0',
-                  backgroundColor: isSelected ? status.bg : '#FFFFFF',
+                  backgroundColor: isSelected ? status.bg : 'var(--cp-float)',
                   cursor: isCurrent ? 'not-allowed' : 'pointer',
                   opacity: isCurrent ? 0.5 : 1,
                   transition: 'all 0.15s',
@@ -146,7 +146,7 @@ export function ChangeStatusModal({
             disabled={!selectedStatus || isUpdating}
             style={{
               height: 40, padding: '0 20px',
-              background: !selectedStatus || isUpdating ? '#94A3B8' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              background: !selectedStatus || isUpdating ? 'var(--fg-4)' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
               cursor: !selectedStatus || isUpdating ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', gap: 6,

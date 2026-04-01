@@ -169,8 +169,8 @@ export function AssignTesterModal({
                 onClick={() => setSelectedProfileId(null)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
-                  border: `1.5px solid ${selectedProfileId === null ? '#A5B4FC' : '#E2E8F0'}`,
-                  borderRadius: 10, backgroundColor: selectedProfileId === null ? '#EEF2FF' : '#FFFFFF',
+                  border: `1.5px solid ${selectedProfileId === null ? '#A5B4FC' : 'var(--divider)'}`,
+                  borderRadius: 10, backgroundColor: selectedProfileId === null ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--cp-float)',
                   cursor: 'pointer', textAlign: 'left', width: '100%',
                 }}
               >
@@ -205,8 +205,8 @@ export function AssignTesterModal({
                     onClick={() => setSelectedProfileId(profile.id)}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
-                      border: `1.5px solid ${isSelected ? '#A5B4FC' : '#E2E8F0'}`,
-                      borderRadius: 10, backgroundColor: isSelected ? '#EEF2FF' : '#FFFFFF',
+                      border: `1.5px solid ${isSelected ? '#A5B4FC' : 'var(--divider)'}`,
+                      borderRadius: 10, backgroundColor: isSelected ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--cp-float)',
                       cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s',
                     }}
                   >

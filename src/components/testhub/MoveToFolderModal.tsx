@@ -97,13 +97,13 @@ export function MoveToFolderModal({
             paddingLeft: 12 + depth * 20,
             borderRadius: 6,
             cursor: isCurrent ? 'not-allowed' : 'pointer',
-            backgroundColor: isSelected ? '#EFF6FF' : 'transparent',
+            backgroundColor: isSelected ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent',
             border: isSelected ? '1px solid #BFDBFE' : '1px solid transparent',
             opacity: isCurrent ? 0.5 : 1,
             transition: 'all 0.1s',
           }}
           onMouseEnter={(e) => { if (!isSelected && !isCurrent) e.currentTarget.style.backgroundColor = 'var(--bg-1)'; }}
-          onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = isSelected ? '#EFF6FF' : 'transparent'; }}
+          onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = isSelected ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent'; }}
         >
           {hasChildren ? (
             <button
@@ -174,7 +174,7 @@ export function MoveToFolderModal({
             disabled={!selectedFolderId || isMoving}
             style={{
               height: 40, padding: '0 20px',
-              background: !selectedFolderId || isMoving ? '#94A3B8' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              background: !selectedFolderId || isMoving ? 'var(--fg-4)' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
               cursor: !selectedFolderId || isMoving ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', gap: 6,

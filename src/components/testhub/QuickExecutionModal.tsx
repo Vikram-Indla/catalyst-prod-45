@@ -252,15 +252,15 @@ export function QuickExecutionModal({
           <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '0 0 12px', textAlign: 'center' }}>Record the test result</p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
             <button onClick={() => handleExecute('passed')} disabled={isSubmitting}
-              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(16,185,129,0.3)' }}>
+              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)', color: 'var(--cp-float)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(16,185,129,0.3)' }}>
               <CheckCircle2 size={18} /> Pass
             </button>
             <button onClick={() => handleExecute('failed')} disabled={isSubmitting}
-              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, var(--sem-danger) 0%, var(--sem-danger) 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(220,38,38,0.3)' }}>
+              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, var(--sem-danger) 0%, var(--sem-danger) 100%)', color: 'var(--cp-float)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(220,38,38,0.3)' }}>
               <XCircle size={18} /> Fail
             </button>
             <button onClick={() => handleExecute('blocked')} disabled={isSubmitting}
-              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #F59E0B 0%, var(--sem-warning) 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(217,119,6,0.3)' }}>
+              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #F59E0B 0%, var(--sem-warning) 100%)', color: 'var(--cp-float)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(217,119,6,0.3)' }}>
               <AlertTriangle size={18} /> Blocked
             </button>
             <button onClick={() => handleExecute('skipped')} disabled={isSubmitting}

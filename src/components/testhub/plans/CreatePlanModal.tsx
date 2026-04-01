@@ -104,7 +104,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
     width: '100%',
     height: 44,
     padding: '0 14px',
-    border: `1.5px solid ${hasError ? '#DC2626' : '#E2E8F0'}`,
+    border: `1.5px solid ${hasError ? 'var(--sem-danger)' : 'var(--divider)'}`,
     borderRadius: 10,
     fontSize: 14,
   });

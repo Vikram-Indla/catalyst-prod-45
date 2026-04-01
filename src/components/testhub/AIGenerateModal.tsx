@@ -382,7 +382,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                   <div style={{
                     width: 22, height: 22, borderRadius: '50%', fontSize: 11, fontWeight: 700,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    backgroundColor: step === s ? '#2563EB' : (['folder', 'input', 'preview'].indexOf(step) > i ? '#059669' : '#E2E8F0'),
+                    backgroundColor: step === s ? 'var(--cp-blue)' : (['folder', 'input', 'preview'].indexOf(step) > i ? 'var(--sem-success)' : 'var(--divider)'),
                     color: step === s || (['folder', 'input', 'preview'].indexOf(step) > i) ? '#FFFFFF' : '#94A3B8',
                   }}>
                     {['folder', 'input', 'preview'].indexOf(step) > i ? '✓' : i + 1}
@@ -482,7 +482,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                   placeholder="e.g., User login with email and password including forgot-password flow, session timeout, and multi-factor authentication..."
                   style={{
                     width: '100%', minHeight: 120, padding: 12,
-                    border: `1.5px solid ${validationError ? '#DC2626' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14,
+                    border: `1.5px solid ${validationError ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8, fontSize: 14,
                     resize: 'vertical', fontFamily: 'inherit',
                   }}
                 />
@@ -575,8 +575,8 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                       key={tc.id}
                       onClick={() => toggleSelection(tc.id)}
                       style={{
-                        padding: 16, border: `1px solid ${selected.has(tc.id) ? '#2563EB' : '#E2E8F0'}`,
-                        borderRadius: 8, backgroundColor: selected.has(tc.id) ? 'rgba(37,99,235,0.04)' : '#FFFFFF',
+                        padding: 16, border: `1px solid ${selected.has(tc.id) ? 'var(--cp-blue)' : 'var(--divider)'}`,
+                        borderRadius: 8, backgroundColor: selected.has(tc.id) ? 'rgba(37,99,235,0.04)' : 'var(--cp-float)',
                         cursor: 'pointer', transition: 'all 0.15s',
                       }}
                     >

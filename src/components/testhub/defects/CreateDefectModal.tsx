@@ -218,7 +218,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               placeholder="Brief description of the issue"
               style={{
                 width: '100%', height: 44, padding: '0 14px',
-                border: `1.5px solid ${errors.title ? '#EF4444' : 'hsl(var(--border))'}`,
+                border: `1.5px solid ${errors.title ? 'var(--sem-danger)' : 'hsl(var(--border))'}`,
                 borderRadius: 10, fontSize: 14, backgroundColor: 'hsl(var(--background))',
                 color: 'hsl(var(--foreground))',
               }}

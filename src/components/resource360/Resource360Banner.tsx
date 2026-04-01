@@ -12,12 +12,12 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
     return (
       <div style={{
         display: 'flex', alignItems: 'center', gap: 14,
-        padding: '20px 24px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+        padding: '20px 24px', background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)',
       }}>
-        <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#E2E8F0' }} />
+        <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--divider)' }} />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <div style={{ width: 140, height: 16, borderRadius: 4, background: '#E2E8F0' }} />
-          <div style={{ width: 200, height: 12, borderRadius: 4, background: '#F1F5F9' }} />
+          <div style={{ width: 140, height: 16, borderRadius: 4, background: 'var(--divider)' }} />
+          <div style={{ width: 200, height: 12, borderRadius: 4, background: 'var(--bg-3)' }} />
         </div>
       </div>
     );

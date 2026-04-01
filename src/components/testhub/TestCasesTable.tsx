@@ -212,7 +212,7 @@ export function TestCasesTable({
                 onMouseLeave={() => setHoveredRowId(null)}
                 style={{
                   height: 36,
-                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? '#F1F5F9' : '#FFFFFF',
+                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? 'var(--cp-bd-zone)' : 'var(--cp-float)',
                   cursor: 'pointer',
                   transition: 'background-color 0.1s',
                 }}

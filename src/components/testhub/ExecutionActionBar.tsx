@@ -73,7 +73,7 @@ export function ExecutionActionBar({
       </div>
 
       <button onClick={onPrevious} disabled={!canGoPrevious || isSubmitting}
-        style={{ height: 44, padding: '0 16px', border: '1.5px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: canGoPrevious ? '#334155' : '#94A3B8', fontSize: 14, fontWeight: 500, cursor: canGoPrevious ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, opacity: canGoPrevious ? 1 : 0.5 }}>
+        style={{ height: 44, padding: '0 16px', border: '1.5px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: canGoPrevious ? 'var(--fg-2)' : 'var(--fg-4)', fontSize: 14, fontWeight: 500, cursor: canGoPrevious ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, opacity: canGoPrevious ? 1 : 0.5 }}>
         <ChevronLeft size={18} /> Prev
       </button>
 
@@ -107,7 +107,7 @@ export function ExecutionActionBar({
       )}
 
       <button onClick={onNext} disabled={!canGoNext || isSubmitting}
-        style={{ height: 44, padding: '0 16px', border: '1.5px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: canGoNext ? '#334155' : '#94A3B8', fontSize: 14, fontWeight: 500, cursor: canGoNext ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, opacity: canGoNext ? 1 : 0.5 }}>
+        style={{ height: 44, padding: '0 16px', border: '1.5px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: canGoNext ? 'var(--fg-2)' : 'var(--fg-4)', fontSize: 14, fontWeight: 500, cursor: canGoNext ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, opacity: canGoNext ? 1 : 0.5 }}>
         Next <ChevronRight size={18} />
       </button>
 

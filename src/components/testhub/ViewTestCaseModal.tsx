@@ -208,7 +208,7 @@ function AddLinkModal({
             style={{
               height: 40,
               padding: '0 20px',
-              background: itemKey.trim() ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' : '#E2E8F0',
+              background: itemKey.trim() ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' : 'var(--divider)',
               border: 'none',
               borderRadius: 8,
               fontSize: 14,
@@ -427,7 +427,7 @@ export function ViewTestCaseModal({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {steps.map((step) => (
               <div key={step.id} style={{ display: 'flex', gap: 16, padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 8, border: '1px solid var(--divider)' }}>
-                <div style={{ width: 32, height: 32, backgroundColor: 'var(--cp-blue)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontFamily: 'Inter', fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
+                <div style={{ width: 32, height: 32, backgroundColor: 'var(--cp-blue)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cp-float)', fontFamily: 'Inter', fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
                   {step.step_number}
                 </div>
                 <div style={{ flex: 1 }}>
@@ -573,7 +573,7 @@ export function ViewTestCaseModal({
             <div
               {...getRootProps()}
               style={{
-                border: `2px dashed ${isDragActive ? '#2563EB' : '#E2E8F0'}`,
+                border: `2px dashed ${isDragActive ? 'var(--cp-blue)' : 'var(--divider)'}`,
                 borderRadius: 8,
                 padding: 32,
                 textAlign: 'center',
@@ -928,7 +928,7 @@ export function ViewTestCaseModal({
                     height: 20,
                     minWidth: 20,
                     padding: '0 6px',
-                    backgroundColor: activeTab === tab.key ? 'rgba(37,99,235,0.1)' : '#F1F5F9',
+                    backgroundColor: activeTab === tab.key ? 'rgba(37,99,235,0.1)' : 'var(--cp-bd-zone)',
                     color: activeTab === tab.key ? '#2563EB' : '#64748B',
                     borderRadius: 10,
                     fontFamily: 'Inter',

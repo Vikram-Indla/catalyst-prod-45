@@ -219,7 +219,7 @@ export function CreateFolderModal({
                     height: 42,
                     border: icon === opt.key ? '2px solid #2563EB' : '1.5px solid #E2E8F0',
                     borderRadius: 10,
-                    background: icon === opt.key ? 'rgba(37,99,235,0.1)' : '#FFFFFF',
+                    background: icon === opt.key ? 'rgba(37,99,235,0.1)' : 'var(--cp-float)',
                     color: icon === opt.key ? '#2563EB' : '#64748B',
                     cursor: 'pointer',
                     display: 'flex',

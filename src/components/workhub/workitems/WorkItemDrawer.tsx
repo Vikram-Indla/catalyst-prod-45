@@ -236,18 +236,18 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
 
             {/* Description */}
             <div>
-              <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+              <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--fg-4)' }}>
                 Description
               </h3>
               <div
                 className="rounded-lg border p-3 text-[13px] leading-relaxed whitespace-pre-wrap overflow-y-auto"
                 style={{
-                  borderColor: '#e2e8f0', backgroundColor: '#fafbfc',
-                  color: 'var(--wh-text-primary, #0f172a)', maxHeight: '300px', minHeight: '60px',
+                  borderColor: 'var(--divider)', backgroundColor: 'var(--bg-1)',
+                  color: 'var(--fg-1)', maxHeight: '300px', minHeight: '60px',
                 }}
               >
                 {item.description_text || (
-                  <span className="italic" style={{ color: '#94a3b8' }}>No description available</span>
+                  <span className="italic" style={{ color: 'var(--fg-4)' }}>No description available</span>
                 )}
               </div>
             </div>

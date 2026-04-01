@@ -193,24 +193,24 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
         exit={{ opacity: 0, y: -4 }}
         transition={{ duration: 0.15 }}
         style={{
-          background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
+          background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 8,
           position: 'sticky', top: 16, fontFamily: "'Inter', sans-serif",
           maxHeight: 'calc(100vh - 200px)', overflowY: 'auto',
         }}
       >
         {/* A. Header with breadcrumb */}
-        <div style={{ padding: '12px 16px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 6, position: 'sticky', top: 0, background: '#FFFFFF', zIndex: 10 }}>
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', gap: 6, position: 'sticky', top: 0, background: 'var(--bg-app)', zIndex: 10 }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4, overflow: 'hidden' }}>
             {parentItem && (
               <>
                 {parentItem.issueType && <JiraIssueTypeIcon type={parentItem.issueType} size={14} />}
                 <span
                   onClick={() => onSelectItem?.(parentItem)}
-                  style={{ fontSize: 12, fontWeight: 500, color: '#2563EB', cursor: 'pointer', flexShrink: 0 }}
+                  style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', cursor: 'pointer', flexShrink: 0 }}
                 >
                   {parentItem.key}
                 </span>
-                <span style={{ color: '#94A3B8', fontSize: 12 }}>/</span>
+                <span style={{ color: 'var(--fg-4)', fontSize: 12 }}>/</span>
               </>
             )}
             {item.issueType && <JiraIssueTypeIcon type={item.issueType} size={14} />}

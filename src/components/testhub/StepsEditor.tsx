@@ -61,7 +61,7 @@ function SortableStepRow({
     zIndex: isDragging ? 1000 : undefined,
     display: 'flex',
     borderBottom: '1px solid var(--divider)',
-    backgroundColor: step.sharedStepId ? '#FEFCE8' : '#FFFFFF',
+    backgroundColor: step.sharedStepId ? '#FEFCE8' : 'var(--cp-float)',
     position: 'relative',
   };
 
@@ -83,7 +83,7 @@ function SortableStepRow({
       <div style={{ width: 56, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 20 }}>
         <div style={{
           width: 32, height: 32, borderRadius: '50%',
-          backgroundColor: step.sharedStepId ? '#CA8A04' : '#2563EB',
+          backgroundColor: step.sharedStepId ? '#CA8A04' : 'var(--cp-blue)',
           color: '#FFFFFF', fontSize: 13, fontWeight: 600,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>{index + 1}</div>
@@ -446,7 +446,7 @@ function AttachButton({ onClick, count }: { onClick: () => void; count: number }
         padding: 0,
         border: '1px solid var(--divider)',
         borderRadius: 6,
-        backgroundColor: count > 0 ? '#EFF6FF' : '#FFFFFF',
+        backgroundColor: count > 0 ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--cp-float)',
         color: count > 0 ? '#2563EB' : '#94A3B8',
         cursor: 'pointer',
         display: 'flex',
@@ -456,11 +456,11 @@ function AttachButton({ onClick, count }: { onClick: () => void; count: number }
         transition: 'all 0.15s',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = count > 0 ? '#DBEAFE' : '#F8FAFC';
-        e.currentTarget.style.borderColor = count > 0 ? '#93C5FD' : '#CBD5E1';
+        e.currentTarget.style.backgroundColor = count > 0 ? '#DBEAFE' : 'var(--bg-1)';
+        e.currentTarget.style.borderColor = count > 0 ? '#93C5FD' : 'var(--divider)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = count > 0 ? '#EFF6FF' : '#FFFFFF';
+        e.currentTarget.style.backgroundColor = count > 0 ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--cp-float)';
         e.currentTarget.style.borderColor = 'var(--divider)';
       }}
     >

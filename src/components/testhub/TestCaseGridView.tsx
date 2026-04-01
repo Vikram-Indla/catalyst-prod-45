@@ -76,7 +76,7 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
             onClick={() => onRowClick(tc)}
             style={{
               backgroundColor: 'var(--cp-float)',
-              border: `1px solid ${isSelected ? '#2563EB' : '#E2E8F0'}`,
+              border: `1px solid ${isSelected ? 'var(--cp-blue)' : 'var(--divider)'}`,
               borderRadius: 12,
               padding: 16,
               cursor: 'pointer',

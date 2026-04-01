@@ -106,7 +106,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
     width: '100%', height: 44, padding: '0 14px',
-    border: `1.5px solid ${hasError ? '#DC2626' : '#E2E8F0'}`,
+    border: `1.5px solid ${hasError ? 'var(--sem-danger)' : 'var(--divider)'}`,
     borderRadius: 10, fontSize: 14,
   });
 
@@ -204,7 +204,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #0891B2 0%, #0E7490 100%)', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #0891B2 0%, #0E7490 100%)', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: 'var(--cp-float)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
             <FileCheck size={16} /> {isSubmitting ? 'Creating...' : 'Add Requirement'}
           </button>
         </div>

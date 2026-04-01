@@ -225,8 +225,8 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
                     onClick={() => setExportType(type.value)}
                     style={{
                       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-                      padding: 12, border: `2px solid ${isSelected ? type.color : '#E2E8F0'}`,
-                      borderRadius: 10, backgroundColor: isSelected ? `${type.color}10` : '#FFF',
+                      padding: 12, border: `2px solid ${isSelected ? type.color : 'var(--divider)'}`,
+                      borderRadius: 10, backgroundColor: isSelected ? `${type.color}10` : 'var(--cp-float)',
                       cursor: 'pointer',
                     }}
                   >
@@ -248,8 +248,8 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
                   onClick={() => setExportFormat(format.value)}
                   style={{
                     flex: 1, padding: 14,
-                    border: `2px solid ${exportFormat === format.value ? '#14B8A6' : '#E2E8F0'}`,
-                    borderRadius: 10, backgroundColor: exportFormat === format.value ? '#F0FDFA' : '#FFF',
+                    border: `2px solid ${exportFormat === format.value ? '#14B8A6' : 'var(--divider)'}`,
+                    borderRadius: 10, backgroundColor: exportFormat === format.value ? '#F0FDFA' : 'var(--cp-float)',
                     cursor: 'pointer', textAlign: 'left',
                   }}
                 >
@@ -337,7 +337,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
             disabled={isExporting || itemCount === 0}
             style={{
               height: 44, padding: '0 24px', display: 'flex', alignItems: 'center', gap: 8,
-              background: itemCount === 0 ? '#CBD5E1' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
+              background: itemCount === 0 ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
               border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFF',
               cursor: isExporting || itemCount === 0 ? 'not-allowed' : 'pointer',
             }}

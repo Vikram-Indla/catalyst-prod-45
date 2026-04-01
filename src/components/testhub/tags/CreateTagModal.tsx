@@ -124,7 +124,7 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
               <Hash size={14} /> Name <span style={{ color: 'var(--sem-danger)' }}>*</span>
             </label>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g., Smoke Test, High Priority" maxLength={50}
-              style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.name ? '#DC2626' : '#E2E8F0'}`, borderRadius: 10, fontSize: 14 }} />
+              style={{ width: '100%', height: 44, padding: '0 14px', border: `1.5px solid ${errors.name ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 10, fontSize: 14 }} />
             {errors.name && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} /> {errors.name}</p>}
           </div>
 
