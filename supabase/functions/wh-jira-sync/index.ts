@@ -76,6 +76,122 @@ function hierarchyLevel(issueType: string): number {
   return 2;
 }
 
+// ─── Auto-Provision Helpers ───────────────────────────────────────────────────
+
+/** Ensure a project has work types; return map of name→id */
+async function ensureWorkTypes(supabase: any, projectId: string): Promise<Record<string, string>> {
+  const { data: existing } = await supabase
+    .from("ph_work_types")
+    .select("id, name")
+    .eq("project_id", projectId)
+    .eq("is_enabled", true);
+
+  const map: Record<string, string> = {};
+  if (existing && existing.length > 0) {
+    for (const t of existing) map[t.name.toLowerCase()] = t.id;
+    return map;
+  }
+
+  // Auto-provision default types
+  const defaults = [
+    { name: "Epic", icon: "Zap", color: "#904EE2", level: 1, position: 0 },
+    { name: "Story", icon: "BookmarkPlus", color: "#63BA3C", level: 2, position: 1 },
+    { name: "Task", icon: "CheckSquare", color: "#4BADE8", level: 2, position: 2 },
+    { name: "Bug", icon: "Bug", color: "#E5493A", level: 2, position: 3 },
+    { name: "Subtask", icon: "CheckSquare", color: "#4BADE8", level: 3, position: 4 },
+  ];
+
+  for (const d of defaults) {
+    const { data: inserted } = await supabase
+      .from("ph_work_types")
+      .insert({ project_id: projectId, ...d, is_enabled: true })
+      .select("id")
+      .single();
+    if (inserted) map[d.name.toLowerCase()] = inserted.id;
+  }
+  return map;
+}
+
+/** Ensure a project has workflow statuses; return map of name→id */
+async function ensureWorkflowStatuses(supabase: any, projectId: string): Promise<Record<string, string>> {
+  const { data: existing } = await supabase
+    .from("ph_workflow_statuses")
+    .select("id, name")
+    .eq("project_id", projectId);
+
+  const map: Record<string, string> = {};
+  if (existing && existing.length > 0) {
+    for (const s of existing) map[s.name.toLowerCase()] = s.id;
+    return map;
+  }
+
+  // Auto-provision default statuses
+  const defaults = [
+    { name: "To Do", category: "todo", position: 0, is_default: true, color: "#DFE1E6" },
+    { name: "In Progress", category: "in_progress", position: 1, is_default: false, color: "#DEEBFF" },
+    { name: "In Review", category: "in_progress", position: 2, is_default: false, color: "#DEEBFF" },
+    { name: "Done", category: "done", position: 3, is_default: false, color: "#E3FCEF" },
+    { name: "Cancelled", category: "terminal", position: 4, is_default: false, color: "#DFE1E6" },
+  ];
+
+  for (const d of defaults) {
+    const { data: inserted } = await supabase
+      .from("ph_workflow_statuses")
+      .insert({ project_id: projectId, ...d })
+      .select("id")
+      .single();
+    if (inserted) map[d.name.toLowerCase()] = inserted.id;
+  }
+  return map;
+}
+
+/** Resolve or create a workflow status for a Jira status name */
+async function resolveStatusId(
+  supabase: any, projectId: string, jiraStatusName: string,
+  statusMap: Record<string, string>, statusCategory: string
+): Promise<string | null> {
+  const lower = jiraStatusName.toLowerCase();
+  if (statusMap[lower]) return statusMap[lower];
+
+  // Try fuzzy match
+  for (const [key, id] of Object.entries(statusMap)) {
+    if (lower.includes(key) || key.includes(lower)) return id;
+  }
+
+  // Map by category
+  const catMap: Record<string, string> = { "Done": "done", "In Progress": "in_progress", "To Do": "todo" };
+  const cat = catMap[statusCategory] || "todo";
+  for (const [key, id] of Object.entries(statusMap)) {
+    // find any status in same category
+    const { data: s } = await supabase
+      .from("ph_workflow_statuses")
+      .select("id, category")
+      .eq("id", id)
+      .single();
+    if (s && s.category === cat) return id;
+  }
+
+  // Create new status
+  const { data: created } = await supabase
+    .from("ph_workflow_statuses")
+    .insert({
+      project_id: projectId,
+      name: jiraStatusName,
+      category: cat,
+      position: Object.keys(statusMap).length,
+      is_default: false,
+      color: cat === "done" ? "#E3FCEF" : cat === "in_progress" ? "#DEEBFF" : "#DFE1E6",
+    })
+    .select("id")
+    .single();
+
+  if (created) {
+    statusMap[lower] = created.id;
+    return created.id;
+  }
+  return null;
+}
+
 // ─── Full Sync Logic ──────────────────────────────────────────────────────────
 
 interface JiraFetchResult {
