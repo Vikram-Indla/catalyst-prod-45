@@ -5,9 +5,9 @@ export function useDepartments() {
   return useQuery({
     queryKey: ['departments'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('departments')
-        .select('id, name, sort_order, code, parent_id, is_active')
+      const { data, error } = await (supabase
+        .from('departments') as any)
+        .select('id, name, sort_order, parent_id, is_active')
         .eq('is_active', true)
         .order('sort_order');
 

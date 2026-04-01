@@ -161,6 +161,32 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
           updatedAt: r.updated_at,
         }));
 
+        // Search ph_work_items (ProjectHub)
+        const { data: phItems, error: phErr } = await (supabase as any)
+          .from('ph_work_items')
+          .select('id, item_key, jira_key, summary, item_type, project_id, updated_at')
+          .or(`item_key.ilike.${searchTerm},summary.ilike.${searchTerm},jira_key.ilike.${searchTerm}`)
+          .is('deleted_at', null)
+          .limit(10);
+        if (!phErr && phItems) {
+          (phItems as any[]).forEach((wi: any) => {
+            const t = (wi.item_type || '').toLowerCase();
+            const mappedType: GlobalSearchWorkItemType = 
+              t === 'defect' ? 'defect' : 
+              t === 'incident' ? 'incident' : 
+              t === 'feature' ? 'feature' : 
+              t === 'epic' ? 'epic' : 'story';
+            searchResults.push({
+              id: wi.id,
+              key: wi.jira_key || wi.item_key || '',
+              summary: wi.summary || '',
+              type: mappedType,
+              scopeName: `ProjectHub · ${wi.item_type || 'Item'}`,
+              updatedAt: wi.updated_at || new Date().toISOString(),
+            });
+          });
+        }
+
         // Sort by updated_at
         searchResults.sort((a, b) => 
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()

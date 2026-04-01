@@ -53,10 +53,10 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
     queryFn: async () => {
       if (!item?.id) return null;
       const { data } = await (supabase.from('ph_work_items') as any)
-        .select('jira_key, jira_sync_status, jira_pushed_at')
+        .select('jira_key, jira_sync_status, jira_pushed_at, sync_source, item_key, last_synced_at')
         .eq('id', item.id)
         .maybeSingle();
-      return data as { jira_key: string | null; jira_sync_status: string | null; jira_pushed_at: string | null } | null;
+      return data as { jira_key: string | null; jira_sync_status: string | null; jira_pushed_at: string | null; sync_source: string | null; item_key: string | null; last_synced_at: string | null } | null;
     },
     enabled: !!item?.id,
   });
@@ -466,8 +466,8 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
             </div>
           </div>
 
-          {/* Jira Sync Status — only when jira_key exists */}
-          {jiraData?.jira_key && (
+          {/* Jira Sync Status — show when jira_key exists OR sync_source is jira */}
+          {(jiraData?.jira_key || jiraData?.sync_source === 'jira') && (
             <div className="border-t border-[#E2E8F0] dark:border-[#2C2820] pt-4 mt-4">
               <label className="block text-[11px] font-semibold text-[#6B7280] dark:text-[#9C8E7E] uppercase mb-3" style={{ fontWeight: 650 }}>
                 Jira Sync
@@ -480,7 +480,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                     className="font-mono text-[12px] px-2 py-0.5 rounded bg-[#F1F5F9] text-[#1E293B] dark:bg-[#2C2820] dark:text-[#E2D5C3]"
                     style={{ borderRadius: 4 }}
                   >
-                    {jiraData.jira_key}
+                    {jiraData.jira_key || jiraData.item_key || '—'}
                   </span>
                 </div>
                 {/* Row 2: Sync Status */}
@@ -493,20 +493,20 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                         height: 20,
                         borderRadius: 3,
                         letterSpacing: '0.05em',
-                        backgroundColor: jiraData.jira_sync_status === 'completed' ? '#E3FCEF' : '#DFE1E6',
-                        color: jiraData.jira_sync_status === 'completed' ? '#006644' : '#253858',
+                        backgroundColor: jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'completed' ? '#E3FCEF' : '#DFE1E6',
+                        color: jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'completed' ? '#006644' : '#253858',
                       }}
                     >
                       {jiraData.jira_sync_status}
                     </span>
                   </div>
                 )}
-                {/* Row 3: Last Pushed */}
+                {/* Row 3: Last Synced */}
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] text-[#6B7280] dark:text-[#9C8E7E]">Last Synced</span>
                   <span className="text-[12px] text-[#334155] dark:text-[#E2D5C3]">
-                    {jiraData.jira_pushed_at
-                      ? format(new Date(jiraData.jira_pushed_at), 'MMM d, yyyy, hh:mm a')
+                    {(jiraData.jira_pushed_at || jiraData.last_synced_at)
+                      ? format(new Date(jiraData.jira_pushed_at || jiraData.last_synced_at!), 'MMM d, yyyy, hh:mm a')
                       : '—'}
                   </span>
                 </div>
