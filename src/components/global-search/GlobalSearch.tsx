@@ -209,13 +209,15 @@ export function GlobalSearch() {
           padding: 0, width: 640, maxWidth: '95vw', borderRadius: 8,
           border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column',
           maxHeight: '80vh', gap: 0, overflow: 'hidden',
+          backgroundColor: '#ffffff', color: '#0F172A',
         }}
-        className="!p-0"
+        className="!p-0 !bg-white"
       >
         {/* LAYER 1 — Search row */}
         <div style={{
           height: 48, borderBottom: '1px solid #E2E8F0', padding: '0 14px',
           gap: 10, display: 'flex', alignItems: 'center', flexShrink: 0,
+          backgroundColor: '#ffffff',
         }}>
           <Search size={16} color="#64748B" />
           <input
@@ -247,6 +249,7 @@ export function GlobalSearch() {
         <div style={{
           padding: '7px 12px', borderBottom: '1px solid #F1F5F9', flexShrink: 0,
           gap: 6, display: 'flex', alignItems: 'center',
+          backgroundColor: '#ffffff',
         }}>
           <button style={{
             width: 28, height: 28, border: '1px solid #E2E8F0', borderRadius: 6,
@@ -262,7 +265,7 @@ export function GlobalSearch() {
         </div>
 
         {/* LAYER 3 — Scroll body */}
-        <div style={{ overflowY: 'auto', flex: 1 }}>
+        <div style={{ overflowY: 'auto', flex: 1, backgroundColor: '#ffffff' }}>
           {isLoading && hasQuery ? (
             // Skeleton
             Array.from({ length: 3 }).map((_, i) => (
@@ -333,6 +336,11 @@ export function GlobalSearch() {
                     <ResultRow key={item.id} item={item} query="" onClick={() => onResultClick(item)} />
                   ))}
                 </>
+              )}
+              {recents.length === 0 && (
+                <div style={{ padding: '32px', textAlign: 'center', color: '#94A3B8', fontSize: '13px' }}>
+                  Start typing to search across all hubs
+                </div>
               )}
             </>
           ) : (
