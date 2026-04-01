@@ -339,6 +339,7 @@ export function GlobalSearch() {
   const { data: results = [], isLoading } = useSearchResults(debouncedQuery, filters);
   const trackView = useTrackView();
   const saveSearch = useSaveSearch();
+  const nameAvatarMap = useProfileAvatarsByName();
 
   // Derive unique assignees from recents
   const assigneeOptions = Array.from(
