@@ -345,7 +345,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                     background: 'var(--bg-2)', marginBottom: 20,
                     fontSize: 11, fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-2)',
                   }}>
-                    <Zap size={10} color="#D97706" /> Processing: <span style={{ fontWeight: 700, color: 'var(--cp-blue)' }}>{currentProject}</span>
+                    <Zap size={10} color="var(--sem-warning)" /> Processing: <span style={{ fontWeight: 700, color: 'var(--cp-blue)' }}>{currentProject}</span>
                   </div>
                 )}
                 <div style={{ width: '100%', maxWidth: 400 }}>
@@ -530,7 +530,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                     <span style={{ fontWeight: 600 }}>{selectedMode.label}</span>
                     <span style={{ color: 'var(--fg-3)', fontWeight: 400, fontSize: 12 }}>— {selectedMode.desc}</span>
                   </span>
-                  <ChevronDown size={14} color="#A1A1AA" style={{ transition: 'transform 0.2s', transform: showModeDropdown ? 'rotate(180deg)' : 'none' }} />
+                  <ChevronDown size={14} color="var(--fg-4)" style={{ transition: 'transform 0.2s', transform: showModeDropdown ? 'rotate(180deg)' : 'none' }} />
                 </button>
                 {showModeDropdown && (
                   <div style={{
@@ -550,7 +550,7 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                           <div style={{ fontWeight: 600, color: 'var(--fg-1)' }}>{opt.label}</div>
                           <div style={{ fontSize: 11, color: 'var(--fg-3)', marginTop: 1 }}>{opt.desc}</div>
                         </div>
-                        {syncMode === opt.value && <Check size={14} color="#2563EB" style={{ marginLeft: 'auto' }} />}
+                        {syncMode === opt.value && <Check size={14} color="var(--cp-blue)" style={{ marginLeft: 'auto' }} />}
                       </button>
                     ))}
                   </div>
