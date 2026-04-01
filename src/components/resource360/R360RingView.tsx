@@ -221,14 +221,14 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             boxShadow: '0 1px 3px rgba(15,23,42,.05)', fontFamily: "'Inter', system-ui, sans-serif",
             transition: 'border-color .15s, box-shadow .15s',
           }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#94A3B8'; e.currentTarget.style.boxShadow = '0 3px 10px rgba(15,23,42,.08)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(15,23,42,.05)'; }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 3px 10px rgba(15,23,42,.08)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(15,23,42,.05)'; }}
           >
             <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: s.accent }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <JiraIcon type={item.item_type} />
-                <span style={{ fontSize: '10.5px', fontWeight: 700, textTransform: 'uppercase', color: '#334155' }}>{item.item_type}</span>
+                <span style={{ fontSize: '10.5px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-2)' }}>{item.item_type}</span>
               </div>
               <span style={{ fontSize: '10.5px', fontWeight: 500, color: '#64748B', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
             </div>

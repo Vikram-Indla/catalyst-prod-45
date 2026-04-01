@@ -219,14 +219,14 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
 
           {/* Error */}
           {error && (
-            <p style={{ fontSize: 12, color: '#ef4444', margin: 0 }}>{error}</p>
+            <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: 0 }}>{error}</p>
           )}
         </div>
 
         {/* Footer */}
         <div style={{
           display: 'flex', justifyContent: 'flex-end', gap: 8,
-          padding: '12px 20px', borderTop: '1px solid #e2e8f0',
+          padding: '12px 20px', borderTop: '1px solid var(--divider)',
         }}>
           <button onClick={onClose} style={{
             padding: '8px 16px', borderRadius: 8, border: '1px solid var(--divider)',
