@@ -1,0 +1,44 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  claude-review:
+    # Run on PR events OR when someone comments @claude
+    if: |
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: "claude-sonnet-4-6"
+          prompt: |
+            Review this PR for:
+            1. Security issues (XSS, injection, auth bypasses)
+            2. Performance bottlenecks (N+1 queries, missing memoization, unbounded fetches)
+            3. Missing error handling on Supabase queries
+            4. Type safety issues (any casts, missing null checks)
+            5. React best practices (missing memo, inline objects in render)
+
+            Be concise. Only flag real issues, not style preferences.
+            For each issue, suggest a specific fix.
+          timeout_minutes: 10
