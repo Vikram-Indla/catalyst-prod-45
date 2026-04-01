@@ -106,7 +106,8 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
         .maybeSingle();
       return data as { jira_key: string | null; jira_sync_status: string | null; jira_pushed_at: string | null } | null;
     },
-    enabled: !!story?.issue_key && isOpen,
+  });
+
   // Comments query
   const { data: comments = [], isLoading: commentsLoading } = useQuery({
     queryKey: ['story-drawer-comments', story?.issue_key],

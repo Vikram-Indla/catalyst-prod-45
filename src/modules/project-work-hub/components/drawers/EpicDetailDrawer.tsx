@@ -94,7 +94,8 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
         .maybeSingle();
       return data as { jira_key: string | null; jira_sync_status: string | null; jira_pushed_at: string | null } | null;
     },
-    enabled: !!epic?.issue_key && isOpen,
+  });
+
   const { data: comments = [], isLoading: commentsLoading } = useQuery({
     queryKey: ['epic-drawer-comments', epic?.issue_key],
     queryFn: async () => {
