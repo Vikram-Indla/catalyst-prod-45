@@ -337,9 +337,9 @@ export function useForYouData() {
         if (jiraAccountIds.length > 0) {
           const { data: assigned } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).order('jira_updated_at', { ascending: false }).limit(200);
           jiraAssigned = assigned || [];
-          const fourteenDaysAgo = new Date();
-          fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
-          const { data: worked } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).gte('jira_updated_at', fourteenDaysAgo.toISOString()).order('jira_updated_at', { ascending: false }).limit(200);
+          const ninetyDaysAgo = new Date();
+          ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+          const { data: worked } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).gte('jira_updated_at', ninetyDaysAgo.toISOString()).order('jira_updated_at', { ascending: false }).limit(200);
           jiraWorked = worked || [];
         }
 
