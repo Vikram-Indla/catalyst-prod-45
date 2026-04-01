@@ -10,11 +10,12 @@ import { TransitionsTab } from './TransitionsTab';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
+import { useTheme } from '@/hooks/useTheme';
 import { supabase } from '@/integrations/supabase/client';
 import type { WorkItem } from '@/hooks/useForYouData';
 
-// Design tokens (ring-fenced)
-const T = {
+// Design tokens (ring-fenced) — light mode
+const T_LIGHT = {
   ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
   surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
@@ -26,23 +27,45 @@ const T = {
   danger: '#DC2626', dangerText: '#D92525', dangerBg: '#FEF2F2',
 };
 
-
-const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
-  Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
-  Product:  { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
-  Task:     { bg: T.surfaceTertiary, color: T.inkMutedStrong, border: T.borderStrong },
-  Incident: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
-  Release:  { bg: T.successBg, color: T.successText, border: T.success },
-  Test:     { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
+// Design tokens — Cool Steel v3 dark mode
+const T_DARK = {
+  ink: 'rgba(235,238,245,0.92)', inkSecondary: 'rgba(235,238,245,0.72)', inkTertiary: 'rgba(235,238,245,0.55)',
+  inkMuted: 'rgba(235,238,245,0.30)', inkMutedStrong: 'rgba(235,238,245,0.35)',
+  surface: '#181A1E', surfaceSecondary: 'rgba(235,238,245,0.03)', surfaceTertiary: 'rgba(235,238,245,0.06)',
+  border: 'rgba(235,238,245,0.10)', borderStrong: 'rgba(235,238,245,0.18)',
+  primary: '#3B82F6', primaryHover: '#60A5FA', primaryBg: 'rgba(59,130,246,0.10)',
+  teal: '#5EEAD4', tealText: '#5EEAD4', tealBg: 'rgba(13,148,136,0.10)',
+  success: '#4ADE80', successText: '#86EFAC', successBg: 'rgba(74,222,128,0.10)',
+  warning: '#FDE68A', warningText: '#FDE68A', warningBg: 'rgba(253,230,138,0.10)',
+  danger: '#F87171', dangerText: '#FCA5A5', dangerBg: 'rgba(239,68,68,0.10)',
 };
 
-const PRI: Record<number, { label: string; color: string }> = {
-  1: { label: 'Lowest', color: T.inkMuted },
-  2: { label: 'Low', color: T.inkMuted },
-  3: { label: 'Medium', color: T.warning },
-  4: { label: 'High', color: T.danger },
-  5: { label: 'Highest', color: T.danger },
-};
+type TTokens = typeof T_LIGHT;
+
+// Default to light for static references outside component tree
+let T: TTokens = T_LIGHT;
+
+
+function getHubCfg(): Record<string, { bg: string; color: string; border: string }> {
+  return {
+    Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
+    Product:  { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
+    Task:     { bg: T.surfaceTertiary, color: T.inkMutedStrong, border: T.borderStrong },
+    Incident: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
+    Release:  { bg: T.successBg, color: T.successText, border: T.success },
+    Test:     { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
+  };
+}
+
+function getPri(): Record<number, { label: string; color: string }> {
+  return {
+    1: { label: 'Lowest', color: T.inkMuted },
+    2: { label: 'Low', color: T.inkMuted },
+    3: { label: 'Medium', color: T.warning },
+    4: { label: 'High', color: T.danger },
+    5: { label: 'Highest', color: T.danger },
+  };
+}
 
 // --- Linkify utility: detect URLs, special-case Figma ---
 function Linkify({ text }: { text: string }) {
@@ -92,7 +115,8 @@ function StatusPill({ status }: { status: string }) {
 }
 
 function HubBadge({ hub }: { hub: string }) {
-  const h = HUB_CFG[hub] || HUB_CFG.Task;
+  const cfg = getHubCfg();
+  const h = cfg[hub] || cfg.Task;
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: h.bg, color: h.color, borderLeft: `3px solid ${h.border}` }}>
       {hub}
@@ -101,14 +125,15 @@ function HubBadge({ hub }: { hub: string }) {
 }
 
 function PriorityBars({ level = 3, showLabel = false }: { level?: number; showLabel?: boolean }) {
+  const pri = getPri();
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: showLabel ? 8 : 2 }}>
       <div style={{ display: 'flex', gap: 2 }}>
         {[1,2,3,4].map(i => (
-          <div key={i} style={{ width: showLabel ? 5 : 4, height: showLabel ? 16 : 14, borderRadius: 1, background: i <= level ? (showLabel ? (PRI[level]?.color || T.inkMuted) : T.inkMuted) : T.border }} />
+          <div key={i} style={{ width: showLabel ? 5 : 4, height: showLabel ? 16 : 14, borderRadius: 1, background: i <= level ? (showLabel ? (pri[level]?.color || T.inkMuted) : T.inkMuted) : T.border }} />
         ))}
       </div>
-      {showLabel && <span style={{ fontSize: 13, fontWeight: 500, color: T.ink }}>{PRI[level]?.label || 'Medium'}</span>}
+      {showLabel && <span style={{ fontSize: 13, fontWeight: 500, color: T.ink }}>{pri[level]?.label || 'Medium'}</span>}
     </div>
   );
 }
@@ -398,6 +423,10 @@ interface ForYouDetailPanelProps {
 }
 
 export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
+  const { isDark } = useTheme();
+  // Swap token palette for entire component tree
+  T = isDark ? T_DARK : T_LIGHT;
+
   const [tab, setTab] = useState('details');
   const [attachments, setAttachments] = useState<any[]>([]);
   const [attachmentsLoading, setAttachmentsLoading] = useState(false);
@@ -554,10 +583,10 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
   return (
     <>
       {/* Overlay */}
-      <div onClick={onClose} className="fy-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(9,9,11,0.4)', zIndex: 200, animation: 'fy-fadeIn .15s ease' }} />
+      <div onClick={onClose} className="fy-overlay" style={{ position: 'fixed', inset: 0, background: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(9,9,11,0.4)', zIndex: 200, animation: 'fy-fadeIn .15s ease' }} />
 
       {/* Panel */}
-      <div className="fy-detail-panel" style={{ position: 'fixed', top: 0, right: 0, width: 'min(58%, 880px)', minWidth: 520, height: '100vh', background: T.surface, borderLeft: `1px solid ${T.border}`, boxShadow: '-12px 0 48px rgba(0,0,0,0.12)', zIndex: 201, display: 'flex', flexDirection: 'column', animation: 'fy-slideIn .2s ease' }}>
+      <div className="fy-detail-panel" style={{ position: 'fixed', top: 0, right: 0, width: 'min(58%, 880px)', minWidth: 520, height: '100vh', background: T.surface, borderLeft: `1px solid ${T.border}`, boxShadow: isDark ? 'none' : '-12px 0 48px rgba(0,0,0,0.12)', zIndex: 201, display: 'flex', flexDirection: 'column', animation: 'fy-slideIn .2s ease' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', borderBottom: `1px solid ${T.border}`, background: T.surfaceSecondary, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
