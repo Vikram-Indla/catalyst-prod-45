@@ -10,8 +10,6 @@ import type { TestFolderWithCount, CreateFolderInput, UpdateFolderInput } from '
  * Uses direct query for reliability
  */
 export async function getFolderTree(projectId: string): Promise<TestFolderWithCount[]> {
-  console.log('[FolderService] getFolderTree called with projectId:', projectId);
-  
   if (!projectId) {
     console.warn('[FolderService] No projectId provided');
     return [];
@@ -29,10 +27,7 @@ export async function getFolderTree(projectId: string): Promise<TestFolderWithCo
     throw new Error(`Failed to fetch folders: ${foldersError.message}`);
   }
 
-  console.log('[FolderService] Raw folders from DB:', folders);
-
   if (!folders || folders.length === 0) {
-    console.log('[FolderService] No folders found for project');
     return [];
   }
 
@@ -82,7 +77,6 @@ export async function getFolderTree(projectId: string): Promise<TestFolderWithCo
     createdAt: folder.created_at,
   }));
 
-  console.log('[FolderService] Transformed folders:', result);
   return result;
 }
 
@@ -122,8 +116,6 @@ export async function getFolderById(folderId: string): Promise<TestFolderWithCou
  * Create a new folder
  */
 export async function createFolder(input: CreateFolderInput): Promise<TestFolderWithCount> {
-  console.log('[FolderService] createFolder called with:', input);
-
   // Get the next sort order for siblings
   const { data: siblings } = await (supabase as any)
     .from('tm_folders')
