@@ -108,23 +108,23 @@ export function ForYouTable({
   };
 
   return (
-    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '1px solid var(--cp-bd)', borderRadius: 6, overflow: 'hidden' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '1px solid var(--cp-bd)', borderRadius: 6, overflow: 'auto' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: 1100 }}>
         <thead>
           <tr>
             <th style={{ ...thStyle, width: 36 }}>
               <input type="checkbox" checked={isAllSelected} onChange={e => handleSelectAll(e.target.checked)} style={{ width: 16, height: 16, accentColor: 'var(--cp-blue)', cursor: 'pointer' }} />
             </th>
-            <th style={{ ...thStyle, width: 32 }} />
-            <th style={{ ...thStyle, width: 140 }}>Key</th>
+            <th style={{ ...thStyle, width: 28 }} />
+            <th style={{ ...thStyle, width: 120 }}>Key</th>
             <th style={thStyle}>Summary</th>
-            <th style={{ ...thStyle, width: 150, textAlign: 'center' }}>Status</th>
-            <th style={{ ...thStyle, width: 180 }}>Project</th>
-            <th style={{ ...thStyle, width: 95 }}>Hub</th>
-            <th style={{ ...thStyle, width: 75 }}>Priority</th>
-            <th style={{ ...thStyle, width: 100 }}>Updated</th>
-            <th style={{ ...thStyle, width: 170 }}>Assigned to</th>
-            <th style={{ ...thStyle, width: 170 }}>Reported by</th>
+            <th style={{ ...thStyle, width: 130, textAlign: 'center' }}>Status</th>
+            <th style={{ ...thStyle, width: 120 }}>Project</th>
+            <th style={{ ...thStyle, width: 80 }}>Hub</th>
+            <th style={{ ...thStyle, width: 65 }}>Priority</th>
+            <th style={{ ...thStyle, width: 90 }}>Updated</th>
+            <th style={{ ...thStyle, width: 150 }}>Assigned to</th>
+            <th style={{ ...thStyle, width: 150 }}>Reported by</th>
           </tr>
         </thead>
         <tbody>
