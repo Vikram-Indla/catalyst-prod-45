@@ -104,7 +104,7 @@ export function JiraSyncDrawer({
       />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 51,
-        width: 480, background: '#FFFFFF',
+        width: 480, background: 'var(--cp-float)',
         boxShadow: '-8px 0 24px rgba(0,0,0,0.12)',
         display: 'flex', flexDirection: 'column',
         fontFamily: 'Inter, sans-serif',
@@ -117,10 +117,10 @@ export function JiraSyncDrawer({
           borderBottom: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', fontFamily: 'Sora, sans-serif', margin: 0 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'Sora, sans-serif', margin: 0 }}>
             Jira Sync Log
           </h2>
-          <button onClick={onClose} style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, border: 'none', background: 'none', cursor: 'pointer', color: '#64748B' }}>
+          <button onClick={onClose} style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, border: 'none', background: 'none', cursor: 'pointer', color: 'var(--fg-3)' }}>
             <X size={16} />
           </button>
         </div>
@@ -129,16 +129,16 @@ export function JiraSyncDrawer({
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {/* Current Status */}
           <div style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
               Current Status
             </div>
             <div className="flex items-center gap-2" style={{ marginBottom: 8 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16A34A', display: 'inline-block' }} />
-              <span style={{ fontSize: 13, color: '#0F172A', fontWeight: 500 }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--sem-success)', display: 'inline-block' }} />
+              <span style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500 }}>
                 Connected to {jiraProjectKey || projectKey}
               </span>
             </div>
-            <div style={{ fontSize: 12, color: '#64748B', marginBottom: 12 }}>
+            <div style={{ fontSize: 12, color: 'var(--fg-3)', marginBottom: 12 }}>
               Last sync: {relativeTime(lastSyncedAt)}
             </div>
             <button

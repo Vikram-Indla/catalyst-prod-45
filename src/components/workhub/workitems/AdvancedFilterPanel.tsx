@@ -177,7 +177,7 @@ export function AdvancedFilterPanel({
               {/* Remove */}
               <button onClick={() => removeCondition(cond.id)}
                 className="p-1.5 rounded-md hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/30">
-                <X className="w-3.5 h-3.5" style={{ color: '#ef4444' }} />
+                <X className="w-3.5 h-3.5" style={{ color: 'var(--sem-danger)' }} />
               </button>
             </div>
           );
@@ -192,9 +192,9 @@ export function AdvancedFilterPanel({
       </button>
 
       {/* Match mode + actions */}
-      <div className="flex items-center justify-between mt-4 pt-3" style={{ borderTop: '1px solid var(--wh-border-light, #f1f5f9)' }}>
+      <div className="flex items-center justify-between mt-4 pt-3" style={{ borderTop: '1px solid var(--bg-1)' }}>
         <div className="flex items-center gap-4">
-          <span className="text-xs font-medium" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>Match:</span>
+          <span className="text-xs font-medium" style={{ color: 'var(--fg-3)' }}>Match:</span>
           <label className="flex items-center gap-1.5 text-xs cursor-pointer">
             <input type="radio" checked={matchMode === 'and'} onChange={() => onMatchModeChange('and')} className="accent-blue-600" />
             <span style={{ color: 'var(--fg-1)' }}>All conditions (AND)</span>
@@ -208,7 +208,7 @@ export function AdvancedFilterPanel({
         <div className="flex items-center gap-2">
           <button onClick={onReset}
             className="px-3 py-1.5 text-xs font-medium rounded-md border hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            style={{ borderColor: 'var(--divider)', color: 'var(--wh-text-secondary, #64748b)' }}>
+            style={{ borderColor: 'var(--divider)', color: 'var(--fg-3)' }}>
             Reset
           </button>
           <button onClick={onApply}

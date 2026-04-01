@@ -60,7 +60,7 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
 
   const sc = getStatusCategory(item.status_category || item.status);
   const colors = SC_COLORS[sc];
-  const witStyle = WIT_STYLES[item.work_item_type] || { bg: '#F1F5F9', color: '#334155' };
+  const witStyle = WIT_STYLES[item.work_item_type] || { bg: 'var(--bg-3)', color: 'var(--fg-2)' };
   const hub = deriveHub(item);
   const hubColor = HUB_COLORS[hub] || '#64748B';
   const hubShort = HUB_SHORT[hub] || hub;
@@ -90,7 +90,7 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
         ref={modalRef}
         onClick={e => e.stopPropagation()}
         style={{
-          background: '#FFFFFF', borderRadius: 12,
+          background: 'var(--cp-float)', borderRadius: 12,
           width: 720, maxHeight: '85vh', overflow: 'auto',
           boxShadow: '0 8px 32px rgba(0,0,0,.18)',
           animation: 'ctxModalIn 250ms ease-out',
@@ -98,7 +98,7 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
       >
         {/* ── Header ── */}
         <div style={{
-          padding: '20px 24px 16px', borderBottom: '1px solid #E2E8F0',
+          padding: '20px 24px 16px', borderBottom: '1px solid var(--divider)',
           display: 'flex', alignItems: 'flex-start', gap: 12,
         }}>
           <div style={{ flex: 1 }}>

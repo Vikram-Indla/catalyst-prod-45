@@ -121,11 +121,11 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
 
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-        width: 440, background: '#FFFFFF', borderRadius: 8, zIndex: 90,
-        padding: 24, border: '0.75px solid #E2E8F0',
+        width: 440, background: 'var(--cp-float)', borderRadius: 8, zIndex: 90,
+        padding: 24, border: '0.75px solid var(--divider)',
         fontFamily: "'Inter', sans-serif",
       }}>
-        <h3 style={{ fontSize: 16, fontWeight: 650, color: '#0F172A', margin: '0 0 16px', fontFamily: "'Sora', sans-serif" }}>
+        <h3 style={{ fontSize: 16, fontWeight: 650, color: 'var(--fg-1)', margin: '0 0 16px', fontFamily: "'Sora', sans-serif" }}>
           Publish Epics to Project
         </h3>
 
@@ -134,17 +134,17 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
             {/* Search */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
-              border: '0.75px solid #E2E8F0', borderRadius: 6,
+              border: '0.75px solid var(--divider)', borderRadius: 6,
               padding: '0 10px', height: 36, marginBottom: 12, background: '#FFFFFF',
             }}>
-              <Search size={14} color="#94A3B8" />
+              <Search size={14} color="var(--fg-4)" />
               <input
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 placeholder="Search projects..."
                 style={{
                   flex: 1, border: 'none', outline: 'none', fontSize: 13,
-                  color: '#0F172A', background: 'transparent',
+                  color: 'var(--fg-1)', background: 'transparent',
                   fontFamily: "'Inter', sans-serif",
                 }}
               />
@@ -165,19 +165,19 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
                   onMouseEnter={e => { if (selectedProject?.id !== p.id) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
                   onMouseLeave={e => { if (selectedProject?.id !== p.id) e.currentTarget.style.background = 'transparent'; }}
                 >
-                  <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>{p.name}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{p.name}</span>
                   <StatusLozenge status={p.status || 'planning'} />
                 </div>
               ))}
               {filtered.length === 0 && (
-                <p style={{ textAlign: 'center', color: '#94A3B8', fontSize: 13, padding: 20 }}>No projects found</p>
+                <p style={{ textAlign: 'center', color: 'var(--fg-4)', fontSize: 13, padding: 20 }}>No projects found</p>
               )}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={onClose} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
               }}>Cancel</button>
             </div>
           </>
@@ -185,43 +185,43 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
 
         {step === 2 && selectedProject && (
           <>
-            <p style={{ fontSize: 14, color: '#334155', margin: '0 0 12px' }}>
+            <p style={{ fontSize: 14, color: 'var(--fg-2)', margin: '0 0 12px' }}>
               <strong>{epics.length}</strong> epics will be added to <strong>{selectedProject.name}</strong>
             </p>
 
             {/* Compact list */}
             <div style={{
               maxHeight: 200, overflowY: 'auto', marginBottom: 12,
-              border: '0.75px solid #E2E8F0', borderRadius: 6, padding: 8,
+              border: '0.75px solid var(--divider)', borderRadius: 6, padding: 8,
             }}>
               {epics.map(e => (
                 <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
                   <span style={{
                     fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
-                    color: '#475569', background: '#F1F5F9', padding: '1px 6px', borderRadius: 2,
+                    color: 'var(--fg-2)', background: '#F1F5F9', padding: '1px 6px', borderRadius: 2,
                   }}>{e.ra_tag || '—'}</span>
-                  <span style={{ fontSize: 12, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {e.title}
                   </span>
                 </div>
               ))}
             </div>
 
-            <p style={{ fontSize: 11, color: '#475569', margin: '0 0 16px' }}>
+            <p style={{ fontSize: 11, color: 'var(--fg-2)', margin: '0 0 16px' }}>
               Each epic will carry a Req Assist™ tag for traceability
             </p>
 
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => setStep(1)} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: '#334155', cursor: 'pointer',
+                border: '0.75px solid #CBD5E1', background: '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
               }}>Back</button>
               <button
                 onClick={handlePublish}
                 disabled={publishing}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-                  border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
+                  border: 'none', background: 'var(--cp-blue)', color: '#FFFFFF', cursor: 'pointer',
                   opacity: publishing ? 0.7 : 1,
                 }}
               >
