@@ -209,14 +209,45 @@ export function SyncConfigPanel() {
             project_configs: { [pk]: projectConfigs[pk] },
           });
 
-          setSyncProgress(prev => prev.map((p, idx) =>
-            idx === i ? {
-              ...p,
-              status: 'done',
-              durationMs: Date.now() - startTime,
-              issuesFetched: result?.issues_fetched ?? result?.summary?.issues_fetched ?? 0,
-            } : p
-          ));
+          // If background processing, poll ph_sync_log for actual result
+          if (result?.status === 'processing') {
+            let attempts = 0;
+            let syncResult: any = null;
+            while (attempts < 60) { // poll up to 2 minutes
+              await new Promise(r => setTimeout(r, 2000));
+              attempts++;
+              const { data: logs } = await supabase
+                .from('ph_sync_log')
+                .select('*')
+                .contains('projects_synced', [pk])
+                .in('status', ['success', 'warning', 'error'])
+                .gte('started_at', new Date(startTime - 5000).toISOString())
+                .order('started_at', { ascending: false })
+                .limit(1);
+              if (logs && logs.length > 0) {
+                syncResult = logs[0];
+                break;
+              }
+            }
+            setSyncProgress(prev => prev.map((p, idx) =>
+              idx === i ? {
+                ...p,
+                status: syncResult?.status === 'error' ? 'error' : 'done',
+                durationMs: syncResult?.duration_ms ?? (Date.now() - startTime),
+                issuesFetched: syncResult?.issues_fetched ?? 0,
+                errorMessage: syncResult?.error_message || undefined,
+              } : p
+            ));
+          } else {
+            setSyncProgress(prev => prev.map((p, idx) =>
+              idx === i ? {
+                ...p,
+                status: 'done',
+                durationMs: Date.now() - startTime,
+                issuesFetched: result?.issues_fetched ?? result?.summary?.issues_fetched ?? 0,
+              } : p
+            ));
+          }
         } catch (err: any) {
           setSyncProgress(prev => prev.map((p, idx) =>
             idx === i ? {
