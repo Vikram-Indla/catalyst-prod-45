@@ -76,6 +76,122 @@ function hierarchyLevel(issueType: string): number {
   return 2;
 }
 
+// ─── Auto-Provision Helpers ───────────────────────────────────────────────────
+
+/** Ensure a project has work types; return map of name→id */
+async function ensureWorkTypes(supabase: any, projectId: string): Promise<Record<string, string>> {
+  const { data: existing } = await supabase
+    .from("ph_work_types")
+    .select("id, name")
+    .eq("project_id", projectId)
+    .eq("is_enabled", true);
+
+  const map: Record<string, string> = {};
+  if (existing && existing.length > 0) {
+    for (const t of existing) map[t.name.toLowerCase()] = t.id;
+    return map;
+  }
+
+  // Auto-provision default types
+  const defaults = [
+    { name: "Epic", icon: "Zap", color: "#904EE2", level: 1, position: 0 },
+    { name: "Story", icon: "BookmarkPlus", color: "#63BA3C", level: 2, position: 1 },
+    { name: "Task", icon: "CheckSquare", color: "#4BADE8", level: 2, position: 2 },
+    { name: "Bug", icon: "Bug", color: "#E5493A", level: 2, position: 3 },
+    { name: "Subtask", icon: "CheckSquare", color: "#4BADE8", level: 3, position: 4 },
+  ];
+
+  for (const d of defaults) {
+    const { data: inserted } = await supabase
+      .from("ph_work_types")
+      .insert({ project_id: projectId, ...d, is_enabled: true })
+      .select("id")
+      .single();
+    if (inserted) map[d.name.toLowerCase()] = inserted.id;
+  }
+  return map;
+}
+
+/** Ensure a project has workflow statuses; return map of name→id */
+async function ensureWorkflowStatuses(supabase: any, projectId: string): Promise<Record<string, string>> {
+  const { data: existing } = await supabase
+    .from("ph_workflow_statuses")
+    .select("id, name")
+    .eq("project_id", projectId);
+
+  const map: Record<string, string> = {};
+  if (existing && existing.length > 0) {
+    for (const s of existing) map[s.name.toLowerCase()] = s.id;
+    return map;
+  }
+
+  // Auto-provision default statuses
+  const defaults = [
+    { name: "To Do", category: "todo", position: 0, is_default: true, color: "#DFE1E6" },
+    { name: "In Progress", category: "in_progress", position: 1, is_default: false, color: "#DEEBFF" },
+    { name: "In Review", category: "in_progress", position: 2, is_default: false, color: "#DEEBFF" },
+    { name: "Done", category: "done", position: 3, is_default: false, color: "#E3FCEF" },
+    { name: "Cancelled", category: "terminal", position: 4, is_default: false, color: "#DFE1E6" },
+  ];
+
+  for (const d of defaults) {
+    const { data: inserted } = await supabase
+      .from("ph_workflow_statuses")
+      .insert({ project_id: projectId, ...d })
+      .select("id")
+      .single();
+    if (inserted) map[d.name.toLowerCase()] = inserted.id;
+  }
+  return map;
+}
+
+/** Resolve or create a workflow status for a Jira status name */
+async function resolveStatusId(
+  supabase: any, projectId: string, jiraStatusName: string,
+  statusMap: Record<string, string>, statusCategory: string
+): Promise<string | null> {
+  const lower = jiraStatusName.toLowerCase();
+  if (statusMap[lower]) return statusMap[lower];
+
+  // Try fuzzy match
+  for (const [key, id] of Object.entries(statusMap)) {
+    if (lower.includes(key) || key.includes(lower)) return id;
+  }
+
+  // Map by category
+  const catMap: Record<string, string> = { "Done": "done", "In Progress": "in_progress", "To Do": "todo" };
+  const cat = catMap[statusCategory] || "todo";
+  for (const [key, id] of Object.entries(statusMap)) {
+    // find any status in same category
+    const { data: s } = await supabase
+      .from("ph_workflow_statuses")
+      .select("id, category")
+      .eq("id", id)
+      .single();
+    if (s && s.category === cat) return id;
+  }
+
+  // Create new status
+  const { data: created } = await supabase
+    .from("ph_workflow_statuses")
+    .insert({
+      project_id: projectId,
+      name: jiraStatusName,
+      category: cat,
+      position: Object.keys(statusMap).length,
+      is_default: false,
+      color: cat === "done" ? "#E3FCEF" : cat === "in_progress" ? "#DEEBFF" : "#DFE1E6",
+    })
+    .select("id")
+    .single();
+
+  if (created) {
+    statusMap[lower] = created.id;
+    return created.id;
+  }
+  return null;
+}
+
 // ─── Full Sync Logic ──────────────────────────────────────────────────────────
 
 interface JiraFetchResult {
@@ -241,6 +357,39 @@ async function handleFullSync(
         }
       } catch { /* ignore */ }
 
+      // Resolve Catalyst project_id from ph_projects
+      const { data: catalystProject } = await supabase
+        .from("ph_projects")
+        .select("id")
+        .eq("key", projectKey)
+        .maybeSingle();
+
+      const catalystProjectId = catalystProject?.id || null;
+
+      // Auto-provision work types and statuses for ph_work_items
+      let workTypeMap: Record<string, string> = {};
+      let statusMap: Record<string, string> = {};
+      if (catalystProjectId) {
+        workTypeMap = await ensureWorkTypes(supabase, catalystProjectId);
+        statusMap = await ensureWorkflowStatuses(supabase, catalystProjectId);
+      }
+
+      // Get current max sequence_num for this project
+      let maxSeq = 0;
+      if (catalystProjectId) {
+        const { data: seqData } = await supabase
+          .from("ph_work_items")
+          .select("sequence_num")
+          .eq("project_id", catalystProjectId)
+          .order("sequence_num", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        maxSeq = seqData?.sequence_num || 0;
+      }
+
+      // Resolve assignee mappings
+      const assigneeAccountIds = new Set<string>();
+
       // Fetch issues
       const { issues } = await jiraSearchPaginated(siteUrl, authEmail, authToken, jql, jiraFields);
       totalFetched += issues.length;
@@ -248,15 +397,37 @@ async function handleFullSync(
       // Collect unique assignee account IDs for unmapped user warnings
       const assigneeIds = new Set<string>();
 
-      // Upsert issues into ph_issues
+      // Build assignee profile map
+      const allAccountIds = new Set<string>();
+      for (const issue of issues) {
+        const f = issue.fields || {};
+        if (f.assignee?.accountId) allAccountIds.add(f.assignee.accountId);
+        if (f.reporter?.accountId) allAccountIds.add(f.reporter.accountId);
+      }
+      const profileMap: Record<string, string> = {};
+      if (allAccountIds.size > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, jira_account_id")
+          .in("jira_account_id", Array.from(allAccountIds));
+        if (profiles) {
+          for (const p of profiles) {
+            if (p.jira_account_id) profileMap[p.jira_account_id] = p.id;
+          }
+        }
+      }
+
+      // Upsert issues into ph_issues AND ph_work_items
       for (const issue of issues) {
         const f = issue.fields || {};
         const statusCat = f.status?.statusCategory?.key;
+        const catalystStatusCat = mapStatusCategory(statusCat);
         const descText = typeof f.description === "object" ? adfToPlainText(f.description) : (f.description || "");
 
         if (f.assignee?.accountId) assigneeIds.add(f.assignee.accountId);
         if (f.reporter?.accountId) assigneeIds.add(f.reporter.accountId);
 
+        // ── 1. Upsert into ph_issues (legacy/sync table) ──
         const row: Record<string, any> = {
           issue_key: issue.key,
           project_key: projectKey,
@@ -264,7 +435,7 @@ async function handleFullSync(
           issue_type: f.issuetype?.name || "Unknown",
           summary: f.summary || "",
           status: f.status?.name || "Unknown",
-          status_category: mapStatusCategory(statusCat),
+          status_category: catalystStatusCat,
           assignee_account_id: f.assignee?.accountId || null,
           assignee_display_name: f.assignee?.displayName || null,
           reporter_account_id: f.reporter?.accountId || null,
@@ -300,7 +471,6 @@ async function handleFullSync(
           row.effective_due_date = f.duedate;
           row.effective_due_source = "Due Date";
         } else {
-          // Check fix versions for release date
           const versionDates = (f.fixVersions || [])
             .filter((v: any) => v.releaseDate)
             .map((v: any) => v.releaseDate)
@@ -313,9 +483,6 @@ async function handleFullSync(
             row.effective_due_source = "Unscheduled";
           }
         }
-
-        // Compute sprint_name from last sprint in customfield (use label as fallback)
-        // Sprint info might be in labels or dedicated field - store what we have
         row.sprint_name = null;
 
         // Upsert by issue_key
@@ -324,10 +491,82 @@ async function handleFullSync(
           .upsert(row, { onConflict: "issue_key" });
 
         if (upsertErr) {
-          console.error(`Upsert failed for ${issue.key}:`, upsertErr.message);
-        } else {
-          totalUpserted++;
+          console.error(`ph_issues upsert failed for ${issue.key}:`, upsertErr.message);
         }
+
+        // ── 2. Upsert into ph_work_items (native table) ──
+        if (catalystProjectId) {
+          try {
+            const issueTypeName = (f.issuetype?.name || "Task").toLowerCase();
+            const typeId = workTypeMap[issueTypeName] || workTypeMap["task"] || null;
+            const jiraStatusName = f.status?.name || "To Do";
+            const statusId = await resolveStatusId(supabase, catalystProjectId, jiraStatusName, statusMap, catalystStatusCat);
+
+            const assigneeId = f.assignee?.accountId ? (profileMap[f.assignee.accountId] || null) : null;
+            const reporterId = f.reporter?.accountId ? (profileMap[f.reporter.accountId] || null) : null;
+
+            // Check if work item already exists
+            const { data: existingWI } = await supabase
+              .from("ph_work_items")
+              .select("id, sequence_num")
+              .eq("jira_key", issue.key)
+              .maybeSingle();
+
+            const wiData: Record<string, any> = {
+              jira_key: issue.key,
+              jira_issue_id: issue.id?.toString() || null,
+              title: f.summary || `Jira ${issue.key}`,
+              summary: f.summary || "",
+              item_type: f.issuetype?.name || "Task",
+              status: jiraStatusName,
+              priority: mapPriority(f.priority?.name),
+              jira_status: jiraStatusName,
+              jira_priority: f.priority?.name || "Medium",
+              jira_labels: f.labels || [],
+              jira_story_points: f.customfield_10016 || null,
+              jira_url: `${siteUrl}browse/${issue.key}`,
+              story_points: f.customfield_10016 || null,
+              due_date: f.duedate || null,
+              labels: f.labels || [],
+              resolution: f.resolution?.name || null,
+              project_id: catalystProjectId,
+              type_id: typeId,
+              status_id: statusId,
+              assignee_id: assigneeId,
+              reporter_id: reporterId,
+              sync_source: "jira",
+              jira_sync_status: "synced",
+              jira_pushed_at: new Date().toISOString(),
+              last_synced_at: new Date().toISOString(),
+              is_jira_locked: true,
+              updated_at: new Date().toISOString(),
+              deleted_at: null,
+              jira_removed_at: null,
+            };
+
+            if (existingWI) {
+              // Update existing
+              await supabase
+                .from("ph_work_items")
+                .update(wiData)
+                .eq("id", existingWI.id);
+            } else {
+              // Insert new
+              maxSeq++;
+              wiData.item_key = `${projectKey}-${maxSeq}`;
+              wiData.sequence_num = maxSeq;
+              wiData.sort_order = maxSeq;
+              wiData.depth = hierarchyLevel(f.issuetype?.name || "") === 1 ? 0 : 1;
+              await supabase
+                .from("ph_work_items")
+                .insert(wiData);
+            }
+          } catch (wiErr: any) {
+            console.error(`ph_work_items upsert failed for ${issue.key}:`, wiErr.message || wiErr);
+          }
+        }
+
+        totalUpserted++;
       }
 
       // Check for unmapped users
