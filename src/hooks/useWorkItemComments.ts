@@ -27,7 +27,8 @@ export function useWorkItemComments(entityType: string, entityId: string) {
         .select('*')
         .eq('entity_type', entityType)
         .eq('entity_id', entityId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(100);
       
       if (error) throw error;
       if (!data || data.length === 0) return [];

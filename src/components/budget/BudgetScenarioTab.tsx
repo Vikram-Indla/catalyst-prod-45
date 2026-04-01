@@ -9,7 +9,7 @@
  * - View details and compare modals
  */
 
-import { useState, useMemo, useEffect, Fragment } from 'react';
+import { useState, useMemo, useEffect, Fragment, memo } from 'react';
 import { Plus, GitBranch, Eye, GitCompare, Trash2, Check, ChevronRight, RefreshCw, Save, ArrowRight, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency, type BudgetPeriod, type BudgetResource, type DepartmentBudget } from '@/hooks/budget/useBudgetData';
@@ -96,7 +96,7 @@ function formatDateDisplay(dateStr: string | null): string {
   return `${day} ${months[date.getMonth()]} ${date.getFullYear()}`;
 }
 
-export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenarioTabProps) {
+export const BudgetScenarioTab = memo(function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenarioTabProps) {
   const { data: savedScenarios = [], isLoading } = useBudgetScenarios();
   const createScenario = useCreateScenario();
   const deleteScenario = useDeleteScenario();
@@ -1584,4 +1584,4 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
       )}
     </div>
   );
-}
+});

@@ -3,7 +3,7 @@
 // Purpose: Main week view detail page matching the provided spec
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import React, { useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { 
   LayoutGrid, ChevronLeft, ChevronRight, Calendar, 
@@ -347,7 +347,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export function T10WeekViewV3() {
+export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const { listId, weekId } = useParams<{ listId: string; weekId: string }>();
   const navigate = useNavigate();
 
@@ -1327,6 +1327,6 @@ export function T10WeekViewV3() {
       />
     </div>
   );
-}
+});
 
 export default T10WeekViewV3;
