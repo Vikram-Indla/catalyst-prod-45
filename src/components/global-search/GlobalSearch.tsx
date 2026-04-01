@@ -401,14 +401,15 @@ export function GlobalSearch() {
           <ChevronRight size={14} color="#94A3B8" style={{ marginRight: 4 }} />
           <div style={{ width: 1, height: 18, background: '#E2E8F0', margin: '0 4px' }} />
           {[
-            { label: 'Boards', icon: LayoutGrid },
-            { label: 'Hubs', icon: Home },
-            { label: 'Filters', icon: Filter },
-            { label: 'Projects', icon: FileEdit },
-            { label: 'Teams', icon: Users2 },
+            { label: 'Boards', icon: LayoutGrid, path: '/project-hub' },
+            { label: 'Hubs', icon: Home, path: '/' },
+            { label: 'Filters', icon: Filter, path: '/project-hub' },
+            { label: 'Projects', icon: FileEdit, path: '/project-hub' },
+            { label: 'Teams', icon: Users2, path: '/' },
           ].map(tab => (
             <button
               key={tab.label}
+              onClick={() => { navigate(tab.path); close(); }}
               style={{
                 height: 40, padding: '0 11px', fontSize: 12, color: '#6B778C',
                 background: 'none', border: 'none', borderBottom: '2px solid transparent',
