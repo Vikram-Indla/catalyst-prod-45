@@ -2,11 +2,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { SearchResult, RecentSearchEntry, ActiveFilters } from '@/types/global-search';
 
+// Tables not yet in generated types — use untyped client until migration runs
+const db = supabase as any;
+
 export function useRecentItems() {
   return useQuery({
     queryKey: ['global-search-recents'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('recently_viewed_items')
         .select('*')
         .order('viewed_at', { ascending: false })
@@ -21,7 +24,7 @@ export function useRecentSearches() {
   return useQuery({
     queryKey: ['global-search-history'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('global_search_history')
         .select('id, query, searched_at')
         .order('searched_at', { ascending: false })
@@ -37,7 +40,7 @@ export function useSearchResults(query: string, filters: ActiveFilters) {
     queryKey: ['global-search-results', query, filters],
     queryFn: async () => {
       if (!query || query.length < 2) return [];
-      let q = supabase
+      let q = db
         .from('recently_viewed_items')
         .select('*')
         .or(`item_key.ilike.%${query}%,title.ilike.%${query}%`)
@@ -60,7 +63,7 @@ export function useTrackView() {
     mutationFn: async (item: SearchResult) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      await supabase.from('recently_viewed_items').upsert(
+      await db.from('recently_viewed_items').upsert(
         {
           user_id: user.id,
           item_key: item.item_key,
@@ -83,7 +86,7 @@ export function useSaveSearch() {
     mutationFn: async (query: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      await supabase.from('global_search_history').insert({
+      await db.from('global_search_history').insert({
         user_id: user.id,
         query,
       });
