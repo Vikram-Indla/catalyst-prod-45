@@ -174,7 +174,7 @@ export function HierarchyContextMenu({
                 onClick={() => { onChangeAssignee(a); onClose(); }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '')}>
-                <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <span style={{ fontSize: 8, fontWeight: 700, color: '#FFFFFF' }}>
                     {a.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                   </span>
@@ -196,7 +196,7 @@ export function HierarchyContextMenu({
 
       {confirmDelete ? (
         <div style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 11, color: '#DC2626' }}>Delete?</span>
+          <span style={{ fontSize: 11, color: 'var(--sem-danger)' }}>Delete?</span>
           <button onClick={() => { onDelete(); onClose(); }} style={{
             fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 3,
             background: '#DC2626', color: '#FFFFFF', border: 'none', cursor: 'pointer',

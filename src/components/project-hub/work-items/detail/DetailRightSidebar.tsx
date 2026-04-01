@@ -41,14 +41,14 @@ interface SidebarProps {
 }
 
 const PRIORITIES = [
-  { value: 'Critical', icon: <ChevronsUp size={14} />, color: '#DC2626' },
-  { value: 'High', icon: <ArrowUp size={14} />, color: '#D97706' },
-  { value: 'Medium', icon: <ArrowRight size={14} />, color: '#2563EB' },
-  { value: 'Low', icon: <ArrowDown size={14} />, color: '#94A3B8' },
+  { value: 'Critical', icon: <ChevronsUp size={14} />, color: 'var(--sem-danger)' },
+  { value: 'High', icon: <ArrowUp size={14} />, color: 'var(--sem-warning)' },
+  { value: 'Medium', icon: <ArrowRight size={14} />, color: 'var(--cp-blue)' },
+  { value: 'Low', icon: <ArrowDown size={14} />, color: 'var(--fg-4)' },
 ];
 
 const STATUS_BG: Record<string, string> = {
-  todo: '#44546F', in_progress: '#2563EB', done: '#16A34A', terminal: '#DC2626',
+  todo: '#44546F', in_progress: 'var(--cp-blue)', done: 'var(--sem-success)', terminal: 'var(--sem-danger)',
 };
 
 export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: SidebarProps) {
@@ -122,7 +122,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
   return (
     <div
       className="shrink-0 overflow-y-auto"
-      style={{ width: 280, borderLeft: '1px solid #E2E8F0', padding: '14px 16px', background: '#FAFBFC' }}
+      style={{ width: 280, borderLeft: '1px solid var(--divider)', padding: '14px 16px', background: '#FAFBFC' }}
       onClick={closeAll}
     >
       {/* STATUS BUTTON */}
@@ -135,7 +135,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
           {item.status_name}
         </button>
         {statusOpen && (
-          <div className="absolute left-0 right-0 top-full mt-1 rounded-md overflow-hidden" style={{ background: '#FFF', border: '1px solid #E2E8F0', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }} onClick={e => e.stopPropagation()}>
+          <div className="absolute left-0 right-0 top-full mt-1 rounded-md overflow-hidden" style={{ background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }} onClick={e => e.stopPropagation()}>
             {statuses.map(s => (
               <button key={s.id} className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[#F1F5F9]" onClick={() => { onUpdate('status_id', s.id); setStatusOpen(false); }}>
                 <StatusLozenge name={s.name} category={s.category} />

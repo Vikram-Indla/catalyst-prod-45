@@ -181,7 +181,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
         {/* Scrollable body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: 0 }}>
           {/* Meta Grid 2×3 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid var(--divider)' }}>
             {[
               { label: 'PROJECT', value: item.project_name || item.project_key || '—' },
               { label: 'ASSIGNER', value: item.assigner_name || item.reporter_name || '—', hasAvatar: true },
@@ -192,15 +192,15 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             ].map((cell, i) => (
               <div key={i} style={{
                 padding: '12px 20px',
-                borderBottom: '1px solid #F1F5F9',
-                borderRight: i % 2 === 0 ? '1px solid #F1F5F9' : 'none',
+                borderBottom: '1px solid var(--bg-3)',
+                borderRight: i % 2 === 0 ? '1px solid var(--bg-3)' : 'none',
               }}>
-                <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: '4px' }}>{cell.label}</div>
+                <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: '4px' }}>{cell.label}</div>
                 {cell.hasAvatar ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={{
                       width: '18px', height: '18px', borderRadius: '50%',
-                      background: 'linear-gradient(135deg,#2563EB,#0D9488)',
+                      background: 'linear-gradient(135deg,var(--cp-blue),var(--sem-success))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '7px', fontWeight: 700, color: 'white', flexShrink: 0,
                     }}>{initials(cell.value as string)}</div>
