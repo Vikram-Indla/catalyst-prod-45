@@ -23,18 +23,18 @@ interface CreateWorkItemModalProps {
 // ─── Hierarchy Icons ──────────────────────────────────────
 const HIERARCHY_ICONS: Record<string, { symbol: string; color: string }> = {
   Epic:    { symbol: '◆', color: '#7C3AED' },
-  Feature: { symbol: '▲', color: '#2563EB' },
-  Story:   { symbol: '●', color: '#0D9488' },
-  Bug:     { symbol: '⬡', color: '#DC2626' },
-  Task:    { symbol: '■', color: '#D97706' },
-  Subtask: { symbol: '○', color: '#94A3B8' },
+  Feature: { symbol: '▲', color: 'var(--cp-blue)' },
+  Story:   { symbol: '●', color: 'var(--sem-success)' },
+  Bug:     { symbol: '⬡', color: 'var(--sem-danger)' },
+  Task:    { symbol: '■', color: 'var(--sem-warning)' },
+  Subtask: { symbol: '○', color: 'var(--fg-4)' },
 };
 
 const PRIORITIES = [
-  { value: 'critical', label: 'Critical', icon: <ChevronsUp size={14} />, color: '#DC2626' },
-  { value: 'high', label: 'High', icon: <ArrowUp size={14} />, color: '#D97706' },
-  { value: 'medium', label: 'Medium', icon: <ArrowRight size={14} />, color: '#2563EB' },
-  { value: 'low', label: 'Low', icon: <ArrowDown size={14} />, color: '#94A3B8' },
+  { value: 'critical', label: 'Critical', icon: <ChevronsUp size={14} />, color: 'var(--sem-danger)' },
+  { value: 'high', label: 'High', icon: <ArrowUp size={14} />, color: 'var(--sem-warning)' },
+  { value: 'medium', label: 'Medium', icon: <ArrowRight size={14} />, color: 'var(--cp-blue)' },
+  { value: 'low', label: 'Low', icon: <ArrowDown size={14} />, color: 'var(--fg-4)' },
 ];
 
 // ─── Component ────────────────────────────────────────────
@@ -242,13 +242,13 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
       {/* Modal */}
       <div
         className="relative rounded-lg shadow-2xl flex flex-col"
-        style={{ width: 480, maxHeight: '85vh', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8 }}
+        style={{ width: 480, maxHeight: '85vh', background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 8 }}
         onClick={e => { e.stopPropagation(); closeDropdowns(); }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3.5" style={{ borderBottom: '1px solid #F1F5F9' }}>
+        <div className="flex items-center justify-between px-5 py-3.5" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div className="flex items-center gap-2">
-            <span className="text-[14px] font-semibold" style={{ color: '#0F172A', fontFamily: 'Sora, sans-serif' }}>
+            <span className="text-[14px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'Sora, sans-serif' }}>
               Create Work Item
             </span>
             <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: '#F1F5F9', color: '#64748B' }}>

@@ -397,16 +397,16 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
             </div>
           )}
           {childLevel && (
-            <div style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0' }}>
+            <div style={{ padding: '8px 20px', borderBottom: '1px solid var(--divider)' }}>
               <button
                 onClick={() => onAddChild?.(item)}
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                  fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif",
-                  display: 'flex', alignItems: 'center', gap: 4, borderBottom: '1px dashed #E2E8F0',
+                  fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif",
+                  display: 'flex', alignItems: 'center', gap: 4, borderBottom: '1px dashed var(--divider)',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#2563EB')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--cp-blue)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-3)')}
               >
                 <Plus size={12} /> Add subtask
               </button>
@@ -416,7 +416,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
 
         {/* F. Linked Work Items placeholder */}
         <Section title="Linked Work Items" defaultOpen={false}>
-          <div style={{ padding: '12px 20px', fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
+          <div style={{ padding: '12px 20px', fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>
             No linked work items
           </div>
         </Section>

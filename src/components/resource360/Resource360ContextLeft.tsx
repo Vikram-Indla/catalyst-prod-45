@@ -113,8 +113,8 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
           </PropertyRow>
           <PropertyRow label="Release">
             <div className="flex flex-col">
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#334155' }}>{item.release_name ?? '—'}</span>
-              <span style={{ fontSize: 10, color: '#94A3B8' }}>ends {dueStr}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)' }}>{item.release_name ?? '—'}</span>
+              <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>ends {dueStr}</span>
             </div>
           </PropertyRow>
           <PropertyRow label="Due" isLast>
