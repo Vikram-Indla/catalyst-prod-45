@@ -585,6 +585,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
       ];
 
   return (
+    <TokenCtx.Provider value={tokens}>
     <>
       {/* Overlay */}
       <div onClick={onClose} className="fy-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(9,9,11,0.4)', zIndex: 200, animation: 'fy-fadeIn .15s ease' }} />
