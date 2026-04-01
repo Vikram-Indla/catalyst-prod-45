@@ -641,8 +641,7 @@ export function CatalystHeader() {
         </div>
       </header>
 
-      {/* Global Search Command Palette */}
-      <GlobalSearchPalette open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+      {/* Global Search is now rendered in CatalystShell */}
 
       {/* Create Entity Dialog */}
       {createDialogType && (
