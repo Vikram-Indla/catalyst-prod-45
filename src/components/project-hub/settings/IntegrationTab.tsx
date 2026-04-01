@@ -105,7 +105,7 @@ export function IntegrationTab() {
   return (
     <div className="space-y-6 dark:bg-[#181A1E]">
       {/* Section 1 — Connection Status */}
-      <div className="bg-white dark:bg-[#1F2128] border border-[#E2E8F0] dark:border-[#262830] rounded-md p-4">
+      <div className="bg-white dark:bg-[#181A1E] border border-[#E2E8F0] dark:border-[#262830] rounded-md p-4">
         <h3 className="text-sm font-semibold text-[#0F172A] dark:text-white mb-3">Jira Connection</h3>
         {connLoading ? (
           <Skeleton className="h-10 w-64" />
@@ -146,7 +146,7 @@ export function IntegrationTab() {
           return (
             <div
               key={card.label}
-              className="relative bg-white dark:bg-[#1F2128] border border-[#E2E8F0] dark:border-[#262830] rounded-md p-4"
+              className="relative bg-white dark:bg-[#181A1E] border border-[#E2E8F0] dark:border-[#262830] rounded-md p-4"
             >
               <Icon size={16} className={`absolute top-4 right-4 ${card.iconClass}`} />
               <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700 }} className="text-[var(--fg-1)] dark:text-white">
@@ -161,7 +161,7 @@ export function IntegrationTab() {
       </div>
 
       {/* Section 3 — Recent Sync Log */}
-      <div className="bg-white dark:bg-[#1F2128] border border-[#E2E8F0] dark:border-[#262830] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[#181A1E] border border-[#E2E8F0] dark:border-[#262830] rounded-md overflow-hidden">
         <h3 className="text-sm font-semibold text-[#0F172A] dark:text-white p-4 pb-2">Recent Sync Events</h3>
 
         {logsError ? (

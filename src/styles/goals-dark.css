@@ -276,7 +276,7 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: #FFFFFF"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="position: fixed"] {
-  background: #1F2128 !important;
+  background: #181A1E !important;
   border-color: rgba(235,238,245,0.10) !important;
 }
 

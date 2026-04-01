@@ -892,8 +892,8 @@ html:has(body[data-scroll-locked]) {
     /* === A) SURFACE LADDER (Nocturne Cool Steel v3) === */
     --bg-0: #181A1E;                     /* App background — Cool Steel */
     --bg-1: #181A1E;                     /* Page canvas — unified surface */
-    --bg-2: #1F2128;                     /* Panels / elevated float */
-    --bg-3: #1F2128;                     /* Cards — same as panels for flush */
+    --bg-2: #181A1E;                     /* Panels — unified with page */
+    --bg-3: #181A1E;                     /* Cards — flush with page */
     --bg-4: #262830;                     /* Raised/hover */
     --bg-5: #2C2E36;                     /* Active/selected surface */
     --bg-app: var(--bg-0);
@@ -2876,15 +2876,15 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] {
   --bg-0: #181A1E;
   --bg-1: #181A1E;
-  --bg-2: #1F2128;
-  --bg-3: #1F2128;
+  --bg-2: #181A1E;
+  --bg-3: #181A1E;
   --bg-4: #262830;
   --border: rgba(255,255,255,0.04);
   --cp-bd: rgba(235,238,245,0.10);
   --cp-bd-table: rgba(235,238,245,0.06);
   --cp-bd-zone: rgba(235,238,245,0.08);
   --cp-bg: #181A1E;
-  --cp-bg-elevated: #1F2128;
+  --cp-bg-elevated: #181A1E;
   --cp-bg-page: #181A1E;
   --cp-bg-sunken: #181A1E;
   --cp-bg-surface: #181A1E;
@@ -3339,8 +3339,8 @@ input[type="range"]::-moz-range-thumb {
 .dark {
   --bg-0: #181A1E;
   --bg-1: #181A1E;
-  --bg-2: #1F2128;
-  --bg-3: #1F2128;
+  --bg-2: #181A1E;
+  --bg-3: #181A1E;
   --bg-4: #262830;
   --border: rgba(255,255,255,0.04);
   --divider: rgba(255,255,255,0.04);
