@@ -12,7 +12,13 @@ import {
   useRecentSyncEvents,
   useUpdateStatusMapping,
   useUpdateSyncDirection,
+  usePendingEventCount,
 } from '@/hooks/useSyncSettings';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useMutation } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
 import { RefreshCw, Wifi, WifiOff, Activity, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 const CATALYST_STATUSES = [
