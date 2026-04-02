@@ -550,22 +550,22 @@ export function CatalystHeader() {
                 minWidth: '200px',
                 height: '32px',
                 padding: '0 10px',
-                background: isDark ? '#1F2128' : '#F8FAFC',
-                border: `1px solid ${isDark ? 'rgba(235,238,245,0.10)' : '#E2E8F0'}`,
+                background: isDark ? '#232019' : '#F8FAFC',
+                border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`,
                 borderRadius: '6px',
                 cursor: 'pointer',
                 gap: '8px',
                 alignItems: 'center',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(235,238,245,0.14)' : '#CBD5E1'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(235,238,245,0.10)' : '#E2E8F0'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(248,244,240,0.14)' : '#CBD5E1'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'; }}
             >
-              <Search style={{ width: '14px', height: '14px', color: isDark ? 'rgba(235,238,245,0.30)' : '#94A3B8', flexShrink: 0 }} />
-              <span style={{ flex: 1, fontSize: '12px', fontFamily: "'Inter', sans-serif", color: isDark ? 'rgba(235,238,245,0.30)' : '#94A3B8', textAlign: 'left' }}>
+              <Search style={{ width: '14px', height: '14px', color: isDark ? 'rgba(248,244,240,0.55)' : '#94A3B8', flexShrink: 0 }} />
+              <span style={{ flex: 1, fontSize: '12px', fontFamily: "'Inter', sans-serif", color: isDark ? 'rgba(248,244,240,0.55)' : '#94A3B8', textAlign: 'left' }}>
                 Search...
               </span>
-              <kbd style={{ fontSize: '10px', background: isDark ? '#181A1E' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(235,238,245,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(235,238,245,0.55)' : '#64748B' }}>⌘</kbd>
-              <kbd style={{ fontSize: '10px', background: isDark ? '#181A1E' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(235,238,245,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(235,238,245,0.55)' : '#64748B' }}>K</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#1A1714' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>⌘</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#1A1714' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>K</kbd>
             </button>
             {/* Mobile search icon */}
             <button
