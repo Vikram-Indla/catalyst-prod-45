@@ -71799,6 +71799,7 @@ export type Database = {
         Args: { p_item_ids: string[]; p_week_id: string }
         Returns: undefined
       }
+      process_sync_events: { Args: { batch_size?: number }; Returns: Json }
       promote_to_roadmap: {
         Args: {
           p_initiative_id: string
@@ -71893,6 +71894,7 @@ export type Database = {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
       }
+      retry_failed_sync_events: { Args: never; Returns: number }
       save_entity_snapshot: {
         Args: {
           p_change_reason?: string
