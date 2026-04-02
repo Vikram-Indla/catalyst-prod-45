@@ -871,6 +871,7 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/projects" element={<S><AllProjectsPageLazy /></S>} />
         <Route path="/project/all-projects" element={<S><AllProjectsPageLazy /></S>} />
         <Route path="/project-hub/projects-legacy" element={<S><ProjectListPageLazy /></S>} />
+        <Route path="/project-hub/portfolio-health" element={<S><div className="flex h-full items-center justify-center" style={{ color: 'var(--text-3)' }}>Portfolio Health — Coming Soon</div></S>} />
         <Route path="/project-hub/resources" element={<S><ResourceListingPageLazy /></S>} />
         <Route path="/project-hub/resources/:resourceId" element={<S><R360MemberDetailLazy /></S>} />
         <Route path="/project-hub/resources-v2" element={<Navigate to="/project-hub/resources" replace />} />

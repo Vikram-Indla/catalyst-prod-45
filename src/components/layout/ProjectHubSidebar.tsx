@@ -53,6 +53,7 @@ const MODULE_NAV_CONFIG: SidebarConfig = {
       items: [
         { id: 'all-projects', title: 'All Projects', path: '/project-hub/projects', icon: LayoutGrid, exact: false },
         { id: 'all-resources', title: 'Resource 360™', path: '/project-hub/resources', icon: UserSearch, exact: true },
+        { id: 'portfolio-health', title: 'Portfolio Health', path: '/project-hub/portfolio-health', icon: Activity, exact: true },
       ],
     },
   ],
@@ -64,7 +65,7 @@ function extractProjectKey(pathname: string): string | undefined {
   if (!match) return undefined;
   const segment = match[1];
   // These are module-level routes, not project keys
-  if (['projects', 'resources'].includes(segment)) return undefined;
+  if (['projects', 'resources', 'portfolio-health'].includes(segment)) return undefined;
   return segment;
 }
 

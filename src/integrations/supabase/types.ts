@@ -68177,6 +68177,9 @@ export type Database = {
           health_status: string | null
           id: string | null
           last_synced_at: string | null
+          lead_avatar_url: string | null
+          lead_id: string | null
+          lead_name: string | null
           member_count: number | null
           member_ids: string[] | null
           name: string | null
