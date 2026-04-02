@@ -15,6 +15,7 @@ const WorkItemsPage = lazy(() => import('@/pages/project/WorkItemsPage'));
 const EpicBacklogPage = lazy(() => import('@/modules/project-work-hub/pages/EpicBacklogPage'));
 const FeatureBacklogPage = lazy(() => import('@/modules/project-work-hub/pages/FeatureBacklogPage'));
 const StoryBacklogPage = lazy(() => import('@/modules/project-work-hub/pages/StoryBacklogPage'));
+const SyncSettingsPage = lazy(() => import('@/pages/project/SyncSettingsPage'));
 
 // Loading component
 function ViewLoader() {
