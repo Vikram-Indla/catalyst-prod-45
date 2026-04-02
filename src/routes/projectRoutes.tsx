@@ -94,6 +94,14 @@ export const projectRoutes: RouteObject[] = [
           </Suspense></ErrorBoundary>
         ),
       },
+      {
+        path: 'sync-settings',
+        element: (
+          <ErrorBoundary><Suspense fallback={<ViewLoader />}>
+            <SyncSettingsPage />
+          </Suspense></ErrorBoundary>
+        ),
+      },
     ],
   },
 ];
