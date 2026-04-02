@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -101,7 +101,8 @@ const QUICK_NAV_ROUTES = [
 ];
 
 export default function ThemeAuditPage() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme, setTheme, isDark } = useTheme();
+  const resolvedTheme = isDark ? 'dark' : 'light';
   const [isRunning, setIsRunning] = useState(false);
   const [lightResult, setLightResult] = useState<AuditResult | null>(null);
   const [darkResult, setDarkResult] = useState<AuditResult | null>(null);

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Filter, X } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/hooks/useTheme';
 
 export interface FilterState {
   statuses: string[];
@@ -18,8 +18,8 @@ interface FilterDropdownProps {
 export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
-  const dark = theme === 'dark';
+  const { isDark: dark } = useTheme();
+  
 
   useEffect(() => {
     if (!open) return;
@@ -197,8 +197,8 @@ export function FilterChips({
   filters: FilterState;
   onChange: (f: FilterState) => void;
 }) {
-  const { theme } = useTheme();
-  const dark = theme === 'dark';
+  const { isDark: dark } = useTheme();
+  
   const chips: { label: string; remove: () => void }[] = [];
   filters.statuses.forEach(s =>
     chips.push({

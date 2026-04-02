@@ -75,7 +75,7 @@ export function ProjectHubShell() {
   });
 
   return (
-    <div className="flex flex-col h-screen bg-[var(--bg-1)] dark:!bg-[#181A1E]" style={{ ['--ph-bg' as string]: 'var(--bg-dark)' }}>
+    <div className="flex flex-col h-screen bg-[var(--bg-1)] dark:!bg-[#181A1E]" style={{ ['--ph-bg' as string]: '#181A1E' }}>
       <TopNav onCreateClick={handleTopCreateClick} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} projects={projects} currentProject={currentProject} />

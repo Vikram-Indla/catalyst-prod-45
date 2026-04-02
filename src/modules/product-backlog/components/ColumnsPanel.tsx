@@ -6,7 +6,7 @@ import React, { useEffect, useRef } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/hooks/useTheme';
 
 interface Column {
   id: string;

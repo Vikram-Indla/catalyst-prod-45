@@ -2,7 +2,7 @@
  * EmptyState — Consistent empty state messages for dashboard widgets
  */
 import { CheckCircle, AlertCircle, Info } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/hooks/useTheme';
 
 interface Props {
   message: string;
@@ -10,8 +10,8 @@ interface Props {
 }
 
 export default function EmptyState({ message, icon = 'info' }: Props) {
-  const { theme } = useTheme();
-  const dark = theme === 'dark';
+  const { isDark: dark } = useTheme();
+  
 
   const ICONS = {
     check: <CheckCircle size={16} color={dark ? 'var(--sem-success-accent)' : 'var(--sem-success)'} />,

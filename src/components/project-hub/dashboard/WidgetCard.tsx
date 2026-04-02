@@ -3,7 +3,7 @@
  * Premium enterprise styling with hover shadow, error state, ARIA
  */
 import type { ReactNode } from 'react';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/hooks/useTheme';
 
 interface Props {
   title: string;
@@ -25,8 +25,8 @@ export function WidgetCard(props: Props) {
 }
 
 function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, headerRight, children, maxHeight, actionLabel, onAction, error, onRetry }: Props) {
-  const { theme } = useTheme();
-  const dark = theme === 'dark';
+  const { isDark: dark } = useTheme();
+  
 
   const getCountBadgeStyle = () => {
     if (!countColor) return dark
@@ -50,7 +50,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
       aria-label={title}
       className="ph-widget-card"
       style={{
-        background: dark ? 'var(--bg-dark)' : 'var(--bg-app)',
+        background: dark ? '#181A1E' : 'var(--bg-app)',
         border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid var(--divider)',
         borderRadius: 10,
         borderLeft: leftBorder ? `3px solid ${leftBorder}` : undefined,
