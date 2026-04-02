@@ -48,10 +48,10 @@ export function CatalystHeader() {
   const location = useLocation();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const globalSearch = useGlobalSearchStore();
 
   useEffect(() => {
-    const handler = () => setIsSearchOpen(true);
+    const handler = () => globalSearch.open();
     window.addEventListener('open-global-search', handler);
     return () => window.removeEventListener('open-global-search', handler);
   }, []);
