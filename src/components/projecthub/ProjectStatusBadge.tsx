@@ -27,9 +27,9 @@ const STATUS_MAP: Record<string, ColorCategory> = {
 };
 
 const COLORS: Record<ColorCategory, { lightBg: string; lightText: string; darkBg: string; darkText: string }> = {
-  green: { lightBg: '#DCFCE7', lightText: '#166534', darkBg: '#182820', darkText: '#86EFAC' },
-  blue:  { lightBg: '#DBEAFE', lightText: '#1E40AF', darkBg: '#1A2030', darkText: '#93C5FD' },
-  grey:  { lightBg: '#F3F4F6', lightText: '#4B5563', darkBg: '#262830', darkText: '#B8BCC8' },
+  green: { lightBg: '#E3FCEF', lightText: '#006644', darkBg: '#1A2A1E', darkText: '#86EFAC' },
+  blue:  { lightBg: '#DEEBFF', lightText: '#0747A6', darkBg: '#1E2636', darkText: '#93C5FD' },
+  grey:  { lightBg: '#DFE1E6', lightText: '#253858', darkBg: '#2C2926', darkText: '#B8BCC8' },
 };
 
 export function ProjectStatusBadge({ status }: { status: ProjectStatus }) {
