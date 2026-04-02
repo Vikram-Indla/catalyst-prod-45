@@ -1437,6 +1437,237 @@ export type Database = {
         }
         Relationships: []
       }
+      catalyst_issues: {
+        Row: {
+          assignee_id: string | null
+          created_at: string | null
+          description: string | null
+          description_adf_raw: Json | null
+          id: string
+          issue_key: string
+          issue_type: string
+          last_modified_by_system: string
+          parent_id: string | null
+          priority: string | null
+          project_id: string
+          release_id: string | null
+          reporter_id: string | null
+          sprint_name: string | null
+          status: string
+          story_points: number | null
+          sync_enabled: boolean | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          description_adf_raw?: Json | null
+          id?: string
+          issue_key: string
+          issue_type?: string
+          last_modified_by_system?: string
+          parent_id?: string | null
+          priority?: string | null
+          project_id: string
+          release_id?: string | null
+          reporter_id?: string | null
+          sprint_name?: string | null
+          status?: string
+          story_points?: number | null
+          sync_enabled?: boolean | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          description_adf_raw?: Json | null
+          id?: string
+          issue_key?: string
+          issue_type?: string
+          last_modified_by_system?: string
+          parent_id?: string | null
+          priority?: string | null
+          project_id?: string
+          release_id?: string | null
+          reporter_id?: string | null
+          sprint_name?: string | null
+          status?: string
+          story_points?: number | null
+          sync_enabled?: boolean | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalyst_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "catalyst_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
+      }
       caty_analytics: {
         Row: {
           conversation_id: string | null
@@ -32199,6 +32430,36 @@ export type Database = {
           },
         ]
       }
+      project_sequences: {
+        Row: {
+          last_number: number
+          project_id: string
+        }
+        Insert: {
+          last_number?: number
+          project_id: string
+        }
+        Update: {
+          last_number?: number
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_sequences_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_sequences_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_stars: {
         Row: {
           created_at: string | null
@@ -39287,6 +39548,386 @@ export type Database = {
           },
         ]
       }
+      sync_conflicts: {
+        Row: {
+          catalyst_issue_id: string | null
+          catalyst_value: string | null
+          created_at: string | null
+          field_name: string
+          id: string
+          jira_value: string | null
+          project_id: string | null
+          resolution: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+        }
+        Insert: {
+          catalyst_issue_id?: string | null
+          catalyst_value?: string | null
+          created_at?: string | null
+          field_name: string
+          id?: string
+          jira_value?: string | null
+          project_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Update: {
+          catalyst_issue_id?: string | null
+          catalyst_value?: string | null
+          created_at?: string | null
+          field_name?: string
+          id?: string
+          jira_value?: string | null
+          project_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sync_conflicts_catalyst_issue_id_fkey"
+            columns: ["catalyst_issue_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sync_conflicts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sync_conflicts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sync_conflicts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "sync_conflicts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "sync_conflicts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sync_conflicts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "sync_conflicts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sync_conflicts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "sync_conflicts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "sync_conflicts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "sync_conflicts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "sync_conflicts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
+      }
+      sync_connections: {
+        Row: {
+          created_at: string | null
+          id: string
+          initial_sync_completed: boolean | null
+          is_active: boolean | null
+          jira_base_url: string
+          jira_project_key: string
+          project_id: string
+          sync_direction: string
+          updated_at: string | null
+          webhook_expiry: string | null
+          webhook_id: string | null
+          webhook_secret: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          initial_sync_completed?: boolean | null
+          is_active?: boolean | null
+          jira_base_url: string
+          jira_project_key: string
+          project_id: string
+          sync_direction?: string
+          updated_at?: string | null
+          webhook_expiry?: string | null
+          webhook_id?: string | null
+          webhook_secret?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          initial_sync_completed?: boolean | null
+          is_active?: boolean | null
+          jira_base_url?: string
+          jira_project_key?: string
+          project_id?: string
+          sync_direction?: string
+          updated_at?: string | null
+          webhook_expiry?: string | null
+          webhook_id?: string | null
+          webhook_secret?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sync_connections_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sync_connections_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sync_cooldowns: {
+        Row: {
+          entity_key: string
+          expires_at: string
+        }
+        Insert: {
+          entity_key: string
+          expires_at: string
+        }
+        Update: {
+          entity_key?: string
+          expires_at?: string
+        }
+        Relationships: []
+      }
+      sync_dead_letter: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          original_event_id: string | null
+          payload: Json
+          retry_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          original_event_id?: string | null
+          payload: Json
+          retry_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          original_event_id?: string | null
+          payload?: Json
+          retry_count?: number | null
+        }
+        Relationships: []
+      }
+      sync_entity_map: {
+        Row: {
+          catalyst_entity_id: string
+          catalyst_entity_type: string
+          created_at: string | null
+          id: string
+          jira_entity_id: string
+          jira_entity_key: string | null
+          jira_entity_type: string
+          jira_self_url: string | null
+          last_sync_status: string | null
+          last_synced_at: string | null
+          sync_direction: string
+          sync_version: number | null
+        }
+        Insert: {
+          catalyst_entity_id: string
+          catalyst_entity_type: string
+          created_at?: string | null
+          id?: string
+          jira_entity_id: string
+          jira_entity_key?: string | null
+          jira_entity_type: string
+          jira_self_url?: string | null
+          last_sync_status?: string | null
+          last_synced_at?: string | null
+          sync_direction?: string
+          sync_version?: number | null
+        }
+        Update: {
+          catalyst_entity_id?: string
+          catalyst_entity_type?: string
+          created_at?: string | null
+          id?: string
+          jira_entity_id?: string
+          jira_entity_key?: string | null
+          jira_entity_type?: string
+          jira_self_url?: string | null
+          last_sync_status?: string | null
+          last_synced_at?: string | null
+          sync_direction?: string
+          sync_version?: number | null
+        }
+        Relationships: []
+      }
+      sync_events: {
+        Row: {
+          created_at: string | null
+          direction: string
+          entity_id: string
+          entity_type: string
+          error_message: string | null
+          event_type: string
+          id: string
+          idempotency_key: string
+          origin_system: string
+          payload: Json
+          processed_at: string | null
+          retry_count: number | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          direction: string
+          entity_id: string
+          entity_type: string
+          error_message?: string | null
+          event_type: string
+          id?: string
+          idempotency_key: string
+          origin_system: string
+          payload: Json
+          processed_at?: string | null
+          retry_count?: number | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          direction?: string
+          entity_id?: string
+          entity_type?: string
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          idempotency_key?: string
+          origin_system?: string
+          payload?: Json
+          processed_at?: string | null
+          retry_count?: number | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      sync_health: {
+        Row: {
+          avg_latency_ms: number | null
+          check_type: string
+          checked_at: string | null
+          details: Json | null
+          events_failed: number | null
+          events_processed: number | null
+          events_received: number | null
+          id: string
+          project_id: string | null
+          status: string
+        }
+        Insert: {
+          avg_latency_ms?: number | null
+          check_type: string
+          checked_at?: string | null
+          details?: Json | null
+          events_failed?: number | null
+          events_processed?: number | null
+          events_received?: number | null
+          id?: string
+          project_id?: string | null
+          status: string
+        }
+        Update: {
+          avg_latency_ms?: number | null
+          check_type?: string
+          checked_at?: string | null
+          details?: Json | null
+          events_failed?: number | null
+          events_processed?: number | null
+          events_received?: number | null
+          id?: string
+          project_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sync_health_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sync_health_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sync_schedules: {
         Row: {
           created_at: string
@@ -39328,6 +39969,155 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      sync_status_map: {
+        Row: {
+          catalyst_lozenge_color: string
+          catalyst_status: string
+          created_at: string | null
+          id: string
+          jira_status_category: string
+          jira_status_id: string
+          jira_status_name: string
+          project_id: string
+        }
+        Insert: {
+          catalyst_lozenge_color: string
+          catalyst_status: string
+          created_at?: string | null
+          id?: string
+          jira_status_category: string
+          jira_status_id: string
+          jira_status_name: string
+          project_id: string
+        }
+        Update: {
+          catalyst_lozenge_color?: string
+          catalyst_status?: string
+          created_at?: string | null
+          id?: string
+          jira_status_category?: string
+          jira_status_id?: string
+          jira_status_name?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sync_status_map_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sync_status_map_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sync_user_map: {
+        Row: {
+          catalyst_user_id: string | null
+          id: string
+          is_active: boolean | null
+          jira_account_id: string
+          jira_display_name: string | null
+          jira_email: string | null
+          mapped_at: string | null
+        }
+        Insert: {
+          catalyst_user_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_account_id: string
+          jira_display_name?: string | null
+          jira_email?: string | null
+          mapped_at?: string | null
+        }
+        Update: {
+          catalyst_user_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_account_id?: string
+          jira_display_name?: string | null
+          jira_email?: string | null
+          mapped_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sync_user_map_catalyst_user_id_fkey"
+            columns: ["catalyst_user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "sync_user_map_catalyst_user_id_fkey"
+            columns: ["catalyst_user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "sync_user_map_catalyst_user_id_fkey"
+            columns: ["catalyst_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sync_user_map_catalyst_user_id_fkey"
+            columns: ["catalyst_user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "sync_user_map_catalyst_user_id_fkey"
+            columns: ["catalyst_user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sync_user_map_catalyst_user_id_fkey"
+            columns: ["catalyst_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "sync_user_map_catalyst_user_id_fkey"
+            columns: ["catalyst_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "sync_user_map_catalyst_user_id_fkey"
+            columns: ["catalyst_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "sync_user_map_catalyst_user_id_fkey"
+            columns: ["catalyst_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "sync_user_map_catalyst_user_id_fkey"
+            columns: ["catalyst_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
       }
       t10_activity: {
         Row: {
@@ -70925,6 +71715,7 @@ export type Database = {
         Args: { p_item_ids: string[]; p_run_id: string }
         Returns: Json
       }
+      next_issue_key: { Args: { p_project_id: string }; Returns: string }
       pause_step_timer: {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
