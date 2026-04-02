@@ -1,1 +1,4 @@
 project_id = "mqgshobotcvcjouzxdbi"
+
+[functions.jira-webhook-receiver]
+verify_jwt = false
