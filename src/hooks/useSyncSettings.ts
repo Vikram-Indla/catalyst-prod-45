@@ -102,6 +102,22 @@ export function useSyncHealth(projectId: string) {
   });
 }
 
+export function usePendingEventCount(projectId: string) {
+  return useQuery({
+    queryKey: ['sync-pending-count', projectId],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('sync_events')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending');
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!projectId,
+    refetchInterval: 10_000,
+  });
+}
+
 export function useRecentSyncEvents(projectId: string) {
   return useQuery({
     queryKey: syncSettingsKeys.events(projectId),
