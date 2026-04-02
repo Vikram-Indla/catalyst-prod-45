@@ -200,6 +200,25 @@ function SyncDirectionSelector({ projectId }: { projectId: string }) {
 
 function SyncHealthCard({ projectId }: { projectId: string }) {
   const { data: health, isLoading } = useSyncHealth(projectId);
+  const { data: pendingCount = 0 } = usePendingEventCount(projectId);
+  const { toast } = useToast();
+
+  const processQueue = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.rpc('process_sync_events', { batch_size: 50 });
+      if (error) throw error;
+      return data as { processed: number; failed: number; skipped: number };
+    },
+    onSuccess: (data) => {
+      toast({
+        title: 'Queue processed',
+        description: `Processed: ${data.processed}, Failed: ${data.failed}, Skipped: ${data.skipped}`,
+      });
+    },
+    onError: (err: Error) => {
+      toast({ title: 'Processing failed', description: err.message, variant: 'destructive' });
+    },
+  });
 
   const getHealthColor = (status?: string) => {
     if (!status) return '#94A3B8';
@@ -215,12 +234,28 @@ function SyncHealthCard({ projectId }: { projectId: string }) {
     return <AlertTriangle className="w-4 h-4 text-[#DC2626]" />;
   };
 
+  const isQueueBackedUp = pendingCount > 10;
+
   return (
     <Card className="border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-background">
       <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-semibold uppercase tracking-[0.06em] text-foreground">
-          Sync Health
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-semibold uppercase tracking-[0.06em] text-foreground">
+            Sync Health
+          </CardTitle>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => processQueue.mutate()}
+            disabled={processQueue.isPending}
+            className="h-7 text-xs"
+          >
+            {processQueue.isPending ? (
+              <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+            ) : null}
+            Manual process
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -235,15 +270,20 @@ function SyncHealthCard({ projectId }: { projectId: string }) {
             <div className="flex items-center gap-2">
               <div
                 className="w-2.5 h-2.5 rounded-full"
-                style={{ backgroundColor: getHealthColor(health.status) }}
+                style={{ backgroundColor: isQueueBackedUp ? '#D97706' : getHealthColor(health.status) }}
               />
-              {getHealthIcon(health.status)}
+              {isQueueBackedUp ? (
+                <AlertTriangle className="w-4 h-4 text-[#D97706]" />
+              ) : (
+                getHealthIcon(health.status)
+              )}
               <span className="text-sm font-medium text-foreground capitalize">
-                {health.status}
+                {isQueueBackedUp ? 'Queue backing up' : health.status}
               </span>
             </div>
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-5 gap-3">
               {[
+                { label: 'Queue Depth', value: pendingCount },
                 { label: 'Received', value: health.events_received },
                 { label: 'Processed', value: health.events_processed },
                 { label: 'Failed', value: health.events_failed },
