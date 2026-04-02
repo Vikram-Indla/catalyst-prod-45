@@ -14,7 +14,7 @@ import { useSingleItemNavigation } from "@/hooks/useSingleItemNavigation";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 const CreateDropdown = lazy(() => import("./CreateDropdown").then(m => ({ default: m.CreateDropdown })));
-const GlobalSearchPalette = lazy(() => import("@/components/ui/global-search-palette").then(m => ({ default: m.GlobalSearchPalette })));
+import { useGlobalSearchStore } from "@/store/globalSearchStore";
 const NotificationsPanel = lazy(() => import("./NotificationsPanel").then(m => ({ default: m.NotificationsPanel })));
 const ProgramSelectorDropdown = lazy(() => import("./ProgramSelectorDropdown").then(m => ({ default: m.ProgramSelectorDropdown })));
 const ProjectSelectorDropdown = lazy(() => import("./ProjectSelectorDropdown").then(m => ({ default: m.ProjectSelectorDropdown })));
@@ -48,10 +48,10 @@ export function CatalystHeader() {
   const location = useLocation();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const globalSearch = useGlobalSearchStore();
 
   useEffect(() => {
-    const handler = () => setIsSearchOpen(true);
+    const handler = () => globalSearch.open();
     window.addEventListener('open-global-search', handler);
     return () => window.removeEventListener('open-global-search', handler);
   }, []);
@@ -662,8 +662,7 @@ export function CatalystHeader() {
         </div>
       </header>
 
-      {/* Global Search Command Palette */}
-      <GlobalSearchPalette open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+      {/* Global Search is rendered by CatalystShell via zustand store */}
 
       {/* Create Entity Dialog */}
       {createDialogType && (
