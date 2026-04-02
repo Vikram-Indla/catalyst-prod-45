@@ -460,11 +460,27 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
       if (nameEl) resourceName = nameEl.textContent?.trim() || 'Unknown';
     }
 
-    // The claim now only contains the number; grab the following noun from adjacent text
+    // Capture number + full action context (e.g. "1 item to 'Monitor'")
     const num = claim.textContent?.trim() || '';
-    // Get the text node right after the claim span to capture the noun
-    const nextText = claim.nextSibling?.textContent?.trim().split(/[,.\s]/)[0] || '';
-    const claimText = nextText ? `${num} ${nextText}` : num;
+    // Walk following siblings to capture text until next "and" boundary or next claim span
+    let contextText = '';
+    let node: Node | null = claim.nextSibling;
+    while (node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent || '';
+        // Stop at ", and " or standalone " and " boundary
+        const boundary = text.search(/,?\s+and\s/i);
+        if (boundary >= 0) {
+          contextText += text.slice(0, boundary);
+          break;
+        }
+        contextText += text;
+      } else if ((node as Element).classList?.contains('di-claim')) {
+        break; // Next claim span, stop
+      }
+      node = node.nextSibling;
+    }
+    const claimText = contextText ? `${num} ${contextText.trim()}` : num;
     if (claimText) {
       setDrillIn({ resourceName, claimText });
     }
