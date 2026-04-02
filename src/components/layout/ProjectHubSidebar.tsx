@@ -72,8 +72,7 @@ function FavouritesSection({ expanded }: { expanded: boolean }) {
   const { data: favoriteIds = new Set<string>() } = useProjectFavorites();
   const { data: projects = [] } = useProjects();
   const navigate = useNavigate();
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
+  const { isDark } = useTheme();
 
   const favourites = useMemo(
     () => projects.filter(p => favoriteIds.has(p.id)),
