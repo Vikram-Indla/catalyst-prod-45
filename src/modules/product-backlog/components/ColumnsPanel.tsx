@@ -34,8 +34,7 @@ export function ColumnsPanel({
   storageKey = 'product_backlog_columns',
 }: ColumnsPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
+  const { isDark } = useTheme();
 
   // Save to localStorage when columns change
   useEffect(() => {
