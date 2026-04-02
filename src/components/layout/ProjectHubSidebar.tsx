@@ -65,7 +65,7 @@ function extractProjectKey(pathname: string): string | undefined {
   if (!match) return undefined;
   const segment = match[1];
   // These are module-level routes, not project keys
-  if (['projects', 'resources'].includes(segment)) return undefined;
+  if (['projects', 'resources', 'portfolio-health'].includes(segment)) return undefined;
   return segment;
 }
 
