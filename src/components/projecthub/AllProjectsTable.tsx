@@ -58,9 +58,9 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
   const queryClient = useQueryClient();
 
   const handleArchive = async () => {
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('projects')
-      .update({ display_status: 'archived' })
+      .update({ display_status: 'archived' } as any)
       .eq('id', project.id);
     if (error) { toast.error('Failed to archive'); return; }
     toast.success(`${project.name} archived`);

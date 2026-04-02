@@ -54,7 +54,7 @@ export function ProjectStatusBadge({ status }: { status: ProjectStatus }) {
         whiteSpace: 'nowrap',
       }}
     >
-      {(status || '—').toUpperCase()}
+      {(status || '—').replace(/_/g, ' ').toUpperCase()}
     </span>
   );
 }
