@@ -450,6 +450,7 @@ export function GlobalSearch() {
         boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
         display: "flex", flexDirection: "column",
         overflow: "hidden",
+        colorScheme: "light",
       }}>
 
         {/* ── SEARCH BAR (56px) ── */}
@@ -467,7 +468,15 @@ export function GlobalSearch() {
             style={{
               flex: 1, border: "none", outline: "none",
               fontSize: 15, fontFamily: "Inter, sans-serif",
-              color: "#171717", backgroundColor: "transparent",
+              color: "#171717",
+              backgroundColor: "#FFFFFF",
+              colorScheme: "light",
+              WebkitAppearance: "none",
+              appearance: "none",
+              WebkitTextFillColor: "#171717",
+              boxShadow: "none",
+              padding: 0,
+              margin: 0,
             }}
           />
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
