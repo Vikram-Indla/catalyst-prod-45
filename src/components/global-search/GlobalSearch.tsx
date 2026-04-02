@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { Search, Settings2, ChevronDown, X, Clock } from "lucide-react";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import type { SearchResult, ActiveFilters, SearchHub, WorkItemType } from "@/types/global-search";
 import { useProfileAvatarsByName } from "@/hooks/useProfileAvatars";
+import { useThemeMode } from "@/providers/ThemeProvider";
 
 /* ─── CANONICAL WORK ITEM SVG ICONS (16×14 inline) ─── */
 const WORK_ICONS: Record<string, { label: string; svg: string }> = {
@@ -136,8 +137,8 @@ function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
       style={{
         display: "flex", alignItems: "center", height: 44,
         padding: "0 16px", gap: 10, cursor: "pointer",
-        backgroundColor: isSelected ? "rgba(37,99,235,0.06)" : "transparent",
-        borderBottom: "0.75px solid rgba(15,23,42,0.06)",
+        backgroundColor: isSelected ? "var(--gs-selected)" : "transparent",
+        borderBottom: "0.75px solid var(--gs-border-subtle)",
       }}
     >
       <span
@@ -146,26 +147,26 @@ function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
       />
       <span style={{
         fontFamily: "JetBrains Mono, monospace", fontSize: 11,
-        color: "#2563EB", fontWeight: 500, flexShrink: 0, minWidth: 70,
+        color: "var(--gs-key)", fontWeight: 500, flexShrink: 0, minWidth: 70,
       }}>
         {item.item_key}
       </span>
       <span style={{
-        flex: 1, fontSize: 13, color: "#171717", fontFamily: "Inter, sans-serif",
+        flex: 1, fontSize: 13, color: "var(--gs-text)", fontFamily: "Inter, sans-serif",
         overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
       }}>
         {item.title}
       </span>
       <div style={{
         display: "flex", alignItems: "center", gap: 8, flexShrink: 0,
-        fontSize: 11, color: "#6B778C", fontFamily: "Inter, sans-serif",
+        fontSize: 11, color: "var(--gs-text-secondary)", fontFamily: "Inter, sans-serif",
       }}>
         {item.project_name && (
           <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {item.project_name}
           </span>
         )}
-        {item.project_name && <span style={{ color: "#C1C7D0" }}>·</span>}
+        {item.project_name && <span style={{ color: "var(--gs-text-muted)" }}>·</span>}
         {item.assignee_name && (
           <>
             {(() => {
@@ -185,7 +186,7 @@ function ResultRow({ item, isSelected, onHover, onClick, avatarMap }: {
                 </span>
               );
             })()}
-            <span style={{ color: "#C1C7D0" }}>·</span>
+            <span style={{ color: "var(--gs-text-muted)" }}>·</span>
           </>
         )}
         <span>{timeAgo(item.viewed_at)}</span>
@@ -231,9 +232,9 @@ function FilterChip({ label, items, selected, onSelect, avatarMap }: {
         style={{
           display: "flex", alignItems: "center", gap: 4, height: 28,
           padding: "0 10px", fontSize: 12, fontFamily: "Inter, sans-serif",
-          color: selected ? "#2563EB" : "#525252", fontWeight: selected ? 500 : 400,
-          backgroundColor: selected ? "#EFF6FF" : "#F8FAFC",
-          border: `1px solid ${selected ? "#BFDBFE" : "#E2E8F0"}`,
+          color: selected ? "var(--gs-chip-active-text)" : "var(--gs-chip-text)", fontWeight: selected ? 500 : 400,
+          backgroundColor: selected ? "var(--gs-chip-active-bg)" : "var(--gs-chip-bg)",
+          border: `1px solid ${selected ? "var(--gs-chip-active-border)" : "var(--gs-chip-border)"}`,
           borderRadius: 4, cursor: "pointer", whiteSpace: "nowrap",
         }}
       >
@@ -243,8 +244,8 @@ function FilterChip({ label, items, selected, onSelect, avatarMap }: {
       {open && (
         <div style={{
           position: "absolute", top: 32, left: 0, zIndex: 100,
-          backgroundColor: "#fff", border: "1px solid #E2E8F0",
-          borderRadius: 6, boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+          backgroundColor: "var(--gs-dropdown-bg)", border: "1px solid var(--gs-chip-border)",
+          borderRadius: 6, boxShadow: "var(--gs-dropdown-shadow)",
           minWidth: 200, maxHeight: 280, overflowY: "auto",
         }}>
           {selected && (
@@ -252,10 +253,10 @@ function FilterChip({ label, items, selected, onSelect, avatarMap }: {
               onClick={() => { onSelect(null); setOpen(false); }}
               style={{
                 padding: "0 12px", height: 36, display: "flex", alignItems: "center",
-                fontSize: 12, color: "#EF4444", cursor: "pointer",
-                borderBottom: "0.75px solid rgba(15,23,42,0.08)",
+                fontSize: 12, color: "var(--gs-danger)", cursor: "pointer",
+                borderBottom: "0.75px solid var(--gs-border-subtle)",
               }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(239,68,68,0.06)")}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "var(--gs-danger-hover)")}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
             >
               Clear filter
@@ -267,13 +268,13 @@ function FilterChip({ label, items, selected, onSelect, avatarMap }: {
               onClick={() => { onSelect(item.value); setOpen(false); }}
               style={{
                 padding: "0 12px", height: 36, display: "flex", alignItems: "center", gap: 8,
-                fontSize: 13, color: selected === item.value ? "#2563EB" : "#262626",
+                fontSize: 13, color: selected === item.value ? "var(--gs-chip-active-text)" : "var(--gs-text)",
                 fontFamily: "Inter, sans-serif", cursor: "pointer",
-                backgroundColor: selected === item.value ? "#EFF6FF" : "transparent",
+                backgroundColor: selected === item.value ? "var(--gs-chip-active-bg)" : "transparent",
                 fontWeight: selected === item.value ? 500 : 400,
               }}
               onMouseEnter={e => {
-                if (selected !== item.value) e.currentTarget.style.backgroundColor = "rgba(15,23,42,0.04)";
+                if (selected !== item.value) e.currentTarget.style.backgroundColor = "var(--gs-hover)";
               }}
               onMouseLeave={e => {
                 if (selected !== item.value) e.currentTarget.style.backgroundColor = "transparent";
@@ -318,8 +319,8 @@ function Kbd({ children }: { children: string }) {
       display: "inline-flex", alignItems: "center", justifyContent: "center",
       height: 20, minWidth: 20, padding: "0 5px",
       fontSize: 11, fontFamily: "JetBrains Mono, monospace",
-      color: "#525252", backgroundColor: "#F1F5F9",
-      border: "1px solid #E2E8F0", borderRadius: 3,
+      color: "var(--gs-kbd-text)", backgroundColor: "var(--gs-kbd-bg)",
+      border: "1px solid var(--gs-kbd-border)", borderRadius: 3,
     }}>
       {children}
     </kbd>
@@ -334,6 +335,7 @@ export function GlobalSearch() {
   const { isOpen, close } = useGlobalSearchStore();
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const { resolvedTheme } = useThemeMode();
 
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -368,6 +370,75 @@ export function GlobalSearch() {
   const [visibleCount, setVisibleCount] = useState(8);
 
   const showSearch = debouncedQuery.length >= 2;
+  const isDark = resolvedTheme === "dark" || (typeof document !== "undefined" && (
+    document.documentElement.classList.contains("dark") ||
+    document.documentElement.getAttribute("data-theme") === "dark"
+  ));
+  const portalTheme = (isDark ? {
+    "--gs-backdrop": "rgba(10,10,10,0.58)",
+    "--gs-bg": "#232019",
+    "--gs-bar-bg": "#1A1714",
+    "--gs-footer-bg": "#1A1714",
+    "--gs-section-bg": "#2C2823",
+    "--gs-dropdown-bg": "#2C2823",
+    "--gs-shadow": "0 20px 60px rgba(0,0,0,0.45)",
+    "--gs-dropdown-shadow": "0 12px 32px rgba(0,0,0,0.35)",
+    "--gs-border": "rgba(255,255,255,0.08)",
+    "--gs-border-subtle": "rgba(255,255,255,0.05)",
+    "--gs-text": "#F5F3F0",
+    "--gs-text-secondary": "#A09890",
+    "--gs-text-muted": "#6B6560",
+    "--gs-section-text": "#A09890",
+    "--gs-placeholder": "#6B6560",
+    "--gs-icon": "#A09890",
+    "--gs-key": "#7DB8FC",
+    "--gs-hover": "rgba(248,244,240,0.04)",
+    "--gs-selected": "rgba(37,99,235,0.16)",
+    "--gs-chip-bg": "#2C2823",
+    "--gs-chip-border": "rgba(255,255,255,0.08)",
+    "--gs-chip-text": "#A09890",
+    "--gs-chip-active-bg": "rgba(37,99,235,0.16)",
+    "--gs-chip-active-border": "rgba(125,184,252,0.32)",
+    "--gs-chip-active-text": "#7DB8FC",
+    "--gs-kbd-bg": "#1A1714",
+    "--gs-kbd-border": "rgba(255,255,255,0.08)",
+    "--gs-kbd-text": "#A09890",
+    "--gs-skeleton": "rgba(255,255,255,0.08)",
+    "--gs-danger": "#F87171",
+    "--gs-danger-hover": "rgba(248,113,113,0.12)",
+  } : {
+    "--gs-backdrop": "rgba(0,0,0,0.4)",
+    "--gs-bg": "#FFFFFF",
+    "--gs-bar-bg": "#FAFBFC",
+    "--gs-footer-bg": "#F8FAFC",
+    "--gs-section-bg": "#FAFAFA",
+    "--gs-dropdown-bg": "#FFFFFF",
+    "--gs-shadow": "0 20px 60px rgba(0,0,0,0.20)",
+    "--gs-dropdown-shadow": "0 8px 24px rgba(0,0,0,0.12)",
+    "--gs-border": "rgba(15,23,42,0.08)",
+    "--gs-border-subtle": "rgba(15,23,42,0.06)",
+    "--gs-text": "#171717",
+    "--gs-text-secondary": "#6B778C",
+    "--gs-text-muted": "#A3A3A3",
+    "--gs-section-text": "#A3A3A3",
+    "--gs-placeholder": "#97A0AF",
+    "--gs-icon": "#97A0AF",
+    "--gs-key": "#2563EB",
+    "--gs-hover": "rgba(15,23,42,0.04)",
+    "--gs-selected": "rgba(37,99,235,0.06)",
+    "--gs-chip-bg": "#F8FAFC",
+    "--gs-chip-border": "#E2E8F0",
+    "--gs-chip-text": "#525252",
+    "--gs-chip-active-bg": "#EFF6FF",
+    "--gs-chip-active-border": "#BFDBFE",
+    "--gs-chip-active-text": "#2563EB",
+    "--gs-kbd-bg": "#F1F5F9",
+    "--gs-kbd-border": "#E2E8F0",
+    "--gs-kbd-text": "#525252",
+    "--gs-skeleton": "#F1F5F9",
+    "--gs-danger": "#EF4444",
+    "--gs-danger-hover": "rgba(239,68,68,0.06)",
+  }) as CSSProperties;
 
   // Filter recents by active filters
   const filteredRecents = recents.filter(item => {
@@ -431,35 +502,36 @@ export function GlobalSearch() {
   if (!isOpen) return null;
 
   return createPortal(
-    <>
+    <div className="global-search-portal" style={portalTheme}>
       {/* Backdrop */}
       <div
         onClick={close}
         style={{
           position: "fixed", inset: 0, zIndex: 9998,
-          backgroundColor: "rgba(0,0,0,0.4)",
+          backgroundColor: "var(--gs-backdrop)",
           backdropFilter: "blur(2px)",
         }}
       />
 
       {/* Modal */}
-      <div style={{
+      <div data-gs-dialog style={{
         position: "fixed", top: "15%", left: "50%", transform: "translateX(-50%)",
         zIndex: 9999, width: 680, maxHeight: 640,
-        backgroundColor: "#ffffff", borderRadius: 8,
-        boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+        backgroundColor: "var(--gs-bg)", borderRadius: 8,
+        boxShadow: "var(--gs-shadow)",
+        border: "1px solid var(--gs-border)",
         display: "flex", flexDirection: "column",
         overflow: "hidden",
-        colorScheme: "light",
+        colorScheme: isDark ? "dark" : "light",
       }}>
 
         {/* ── SEARCH BAR (56px) ── */}
         <div style={{
           display: "flex", alignItems: "center", height: 56,
           padding: "0 16px", gap: 10,
-          borderBottom: "1px solid rgba(15,23,42,0.08)",
+          borderBottom: "1px solid var(--gs-border)",
         }}>
-          <Search size={18} color="#97A0AF" style={{ flexShrink: 0 }} />
+          <Search size={18} color="var(--gs-icon)" style={{ flexShrink: 0 }} />
           <input
             ref={inputRef}
             value={query}
@@ -468,22 +540,23 @@ export function GlobalSearch() {
             style={{
               flex: 1, border: "none", outline: "none",
               fontSize: 15, fontFamily: "Inter, sans-serif",
-              color: "#171717",
-              backgroundColor: "#FFFFFF",
-              colorScheme: "light",
+              color: "var(--gs-text)",
+              backgroundColor: "transparent",
+              colorScheme: isDark ? "dark" : "light",
               WebkitAppearance: "none",
               appearance: "none",
-              WebkitTextFillColor: "#171717",
+              WebkitTextFillColor: "var(--gs-text)",
               boxShadow: "none",
               padding: 0,
               margin: 0,
+              caretColor: "var(--gs-text)",
             }}
           />
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
             <kbd style={{
               fontSize: 11, fontFamily: "JetBrains Mono, monospace",
-              color: "#97A0AF", backgroundColor: "#F1F5F9",
-              border: "1px solid #E2E8F0", borderRadius: 3,
+              color: "var(--gs-kbd-text)", backgroundColor: "var(--gs-kbd-bg)",
+              border: "1px solid var(--gs-kbd-border)", borderRadius: 3,
               padding: "2px 6px",
             }}>⌘K</kbd>
             <button
@@ -492,10 +565,10 @@ export function GlobalSearch() {
                 width: 28, height: 28, borderRadius: 4,
                 border: "none", backgroundColor: "transparent",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                cursor: "pointer", color: "#97A0AF",
+                cursor: "pointer", color: "var(--gs-icon)",
               }}
-              onMouseEnter={e => { e.currentTarget.style.backgroundColor = "rgba(15,23,42,0.06)"; e.currentTarget.style.color = "#171717"; }}
-              onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#97A0AF"; }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = "var(--gs-hover)"; e.currentTarget.style.color = "var(--gs-text)"; }}
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--gs-icon)"; }}
             >
               <X size={16} />
             </button>
@@ -506,10 +579,10 @@ export function GlobalSearch() {
         <div style={{
           display: "flex", alignItems: "center", height: 40,
           padding: "0 16px", gap: 8,
-          borderBottom: "1px solid rgba(15,23,42,0.08)",
-          backgroundColor: "#FAFBFC",
+          borderBottom: "1px solid var(--gs-border)",
+          backgroundColor: "var(--gs-bar-bg)",
         }}>
-          <Settings2 size={14} color="#97A0AF" style={{ flexShrink: 0, marginRight: 4 }} />
+          <Settings2 size={14} color="var(--gs-icon)" style={{ flexShrink: 0, marginRight: 4 }} />
           <FilterChip label="Hub" items={hubOptions} selected={filters.hub} onSelect={v => setFilter("hub", v as any)} />
           <FilterChip label="Assignee" items={assigneeOptions} selected={filters.assignee} onSelect={v => setFilter("assignee", v)} avatarMap={nameAvatarMap} />
           <FilterChip label="Type" items={typeOptions} selected={filters.type} onSelect={v => setFilter("type", v as any)} />
@@ -525,9 +598,9 @@ export function GlobalSearch() {
             <div key={i} style={{
               display: "flex", alignItems: "center", height: 44, padding: "0 16px", gap: 10,
             }}>
-              <div style={{ width: 14, height: 14, borderRadius: 3, backgroundColor: "#F1F5F9" }} />
-              <div style={{ width: 60, height: 12, borderRadius: 3, backgroundColor: "#F1F5F9" }} />
-              <div style={{ flex: 1, height: 12, borderRadius: 3, backgroundColor: "#F1F5F9" }} />
+              <div style={{ width: 14, height: 14, borderRadius: 3, backgroundColor: "var(--gs-skeleton)" }} />
+              <div style={{ width: 60, height: 12, borderRadius: 3, backgroundColor: "var(--gs-skeleton)" }} />
+              <div style={{ flex: 1, height: 12, borderRadius: 3, backgroundColor: "var(--gs-skeleton)" }} />
             </div>
           ))}
 
@@ -539,11 +612,11 @@ export function GlobalSearch() {
                 display: "flex", flexDirection: "column", alignItems: "center",
                 justifyContent: "center", height: 200, gap: 8,
               }}>
-                <Clock size={24} style={{ color: "#D4D4D4" }} />
-                <span style={{ fontSize: 13, color: "#A3A3A3", fontFamily: "Inter, sans-serif" }}>
+                <Clock size={24} style={{ color: "var(--gs-text-muted)" }} />
+                <span style={{ fontSize: 13, color: "var(--gs-text-secondary)", fontFamily: "Inter, sans-serif" }}>
                   No recent items yet
                 </span>
-                <span style={{ fontSize: 12, color: "#D4D4D4", fontFamily: "Inter, sans-serif" }}>
+                <span style={{ fontSize: 12, color: "var(--gs-text-muted)", fontFamily: "Inter, sans-serif" }}>
                   Items you open across Catalyst hubs will appear here
                 </span>
               </div>
@@ -561,10 +634,10 @@ export function GlobalSearch() {
                     <div key={group}>
                       <div style={{
                         padding: "10px 16px 4px", fontSize: 11, fontWeight: 600,
-                        color: "#A3A3A3", fontFamily: "Inter, sans-serif",
+                        color: "var(--gs-section-text)", fontFamily: "Inter, sans-serif",
                         textTransform: "uppercase", letterSpacing: "0.06em",
-                        backgroundColor: "#FAFAFA",
-                        borderBottom: "0.75px solid rgba(15,23,42,0.06)",
+                        backgroundColor: "var(--gs-section-bg)",
+                        borderBottom: "0.75px solid var(--gs-border-subtle)",
                       }}>
                         {group}
                       </div>
@@ -587,15 +660,15 @@ export function GlobalSearch() {
                     style={{
                       display: "flex", alignItems: "center", justifyContent: "center",
                       height: 40, fontSize: 12, fontWeight: 500,
-                      color: "#2563EB", fontFamily: "Inter, sans-serif",
-                      cursor: "pointer", borderTop: "0.75px solid rgba(15,23,42,0.06)",
+                      color: "var(--gs-key)", fontFamily: "Inter, sans-serif",
+                      cursor: "pointer", borderTop: "0.75px solid var(--gs-border-subtle)",
                       gap: 6, transition: "background 100ms ease",
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(37,99,235,0.04)")}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = "var(--gs-hover)")}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                   >
                     Show {Math.min(filteredRecents.length - visibleCount, 10)} more
-                    <span style={{ fontSize: 11, color: "#A3A3A3" }}>
+                    <span style={{ fontSize: 11, color: "var(--gs-text-muted)" }}>
                       ({filteredRecents.length - visibleCount} remaining)
                     </span>
                   </div>
@@ -612,8 +685,8 @@ export function GlobalSearch() {
                   display: "flex", flexDirection: "column", alignItems: "center",
                   justifyContent: "center", height: 160, gap: 8,
                 }}>
-                  <Search size={24} style={{ color: "#D4D4D4" }} />
-                  <span style={{ fontSize: 13, color: "#A3A3A3", fontFamily: "Inter, sans-serif" }}>
+                  <Search size={24} style={{ color: "var(--gs-text-muted)" }} />
+                  <span style={{ fontSize: 13, color: "var(--gs-text-secondary)", fontFamily: "Inter, sans-serif" }}>
                     No results for "{debouncedQuery}"
                   </span>
                 </div>
@@ -621,7 +694,7 @@ export function GlobalSearch() {
                 <>
                   <div style={{
                     padding: "10px 16px 4px", fontSize: 11, fontWeight: 600,
-                    color: "#5E6C84", textTransform: "uppercase", letterSpacing: "0.06em",
+                    color: "var(--gs-section-text)", textTransform: "uppercase", letterSpacing: "0.06em",
                     fontFamily: "Inter, sans-serif",
                   }}>
                     Results ({results.length})
@@ -642,15 +715,15 @@ export function GlobalSearch() {
                       style={{
                         display: "flex", alignItems: "center", justifyContent: "center",
                         height: 40, fontSize: 12, fontWeight: 500,
-                        color: "#2563EB", fontFamily: "Inter, sans-serif",
-                        cursor: "pointer", borderTop: "0.75px solid rgba(15,23,42,0.06)",
+                        color: "var(--gs-key)", fontFamily: "Inter, sans-serif",
+                        cursor: "pointer", borderTop: "0.75px solid var(--gs-border-subtle)",
                         gap: 6, transition: "background 100ms ease",
                       }}
-                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(37,99,235,0.04)")}
+                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = "var(--gs-hover)")}
                       onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                     >
                       Show {Math.min(results.length - visibleCount, 10)} more
-                      <span style={{ fontSize: 11, color: "#A3A3A3" }}>
+                      <span style={{ fontSize: 11, color: "var(--gs-text-muted)" }}>
                         ({results.length - visibleCount} remaining)
                       </span>
                     </div>
@@ -665,9 +738,9 @@ export function GlobalSearch() {
         <div style={{
           display: "flex", alignItems: "center", height: 36,
           padding: "0 16px", gap: 16,
-          borderTop: "1px solid rgba(15,23,42,0.08)",
-          backgroundColor: "#F8FAFC",
-          fontSize: 11, fontFamily: "Inter, sans-serif", color: "#6B778C",
+          borderTop: "1px solid var(--gs-border)",
+          backgroundColor: "var(--gs-footer-bg)",
+          fontSize: 11, fontFamily: "Inter, sans-serif", color: "var(--gs-text-secondary)",
         }}>
           <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <Kbd>↑</Kbd><Kbd>↓</Kbd> <span>Navigate</span>
@@ -678,12 +751,12 @@ export function GlobalSearch() {
           <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <Kbd>Esc</Kbd> <span>Close</span>
           </span>
-          <span style={{ marginLeft: "auto", color: "#C1C7D0", fontSize: 10 }}>
+          <span style={{ marginLeft: "auto", color: "var(--gs-text-muted)", fontSize: 10 }}>
             Catalyst Search
           </span>
         </div>
       </div>
-    </>,
+    </div>,
     document.body
   );
 }

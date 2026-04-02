@@ -3578,6 +3578,22 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2) !important;
 }
 
+.dark .global-search-portal input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+[data-theme="dark"] .global-search-portal input:not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  color: #F5F3F0 !important;
+  -webkit-text-fill-color: #F5F3F0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  caret-color: #F5F3F0 !important;
+}
+
+.dark .global-search-portal input::placeholder,
+[data-theme="dark"] .global-search-portal input::placeholder {
+  color: #6B6560 !important;
+}
+
 .dark .text-red-300,
 .dark .text-red-400,
 .dark .text-red-500,
