@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, ChevronLeft, ChevronRight as ChevronRightIcon, FolderKanban } from 'lucide-react';
+import { Plus, FolderKanban } from 'lucide-react';
 import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
 import {
@@ -13,24 +13,29 @@ import {
 import { useMemberProfiles } from '@/components/projecthub/MemberStack';
 
 import { AllProjectsToolbar } from '@/components/projecthub/AllProjectsToolbar';
-import { ProjectAdvancedFilters } from '@/components/projecthub/ProjectAdvancedFilters';
 import { AllProjectsTable } from '@/components/projecthub/AllProjectsTable';
 import { AllProjectsCardGrid } from '@/components/projecthub/AllProjectsCardGrid';
 import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateProjectDialog } from '@/components/projecthub/CreateProjectDialog';
 import { toast } from 'sonner';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export default function AllProjectsPage() {
   const [view, setView] = useState<ViewMode>('list');
   const [filters, setFilters] = useState<ProjectFilters>(DEFAULT_FILTERS);
-  const [sortCol, setSortCol] = useState<SortColumn>('total_tasks');
-  const [sortDir, setSortDir] = useState<SortDirection>('desc');
-  const [page, setPage] = useState(0);
-  const [perPage, setPerPage] = useState(50);
+  const [sortCol, setSortCol] = useState<SortColumn>('name');
+  const [sortDir, setSortDir] = useState<SortDirection>('asc');
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
-  const [showAdvFilters, setShowAdvFilters] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const { data: projects = [], isLoading, error } = useProjects();
@@ -44,9 +49,7 @@ export default function AllProjectsPage() {
   const filtered = useMemo(() => filterAndSortProjects(projects, filters, sortCol, sortDir, favorites), [projects, filters, sortCol, sortDir, favorites]);
   const stats = useMemo(() => computePortfolioStats(projects, favorites), [projects, favorites]);
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
-  const pageData = filtered.slice(page * perPage, (page + 1) * perPage);
-
-  const departments = useMemo(() => [...new Set(projects.map(p => p.department).filter(Boolean) as string[])].sort(), [projects]);
+  const pageData = filtered.slice((page - 1) * perPage, page * perPage);
 
   const selectedProjectData = useMemo(() => projects.find(p => p.id === selectedProject) ?? null, [projects, selectedProject]);
 
@@ -54,6 +57,8 @@ export default function AllProjectsPage() {
     if (col === sortCol) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
     else { setSortCol(col); setSortDir('asc'); }
   };
+
+  const handleFilterChange = (f: ProjectFilters) => { setFilters(f); setPage(1); };
 
   const handleToggleRow = (id: string) => {
     setSelectedRows(prev => {
@@ -68,16 +73,16 @@ export default function AllProjectsPage() {
     else setSelectedRows(new Set(pageData.map(p => p.id)));
   };
 
-  if (error) {
-    toast.error('Failed to load projects');
-  }
+  if (error) toast.error('Failed to load projects');
+
+  const startIdx = (page - 1) * perPage;
+  const endIdx = Math.min(startIdx + perPage, filtered.length);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: "'Inter', -apple-system, system-ui, sans-serif", WebkitFontSmoothing: 'antialiased' }}>
-      {/* Catalyst Header */}
       <CommandCenterHeader
         title="All Projects"
-        subtitle="Track and manage all projects across your portfolio"
+        subtitle={`${filtered.length} projects across your portfolio`}
         actions={
           <div className="flex items-center gap-2">
             <button
@@ -85,11 +90,8 @@ export default function AllProjectsPage() {
               className="flex items-center gap-1.5 rounded-md"
               style={{
                 height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600,
-                color: 'var(--catalyst-text-on-primary, #FFF)',
-                background: 'var(--catalyst-primary, #2563EB)',
-                border: 'none',
-                borderRadius: 'var(--catalyst-radius-md, 6px)',
-                cursor: 'pointer',
+                color: '#FFF', background: '#2563EB', border: 'none',
+                borderRadius: 6, cursor: 'pointer',
               }}
             >
               <Plus size={16} strokeWidth={2.5} /> New Project
@@ -98,97 +100,138 @@ export default function AllProjectsPage() {
         }
       />
 
-      <div className="flex-1 overflow-auto px-6 py-3 bg-[#F8FAFC] dark:!bg-[#181A1E] text-foreground">
+      <div className="flex-1 overflow-auto px-6 py-3" style={{ background: 'var(--bg-sunken)', color: 'var(--text-1)' }}>
+        {/* Toolbar */}
+        <div style={{ marginBottom: 10 }}>
+          <AllProjectsToolbar
+            view={view}
+            onViewChange={v => { setView(v); setPage(1); }}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            stats={stats}
+          />
+        </div>
 
-      {/* Toolbar */}
-      <div style={{ marginBottom: 10, flexShrink: 0 }}>
-        <AllProjectsToolbar
-          view={view}
-          onViewChange={v => { setView(v); setPage(0); }}
-          filters={filters}
-          onFilterChange={f => { setFilters(f); setPage(0); }}
-          stats={stats}
-        />
-      </div>
-
-
-      {/* Content */}
-      {isLoading ? (
-        <div className="flex-1 rounded-lg border border-border bg-card p-10 dark:bg-background dark:shadow-none">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="animate-pulse" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div className="h-7 w-7 rounded bg-muted" />
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <div className="h-3 w-[30%] rounded bg-muted" />
-                  <div className="h-2.5 w-[20%] rounded bg-muted/70" />
+        {/* Content */}
+        {isLoading ? (
+          <div className="rounded-lg border p-10" style={{ borderColor: 'var(--bd-default)', background: 'var(--bg-elevated)' }}>
+            <div className="flex flex-col gap-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="animate-pulse flex items-center gap-4">
+                  <div className="h-7 w-7 rounded-full" style={{ background: 'var(--bg-sunken)' }} />
+                  <div className="flex-1 flex flex-col gap-1.5">
+                    <div className="h-3 w-[30%] rounded" style={{ background: 'var(--bg-sunken)' }} />
+                    <div className="h-2.5 w-[20%] rounded" style={{ background: 'var(--bg-sunken)' }} />
+                  </div>
                 </div>
-                <div className="h-3 w-[60px] rounded bg-muted/70" />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-border bg-card px-10 py-20 text-center dark:bg-background dark:shadow-none">
-          <FolderKanban size={48} className="text-muted-foreground/50" strokeWidth={1.25} />
-          <h3 className="mt-4 font-['Sora',sans-serif] text-lg font-semibold text-foreground">
-            {filters.search || filters.statusChip !== 'All' ? 'No projects match your filters' : 'No projects yet'}
-          </h3>
-          <p className="mt-1 max-w-[360px] text-[13px] text-muted-foreground">
-            {filters.search || filters.statusChip !== 'All' ? 'Try adjusting your search or filter criteria.' : 'Create your first project to get started.'}
-          </p>
-          {filters.search === '' && filters.statusChip === 'All' && (
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="mt-6 flex h-9 items-center gap-1.5 rounded-md bg-primary px-4 text-[13px] font-semibold text-primary-foreground"
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-1 flex-col items-center justify-center rounded-lg border px-10 py-20 text-center" style={{ borderColor: 'var(--bd-default)', background: 'var(--bg-elevated)' }}>
+            <FolderKanban size={48} style={{ color: 'var(--text-4)' }} strokeWidth={1.25} />
+            <h3 className="mt-4 text-lg font-semibold" style={{ fontFamily: "'Sora', sans-serif", color: 'var(--text-1)' }}>
+              {filters.search || filters.statusChip !== 'All' ? 'No projects match your filters' : 'No projects yet'}
+            </h3>
+            <p className="mt-1 max-w-[360px] text-[13px]" style={{ color: 'var(--text-3)' }}>
+              {filters.search || filters.statusChip !== 'All' ? 'Try adjusting your search or filter criteria.' : 'Create your first project to get started.'}
+            </p>
+          </div>
+        ) : view === 'list' ? (
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border" style={{ borderColor: 'var(--bd-default)', background: 'var(--bg-elevated)' }}>
+            <div className="flex-1 min-h-0 overflow-auto">
+              <AllProjectsTable
+                projects={pageData}
+                favoriteIds={favorites}
+                onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
+                onSelectProject={id => setSelectedProject(id)}
+                sortCol={sortCol}
+                sortDir={sortDir}
+                onSort={handleSort}
+                selectedRows={selectedRows}
+                onToggleRow={handleToggleRow}
+                onToggleAll={handleToggleAll}
+              />
+            </div>
+            {/* Pagination Footer */}
+            <div
+              className="flex shrink-0 items-center justify-between px-4 py-2"
+              style={{ borderTop: '1px solid var(--bd-default)', background: 'var(--bg-surface)', fontSize: 13 }}
             >
-              <Plus size={16} /> New Project
-            </button>
-          )}
-        </div>
-      ) : view === 'list' ? (
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm dark:bg-background dark:shadow-none">
-          <div style={{ flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'auto' }}>
-            <AllProjectsTable
-              projects={pageData}
+              <span style={{ color: 'var(--text-3)' }}>
+                Showing {startIdx + 1}–{endIdx} of {filtered.length} projects
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="px-3 py-1 rounded text-sm"
+                  style={{
+                    border: '1px solid var(--bd-default)', cursor: page === 1 ? 'not-allowed' : 'pointer',
+                    opacity: page === 1 ? 0.4 : 1, color: 'var(--text-2)', background: 'transparent',
+                  }}
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                  <button
+                    key={n}
+                    onClick={() => setPage(n)}
+                    className="w-8 h-8 rounded text-sm"
+                    style={{
+                      border: page === n ? 'none' : '1px solid var(--bd-default)',
+                      background: page === n ? '#2563EB' : 'transparent',
+                      color: page === n ? '#FFF' : 'var(--text-2)',
+                      fontWeight: page === n ? 600 : 400,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {n}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page >= totalPages}
+                  className="px-3 py-1 rounded text-sm"
+                  style={{
+                    border: '1px solid var(--bd-default)', cursor: page >= totalPages ? 'not-allowed' : 'pointer',
+                    opacity: page >= totalPages ? 0.4 : 1, color: 'var(--text-2)', background: 'transparent',
+                  }}
+                >
+                  Next
+                </button>
+                <Select value={String(perPage)} onValueChange={v => { setPerPage(Number(v)); setPage(1); }}>
+                  <SelectTrigger className="h-8 w-[72px] text-xs" style={{ borderColor: 'var(--bd-default)', color: 'var(--text-2)' }}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="25">25</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <AllProjectsCardGrid
+              projects={filtered}
               favoriteIds={favorites}
               onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
               onSelectProject={id => setSelectedProject(id)}
-              sortCol={sortCol}
-              sortDir={sortDir}
-              onSort={handleSort}
-              selectedRows={selectedRows}
-              onToggleRow={handleToggleRow}
-              onToggleAll={handleToggleAll}
             />
           </div>
-          {/* Footer */}
-          <div className="flex shrink-0 items-center justify-center border-t border-border bg-muted/40 px-4 py-1.5 text-xs text-muted-foreground dark:bg-background">
-            <span>Showing {filtered.length} projects</span>
-          </div>
-        </div>
-      ) : (
-        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-          <AllProjectsCardGrid
-            projects={filtered}
-            favoriteIds={favorites}
-            onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
-            onSelectProject={id => setSelectedProject(id)}
-          />
-        </div>
-      )}
+        )}
 
-      {/* Detail Panel */}
-      <ProjectDetailPanel
-        project={selectedProjectData}
-        open={!!selectedProject}
-        onClose={() => setSelectedProject(null)}
-        isFav={selectedProject ? favorites.has(selectedProject) : false}
-        onToggleFav={() => { if (selectedProject) toggleFav.mutate({ projectId: selectedProject, isFavorited: favorites.has(selectedProject) }); }}
-      />
-
-      {/* Modals */}
-      <CreateProjectDialog open={showCreateModal} onClose={() => setShowCreateModal(false)} />
+        <ProjectDetailPanel
+          project={selectedProjectData}
+          open={!!selectedProject}
+          onClose={() => setSelectedProject(null)}
+          isFav={selectedProject ? favorites.has(selectedProject) : false}
+          onToggleFav={() => { if (selectedProject) toggleFav.mutate({ projectId: selectedProject, isFavorited: favorites.has(selectedProject) }); }}
+        />
+        <CreateProjectDialog open={showCreateModal} onClose={() => setShowCreateModal(false)} />
       </div>
     </div>
   );
