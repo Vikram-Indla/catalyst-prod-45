@@ -46,7 +46,7 @@ export default function ExecutionHubPage() {
   const navigate = useNavigate();
   const [cycles, setCycles] = useState<CycleWithStats[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [viewFilter, setViewFilter] = useState<string>('active');
+  const [viewFilter, setViewFilter] = useState<string>('all');
 
   useEffect(() => {
     fetchCycles();
