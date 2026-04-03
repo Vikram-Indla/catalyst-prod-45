@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
-import { X, Download, RefreshCw, ExternalLink, CheckCircle2, XCircle, Minus, Activity } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { X as XIcon, Download, RefreshCw, ExternalLink, CheckCircle2, XCircle, Minus, Activity } from 'lucide-react';
 import { RH } from '@/constants/releasehub.design';
 import { StatusLozenge } from './StatusLozenge';
 import { SourceBadge } from './SourceBadge';
 import { CatalystAIChip } from './CatalystAIChip';
-import { useUpdateReleaseStatus, useChanges, useReleaseTestCycles, useApproveSignoff, useRejectSignoff } from '@/hooks/useReleaseHub';
+import { useUpdateReleaseStatus, useChanges, useReleaseTestCycles, useApproveSignoff, useRejectSignoff, useLinkTestCycle, useUnlinkTestCycle } from '@/hooks/useReleaseHub';
 import { getSignoffWaitTime } from '@/utils/releasehub.utils';
 import { differenceInHours } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { ReleaseStatus } from '@/types/releasehub';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 interface Props {
   release: any;
@@ -46,10 +47,10 @@ export function ReleaseDrawer({ release, onClose }: Props) {
   const { data: testCycles = [] } = useReleaseTestCycles(release.id);
   const relChanges = allChanges.filter((c: any) => c.release_id === release.id);
 
-  // Activity query
+  // Change activity query
   const relChangeIds = relChanges.map((c: any) => c.id).filter(Boolean);
-  const { data: activityEntries = [], isLoading: activityLoading } = useQuery({
-    queryKey: ['release-hub', 'release-activity', release.id, relChangeIds],
+  const { data: changeActivity = [], isLoading: changeActivityLoading } = useQuery({
+    queryKey: ['release-hub', 'change-activity', release.id, relChangeIds],
     queryFn: async () => {
       if (relChangeIds.length === 0) return [];
       const { data, error } = await supabase
@@ -63,6 +64,39 @@ export function ReleaseDrawer({ release, onClose }: Props) {
     },
     enabled: relChangeIds.length > 0,
   });
+
+  // Release activity query
+  const { data: releaseActivity = [], isLoading: releaseActivityLoading } = useQuery({
+    queryKey: ['release-hub', 'release-activity', release.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('rh_release_activity_log')
+        .select('*')
+        .eq('release_id', release.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      return data ?? [];
+    },
+    enabled: !!release.id,
+  });
+
+  const activityLoading = changeActivityLoading || releaseActivityLoading;
+
+  const mergedActivity = useMemo(() => {
+    const changeItems = (changeActivity ?? []).map((a: any) => ({
+      ...a,
+      _source: 'change',
+    }));
+    const releaseItems = (releaseActivity ?? []).map((a: any) => ({
+      ...a,
+      _source: 'release',
+    }));
+    return [...changeItems, ...releaseItems].sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() -
+        new Date(a.created_at).getTime()
+    );
+  }, [changeActivity, releaseActivity]);
 
   // ── COMPUTED QUALITY GATES ──
   const allSignoffsComplete = (release.pending_signoffs ?? 0) === 0;
@@ -148,7 +182,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
             <div className="flex items-center gap-1.5">
               <button className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><Download size={14} /></button>
               <button className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><RefreshCw size={14} /></button>
-              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
+              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><XIcon size={14} /></button>
             </div>
           </div>
           <h2 className="text-[18px] font-extrabold mb-2" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{release.name}</h2>
@@ -187,7 +221,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
           {activeTab === 'Test Cycles' && <TestCyclesTab testCycles={testCycles} release={release} />}
           {activeTab === 'Sign-offs' && <SignoffsTab releaseId={release.id} changes={relChanges} />}
           {activeTab === 'Activity' && (
-            <ActivityFeed entries={activityEntries} loading={activityLoading} />
+            <ActivityFeed entries={mergedActivity} loading={activityLoading} />
           )}
         </div>
       </div>
@@ -308,42 +342,117 @@ function ChangesTab({ changes }: { changes: any[] }) {
 
 // ── Test Cycles Tab ────────────────────────────────────
 function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: any }) {
-  if (testCycles.length === 0) {
-    return (
-      <div className="text-center py-10">
-        <p className="text-[#94A3B8] text-[13px] mb-3">No test cycles linked</p>
-        <button className="h-9 px-4 rounded-md border border-[#2563EB] text-[#2563EB] text-[13px] font-semibold hover:bg-[#EFF6FF]">Link Test Cycle</button>
-      </div>
-    );
-  }
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [availableCycles, setAvailableCycles] = useState<any[]>([]);
+  const linkMut = useLinkTestCycle();
+  const unlinkMut = useUnlinkTestCycle();
+
+  const linkedCycleIds = new Set(testCycles.map((tc: any) => tc.test_cycle_id));
+
+  const openLinkModal = async () => {
+    const { data } = await supabase
+      .from('tm_test_cycles')
+      .select('id, name, status, total_cases, pass_count')
+      .eq('project_id', release.project_id)
+      .order('created_at', { ascending: false });
+    setAvailableCycles(data ?? []);
+    setShowLinkModal(true);
+  };
+
+  const handleLink = async (cycleId: string) => {
+    await linkMut.mutateAsync({ releaseId: release.id, testCycleId: cycleId });
+    toast.success('Test cycle linked.');
+    setShowLinkModal(false);
+  };
+
+  const handleUnlink = async (testCycleId: string) => {
+    await unlinkMut.mutateAsync({ releaseId: release.id, testCycleId });
+    toast.success('Test cycle unlinked.');
+  };
+
   return (
-    <div className="space-y-3">
-      {testCycles.map((tc: any) => {
-        const cycle = tc.tm_test_cycles;
-        const passCount = cycle?.pass_count || 0;
-        const totalCases = cycle?.total_cases || 1;
-        const passRate = Math.round((passCount / totalCases) * 100);
-        const daysLeft = release.days_remaining ?? 99;
-        const atRisk = cycle?.status === 'running' && daysLeft < 7 && passRate < 50;
-        return (
-          <div key={tc.id} className="border border-[rgba(15,23,42,0.12)] rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[13px] font-semibold" style={{ color: RH.ink1 }}>{cycle?.name || 'Cycle'}</span>
-              <a href={`/testhub/cycles/${tc.test_cycle_id}`} className="text-[12px] text-[#2563EB] flex items-center gap-1 hover:underline">
-                Open in TestHub <ExternalLink size={10} />
-              </a>
-            </div>
-            <div className="flex items-center gap-2 mb-2">
-              <StatusLozenge status={cycle?.status || 'not_started'} />
-              <span className="text-[11px] text-[#64748B]">{passCount}/{totalCases} cases</span>
-            </div>
-            <div className="w-full h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
-              <div className="h-full bg-[var(--sem-success)] rounded-full" style={{ width: `${passRate}%` }} />
-            </div>
-            {atRisk && <CatalystAIChip label="test cycle at risk — recommend pause release" className="mt-2" />}
+    <div>
+      {testCycles.length === 0 ? (
+        <div className="text-center py-10">
+          <p className="text-[#94A3B8] text-[13px] mb-3">No test cycles linked</p>
+          <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[#2563EB] text-[#2563EB] text-[13px] font-semibold hover:bg-[#EFF6FF]">Link Test Cycle</button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <div className="flex justify-end mb-2">
+            <button onClick={openLinkModal} className="h-8 px-3 rounded-md border border-[#2563EB] text-[#2563EB] text-[12px] font-semibold hover:bg-[#EFF6FF]">Link Test Cycle</button>
           </div>
-        );
-      })}
+          {testCycles.map((tc: any) => {
+            const cycle = tc.tm_test_cycles;
+            const passCount = cycle?.pass_count || 0;
+            const totalCases = cycle?.total_cases || 1;
+            const passRate = Math.round((passCount / totalCases) * 100);
+            const daysLeft = release.days_remaining ?? 99;
+            const atRisk = cycle?.status === 'running' && daysLeft < 7 && passRate < 50;
+            return (
+              <div key={tc.id} className="border border-[rgba(15,23,42,0.12)] rounded-lg p-4 group relative">
+                <button
+                  onClick={() => handleUnlink(tc.test_cycle_id)}
+                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[#94A3B8] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-opacity"
+                  title="Unlink test cycle"
+                >
+                  <XIcon size={14} />
+                </button>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[13px] font-semibold" style={{ color: RH.ink1 }}>{cycle?.name || 'Cycle'}</span>
+                  <a href={`/testhub/cycles/${tc.test_cycle_id}`} className="text-[12px] text-[#2563EB] flex items-center gap-1 hover:underline mr-8">
+                    Open in TestHub <ExternalLink size={10} />
+                  </a>
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <StatusLozenge status={cycle?.status || 'not_started'} />
+                  <span className="text-[11px] text-[#64748B]">{passCount}/{totalCases} cases</span>
+                </div>
+                <div className="w-full h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
+                  <div className="h-full bg-[var(--sem-success)] rounded-full" style={{ width: `${passRate}%` }} />
+                </div>
+                {atRisk && <CatalystAIChip label="test cycle at risk — recommend pause release" className="mt-2" />}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <Dialog open={showLinkModal} onOpenChange={setShowLinkModal}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle style={{ fontFamily: RH.fontDisplay }}>Link Test Cycle</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[320px] overflow-y-auto space-y-0">
+            {availableCycles.length === 0 && (
+              <p className="text-center py-6 text-[#94A3B8] text-[13px]">No test cycles found for this project</p>
+            )}
+            {availableCycles.map((cycle: any) => {
+              const alreadyLinked = linkedCycleIds.has(cycle.id);
+              return (
+                <button
+                  key={cycle.id}
+                  disabled={alreadyLinked}
+                  onClick={() => handleLink(cycle.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-left border-b border-[rgba(15,23,42,0.06)] last:border-0 transition-colors ${
+                    alreadyLinked ? 'opacity-50 cursor-default' : 'hover:bg-[rgba(0,0,0,0.04)] cursor-pointer'
+                  }`}
+                >
+                  <div className="flex-1 min-w-0">
+                    <span className="text-[13px] font-medium block truncate" style={{ color: RH.ink1 }}>{cycle.name}</span>
+                    <span className="text-[11px] text-[#64748B]">{cycle.total_cases ?? 0} cases</span>
+                  </div>
+                  <StatusLozenge status={cycle.status || 'not_started'} />
+                  {alreadyLinked && <span className="text-[11px] text-[#94A3B8] font-medium">Linked</span>}
+                </button>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <button onClick={() => setShowLinkModal(false)} className="h-8 px-4 rounded-md text-[13px] font-medium text-[#64748B] hover:bg-[#F1F5F9]">Close</button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
