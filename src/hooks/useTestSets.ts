@@ -333,7 +333,7 @@ export function useCreateTestCycleFromSet() {
 
       // Create a new test cycle
       const { data: newCycle, error: cycleError } = await supabase
-        .from('th_test_cycles' as any)
+        .from('tm_test_cycles' as any)
         .insert({
           project_id: projectId,
           name: `${(testSet as any).name} - Execution`,
