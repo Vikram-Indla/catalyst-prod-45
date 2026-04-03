@@ -64,17 +64,14 @@ export default function TestRunsPage() {
         (supabase as any)
           .from('tm_cycle_scope')
           .select(`
-            id, cycle_id, test_case_id, execution_status, executed_at, executed_by,
-            assigned_to, execution_time_seconds, failure_reason, notes,
-            test_case:tm_test_cases ( id, case_key, title, priority ),
-            cycle:tm_test_cycles!tm_cycle_scope_cycle_id_fkey ( id, cycle_key, name ),
-            executor:profiles!tm_cycle_scope_executed_by_fkey ( full_name )
+            id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at,
+            test_case:tm_test_cases ( id, case_key, title, priority )
           `)
-          .order('executed_at', { ascending: false, nullsFirst: false }),
+          .order('updated_at', { ascending: false, nullsFirst: false }),
         (supabase as any)
           .from('tm_test_cycles')
           .select('id, cycle_key, name')
-          .order('start_date', { ascending: false }),
+          .order('created_at', { ascending: false }),
       ]);
       if (execRes.error) throw execRes.error;
       setRecords((execRes.data) || []);

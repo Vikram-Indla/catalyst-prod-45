@@ -12,19 +12,16 @@ interface TestCycle {
   name: string;
   description: string | null;
   status: string;
-  start_date: string | null;
-  end_date: string | null;
-  progress_percent: number;
+  planned_start: string | null;
+  planned_end: string | null;
   total_cases: number;
   passed_count: number;
   failed_count: number;
   blocked_count: number;
   skipped_count: number;
   not_run_count: number;
-  owner?: {
-    id: string;
-    full_name: string;
-  };
+  in_progress_count?: number;
+  environment_id?: string | null;
 }
 
 interface TestCycleCardProps {
@@ -86,12 +83,8 @@ export function TestCycleCard({
     return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  const getOwnerInitials = () => {
-    if (!cycle.owner?.full_name) return '?';
-    return cycle.owner.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  };
-
   const executedCount = cycle.passed_count + cycle.failed_count + cycle.blocked_count + cycle.skipped_count;
+  const progressPercent = cycle.total_cases > 0 ? Math.round((executedCount / cycle.total_cases) * 100) : 0;
 
   return (
     <div
@@ -192,17 +185,8 @@ export function TestCycleCard({
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, fontSize: 13, color: 'var(--fg-3)' }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <Calendar size={14} />
-          {formatDate(cycle.start_date)} — {formatDate(cycle.end_date)}
+          {formatDate(cycle.planned_start)} — {formatDate(cycle.planned_end)}
         </span>
-        {cycle.owner && (
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{
-              width: 22, height: 22, borderRadius: '50%', backgroundColor: '#E0E7FF', color: '#4F46E5',
-              fontSize: 10, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>{getOwnerInitials()}</div>
-            {cycle.owner.full_name}
-          </span>
-        )}
       </div>
 
       {/* Progress Bar */}
@@ -213,16 +197,16 @@ export function TestCycleCard({
         </div>
         <div style={{ height: 8, backgroundColor: 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
           <div style={{
-            height: '100%', width: `${cycle.progress_percent}%`,
-            background: cycle.progress_percent === 100
+            height: '100%', width: `${progressPercent}%`,
+            background: progressPercent === 100
               ? 'linear-gradient(90deg, #10B981 0%, #059669 100%)'
               : 'linear-gradient(90deg, #2563EB 0%, #1D4ED8 100%)',
             borderRadius: 4, transition: 'width 0.5s ease',
           }} />
         </div>
         <div style={{ textAlign: 'right', marginTop: 4 }}>
-          <span style={{ fontSize: 20, fontWeight: 700, color: cycle.progress_percent === 100 ? 'var(--sem-success)' : 'var(--cp-blue)' }}>
-            {cycle.progress_percent}%
+          <span style={{ fontSize: 20, fontWeight: 700, color: progressPercent === 100 ? 'var(--sem-success)' : 'var(--cp-blue)' }}>
+            {progressPercent}%
           </span>
         </div>
       </div>

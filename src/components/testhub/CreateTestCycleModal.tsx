@@ -20,9 +20,8 @@ interface TestCycleData {
   cycle_key: string;
   name: string;
   description: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  owner_id?: string | null;
+  planned_start: string | null;
+  planned_end: string | null;
   environment_id?: string | null;
   status: string;
 }
@@ -59,9 +58,9 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
       if (mode === 'edit' && cycle) {
         setName(cycle.name || '');
         setDescription(cycle.description || '');
-        setStartDate(cycle.start_date || '');
-        setEndDate(cycle.end_date || '');
-        setOwnerId(cycle.owner_id || '');
+        setStartDate(cycle.planned_start || '');
+        setEndDate(cycle.planned_end || '');
+        setOwnerId('');
         setEnvironmentId(cycle.environment_id || '');
       } else {
         setName('');
@@ -108,9 +107,8 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         const updateData: any = {
           name: name.trim(),
           description: description.trim() || null,
-          start_date: startDate || null,
-          end_date: endDate || null,
-          owner_id: ownerId || null,
+          planned_start: startDate || null,
+          planned_end: endDate || null,
           environment_id: environmentId || null,
           updated_at: new Date().toISOString(),
         };
@@ -132,13 +130,13 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           cycle_key: cycleKey,
           name: name.trim(),
           description: description.trim() || null,
-          start_date: startDate || null,
-          end_date: endDate || null,
-          owner_id: ownerId || null,
+          planned_start: startDate || null,
+          planned_end: endDate || null,
           environment_id: environmentId || null,
           status: 'draft',
-          progress_percent: 0, total_cases: 0, passed_count: 0, failed_count: 0,
+          total_cases: 0, passed_count: 0, failed_count: 0,
           blocked_count: 0, skipped_count: 0, not_run_count: 0,
+          project_id: '00000000-0000-0000-0000-000000000001',
         };
         const { error } = await (supabase as any).from('tm_test_cycles').insert(insertData).select().single();
 

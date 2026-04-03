@@ -52,8 +52,9 @@ export default function ExecutionHubPage() {
     try {
       const { data, error } = await (supabase as any)
         .from('tm_test_cycles')
-        .select(`*, owner:profiles!tm_test_cycles_owner_id_fkey ( full_name )`)
-        .order('start_date', { ascending: false });
+        .select('id, cycle_key, name, description, status, planned_start, planned_end, environment_id, project_id, total_cases, passed_count, failed_count, blocked_count, skipped_count, not_run_count, in_progress_count, created_at, updated_at')
+        .eq('project_id', '00000000-0000-0000-0000-000000000001')
+        .order('created_at', { ascending: false });
       if (error) throw error;
       setCycles((data) || []);
     } catch (err) {

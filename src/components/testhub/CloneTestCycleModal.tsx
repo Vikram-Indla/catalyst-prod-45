@@ -8,9 +8,8 @@ interface TestCycle {
   cycle_key: string;
   name: string;
   description: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  owner_id?: string | null;
+  planned_start: string | null;
+  planned_end: string | null;
   total_cases: number;
 }
 
@@ -67,17 +66,16 @@ export function CloneTestCycleModal({
         cycle_key: newCycleKey,
         name: newName.trim(),
         description: cycle.description,
-        start_date: cycle.start_date,
-        end_date: cycle.end_date,
-        owner_id: cycle.owner_id,
+        planned_start: cycle.planned_start,
+        planned_end: cycle.planned_end,
         status: 'draft',
-        progress_percent: 0,
         total_cases: 0,
         passed_count: 0,
         failed_count: 0,
         blocked_count: 0,
         skipped_count: 0,
         not_run_count: 0,
+        project_id: '00000000-0000-0000-0000-000000000001',
       };
 
       const { data: newCycle, error: cycleError } = await (supabase as any)

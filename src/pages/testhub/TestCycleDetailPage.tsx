@@ -21,18 +21,16 @@ interface TestCycle {
   name: string;
   description: string | null;
   status: string;
-  start_date: string | null;
-  end_date: string | null;
-  progress_percent: number;
+  planned_start: string | null;
+  planned_end: string | null;
   total_cases: number;
   passed_count: number;
   failed_count: number;
   blocked_count: number;
   skipped_count: number;
   not_run_count: number;
+  in_progress_count?: number;
   environment_id?: string | null;
-  owner?: { id: string; full_name: string };
-  environment?: { id: string; name: string; type: string; health_status: string } | null;
 }
 
 interface CycleTestCase {
@@ -90,9 +88,10 @@ export default function TestCycleDetailPage() {
     if (!cycleId) return;
     try {
       const { data, error } = await (supabase as any).from('tm_test_cycles')
-        .select(`*, owner:profiles!tm_test_cycles_owner_id_fkey ( id, full_name ), environment:tm_environments!tm_test_cycles_environment_id_fkey ( id, name, type, health_status )`)
-        .eq('id', cycleId).single();
+        .select('id, cycle_key, name, description, status, planned_start, planned_end, environment_id, project_id, total_cases, passed_count, failed_count, blocked_count, skipped_count, not_run_count, in_progress_count, created_at, updated_at')
+        .eq('id', cycleId).maybeSingle();
       if (error) throw error;
+      if (!data) { catalystToast.error('Cycle not found'); return; }
       setCycle(data);
     } catch { catalystToast.error('Failed to load cycle'); }
   };
@@ -101,8 +100,8 @@ export default function TestCycleDetailPage() {
     if (!cycleId) return;
     try {
       const { data, error } = await (supabase as any).from('tm_cycle_scope')
-        .select(`*, test_case:tm_test_cases ( id, case_key, title, priority, type ), assignee:profiles!tm_cycle_scope_assigned_to_fkey ( id, full_name )`)
-        .eq('cycle_id', cycleId).order('created_at');
+        .select(`id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at, test_case:tm_test_cases ( id, case_key, title, priority, type )`)
+        .eq('cycle_id', cycleId).order('sort_order');
       if (error) throw error;
       setTestCases(data || []);
     } catch { /* ignore */ }
@@ -234,17 +233,14 @@ export default function TestCycleDetailPage() {
             <h1 style={{ fontSize: 22, fontWeight: 700, color: '#0F172A', margin: '0 0 8px' }}>{cycle.name}</h1>
             {cycle.description && <p style={{ fontSize: 14, color: '#64748B', margin: '0 0 8px', maxWidth: 600 }}>{cycle.description}</p>}
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: '#64748B' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={14} />{formatDate(cycle.start_date)} — {formatDate(cycle.end_date)}</span>
-              {cycle.owner && <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><User size={14} />{cycle.owner.full_name}</span>}
-              {cycle.environment && (
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={14} />{formatDate(cycle.planned_start)} — {formatDate(cycle.planned_end)}</span>
+              {cycle.environment_id && (
                 <span
-                  onClick={() => navigate(`/testhub/environments/${cycle.environment!.id}`)}
+                  onClick={() => navigate(`/testhub/environments/${cycle.environment_id}`)}
                   style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '2px 8px', backgroundColor: '#EFF6FF', borderRadius: 6, color: '#2563EB', fontWeight: 500 }}
-                  title={`Health: ${cycle.environment.health_status}`}
                 >
                   <Server size={14} />
-                  {cycle.environment.name}
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: cycle.environment.health_status === 'healthy' ? '#10B981' : cycle.environment.health_status === 'degraded' ? '#F59E0B' : cycle.environment.health_status === 'down' ? '#EF4444' : '#94A3B8' }} />
+                  Environment
                 </span>
               )}
             </div>
@@ -288,19 +284,25 @@ export default function TestCycleDetailPage() {
       {/* Stats Cards - 3-panel layout per spec */}
       <div style={{ padding: '24px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
         {/* Progress Panel */}
+        {(() => {
+          const executedCount = cycle.total_cases - cycle.not_run_count;
+          const pp = cycle.total_cases > 0 ? Math.round((executedCount / cycle.total_cases) * 100) : 0;
+          return (
         <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24, textAlign: 'center' }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Progress</p>
           <div style={{ width: 100, height: 100, margin: '0 auto 16px', position: 'relative' }}>
             <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
               <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#E2E8F0" strokeWidth="3" />
-              <circle cx="18" cy="18" r="15.9155" fill="none" stroke={cycle.progress_percent === 100 ? '#059669' : '#2563EB'} strokeWidth="3" strokeDasharray={`${cycle.progress_percent} ${100 - cycle.progress_percent}`} strokeLinecap="round" />
+              <circle cx="18" cy="18" r="15.9155" fill="none" stroke={pp === 100 ? '#059669' : '#2563EB'} strokeWidth="3" strokeDasharray={`${pp} ${100 - pp}`} strokeLinecap="round" />
             </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: cycle.progress_percent === 100 ? '#059669' : '#2563EB' }}>
-              {cycle.progress_percent}%
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: pp === 100 ? '#059669' : '#2563EB' }}>
+              {pp}%
             </div>
           </div>
-          <p style={{ fontSize: 14, color: '#334155', margin: 0, fontWeight: 500 }}>{cycle.total_cases - cycle.not_run_count}/{cycle.total_cases} executed</p>
+          <p style={{ fontSize: 14, color: '#334155', margin: 0, fontWeight: 500 }}>{executedCount}/{cycle.total_cases} executed</p>
         </div>
+          );
+        })()}
 
         {/* By Status Panel */}
         <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24 }}>
