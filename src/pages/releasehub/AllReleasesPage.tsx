@@ -30,12 +30,26 @@ function relativeTime(dateStr: string | null | undefined): string {
 
 export default function AllReleasesPage() {
   const { data: releases = [], isLoading, error, refetch } = useReleaseSummary();
+  const { data: freezeWindows = [] } = useFreezeWindows();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<string>('all');
   const [view, setView] = useState<'cards' | 'table'>('cards');
   const [selectedRelease, setSelectedRelease] = useState<any>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [importing, setImporting] = useState(false);
+
+  const freezeConflicts = useMemo(() => {
+    if (!freezeWindows.length || !releases.length) return [];
+    return releases.filter((r: any) => {
+      if (!r.target_date) return false;
+      const t = new Date(r.target_date);
+      return freezeWindows.some((fw: any) => {
+        const s = new Date(fw.start_date);
+        const e = new Date(fw.end_date);
+        return t >= s && t <= e;
+      });
+    });
+  }, [releases, freezeWindows]);
 
   const filtered = releases.filter((r: any) => {
     const mapped = mapStatus(r.status);
