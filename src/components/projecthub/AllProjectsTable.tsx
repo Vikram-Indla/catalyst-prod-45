@@ -174,15 +174,13 @@ export function AllProjectsTable({
   const sortableMap: Record<number, SortColumn> = { 1: 'name', 2: 'status' };
 
   return (
+    <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
     <div
       className="font-['Inter',sans-serif]"
       style={{
         display: 'grid',
         gridTemplateColumns: GRID_COLS,
         alignItems: 'center',
-        border: '0.75px solid var(--bd-default)',
-        borderRadius: 8,
-        overflow: 'hidden',
         background: 'var(--bg-elevated, var(--bg-1))',
         color: 'var(--text-1)',
       }}
