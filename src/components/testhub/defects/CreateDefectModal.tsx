@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { X, Bug, AlertCircle } from 'lucide-react';
+import { useCreateDefect } from '@/hooks/test-management/useDefects';
 import { supabase } from '@/integrations/supabase/client';
-import { catalystToast } from '@/components/ui/CatalystToast';
+import { toast } from 'sonner';
+import type { DefectSeverity } from '@/types/test-management';
+
+const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
 
 interface CreateDefectModalProps {
   isOpen: boolean;
@@ -17,10 +21,10 @@ interface CreateDefectModalProps {
 }
 
 const SEVERITY_OPTIONS = [
-  { value: 'critical', label: 'Critical', color: 'var(--sem-danger)', desc: 'System crash, data loss' },
-  { value: 'high', label: 'High', color: '#EA580C', desc: 'Major feature broken' },
-  { value: 'medium', label: 'Medium', color: 'var(--sem-warning)', desc: 'Feature partially works' },
-  { value: 'low', label: 'Low', color: 'var(--sem-success)', desc: 'Minor/cosmetic issue' },
+  { value: 'critical', label: 'Critical', color: '#DC2626', desc: 'System crash, data loss', mapped: 'CRITICAL' as DefectSeverity },
+  { value: 'high', label: 'High', color: '#EA580C', desc: 'Major feature broken', mapped: 'MAJOR' as DefectSeverity },
+  { value: 'medium', label: 'Medium', color: '#D97706', desc: 'Feature partially works', mapped: 'MINOR' as DefectSeverity },
+  { value: 'low', label: 'Low', color: '#16A34A', desc: 'Minor/cosmetic issue', mapped: 'TRIVIAL' as DefectSeverity },
 ];
 
 const PRIORITY_OPTIONS = [
@@ -41,8 +45,9 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
   const [actualResult, setActualResult] = useState('');
   const [assignedTo, setAssignedTo] = useState('');
   const [users, setUsers] = useState<{ id: string; full_name: string }[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const createDefect = useCreateDefect();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -88,71 +93,22 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
   const handleSubmit = async () => {
     if (!validate()) return;
 
-    setIsSubmitting(true);
+    const sevOption = SEVERITY_OPTIONS.find(o => o.value === severity);
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      await createDefect.mutateAsync({
+        project_id: DEFAULT_PROJECT_ID,
+        title: title.trim(),
+        description: description.trim() || undefined,
+        severity: sevOption?.mapped || 'MINOR',
+        assigned_to: assignedTo || undefined,
+      });
 
-      const { data: defect, error } = await supabase
-        .from('th_defects' as any)
-        .insert({
-          title: title.trim(),
-          description: description.trim() || null,
-          severity,
-          priority,
-          environment: environment.trim() || null,
-          steps_to_reproduce: stepsToReproduce.trim() || null,
-          expected_result: expectedResult.trim() || null,
-          actual_result: actualResult.trim() || null,
-          assigned_to: assignedTo || null,
-          reported_by: user?.id || null,
-          status: 'new',
-          defect_key: '', // trigger will generate
-        })
-        .select()
-        .single();
-
-      if (error) throw new Error(error.message);
-
-      // Create links if prefill provided
-      if (defect && prefill) {
-        const links: any[] = [];
-        if (prefill.testCaseId) {
-          links.push({
-            defect_id: (defect as any).id,
-            link_type: 'test_case',
-            linked_id: prefill.testCaseId,
-            created_by: user?.id,
-          });
-        }
-        if (prefill.cycleTestCaseId) {
-          links.push({
-            defect_id: (defect as any).id,
-            link_type: 'cycle_test_case',
-            linked_id: prefill.cycleTestCaseId,
-            created_by: user?.id,
-          });
-        }
-        if (prefill.cycleId) {
-          links.push({
-            defect_id: (defect as any).id,
-            link_type: 'cycle',
-            linked_id: prefill.cycleId,
-            created_by: user?.id,
-          });
-        }
-        if (links.length > 0) {
-          await supabase.from('th_defect_links' as any).insert(links);
-        }
-      }
-
-      catalystToast.success(`Defect ${(defect as any).defect_key} created`);
       onCreated();
       onClose();
     } catch (err: any) {
       console.error('Create defect error:', err);
-      catalystToast.error(err.message || 'Failed to create defect');
-    } finally {
-      setIsSubmitting(false);
+      toast.error(err.message || 'Failed to create defect');
     }
   };
 
@@ -178,7 +134,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
               width: 44, height: 44, borderRadius: 10,
-              background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Bug size={22} style={{ color: '#FFF' }} />
@@ -209,7 +165,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
           {/* Title */}
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
-              Title <span style={{ color: 'var(--sem-danger)' }}>*</span>
+              Title <span style={{ color: '#DC2626' }}>*</span>
             </label>
             <input
               type="text"
@@ -218,12 +174,12 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               placeholder="Brief description of the issue"
               style={{
                 width: '100%', height: 44, padding: '0 14px',
-                border: `1.5px solid ${errors.title ? 'var(--sem-danger)' : 'var(--divider)'}`,
+                border: `1.5px solid ${errors.title ? '#DC2626' : 'var(--divider)'}`,
                 borderRadius: 10, fontSize: 14, backgroundColor: 'var(--bg-app)',
                 color: 'var(--fg-1)',
               }}
             />
-            {errors.title && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '4px 0 0' }}>{errors.title}</p>}
+            {errors.title && <p style={{ fontSize: 12, color: '#DC2626', margin: '4px 0 0' }}>{errors.title}</p>}
           </div>
 
           {/* Severity & Priority */}
@@ -385,7 +341,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <AlertCircle size={14} style={{ color: 'var(--sem-danger)' }} /> Actual Result
+                  <AlertCircle size={14} style={{ color: '#DC2626' }} /> Actual Result
                 </span>
               </label>
               <textarea
@@ -410,7 +366,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
         }}>
           <button
             onClick={onClose}
-            disabled={isSubmitting}
+            disabled={createDefect.isPending}
             style={{
               height: 44, padding: '0 20px',
               backgroundColor: 'var(--bg-app)', border: '1.5px solid var(--divider)',
@@ -422,17 +378,17 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
           </button>
           <button
             onClick={handleSubmit}
-            disabled={isSubmitting}
+            disabled={createDefect.isPending}
             style={{
               height: 44, padding: '0 24px',
-              background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
               border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600,
-              color: '#FFFFFF', cursor: isSubmitting ? 'not-allowed' : 'pointer',
-              opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8,
+              color: '#FFFFFF', cursor: createDefect.isPending ? 'not-allowed' : 'pointer',
+              opacity: createDefect.isPending ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8,
             }}
           >
             <Bug size={16} />
-            {isSubmitting ? 'Creating...' : 'Create Defect'}
+            {createDefect.isPending ? 'Creating...' : 'Create Defect'}
           </button>
         </div>
       </div>
