@@ -959,19 +959,19 @@ html:has(body[data-scroll-locked]) {
     --stroke-1: var(--divider);
     --stroke-2: var(--border-subtle);
     
-    --border: 0 0% 100% / 0.06;
-    --input: 0 0% 100% / 0.08;
+    --border: 220 15% 85% / 0.06;
+    --input: 220 15% 85% / 0.08;
     --ring: 217 91% 60%;
     
     /* === D) INTERACTION TOKENS === */
-    --focus-ring: rgba(198,156,109,0.55);  /* Brand gold focus */
-    --hover: rgba(255,255,255,0.04);
-    --active: rgba(255,255,255,0.07);
-    --selected: rgba(255,255,255,0.08);    /* Neutral selected */
+    --focus-ring: rgba(59,130,246,0.55);   /* Blue focus — Cool Steel */
+    --hover: rgba(200,210,225,0.04);
+    --active: rgba(200,210,225,0.07);
+    --selected: rgba(200,210,225,0.08);    /* Neutral selected */
     
     --row-hover: var(--hover);
-    --row-selected: rgba(255,255,255,0.08);
-    --row-active: rgba(255,255,255,0.12);
+    --row-selected: rgba(200,210,225,0.08);
+    --row-active: rgba(200,210,225,0.12);
     
     /* ═══════════════════════════════════════════════════════════════
        CATALYST V5 CANONICAL — Dark Mode Semantic Tokens
