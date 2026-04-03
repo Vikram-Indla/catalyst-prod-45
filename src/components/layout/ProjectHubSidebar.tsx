@@ -10,7 +10,6 @@ import { useMemo } from 'react';
 import {
   LayoutGrid,
   LayoutDashboard,
-  Activity,
   Settings,
   UserSearch,
   Layers,
