@@ -103,8 +103,8 @@ export function CreateEnvironmentModal({ isOpen, onClose, onCreated }: CreateEnv
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 10, background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Server size={22} style={{ color: '#FFFFFF' }} />
+            <div style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Server size={22} style={{ color: '#374151' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Add Environment</h2>
           </div>
@@ -186,7 +186,7 @@ export function CreateEnvironmentModal({ isOpen, onClose, onCreated }: CreateEnv
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: 'var(--cp-float)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 44, padding: '0 24px', backgroundColor: '#2563EB', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Server size={16} /> {isSubmitting ? 'Creating...' : 'Add Environment'}
           </button>
         </div>

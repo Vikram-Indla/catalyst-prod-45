@@ -208,7 +208,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                 <Calendar size={14} style={{ color: 'var(--fg-3)' }} /> Start Date
               </label>
               <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-                style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)' }}
+                style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)' }}
               />
             </div>
             <div style={{ flex: 1 }}>
@@ -216,7 +216,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                 <Calendar size={14} style={{ color: 'var(--fg-3)' }} /> End Date
               </label>
               <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} min={startDate}
-                style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${errors.endDate ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8, fontSize: 14, color: 'var(--fg-1)' }}
+                style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${errors.endDate ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)' }}
               />
               {errors.endDate && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.endDate}</p>}
             </div>
@@ -228,12 +228,12 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
               <Server size={14} style={{ color: 'var(--fg-3)' }} /> Environment
             </label>
             <select value={environmentId} onChange={(e) => setEnvironmentId(e.target.value)}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)' }}
+              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', appearance: 'none', WebkitAppearance: 'none' }}
             >
               <option value="">Select environment (optional)</option>
               {environments.map(env => (
                 <option key={env.id} value={env.id}>
-                  {env.name} ({env.type}) {env.health_status === 'healthy' ? '🟢' : env.health_status === 'degraded' ? '🟡' : env.health_status === 'down' ? '🔴' : '⚪'}
+                  {env.name} ({env.type})
                 </option>
               ))}
             </select>
@@ -245,7 +245,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
               <User size={14} style={{ color: 'var(--fg-3)' }} /> Owner
             </label>
             <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)' }}
+              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', appearance: 'none', WebkitAppearance: 'none' }}
             >
               <option value="">Select owner (optional)</option>
               {profiles.map(p => <option key={p.id} value={p.id}>{p.full_name}</option>)}

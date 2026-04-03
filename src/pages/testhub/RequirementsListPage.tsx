@@ -50,11 +50,11 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
   deprecated:   { label: 'DEPRECATED',   color: '#253858', bg: '#DFE1E6' },
 };
 
-const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
-  critical: { label: 'Critical', color: '#DC2626' },
-  high: { label: 'High', color: '#EA580C' },
-  medium: { label: 'Medium', color: '#D97706' },
-  low: { label: 'Low', color: '#059669' },
+const PRIORITY_CONFIG: Record<string, { label: string }> = {
+  critical: { label: 'Critical' },
+  high: { label: 'High' },
+  medium: { label: 'Medium' },
+  low: { label: 'Low' },
 };
 
 export default function RequirementsListPage() {
@@ -261,7 +261,7 @@ export default function RequirementsListPage() {
                       <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '2px 8px', borderRadius: 4 }}>{type.label}</span>
                     </td>
                     <td style={{ padding: '0 12px' }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: priority.color }}>{priority.label}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', backgroundColor: '#F1F5F9', padding: '2px 8px', borderRadius: 4 }}>{priority.label}</span>
                     </td>
                     <td style={{ padding: '0 12px' }}>
                       <span style={{
