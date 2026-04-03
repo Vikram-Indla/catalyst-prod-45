@@ -18,15 +18,27 @@ function formatTimeAgo(date: string | null | undefined): string {
 
 export function useSyncConnection() {
   return useQuery({
-    queryKey: ['sync-connection'],
+    queryKey: ['jira-connection-status'],
     queryFn: async () => {
-      const { data } = await supabase
+      // Check Native V2 first
+      const { data: v2, error: v2err } = await supabase
         .from('sync_connections')
-        .select('*')
+        .select('id, jira_base_url, jira_project_key, is_active, webhook_id')
         .eq('is_active', true)
         .limit(1)
         .maybeSingle();
-      return data;
+      if (v2 && !v2err) return { ...v2, source: 'v2' as const, connected: true };
+
+      // Fallback: check Legacy
+      const { data: legacy } = await supabase
+        .from('jira_connections')
+        .select('id, jira_url, is_active')
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle();
+      if (legacy) return { id: legacy.id, jira_base_url: legacy.jira_url, jira_project_key: null, is_active: true, webhook_id: null, source: 'legacy' as const, connected: true };
+
+      return null;
     },
     refetchInterval: 30000,
     staleTime: 15_000,
