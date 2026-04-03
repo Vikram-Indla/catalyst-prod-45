@@ -256,7 +256,7 @@ export function AllProjectsTable({
             </div>
 
             {/* Cell 2: Star */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 0', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 0', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
               <button
                 onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', pointerEvents: 'auto' }}
