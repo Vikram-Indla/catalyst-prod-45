@@ -77,8 +77,8 @@ export default function TestRunsPage() {
           .order('start_date', { ascending: false }),
       ]);
       if (execRes.error) throw execRes.error;
-      setRecords((execRes.data as any) || []);
-      setCycles((cycleRes.data as any) || []);
+      setRecords((execRes.data) || []);
+      setCycles((cycleRes.data) || []);
     } catch (err) {
       console.error('Failed to load test runs', err);
     } finally {
