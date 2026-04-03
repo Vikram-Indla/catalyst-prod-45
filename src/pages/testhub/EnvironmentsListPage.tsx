@@ -156,9 +156,9 @@ export default function EnvironmentsListPage() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 20px',
             border: 'none', borderRadius: 10,
-            background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+            background: '#2563EB',
             color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(99, 102, 241, 0.3)',
+            boxShadow: 'none',
           }}
         >
           <Plus size={18} /> Add Environment
