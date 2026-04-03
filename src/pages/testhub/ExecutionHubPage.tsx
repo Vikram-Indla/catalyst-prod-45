@@ -30,11 +30,16 @@ interface CycleWithStats {
   owner: { full_name: string } | null;
 }
 
-const statusStyles: Record<string, { label: string; color: string; bg: string }> = {
-  active: { label: 'Active', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
-  draft: { label: 'Draft', color: 'text-muted-foreground', bg: 'bg-muted border-border' },
-  completed: { label: 'Completed', color: 'text-primary', bg: 'bg-primary/10 border-primary/20' },
-  archived: { label: 'Archived', color: 'text-muted-foreground', bg: 'bg-muted/50 border-border' },
+const CYCLE_STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = {
+  in_progress:  { bg: '#DEEBFF', text: '#0747A6', label: 'IN PROGRESS' },
+  active:       { bg: '#DEEBFF', text: '#0747A6', label: 'ACTIVE' },
+  planned:      { bg: '#DFE1E6', text: '#253858', label: 'PLANNED' },
+  draft:        { bg: '#DFE1E6', text: '#253858', label: 'DRAFT' },
+  on_hold:      { bg: '#DFE1E6', text: '#253858', label: 'ON HOLD' },
+  completed:    { bg: '#E3FCEF', text: '#006644', label: 'COMPLETED' },
+  closed:       { bg: '#E3FCEF', text: '#006644', label: 'CLOSED' },
+  done:         { bg: '#E3FCEF', text: '#006644', label: 'DONE' },
+  archived:     { bg: '#DFE1E6', text: '#253858', label: 'ARCHIVED' },
 };
 
 export default function ExecutionHubPage() {
