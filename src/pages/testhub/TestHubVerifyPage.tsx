@@ -4,8 +4,8 @@
  * Self-running diagnostic — 20 automated integrity checks on page load.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Loader2, RefreshCw, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import TestHubPageHeader from '@/components/testhub/TestHubPageHeader';
 
