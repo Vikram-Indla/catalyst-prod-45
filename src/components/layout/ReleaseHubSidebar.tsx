@@ -14,6 +14,7 @@ import {
   Clock,
   CalendarOff,
   Settings,
+  ShieldCheck,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
@@ -51,6 +52,12 @@ const buildSections = (triageCount: number, pendingSignoffs: number): SidebarSec
     title: 'Production',
     items: [
       { id: 'production-events', title: 'Production Events', path: '/release-hub/production-events', icon: Clock, exact: false },
+    ],
+  },
+  {
+    title: 'Diagnostics',
+    items: [
+      { id: 'prerequisites', title: 'Sync Prerequisites', path: '/release-hub/prerequisites', icon: ShieldCheck, exact: true },
     ],
   },
   {
