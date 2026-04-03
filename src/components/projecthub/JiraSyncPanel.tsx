@@ -149,8 +149,22 @@ export function JiraSyncPanel() {
   const handleSyncNow = async () => {
     setSyncing(true);
     try {
+      // Read configured projects from wh_config so the edge function knows what to sync
+      const { data: configRows } = await (supabase as any)
+        .from('wh_config')
+        .select('key, value')
+        .in('key', ['sync_projects', 'sync_project_config', 'sync_lookback_months']);
+      const cfg: Record<string, any> = {};
+      configRows?.forEach((c: any) => {
+        try { cfg[c.key] = typeof c.value === 'string' ? JSON.parse(c.value) : c.value; } catch { cfg[c.key] = c.value; }
+      });
+
       const { data, error } = await supabase.functions.invoke('wh-jira-sync', {
-        body: { sync_type: 'full' },
+        body: {
+          sync_type: 'full',
+          projects: cfg.sync_projects || undefined,
+          project_configs: cfg.sync_project_config || undefined,
+        },
       });
       if (error) throw error;
 
