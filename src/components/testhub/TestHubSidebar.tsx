@@ -1,5 +1,5 @@
 import { useLocation, Link } from 'react-router-dom';
-import { FileText, List, Clock, Folder, Shield } from 'lucide-react';
+import { FileText, List, Clock, Folder, Shield, CheckSquare } from 'lucide-react';
 
 interface NavItem {
   label: string;
