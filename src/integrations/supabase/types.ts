@@ -55115,11 +55115,13 @@ export type Database = {
       }
       tm_shared_steps: {
         Row: {
+          action: string | null
           category_id: string | null
           created_at: string | null
           created_by: string | null
           deleted_at: string | null
           description: string | null
+          expected_result: string | null
           id: string
           is_active: boolean | null
           name: string
@@ -55130,11 +55132,13 @@ export type Database = {
           variables: Json | null
         }
         Insert: {
+          action?: string | null
           category_id?: string | null
           created_at?: string | null
           created_by?: string | null
           deleted_at?: string | null
           description?: string | null
+          expected_result?: string | null
           id?: string
           is_active?: boolean | null
           name: string
@@ -55145,11 +55149,13 @@ export type Database = {
           variables?: Json | null
         }
         Update: {
+          action?: string | null
           category_id?: string | null
           created_at?: string | null
           created_by?: string | null
           deleted_at?: string | null
           description?: string | null
+          expected_result?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
