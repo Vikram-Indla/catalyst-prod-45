@@ -51846,13 +51846,18 @@ export type Database = {
           created_at: string | null
           db_info: string | null
           description: string | null
+          env_key: string | null
           health_status: string | null
           id: string
           is_active: boolean | null
           last_health_check: string | null
           name: string
+          owner_id: string | null
           project_id: string
+          status: string | null
+          type: string | null
           updated_at: string | null
+          url: string | null
         }
         Insert: {
           api_url?: string | null
@@ -51861,13 +51866,18 @@ export type Database = {
           created_at?: string | null
           db_info?: string | null
           description?: string | null
+          env_key?: string | null
           health_status?: string | null
           id?: string
           is_active?: boolean | null
           last_health_check?: string | null
           name: string
+          owner_id?: string | null
           project_id: string
+          status?: string | null
+          type?: string | null
           updated_at?: string | null
+          url?: string | null
         }
         Update: {
           api_url?: string | null
@@ -51876,15 +51886,90 @@ export type Database = {
           created_at?: string | null
           db_info?: string | null
           description?: string | null
+          env_key?: string | null
           health_status?: string | null
           id?: string
           is_active?: boolean | null
           last_health_check?: string | null
           name?: string
+          owner_id?: string | null
           project_id?: string
+          status?: string | null
+          type?: string | null
           updated_at?: string | null
+          url?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
           {
             foreignKeyName: "tm_environments_project_id_fkey"
             columns: ["project_id"]
@@ -54999,23 +55084,32 @@ export type Database = {
         Row: {
           color: string | null
           created_at: string | null
+          description: string | null
           icon: string | null
           id: string
           name: string
+          sort_order: number | null
+          updated_at: string | null
         }
         Insert: {
           color?: string | null
           created_at?: string | null
+          description?: string | null
           icon?: string | null
           id?: string
           name: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Update: {
           color?: string | null
           created_at?: string | null
+          description?: string | null
           icon?: string | null
           id?: string
           name?: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -55027,11 +55121,13 @@ export type Database = {
           deleted_at: string | null
           description: string | null
           id: string
+          is_active: boolean | null
           name: string
           steps: Json
           tags: string[] | null
           updated_at: string | null
           usage_count: number | null
+          variables: Json | null
         }
         Insert: {
           category_id?: string | null
@@ -55040,11 +55136,13 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           id?: string
+          is_active?: boolean | null
           name: string
           steps?: Json
           tags?: string[] | null
           updated_at?: string | null
           usage_count?: number | null
+          variables?: Json | null
         }
         Update: {
           category_id?: string | null
@@ -55053,11 +55151,13 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           id?: string
+          is_active?: boolean | null
           name?: string
           steps?: Json
           tags?: string[] | null
           updated_at?: string | null
           usage_count?: number | null
+          variables?: Json | null
         }
         Relationships: [
           {
