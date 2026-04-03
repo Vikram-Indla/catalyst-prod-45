@@ -73,11 +73,17 @@ function StatusChangePopover({ project }: { project: ProjectListItem }) {
         {STATUS_OPTIONS.map(opt => (
           <button
             key={opt.value}
-            onClick={() => handleChange(opt.value)}
+            onClick={() => handleChange(opt.value, opt.label)}
             className="flex w-full items-center gap-2 rounded px-3 py-2 text-sm hover:bg-gray-50"
             style={{ border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
           >
-            <ProjectStatusBadge status={opt.value as any} />
+            <span style={{
+              display: 'inline-block', padding: '0 6px', borderRadius: 3, height: 20, lineHeight: '20px',
+              background: opt.bg, color: opt.color, fontSize: 11, fontWeight: 700,
+              textTransform: 'uppercase', letterSpacing: '0.03em', whiteSpace: 'nowrap',
+            }}>
+              {opt.label}
+            </span>
           </button>
         ))}
       </PopoverContent>
