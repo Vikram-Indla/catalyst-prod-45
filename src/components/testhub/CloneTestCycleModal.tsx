@@ -41,8 +41,8 @@ export function CloneTestCycleModal({
   const generateCycleKey = async (): Promise<string> => {
     const { data, error } = await supabase.rpc('generate_cycle_key');
     if (error) {
-      const { data: lastCycle } = await supabase
-        .from('th_test_cycles')
+      const { data: lastCycle } = await (supabase as any)
+        .from('tm_test_cycles')
         .select('cycle_key')
         .order('created_at', { ascending: false })
         .limit(1);
