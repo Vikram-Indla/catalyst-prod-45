@@ -160,7 +160,7 @@ async function fetchMyTestScopeData(): Promise<MyTestScopeData> {
     failedTests,
     blockedTests,
     notRunTests,
-    passRate: stats.pass_rate ?? (totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0),
+    passRate: totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0,
     overdueCount: tests.filter(t => t.urgency === 'overdue').length,
     dueTodayCount: tests.filter(t => t.urgency === 'due_today').length,
     linkedDefectsCount: 0,
