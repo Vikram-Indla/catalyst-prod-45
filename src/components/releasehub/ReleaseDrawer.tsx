@@ -212,6 +212,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
             <OverviewTab
               release={release}
               changesCount={relChanges.length}
+              changes={relChanges}
               computedGates={computedGates}
               gatesPassCount={gatesPassCount}
               gatesTotalCount={gatesTotalCount}
