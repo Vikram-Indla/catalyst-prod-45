@@ -8,6 +8,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { CreateEnvironmentModal } from '@/components/testhub/environments/CreateEnvironmentModal';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Environment {
   id: string;
@@ -33,12 +34,12 @@ interface EnvironmentSummary {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  development: { label: 'Development', color: '#2563EB', bg: '#EFF6FF' },
-  testing: { label: 'Testing', color: '#7C3AED', bg: '#F5F3FF' },
-  staging: { label: 'Staging', color: '#D97706', bg: '#FFFBEB' },
-  uat: { label: 'UAT', color: '#0891B2', bg: '#ECFEFF' },
-  production: { label: 'Production', color: '#DC2626', bg: '#FEF2F2' },
-  other: { label: 'Other', color: '#64748B', bg: '#F1F5F9' },
+  development: { label: 'Development', color: '#475569', bg: '#F1F5F9' },
+  testing: { label: 'Testing', color: '#475569', bg: '#F1F5F9' },
+  staging: { label: 'Staging', color: '#475569', bg: '#F1F5F9' },
+  uat: { label: 'UAT', color: '#475569', bg: '#F1F5F9' },
+  production: { label: 'Production', color: '#475569', bg: '#F1F5F9' },
+  other: { label: 'Other', color: '#475569', bg: '#F1F5F9' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
@@ -155,9 +156,9 @@ export default function EnvironmentsListPage() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 20px',
             border: 'none', borderRadius: 10,
-            background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+            background: '#2563EB',
             color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(99, 102, 241, 0.3)',
+            boxShadow: 'none',
           }}
         >
           <Plus size={18} /> Add Environment
@@ -221,24 +222,30 @@ export default function EnvironmentsListPage() {
             }}
           />
         </div>
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}
-          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
-          <option value="all">All Types</option>
-          <option value="development">Development</option>
-          <option value="testing">Testing</option>
-          <option value="staging">Staging</option>
-          <option value="uat">UAT</option>
-          <option value="production">Production</option>
-          <option value="other">Other</option>
-        </select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
-          <option value="all">All Status</option>
-          <option value="active">Active</option>
-          <option value="maintenance">Maintenance</option>
-          <option value="inactive">Inactive</option>
-          <option value="deprecated">Deprecated</option>
-        </select>
+        <Select value={typeFilter} onValueChange={setTypeFilter}>
+          <SelectTrigger className="h-[36px] w-[160px] border-[#E2E8F0] rounded text-[13px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <SelectValue placeholder="All Types" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="development">Development</SelectItem>
+            <SelectItem value="testing">Testing</SelectItem>
+            <SelectItem value="staging">Staging</SelectItem>
+            <SelectItem value="uat">UAT</SelectItem>
+            <SelectItem value="production">Production</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="h-[36px] w-[160px] border-[#E2E8F0] rounded text-[13px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="unknown">Unknown</SelectItem>
+          </SelectContent>
+        </Select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
             style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 10, backgroundColor: '#FFF', color: '#64748B', fontSize: 14, cursor: 'pointer' }}>
@@ -281,7 +288,7 @@ export default function EnvironmentsListPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#6366F1', backgroundColor: '#EEF2FF', padding: '4px 10px', borderRadius: 6 }}>{env.env_key}</span>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '3px 8px', borderRadius: 4 }}>{type.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', backgroundColor: '#F1F5F9', padding: '0 6px', borderRadius: 3, height: 20, display: 'inline-flex', alignItems: 'center', textTransform: 'uppercase' as const }}>{type.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: health.color, backgroundColor: health.bg, padding: '4px 8px', borderRadius: 6 }}>
                     <HealthIcon size={12} /> {health.label}

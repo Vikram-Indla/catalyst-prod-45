@@ -61,24 +61,21 @@ export default function TestRunsPage() {
     setIsLoading(true);
     try {
       const [execRes, cycleRes] = await Promise.all([
-        supabase
-          .from('th_cycle_test_cases')
+        (supabase as any)
+          .from('tm_cycle_scope')
           .select(`
-            id, cycle_id, test_case_id, execution_status, executed_at, executed_by,
-            assigned_to, execution_time_seconds, failure_reason, notes,
-            test_case:th_test_cases ( id, case_key, title, priority ),
-            cycle:th_test_cycles!th_cycle_test_cases_cycle_id_fkey ( id, cycle_key, name ),
-            executor:profiles!th_cycle_test_cases_executed_by_fkey ( full_name )
+            id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at,
+            test_case:tm_test_cases ( id, case_key, title, priority )
           `)
-          .order('executed_at', { ascending: false, nullsFirst: false }),
-        supabase
-          .from('th_test_cycles')
+          .order('updated_at', { ascending: false, nullsFirst: false }),
+        (supabase as any)
+          .from('tm_test_cycles')
           .select('id, cycle_key, name')
-          .order('start_date', { ascending: false }),
+          .order('created_at', { ascending: false }),
       ]);
       if (execRes.error) throw execRes.error;
-      setRecords((execRes.data as any) || []);
-      setCycles((cycleRes.data as any) || []);
+      setRecords((execRes.data) || []);
+      setCycles((cycleRes.data) || []);
     } catch (err) {
       console.error('Failed to load test runs', err);
     } finally {

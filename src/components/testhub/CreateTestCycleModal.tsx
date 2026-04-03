@@ -20,9 +20,8 @@ interface TestCycleData {
   cycle_key: string;
   name: string;
   description: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  owner_id?: string | null;
+  planned_start: string | null;
+  planned_end: string | null;
   environment_id?: string | null;
   status: string;
 }
@@ -52,16 +51,16 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
       supabase.from('profiles').select('id, full_name').order('full_name').then(({ data }) => {
         if (data) setProfiles(data);
       });
-      (supabase as any).from('th_environments').select('id, name, type, health_status').eq('status', 'active').order('name').then(({ data }: any) => {
+      (supabase as any).from('tm_environments').select('id, name, type, health_status').eq('status', 'active').order('name').then(({ data }: any) => {
         if (data) setEnvironments(data);
       });
 
       if (mode === 'edit' && cycle) {
         setName(cycle.name || '');
         setDescription(cycle.description || '');
-        setStartDate(cycle.start_date || '');
-        setEndDate(cycle.end_date || '');
-        setOwnerId(cycle.owner_id || '');
+        setStartDate(cycle.planned_start || '');
+        setEndDate(cycle.planned_end || '');
+        setOwnerId('');
         setEnvironmentId(cycle.environment_id || '');
       } else {
         setName('');
@@ -88,8 +87,8 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
   const generateCycleKey = async (): Promise<string> => {
     const { data, error } = await supabase.rpc('generate_cycle_key');
     if (error) {
-      const { data: lastCycle } = await supabase
-        .from('th_test_cycles').select('cycle_key').order('created_at', { ascending: false }).limit(1);
+      const { data: lastCycle } = await (supabase as any)
+        .from('tm_test_cycles').select('cycle_key').order('created_at', { ascending: false }).limit(1);
       if (lastCycle && lastCycle.length > 0) {
         const lastNum = parseInt(lastCycle[0].cycle_key.replace('CYCLE-', ''));
         return `CYCLE-${String(lastNum + 1).padStart(3, '0')}`;
@@ -108,15 +107,14 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         const updateData: any = {
           name: name.trim(),
           description: description.trim() || null,
-          start_date: startDate || null,
-          end_date: endDate || null,
-          owner_id: ownerId || null,
+          planned_start: startDate || null,
+          planned_end: endDate || null,
           environment_id: environmentId || null,
           updated_at: new Date().toISOString(),
         };
 
-        const { error } = await supabase
-          .from('th_test_cycles')
+        const { error } = await (supabase as any)
+          .from('tm_test_cycles')
           .update(updateData)
           .eq('id', cycle.id);
 
@@ -132,15 +130,15 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           cycle_key: cycleKey,
           name: name.trim(),
           description: description.trim() || null,
-          start_date: startDate || null,
-          end_date: endDate || null,
-          owner_id: ownerId || null,
+          planned_start: startDate || null,
+          planned_end: endDate || null,
           environment_id: environmentId || null,
           status: 'draft',
-          progress_percent: 0, total_cases: 0, passed_count: 0, failed_count: 0,
+          total_cases: 0, passed_count: 0, failed_count: 0,
           blocked_count: 0, skipped_count: 0, not_run_count: 0,
+          project_id: '00000000-0000-0000-0000-000000000001',
         };
-        const { error } = await supabase.from('th_test_cycles').insert(insertData).select().single();
+        const { error } = await (supabase as any).from('tm_test_cycles').insert(insertData).select().single();
 
         if (error) {
           catalystToast.error(error.message || 'Failed to create test cycle', { title: 'Creation Failed' });

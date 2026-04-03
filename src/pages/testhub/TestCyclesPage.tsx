@@ -23,26 +23,29 @@ interface TestCycle {
   name: string;
   description: string | null;
   status: string;
-  start_date: string | null;
-  end_date: string | null;
-  progress_percent: number;
+  planned_start: string | null;
+  planned_end: string | null;
   total_cases: number;
   passed_count: number;
   failed_count: number;
   blocked_count: number;
   skipped_count: number;
   not_run_count: number;
+  in_progress_count: number;
   created_at: string;
   updated_at: string;
-  owner_id?: string | null;
-  owner?: { id: string; full_name: string };
+  environment_id: string | null;
+  project_id: string;
 }
 
-const statusConfig = {
-  draft: { label: 'Draft', color: '#64748B', bg: '#F1F5F9' },
-  active: { label: 'Active', color: '#059669', bg: '#ECFDF5' },
-  completed: { label: 'Completed', color: '#2563EB', bg: '#EFF6FF' },
-  archived: { label: 'Archived', color: '#94A3B8', bg: '#F8FAFC' },
+const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
+  draft: { label: 'DRAFT', color: '#253858', bg: '#DFE1E6' },
+  planned: { label: 'PLANNED', color: '#253858', bg: '#DFE1E6' },
+  active: { label: 'ACTIVE', color: '#0747A6', bg: '#DEEBFF' },
+  in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
+  completed: { label: 'COMPLETED', color: '#006644', bg: '#E3FCEF' },
+  done: { label: 'DONE', color: '#006644', bg: '#E3FCEF' },
+  archived: { label: 'ARCHIVED', color: '#253858', bg: '#DFE1E6' },
 };
 
 export default function TestCyclesPage() {
@@ -66,16 +69,18 @@ export default function TestCyclesPage() {
   const fetchCycles = async () => {
     setIsLoading(true);
     try {
-      let query = supabase
-        .from('th_test_cycles')
-        .select(`*, owner:profiles!th_test_cycles_owner_id_fkey ( id, full_name )`)
-        .order(sortField, { ascending: sortDirection === 'asc' });
+      const safeSortField = ['created_at', 'name', 'status', 'cycle_key', 'planned_start', 'planned_end', 'updated_at'].includes(sortField) ? sortField : 'created_at';
+      let query = (supabase as any)
+        .from('tm_test_cycles')
+        .select('id, cycle_key, name, description, status, planned_start, planned_end, environment_id, project_id, total_cases, passed_count, failed_count, blocked_count, skipped_count, not_run_count, in_progress_count, created_at, updated_at')
+        .eq('project_id', '00000000-0000-0000-0000-000000000001')
+        .order(safeSortField, { ascending: sortDirection === 'asc' });
       if (statusFilter.length > 0) query = query.in('status', statusFilter);
       if (searchQuery.trim()) query = query.or(`name.ilike.%${searchQuery}%,cycle_key.ilike.%${searchQuery}%`);
-      if (dateFrom) query = query.gte('start_date', dateFrom);
-      if (dateTo) query = query.lte('end_date', dateTo);
+      if (dateFrom) query = query.gte('planned_start', dateFrom);
+      if (dateTo) query = query.lte('planned_end', dateTo);
       const { data, error } = await query;
-      if (error) { catalystToast.error('Failed to load test cycles'); return; }
+      if (error) { catalystToast.error('Failed to load test cycles'); console.error('Cycles query error:', error); return; }
       setCycles(data || []);
     } catch { catalystToast.error('Failed to load test cycles'); }
     finally { setIsLoading(false); }
@@ -91,7 +96,7 @@ export default function TestCyclesPage() {
 
   const handleStatusChange = async (cycleId: string, newStatus: string, label: string) => {
     try {
-      const { error } = await supabase.from('th_test_cycles').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', cycleId);
+      const { error } = await (supabase as any).from('tm_test_cycles').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', cycleId);
       if (error) throw error;
       catalystToast.success(`Cycle ${label.toLowerCase()}`, { title: `Cycle ${label}` });
       fetchCycles();
@@ -100,7 +105,7 @@ export default function TestCyclesPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
-      <TestHubPageHeader title="Test Cycles" subtitle="Plan and track test execution across sprints and releases">
+      <TestHubPageHeader title="Test Cycles" subtitle="Plan and track test execution across cycles and releases">
             <button onClick={() => { fetchCycles(); catalystToast.success('Test cycles refreshed'); }} title="Refresh"
               style={{ width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               <RefreshCw size={18} />

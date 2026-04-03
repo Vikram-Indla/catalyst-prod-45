@@ -69,8 +69,8 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
 
     setIsSubmitting(true);
     try {
-      const { data, error } = await supabase
-        .from('th_test_plans')
+      const { data, error } = await (supabase as any)
+        .from('tm_test_plans')
         .insert({
           name: name.trim(),
           description: description.trim() || null,

@@ -110,9 +110,9 @@ export default function CycleReportPage() {
     setIsLoading(true);
     try {
       const [cycleRes, testerRes, priorityRes, failureRes, dailyRes] = await Promise.all([
-        supabase
-          .from('th_test_cycles')
-          .select('*, owner:profiles!th_test_cycles_owner_id_fkey(full_name)')
+        (supabase as any)
+          .from('tm_test_cycles')
+          .select('*, owner:profiles!tm_test_cycles_owner_id_fkey(full_name)')
           .eq('id', cycleId)
           .single(),
         supabase.rpc('get_cycle_stats_by_tester', { p_cycle_id: cycleId }),

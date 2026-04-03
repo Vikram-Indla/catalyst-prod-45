@@ -144,12 +144,12 @@ export function useReleaseCycles(releaseId: string | undefined) {
     const fetch = async () => {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('release_test_cycles')
           .select(`
             id,
             cycle_id,
-            cycle:th_test_cycles(id, name, status, total_cases, passed_count, failed_count, blocked_count, start_date, end_date)
+            cycle:tm_test_cycles(id, name, status, total_cases, passed_count, failed_count, blocked_count, start_date, end_date)
           `)
           .eq('release_id', releaseId);
         if (error) throw new Error(error.message);

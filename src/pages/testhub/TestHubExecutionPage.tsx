@@ -149,15 +149,15 @@ export default function TestHubExecutionPage() {
 
   const fetchCycle = useCallback(async () => {
     if (!cycleId) return;
-    const { data, error } = await supabase.from('th_test_cycles').select('*').eq('id', cycleId).single();
+    const { data, error } = await (supabase as any).from('tm_test_cycles').select('*').eq('id', cycleId).single();
     if (!error && data) setCycle(data as any);
   }, [cycleId]);
 
   const fetchTestCases = useCallback(async () => {
     if (!cycleId) return;
-    const { data, error } = await supabase
-      .from('th_cycle_test_cases')
-      .select(`*, test_case:th_test_cases ( id, case_key, title, objective, preconditions, priority, type ), assignee:profiles!th_cycle_test_cases_assigned_to_fkey ( id, full_name )`)
+    const { data, error } = await (supabase as any)
+      .from('tm_cycle_scope')
+      .select(`*, test_case:tm_test_cases ( id, case_key, title, objective, preconditions, priority, type ), assignee:profiles!tm_cycle_scope_assigned_to_fkey ( id, full_name )`)
       .eq('cycle_id', cycleId)
       .order('created_at');
 
@@ -258,7 +258,7 @@ export default function TestHubExecutionPage() {
         updateData.executed_at = null; updateData.executed_by = null;
         updateData.failure_reason = null; updateData.execution_time_seconds = 0;
       }
-      const { error } = await supabase.from('th_cycle_test_cases').update(updateData).eq('id', selectedTestCaseId);
+      const { error } = await (supabase as any).from('tm_cycle_scope').update(updateData).eq('id', selectedTestCaseId);
       if (error) { catalystToast.error('Failed to update test result'); return; }
 
       const toastMap: Record<string, () => void> = {
@@ -376,7 +376,7 @@ export default function TestHubExecutionPage() {
     const timer = setTimeout(async () => {
       const currentTC = testCases.find(tc => tc.id === selectedTestCaseId);
       if (notes !== (currentTC?.notes || '')) {
-        await supabase.from('th_cycle_test_cases').update({ notes, updated_at: new Date().toISOString() }).eq('id', selectedTestCaseId);
+        await (supabase as any).from('tm_cycle_scope').update({ notes, updated_at: new Date().toISOString() }).eq('id', selectedTestCaseId);
       }
     }, 800);
     return () => clearTimeout(timer);

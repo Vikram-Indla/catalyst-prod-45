@@ -8,9 +8,8 @@ interface TestCycle {
   cycle_key: string;
   name: string;
   description: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  owner_id?: string | null;
+  planned_start: string | null;
+  planned_end: string | null;
   total_cases: number;
 }
 
@@ -41,8 +40,8 @@ export function CloneTestCycleModal({
   const generateCycleKey = async (): Promise<string> => {
     const { data, error } = await supabase.rpc('generate_cycle_key');
     if (error) {
-      const { data: lastCycle } = await supabase
-        .from('th_test_cycles')
+      const { data: lastCycle } = await (supabase as any)
+        .from('tm_test_cycles')
         .select('cycle_key')
         .order('created_at', { ascending: false })
         .limit(1);
@@ -67,21 +66,20 @@ export function CloneTestCycleModal({
         cycle_key: newCycleKey,
         name: newName.trim(),
         description: cycle.description,
-        start_date: cycle.start_date,
-        end_date: cycle.end_date,
-        owner_id: cycle.owner_id,
+        planned_start: cycle.planned_start,
+        planned_end: cycle.planned_end,
         status: 'draft',
-        progress_percent: 0,
         total_cases: 0,
         passed_count: 0,
         failed_count: 0,
         blocked_count: 0,
         skipped_count: 0,
         not_run_count: 0,
+        project_id: '00000000-0000-0000-0000-000000000001',
       };
 
-      const { data: newCycle, error: cycleError } = await supabase
-        .from('th_test_cycles')
+      const { data: newCycle, error: cycleError } = await (supabase as any)
+        .from('tm_test_cycles')
         .insert(newCycleData)
         .select()
         .single();
@@ -94,8 +92,8 @@ export function CloneTestCycleModal({
       }
 
       if (includeTestCases && cycle.total_cases > 0) {
-        const { data: originalTestCases, error: fetchError } = await supabase
-          .from('th_cycle_test_cases')
+        const { data: originalTestCases, error: fetchError } = await (supabase as any)
+          .from('tm_cycle_scope')
           .select('test_case_id, assigned_to')
           .eq('cycle_id', cycle.id);
 
@@ -107,8 +105,8 @@ export function CloneTestCycleModal({
             execution_status: 'not_run',
           }));
 
-          const { error: testCasesError } = await supabase
-            .from('th_cycle_test_cases')
+          const { error: testCasesError } = await (supabase as any)
+            .from('tm_cycle_scope')
             .insert(newTestCaseRecords);
 
           if (testCasesError) {
