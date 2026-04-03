@@ -1,13 +1,14 @@
 import { useState, useMemo } from 'react';
-import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown } from 'lucide-react';
+import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown, ExternalLink, Settings, Archive, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ProjectListItem, SortColumn, SortDirection } from '@/types/projecthub';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
 import { MemberStack } from './MemberStack';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { supabase } from '@/integrations/supabase/client';
-import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -21,7 +22,8 @@ function getBadgeColor(id: string): string {
   return BADGE_COLORS[Math.abs(hash) % BADGE_COLORS.length];
 }
 
-function getInitials(name: string): string {
+function getInitials(name: string | null | undefined): string {
+  if (!name) return '??';
   const parts = name.trim().split(/\s+/);
   if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
   return name.substring(0, 2).toUpperCase();
@@ -29,6 +31,18 @@ function getInitials(name: string): string {
 
 function isActiveStatus(status: string): boolean {
   return status === 'active';
+}
+
+// ── Shared hooks ───────────────────────────────────────
+function useAllProfiles() {
+  return useQuery({
+    queryKey: ['profiles-all'],
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('id, full_name, avatar_url, role').order('full_name');
+      return (data || []).map(p => ({ ...p, display_name: p.full_name || '' }));
+    },
+    staleTime: 60_000,
+  });
 }
 
 // ── 7-column grid ──────────────────────────────────────
@@ -92,6 +106,228 @@ function StatusChangePopover({ project }: { project: ProjectListItem }) {
   );
 }
 
+function LeadReassignPopover({ project }: { project: ProjectListItem }) {
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const { data: profiles = [] } = useAllProfiles();
+
+  const filtered = profiles.filter(p =>
+    p.display_name?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleLeadChange = async (newLeadId: string) => {
+    const { error } = await supabase
+      .from('projects')
+      .update({ lead_id: newLeadId, updated_at: new Date().toISOString() } as any)
+      .eq('id', project.id);
+    if (error) { toast.error('Failed to update lead'); return; }
+    toast.success('Lead updated');
+    queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+    setOpen(false);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={o => { setOpen(o); if (!o) setSearch(''); }}>
+      <PopoverTrigger asChild>
+        <button onClick={e => e.stopPropagation()} className="flex items-center gap-2 cursor-pointer hover:text-blue-600 w-full" style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left' }}>
+          {project.lead_name ? (
+            <>
+              <Avatar className="w-6 h-6">
+                <AvatarFallback className="text-[10px] font-bold text-white" style={{ background: getBadgeColor(project.lead_id || '') }}>
+                  {getInitials(project.lead_name)}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-[13px] font-medium truncate" style={{ color: 'var(--text-2)' }}>
+                {project.lead_name.split(' ').slice(0, 2).join(' ')}
+              </span>
+            </>
+          ) : (
+            <span style={{ fontSize: 13, color: 'var(--text-4)' }}>—</span>
+          )}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="w-60 p-3 bg-white dark:bg-[#232019]"
+        style={{ border: '1px solid #E2E8F0', borderRadius: 6 }}
+        onClick={e => e.stopPropagation()}
+      >
+        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Reassign lead</p>
+        <div className="relative mb-2">
+          <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            placeholder="Search people..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="h-8 w-full pl-8 pr-2 rounded border border-slate-200 dark:border-slate-600 bg-white dark:bg-[#2C2823] text-[13px] placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+        <div className="max-h-48 overflow-y-auto space-y-0.5">
+          {filtered.map(p => (
+            <button
+              key={p.id}
+              onClick={() => handleLeadChange(p.id)}
+              className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-slate-50 dark:hover:bg-slate-800 w-full text-left"
+              style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+            >
+              <Avatar className="w-6 h-6">
+                <AvatarFallback className="text-[10px] font-bold text-white" style={{ background: getBadgeColor(p.id) }}>
+                  {getInitials(p.display_name)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <div className="text-[13px] font-medium truncate" style={{ color: 'var(--text-1)' }}>{p.display_name}</div>
+                <div className="text-[11px] truncate" style={{ color: 'var(--text-3)' }}>{p.role || 'Team Member'}</div>
+              </div>
+            </button>
+          ))}
+          {filtered.length === 0 && <p className="text-xs text-slate-400 text-center py-3">No results</p>}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function MemberManagePopover({ project }: { project: ProjectListItem }) {
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [addMode, setAddMode] = useState(false);
+  const { data: profiles = [] } = useAllProfiles();
+
+  const memberIds = project.member_ids || [];
+
+  // Fetch member profiles for display
+  const members = useMemo(() => {
+    return memberIds.map(id => {
+      const p = profiles.find(pr => pr.id === id);
+      return { id, display_name: p?.display_name || 'Unknown', role: p?.role || '' };
+    });
+  }, [memberIds, profiles]);
+
+  const nonMembers = profiles.filter(p =>
+    !memberIds.includes(p.id) && p.display_name?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleRemove = async (userId: string) => {
+    const { error } = await supabase
+      .from('project_members')
+      .delete()
+      .eq('project_id', project.id)
+      .eq('user_id', userId);
+    if (error) { toast.error('Failed to remove member'); return; }
+    toast.success('Member removed');
+    queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+  };
+
+  const handleAdd = async (userId: string) => {
+    const { error } = await supabase
+      .from('project_members')
+      .insert({ project_id: project.id, user_id: userId, role: 'member' } as any);
+    if (error) { toast.error('Failed to add member'); return; }
+    toast.success('Member added');
+    queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+  };
+
+  return (
+    <Popover open={open} onOpenChange={o => { setOpen(o); if (!o) { setAddMode(false); setSearch(''); } }}>
+      <PopoverTrigger asChild>
+        <button onClick={e => e.stopPropagation()} className="flex items-center cursor-pointer" style={{ background: 'none', border: 'none', padding: 0 }}>
+          {memberIds.length > 0 ? (
+            <MemberStack memberIds={memberIds} memberCount={project.member_count} max={3} />
+          ) : (
+            <span style={{ fontSize: 13, color: 'var(--text-4)' }}>—</span>
+          )}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="w-[260px] p-3 bg-white dark:bg-[#232019]"
+        style={{ border: '1px solid #E2E8F0', borderRadius: 6 }}
+        onClick={e => e.stopPropagation()}
+      >
+        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Manage members</p>
+
+        {addMode ? (
+          <>
+            <div className="relative mb-2">
+              <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                placeholder="Search people..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                autoFocus
+                className="h-8 w-full pl-8 pr-2 rounded border border-slate-200 dark:border-slate-600 bg-white dark:bg-[#2C2823] text-[13px] placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div className="max-h-40 overflow-y-auto space-y-0.5">
+              {nonMembers.map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => handleAdd(p.id)}
+                  className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-slate-50 dark:hover:bg-slate-800 w-full text-left"
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                >
+                  <Avatar className="w-5 h-5">
+                    <AvatarFallback className="text-[9px] font-bold text-white" style={{ background: getBadgeColor(p.id) }}>
+                      {getInitials(p.display_name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-[13px] truncate" style={{ color: 'var(--text-1)' }}>{p.display_name}</span>
+                  <span className="ml-auto text-blue-600 text-xs font-bold">+</span>
+                </button>
+              ))}
+              {nonMembers.length === 0 && <p className="text-xs text-slate-400 text-center py-3">No results</p>}
+            </div>
+            <button
+              onClick={() => { setAddMode(false); setSearch(''); }}
+              className="mt-2 text-[12px] text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            >← Back</button>
+          </>
+        ) : (
+          <>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Current · {members.length}</p>
+            <div className="max-h-40 overflow-y-auto space-y-0.5 mb-2">
+              {members.map(m => (
+                <div key={m.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800">
+                  <Avatar className="w-5 h-5">
+                    <AvatarFallback className="text-[9px] font-bold text-white" style={{ background: getBadgeColor(m.id) }}>
+                      {getInitials(m.display_name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-[13px] truncate flex-1" style={{ color: 'var(--text-1)' }}>{m.display_name}</span>
+                  {m.id === project.lead_id && (
+                    <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 dark:bg-blue-950 px-1.5 py-0.5 rounded">Lead</span>
+                  )}
+                  {m.id !== project.lead_id && (
+                    <button
+                      onClick={() => handleRemove(m.id)}
+                      className="text-slate-400 hover:text-red-600 text-xs transition-colors"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px' }}
+                    >×</button>
+                  )}
+                </div>
+              ))}
+              {members.length === 0 && <p className="text-xs text-slate-400 text-center py-2">No members</p>}
+            </div>
+            <div className="border-t border-slate-100 dark:border-slate-700 pt-2">
+              <button
+                onClick={() => setAddMode(true)}
+                className="flex items-center gap-1.5 px-2 py-1.5 text-blue-600 text-[13px] font-medium rounded-md hover:bg-blue-50 dark:hover:bg-blue-950 w-full"
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+              >
+                + Add member
+              </button>
+            </div>
+          </>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 function RowActionMenu({ project }: { project: ProjectListItem }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -99,7 +335,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
   const handleArchive = async () => {
     const { error } = await supabase
       .from('projects')
-      .update({ status: 'archived' } as any)
+      .update({ status: 'archived', updated_at: new Date().toISOString() } as any)
       .eq('id', project.id);
     if (error) { toast.error('Failed to archive'); return; }
     toast.success(`${project.name} archived`);
@@ -107,8 +343,8 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
   };
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         <button
           onClick={e => e.stopPropagation()}
           className="flex h-7 w-7 items-center justify-center rounded opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200"
@@ -116,29 +352,24 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
         >
           <MoreHorizontal size={16} />
         </button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        className="w-48 p-1 bg-white dark:bg-[#232019]"
-        style={{ border: '1px solid #E2E8F0', borderRadius: 6 }}
-        onClick={e => e.stopPropagation()}
-      >
-        <button
-          onClick={() => navigate(`/project-hub/${project.project_key}/dashboard`)}
-          className="flex w-full items-center rounded px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-200"
-          style={{ border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
-        >
-          Open Project
-        </button>
-        <button
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[180px]" onClick={e => e.stopPropagation()}>
+        <DropdownMenuLabel className="text-xs text-slate-500">Actions</DropdownMenuLabel>
+        <DropdownMenuItem onClick={() => navigate(`/project-hub/${project.project_key}/dashboard`)}>
+          <ExternalLink size={14} className="mr-2" /> Open Project
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate(`/project-hub/${project.project_key}/sync`)} disabled>
+          <Settings size={14} className="mr-2" /> Sync Settings
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
           onClick={handleArchive}
-          className="flex w-full items-center rounded px-3 py-2 text-sm hover:bg-red-50 dark:hover:bg-red-950"
-          style={{ color: '#DC2626', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
+          className="text-red-600 focus:text-red-600 focus:bg-red-50"
         >
-          Archive
-        </button>
-      </PopoverContent>
-    </Popover>
+          <Archive size={14} className="mr-2" /> Archive
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -261,7 +492,6 @@ export function AllProjectsTable({
 
             {/* Cell 2: Project — 2 lines */}
             <div className="flex flex-col items-start gap-1 py-3 px-3" style={{ borderBottom: '0.75px solid var(--bd-default)', opacity: active ? 1 : 0.45 }}>
-              {/* Line 1: star + badge + name + key */}
               <div className="flex items-center gap-2.5 w-full">
                 <button
                   onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }}
@@ -287,7 +517,6 @@ export function AllProjectsTable({
                   {p.project_key}
                 </span>
               </div>
-              {/* Line 2: sync chip */}
               <div className="flex items-center gap-2 pl-[42px]">
                 <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-medium text-slate-500 dark:text-slate-400">
                   <span className={cn("w-1.5 h-1.5 rounded-full", syncHealthy ? "bg-green-500" : "bg-amber-500")} />
@@ -305,36 +534,14 @@ export function AllProjectsTable({
               )}
             </div>
 
-            {/* Cell 4: Lead */}
+            {/* Cell 4: Lead — clickable reassignment popover */}
             <div style={{ borderBottom: '0.75px solid var(--bd-default)', padding: '8px 8px', opacity: active ? 1 : 0.45 }}>
-              {p.lead_name ? (
-                <div className="flex items-center gap-2 cursor-pointer hover:text-blue-600">
-                  <Avatar className="w-6 h-6">
-                    <AvatarFallback
-                      className="text-[10px] font-bold text-white"
-                      style={{ background: getBadgeColor(p.lead_id || '') }}
-                    >
-                      {getInitials(p.lead_name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-[13px] font-medium truncate" style={{ color: 'var(--text-2)' }}>
-                    {p.lead_name.split(' ').slice(0, 2).join(' ')}
-                  </span>
-                </div>
-              ) : (
-                <span style={{ fontSize: 13, color: 'var(--text-4)' }}>—</span>
-              )}
+              <LeadReassignPopover project={p} />
             </div>
 
-            {/* Cell 5: Members */}
+            {/* Cell 5: Members — clickable management popover */}
             <div style={{ borderBottom: '0.75px solid var(--bd-default)', padding: '8px 8px', opacity: active ? 1 : 0.45 }}>
-              {p.member_ids && p.member_ids.length > 0 ? (
-                <div className="flex items-center cursor-pointer">
-                  <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
-                </div>
-              ) : (
-                <span style={{ fontSize: 13, color: 'var(--text-4)' }}>—</span>
-              )}
+              <MemberManagePopover project={p} />
             </div>
 
             {/* Cell 6: Updated */}
