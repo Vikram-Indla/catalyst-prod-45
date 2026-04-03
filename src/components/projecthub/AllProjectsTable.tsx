@@ -388,32 +388,19 @@ export function AllProjectsTable({
 }: Props) {
   const navigate = useNavigate();
 
-  // Per-project sync data from ph_issues + ph_sync_log (authoritative sources)
+  // Per-project sync data from RPC + ph_sync_log (authoritative sources)
   const { data: syncData } = useQuery({
     queryKey: ['project-sync-data'],
     queryFn: async () => {
-      // Get per-project issue counts from ph_issues using issue_key (guaranteed to exist)
-      // Paginate to get all rows (Supabase default limit is 1000)
+      // Use SECURITY DEFINER RPC to get per-project 2026 issue counts
+      // This bypasses PostgREST table cache issues
       const countMap: Record<string, number> = {};
-      let offset = 0;
-      const pageSize = 1000;
-      let hasMore = true;
 
-      while (hasMore) {
-        const { data: issues } = await (supabase as any)
-          .from('ph_issues')
-          .select('issue_key')
-          .range(offset, offset + pageSize - 1);
-
-        if (!issues || issues.length === 0) { hasMore = false; break; }
-
-        issues.forEach((i: any) => {
-          const pk = i.issue_key?.split('-')?.[0];
-          if (pk) countMap[pk] = (countMap[pk] || 0) + 1;
+      const { data: rpcData } = await (supabase as any).rpc('get_project_issue_counts');
+      if (rpcData) {
+        rpcData.forEach((r: any) => {
+          if (r.proj) countMap[r.proj] = Number(r.cnt) || 0;
         });
-
-        offset += pageSize;
-        if (issues.length < pageSize) hasMore = false;
       }
 
       // Get last successful sync time
