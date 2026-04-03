@@ -53,14 +53,17 @@ export default function FreezeWindowsPage() {
   }, [calMonth]);
 
   const isFreezeDate = (date: Date) => {
-    const d = date.toISOString().slice(0, 10);
+    const riyadh = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Riyadh' }));
+    const d = riyadh.getFullYear() + '-' + String(riyadh.getMonth() + 1).padStart(2, '0') + '-' + String(riyadh.getDate()).padStart(2, '0');
     return windows.find((fw: any) => d >= fw.start_date && d <= fw.end_date);
   };
 
-  const isToday = (date: Date) =>
-    date.getFullYear() === today.getFullYear() &&
-    date.getMonth() === today.getMonth() &&
-    date.getDate() === today.getDate();
+  const isToday = (date: Date) => {
+    const riyadh = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh' }));
+    return date.getFullYear() === riyadh.getFullYear() &&
+      date.getMonth() === riyadh.getMonth() &&
+      date.getDate() === riyadh.getDate();
+  };
 
   const handleCreate = async () => {
     setFormError('');
@@ -107,8 +110,7 @@ export default function FreezeWindowsPage() {
           </p>
         </div>
         <button onClick={() => setShowModal(true)}
-          className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"
-          style={{ background: 'linear-gradient(to bottom, #3B82F6, #2563EB)', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
+          className="h-9 px-4 rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-colors">
           <Plus size={14} /> Add Freeze Window
         </button>
       </div>

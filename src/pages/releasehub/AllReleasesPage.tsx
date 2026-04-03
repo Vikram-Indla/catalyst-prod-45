@@ -112,8 +112,7 @@ export default function AllReleasesPage() {
             <Download size={14} /> Import from Jira
           </button>
           <button onClick={() => setShowCreate(true)}
-            className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"
-            style={{ background: 'linear-gradient(to bottom, #3B82F6, #2563EB)', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
+            className="h-9 px-4 rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-colors">
             <Plus size={14} /> New Release
           </button>
         </div>
@@ -221,7 +220,7 @@ export default function AllReleasesPage() {
                   <div className="flex items-center gap-3 text-[12px] text-[#64748B] mb-3">
                     <span>{r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date'}</span>
                     <span>·</span>
-                    <span>{progress.total} changes</span>
+                    <span>{progress.total} {progress.total === 1 ? 'change' : 'changes'}</span>
                   </div>
 
                   {progress.empty ? (
@@ -235,7 +234,7 @@ export default function AllReleasesPage() {
                         }} />
                       </div>
                       <p className="text-[11px] text-[#94A3B8] mt-1" style={{ fontFamily: RH.fontBody }}>
-                        {progress.pct}% · {progress.completed} of {progress.total} changes deployed
+                        {progress.pct}% · {progress.completed} of {progress.total} {progress.total === 1 ? 'change' : 'changes'} deployed
                       </p>
                     </>
                   )}
