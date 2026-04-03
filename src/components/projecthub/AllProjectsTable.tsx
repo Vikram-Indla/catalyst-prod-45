@@ -331,7 +331,7 @@ export function AllProjectsTable({
             </div>
 
             {/* Cell 8: Updated */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 8px', fontSize: 12, color: 'var(--text-3)', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', fontSize: 12, color: 'var(--text-3)', opacity: active ? 1 : 0.45 }}>
               {p.updated_at
                 ? formatDistanceToNowStrict(new Date(p.updated_at), { addSuffix: true })
                 : '—'}
