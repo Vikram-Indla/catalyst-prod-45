@@ -347,7 +347,7 @@ export function useCreateTestCycleFromSet() {
       // Add test cases to the cycle
       if ((setCases as any[]).length > 0) {
         const { error: addError } = await supabase
-          .from('th_cycle_test_cases' as any)
+          .from('tm_cycle_scope' as any)
           .insert(
             (setCases as any[]).map((sc, idx) => ({
               cycle_id: (newCycle as any).id,

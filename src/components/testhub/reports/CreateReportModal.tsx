@@ -41,8 +41,8 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
   useEffect(() => {
     const fetchData = async () => {
       const [cyclesRes, plansRes] = await Promise.all([
-        (supabase as any).from('th_test_cycles').select('id, cycle_key, name').order('created_at', { ascending: false }),
-        (supabase as any).from('th_test_plans').select('id, plan_key, name').neq('status', 'archived').order('created_at', { ascending: false }),
+        (supabase as any).from('tm_test_cycles').select('id, cycle_key, name').order('created_at', { ascending: false }),
+        (supabase as any).from('tm_test_plans').select('id, plan_key, name').neq('status', 'archived').order('created_at', { ascending: false }),
       ]);
       if (cyclesRes.data) setCycles(cyclesRes.data);
       if (plansRes.data) setPlans(plansRes.data);

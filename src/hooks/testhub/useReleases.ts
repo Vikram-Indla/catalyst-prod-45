@@ -149,7 +149,7 @@ export function useReleaseCycles(releaseId: string | undefined) {
           .select(`
             id,
             cycle_id,
-            cycle:th_test_cycles(id, name, status, total_cases, passed_count, failed_count, blocked_count, start_date, end_date)
+            cycle:tm_test_cycles(id, name, status, total_cases, passed_count, failed_count, blocked_count, start_date, end_date)
           `)
           .eq('release_id', releaseId);
         if (error) throw new Error(error.message);

@@ -93,8 +93,8 @@ export function QuickExecutionModal({
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
-        .from('th_cycle_test_cases')
+      const { error } = await (supabase as any)
+        .from('tm_cycle_scope')
         .update({
           execution_status: status,
           executed_at: new Date().toISOString(),
