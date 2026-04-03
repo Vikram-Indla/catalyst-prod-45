@@ -266,29 +266,6 @@ export function useDeleteFreezeWindow() {
   });
 }
 
-export function useLinkTestCycle() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async ({
-      releaseId,
-      testCycleId,
-    }: {
-      releaseId: string;
-      testCycleId: string;
-    }) => {
-      const { error } = await supabase
-        .from('rh_release_test_cycle_links')
-        .insert({ release_id: releaseId, test_cycle_id: testCycleId });
-      if (error) throw error;
-    },
-    onSuccess: (_data, vars) => {
-      qc.invalidateQueries({
-        queryKey: ['release-hub', 'test-cycles', vars.releaseId],
-      });
-    },
-  });
-}
-
 export function useUnlinkTestCycle() {
   const qc = useQueryClient();
   return useMutation({
