@@ -290,7 +290,7 @@ export function AllProjectsTable({
             </div>
 
             {/* Cell 5: Status */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 8px', textAlign: 'center', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', textAlign: 'center', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
               {active ? (
                 <StatusChangePopover project={p} />
               ) : (
