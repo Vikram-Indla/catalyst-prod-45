@@ -394,7 +394,7 @@ export function AllProjectsTable({
     queryFn: async () => {
       const { data } = await supabase
         .from('sync_entity_map')
-        .select('catalyst_entity_id, last_synced_at, sync_direction, sync_version')
+        .select('catalyst_entity_id, last_synced_at, sync_direction, last_sync_status')
         .eq('catalyst_entity_type', 'project');
       return new Map(data?.map(s => [s.catalyst_entity_id, s]) || []);
     },

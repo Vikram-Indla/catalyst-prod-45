@@ -106,21 +106,22 @@ export function JiraSyncPanel() {
   const { data: syncStats } = useQuery({
     queryKey: ['sync-stats'],
     queryFn: async () => {
-      const [projectsRes, issuesRes, queueRes, healthRes, failedRes] = await Promise.all([
-        supabase.from('sync_entity_map').select('id', { count: 'exact', head: true }).eq('catalyst_entity_type', 'project'),
-        supabase.from('catalyst_issues').select('id', { count: 'exact', head: true }),
-        supabase.from('sync_events').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('sync_health').select('*').order('checked_at', { ascending: false }).limit(5),
-        supabase.from('sync_events').select('id', { count: 'exact', head: true }).eq('status', 'failed'),
-      ]);
-      return {
-        projectCount: projectsRes.count || 0,
-        issueCount: issuesRes.count || 0,
-        queueDepth: queueRes.count || 0,
-        lastChecked: (healthRes.data as any)?.[0]?.checked_at ?? null,
-        failedCount: failedRes.count || 0,
-        webhookActive: !!conn?.webhook_id,
-      };
+      const results = { projectCount: 0, issueCount: 0, queueDepth: 0, lastChecked: null as string | null, failedCount: 0, webhookActive: !!conn?.webhook_id };
+      try {
+        const [connRes, issuesRes, queueRes, healthRes, failedRes] = await Promise.all([
+          supabase.from('sync_connections').select('id', { count: 'exact', head: true }).eq('is_active', true),
+          supabase.from('catalyst_issues').select('id', { count: 'exact', head: true }),
+          supabase.from('sync_events').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+          supabase.from('sync_health').select('checked_at, status').order('checked_at', { ascending: false }).limit(1).maybeSingle(),
+          supabase.from('sync_events').select('id', { count: 'exact', head: true }).eq('status', 'failed'),
+        ]);
+        results.projectCount = connRes.count || 0;
+        results.issueCount = issuesRes.count || 0;
+        results.queueDepth = queueRes.count || 0;
+        results.lastChecked = healthRes.data?.checked_at || null;
+        results.failedCount = failedRes.count || 0;
+      } catch (e) { console.error('Sync stats error:', e); }
+      return results;
     },
     refetchInterval: 30000,
   });
