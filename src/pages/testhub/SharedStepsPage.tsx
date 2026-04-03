@@ -150,8 +150,8 @@ export default function SharedStepsPage() {
 
       if (catError) { console.error('Categories fetch error:', catError); return; }
 
-      const { data: countsData } = await supabase
-        .from('th_shared_steps')
+      const { data: countsData } = await (supabase as any)
+        .from('tm_shared_steps')
         .select('category_id')
         .eq('is_active', true);
 
