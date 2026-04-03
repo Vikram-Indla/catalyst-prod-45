@@ -29,6 +29,7 @@ interface TestCaseForEdit {
   status: string;
   version: number;
   owner_id?: string | null;
+  created_by?: string | null;
 }
 
 interface CreateTestCaseModalProps {

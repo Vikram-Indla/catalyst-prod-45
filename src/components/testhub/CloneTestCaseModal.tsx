@@ -10,7 +10,6 @@ interface TestCase {
   objective: string | null;
   preconditions: string | null;
   folder_id: string | null;
-  folderId?: string | null;
   priority: string;
   type: string;
 }
@@ -70,7 +69,7 @@ export function CloneTestCaseModal({
           title: newTitle.trim(),
           description: (testCase as any).objective || (testCase as any).description || '',
           preconditions: testCase.preconditions,
-          folder_id: (testCase as any).folderId || testCase.folder_id,
+          folder_id: testCase.folder_id,
           priority_id: (testCase as any).priority_id || null,
           case_type_id: (testCase as any).case_type_id || null,
           status: 'draft',
