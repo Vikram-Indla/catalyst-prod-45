@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, LayoutGrid, List, Plus, Package } from 'lucide-react';
-import { useReleases } from '@/hooks/useReleaseHub';
+import { useReleaseSummary } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
 import { SourceBadge } from '@/components/releasehub/SourceBadge';
@@ -16,7 +16,7 @@ function mapStatus(status: string) {
 }
 
 export default function AllReleasesPage() {
-  const { data: releases = [], isLoading, error, refetch } = useReleases();
+  const { data: releases = [], isLoading, error, refetch } = useReleaseSummary();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<string>('all');
   const [view, setView] = useState<'cards' | 'table'>('cards');
@@ -43,6 +43,14 @@ export default function AllReleasesPage() {
     if (s === 'released') return '#16A34A';
     if (s === 'planning') return '#FFFFFF';
     return 'rgba(15,23,42,0.12)';
+  };
+
+  const getProgress = (r: any) => {
+    const total = Number(r.change_count) || 0;
+    const completed = Number(r.completed_change_count) || 0;
+    if (total === 0) return { pct: 0, total, completed, empty: true };
+    const pct = Math.min(Math.round((completed / total) * 100), 100);
+    return { pct, total, completed, empty: false };
   };
 
   return (
@@ -101,66 +109,88 @@ export default function AllReleasesPage() {
           actions={[{ label: 'Clear filters', onClick: () => { setSearch(''); setFilter('all'); }, variant: 'ghost' }]} />
       ) : view === 'cards' ? (
         <div className="grid grid-cols-3 gap-3.5">
-          {filtered.map((r: any) => (
-            <button key={r.id} onClick={() => setSelectedRelease(r)}
-              className="bg-white rounded-md border border-[rgba(15,23,42,0.12)] overflow-hidden text-left hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all relative group"
-              style={{ borderRadius: 6 }}>
-              <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: accentColor(r.status), borderRadius: '6px 0 0 6px' }} />
-              <div className="p-4 pl-5">
-                {/* Title + Key */}
-                <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: RH.ink1, fontWeight: 650 }}>{r.name}</h3>
-                {r.jira_key && <span className="text-[11px] text-[#94A3B8] block mb-2" style={{ fontFamily: RH.fontMono }}>{r.jira_key}</span>}
+          {filtered.map((r: any) => {
+            const progress = getProgress(r);
+            return (
+              <button key={r.id} onClick={() => setSelectedRelease(r)}
+                className="bg-white rounded-md border border-[rgba(15,23,42,0.12)] overflow-hidden text-left hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all relative group"
+                style={{ borderRadius: 6 }}>
+                <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: accentColor(r.status), borderRadius: '6px 0 0 6px' }} />
+                <div className="p-4 pl-5">
+                  <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: RH.ink1, fontWeight: 650 }}>{r.name}</h3>
+                  {r.jira_key && <span className="text-[11px] text-[#94A3B8] block mb-2" style={{ fontFamily: RH.fontMono }}>{r.jira_key}</span>}
 
-                {/* Status lozenge top-right area */}
-                <div className="flex items-center gap-2 flex-wrap mb-2">
-                  <StatusLozenge status={mapStatus(r.status)} />
-                </div>
+                  <div className="flex items-center gap-2 flex-wrap mb-2">
+                    <StatusLozenge status={mapStatus(r.status)} />
+                  </div>
 
-                {/* Meta row */}
-                <div className="flex items-center gap-3 text-[12px] text-[#64748B] mb-3">
-                  <span>{r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date'}</span>
-                  <span>·</span>
-                  <span>{r.change_count || r.chg_count || 0} changes</span>
-                </div>
+                  <div className="flex items-center gap-3 text-[12px] text-[#64748B] mb-3">
+                    <span>{r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date'}</span>
+                    <span>·</span>
+                    <span>{progress.total} changes</span>
+                  </div>
 
-                {/* Progress bar */}
-                <div className="w-full h-1 bg-[#F1F5F9] rounded-full overflow-hidden">
-                  <div className="h-full rounded-full" style={{
-                    width: mapStatus(r.status) === 'released' ? '100%' : mapStatus(r.status) === 'in_progress' ? '50%' : '10%',
-                    background: accentColor(r.status)
-                  }} />
+                  {progress.empty ? (
+                    <p className="text-[11px] text-[#94A3B8]" style={{ fontFamily: RH.fontBody }}>No changes yet</p>
+                  ) : (
+                    <>
+                      <div className="w-full h-1 bg-[#F1F5F9] rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all" style={{
+                          width: progress.pct + '%',
+                          background: accentColor(r.status)
+                        }} />
+                      </div>
+                      <p className="text-[11px] text-[#94A3B8] mt-1" style={{ fontFamily: RH.fontBody }}>
+                        {progress.pct}% · {progress.completed} of {progress.total} changes deployed
+                      </p>
+                    </>
+                  )}
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
       ) : (
         <div className="bg-white rounded border border-[rgba(15,23,42,0.12)] overflow-hidden">
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
               <tr style={{ background: '#F1F5F9' }}>
-                {['RELEASE', 'SOURCE', 'STATUS', 'TARGET DATE', 'CHANGES', 'TEST CYCLES'].map(h => (
+                {['RELEASE', 'SOURCE', 'STATUS', 'TARGET DATE', 'CHANGES', 'PROGRESS'].map(h => (
                   <th key={h} className="px-3 py-0 h-[36px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {filtered.map((r: any) => (
-                <tr key={r.id} onClick={() => setSelectedRelease(r)}
-                  className="border-b border-[rgba(15,23,42,0.06)] cursor-pointer"
-                  style={{ height: 36, background: '#FFFFFF', transition: 'background 120ms' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}>
-                  <td className="px-3 py-0 font-medium" style={{ color: RH.ink1 }}>{r.name}</td>
-                  <td className="px-3 py-0"><SourceBadge source={r.source || 'catalyst'} /></td>
-                  <td className="px-3 py-0"><StatusLozenge status={mapStatus(r.status)} /></td>
-                  <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
-                    {r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
-                  </td>
-                  <td className="px-3 py-0"><span className="font-bold text-[#0F172A]" style={{ fontFamily: RH.fontMono }}>{r.change_count || r.chg_count || 0}</span></td>
-                  <td className="px-3 py-0 text-[#64748B]">{r.test_cycle_count || 0}</td>
-                </tr>
-              ))}
+              {filtered.map((r: any) => {
+                const progress = getProgress(r);
+                return (
+                  <tr key={r.id} onClick={() => setSelectedRelease(r)}
+                    className="border-b border-[rgba(15,23,42,0.06)] cursor-pointer"
+                    style={{ height: 36, background: '#FFFFFF', transition: 'background 120ms' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}>
+                    <td className="px-3 py-0 font-medium" style={{ color: RH.ink1 }}>{r.name}</td>
+                    <td className="px-3 py-0"><SourceBadge source={r.source || 'catalyst'} /></td>
+                    <td className="px-3 py-0"><StatusLozenge status={mapStatus(r.status)} /></td>
+                    <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
+                      {r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                    </td>
+                    <td className="px-3 py-0"><span className="font-bold text-[#0F172A]" style={{ fontFamily: RH.fontMono }}>{progress.total}</span></td>
+                    <td className="px-3 py-0">
+                      {progress.empty ? (
+                        <span className="text-[11px] text-[#94A3B8]">No changes yet</span>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 h-1 bg-[#F1F5F9] rounded-full overflow-hidden">
+                            <div className="h-full rounded-full" style={{ width: progress.pct + '%', background: accentColor(r.status) }} />
+                          </div>
+                          <span className="text-[11px] text-[#64748B]" style={{ fontFamily: RH.fontMono }}>{progress.pct}%</span>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
