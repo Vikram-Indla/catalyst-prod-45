@@ -1,6 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Check, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Check, X, ChevronDown, Search } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Switch } from '@/components/ui/switch';
 import { IconColorPicker } from './IconColorPicker';
 
 const DEPARTMENTS = [
@@ -21,6 +23,9 @@ export interface StepDetailsData {
   description: string;
   icon: string;
   color: string;
+  lead_id: string;
+  linkJira: boolean;
+  jiraKey: string;
 }
 
 interface StepDetailsProps {
@@ -40,9 +45,47 @@ function generateKey(name: string): string {
     .slice(0, 6);
 }
 
+function getInitials(name: string | null): string {
+  if (!name) return '?';
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
 export function StepDetails({ data, onChange, isValid, onValidChange }: StepDetailsProps) {
   const [keyManual, setKeyManual] = useState(false);
   const [keyStatus, setKeyStatus] = useState<'checking' | 'available' | 'taken' | null>(null);
+  const [showLeadPicker, setShowLeadPicker] = useState(false);
+  const [leadFilter, setLeadFilter] = useState('');
+  const leadRef = useRef<HTMLDivElement>(null);
+
+  // Profiles for lead picker
+  const { data: profiles } = useQuery({
+    queryKey: ['ph-profiles-lead-picker'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url, role')
+        .eq('approval_status', 'APPROVED')
+        .order('full_name', { ascending: true });
+      return (data || []).map(p => ({
+        id: p.id,
+        display_name: p.full_name || 'Unknown',
+        avatar_url: p.avatar_url,
+        role: p.role,
+      }));
+    },
+  });
+
+  const selectedLead = profiles?.find(p => p.id === data.lead_id);
+
+  // Close lead picker on outside click
+  useEffect(() => {
+    if (!showLeadPicker) return;
+    const handler = (e: MouseEvent) => {
+      if (leadRef.current && !leadRef.current.contains(e.target as Node)) setShowLeadPicker(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showLeadPicker]);
 
   // Auto-generate key from name
   useEffect(() => {
@@ -57,7 +100,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
     if (!data.key || data.key.length < 2) { setKeyStatus(null); return; }
     setKeyStatus('checking');
     const t = setTimeout(async () => {
-      const { data: existing, error } = await supabase
+      const { data: existing } = await supabase
         .from('ph_projects')
         .select('id')
         .eq('key', data.key.toUpperCase())
@@ -85,6 +128,10 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
     outline: 'none',
     fontFamily: "'Inter', sans-serif",
   };
+
+  const filteredProfiles = profiles?.filter(p =>
+    p.display_name.toLowerCase().includes(leadFilter.toLowerCase())
+  ) || [];
 
   return (
     <div className="space-y-4">
@@ -157,6 +204,89 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
         </select>
       </div>
 
+      {/* Lead Picker */}
+      <div ref={leadRef} className="relative">
+        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+          Project Lead
+        </label>
+        <button
+          type="button"
+          onClick={() => setShowLeadPicker(!showLeadPicker)}
+          className="flex items-center justify-between w-full text-left"
+          style={{
+            ...inputStyle,
+            display: 'flex',
+            alignItems: 'center',
+            cursor: 'pointer',
+            gap: 8,
+          }}
+        >
+          {selectedLead ? (
+            <div className="flex items-center gap-2 min-w-0">
+              {selectedLead.avatar_url ? (
+                <img src={selectedLead.avatar_url} alt="" className="rounded-full" style={{ width: 22, height: 22, objectFit: 'cover' }} />
+              ) : (
+                <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 22, height: 22, background: '#E2E8F0', fontSize: 9, fontWeight: 700, color: '#475569' }}>
+                  {getInitials(selectedLead.display_name)}
+                </div>
+              )}
+              <span className="truncate" style={{ fontSize: 13, color: 'var(--fg-1)' }}>{selectedLead.display_name}</span>
+            </div>
+          ) : (
+            <span style={{ color: 'var(--fg-4)', fontSize: 13 }}>Select project lead...</span>
+          )}
+          <ChevronDown size={14} style={{ color: 'var(--fg-3)', flexShrink: 0 }} />
+        </button>
+
+        {showLeadPicker && (
+          <div
+            className="absolute left-0 right-0 z-50 bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] rounded-lg shadow-lg"
+            style={{ top: '100%', marginTop: 4, maxHeight: 260, display: 'flex', flexDirection: 'column' }}
+          >
+            <div className="p-2 border-b border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)]">
+              <div className="relative">
+                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+                <input
+                  autoFocus
+                  value={leadFilter}
+                  onChange={e => setLeadFilter(e.target.value)}
+                  placeholder="Search people..."
+                  className="w-full text-[13px] pl-8 pr-3 py-1.5 rounded border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] bg-transparent outline-none"
+                  style={{ height: 32, color: 'var(--fg-1)' }}
+                />
+              </div>
+            </div>
+            <div className="overflow-y-auto flex-1 p-1" style={{ maxHeight: 200 }}>
+              {filteredProfiles.length === 0 ? (
+                <div className="text-center py-4" style={{ fontSize: 12, color: 'var(--fg-3)' }}>No results</div>
+              ) : (
+                filteredProfiles.map(p => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => { onChange({ ...data, lead_id: p.id }); setShowLeadPicker(false); setLeadFilter(''); }}
+                    className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-[#F1F5F9] dark:hover:bg-[rgba(255,255,255,0.04)] w-full text-left"
+                  >
+                    {p.avatar_url ? (
+                      <img src={p.avatar_url} alt="" className="rounded-full" style={{ width: 24, height: 24, objectFit: 'cover' }} />
+                    ) : (
+                      <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 24, height: 24, background: '#E2E8F0', fontSize: 9, fontWeight: 700, color: '#475569' }}>
+                        {getInitials(p.display_name)}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{p.display_name}</div>
+                      <div className="truncate" style={{ fontSize: 11, color: 'var(--fg-3)' }}>{p.role || 'Team Member'}</div>
+                    </div>
+                    {p.id === data.lead_id && <Check size={14} className="ml-auto text-[#2563EB]" />}
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Description */}
       <div>
         <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
@@ -174,6 +304,38 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
             resize: 'vertical',
           }}
         />
+      </div>
+
+      {/* Jira Link Toggle */}
+      <div className="rounded-lg border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Link to Jira project</div>
+            <div style={{ fontSize: 11, color: 'var(--fg-3)', marginTop: 2 }}>Enable bi-directional sync with an existing Jira project</div>
+          </div>
+          <Switch
+            checked={data.linkJira}
+            onCheckedChange={v => onChange({ ...data, linkJira: v })}
+          />
+        </div>
+        {data.linkJira && (
+          <div className="mt-3">
+            <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+              Jira Project Key
+            </label>
+            <input
+              value={data.jiraKey}
+              onChange={e => onChange({ ...data, jiraKey: e.target.value.toUpperCase() })}
+              placeholder="e.g. DTI"
+              style={{
+                ...inputStyle,
+                fontFamily: "'JetBrains Mono', monospace",
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Icon + Color */}
