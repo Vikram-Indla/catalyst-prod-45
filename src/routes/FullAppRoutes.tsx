@@ -60,6 +60,7 @@ const RH21ReleaseComparePage = lazy(() => import("../pages/releasehub/ReleaseCom
 const RH21TriageQueuePage = lazy(() => import("../pages/releasehub/TriageQueuePage"));
 const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage"));
 const RH21SignOffQueuePage = lazy(() => import("../pages/release-hub/SignOffQueuePage"));
+const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindowsPage"));
 const StrategicThemesPage = lazy(() => import("../pages/strategyhub/StrategicThemesPage"));
 const GoalsKeyResultsPage = lazy(() => import("../pages/strategyhub/GoalsKeyResultsPage"));
 const InitiativeListingPage = lazy(() => import("../pages/producthub/InitiativeListingPage"));
