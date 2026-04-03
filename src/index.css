@@ -911,11 +911,11 @@ html:has(body[data-scroll-locked]) {
     --primary: 217 91% 60%;              /* #3b82f6 blue */
     --primary-foreground: 0 0% 100%;     /* pure white on buttons only */
     
-    --secondary: 216 10% 10%;            /* matches card */
-    --secondary-foreground: 0 0% 92%;
+    --secondary: 222 12% 12%;            /* Cool Steel card */
+    --secondary-foreground: 216 25% 91%;
     
-    --muted: 216 10% 12%;                /* #232830 */
-    --muted-foreground: 0 0% 72%;        /* --fg-2 */
+    --muted: 222 12% 14%;                /* #1E2027 */
+    --muted-foreground: 216 20% 72%;     /* --fg-2 */
     
     --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
