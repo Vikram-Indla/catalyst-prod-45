@@ -38,9 +38,12 @@ function useAllProfiles() {
   return useQuery({
     queryKey: ['profiles-all'],
     queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, display_name, avatar_url, role').order('display_name');
-      return data || [];
+      const { data } = await supabase.from('profiles').select('id, full_name, avatar_url, role').order('full_name');
+      return (data || []).map(p => ({ ...p, display_name: p.full_name || '' }));
     },
+    staleTime: 60_000,
+  });
+}
     staleTime: 60_000,
   });
 }
