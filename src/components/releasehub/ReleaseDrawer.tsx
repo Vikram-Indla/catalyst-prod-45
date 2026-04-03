@@ -221,7 +221,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
           {activeTab === 'Test Cycles' && <TestCyclesTab testCycles={testCycles} release={release} />}
           {activeTab === 'Sign-offs' && <SignoffsTab releaseId={release.id} changes={relChanges} />}
           {activeTab === 'Activity' && (
-            <ActivityFeed entries={activityEntries} loading={activityLoading} />
+            <ActivityFeed entries={mergedActivity} loading={activityLoading} />
           )}
         </div>
       </div>
