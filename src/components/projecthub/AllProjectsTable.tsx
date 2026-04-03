@@ -322,7 +322,7 @@ export function AllProjectsTable({
             </div>
 
             {/* Cell 7: Members */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 8px', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', opacity: active ? 1 : 0.45 }}>
               {p.member_ids && p.member_ids.length > 0 ? (
                 <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
               ) : (
