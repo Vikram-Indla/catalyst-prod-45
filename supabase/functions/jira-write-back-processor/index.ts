@@ -88,7 +88,12 @@ Deno.serve(async (req) => {
 
         const projectId = workItem?.project_id || payload.project_id;
 
-        // 2b. Fetch project mapping
+        // 2b. Resolve Jira credentials — try jira_connections first, fall back to ph_jira_connection
+        let baseUrl: string;
+        let authHeader: string;
+        let jiraProjectKey: string | null = null;
+
+        // Try System A: jira_project_mappings → jira_connections
         const { data: mapping } = await supabase
           .from("jira_project_mappings")
           .select("jira_project_key, connection_id")
@@ -96,34 +101,54 @@ Deno.serve(async (req) => {
           .eq("sync_enabled", true)
           .maybeSingle();
 
-        if (!mapping) {
-          throw new Error(`No active Jira mapping for project ${projectId}`);
+        if (mapping) {
+          const { data: connection } = await supabase
+            .from("jira_connections")
+            .select("id, base_url")
+            .eq("id", mapping.connection_id)
+            .eq("is_active", true)
+            .maybeSingle();
+
+          if (connection) {
+            const { data: creds } = await supabase
+              .from("jira_auth_credentials")
+              .select("email, api_token")
+              .eq("connection_id", connection.id)
+              .maybeSingle();
+
+            if (creds) {
+              baseUrl = connection.base_url.replace(/\/$/, "");
+              authHeader = "Basic " + btoa(`${creds.email}:${creds.api_token}`);
+              jiraProjectKey = mapping.jira_project_key;
+            }
+          }
         }
 
-        // 2c. Fetch connection + credentials
-        const { data: connection } = await supabase
-          .from("jira_connections")
-          .select("id, base_url")
-          .eq("id", mapping.connection_id)
-          .eq("is_active", true)
-          .maybeSingle();
+        // Fallback: ph_jira_connection (the authoritative singleton)
+        if (!baseUrl! || !authHeader!) {
+          const { data: phConn } = await supabase
+            .from("ph_jira_connection")
+            .select("site_url, auth_email, auth_token_encrypted")
+            .eq("status", "connected")
+            .single();
 
-        if (!connection) {
-          throw new Error(`No active connection ${mapping.connection_id}`);
+          if (!phConn) {
+            throw new Error("No active Jira connection found");
+          }
+
+          baseUrl = phConn.site_url.replace(/\/$/, "");
+          authHeader = "Basic " + btoa(`${phConn.auth_email}:${phConn.auth_token_encrypted}`);
+
+          // Resolve jira project key from ph_projects
+          if (!jiraProjectKey) {
+            const { data: phProject } = await supabase
+              .from("ph_projects")
+              .select("key")
+              .eq("id", projectId)
+              .maybeSingle();
+            jiraProjectKey = phProject?.key || null;
+          }
         }
-
-        const { data: creds } = await supabase
-          .from("jira_auth_credentials")
-          .select("email, api_token")
-          .eq("connection_id", connection.id)
-          .maybeSingle();
-
-        if (!creds) {
-          throw new Error(`No credentials for connection ${connection.id}`);
-        }
-
-        const baseUrl = connection.base_url.replace(/\/$/, "");
-        const authHeader = "Basic " + btoa(`${creds.email}:${creds.api_token}`);
         const jiraHeaders = {
           Authorization: authHeader,
           "Content-Type": "application/json",
@@ -137,7 +162,7 @@ Deno.serve(async (req) => {
         if (operation === "create") {
           const body = {
             fields: {
-              project: { key: mapping.jira_project_key },
+              project: { key: jiraProjectKey || "UNKNOWN" },
               issuetype: { name: "Story" },
               summary: payload.title || "Untitled",
               description: {

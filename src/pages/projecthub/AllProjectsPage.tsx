@@ -20,6 +20,7 @@ import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateProjectDialog } from '@/components/projecthub/CreateProjectDialog';
 import { toast } from 'sonner';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
+import { JiraSyncCTA } from '@/components/projecthub/JiraSyncCTA';
 
 export default function AllProjectsPage() {
   const [view, setView] = useState<ViewMode>('list');
@@ -80,6 +81,7 @@ export default function AllProjectsPage() {
         subtitle="Track and manage all projects across your portfolio"
         actions={
           <div className="flex items-center gap-2">
+            <JiraSyncCTA />
             <button
               onClick={() => setShowCreateModal(true)}
               className="flex items-center gap-1.5 rounded-md"
