@@ -143,12 +143,12 @@ export default function CommandCenterPage() {
 
     // Post-deploy summary
     const lastSuccessEvent = [...productionEvents]
-      .filter((e: any) => (e.deployment_result || e.status) === 'SUCCESS')
+      .filter((e: any) => e.deployment_result === 'SUCCESS')
       .sort((a: any, b: any) =>
-        new Date(b.event_date || b.deployed_at).getTime() - new Date(a.event_date || a.deployed_at).getTime()
+        new Date(b.deployed_at).getTime() - new Date(a.deployed_at).getTime()
       )[0];
     const lastDeployDate = lastSuccessEvent
-      ? new Date(lastSuccessEvent.event_date || lastSuccessEvent.deployed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+      ? new Date(lastSuccessEvent.deployed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
       : null;
 
     const postDeploySummary = allChanges.length === 0
