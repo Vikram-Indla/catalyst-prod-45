@@ -132,12 +132,16 @@ async function runCheck(id: string): Promise<Partial<VCheck>> {
         return { actual: data ? 'Returns data' : 'No data', status: data ? 'pass' : 'warn' };
       }
       case 'C2': {
-        const { data, error } = await supabase.rpc('tm_get_traceability_matrix', {
-          p_project_id: '00000000-0000-0000-0000-000000000001',
+        const { data: proj } = await supabase
+          .from('projects')
+          .select('id')
+          .limit(1)
+          .single();
+        const { error } = await supabase.rpc('tm_get_traceability_matrix', {
+          p_project_id: proj?.id ?? '00000000-0000-0000-0000-000000000000',
         } as any);
         if (error) return { actual: error.message, status: 'fail' };
-        const count = Array.isArray(data) ? data.length : 0;
-        return { actual: `${count} rows`, status: 'pass' };
+        return { actual: 'RPC reachable', status: 'pass' };
       }
       case 'C3': {
         const { data: { user } } = await supabase.auth.getUser();
