@@ -356,5 +356,6 @@ export function AllProjectsTable({
         );
       })}
     </div>
+    </div>
   );
 }
