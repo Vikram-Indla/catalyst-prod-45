@@ -273,6 +273,11 @@ export default function AllProjectsPage() {
           onToggleFav={() => { if (selectedProject) toggleFav.mutate({ projectId: selectedProject, isFavorited: favorites.has(selectedProject) }); }}
         />
         <CreateProjectDialog open={showCreateModal} onClose={() => setShowCreateModal(false)} />
+        {new URLSearchParams(window.location.search).has('debug') && (
+          <Suspense fallback={null}>
+            <WiringAuditLazy />
+          </Suspense>
+        )}
       </div>
     </div>
   );
