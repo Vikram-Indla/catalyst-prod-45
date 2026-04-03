@@ -405,6 +405,20 @@ export function AllProjectsTable({
 }: Props) {
   const navigate = useNavigate();
 
+  // Sync entity map for per-row direction info
+  const { data: syncMap } = useQuery({
+    queryKey: ['sync-entity-map'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('sync_entity_map')
+        .select('catalyst_entity_id, last_synced_at, sync_direction, sync_version')
+        .eq('catalyst_entity_type', 'project');
+      return new Map(data?.map(s => [s.catalyst_entity_id, s]) || []);
+    },
+    refetchInterval: 30000,
+    staleTime: 15_000,
+  });
+
   const headerLabels = ['#', 'PROJECT', 'STATUS', 'LEAD', 'MEMBERS', 'UPDATED', ''];
   const sortableMap: Record<number, SortColumn> = { 1: 'name', 2: 'status' };
 
