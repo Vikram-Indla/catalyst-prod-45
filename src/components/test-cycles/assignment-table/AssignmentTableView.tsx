@@ -26,13 +26,25 @@ interface AssignmentTableViewProps {
   cycleId: string;
 }
 
-// Mock team members
-const MOCK_TEAM_MEMBERS: TeamMemberOption[] = [
-  { id: 'u1', name: 'Ahmed S.', avatar: null, workload: 18 },
-  { id: 'u2', name: 'Sara M.', avatar: null, workload: 12 },
-  { id: 'u3', name: 'Omar K.', avatar: null, workload: 15 },
-  { id: 'u4', name: 'Fatima R.', avatar: null, workload: 20 },
-];
+// Real team members from profiles
+function useTeamMembers(): TeamMemberOption[] {
+  const { data } = useQuery({
+    queryKey: ['assignment-team-members'],
+    queryFn: async () => {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .order('full_name');
+      return (profiles || []).map((p) => ({
+        id: p.id,
+        name: p.full_name || 'Unknown',
+        avatar: p.avatar_url,
+        workload: 0,
+      }));
+    },
+  });
+  return data || [];
+}
 
 export function AssignmentTableView({ cycleId }: AssignmentTableViewProps) {
   const [columnsOpen, setColumnsOpen] = useState(false);
