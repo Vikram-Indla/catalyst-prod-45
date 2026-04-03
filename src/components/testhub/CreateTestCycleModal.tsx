@@ -207,16 +207,28 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
               <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
                 <Calendar size={14} style={{ color: 'var(--fg-3)' }} /> Start Date
               </label>
-              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-                style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none', cursor: 'pointer' } as React.CSSProperties}
+              <input
+                type="text"
+                placeholder="YYYY-MM-DD"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                onFocus={(e) => { (e.target as HTMLInputElement).type = 'date'; }}
+                onBlur={(e) => { if (!(e.target as HTMLInputElement).value) { (e.target as HTMLInputElement).type = 'text'; } }}
+                style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid #E2E8F0', borderRadius: 4, fontSize: 14, color: '#1E293B', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
               />
             </div>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
                 <Calendar size={14} style={{ color: 'var(--fg-3)' }} /> End Date
               </label>
-              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} min={startDate}
-                style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${errors.endDate ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none', cursor: 'pointer' } as React.CSSProperties}
+              <input
+                type="text"
+                placeholder="YYYY-MM-DD"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                onFocus={(e) => { (e.target as HTMLInputElement).type = 'date'; (e.target as HTMLInputElement).min = startDate; }}
+                onBlur={(e) => { if (!(e.target as HTMLInputElement).value) { (e.target as HTMLInputElement).type = 'text'; } }}
+                style={{ width: '100%', height: 40, padding: '0 12px', border: `1.5px solid ${errors.endDate ? '#EF4444' : '#E2E8F0'}`, borderRadius: 4, fontSize: 14, color: '#1E293B', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
               />
               {errors.endDate && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.endDate}</p>}
             </div>
@@ -264,12 +276,14 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         {/* Footer */}
         <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
-          <button onClick={handleSubmit} disabled={isSubmitting || !name.trim()} style={{
+          <button type="button" onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 40, padding: '0 24px',
-            backgroundColor: name.trim() && !isSubmitting ? '#2563EB' : '#94A3B8',
+            backgroundColor: isSubmitting ? '#93C5FD' : '#2563EB',
             border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
-            cursor: name.trim() ? 'pointer' : 'not-allowed',
-            opacity: isSubmitting ? 0.5 : 1,
+            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            opacity: isSubmitting ? 0.7 : 1,
+            transition: 'background-color 0.15s',
           }}>
             {isSubmitting
               ? (isEdit ? 'Saving...' : 'Creating...')
