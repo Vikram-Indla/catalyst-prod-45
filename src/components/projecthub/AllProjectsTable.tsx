@@ -238,7 +238,7 @@ export function AllProjectsTable({
             }}
           >
             {/* Cell 1: # / Checkbox */}
-            <div style={{ padding: '14px 8px', textAlign: 'center', borderBottom: CELL_BORDER, opacity: active ? 1 : 0.45 }}>
+            <div style={{ padding: '8px 8px', textAlign: 'center', borderBottom: CELL_BORDER, opacity: active ? 1 : 0.45 }}>
               <span
                 className="group-hover:hidden"
                 style={{ fontSize: 12, color: 'var(--text-3)', fontVariantNumeric: 'tabular-nums', ...(checked ? { display: 'none' } : {}) }}
@@ -256,7 +256,7 @@ export function AllProjectsTable({
             </div>
 
             {/* Cell 2: Star */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 0', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 0', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
               <button
                 onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', pointerEvents: 'auto' }}
@@ -266,7 +266,7 @@ export function AllProjectsTable({
             </div>
 
             {/* Cell 3: Badge */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 0', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 0', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
               <div
                 className="flex items-center justify-center rounded-full"
                 style={{ width: 28, height: 28, background: badgeColor, color: '#FFF', fontSize: 11, fontWeight: 700, flexShrink: 0 }}
@@ -275,35 +275,22 @@ export function AllProjectsTable({
               </div>
             </div>
 
-            {/* Cell 4: Project name + key (line 1) + members + date (line 2) */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 8px', opacity: active ? 1 : 0.45 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span
-                  onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
-                  className="truncate hover:underline"
-                  style={{ fontWeight: 600, fontSize: 14, cursor: 'pointer', color: 'var(--text-1)', pointerEvents: 'auto' }}
-                >
-                  {p.name}
-                </span>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: 'var(--text-4)', flexShrink: 0 }}>
-                  {p.project_key}
-                </span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 12, color: 'var(--text-3)' }}>
-                {p.member_ids && p.member_ids.length > 0 && (
-                  <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
-                )}
-                {p.member_ids && p.member_ids.length > 0 && p.updated_at && (
-                  <span style={{ color: 'var(--text-4)' }}>·</span>
-                )}
-                {p.updated_at && (
-                  <span>{formatDistanceToNowStrict(new Date(p.updated_at), { addSuffix: true })}</span>
-                )}
-              </div>
+            {/* Cell 4: Project name + key (single line) */}
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', opacity: active ? 1 : 0.45, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span
+                onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
+                className="truncate hover:underline"
+                style={{ fontWeight: 600, fontSize: 14, cursor: 'pointer', color: 'var(--text-1)', pointerEvents: 'auto' }}
+              >
+                {p.name}
+              </span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: 'var(--text-4)', flexShrink: 0 }}>
+                {p.project_key}
+              </span>
             </div>
 
             {/* Cell 5: Status */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 8px', textAlign: 'center', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', textAlign: 'center', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
               {active ? (
                 <StatusChangePopover project={p} />
               ) : (
@@ -312,7 +299,7 @@ export function AllProjectsTable({
             </div>
 
             {/* Cell 6: Lead */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 8px', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', opacity: active ? 1 : 0.45 }}>
               {p.lead_name ? (
                 <div className="flex items-center gap-2">
                   <div
@@ -335,7 +322,7 @@ export function AllProjectsTable({
             </div>
 
             {/* Cell 7: Members */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 8px', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', opacity: active ? 1 : 0.45 }}>
               {p.member_ids && p.member_ids.length > 0 ? (
                 <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
               ) : (
@@ -344,14 +331,14 @@ export function AllProjectsTable({
             </div>
 
             {/* Cell 8: Updated */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 8px', fontSize: 12, color: 'var(--text-3)', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', fontSize: 12, color: 'var(--text-3)', opacity: active ? 1 : 0.45 }}>
               {p.updated_at
                 ? formatDistanceToNowStrict(new Date(p.updated_at), { addSuffix: true })
                 : '—'}
             </div>
 
             {/* Cell 9: Actions */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 8px', display: 'flex', justifyContent: 'center', pointerEvents: 'auto', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', display: 'flex', justifyContent: 'center', pointerEvents: 'auto', opacity: active ? 1 : 0.45 }}>
               {active ? (
                 <RowActionMenu project={p} />
               ) : (
