@@ -23,6 +23,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
 
   const [details, setDetails] = useState<StepDetailsData>({
     name: '', key: '', department: '', description: '', icon: 'rocket', color: '#2563EB',
+    lead_id: '', linkJira: false, jiraKey: '',
   });
   const [workflow, setWorkflow] = useState<StepWorkflowData>({
     useDefault: true, copyFromProject: null, featureLayer: false,
