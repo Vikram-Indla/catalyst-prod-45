@@ -288,7 +288,7 @@ export default function EnvironmentsListPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#6366F1', backgroundColor: '#EEF2FF', padding: '4px 10px', borderRadius: 6 }}>{env.env_key}</span>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '3px 8px', borderRadius: 4 }}>{type.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', backgroundColor: '#F1F5F9', padding: '0 6px', borderRadius: 3, height: 20, display: 'inline-flex', alignItems: 'center', textTransform: 'uppercase' as const }}>{type.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: health.color, backgroundColor: health.bg, padding: '4px 8px', borderRadius: 6 }}>
                     <HealthIcon size={12} /> {health.label}
