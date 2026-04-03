@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { Plus, FolderKanban } from 'lucide-react';
 import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
+const WiringAuditLazy = lazy(() => import('@/components/project-hub/WiringAudit').then(m => ({ default: m.WiringAudit })));
 import {
   Select,
   SelectContent,
@@ -273,6 +274,11 @@ export default function AllProjectsPage() {
           onToggleFav={() => { if (selectedProject) toggleFav.mutate({ projectId: selectedProject, isFavorited: favorites.has(selectedProject) }); }}
         />
         <CreateProjectDialog open={showCreateModal} onClose={() => setShowCreateModal(false)} />
+        {new URLSearchParams(window.location.search).has('debug') && (
+          <Suspense fallback={null}>
+            <WiringAuditLazy />
+          </Suspense>
+        )}
       </div>
     </div>
   );
