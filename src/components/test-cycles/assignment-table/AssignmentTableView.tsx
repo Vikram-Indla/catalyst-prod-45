@@ -183,7 +183,7 @@ export function AssignmentTableView({ cycleId }: AssignmentTableViewProps) {
       {selectedIds.size > 0 && (
         <BulkActionsBar
           selectedCount={selectedIds.size}
-          teamMembers={MOCK_TEAM_MEMBERS}
+          teamMembers={teamMembers}
           onAssign={handleBulkAssign}
           onChangePriority={handleBulkPriority}
           onChangeStatus={handleBulkStatus}
@@ -249,7 +249,7 @@ export function AssignmentTableView({ cycleId }: AssignmentTableViewProps) {
                   onOpenDetails={() => {
                     toast.info(`Opening details for ${assignment.testCaseCode}`);
                   }}
-                  teamMembers={MOCK_TEAM_MEMBERS}
+                  teamMembers={teamMembers}
                   visibleColumns={visibleColumns}
                 />
               ))}
