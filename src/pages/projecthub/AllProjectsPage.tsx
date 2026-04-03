@@ -151,6 +151,7 @@ export default function AllProjectsPage() {
                 selectedRows={selectedRows}
                 onToggleRow={handleToggleRow}
                 onToggleAll={handleToggleAll}
+                pageOffset={startIdx}
               />
             </div>
             {/* Pagination Footer */}
