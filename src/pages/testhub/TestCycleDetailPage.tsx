@@ -89,8 +89,8 @@ export default function TestCycleDetailPage() {
   const fetchCycle = async () => {
     if (!cycleId) return;
     try {
-      const { data, error } = await (supabase as any).from('th_test_cycles')
-        .select(`*, owner:profiles!th_test_cycles_owner_id_fkey ( id, full_name ), environment:th_environments!th_test_cycles_environment_id_fkey ( id, name, type, health_status )`)
+      const { data, error } = await (supabase as any).from('tm_test_cycles')
+        .select(`*, owner:profiles!tm_test_cycles_owner_id_fkey ( id, full_name ), environment:tm_environments!tm_test_cycles_environment_id_fkey ( id, name, type, health_status )`)
         .eq('id', cycleId).single();
       if (error) throw error;
       setCycle(data);
