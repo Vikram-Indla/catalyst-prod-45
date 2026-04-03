@@ -18,16 +18,15 @@ interface CycleWithStats {
   cycle_key: string;
   name: string;
   status: string;
-  start_date: string;
-  end_date: string;
-  progress_percent: number;
+  planned_start: string | null;
+  planned_end: string | null;
   total_cases: number;
   passed_count: number;
   failed_count: number;
   blocked_count: number;
   skipped_count: number;
   not_run_count: number;
-  owner: { full_name: string } | null;
+  in_progress_count: number;
 }
 
 const CYCLE_STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = {
