@@ -200,7 +200,7 @@ export function TestRepositoryPage() {
      }
 
      // Fetch owner profiles
-     const ownerIds = [...new Set(data?.map(tc => tc.owner_id).filter(Boolean) as string[])];
+     const ownerIds = [...new Set(data?.map(tc => (tc as any).created_by).filter(Boolean) as string[])];
      let profilesMap: Record<string, { full_name: string | null; avatar_url: string | null }> = {};
      if (ownerIds.length > 0) {
        const { data: profiles } = await supabase
@@ -211,20 +211,23 @@ export function TestRepositoryPage() {
      }
 
      let mapped = data?.map(tc => {
-       const owner = tc.owner_id ? profilesMap[tc.owner_id] : null;
+       const ownerId = (tc as any).created_by;
+       const owner = ownerId ? profilesMap[ownerId] : null;
        const ownerName = owner?.full_name || null;
+       const priorityName = (tc as any).priority_ref?.name || 'medium';
+       const typeName = (tc as any).type_ref?.name || 'functional';
        return {
         id: tc.id,
         caseKey: tc.case_key,
         title: tc.title,
-        priority: tc.priority as TestCase['priority'],
-        type: tc.type as TestCase['type'],
+        priority: priorityName.toLowerCase() as TestCase['priority'],
+        type: typeName.toLowerCase() as TestCase['type'],
         status: tc.status as TestCase['status'],
         ownerInitials: ownerName ? ownerName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : null,
         ownerName,
         ownerAvatarUrl: owner?.avatar_url || null,
         updatedAt: tc.updated_at,
-        objective: tc.objective,
+        objective: tc.description,
         preconditions: tc.preconditions,
         folderId: tc.folder_id,
         version: tc.version || 1,
