@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Search, LayoutGrid, List, Plus, Package, Download, Clock } from 'lucide-react';
-import { useReleaseSummary } from '@/hooks/useReleaseHub';
+import React, { useState, useMemo } from 'react';
+import { Search, LayoutGrid, List, Plus, Package, Download, Clock, AlertTriangle } from 'lucide-react';
+import { useReleaseSummary, useFreezeWindows } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
 import { SourceBadge } from '@/components/releasehub/SourceBadge';
