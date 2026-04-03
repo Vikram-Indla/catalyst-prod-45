@@ -33,11 +33,11 @@ function isActiveStatus(status: string): boolean {
 const GRID_COLS = '48px 16px 36px minmax(200px,1fr) 120px 140px 120px 120px 48px';
 const CELL_BORDER = '0.75px solid var(--bd-default)';
 
-const STATUS_OPTIONS: { value: string; label: string }[] = [
-  { value: 'planning', label: 'Planning' },
-  { value: 'active', label: 'Active' },
-  { value: 'on_hold', label: 'On Hold' },
-  { value: 'completed', label: 'Completed' },
+const STATUS_OPTIONS = [
+  { value: 'active', label: 'ACTIVE', bg: '#DEEBFF', color: '#0747A6' },
+  { value: 'planning', label: 'PLANNING', bg: '#DFE1E6', color: '#253858' },
+  { value: 'on_hold', label: 'ON HOLD', bg: '#DFE1E6', color: '#253858' },
+  { value: 'completed', label: 'COMPLETED', bg: '#E3FCEF', color: '#006644' },
 ];
 
 // ── Sub-components ─────────────────────────────────────
@@ -46,13 +46,13 @@ function StatusChangePopover({ project }: { project: ProjectListItem }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  const handleChange = async (newStatus: string) => {
+  const handleChange = async (newStatus: string, label: string) => {
     const { error } = await supabase
       .from('projects')
-      .update({ status: newStatus } as any)
+      .update({ display_status: newStatus } as any)
       .eq('id', project.id);
     if (error) { toast.error('Failed to update status'); return; }
-    toast.success(`Status changed to ${newStatus.replace(/_/g, ' ')}`);
+    toast.success(`Status changed to ${label}`);
     queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
     setOpen(false);
   };
@@ -73,11 +73,17 @@ function StatusChangePopover({ project }: { project: ProjectListItem }) {
         {STATUS_OPTIONS.map(opt => (
           <button
             key={opt.value}
-            onClick={() => handleChange(opt.value)}
+            onClick={() => handleChange(opt.value, opt.label)}
             className="flex w-full items-center gap-2 rounded px-3 py-2 text-sm hover:bg-gray-50"
             style={{ border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
           >
-            <ProjectStatusBadge status={opt.value as any} />
+            <span style={{
+              display: 'inline-block', padding: '0 6px', borderRadius: 3, height: 20, lineHeight: '20px',
+              background: opt.bg, color: opt.color, fontSize: 11, fontWeight: 700,
+              textTransform: 'uppercase', letterSpacing: '0.03em', whiteSpace: 'nowrap',
+            }}>
+              {opt.label}
+            </span>
           </button>
         ))}
       </PopoverContent>
@@ -189,14 +195,14 @@ export function AllProjectsTable({
             key={i}
             onClick={isSortable ? () => onSort(sortCol_) : undefined}
             style={{
-              padding: '10px 8px',
+              padding: '12px 8px',
               fontSize: 11,
-              fontWeight: 600,
+              fontWeight: 700,
               textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: 'var(--text-3)',
+              letterSpacing: '0.06em',
+              color: 'var(--text-2)',
               background: 'var(--bg-sunken)',
-              borderBottom: '1px solid var(--bd-default)',
+              borderBottom: '2px solid var(--bd-default)',
               cursor: isSortable ? 'pointer' : 'default',
               userSelect: isSortable ? 'none' : undefined,
               display: 'flex',
