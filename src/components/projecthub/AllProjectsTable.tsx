@@ -11,7 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 // ── Utilities ──────────────────────────────────────────
 const BADGE_COLORS = ['#3B82F6', '#6366F1', '#0891B2', '#475569', '#0D9488', '#78716C'];
@@ -134,6 +134,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
           {project.lead_name ? (
             <>
               <Avatar className="w-6 h-6">
+                {project.lead_avatar_url && <AvatarImage src={project.lead_avatar_url} alt={project.lead_name || ''} />}
                 <AvatarFallback className="text-[10px] font-bold text-white" style={{ background: getBadgeColor(project.lead_id || '') }}>
                   {getInitials(project.lead_name)}
                 </AvatarFallback>
@@ -172,6 +173,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
               style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               <Avatar className="w-6 h-6">
+                {p.avatar_url && <AvatarImage src={p.avatar_url} alt={p.display_name} />}
                 <AvatarFallback className="text-[10px] font-bold text-white" style={{ background: getBadgeColor(p.id) }}>
                   {getInitials(p.display_name)}
                 </AvatarFallback>
@@ -202,7 +204,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
   const members = useMemo(() => {
     return memberIds.map(id => {
       const p = profiles.find(pr => pr.id === id);
-      return { id, display_name: p?.display_name || 'Unknown', role: p?.role || '' };
+      return { id, display_name: p?.display_name || 'Unknown', role: p?.role || '', avatar_url: p?.avatar_url || null };
     });
   }, [memberIds, profiles]);
 
@@ -270,6 +272,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
                   style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
                 >
                   <Avatar className="w-5 h-5">
+                    {p.avatar_url && <AvatarImage src={p.avatar_url} alt={p.display_name} />}
                     <AvatarFallback className="text-[9px] font-bold text-white" style={{ background: getBadgeColor(p.id) }}>
                       {getInitials(p.display_name)}
                     </AvatarFallback>
@@ -293,6 +296,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
               {members.map(m => (
                 <div key={m.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800">
                   <Avatar className="w-5 h-5">
+                    {m.avatar_url && <AvatarImage src={m.avatar_url} alt={m.display_name} />}
                     <AvatarFallback className="text-[9px] font-bold text-white" style={{ background: getBadgeColor(m.id) }}>
                       {getInitials(m.display_name)}
                     </AvatarFallback>

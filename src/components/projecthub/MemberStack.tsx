@@ -88,21 +88,31 @@ export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProp
         {shown.map((id, i) => {
           const profile = profileCache.get(id);
           const name = profile?.full_name || '';
+          const avatarUrl = profile?.avatar_url;
           const initials = name ? getInitials(name) : '?';
           const [from, to] = getMemberGradient(name || id);
           return (
             <Tooltip key={id}>
               <TooltipTrigger asChild>
-                <div
-                  className="flex h-[22px] w-[22px] shrink-0 cursor-default items-center justify-center rounded-full border-2 border-background text-[8px] font-bold text-white"
-                  style={{
-                    background: `linear-gradient(135deg, ${from}, ${to})`,
-                    marginLeft: i > 0 ? -6 : 0,
-                    zIndex: max - i,
-                  }}
-                >
-                  {initials}
-                </div>
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={name || 'Unknown'}
+                    className="h-[22px] w-[22px] shrink-0 rounded-full border-2 border-background object-cover"
+                    style={{ marginLeft: i > 0 ? -6 : 0, zIndex: max - i }}
+                  />
+                ) : (
+                  <div
+                    className="flex h-[22px] w-[22px] shrink-0 cursor-default items-center justify-center rounded-full border-2 border-background text-[8px] font-bold text-white"
+                    style={{
+                      background: `linear-gradient(135deg, ${from}, ${to})`,
+                      marginLeft: i > 0 ? -6 : 0,
+                      zIndex: max - i,
+                    }}
+                  >
+                    {initials}
+                  </div>
+                )}
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">
                 {name || 'Unknown'}
