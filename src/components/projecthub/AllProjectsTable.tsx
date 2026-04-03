@@ -46,7 +46,7 @@ function useAllProfiles() {
 }
 
 // ── 7-column grid ──────────────────────────────────────
-const GRID_COLS = '48px minmax(280px,1fr) 110px 170px 130px 100px 40px';
+const GRID_COLS = '48px minmax(280px,1fr) 110px minmax(160px,1fr) 130px 100px 40px';
 
 const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
   { value: 'active', label: 'ACTIVE' },
@@ -388,15 +388,34 @@ export function AllProjectsTable({
 }: Props) {
   const navigate = useNavigate();
 
-  // Sync entity map for per-row direction info
-  const { data: syncMap } = useQuery({
-    queryKey: ['sync-entity-map'],
+  // Per-project sync data from ph_issues + ph_sync_log (authoritative sources)
+  const { data: syncData } = useQuery({
+    queryKey: ['project-sync-data'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('sync_entity_map')
-        .select('catalyst_entity_id, last_synced_at, sync_direction, last_sync_status')
-        .eq('catalyst_entity_type', 'project');
-      return new Map(data?.map(s => [s.catalyst_entity_id, s]) || []);
+      // Get per-project issue counts from ph_issues
+      const { data: issues } = await (supabase as any)
+        .from('ph_issues')
+        .select('project_key')
+        .is('jira_removed_at', null)
+        .limit(5000);
+
+      const countMap: Record<string, number> = {};
+      (issues || []).forEach((i: any) => {
+        countMap[i.project_key] = (countMap[i.project_key] || 0) + 1;
+      });
+
+      // Get last successful sync time
+      const { data: lastSync } = await (supabase as any)
+        .from('ph_sync_log')
+        .select('completed_at, projects_synced')
+        .in('status', ['success', 'warning'])
+        .order('completed_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      const syncedProjectKeys = new Set<string>(lastSync?.projects_synced || []);
+
+      return { countMap, lastSyncAt: lastSync?.completed_at || null, syncedProjectKeys };
     },
     refetchInterval: 30000,
     staleTime: 15_000,
@@ -445,14 +464,13 @@ export function AllProjectsTable({
           const badgeText = p.project_key.substring(0, 2);
           const rowNum = pageOffset + idx + 1;
 
-          const syncInfo = syncMap?.get(p.id);
-          const syncHealthy = !!(syncInfo?.last_synced_at || p.last_synced_at);
-          const syncTs = syncInfo?.last_synced_at || p.last_synced_at;
+          // Sync status from ph_issues counts + ph_sync_log
+          const issueCount = syncData?.countMap?.[p.project_key] ?? p.total_issues ?? 0;
+          const wasSynced = syncData?.syncedProjectKeys?.has(p.project_key) || !!p.last_synced_at;
+          const syncTs = wasSynced ? (syncData?.lastSyncAt || p.last_synced_at) : null;
           const syncAge = syncTs
             ? formatDistanceToNowStrict(new Date(syncTs), { addSuffix: false })
             : null;
-          const dirIcon = syncInfo?.sync_direction === 'inbound' ? '←'
-            : syncInfo?.sync_direction === 'outbound' ? '→' : '↔';
 
           return (
             <div
@@ -511,8 +529,8 @@ export function AllProjectsTable({
                 </div>
                 <div className="flex items-center gap-2 pl-[42px]">
                   <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                    <span className={cn("w-1.5 h-1.5 rounded-full", syncHealthy ? "bg-green-500" : "bg-amber-500")} />
-                    {syncAge ? `${dirIcon} ${syncAge}` : 'Not synced'} · {p.total_issues ?? 0} issues
+                    <span className={cn("w-1.5 h-1.5 rounded-full", wasSynced ? "bg-green-500" : "bg-amber-500")} />
+                    {syncAge ? `↔ ${syncAge}` : 'Not synced'} · {issueCount} issues
                   </div>
                 </div>
               </div>
@@ -536,10 +554,10 @@ export function AllProjectsTable({
                 <MemberManagePopover project={p} />
               </div>
 
-              {/* Cell 6: Updated */}
+              {/* Cell 6: Updated — prefer sync time, fallback to updated_at */}
               <div className="px-2 py-2 text-xs text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700/50" style={{ opacity: active ? 1 : 0.45 }}>
-                {p.updated_at
-                  ? formatDistanceToNowStrict(new Date(p.updated_at), { addSuffix: true })
+                {(syncTs || p.updated_at)
+                  ? formatDistanceToNowStrict(new Date(syncTs || p.updated_at), { addSuffix: true })
                   : '—'}
               </div>
 
