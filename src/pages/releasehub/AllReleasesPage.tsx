@@ -115,7 +115,6 @@ export default function AllReleasesPage() {
             className="h-9 px-4 rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-colors">
             <Plus size={14} /> New Release
           </button>
-          </button>
         </div>
       </div>
 
