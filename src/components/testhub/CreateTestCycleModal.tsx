@@ -245,7 +245,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
               <User size={14} style={{ color: 'var(--fg-3)' }} /> Owner
             </label>
             <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)' }}
+              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', appearance: 'none', WebkitAppearance: 'none' }}
             >
               <option value="">Select owner (optional)</option>
               {profiles.map(p => <option key={p.id} value={p.id}>{p.full_name}</option>)}

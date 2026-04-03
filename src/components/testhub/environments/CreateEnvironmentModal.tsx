@@ -186,7 +186,7 @@ export function CreateEnvironmentModal({ isOpen, onClose, onCreated }: CreateEnv
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: 'var(--cp-float)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 44, padding: '0 24px', backgroundColor: '#2563EB', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Server size={16} /> {isSubmitting ? 'Creating...' : 'Add Environment'}
           </button>
         </div>

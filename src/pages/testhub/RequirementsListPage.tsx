@@ -261,7 +261,7 @@ export default function RequirementsListPage() {
                       <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '2px 8px', borderRadius: 4 }}>{type.label}</span>
                     </td>
                     <td style={{ padding: '0 12px' }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: priority.color }}>{priority.label}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', backgroundColor: '#F1F5F9', padding: '2px 8px', borderRadius: 4 }}>{priority.label}</span>
                     </td>
                     <td style={{ padding: '0 12px' }}>
                       <span style={{
