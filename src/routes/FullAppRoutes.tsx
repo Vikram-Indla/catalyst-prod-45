@@ -590,6 +590,7 @@ export default function FullAppRoutes() {
         <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />
         <Route path="/release-hub/sign-off-queue" element={<S><RH21SignOffQueuePage /></S>} />
         <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
+        <Route path="/release-hub/freeze-windows" element={<S><RH21FreezeWindowsPage /></S>} />
         <Route path="/release-hub/:releaseId" element={<S><ReleaseDashboardV5Page /></S>} />
 
         {/* Legacy releasehub redirects */}

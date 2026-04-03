@@ -53,6 +53,12 @@ const buildSections = (triageCount: number, pendingSignoffs: number): SidebarSec
       { id: 'production-events', title: 'Production Events', path: '/release-hub/production-events', icon: Clock, exact: false },
     ],
   },
+  {
+    title: 'Settings',
+    items: [
+      { id: 'freeze-windows', title: 'Freeze Windows', path: '/release-hub/freeze-windows', icon: CalendarOff, exact: true },
+    ],
+  },
 ];
 
 export function ReleaseHubSidebar({ expanded, onToggle, className, triageCount = 0, pendingSignoffs = 0 }: ReleaseHubSidebarProps) {
