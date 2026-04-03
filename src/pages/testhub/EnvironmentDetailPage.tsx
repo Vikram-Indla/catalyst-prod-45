@@ -81,8 +81,8 @@ export default function EnvironmentDetailPage() {
     setIsLoading(true);
     try {
       const { data: envData } = await (supabase as any)
-        .from('th_environments')
-        .select(`*, owner:profiles!th_environments_owner_id_fkey(full_name)`)
+        .from('tm_environments')
+        .select(`*, owner:profiles!tm_environments_owner_id_fkey(full_name)`)
         .eq('id', environmentId)
         .single();
       if (envData) setEnvironment(envData);
