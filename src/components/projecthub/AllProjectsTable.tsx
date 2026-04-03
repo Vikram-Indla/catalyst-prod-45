@@ -392,17 +392,29 @@ export function AllProjectsTable({
   const { data: syncData } = useQuery({
     queryKey: ['project-sync-data'],
     queryFn: async () => {
-      // Get per-project issue counts from ph_issues
-      const { data: issues } = await (supabase as any)
-        .from('ph_issues')
-        .select('project_key')
-        .is('jira_removed_at', null)
-        .limit(5000);
-
+      // Get per-project issue counts from ph_issues using issue_key (guaranteed to exist)
+      // Paginate to get all rows (Supabase default limit is 1000)
       const countMap: Record<string, number> = {};
-      (issues || []).forEach((i: any) => {
-        countMap[i.project_key] = (countMap[i.project_key] || 0) + 1;
-      });
+      let offset = 0;
+      const pageSize = 1000;
+      let hasMore = true;
+
+      while (hasMore) {
+        const { data: issues } = await (supabase as any)
+          .from('ph_issues')
+          .select('issue_key')
+          .range(offset, offset + pageSize - 1);
+
+        if (!issues || issues.length === 0) { hasMore = false; break; }
+
+        issues.forEach((i: any) => {
+          const pk = i.issue_key?.split('-')?.[0];
+          if (pk) countMap[pk] = (countMap[pk] || 0) + 1;
+        });
+
+        offset += pageSize;
+        if (issues.length < pageSize) hasMore = false;
+      }
 
       // Get last successful sync time
       const { data: lastSync } = await (supabase as any)
