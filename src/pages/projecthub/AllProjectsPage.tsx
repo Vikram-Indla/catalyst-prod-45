@@ -1,5 +1,5 @@
 import { useState, useMemo, lazy, Suspense } from 'react';
-import { Plus, FolderKanban } from 'lucide-react';
+import { Plus, FolderKanban, FolderOpen } from 'lucide-react';
 import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
 import {
@@ -37,11 +37,12 @@ export default function AllProjectsPage() {
   const [sortCol, setSortCol] = useState<SortColumn>('name');
   const [sortDir, setSortDir] = useState<SortDirection>('asc');
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(12);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [syncPanelOpen, setSyncPanelOpen] = useState(false);
 
   // Get current user for "My Projects" tab
   useMemo(() => {
@@ -111,21 +112,27 @@ export default function AllProjectsPage() {
   const startIdx = (page - 1) * perPage;
   const endIdx = Math.min(startIdx + perPage, filtered.length);
 
+  // Determine empty state context
+  const isEmptyProjects = !isLoading && projects.length === 0;
+  const isStarredEmpty = !isLoading && filters.statusChip === 'Starred' && filtered.length === 0 && projects.length > 0;
+  const isMyProjectsNoAuth = !isLoading && filters.statusChip === 'My Projects' && !currentUserId;
+  const isSearchNoResults = !isLoading && !!filters.search && filtered.length === 0 && projects.length > 0;
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: "'Inter', -apple-system, system-ui, sans-serif", WebkitFontSmoothing: 'antialiased' }}>
+    <div className="flex flex-col h-full font-['Inter',-apple-system,system-ui,sans-serif] antialiased">
       <CommandCenterHeader
         title="All Projects"
         subtitle={`${filtered.length} projects across your portfolio`}
         actions={
           <div className="flex items-center gap-3">
             {/* Jira Sync CTA */}
-            <Popover>
+            <Popover open={syncPanelOpen} onOpenChange={setSyncPanelOpen}>
               <PopoverTrigger asChild>
-                <button className="h-10 px-4 bg-white dark:bg-[#232019] border-[1.5px] border-slate-200 dark:border-slate-700 rounded-lg text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300">
+                <button className="h-10 px-4 bg-white dark:!bg-[#232019] border border-slate-200 dark:border-slate-700 rounded-md text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none">
                   <SyncCTALabel />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[360px] p-5 bg-white dark:bg-[#232019]" align="end">
+              <PopoverContent className="w-[360px] p-5 bg-white dark:!bg-[#232019] dark:border-slate-700" align="end">
                 <JiraSyncPanel />
               </PopoverContent>
             </Popover>
@@ -133,13 +140,7 @@ export default function AllProjectsPage() {
             {/* New Project */}
             <button
               onClick={() => setShowCreateModal(true)}
-              className="h-10 px-5 rounded-md text-sm font-semibold flex items-center gap-2 text-white"
-              style={{
-                background: '#2563EB',
-                boxShadow: '0 2px 8px rgba(37,99,235,0.15)',
-                border: 'none',
-                cursor: 'pointer',
-              }}
+              className="h-10 px-5 rounded-md text-sm font-semibold flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 border-none cursor-pointer shadow-[0_2px_8px_rgba(37,99,235,0.15)] focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
             >
               <Plus size={16} strokeWidth={2.5} /> New Project
             </button>
@@ -147,9 +148,9 @@ export default function AllProjectsPage() {
         }
       />
 
-      <div className="flex-1 overflow-auto px-6 py-3" style={{ background: 'var(--bg-sunken)', color: 'var(--text-1)' }}>
+      <div className="flex-1 overflow-auto px-6 py-3 bg-slate-50 dark:!bg-[#1A1714] text-foreground">
         {/* Toolbar */}
-        <div style={{ marginBottom: 10 }}>
+        <div className="mb-2.5">
           <AllProjectsToolbar
             view={view}
             onViewChange={v => { setView(v); setPage(1); }}
@@ -161,47 +162,65 @@ export default function AllProjectsPage() {
 
         {/* Content */}
         {isLoading ? (
-          <div className="rounded-lg border p-10" style={{ borderColor: 'var(--bd-default)', background: 'var(--bg-elevated)' }}>
+          <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-10 bg-white dark:!bg-[#1A1714]">
             <div className="flex flex-col gap-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="animate-pulse flex items-center gap-4">
-                  <div className="h-7 w-7 rounded-full" style={{ background: 'var(--bg-sunken)' }} />
+                  <div className="h-7 w-7 rounded-full bg-slate-100 dark:bg-slate-800" />
                   <div className="flex-1 flex flex-col gap-1.5">
-                    <div className="h-3 w-[30%] rounded" style={{ background: 'var(--bg-sunken)' }} />
-                    <div className="h-2.5 w-[20%] rounded" style={{ background: 'var(--bg-sunken)' }} />
+                    <div className="h-3 w-[30%] rounded bg-slate-100 dark:bg-slate-800" />
+                    <div className="h-2.5 w-[20%] rounded bg-slate-100 dark:bg-slate-800" />
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        ) : filtered.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center rounded-lg border px-10 py-20 text-center" style={{ borderColor: 'var(--bd-default)', background: 'var(--bg-elevated)' }}>
-            <FolderKanban size={48} style={{ color: 'var(--text-4)' }} strokeWidth={1.25} />
-            <h3 className="mt-4 text-lg font-semibold" style={{ fontFamily: "'Sora', sans-serif", color: 'var(--text-1)' }}>
-              {filters.search || filters.statusChip !== 'All' ? 'No projects match your filters' : 'No projects yet'}
-            </h3>
-            <p className="mt-1 max-w-[360px] text-[13px]" style={{ color: 'var(--text-3)' }}>
-              {filters.search || filters.statusChip !== 'All'
-                ? 'Try adjusting your search or filter criteria.'
-                : 'Connect Jira to sync your projects, or create one manually.'}
+        ) : isEmptyProjects ? (
+          /* QA1: Empty state — 0 projects */
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+              <FolderOpen className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+            </div>
+            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-200 mb-1" style={{ fontFamily: "'Sora', sans-serif" }}>No projects yet</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-md">
+              Connect Jira to sync your projects, or create one manually to get started.
             </p>
-            {!filters.search && filters.statusChip === 'All' && (
-              <div className="flex gap-3 mt-4">
-                <button className="px-4 py-2 text-sm font-medium rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" style={{ background: 'transparent', cursor: 'pointer' }}>
-                  Connect Jira
-                </button>
-                <button
-                  onClick={() => setShowCreateModal(true)}
-                  className="px-4 py-2 text-sm font-semibold rounded-md text-white"
-                  style={{ background: '#2563EB', border: 'none', cursor: 'pointer' }}
-                >
-                  New Project
-                </button>
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSyncPanelOpen(true)}
+                className="h-9 px-4 border border-slate-200 dark:border-slate-700 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 bg-transparent text-slate-700 dark:text-slate-300 cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
+              >
+                ↔ Connect Jira
+              </button>
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="h-9 px-4 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 flex items-center gap-2 border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
+              >
+                <Plus className="w-4 h-4" /> New Project
+              </button>
+            </div>
+          </div>
+        ) : isMyProjectsNoAuth ? (
+          /* QA1: My Projects — not logged in */
+          <p className="text-sm text-slate-500 dark:text-slate-400 py-12 text-center">Sign in to see your assigned projects.</p>
+        ) : isStarredEmpty ? (
+          /* QA1: Starred tab — 0 starred */
+          <p className="text-sm text-slate-500 dark:text-slate-400 py-12 text-center">No starred projects. Click ☆ on any project to add it here.</p>
+        ) : isSearchNoResults ? (
+          /* QA1: Search — no results */
+          <p className="text-sm text-slate-500 dark:text-slate-400 py-12 text-center">No projects match &ldquo;{filters.search}&rdquo;</p>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 px-10 py-20 text-center bg-white dark:!bg-[#1A1714]">
+            <FolderKanban size={48} className="text-slate-300 dark:text-slate-600" strokeWidth={1.25} />
+            <h3 className="mt-4 text-lg font-semibold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
+              No projects match your filters
+            </h3>
+            <p className="mt-1 max-w-[360px] text-[13px] text-muted-foreground">
+              Try adjusting your search or filter criteria.
+            </p>
           </div>
         ) : view === 'list' ? (
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border" style={{ borderColor: 'var(--bd-default)', background: 'var(--bg-elevated)' }}>
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#1A1714]">
             <div className="flex-1 min-h-0 overflow-auto">
               <AllProjectsTable
                 projects={pageData}
@@ -217,43 +236,42 @@ export default function AllProjectsPage() {
                 pageOffset={startIdx}
               />
             </div>
-            {/* Pagination Footer — page numbers only, no Prev/Next */}
-            <div
-              className="flex shrink-0 items-center justify-between px-4 py-2"
-              style={{ borderTop: '1px solid var(--bd-default)', background: 'var(--bg-surface)', fontSize: 13 }}
-            >
-              <span style={{ color: 'var(--text-3)' }}>
-                Showing {startIdx + 1}–{endIdx} of {filtered.length} projects
-              </span>
-              <div className="flex items-center gap-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
-                  <button
-                    key={n}
-                    onClick={() => setPage(n)}
-                    className="w-8 h-8 rounded text-sm"
-                    style={{
-                      border: page === n ? 'none' : '1px solid var(--bd-default)',
-                      background: page === n ? '#2563EB' : 'transparent',
-                      color: page === n ? '#FFF' : 'var(--text-2)',
-                      fontWeight: page === n ? 600 : 400,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {n}
-                  </button>
-                ))}
-                <Select value={String(perPage)} onValueChange={v => { setPerPage(Number(v)); setPage(1); }}>
-                  <SelectTrigger className="h-8 w-[72px] text-xs" style={{ borderColor: 'var(--bd-default)', color: 'var(--text-2)' }}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="25">25</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                  </SelectContent>
-                </Select>
+            {/* Pagination Footer — only when totalPages > 1 */}
+            {totalPages > 1 && (
+              <div
+                className="flex shrink-0 items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#1A1714]"
+                style={{ fontSize: 13 }}
+              >
+                <span className="text-muted-foreground">
+                  Showing {startIdx + 1}–{endIdx} of {filtered.length} projects
+                </span>
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                    <button
+                      key={n}
+                      onClick={() => setPage(n)}
+                      className={`w-8 h-8 rounded text-sm border focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none cursor-pointer ${
+                        page === n
+                          ? 'bg-blue-600 text-white border-blue-600 font-semibold'
+                          : 'bg-transparent border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                  <Select value={String(perPage)} onValueChange={v => { setPerPage(Number(v)); setPage(1); }}>
+                    <SelectTrigger className="h-8 w-[72px] text-xs border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 focus-visible:ring-2 focus-visible:ring-blue-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="25">25</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         ) : (
           <div className="flex-1 min-h-0 overflow-y-auto">
