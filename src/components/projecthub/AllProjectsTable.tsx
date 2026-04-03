@@ -338,7 +338,7 @@ export function AllProjectsTable({
             </div>
 
             {/* Cell 9: Actions */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 8px', display: 'flex', justifyContent: 'center', pointerEvents: 'auto', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', display: 'flex', justifyContent: 'center', pointerEvents: 'auto', opacity: active ? 1 : 0.45 }}>
               {active ? (
                 <RowActionMenu project={p} />
               ) : (
