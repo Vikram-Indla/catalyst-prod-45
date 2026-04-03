@@ -69,8 +69,9 @@ export default function EnvironmentsListPage() {
     setIsLoading(true);
     try {
       let query = (supabase as any)
-        .from('th_environments')
-        .select(`*, owner:profiles!th_environments_owner_id_fkey(full_name)`)
+        .from('tm_environments')
+        .select(`*, owner:profiles!tm_environments_owner_id_fkey(full_name)`)
+        .eq('project_id', '00000000-0000-0000-0000-000000000001')
         .order('created_at', { ascending: true });
 
       if (typeFilter !== 'all') query = query.eq('type', typeFilter);

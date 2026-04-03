@@ -150,8 +150,8 @@ export default function SharedStepsPage() {
 
       if (catError) { console.error('Categories fetch error:', catError); return; }
 
-      const { data: countsData } = await supabase
-        .from('th_shared_steps')
+      const { data: countsData } = await (supabase as any)
+        .from('tm_shared_steps')
         .select('category_id')
         .eq('is_active', true);
 
@@ -185,8 +185,8 @@ export default function SharedStepsPage() {
   const fetchSharedSteps = async () => {
     setLoading(true);
     try {
-      let query = supabase
-        .from('th_shared_steps')
+      let query = (supabase as any)
+        .from('tm_shared_steps')
         .select(`
           *,
           category:tm_shared_step_categories (
@@ -233,8 +233,8 @@ export default function SharedStepsPage() {
   };
 
   const handleDuplicate = async (step: SharedStep) => {
-    const { data, error } = await supabase
-      .from('th_shared_steps')
+    const { data, error } = await (supabase as any)
+      .from('tm_shared_steps')
       .insert({
         name: `${step.name} (Copy)`,
         description: step.description,
@@ -243,6 +243,7 @@ export default function SharedStepsPage() {
         category_id: step.category_id,
         variables: step.variables as any,
         usage_count: 0,
+        project_id: '00000000-0000-0000-0000-000000000001',
       })
       .select(`*, category:tm_shared_step_categories ( id, name, color, icon )`)
       .single();
