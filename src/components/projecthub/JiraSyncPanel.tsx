@@ -153,15 +153,29 @@ export function JiraSyncPanel() {
         body: { sync_type: 'full' },
       });
       if (error) throw error;
+
+      // Handle multiple response formats from different versions of the edge function
       if (data?.success) {
-        toast.success(`Sync complete: ${data.issues_upserted ?? 0} issues synced`);
+        const count = data.issues_upserted ?? data.issues_fetched ?? 0;
+        toast.success(`Sync complete: ${count} issues synced`);
+      } else if (data?.status === 'processing' || data?.status === 'started') {
+        toast.success('Sync triggered — processing in background. Stats will update shortly.');
+      } else if (data?.error) {
+        toast.error(`Sync error: ${data.error}`);
       } else {
-        toast.error(data?.error || 'Sync returned no data');
+        // Treat any non-error response as success
+        toast.success('Sync triggered successfully');
       }
-      queryClient.invalidateQueries({ queryKey: ['sync-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['sync-health-latest'] });
-      queryClient.invalidateQueries({ queryKey: ['jira-connection-status'] });
-      queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+
+      // Refresh all related queries after a short delay for background processing
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['sync-stats'] });
+        queryClient.invalidateQueries({ queryKey: ['sync-health-latest'] });
+        queryClient.invalidateQueries({ queryKey: ['jira-connection-status'] });
+        queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+        queryClient.invalidateQueries({ queryKey: ['wh', 'sync-health'] });
+        queryClient.invalidateQueries({ queryKey: ['wh', 'sync-logs'] });
+      }, 3000);
     } catch (err) {
       toast.error(`Sync failed: ${String(err)}`);
     } finally {
