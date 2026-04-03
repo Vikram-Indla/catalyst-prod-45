@@ -91,7 +91,7 @@ export default function TestCyclesPage() {
 
   const handleStatusChange = async (cycleId: string, newStatus: string, label: string) => {
     try {
-      const { error } = await supabase.from('th_test_cycles').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', cycleId);
+      const { error } = await (supabase as any).from('tm_test_cycles').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', cycleId);
       if (error) throw error;
       catalystToast.success(`Cycle ${label.toLowerCase()}`, { title: `Cycle ${label}` });
       fetchCycles();
