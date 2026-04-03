@@ -109,7 +109,7 @@ export default function EnvironmentDetailPage() {
   const updateStatus = async (newStatus: string) => {
     if (!environment) return;
     try {
-      const { error } = await (supabase as any).from('th_environments').update({ status: newStatus }).eq('id', environment.id);
+      const { error } = await (supabase as any).from('tm_environments').update({ status: newStatus }).eq('id', environment.id);
       if (error) throw error;
       catalystToast.success(`Status changed to ${STATUS_CONFIG[newStatus]?.label || newStatus}`);
       fetchEnvironment();
