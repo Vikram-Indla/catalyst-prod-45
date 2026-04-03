@@ -50,7 +50,7 @@ export function MoveToFolderModal({
     setIsMoving(true);
     try {
       const { error } = await supabase
-        .from('th_test_cases')
+        .from('tm_test_cases')
         .update({ folder_id: selectedFolderId, updated_at: new Date().toISOString() })
         .in('id', testCaseIds);
 

@@ -63,15 +63,19 @@ interface RawTestCase {
   id: string;
   case_key: string;
   title: string;
-  objective: string | null;
+  description: string | null;
   preconditions: string | null;
   folder_id: string | null;
-  priority: string;
-  type: string;
+  priority_id: string | null;
+  case_type_id: string | null;
   status: string;
   version: number;
   updated_at: string;
-  owner_id?: string | null;
+  created_by?: string | null;
+  assigned_to?: string | null;
+  objective?: string | null;
+  priority?: string;
+  type?: string;
 }
 
 interface ContextMenuState {
@@ -141,7 +145,7 @@ export function TestRepositoryPage() {
   // Fetch folders
   const fetchFolders = async () => {
     const { data, error } = await supabase
-      .from('th_folders')
+      .from('tm_folders')
       .select('*')
       .order('sort_order');
 
@@ -151,7 +155,7 @@ export function TestRepositoryPage() {
     }
 
     const { data: counts } = await supabase
-      .from('th_test_cases')
+      .from('tm_test_cases')
       .select('folder_id');
 
     const countMap: Record<string, number> = {};
@@ -177,7 +181,7 @@ export function TestRepositoryPage() {
    const fetchTestCases = async () => {
      setIsLoading(true);
 
-     let query = supabase.from('th_test_cases').select('*');
+     let query = supabase.from('tm_test_cases').select('*, priority_ref:tm_case_priorities(name), type_ref:tm_case_types(name)');
 
      if (selectedFolderId) {
        query = query.eq('folder_id', selectedFolderId);
@@ -196,7 +200,7 @@ export function TestRepositoryPage() {
      }
 
      // Fetch owner profiles
-     const ownerIds = [...new Set(data?.map(tc => tc.owner_id).filter(Boolean) as string[])];
+     const ownerIds = [...new Set(data?.map(tc => (tc as any).created_by).filter(Boolean) as string[])];
      let profilesMap: Record<string, { full_name: string | null; avatar_url: string | null }> = {};
      if (ownerIds.length > 0) {
        const { data: profiles } = await supabase
@@ -207,20 +211,23 @@ export function TestRepositoryPage() {
      }
 
      let mapped = data?.map(tc => {
-       const owner = tc.owner_id ? profilesMap[tc.owner_id] : null;
+       const ownerId = (tc as any).created_by;
+       const owner = ownerId ? profilesMap[ownerId] : null;
        const ownerName = owner?.full_name || null;
+       const priorityName = (tc as any).priority_ref?.name || 'medium';
+       const typeName = (tc as any).type_ref?.name || 'functional';
        return {
         id: tc.id,
         caseKey: tc.case_key,
         title: tc.title,
-        priority: tc.priority as TestCase['priority'],
-        type: tc.type as TestCase['type'],
+        priority: priorityName.toLowerCase() as TestCase['priority'],
+        type: typeName.toLowerCase() as TestCase['type'],
         status: tc.status as TestCase['status'],
         ownerInitials: ownerName ? ownerName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : null,
         ownerName,
         ownerAvatarUrl: owner?.avatar_url || null,
         updatedAt: tc.updated_at,
-        objective: tc.objective,
+        objective: tc.description,
         preconditions: tc.preconditions,
         folderId: tc.folder_id,
         version: tc.version || 1,
@@ -280,7 +287,7 @@ export function TestRepositoryPage() {
     if (!viewId) return;
     const openFromUrl = async () => {
       const { data } = await supabase
-        .from('th_test_cases')
+        .from('tm_test_cases')
         .select('*')
         .eq('id', viewId)
         .maybeSingle();
@@ -328,9 +335,11 @@ export function TestRepositoryPage() {
       id: testCase.id,
       case_key: testCase.caseKey,
       title: testCase.title,
-      objective: testCase.objective || null,
+      description: testCase.objective || null,
       preconditions: testCase.preconditions || null,
       folder_id: testCase.folderId || null,
+      priority_id: null,
+      case_type_id: null,
       priority: testCase.priority,
       type: testCase.type,
       status: testCase.status,
@@ -360,7 +369,7 @@ export function TestRepositoryPage() {
 
   const openEditModal = async (tc: RawTestCase) => {
     const { data: stepsData } = await supabase
-      .from('th_test_steps')
+      .from('tm_test_steps')
       .select('*')
       .eq('test_case_id', tc.id)
       .order('step_number');
@@ -380,7 +389,7 @@ export function TestRepositoryPage() {
   const handleViewFromContext = async () => {
     if (!contextMenu) return;
     const { data: fullTC } = await supabase
-      .from('th_test_cases')
+      .from('tm_test_cases')
       .select('*')
       .eq('id', contextMenu.testCase.id)
       .single();
@@ -395,7 +404,7 @@ export function TestRepositoryPage() {
   const handleEditFromContext = async () => {
     if (!contextMenu) return;
     const { data: fullTC } = await supabase
-      .from('th_test_cases')
+      .from('tm_test_cases')
       .select('*')
       .eq('id', contextMenu.testCase.id)
       .single();
@@ -409,7 +418,7 @@ export function TestRepositoryPage() {
   const handleCloneFromContext = async () => {
     if (!contextMenu) return;
     const { data: fullTC } = await supabase
-      .from('th_test_cases')
+      .from('tm_test_cases')
       .select('*')
       .eq('id', contextMenu.testCase.id)
       .single();
@@ -527,7 +536,7 @@ export function TestRepositoryPage() {
 
     // Delete folder
     const { error } = await supabase
-      .from('th_folders')
+      .from('tm_folders')
       .delete()
       .eq('id', folderId);
 
@@ -564,7 +573,7 @@ export function TestRepositoryPage() {
     if (!renameFolderId) return;
     setIsRenaming(true);
     const { error } = await supabase
-      .from('th_folders')
+      .from('tm_folders')
       .update({ name: newName })
       .eq('id', renameFolderId);
     setIsRenaming(false);
@@ -983,7 +992,7 @@ export function TestRepositoryPage() {
           type: selectedTestCase.type,
           status: selectedTestCase.status,
           version: selectedTestCase.version || 1,
-          owner_id: selectedTestCase.owner_id || null,
+          owner_id: selectedTestCase.assigned_to || null,
         } : undefined}
         existingSteps={selectedTestCaseSteps.length > 0 ? selectedTestCaseSteps : undefined}
       />
@@ -995,7 +1004,7 @@ export function TestRepositoryPage() {
           setIsViewModalOpen(false);
           setSelectedTestCase(null);
         }}
-        testCase={selectedTestCase}
+        testCase={selectedTestCase as any}
         onEdit={handleEditFromView}
         onClone={handleCloneFromView}
       />
@@ -1008,7 +1017,7 @@ export function TestRepositoryPage() {
           setSelectedTestCase(null);
         }}
         onSuccess={handleCloneSuccess}
-        testCase={selectedTestCase}
+        testCase={selectedTestCase as any}
       />
 
       {/* Delete Modal */}

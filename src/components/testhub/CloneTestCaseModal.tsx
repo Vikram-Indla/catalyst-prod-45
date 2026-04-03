@@ -10,6 +10,7 @@ interface TestCase {
   objective: string | null;
   preconditions: string | null;
   folder_id: string | null;
+  folderId?: string | null;
   priority: string;
   type: string;
 }
@@ -49,7 +50,7 @@ export function CloneTestCaseModal({
     try {
       // 1. Generate new case_key
       const { data: lastCase } = await supabase
-        .from('th_test_cases')
+        .from('tm_test_cases')
         .select('case_key')
         .order('created_at', { ascending: false })
         .limit(1);
@@ -62,20 +63,20 @@ export function CloneTestCaseModal({
       const newCaseKey = `TC-${String(nextNum).padStart(3, '0')}`;
 
       // 2. Insert cloned test case
-      const { data: newCase, error } = await supabase
-        .from('th_test_cases')
-        .insert({
+      const { data: newCase, error } = await (supabase as any)
+        .from('tm_test_cases')
+        .insert([{
           case_key: newCaseKey,
           title: newTitle.trim(),
-          objective: testCase.objective,
+          description: (testCase as any).objective || (testCase as any).description || '',
           preconditions: testCase.preconditions,
-          folder_id: testCase.folder_id,
-          priority: testCase.priority,
-          type: testCase.type,
-          status: 'draft', // Always start as draft
-          automation: 'manual', // Default automation status
+          folder_id: (testCase as any).folderId || testCase.folder_id,
+          priority_id: (testCase as any).priority_id || null,
+          case_type_id: (testCase as any).case_type_id || null,
+          status: 'draft',
+          automation_status: 'manual',
           version: 1,
-        })
+        }])
         .select()
         .single();
 
@@ -84,7 +85,7 @@ export function CloneTestCaseModal({
       // 3. Clone steps if checked
       if (includeSteps) {
         const { data: originalSteps } = await supabase
-          .from('th_test_steps')
+          .from('tm_test_steps')
           .select('*')
           .eq('test_case_id', testCase.id)
           .order('step_number');
@@ -96,7 +97,7 @@ export function CloneTestCaseModal({
             action: s.action,
             expected_result: s.expected_result,
           }));
-          await supabase.from('th_test_steps').insert(clonedSteps);
+          await supabase.from('tm_test_steps').insert(clonedSteps);
         }
       }
 

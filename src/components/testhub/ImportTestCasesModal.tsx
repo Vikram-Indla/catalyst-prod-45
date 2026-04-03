@@ -104,7 +104,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
     try {
       for (const tc of parsedData) {
         const { data: lastCase } = await supabase
-          .from('th_test_cases')
+          .from('tm_test_cases')
           .select('case_key')
           .order('created_at', { ascending: false })
           .limit(1);
@@ -115,26 +115,24 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
           if (match) nextNum = parseInt(match[1]) + 1;
         }
         
-        const { data: newCase, error: tcError } = await supabase
-          .from('th_test_cases')
-          .insert({
+        const { data: newCase, error: tcError } = await (supabase as any)
+          .from('tm_test_cases')
+          .insert([{
             case_key: `TC-${String(nextNum).padStart(3, '0')}`,
             title: tc.title,
-            objective: tc.objective,
+            description: tc.objective,
             preconditions: tc.preconditions,
             folder_id: selectedFolderId || null,
-            priority: tc.priority,
-            type: tc.type,
             status: 'draft',
-            automation: tc.automation,
-          })
+            automation_status: tc.automation || 'manual',
+          }])
           .select()
           .single();
         
         if (tcError) throw tcError;
         
         if (tc.steps?.length && newCase) {
-          await supabase.from('th_test_steps').insert(
+          await supabase.from('tm_test_steps').insert(
             tc.steps.map((s, i) => ({
               test_case_id: newCase.id,
               step_number: i + 1,

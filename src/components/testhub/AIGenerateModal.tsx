@@ -53,7 +53,7 @@ function getFolderPath(folders: Folder[], folderId: string): string[] {
  */
 async function getNextCaseKeys(batchSize: number): Promise<string[]> {
   const { data: allCases } = await supabase
-    .from('th_test_cases')
+    .from('tm_test_cases')
     .select('case_key');
 
   let maxNum = 0;
@@ -100,7 +100,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
     setLoadingFolders(true);
     try {
       const { data, error } = await supabase
-        .from('th_folders')
+        .from('tm_folders')
         .select('id, name, parent_id')
         .order('sort_order');
       if (error) throw error;
@@ -213,7 +213,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
       for (let i = 0; i < toInsert.length; i++) {
         const tc = toInsert[i];
         const { data: newCase, error: tcError } = await supabase
-          .from('th_test_cases')
+          .from('tm_test_cases')
           .insert({
             case_key: caseKeys[i],
             title: tc.title,
@@ -231,7 +231,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
         if (tcError) throw tcError;
 
         if (includeSteps && tc.steps?.length && newCase) {
-          await supabase.from('th_test_steps').insert(
+          await supabase.from('tm_test_steps').insert(
             tc.steps.map((s, idx) => ({
               test_case_id: newCase.id,
               step_number: s.stepNumber || idx + 1,
