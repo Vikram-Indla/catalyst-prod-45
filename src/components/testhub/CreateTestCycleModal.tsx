@@ -276,12 +276,14 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         {/* Footer */}
         <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
-          <button onClick={handleSubmit} disabled={isSubmitting || !name.trim()} style={{
+          <button type="button" onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 40, padding: '0 24px',
-            backgroundColor: name.trim() && !isSubmitting ? '#2563EB' : '#94A3B8',
+            backgroundColor: isSubmitting ? '#93C5FD' : '#2563EB',
             border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
-            cursor: name.trim() ? 'pointer' : 'not-allowed',
-            opacity: isSubmitting ? 0.5 : 1,
+            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            opacity: isSubmitting ? 0.7 : 1,
+            transition: 'background-color 0.15s',
           }}>
             {isSubmitting
               ? (isEdit ? 'Saving...' : 'Creating...')
