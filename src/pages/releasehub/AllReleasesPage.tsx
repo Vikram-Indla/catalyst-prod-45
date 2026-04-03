@@ -92,11 +92,17 @@ export default function AllReleasesPage() {
           <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>All Releases</h1>
           <p className="text-[13px] text-[#64748B]" style={{ fontFamily: RH.fontBody }}>Manage and track all releases</p>
         </div>
-        <button onClick={() => setShowCreate(true)}
-          className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"
-          style={{ background: 'linear-gradient(to bottom, #3B82F6, #2563EB)', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
-          <Plus size={14} /> New Release
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleImport} disabled={importing}
+            className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5 border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#475569] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            <Download size={14} /> Import from Jira
+          </button>
+          <button onClick={() => setShowCreate(true)}
+            className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"
+            style={{ background: 'linear-gradient(to bottom, #3B82F6, #2563EB)', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
+            <Plus size={14} /> New Release
+          </button>
+        </div>
       </div>
 
       {/* Filter Tabs */}
