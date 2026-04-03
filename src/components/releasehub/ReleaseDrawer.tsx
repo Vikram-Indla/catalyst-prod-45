@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
-import { X, Download, RefreshCw, ExternalLink, CheckCircle2, XCircle, Minus, Activity } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { X as XIcon, Download, RefreshCw, ExternalLink, CheckCircle2, XCircle, Minus, Activity } from 'lucide-react';
 import { RH } from '@/constants/releasehub.design';
 import { StatusLozenge } from './StatusLozenge';
 import { SourceBadge } from './SourceBadge';
 import { CatalystAIChip } from './CatalystAIChip';
-import { useUpdateReleaseStatus, useChanges, useReleaseTestCycles, useApproveSignoff, useRejectSignoff } from '@/hooks/useReleaseHub';
+import { useUpdateReleaseStatus, useChanges, useReleaseTestCycles, useApproveSignoff, useRejectSignoff, useLinkTestCycle, useUnlinkTestCycle } from '@/hooks/useReleaseHub';
 import { getSignoffWaitTime } from '@/utils/releasehub.utils';
 import { differenceInHours } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { ReleaseStatus } from '@/types/releasehub';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 interface Props {
   release: any;
