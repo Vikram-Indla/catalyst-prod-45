@@ -50,12 +50,12 @@ export default function ExecutionHubPage() {
   const fetchCycles = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('th_test_cycles')
-        .select(`*, owner:profiles!th_test_cycles_owner_id_fkey ( full_name )`)
+      const { data, error } = await (supabase as any)
+        .from('tm_test_cycles')
+        .select(`*, owner:profiles!tm_test_cycles_owner_id_fkey ( full_name )`)
         .order('start_date', { ascending: false });
       if (error) throw error;
-      setCycles((data as any) || []);
+      setCycles((data) || []);
     } catch (err) {
       console.error('Failed to load cycles', err);
     } finally {

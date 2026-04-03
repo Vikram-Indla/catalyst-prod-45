@@ -60,8 +60,8 @@ export function AssignTesterModal({
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
-        .from('th_cycle_test_cases')
+      const { error } = await (supabase as any)
+        .from('tm_cycle_scope')
         .update({ 
           assigned_to: selectedProfileId,
           updated_at: new Date().toISOString(),
