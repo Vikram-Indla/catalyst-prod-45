@@ -573,6 +573,7 @@ export default function FullAppRoutes() {
           <Route path="releases/:releaseId" element={<S><ReleaseDetailPage /></S>} />
           <Route path="caty" element={<MG k="ai_features" t="Caty AI"><S><CatyAIPage /></S></MG>} />
           <Route path="docs" element={<S><TestHubDocsPage /></S>} />
+          <Route path="verify" element={<S><TestHubVerifyPage /></S>} />
         </Route>
 
         {/* ═══ IncidentHub ═══ */}
