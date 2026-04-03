@@ -258,7 +258,7 @@ export default function TestHubExecutionPage() {
         updateData.executed_at = null; updateData.executed_by = null;
         updateData.failure_reason = null; updateData.execution_time_seconds = 0;
       }
-      const { error } = await supabase.from('th_cycle_test_cases').update(updateData).eq('id', selectedTestCaseId);
+      const { error } = await (supabase as any).from('tm_cycle_scope').update(updateData).eq('id', selectedTestCaseId);
       if (error) { catalystToast.error('Failed to update test result'); return; }
 
       const toastMap: Record<string, () => void> = {
