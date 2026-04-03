@@ -67514,6 +67514,7 @@ export type Database = {
         Row: {
           change_count: number | null
           chg_count: number | null
+          completed_change_count: number | null
           created_at: string | null
           days_remaining: number | null
           id: string | null
