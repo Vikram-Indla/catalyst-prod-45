@@ -33,11 +33,11 @@ function isActiveStatus(status: string): boolean {
 const GRID_COLS = '48px 16px 36px minmax(200px,1fr) 120px 140px 120px 120px 48px';
 const CELL_BORDER = '0.75px solid var(--bd-default)';
 
-const STATUS_OPTIONS: { value: string; label: string }[] = [
-  { value: 'planning', label: 'Planning' },
-  { value: 'active', label: 'Active' },
-  { value: 'on_hold', label: 'On Hold' },
-  { value: 'completed', label: 'Completed' },
+const STATUS_OPTIONS = [
+  { value: 'active', label: 'ACTIVE', bg: '#DEEBFF', color: '#0747A6' },
+  { value: 'planning', label: 'PLANNING', bg: '#DFE1E6', color: '#253858' },
+  { value: 'on_hold', label: 'ON HOLD', bg: '#DFE1E6', color: '#253858' },
+  { value: 'completed', label: 'COMPLETED', bg: '#E3FCEF', color: '#006644' },
 ];
 
 // ── Sub-components ─────────────────────────────────────
