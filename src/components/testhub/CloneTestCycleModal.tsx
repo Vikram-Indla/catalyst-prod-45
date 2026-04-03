@@ -94,8 +94,8 @@ export function CloneTestCycleModal({
       }
 
       if (includeTestCases && cycle.total_cases > 0) {
-        const { data: originalTestCases, error: fetchError } = await supabase
-          .from('th_cycle_test_cases')
+        const { data: originalTestCases, error: fetchError } = await (supabase as any)
+          .from('tm_cycle_scope')
           .select('test_case_id, assigned_to')
           .eq('cycle_id', cycle.id);
 
