@@ -149,7 +149,7 @@ export default function TestHubExecutionPage() {
 
   const fetchCycle = useCallback(async () => {
     if (!cycleId) return;
-    const { data, error } = await supabase.from('th_test_cycles').select('*').eq('id', cycleId).single();
+    const { data, error } = await (supabase as any).from('tm_test_cycles').select('*').eq('id', cycleId).single();
     if (!error && data) setCycle(data as any);
   }, [cycleId]);
 
