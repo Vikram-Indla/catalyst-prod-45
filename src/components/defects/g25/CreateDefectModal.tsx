@@ -8,14 +8,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { defectSchema, DefectFormValues } from '@/schemas/defectSchema';
-import { useCreateDefectG25 } from '@/hooks/useDefectsG25';
+import { useCreateDefect } from '@/hooks/test-management/useDefects';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import type { DefectSeverity } from '@/types/test-management';
+
+const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
 
 interface Props { open: boolean; onClose: () => void; linkedTestCaseId?: string; linkedExecutionId?: string; }
 
 export function CreateDefectModalG25({ open, onClose, linkedTestCaseId, linkedExecutionId }: Props) {
-  const create = useCreateDefectG25();
+  const create = useCreateDefect();
   const { data: users } = useQuery({
     queryKey: ['profiles-list'],
     queryFn: async () => { const { data, error } = await supabase.from('profiles').select('id, full_name').order('full_name'); if (error) throw error; return data || []; },
@@ -26,8 +29,22 @@ export function CreateDefectModalG25({ open, onClose, linkedTestCaseId, linkedEx
     defaultValues: { title: '', description: '', severity: 'medium', priority: 'medium', assigned_to: null, component: '', environment: '', affected_version: '', due_date: null, folder_id: null, steps_to_reproduce: '', expected_result: '', actual_result: '' },
   });
 
+  const severityMap: Record<string, DefectSeverity> = {
+    critical: 'CRITICAL',
+    high: 'MAJOR',
+    medium: 'MINOR',
+    low: 'TRIVIAL',
+  };
+
   const onSubmit = async (values: DefectFormValues) => {
-    await create.mutateAsync(values);
+    await create.mutateAsync({
+      project_id: DEFAULT_PROJECT_ID,
+      title: values.title,
+      description: values.description || undefined,
+      severity: severityMap[values.severity] || 'MINOR',
+      assigned_to: values.assigned_to || undefined,
+      run_id: linkedExecutionId || undefined,
+    });
     form.reset();
     onClose();
   };
