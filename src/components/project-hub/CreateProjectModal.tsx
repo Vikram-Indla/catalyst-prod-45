@@ -72,9 +72,11 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       // Link to Jira if enabled
       if (details.linkJira && details.jiraKey && projectId) {
         const { error: syncErr } = await supabase.from('sync_entity_map').insert({
-          catalyst_id: projectId, entity_type: 'project',
-          jira_key: details.jiraKey.trim().toUpperCase(),
-          sync_direction: 'bidirectional', sync_enabled: true,
+          catalyst_entity_id: projectId, catalyst_entity_type: 'project',
+          jira_entity_id: details.jiraKey.trim().toUpperCase(),
+          jira_entity_type: 'project',
+          jira_entity_key: details.jiraKey.trim().toUpperCase(),
+          sync_direction: 'bidirectional',
         });
         if (syncErr) console.warn('Failed to create Jira link:', syncErr.message);
       }
