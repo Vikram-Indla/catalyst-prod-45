@@ -52,7 +52,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
       supabase.from('profiles').select('id, full_name').order('full_name').then(({ data }) => {
         if (data) setProfiles(data);
       });
-      (supabase as any).from('th_environments').select('id, name, type, health_status').eq('status', 'active').order('name').then(({ data }: any) => {
+      (supabase as any).from('tm_environments').select('id, name, type, health_status').eq('status', 'active').order('name').then(({ data }: any) => {
         if (data) setEnvironments(data);
       });
 
