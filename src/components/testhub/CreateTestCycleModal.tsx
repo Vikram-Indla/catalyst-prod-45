@@ -58,9 +58,9 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
       if (mode === 'edit' && cycle) {
         setName(cycle.name || '');
         setDescription(cycle.description || '');
-        setStartDate(cycle.start_date || '');
-        setEndDate(cycle.end_date || '');
-        setOwnerId(cycle.owner_id || '');
+        setStartDate(cycle.planned_start || '');
+        setEndDate(cycle.planned_end || '');
+        setOwnerId('');
         setEnvironmentId(cycle.environment_id || '');
       } else {
         setName('');
