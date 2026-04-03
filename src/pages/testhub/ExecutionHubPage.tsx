@@ -18,30 +18,34 @@ interface CycleWithStats {
   cycle_key: string;
   name: string;
   status: string;
-  start_date: string;
-  end_date: string;
-  progress_percent: number;
+  planned_start: string | null;
+  planned_end: string | null;
   total_cases: number;
   passed_count: number;
   failed_count: number;
   blocked_count: number;
   skipped_count: number;
   not_run_count: number;
-  owner: { full_name: string } | null;
+  in_progress_count: number;
 }
 
-const statusStyles: Record<string, { label: string; color: string; bg: string }> = {
-  active: { label: 'Active', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
-  draft: { label: 'Draft', color: 'text-muted-foreground', bg: 'bg-muted border-border' },
-  completed: { label: 'Completed', color: 'text-primary', bg: 'bg-primary/10 border-primary/20' },
-  archived: { label: 'Archived', color: 'text-muted-foreground', bg: 'bg-muted/50 border-border' },
+const CYCLE_STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = {
+  in_progress:  { bg: '#DEEBFF', text: '#0747A6', label: 'IN PROGRESS' },
+  active:       { bg: '#DEEBFF', text: '#0747A6', label: 'ACTIVE' },
+  planned:      { bg: '#DFE1E6', text: '#253858', label: 'PLANNED' },
+  draft:        { bg: '#DFE1E6', text: '#253858', label: 'DRAFT' },
+  on_hold:      { bg: '#DFE1E6', text: '#253858', label: 'ON HOLD' },
+  completed:    { bg: '#E3FCEF', text: '#006644', label: 'COMPLETED' },
+  closed:       { bg: '#E3FCEF', text: '#006644', label: 'CLOSED' },
+  done:         { bg: '#E3FCEF', text: '#006644', label: 'DONE' },
+  archived:     { bg: '#DFE1E6', text: '#253858', label: 'ARCHIVED' },
 };
 
 export default function ExecutionHubPage() {
   const navigate = useNavigate();
   const [cycles, setCycles] = useState<CycleWithStats[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [viewFilter, setViewFilter] = useState<string>('active');
+  const [viewFilter, setViewFilter] = useState<string>('all');
 
   useEffect(() => {
     fetchCycles();
@@ -163,8 +167,9 @@ export default function ExecutionHubPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {filtered.map(cycle => {
-            const st = statusStyles[cycle.status] || statusStyles.draft;
+            const cfg = CYCLE_STATUS_MAP[(cycle.status || 'draft').toLowerCase()] ?? CYCLE_STATUS_MAP['draft'];
             const executed = cycle.total_cases - cycle.not_run_count;
+            const progressPercent = cycle.total_cases > 0 ? Math.round((executed / cycle.total_cases) * 100) : 0;
             return (
               <div
                 key={cycle.id}
@@ -178,14 +183,18 @@ export default function ExecutionHubPage() {
                       <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded">
                         {cycle.cycle_key}
                       </span>
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded border ${st.bg} ${st.color}`}>
-                        {st.label}
+                      <span style={{
+                        backgroundColor: cfg.bg, color: cfg.text,
+                        fontSize: '11px', fontWeight: 700, letterSpacing: '0.03em',
+                        textTransform: 'uppercase', borderRadius: '3px', padding: '2px 6px',
+                        height: '20px', display: 'inline-flex', alignItems: 'center',
+                      }}>
+                        {cfg.label}
                       </span>
                     </div>
                     <h3 className="text-sm font-semibold text-foreground truncate">{cycle.name}</h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {formatDate(cycle.start_date)} — {formatDate(cycle.end_date)}
-                      {cycle.owner && <span className="ml-2">• {cycle.owner.full_name}</span>}
+                      {cycle.planned_start ? formatDate(cycle.planned_start) : '—'} — {cycle.planned_end ? formatDate(cycle.planned_end) : '—'}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -209,12 +218,12 @@ export default function ExecutionHubPage() {
                 <div className="mb-3">
                   <div className="flex justify-between text-xs mb-1.5">
                     <span className="text-muted-foreground">{executed} / {cycle.total_cases} executed</span>
-                    <span className="font-semibold text-foreground">{cycle.progress_percent}%</span>
+                    <span className="font-semibold text-foreground">{progressPercent}%</span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-300"
-                      style={{ width: `${cycle.progress_percent}%` }}
+                      style={{ width: `${progressPercent}%` }}
                     />
                   </div>
                 </div>

@@ -146,13 +146,13 @@ async function fetchMyTestScopeData(): Promise<MyTestScopeData> {
     }
   }
 
-  // Build stats from RPC or calculate from tests
-  const stats = statsJson || {};
-  const passedTests = stats.passed_count ?? tests.filter(t => t.status === 'passed').length;
-  const failedTests = stats.failed_count ?? tests.filter(t => t.status === 'failed').length;
-  const blockedTests = stats.blocked_count ?? tests.filter(t => t.status === 'blocked').length;
-  const notRunTests = stats.remaining ?? tests.filter(t => t.status === 'not_run').length;
-  const totalTests = stats.total_assigned ?? tests.length;
+  // Build stats from tests array (single source of truth for consistency)
+  // If we have tests, use them. Stats RPC is only used as supplementary info.
+  const passedTests = tests.filter(t => t.status === 'passed').length;
+  const failedTests = tests.filter(t => t.status === 'failed').length;
+  const blockedTests = tests.filter(t => t.status === 'blocked').length;
+  const notRunTests = tests.filter(t => t.status === 'not_run').length;
+  const totalTests = tests.length;
 
   const summary: TestScopeSummary = {
     totalTests,
@@ -160,7 +160,7 @@ async function fetchMyTestScopeData(): Promise<MyTestScopeData> {
     failedTests,
     blockedTests,
     notRunTests,
-    passRate: stats.pass_rate ?? (totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0),
+    passRate: totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0,
     overdueCount: tests.filter(t => t.urgency === 'overdue').length,
     dueTodayCount: tests.filter(t => t.urgency === 'due_today').length,
     linkedDefectsCount: 0,

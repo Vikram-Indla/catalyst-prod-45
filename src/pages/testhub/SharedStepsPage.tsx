@@ -596,11 +596,10 @@ export default function SharedStepsPage() {
                           <td style={{ padding: '12px 16px' }}>
                             {step.category ? (
                               <span style={{
-                                display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 10px',
-                                backgroundColor: `${step.category.color}15`, borderRadius: 12, fontSize: 12,
-                                fontWeight: 600, color: step.category.color,
+                                display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px',
+                                backgroundColor: '#F1F5F9', borderRadius: 4, fontSize: 11,
+                                fontWeight: 600, color: '#374151',
                               }}>
-                                <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: step.category.color }} />
                                 {step.category.name}
                               </span>
                             ) : (
@@ -785,13 +784,12 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete }: {
       {/* Top row: category badge + usage + kebab */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {cat && (
+        {cat && (
             <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 10px',
-              backgroundColor: `${cat.color}15`, borderRadius: 12, fontSize: 11,
-              fontWeight: 600, color: cat.color, fontFamily: 'Inter',
+              display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px',
+              backgroundColor: '#F1F5F9', borderRadius: 4, fontSize: 11,
+              fontWeight: 600, color: '#374151', fontFamily: 'Inter',
             }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: cat.color }} />
               {cat.name}
             </span>
           )}
