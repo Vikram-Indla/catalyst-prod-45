@@ -185,8 +185,8 @@ export default function SharedStepsPage() {
   const fetchSharedSteps = async () => {
     setLoading(true);
     try {
-      let query = (supabase as any)
-        .from('tm_shared_steps')
+      let query = supabase
+        .from('tm_shared_steps' as any)
         .select(`
           *,
           category:tm_shared_step_categories (
