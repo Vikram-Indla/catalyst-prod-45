@@ -889,33 +889,33 @@ html:has(body[data-scroll-locked]) {
     --brand-gold-hover: #0f766e;
     --brand-teal: #0d9488;
     
-    /* === A) SURFACE LADDER (Nocturne Warm Charcoal) === */
-    --bg-0: #181A1E;                     /* App background — Nocturne warm charcoal */
+    /* === A) SURFACE LADDER (Cool Steel blue-grey) === */
+    --bg-0: #181A1E;                     /* App background — Cool Steel */
     --bg-1: #181A1E;                     /* Page canvas */
-    --bg-2: #1F2128;                     /* Panels / elevated float */
-    --bg-3: #1F2128;                     /* Cards — same as panels for flush */
-    --bg-4: #2A2720;                     /* Raised/hover */
-    --bg-5: #312E27;                     /* Active/selected surface */
+    --bg-2: #1E2027;                     /* Panels / elevated float */
+    --bg-3: #1E2027;                     /* Cards — same as panels for flush */
+    --bg-4: #262830;                     /* Raised/hover */
+    --bg-5: #2C2E36;                     /* Active/selected surface */
     --bg-app: var(--bg-0);
     
     /* Shadcn surface mappings */
-    --background: 30 13% 9%;             /* #181A1E */
-    --foreground: 0 0% 92%;              /* rgba(255,255,255,0.92) */
+    --background: 222 13% 11%;            /* #181A1E Cool Steel */
+    --foreground: 216 25% 91%;            /* Cool Steel text */
     
-    --card: 30 13% 9%;                   /* Same as --background — flush cards */
-    --card-foreground: 0 0% 92%;
+    --card: 222 13% 11%;                  /* Same as --background — flush cards */
+    --card-foreground: 216 25% 91%;
     
-    --popover: 228 14% 14%;               /* #1F2128 - NOCTURNE float */
-    --popover-foreground: 0 0% 92%;
+    --popover: 228 12% 13%;               /* #1E2027 - Cool Steel float */
+    --popover-foreground: 216 25% 91%;
     
     --primary: 217 91% 60%;              /* #3b82f6 blue */
     --primary-foreground: 0 0% 100%;     /* pure white on buttons only */
     
-    --secondary: 216 10% 10%;            /* matches card */
-    --secondary-foreground: 0 0% 92%;
+    --secondary: 222 12% 12%;            /* Cool Steel card */
+    --secondary-foreground: 216 25% 91%;
     
-    --muted: 216 10% 12%;                /* #232830 */
-    --muted-foreground: 0 0% 72%;        /* --fg-2 */
+    --muted: 222 12% 14%;                /* #1E2027 */
+    --muted-foreground: 216 20% 72%;     /* --fg-2 */
     
     --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
@@ -924,10 +924,10 @@ html:has(body[data-scroll-locked]) {
     --destructive-foreground: 0 0% 98%;
     
     /* === B) TEXT LADDER (Readable, consistent — no pure white body) === */
-    --fg-1: rgba(255,255,255,0.92);      /* Primary text */
-    --fg-2: rgba(255,255,255,0.72);      /* Secondary text */
-    --fg-3: rgba(255,255,255,0.60);      /* Muted/hints — bumped from 0.55 per L20 */
-    --fg-4: rgba(255,255,255,0.38);      /* Disabled */
+    --fg-1: rgba(225,230,240,0.92);      /* Primary text — Cool Steel */
+    --fg-2: rgba(225,230,240,0.72);      /* Secondary text */
+    --fg-3: rgba(225,230,240,0.60);      /* Muted/hints */
+    --fg-4: rgba(225,230,240,0.38);      /* Disabled */
     
     --text-1: var(--fg-1);
     --text-2: var(--fg-2);
@@ -936,42 +936,42 @@ html:has(body[data-scroll-locked]) {
     --text-inverse: #0a0a0a;
     
     /* HSL versions for Tailwind */
-    --text-primary: 0 0% 92%;
-    --text-secondary: 0 0% 72%;
-    --text-tertiary: 0 0% 60%;
-    --text-muted: 0 0% 60%;
+    --text-primary: 216 25% 91%;
+    --text-secondary: 216 15% 72%;
+    --text-tertiary: 220 8% 57%;
+    --text-muted: 220 8% 57%;
     
     /* ═══════════════════════════════════════════════════════════════
        V9.5 NAVIGATION SHELL — AAA Contrast (Dark Mode)
        Based on Linear/Stripe dark mode standards
        ═══════════════════════════════════════════════════════════════ */
-    --nav-text-primary: rgba(255,255,255,0.92);
-    --nav-text-secondary: rgba(255,255,255,0.72);
-    --nav-text-tertiary: rgba(255,255,255,0.55);
-    --nav-module-badge: #3F3F46;           /* Neutral badge (same as light) */
-    --nav-section-label: rgba(255,255,255,0.55);
+    --nav-text-primary: rgba(225,230,240,0.92);
+    --nav-text-secondary: rgba(225,230,240,0.72);
+    --nav-text-tertiary: rgba(225,230,240,0.55);
+    --nav-module-badge: #32343A;           /* Cool Steel badge */
+    --nav-section-label: rgba(225,230,240,0.55);
     --nav-accent-bar: #3b82f6;             /* Left accent bar */
     
-    /* === C) DIVIDER + BORDER GRAMMAR (Never white lines) === */
-    --divider: rgba(255,255,255,0.06);
-    --border-subtle: rgba(255,255,255,0.08);
-    --border-strong: rgba(255,255,255,0.12);
+    /* === C) DIVIDER + BORDER GRAMMAR (Cool Steel borders) === */
+    --divider: rgba(200,210,225,0.06);
+    --border-subtle: rgba(200,210,225,0.08);
+    --border-strong: rgba(200,210,225,0.12);
     --stroke-1: var(--divider);
     --stroke-2: var(--border-subtle);
     
-    --border: 0 0% 100% / 0.06;
-    --input: 0 0% 100% / 0.08;
+    --border: 220 15% 85% / 0.06;
+    --input: 220 15% 85% / 0.08;
     --ring: 217 91% 60%;
     
     /* === D) INTERACTION TOKENS === */
-    --focus-ring: rgba(198,156,109,0.55);  /* Brand gold focus */
-    --hover: rgba(255,255,255,0.04);
-    --active: rgba(255,255,255,0.07);
-    --selected: rgba(255,255,255,0.08);    /* Neutral selected */
+    --focus-ring: rgba(59,130,246,0.55);   /* Blue focus — Cool Steel */
+    --hover: rgba(200,210,225,0.04);
+    --active: rgba(200,210,225,0.07);
+    --selected: rgba(200,210,225,0.08);    /* Neutral selected */
     
     --row-hover: var(--hover);
-    --row-selected: rgba(255,255,255,0.08);
-    --row-active: rgba(255,255,255,0.12);
+    --row-selected: rgba(200,210,225,0.08);
+    --row-active: rgba(200,210,225,0.12);
     
     /* ═══════════════════════════════════════════════════════════════
        CATALYST V5 CANONICAL — Dark Mode Semantic Tokens
@@ -2876,42 +2876,42 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] {
   --bg-0: #181A1E;
   --bg-1: #181A1E;
-  --bg-2: #1F2128;
-  --bg-3: #1F2128;
-  --bg-4: #2A2720;
-  --border: rgba(255,255,255,0.04);
-  --cp-bd: rgba(235,238,245,0.10);
-  --cp-bd-table: rgba(235,238,245,0.06);
-  --cp-bd-zone: rgba(235,238,245,0.08);
+  --bg-2: #1E2027;
+  --bg-3: #1E2027;
+  --bg-4: #262830;
+  --border: rgba(200,210,225,0.06);
+  --cp-bd: rgba(200,210,225,0.10);
+  --cp-bd-table: rgba(200,210,225,0.06);
+  --cp-bd-zone: rgba(200,210,225,0.08);
   --cp-bg: #181A1E;
-  --cp-bg-elevated: #1A1A1A;
-  --cp-bg-page: #0A0A0A;
-  --cp-bg-sunken: #0A0A0A;
-  --cp-bg-surface: #141414;
+  --cp-bg-elevated: #1E2027;
+  --cp-bg-page: #0F1114;
+  --cp-bg-sunken: #12141A;
+  --cp-bg-surface: #181A1E;
   --cp-blue: #3B82F6;
   --cp-blue-link: #7DB8FC;
   --cp-blue-text: #7DB8FC;
   --cp-blue-wash: rgba(59,130,246,0.10);
-  --cp-border-default: rgba(255,255,255,0.10);
-  --cp-border-strong: rgba(255,255,255,0.18);
-  --cp-border-subtle: rgba(255,255,255,0.06);
+  --cp-border-default: rgba(200,210,225,0.12);
+  --cp-border-strong: rgba(200,210,225,0.18);
+  --cp-border-subtle: rgba(200,210,225,0.06);
   --cp-err: #F87171;
   --cp-err-bg: rgba(248,113,113,0.10);
   --cp-err-text: #F87171;
-  --cp-float: #1F2128;
-  --cp-hover: rgba(235,238,245,0.05);
-  --cp-interact-hover: rgba(255,255,255,0.04);
-  --cp-interact-press: rgba(255,255,255,0.08);
+  --cp-float: #1E2027;
+  --cp-hover: rgba(200,210,225,0.05);
+  --cp-interact-hover: rgba(200,210,225,0.04);
+  --cp-interact-press: rgba(200,210,225,0.08);
   --cp-interact-selected: rgba(37,99,235,0.15);
   --cp-lozenge-blue-bg: #0C66E4;
   --cp-lozenge-blue-text: #FFFFFF;
   --cp-lozenge-green-bg: #1B7F37;
   --cp-lozenge-green-text: #FFFFFF;
-  --cp-lozenge-grey-bg: #3B3D42;
+  --cp-lozenge-grey-bg: #32343A;
   --cp-lozenge-grey-text: #D4D4D4;
-  --cp-lz-bl-bg: #1A2030;
+  --cp-lz-bl-bg: #1A2540;
   --cp-lz-bl-t: #93C5FD;
-  --cp-lz-gn-bg: #182820;
+  --cp-lz-gn-bg: #0F2A1A;
   --cp-lz-gn-t: #86EFAC;
   --cp-lz-gy-bg: #262830;
   --cp-lz-gy-t: #B8BCC8;
@@ -2920,23 +2920,23 @@ input[type="range"]::-moz-range-thumb {
   --cp-prg-bg: rgba(59,130,246,0.10);
   --cp-shadow-overlay: 0px 8px 12px rgba(0,0,0,0.5), 0px 0px 1px rgba(0,0,0,0.6);
   --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.3);
-  --cp-t1: rgba(235,238,245,0.92);
-  --cp-t2: rgba(235,238,245,0.72);
-  --cp-t3: rgba(235,238,245,0.60);
-  --cp-t4: rgba(235,238,245,0.35);
+  --cp-t1: rgba(225,230,240,0.92);
+  --cp-t2: rgba(225,230,240,0.72);
+  --cp-t3: rgba(225,230,240,0.60);
+  --cp-t4: rgba(225,230,240,0.35);
   --cp-text-link: #60A5FA;
-  --cp-text-muted: #737373;
-  --cp-text-primary: #FAFAFA;
-  --cp-text-secondary: #D4D4D4;
-  --cp-text-tertiary: #A3A3A3;
+  --cp-text-muted: #8B8F99;
+  --cp-text-primary: #F1F3F5;
+  --cp-text-secondary: #C1C5CC;
+  --cp-text-tertiary: #8B8F99;
   --cp-warn: #FBBF24;
   --cp-warn-bg: rgba(251,191,36,0.10);
-  --divider: rgba(255,255,255,0.04);
+  --divider: rgba(200,210,225,0.04);
   --ring: rgba(59,130,246,0.7);
   --shadow: 0 4px 12px rgba(0,0,0,0.4);
-  --text-1: #f5f5f5;
-  --text-2: #d4d4d4;
-  --text-3: #a3a3a3;
+  --text-1: #F1F3F5;
+  --text-2: #C1C5CC;
+  --text-3: #8B8F99;
   --tw-border-opacity: 0.04 !important;
 }
 
