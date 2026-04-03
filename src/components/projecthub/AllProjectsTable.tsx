@@ -46,13 +46,13 @@ function StatusChangePopover({ project }: { project: ProjectListItem }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  const handleChange = async (newStatus: string) => {
+  const handleChange = async (newStatus: string, label: string) => {
     const { error } = await supabase
       .from('projects')
-      .update({ status: newStatus } as any)
+      .update({ display_status: newStatus } as any)
       .eq('id', project.id);
     if (error) { toast.error('Failed to update status'); return; }
-    toast.success(`Status changed to ${newStatus.replace(/_/g, ' ')}`);
+    toast.success(`Status changed to ${label}`);
     queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
     setOpen(false);
   };
