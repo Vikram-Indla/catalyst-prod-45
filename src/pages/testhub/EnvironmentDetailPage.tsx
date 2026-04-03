@@ -119,7 +119,7 @@ export default function EnvironmentDetailPage() {
   const updateHealthStatus = async (newHealth: string) => {
     if (!environment) return;
     try {
-      const { error } = await (supabase as any).from('th_environments').update({ health_status: newHealth, last_health_check: new Date().toISOString() }).eq('id', environment.id);
+      const { error } = await (supabase as any).from('tm_environments').update({ health_status: newHealth, last_health_check: new Date().toISOString() }).eq('id', environment.id);
       if (error) throw error;
       catalystToast.success(`Health status updated to ${HEALTH_CONFIG[newHealth]?.label || newHealth}`);
       fetchEnvironment();
