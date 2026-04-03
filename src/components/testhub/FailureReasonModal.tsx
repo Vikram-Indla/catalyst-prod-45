@@ -112,7 +112,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
                   onClick={() => setShowCreateDefect(true)}
                   style={{
                     height: 40, padding: '0 14px',
-                    background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
+                    backgroundColor: '#2563EB',
                     border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
                     color: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                     whiteSpace: 'nowrap',
