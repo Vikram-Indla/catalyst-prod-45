@@ -49,15 +49,15 @@ export default function TestHubDashboardPage() {
     try {
       const [statsRes, cyclesRes, activityRes, failingRes, defectStatsRes] = await Promise.all([
         supabase.rpc('get_dashboard_stats'),
-        supabase
-          .from('th_test_cycles')
+        (supabase as any)
+          .from('tm_test_cycles')
           .select('id, cycle_key, name, status, progress_percent, total_cases, passed_count, failed_count, blocked_count, not_run_count')
           .eq('status', 'active')
           .order('created_at', { ascending: false })
           .limit(5),
-        supabase
-          .from('th_cycle_test_cases')
-          .select('id, execution_status, executed_at, cycle_id, test_case_id, executed_by, th_test_cases(case_key, title), th_test_cycles!th_cycle_test_cases_cycle_id_fkey(cycle_key), profiles!th_cycle_test_cases_executed_by_fkey(full_name)')
+        (supabase as any)
+          .from('tm_cycle_scope')
+          .select('id, execution_status, executed_at, cycle_id, test_case_id, executed_by, tm_test_cases(case_key, title), tm_test_cycles!tm_cycle_scope_cycle_id_fkey(cycle_key), profiles!tm_cycle_scope_executed_by_fkey(full_name)')
           .not('executed_at', 'is', null)
           .order('executed_at', { ascending: false })
           .limit(10),
