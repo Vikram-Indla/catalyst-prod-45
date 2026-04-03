@@ -188,20 +188,12 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
         <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
           Department <span style={{ color: 'var(--sem-danger)' }}>*</span>
         </label>
-        <select
+        <input
           value={data.department}
           onChange={e => onChange({ ...data, department: e.target.value })}
-          style={{
-            ...inputStyle,
-            cursor: 'pointer',
-            color: data.department ? 'var(--fg-1)' : 'var(--fg-4)',
-          }}
-        >
-          <option value="" disabled>Select department</option>
-          {DEPARTMENTS.map(d => (
-            <option key={d} value={d}>{d}</option>
-          ))}
-        </select>
+          placeholder="e.g. Mining, Digital Operations"
+          style={inputStyle}
+        />
       </div>
 
       {/* Lead Picker */}
