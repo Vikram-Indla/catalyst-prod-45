@@ -125,23 +125,25 @@ export const jiraSyncService = {
     }
   },
 
-  /** Trigger a sync run — inserts a log entry */
+  /** Trigger a full sync run — inbound (RPC) + outbound (Edge Function) */
   async triggerSync(projectId: string): Promise<SyncLogRow> {
     const userId = await getUserId();
 
-    // Try invoking the edge function if available
+    // 1. Process inbound events via RPC
     try {
-      const { data: fnData, error: fnError } = await supabase.functions.invoke('wh-jira-sync', {
-        body: { projectId },
-      });
-      if (!fnError && fnData) {
-        return fnData as SyncLogRow;
-      }
+      await supabase.rpc('process_sync_events', { batch_size: 50 } as any);
     } catch {
-      // Fall through to manual log insert
+      // RPC may not exist yet — continue to outbound
     }
 
-    // Fallback: insert a sync log entry directly
+    // 2. Process outbound events via Edge Function
+    try {
+      await supabase.functions.invoke('process-outbound-sync');
+    } catch {
+      // Edge function may not be deployed yet — continue
+    }
+
+    // 3. Insert a sync log entry
     const { data, error } = await supabase
       .from('jira_sync_logs')
       .insert({
