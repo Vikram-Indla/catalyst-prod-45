@@ -1,0 +1,255 @@
+import React, { useState, useMemo } from 'react';
+import { CalendarOff, Plus, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useFreezeWindows, useCreateFreezeWindow, useDeleteFreezeWindow } from '@/hooks/useReleaseHub';
+import { RH } from '@/constants/releasehub.design';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+function formatDate(d: string) {
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function daysBetween(s: string, e: string) {
+  const start = new Date(s + 'T00:00:00');
+  const end = new Date(e + 'T00:00:00');
+  return Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
+}
+
+export default function FreezeWindowsPage() {
+  const { data: windows = [], isLoading } = useFreezeWindows();
+  const createMut = useCreateFreezeWindow();
+  const deleteMut = useDeleteFreezeWindow();
+
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({ name: '', start_date: '', end_date: '', reason: '' });
+  const [formError, setFormError] = useState('');
+
+  // Calendar state
+  const [calMonth, setCalMonth] = useState(() => new Date());
+  const today = new Date();
+
+  const calendarDays = useMemo(() => {
+    const year = calMonth.getFullYear();
+    const month = calMonth.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startPad = firstDay.getDay();
+    const days: { date: Date; inMonth: boolean }[] = [];
+
+    for (let i = startPad - 1; i >= 0; i--) {
+      days.push({ date: new Date(year, month, -i), inMonth: false });
+    }
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      days.push({ date: new Date(year, month, d), inMonth: true });
+    }
+    const remaining = 7 - (days.length % 7);
+    if (remaining < 7) {
+      for (let i = 1; i <= remaining; i++) {
+        days.push({ date: new Date(year, month + 1, i), inMonth: false });
+      }
+    }
+    return days;
+  }, [calMonth]);
+
+  const isFreezeDate = (date: Date) => {
+    const d = date.toISOString().slice(0, 10);
+    return windows.find((fw: any) => d >= fw.start_date && d <= fw.end_date);
+  };
+
+  const isToday = (date: Date) =>
+    date.getFullYear() === today.getFullYear() &&
+    date.getMonth() === today.getMonth() &&
+    date.getDate() === today.getDate();
+
+  const handleCreate = async () => {
+    setFormError('');
+    if (!form.name.trim()) { setFormError('Name is required'); return; }
+    if (!form.start_date) { setFormError('Start date is required'); return; }
+    if (!form.end_date) { setFormError('End date is required'); return; }
+    if (form.end_date < form.start_date) { setFormError('End date must be on or after start date'); return; }
+
+    try {
+      await createMut.mutateAsync({
+        name: form.name.trim(),
+        start_date: form.start_date,
+        end_date: form.end_date,
+        reason: form.reason.trim() || undefined,
+      });
+      toast.success('Freeze window added.');
+      setShowModal(false);
+      setForm({ name: '', start_date: '', end_date: '', reason: '' });
+    } catch (err) {
+      toast.error('Failed to create freeze window: ' + String(err));
+    }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`Delete freeze window "${name}"?`)) return;
+    try {
+      await deleteMut.mutateAsync(id);
+      toast.success('Freeze window removed.');
+    } catch (err) {
+      toast.error('Failed to delete: ' + String(err));
+    }
+  };
+
+  const monthLabel = calMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  return (
+    <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <h1 className="text-[22px]" style={{ fontFamily: RH.fontDisplay, color: '#0F172A', fontWeight: 650 }}>Freeze Windows</h1>
+          <p className="text-[13px] text-[#64748B]" style={{ fontFamily: RH.fontBody }}>
+            Define deployment freeze periods. Releases targeting these dates will be flagged automatically.
+          </p>
+        </div>
+        <button onClick={() => setShowModal(true)}
+          className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"
+          style={{ background: 'linear-gradient(to bottom, #3B82F6, #2563EB)', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
+          <Plus size={14} /> Add Freeze Window
+        </button>
+      </div>
+
+      {/* Calendar Strip */}
+      <div className="mb-6 border border-[#E2E8F0] rounded-lg p-4" style={{ background: '#FFFFFF' }}>
+        <div className="flex items-center justify-between mb-3">
+          <button onClick={() => setCalMonth(new Date(calMonth.getFullYear(), calMonth.getMonth() - 1))}
+            className="h-7 w-7 rounded flex items-center justify-center hover:bg-[#F1F5F9] text-[#64748B]">
+            <ChevronLeft size={16} />
+          </button>
+          <span className="text-[14px] font-semibold" style={{ fontFamily: RH.fontDisplay, color: '#0F172A' }}>{monthLabel}</span>
+          <button onClick={() => setCalMonth(new Date(calMonth.getFullYear(), calMonth.getMonth() + 1))}
+            className="h-7 w-7 rounded flex items-center justify-center hover:bg-[#F1F5F9] text-[#64748B]">
+            <ChevronRight size={16} />
+          </button>
+        </div>
+        <div className="grid grid-cols-7 gap-0.5">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+            <div key={d} className="text-center text-[10px] font-semibold uppercase tracking-[0.06em] text-[#94A3B8] pb-1">{d}</div>
+          ))}
+          {calendarDays.map((cd, i) => {
+            const fw = isFreezeDate(cd.date);
+            const todayRing = isToday(cd.date);
+            return (
+              <TooltipProvider key={i}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className={`h-9 w-full flex items-center justify-center text-[12px] rounded cursor-default
+                      ${!cd.inMonth ? 'text-[#CBD5E1]' : 'text-[#334155]'}
+                      ${fw ? 'bg-[#FEF3C7] border border-[#FCD34D]' : ''}
+                      ${todayRing ? 'ring-2 ring-[#2563EB]' : ''}
+                    `}>
+                      {cd.date.getDate()}
+                    </div>
+                  </TooltipTrigger>
+                  {fw && (
+                    <TooltipContent side="top" className="text-xs">{(fw as any).name}</TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Table */}
+      {isLoading ? (
+        <div className="space-y-1">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-9 bg-[#F1F5F9] rounded animate-pulse" />
+          ))}
+        </div>
+      ) : windows.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="w-16 h-16 rounded-full bg-[#F1F5F9] flex items-center justify-center mb-4">
+            <CalendarOff className="w-8 h-8 text-[#94A3B8]" />
+          </div>
+          <h3 className="font-semibold text-lg mb-1" style={{ color: '#0F172A' }}>No freeze windows defined</h3>
+          <p className="text-[13px] text-[#64748B] max-w-md">Add one to protect critical periods.</p>
+        </div>
+      ) : (
+        <div className="border border-[#E2E8F0] rounded-lg overflow-hidden" style={{ background: '#FFFFFF' }}>
+          <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
+            <thead>
+              <tr style={{ background: '#F1F5F9' }}>
+                {['NAME', 'START DATE', 'END DATE', 'DURATION', 'REASON', 'ACTIONS'].map(h => (
+                  <th key={h} className="px-3 py-0 h-9 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {windows.map((fw: any) => (
+                <tr key={fw.id} className="group border-b border-[rgba(15,23,42,0.06)]"
+                  style={{ height: 36, transition: 'background 120ms' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}>
+                  <td className="px-3 py-0 font-medium" style={{ color: '#0F172A', fontWeight: 650 }}>{fw.name}</td>
+                  <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>{formatDate(fw.start_date)}</td>
+                  <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>{formatDate(fw.end_date)}</td>
+                  <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>{daysBetween(fw.start_date, fw.end_date)} days</td>
+                  <td className="px-3 py-0 text-[#64748B] max-w-[240px] truncate" title={fw.reason || ''}>{fw.reason ? (fw.reason.length > 40 ? fw.reason.slice(0, 40) + '…' : fw.reason) : '—'}</td>
+                  <td className="px-3 py-0">
+                    <button onClick={() => handleDelete(fw.id, fw.name)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 rounded flex items-center justify-center hover:bg-[#FEE2E2] text-[#94A3B8] hover:text-[#DC2626]">
+                      <Trash2 size={14} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Create Modal */}
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="sm:max-w-[440px]">
+          <DialogHeader>
+            <DialogTitle style={{ fontFamily: RH.fontDisplay }}>Add Freeze Window</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div>
+              <label className="text-[12px] font-semibold text-[#475569] block mb-1">Name *</label>
+              <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                placeholder="e.g. Go-Live Freeze Q2"
+                className="h-9 w-full px-3 rounded border border-[#E2E8F0] bg-white text-[13px] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[12px] font-semibold text-[#475569] block mb-1">Start Date *</label>
+                <input type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
+                  className="h-9 w-full px-3 rounded border border-[#E2E8F0] bg-white text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+              </div>
+              <div>
+                <label className="text-[12px] font-semibold text-[#475569] block mb-1">End Date *</label>
+                <input type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
+                  className="h-9 w-full px-3 rounded border border-[#E2E8F0] bg-white text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+              </div>
+            </div>
+            <div>
+              <label className="text-[12px] font-semibold text-[#475569] block mb-1">Reason</label>
+              <textarea value={form.reason} onChange={e => setForm(f => ({ ...f, reason: e.target.value }))}
+                placeholder="e.g. National holiday / major go-live" rows={3}
+                className="w-full px-3 py-2 rounded border border-[#E2E8F0] bg-white text-[13px] placeholder:text-[#94A3B8] resize-none focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]" />
+            </div>
+            {formError && <p className="text-[12px] text-[#DC2626]">{formError}</p>}
+          </div>
+          <DialogFooter>
+            <button onClick={() => { setShowModal(false); setForm({ name: '', start_date: '', end_date: '', reason: '' }); setFormError(''); }}
+              className="h-9 px-4 rounded-md text-[13px] font-medium text-[#475569] hover:bg-[#F1F5F9] transition-colors">
+              Cancel
+            </button>
+            <button onClick={handleCreate} disabled={createMut.isPending}
+              className="h-9 px-4 rounded-md text-white text-[13px] font-semibold disabled:opacity-50 transition-colors"
+              style={{ background: '#2563EB' }}>
+              {createMut.isPending ? 'Adding...' : 'Add Freeze Window'}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

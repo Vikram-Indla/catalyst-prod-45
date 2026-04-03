@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Search, LayoutGrid, List, Plus, Package, Download, Clock } from 'lucide-react';
-import { useReleaseSummary } from '@/hooks/useReleaseHub';
+import React, { useState, useMemo } from 'react';
+import { Search, LayoutGrid, List, Plus, Package, Download, Clock, AlertTriangle } from 'lucide-react';
+import { useReleaseSummary, useFreezeWindows } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
 import { SourceBadge } from '@/components/releasehub/SourceBadge';
@@ -30,12 +30,26 @@ function relativeTime(dateStr: string | null | undefined): string {
 
 export default function AllReleasesPage() {
   const { data: releases = [], isLoading, error, refetch } = useReleaseSummary();
+  const { data: freezeWindows = [] } = useFreezeWindows();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<string>('all');
   const [view, setView] = useState<'cards' | 'table'>('cards');
   const [selectedRelease, setSelectedRelease] = useState<any>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [importing, setImporting] = useState(false);
+
+  const freezeConflicts = useMemo(() => {
+    if (!freezeWindows.length || !releases.length) return [];
+    return releases.filter((r: any) => {
+      if (!r.target_date) return false;
+      const t = new Date(r.target_date);
+      return freezeWindows.some((fw: any) => {
+        const s = new Date(fw.start_date);
+        const e = new Date(fw.end_date);
+        return t >= s && t <= e;
+      });
+    });
+  }, [releases, freezeWindows]);
 
   const filtered = releases.filter((r: any) => {
     const mapped = mapStatus(r.status);
@@ -104,6 +118,32 @@ export default function AllReleasesPage() {
           </button>
         </div>
       </div>
+
+      {/* Freeze conflict banner */}
+      {freezeConflicts.length > 0 && (
+        <div style={{
+          background: '#FEF3C7',
+          border: '1px solid #FCD34D',
+          borderRadius: '6px',
+          padding: '10px 14px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          marginBottom: '12px',
+        }}>
+          <AlertTriangle size={16} color="#D97706" />
+          <span style={{ fontSize: '13px', color: '#92400E' }}>
+            {freezeConflicts.length === 1
+              ? `"${freezeConflicts[0].name}" targets a date within a freeze window.`
+              : `${freezeConflicts.length} releases target dates within freeze windows.`}
+            {' '}
+            <a href="/release-hub/freeze-windows"
+               style={{ color: '#B45309', textDecoration: 'underline', fontWeight: 600 }}>
+              View freeze windows →
+            </a>
+          </span>
+        </div>
+      )}
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-2 mb-4">

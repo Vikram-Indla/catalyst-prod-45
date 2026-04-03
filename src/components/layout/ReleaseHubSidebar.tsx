@@ -12,6 +12,7 @@ import {
   ArrowLeftRight,
   CheckSquare,
   Clock,
+  CalendarOff,
   Settings,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
@@ -50,6 +51,12 @@ const buildSections = (triageCount: number, pendingSignoffs: number): SidebarSec
     title: 'Production',
     items: [
       { id: 'production-events', title: 'Production Events', path: '/release-hub/production-events', icon: Clock, exact: false },
+    ],
+  },
+  {
+    title: 'Settings',
+    items: [
+      { id: 'freeze-windows', title: 'Freeze Windows', path: '/release-hub/freeze-windows', icon: CalendarOff, exact: true },
     ],
   },
 ];
