@@ -1017,7 +1017,7 @@ export function TestRepositoryPage() {
           setSelectedTestCase(null);
         }}
         onSuccess={handleCloneSuccess}
-        testCase={selectedTestCase}
+        testCase={selectedTestCase as any}
       />
 
       {/* Delete Modal */}
