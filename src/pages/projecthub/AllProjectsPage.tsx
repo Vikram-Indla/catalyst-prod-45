@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
+const WiringAuditLazy = lazy(() => import('@/components/project-hub/WiringAudit').then(m => ({ default: m.WiringAudit })));
 import {
   Select,
   SelectContent,
