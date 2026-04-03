@@ -45,11 +45,14 @@ interface CycleTestCase {
   assignee?: { id: string; full_name: string } | null;
 }
 
-const statusConfig = {
-  draft: { label: 'Draft', color: '#64748B', bg: '#F1F5F9' },
-  active: { label: 'Active', color: '#059669', bg: '#ECFDF5' },
-  completed: { label: 'Completed', color: '#2563EB', bg: '#EFF6FF' },
-  archived: { label: 'Archived', color: '#94A3B8', bg: '#F8FAFC' },
+const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
+  draft:       { label: 'DRAFT',       color: '#253858', bg: '#DFE1E6' },
+  planned:     { label: 'PLANNED',     color: '#253858', bg: '#DFE1E6' },
+  active:      { label: 'ACTIVE',      color: '#0747A6', bg: '#DEEBFF' },
+  in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
+  completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF' },
+  done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF' },
+  archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6' },
 };
 
 const executionStatusConfig: Record<string, { label: string; color: string; bg: string; Icon: any }> = {
@@ -212,7 +215,7 @@ export default function TestCycleDetailPage() {
     );
   }
 
-  const status = statusConfig[cycle.status];
+  const status = statusConfig[(cycle.status || 'draft').toLowerCase().replace(/-/g, '_')] ?? statusConfig['draft'];
   const canEdit = cycle.status === 'draft' || cycle.status === 'active';
 
   return (

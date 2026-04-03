@@ -36,11 +36,14 @@ interface TestCycleCardProps {
   onArchive: () => void;
 }
 
-const statusConfig = {
-  draft: { label: 'Draft', color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', border: 'var(--divider)' },
-  active: { label: 'Active', color: 'var(--sem-success)', bg: '#ECFDF5', border: '#A7F3D0' },
-  completed: { label: 'Completed', color: 'var(--cp-blue)', bg: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', border: 'color-mix(in srgb, var(--cp-blue) 25%, transparent)' },
-  archived: { label: 'Archived', color: 'var(--fg-4)', bg: 'var(--bg-1)', border: 'var(--divider)' },
+const statusConfig: Record<string, { label: string; color: string; bg: string; border: string }> = {
+  draft:       { label: 'DRAFT',       color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
+  planned:     { label: 'PLANNED',     color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
+  active:      { label: 'ACTIVE',      color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
+  in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
+  completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
+  done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
+  archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
 };
 
 const menuItemStyle: React.CSSProperties = {
@@ -65,7 +68,7 @@ export function TestCycleCard({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const status = statusConfig[cycle.status];
+  const status = statusConfig[(cycle.status || 'draft').toLowerCase().replace(/-/g, '_')] ?? statusConfig['draft'];
 
   useEffect(() => {
     if (!menuOpen) return;
