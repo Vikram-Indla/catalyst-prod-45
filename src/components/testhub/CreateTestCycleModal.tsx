@@ -20,9 +20,8 @@ interface TestCycleData {
   cycle_key: string;
   name: string;
   description: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  owner_id?: string | null;
+  planned_start: string | null;
+  planned_end: string | null;
   environment_id?: string | null;
   status: string;
 }
