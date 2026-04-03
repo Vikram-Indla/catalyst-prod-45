@@ -204,7 +204,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
   const members = useMemo(() => {
     return memberIds.map(id => {
       const p = profiles.find(pr => pr.id === id);
-      return { id, display_name: p?.display_name || 'Unknown', role: p?.role || '' };
+      return { id, display_name: p?.display_name || 'Unknown', role: p?.role || '', avatar_url: p?.avatar_url || null };
     });
   }, [memberIds, profiles]);
 
