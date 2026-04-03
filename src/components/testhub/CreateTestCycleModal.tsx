@@ -88,8 +88,8 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
   const generateCycleKey = async (): Promise<string> => {
     const { data, error } = await supabase.rpc('generate_cycle_key');
     if (error) {
-      const { data: lastCycle } = await supabase
-        .from('th_test_cycles').select('cycle_key').order('created_at', { ascending: false }).limit(1);
+      const { data: lastCycle } = await (supabase as any)
+        .from('tm_test_cycles').select('cycle_key').order('created_at', { ascending: false }).limit(1);
       if (lastCycle && lastCycle.length > 0) {
         const lastNum = parseInt(lastCycle[0].cycle_key.replace('CYCLE-', ''));
         return `CYCLE-${String(lastNum + 1).padStart(3, '0')}`;
