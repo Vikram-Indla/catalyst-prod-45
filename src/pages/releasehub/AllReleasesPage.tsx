@@ -235,7 +235,7 @@ export default function AllReleasesPage() {
                         }} />
                       </div>
                       <p className="text-[11px] text-[#94A3B8] mt-1" style={{ fontFamily: RH.fontBody }}>
-                        {progress.pct}% · {progress.completed} of {progress.total} changes deployed
+                        {progress.pct}% · {progress.completed} of {progress.total} {progress.total === 1 ? 'change' : 'changes'} deployed
                       </p>
                     </>
                   )}
