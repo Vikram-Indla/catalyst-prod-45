@@ -227,7 +227,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
         for (let i = 0; i < transformedData.length; i++) {
           const row = transformedData[i];
           try {
-            const { error } = await (supabase as any).from('th_requirements').insert({
+            const { error } = await (supabase as any).from('tm_requirements').insert({
               title: row.title,
               description: row.description || null,
               type: row.type || 'functional',

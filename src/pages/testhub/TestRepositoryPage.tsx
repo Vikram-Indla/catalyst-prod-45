@@ -663,16 +663,16 @@ export function TestRepositoryPage() {
               Export
             </button>
 
-            {/* Generate with AI - GREEN */}
+            {/* Generate with AI - PURPLE (AI reserved) */}
             <button 
               onClick={() => setIsAIGenerateModalOpen(true)}
               style={{
                 height: 40, padding: '0 16px',
-                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
                 border: 'none', borderRadius: 8, fontFamily: 'Inter, sans-serif',
                 fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
-                boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)', transition: 'all 0.15s',
+                boxShadow: '0 2px 8px rgba(124, 58, 237, 0.25)', transition: 'all 0.15s',
               }}
             >
               <Sparkles style={{ width: 16, height: 16, color: '#FFFFFF' }} />

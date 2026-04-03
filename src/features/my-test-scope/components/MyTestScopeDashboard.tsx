@@ -51,7 +51,7 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
       .channel('my-scope-realtime')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'th_cycle_test_cases' },
+        { event: '*', schema: 'public', table: 'tm_cycle_scope' },
         () => {
           queryClient.invalidateQueries({ queryKey: myTestScopeKeys.all });
         }

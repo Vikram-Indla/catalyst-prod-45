@@ -3,6 +3,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -24,15 +26,28 @@ interface AssignmentTableViewProps {
   cycleId: string;
 }
 
-// Mock team members
-const MOCK_TEAM_MEMBERS: TeamMemberOption[] = [
-  { id: 'u1', name: 'Ahmed S.', avatar: null, workload: 18 },
-  { id: 'u2', name: 'Sara M.', avatar: null, workload: 12 },
-  { id: 'u3', name: 'Omar K.', avatar: null, workload: 15 },
-  { id: 'u4', name: 'Fatima R.', avatar: null, workload: 20 },
-];
+// Real team members from profiles
+function useTeamMembers(): TeamMemberOption[] {
+  const { data } = useQuery({
+    queryKey: ['assignment-team-members'],
+    queryFn: async () => {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .order('full_name');
+      return (profiles || []).map((p) => ({
+        id: p.id,
+        name: p.full_name || 'Unknown',
+        avatar: p.avatar_url,
+        workload: 0,
+      }));
+    },
+  });
+  return data || [];
+}
 
 export function AssignmentTableView({ cycleId }: AssignmentTableViewProps) {
+  const teamMembers = useTeamMembers();
   const [columnsOpen, setColumnsOpen] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => {
     const stored = localStorage.getItem('assignment-table-columns');
@@ -168,7 +183,7 @@ export function AssignmentTableView({ cycleId }: AssignmentTableViewProps) {
       {selectedIds.size > 0 && (
         <BulkActionsBar
           selectedCount={selectedIds.size}
-          teamMembers={MOCK_TEAM_MEMBERS}
+          teamMembers={teamMembers}
           onAssign={handleBulkAssign}
           onChangePriority={handleBulkPriority}
           onChangeStatus={handleBulkStatus}
@@ -234,7 +249,7 @@ export function AssignmentTableView({ cycleId }: AssignmentTableViewProps) {
                   onOpenDetails={() => {
                     toast.info(`Opening details for ${assignment.testCaseCode}`);
                   }}
-                  teamMembers={MOCK_TEAM_MEMBERS}
+                  teamMembers={teamMembers}
                   visibleColumns={visibleColumns}
                 />
               ))}

@@ -146,7 +146,7 @@ async function fetchMyTestScopeData(): Promise<MyTestScopeData> {
     }
   }
 
-  // Build stats from RPC or calculate from tests
+  // Prefer RPC stats (accurate even when tests array is empty due to user mismatch)
   const stats = statsJson || {};
   const passedTests = stats.passed_count ?? tests.filter(t => t.status === 'passed').length;
   const failedTests = stats.failed_count ?? tests.filter(t => t.status === 'failed').length;
@@ -160,7 +160,7 @@ async function fetchMyTestScopeData(): Promise<MyTestScopeData> {
     failedTests,
     blockedTests,
     notRunTests,
-    passRate: stats.pass_rate ?? (totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0),
+    passRate: totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0,
     overdueCount: tests.filter(t => t.urgency === 'overdue').length,
     dueTodayCount: tests.filter(t => t.urgency === 'due_today').length,
     linkedDefectsCount: 0,

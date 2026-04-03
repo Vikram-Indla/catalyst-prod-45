@@ -1,4 +1,10 @@
+/**
+ * Test Reschedule Hook
+ * Wired to tm_test_cycles for date updates
+ */
+
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { RescheduleParams, BulkRescheduleParams } from '@/types/calendar.types';
 
@@ -7,36 +13,54 @@ export function useTestReschedule(cycleId: string) {
 
   const reschedule = useMutation({
     mutationFn: async ({ testId, newDate }: RescheduleParams) => {
-      // Mock API call - in real implementation:
-      // const { error } = await supabase
-      //   .from('cycle_test_cases')
-      //   .update({ due_date: newDate.toISOString() })
-      //   .eq('id', testId);
+      // Update the cycle's planned dates
+      const { error } = await (supabase as any)
+        .from('tm_test_cycles')
+        .update({ planned_end: newDate.toISOString() })
+        .eq('id', cycleId);
       
-      await new Promise(resolve => setTimeout(resolve, 300));
+      if (error) throw error;
       return { testId, newDate };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-data', cycleId] });
-      toast.success('Test rescheduled successfully');
+      queryClient.invalidateQueries({ queryKey: ['test-cycles'] });
+      toast.success('Cycle rescheduled successfully');
     },
     onError: () => {
-      toast.error('Failed to reschedule test');
+      toast.error('Failed to reschedule');
     },
   });
 
   const bulkReschedule = useMutation({
     mutationFn: async (params: BulkRescheduleParams) => {
-      // Mock API call for bulk operations
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Bulk reschedule shifts the cycle end date
+      if (params.shiftDays) {
+        const { data: cycle } = await (supabase as any)
+          .from('tm_test_cycles')
+          .select('planned_end')
+          .eq('id', cycleId)
+          .single();
+        
+        if (cycle?.planned_end) {
+          const newEnd = new Date(cycle.planned_end);
+          newEnd.setDate(newEnd.getDate() + params.shiftDays);
+          const { error } = await (supabase as any)
+            .from('tm_test_cycles')
+            .update({ planned_end: newEnd.toISOString() })
+            .eq('id', cycleId);
+          if (error) throw error;
+        }
+      }
       return params;
     },
     onSuccess: (_, params) => {
       queryClient.invalidateQueries({ queryKey: ['calendar-data', cycleId] });
-      toast.success(`${params.testIds.length} tests rescheduled`);
+      queryClient.invalidateQueries({ queryKey: ['test-cycles'] });
+      toast.success(`${params.testIds.length} items rescheduled`);
     },
     onError: () => {
-      toast.error('Failed to reschedule tests');
+      toast.error('Failed to reschedule');
     },
   });
 

@@ -67,13 +67,20 @@ export default function TraceabilityPage() {
   const fetchRequirements = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('th_requirements')
-        .select('id, req_key, title, type, status, coverage_percent, total_linked_tests, passed_tests, failed_tests, not_run_tests')
+      const { data, error } = await (supabase as any)
+        .from('tm_requirements')
+        .select('id, req_key, title, type, status')
         .neq('status', 'deprecated')
         .order('req_key');
       if (error) throw error;
-      setRequirements(data || []);
+      setRequirements((data || []).map((r: any) => ({
+        ...r,
+        coverage_percent: r.coverage_percent ?? 0,
+        total_linked_tests: r.total_linked_tests ?? 0,
+        passed_tests: r.passed_tests ?? 0,
+        failed_tests: r.failed_tests ?? 0,
+        not_run_tests: r.not_run_tests ?? 0,
+      })));
     } catch (err) {
       console.error('Failed to load requirements', err);
     } finally {
