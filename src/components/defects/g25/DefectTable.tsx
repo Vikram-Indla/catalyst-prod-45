@@ -64,8 +64,8 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete 
                 </div>
               ) : <span className="text-sm text-muted-foreground">Unassigned</span>}
             </TableCell>
-            <TableCell className="text-sm text-muted-foreground">{formatDistanceToNow(new Date(d.created_at), { addSuffix: false })}</TableCell>
-            <TableCell onClick={e => e.stopPropagation()}>
+            <TableCell style={{ padding: '0 12px' }} className="text-sm text-muted-foreground">{formatDistanceToNow(new Date(d.created_at), { addSuffix: false })}</TableCell>
+            <TableCell style={{ padding: '0 12px' }} onClick={e => e.stopPropagation()}>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild><Button variant="ghost" size="sm" className="h-8 w-8 p-0"><MoreVertical className="h-4 w-4" /></Button></DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
