@@ -238,7 +238,7 @@ export function AllProjectsTable({
             }}
           >
             {/* Cell 1: # / Checkbox */}
-            <div style={{ padding: '14px 8px', textAlign: 'center', borderBottom: CELL_BORDER, opacity: active ? 1 : 0.45 }}>
+            <div style={{ padding: '8px 8px', textAlign: 'center', borderBottom: CELL_BORDER, opacity: active ? 1 : 0.45 }}>
               <span
                 className="group-hover:hidden"
                 style={{ fontSize: 12, color: 'var(--text-3)', fontVariantNumeric: 'tabular-nums', ...(checked ? { display: 'none' } : {}) }}
