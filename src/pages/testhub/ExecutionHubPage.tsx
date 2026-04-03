@@ -168,8 +168,9 @@ export default function ExecutionHubPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {filtered.map(cycle => {
-            const st = statusStyles[cycle.status] || statusStyles.draft;
+            const cfg = CYCLE_STATUS_MAP[(cycle.status || 'draft').toLowerCase()] ?? CYCLE_STATUS_MAP['draft'];
             const executed = cycle.total_cases - cycle.not_run_count;
+            const progressPercent = cycle.total_cases > 0 ? Math.round((executed / cycle.total_cases) * 100) : 0;
             return (
               <div
                 key={cycle.id}
@@ -183,8 +184,13 @@ export default function ExecutionHubPage() {
                       <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded">
                         {cycle.cycle_key}
                       </span>
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded border ${st.bg} ${st.color}`}>
-                        {st.label}
+                      <span style={{
+                        backgroundColor: cfg.bg, color: cfg.text,
+                        fontSize: '11px', fontWeight: 700, letterSpacing: '0.03em',
+                        textTransform: 'uppercase', borderRadius: '3px', padding: '2px 6px',
+                        height: '20px', display: 'inline-flex', alignItems: 'center',
+                      }}>
+                        {cfg.label}
                       </span>
                     </div>
                     <h3 className="text-sm font-semibold text-foreground truncate">{cycle.name}</h3>
