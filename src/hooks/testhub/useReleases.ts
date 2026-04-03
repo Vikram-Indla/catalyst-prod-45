@@ -144,7 +144,7 @@ export function useReleaseCycles(releaseId: string | undefined) {
     const fetch = async () => {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('release_test_cycles')
           .select(`
             id,
