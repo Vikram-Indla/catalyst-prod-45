@@ -174,15 +174,13 @@ export function AllProjectsTable({
   const sortableMap: Record<number, SortColumn> = { 1: 'name', 2: 'status' };
 
   return (
+    <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
     <div
       className="font-['Inter',sans-serif]"
       style={{
         display: 'grid',
         gridTemplateColumns: GRID_COLS,
         alignItems: 'center',
-        border: '0.75px solid var(--bd-default)',
-        borderRadius: 8,
-        overflow: 'hidden',
         background: 'var(--bg-elevated, var(--bg-1))',
         color: 'var(--text-1)',
       }}
@@ -202,8 +200,8 @@ export function AllProjectsTable({
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
               color: 'var(--text-2)',
-              background: 'var(--bg-sunken)',
-              borderBottom: '2px solid var(--bd-default)',
+              background: '#F1F5F9',
+              borderBottom: '2px solid #E2E8F0',
               cursor: isSortable ? 'pointer' : 'default',
               userSelect: isSortable ? 'none' : undefined,
               display: 'flex',
@@ -357,6 +355,7 @@ export function AllProjectsTable({
           </div>
         );
       })}
+    </div>
     </div>
   );
 }
