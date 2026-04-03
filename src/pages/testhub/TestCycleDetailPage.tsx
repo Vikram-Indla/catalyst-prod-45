@@ -284,19 +284,25 @@ export default function TestCycleDetailPage() {
       {/* Stats Cards - 3-panel layout per spec */}
       <div style={{ padding: '24px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
         {/* Progress Panel */}
+        {(() => {
+          const executedCount = cycle.total_cases - cycle.not_run_count;
+          const pp = cycle.total_cases > 0 ? Math.round((executedCount / cycle.total_cases) * 100) : 0;
+          return (
         <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24, textAlign: 'center' }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Progress</p>
           <div style={{ width: 100, height: 100, margin: '0 auto 16px', position: 'relative' }}>
             <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
               <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#E2E8F0" strokeWidth="3" />
-              <circle cx="18" cy="18" r="15.9155" fill="none" stroke={cycle.progress_percent === 100 ? '#059669' : '#2563EB'} strokeWidth="3" strokeDasharray={`${cycle.progress_percent} ${100 - cycle.progress_percent}`} strokeLinecap="round" />
+              <circle cx="18" cy="18" r="15.9155" fill="none" stroke={pp === 100 ? '#059669' : '#2563EB'} strokeWidth="3" strokeDasharray={`${pp} ${100 - pp}`} strokeLinecap="round" />
             </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: cycle.progress_percent === 100 ? '#059669' : '#2563EB' }}>
-              {cycle.progress_percent}%
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: pp === 100 ? '#059669' : '#2563EB' }}>
+              {pp}%
             </div>
           </div>
-          <p style={{ fontSize: 14, color: '#334155', margin: 0, fontWeight: 500 }}>{cycle.total_cases - cycle.not_run_count}/{cycle.total_cases} executed</p>
+          <p style={{ fontSize: 14, color: '#334155', margin: 0, fontWeight: 500 }}>{executedCount}/{cycle.total_cases} executed</p>
         </div>
+          );
+        })()}
 
         {/* By Status Panel */}
         <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24 }}>
