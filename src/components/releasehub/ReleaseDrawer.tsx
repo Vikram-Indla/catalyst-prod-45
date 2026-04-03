@@ -240,14 +240,86 @@ interface ComputedGate {
 
 // ── Overview Tab ───────────────────────────────────────
 function OverviewTab({
-  release, changesCount, computedGates, gatesPassCount, gatesTotalCount,
+  release, changesCount, changes, computedGates, gatesPassCount, gatesTotalCount,
 }: {
   release: any;
   changesCount: number;
+  changes: any[];
   computedGates: ComputedGate[];
   gatesPassCount: number;
   gatesTotalCount: number;
 }) {
+  const [notesState, setNotesState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [generatedNotes, setGeneratedNotes] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  // Reset when release changes or component unmounts
+  useEffect(() => {
+    setNotesState('idle');
+    setGeneratedNotes(null);
+  }, [release.id]);
+
+  const generateReleaseNotes = async () => {
+    setNotesState('loading');
+    try {
+      // Fetch issues for this release
+      const { data: issues } = await supabase
+        .from('rh_release_issues')
+        .select('summary, issue_type')
+        .eq('release_id', release.id);
+      const issueList = issues ?? [];
+
+      const prompt = `You are a release notes writer for an enterprise government platform used by Saudi Arabia's Ministry of Industry.
+
+Release: ${release.name} v${release.version || '1.0'}
+Target date: ${release.target_date || 'TBD'}
+
+Changes included (${changes.length} total):
+${changes.map((c: any) =>
+  `- [${c.risk_level?.toUpperCase() || 'MEDIUM'} RISK] ${c.title}: ${c.description || 'No description'}`
+).join('\n')}
+
+${issueList.length > 0 ? `Issues resolved (${issueList.length}):
+${issueList.map((i: any) => `- [${i.issue_type}] ${i.summary}`).join('\n')}` : ''}
+
+Write professional release notes in this exact format:
+## What's New
+[2-4 bullet points summarising key changes]
+
+## Issues Resolved
+[bullet list of issues, or "No issues tracked for this release."]
+
+## Risk Summary
+[1-2 sentences on overall risk level and any high-risk items to monitor]
+
+Be concise. Use plain language suitable for ministry stakeholders.
+Do not use jargon. Do not hallucinate features not listed above.`;
+
+      const { data, error } = await supabase.functions.invoke('kb-query', {
+        body: {
+          query: prompt,
+          filter_source: undefined,
+          context_mode: 'structured',
+        },
+      });
+      if (error) throw error;
+      const answer = data?.answer;
+      if (!answer) throw new Error('No answer returned');
+      setGeneratedNotes(answer);
+      setNotesState('success');
+    } catch {
+      setNotesState('error');
+    }
+  };
+
+  const handleCopy = () => {
+    if (generatedNotes) {
+      navigator.clipboard.writeText(generatedNotes);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+  };
+
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-3">
@@ -309,6 +381,73 @@ function OverviewTab({
             );
           })}
         </div>
+      </div>
+
+      {/* ── AI Release Notes Panel ── */}
+      <div className="border border-[#E2E8F0] rounded-md p-4 bg-white">
+        <div className="flex justify-between items-center mb-3">
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold rounded-full px-2 py-0.5 bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE]">
+            ✦ Catalyst AI
+          </span>
+          <button
+            onClick={generateReleaseNotes}
+            disabled={notesState === 'loading'}
+            className="inline-flex items-center gap-1 bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
+          >
+            <Sparkles size={12} />
+            {notesState === 'success' ? 'Regenerate' : 'Generate'}
+          </button>
+        </div>
+
+        {notesState === 'idle' && (
+          <div className="flex items-center gap-2 py-6 justify-center text-[#94A3B8] text-[13px]">
+            <FileText size={16} />
+            <span>Click Generate to create AI release notes.</span>
+          </div>
+        )}
+
+        {notesState === 'loading' && (
+          <div className="flex items-center gap-2 py-6 justify-center text-[#7C3AED] text-[13px]">
+            <Loader2 size={16} className="animate-spin" />
+            <span>Generating release notes…</span>
+          </div>
+        )}
+
+        {notesState === 'success' && generatedNotes && (
+          <div>
+            <div className="max-h-[300px] overflow-auto text-[13px] text-[#0F172A] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: RH.fontBody }}>
+              {generatedNotes}
+            </div>
+            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[#F1F5F9]">
+              <button
+                onClick={handleCopy}
+                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[#E2E8F0] text-[12px] font-medium text-[#475569] hover:bg-[#F8FAFC] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
+              >
+                <Copy size={12} />
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
+              <button
+                onClick={generateReleaseNotes}
+                className="text-[12px] text-[#64748B] hover:text-[#475569] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none rounded"
+              >
+                Regenerate
+              </button>
+            </div>
+          </div>
+        )}
+
+        {notesState === 'error' && (
+          <div className="flex items-center gap-2 py-6 justify-center text-[13px]">
+            <AlertCircle size={16} className="text-[#DC2626]" />
+            <span className="text-[#475569]">Could not generate notes.</span>
+            <button
+              onClick={generateReleaseNotes}
+              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[#E2E8F0] text-[12px] font-medium text-[#475569] hover:bg-[#F8FAFC] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
+            >
+              <RefreshCw size={12} /> Try again
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
