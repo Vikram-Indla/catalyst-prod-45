@@ -60,10 +60,33 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         p_feature_layer: workflow.featureLayer, p_user_id: user.id,
       });
       if (error) throw new Error(error.message);
+
+      // Add lead as member with role 'lead'
+      if (details.lead_id && projectId) {
+        const { error: leadErr } = await supabase.from('ph_project_members').insert({
+          project_id: projectId, user_id: details.lead_id, role: 'lead',
+        });
+        if (leadErr) console.warn('Failed to add lead as member:', leadErr.message);
+      }
+
+      // Link to Jira if enabled
+      if (details.linkJira && details.jiraKey && projectId) {
+        const { error: syncErr } = await supabase.from('sync_entity_map').insert({
+          catalyst_id: projectId, entity_type: 'project',
+          jira_key: details.jiraKey.trim().toUpperCase(),
+          sync_direction: 'bidirectional', sync_enabled: true,
+        });
+        if (syncErr) console.warn('Failed to create Jira link:', syncErr.message);
+      }
+
       if (members.length > 0 && projectId) {
-        const rows = members.map(m => ({ project_id: projectId, user_id: m.userId, role: m.role }));
-        const { error: memErr } = await supabase.from('ph_project_members').insert(rows);
-        if (memErr) console.warn('Failed to add some members:', memErr.message);
+        const rows = members
+          .filter(m => m.userId !== details.lead_id) // avoid duplicate if lead already added
+          .map(m => ({ project_id: projectId, user_id: m.userId, role: m.role }));
+        if (rows.length > 0) {
+          const { error: memErr } = await supabase.from('ph_project_members').insert(rows);
+          if (memErr) console.warn('Failed to add some members:', memErr.message);
+        }
       }
       queryClient.invalidateQueries({ queryKey: ['ph-projects'] });
       queryClient.invalidateQueries({ queryKey: ['ph-projects-list'] });
