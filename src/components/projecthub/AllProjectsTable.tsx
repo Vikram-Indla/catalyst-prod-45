@@ -173,6 +173,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
               style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               <Avatar className="w-6 h-6">
+                {p.avatar_url && <AvatarImage src={p.avatar_url} alt={p.display_name} />}
                 <AvatarFallback className="text-[10px] font-bold text-white" style={{ background: getBadgeColor(p.id) }}>
                   {getInitials(p.display_name)}
                 </AvatarFallback>
