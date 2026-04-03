@@ -209,7 +209,7 @@ export default function TestHubDashboardPage() {
              trend={{ direction: 'down', value: '−12%', color: '#DC2626' }}
              subtitle={`${totalExecuted} of ${totalAll} executed`} sparkData={[80, 72, 65, 58, 52, 48, 46, 47]}
              valueColor={passRateColor} isDanger={passRate < 60} />
-          <KPICard label="Active cycles" value={stats?.active_cycles ?? 0} accent="#3B82F6"
+           <KPICard label="Active cycles" value={activeCycles.length} accent="#3B82F6"
             trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
             subtitle={`${stats?.completed_cycles ?? 0} completed`} sparkData={[3, 4, 5, 5, 5, 5, 5, 5]} />
           <KPICard label="Blocked tests" value={stats?.total_blocked ?? 0} accent="#EF4444"

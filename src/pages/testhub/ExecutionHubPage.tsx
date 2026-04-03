@@ -219,12 +219,12 @@ export default function ExecutionHubPage() {
                 <div className="mb-3">
                   <div className="flex justify-between text-xs mb-1.5">
                     <span className="text-muted-foreground">{executed} / {cycle.total_cases} executed</span>
-                    <span className="font-semibold text-foreground">{cycle.progress_percent}%</span>
+                    <span className="font-semibold text-foreground">{progressPercent}%</span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-300"
-                      style={{ width: `${cycle.progress_percent}%` }}
+                      style={{ width: `${progressPercent}%` }}
                     />
                   </div>
                 </div>
