@@ -34,13 +34,24 @@ export function useTestReschedule(cycleId: string) {
 
   const bulkReschedule = useMutation({
     mutationFn: async (params: BulkRescheduleParams) => {
-      // Bulk reschedule updates the cycle end date
-      const { error } = await (supabase as any)
-        .from('tm_test_cycles')
-        .update({ planned_end: params.newDate.toISOString() })
-        .eq('id', cycleId);
-      
-      if (error) throw error;
+      // Bulk reschedule shifts the cycle end date
+      if (params.shiftDays) {
+        const { data: cycle } = await (supabase as any)
+          .from('tm_test_cycles')
+          .select('planned_end')
+          .eq('id', cycleId)
+          .single();
+        
+        if (cycle?.planned_end) {
+          const newEnd = new Date(cycle.planned_end);
+          newEnd.setDate(newEnd.getDate() + params.shiftDays);
+          const { error } = await (supabase as any)
+            .from('tm_test_cycles')
+            .update({ planned_end: newEnd.toISOString() })
+            .eq('id', cycleId);
+          if (error) throw error;
+        }
+      }
       return params;
     },
     onSuccess: (_, params) => {
