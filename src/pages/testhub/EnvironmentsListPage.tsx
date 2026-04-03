@@ -34,12 +34,12 @@ interface EnvironmentSummary {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  development: { label: 'Development', color: '#2563EB', bg: '#EFF6FF' },
-  testing: { label: 'Testing', color: '#7C3AED', bg: '#F5F3FF' },
-  staging: { label: 'Staging', color: '#D97706', bg: '#FFFBEB' },
-  uat: { label: 'UAT', color: '#0891B2', bg: '#ECFEFF' },
-  production: { label: 'Production', color: '#DC2626', bg: '#FEF2F2' },
-  other: { label: 'Other', color: '#64748B', bg: '#F1F5F9' },
+  development: { label: 'Development', color: '#475569', bg: '#F1F5F9' },
+  testing: { label: 'Testing', color: '#475569', bg: '#F1F5F9' },
+  staging: { label: 'Staging', color: '#475569', bg: '#F1F5F9' },
+  uat: { label: 'UAT', color: '#475569', bg: '#F1F5F9' },
+  production: { label: 'Production', color: '#475569', bg: '#F1F5F9' },
+  other: { label: 'Other', color: '#475569', bg: '#F1F5F9' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
