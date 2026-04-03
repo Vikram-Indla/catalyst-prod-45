@@ -221,7 +221,7 @@ export default function AllReleasesPage() {
                   <div className="flex items-center gap-3 text-[12px] text-[#64748B] mb-3">
                     <span>{r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date'}</span>
                     <span>·</span>
-                    <span>{progress.total} changes</span>
+                    <span>{progress.total} {progress.total === 1 ? 'change' : 'changes'}</span>
                   </div>
 
                   {progress.empty ? (
