@@ -152,20 +152,31 @@ export default function RequirementsListPage() {
       <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
 
       {/* Summary Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
-        <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
-          <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Total Requirements</p>
-          <p style={{ fontSize: 28, fontWeight: 700, color: '#0F172A', margin: '8px 0 0' }}>{requirements.length}</p>
-        </div>
-        <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
-          <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>With Linked Tests</p>
-          <p style={{ fontSize: 28, fontWeight: 700, color: '#059669', margin: '8px 0 0' }}>{requirements.filter(r => r.linked_test_count > 0).length}</p>
-        </div>
-        <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
-          <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>No Coverage</p>
-          <p style={{ fontSize: 28, fontWeight: 700, color: '#DC2626', margin: '8px 0 0' }}>{requirements.filter(r => r.linked_test_count === 0).length}</p>
-        </div>
-      </div>
+      {(() => {
+        const fullyCount = requirements.filter(r => r.linked_test_count >= 3).length;
+        const partialCount = requirements.filter(r => r.linked_test_count > 0 && r.linked_test_count < 3).length;
+        const noneCount = requirements.filter(r => r.linked_test_count === 0).length;
+        return (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+            <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
+              <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Total Requirements</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: '#0F172A', margin: '8px 0 0' }}>{requirements.length}</p>
+            </div>
+            <div style={{ backgroundColor: '#F0FDF4', borderRadius: 12, padding: 20, border: '1px solid #BBF7D0' }}>
+              <p style={{ fontSize: 12, color: '#16A34A', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Fully Covered</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: '#16A34A', margin: '8px 0 0' }}>{fullyCount}</p>
+            </div>
+            <div style={{ backgroundColor: '#FFFBEB', borderRadius: 12, padding: 20, border: '1px solid #FDE68A' }}>
+              <p style={{ fontSize: 12, color: '#D97706', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Partially Covered</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: '#D97706', margin: '8px 0 0' }}>{partialCount}</p>
+            </div>
+            <div style={{ backgroundColor: '#FEF2F2', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
+              <p style={{ fontSize: 12, color: '#DC2626', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>No Coverage</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: '#DC2626', margin: '8px 0 0' }}>{noneCount}</p>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>

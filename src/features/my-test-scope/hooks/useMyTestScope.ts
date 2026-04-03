@@ -146,13 +146,13 @@ async function fetchMyTestScopeData(): Promise<MyTestScopeData> {
     }
   }
 
-  // Build stats from tests array (single source of truth for consistency)
-  // If we have tests, use them. Stats RPC is only used as supplementary info.
-  const passedTests = tests.filter(t => t.status === 'passed').length;
-  const failedTests = tests.filter(t => t.status === 'failed').length;
-  const blockedTests = tests.filter(t => t.status === 'blocked').length;
-  const notRunTests = tests.filter(t => t.status === 'not_run').length;
-  const totalTests = tests.length;
+  // Prefer RPC stats (accurate even when tests array is empty due to user mismatch)
+  const stats = statsJson || {};
+  const passedTests = stats.passed_count ?? tests.filter(t => t.status === 'passed').length;
+  const failedTests = stats.failed_count ?? tests.filter(t => t.status === 'failed').length;
+  const blockedTests = stats.blocked_count ?? tests.filter(t => t.status === 'blocked').length;
+  const notRunTests = stats.remaining ?? tests.filter(t => t.status === 'not_run').length;
+  const totalTests = stats.total_assigned ?? tests.length;
 
   const summary: TestScopeSummary = {
     totalTests,

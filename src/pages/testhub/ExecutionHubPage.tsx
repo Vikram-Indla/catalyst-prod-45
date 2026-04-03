@@ -75,7 +75,7 @@ export default function ExecutionHubPage() {
 
   // Aggregate stats
   const globalStats = useMemo(() => {
-    const activeCycles = cycles.filter(c => c.status === 'active');
+    const activeCycles = cycles.filter(c => ['active', 'in_progress'].includes((c.status || '').toLowerCase()));
     const totalCases = activeCycles.reduce((s, c) => s + c.total_cases, 0);
     const passed = activeCycles.reduce((s, c) => s + c.passed_count, 0);
     const failed = activeCycles.reduce((s, c) => s + c.failed_count, 0);
