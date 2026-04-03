@@ -37243,6 +37243,63 @@ export type Database = {
           },
         ]
       }
+      rh_release_issues: {
+        Row: {
+          assignee_id: string | null
+          created_at: string | null
+          id: string
+          issue_key: string
+          issue_type: string | null
+          jira_issue_id: string | null
+          release_id: string
+          status: string | null
+          story_points: number | null
+          summary: string | null
+          synced_at: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string | null
+          id?: string
+          issue_key: string
+          issue_type?: string | null
+          jira_issue_id?: string | null
+          release_id: string
+          status?: string | null
+          story_points?: number | null
+          summary?: string | null
+          synced_at?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string | null
+          id?: string
+          issue_key?: string
+          issue_type?: string | null
+          jira_issue_id?: string | null
+          release_id?: string
+          status?: string | null
+          story_points?: number | null
+          summary?: string | null
+          synced_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rh_release_issues_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "rh_release_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rh_release_issues_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "rh_releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rh_release_test_cycle_links: {
         Row: {
           id: string
