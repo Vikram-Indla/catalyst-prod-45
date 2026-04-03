@@ -14,6 +14,7 @@ import {
   Clock,
   CalendarOff,
   Settings,
+  ShieldCheck,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
