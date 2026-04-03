@@ -992,7 +992,7 @@ export function TestRepositoryPage() {
           type: selectedTestCase.type,
           status: selectedTestCase.status,
           version: selectedTestCase.version || 1,
-          created_by: selectedTestCase.created_by || null,
+          assigned_to: selectedTestCase.assigned_to || null,
         } : undefined}
         existingSteps={selectedTestCaseSteps.length > 0 ? selectedTestCaseSteps : undefined}
       />
