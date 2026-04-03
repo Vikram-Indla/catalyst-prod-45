@@ -936,26 +936,26 @@ html:has(body[data-scroll-locked]) {
     --text-inverse: #0a0a0a;
     
     /* HSL versions for Tailwind */
-    --text-primary: 0 0% 92%;
-    --text-secondary: 0 0% 72%;
-    --text-tertiary: 0 0% 60%;
-    --text-muted: 0 0% 60%;
+    --text-primary: 216 25% 91%;
+    --text-secondary: 216 15% 72%;
+    --text-tertiary: 220 8% 57%;
+    --text-muted: 220 8% 57%;
     
     /* ═══════════════════════════════════════════════════════════════
        V9.5 NAVIGATION SHELL — AAA Contrast (Dark Mode)
        Based on Linear/Stripe dark mode standards
        ═══════════════════════════════════════════════════════════════ */
-    --nav-text-primary: rgba(255,255,255,0.92);
-    --nav-text-secondary: rgba(255,255,255,0.72);
-    --nav-text-tertiary: rgba(255,255,255,0.55);
-    --nav-module-badge: #3F3F46;           /* Neutral badge (same as light) */
-    --nav-section-label: rgba(255,255,255,0.55);
+    --nav-text-primary: rgba(225,230,240,0.92);
+    --nav-text-secondary: rgba(225,230,240,0.72);
+    --nav-text-tertiary: rgba(225,230,240,0.55);
+    --nav-module-badge: #32343A;           /* Cool Steel badge */
+    --nav-section-label: rgba(225,230,240,0.55);
     --nav-accent-bar: #3b82f6;             /* Left accent bar */
     
-    /* === C) DIVIDER + BORDER GRAMMAR (Never white lines) === */
-    --divider: rgba(255,255,255,0.06);
-    --border-subtle: rgba(255,255,255,0.08);
-    --border-strong: rgba(255,255,255,0.12);
+    /* === C) DIVIDER + BORDER GRAMMAR (Cool Steel borders) === */
+    --divider: rgba(200,210,225,0.06);
+    --border-subtle: rgba(200,210,225,0.08);
+    --border-strong: rgba(200,210,225,0.12);
     --stroke-1: var(--divider);
     --stroke-2: var(--border-subtle);
     
