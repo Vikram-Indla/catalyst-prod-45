@@ -475,10 +475,14 @@ export function AllProjectsTable({
         const badgeText = p.project_key.substring(0, 2);
         const rowNum = pageOffset + idx + 1;
 
-        const syncHealthy = !!p.last_synced_at;
-        const syncAge = p.last_synced_at
-          ? formatDistanceToNowStrict(new Date(p.last_synced_at), { addSuffix: false })
+        const syncInfo = syncMap?.get(p.id);
+        const syncHealthy = !!(syncInfo?.last_synced_at || p.last_synced_at);
+        const syncTs = syncInfo?.last_synced_at || p.last_synced_at;
+        const syncAge = syncTs
+          ? formatDistanceToNowStrict(new Date(syncTs), { addSuffix: false })
           : null;
+        const dirIcon = syncInfo?.sync_direction === 'inbound' ? '←'
+          : syncInfo?.sync_direction === 'outbound' ? '→' : '↔';
 
         return (
           <div
