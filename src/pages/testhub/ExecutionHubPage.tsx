@@ -55,7 +55,7 @@ export default function ExecutionHubPage() {
         .select(`*, owner:profiles!tm_test_cycles_owner_id_fkey ( full_name )`)
         .order('start_date', { ascending: false });
       if (error) throw error;
-      setCycles((data as any) || []);
+      setCycles((data) || []);
     } catch (err) {
       console.error('Failed to load cycles', err);
     } finally {

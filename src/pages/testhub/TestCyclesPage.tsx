@@ -100,7 +100,7 @@ export default function TestCyclesPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
-      <TestHubPageHeader title="Test Cycles" subtitle="Plan and track test execution across sprints and releases">
+      <TestHubPageHeader title="Test Cycles" subtitle="Plan and track test execution across cycles and releases">
             <button onClick={() => { fetchCycles(); catalystToast.success('Test cycles refreshed'); }} title="Refresh"
               style={{ width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               <RefreshCw size={18} />
