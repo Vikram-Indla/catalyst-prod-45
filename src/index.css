@@ -924,10 +924,10 @@ html:has(body[data-scroll-locked]) {
     --destructive-foreground: 0 0% 98%;
     
     /* === B) TEXT LADDER (Readable, consistent — no pure white body) === */
-    --fg-1: rgba(255,255,255,0.92);      /* Primary text */
-    --fg-2: rgba(255,255,255,0.72);      /* Secondary text */
-    --fg-3: rgba(255,255,255,0.60);      /* Muted/hints — bumped from 0.55 per L20 */
-    --fg-4: rgba(255,255,255,0.38);      /* Disabled */
+    --fg-1: rgba(225,230,240,0.92);      /* Primary text — Cool Steel */
+    --fg-2: rgba(225,230,240,0.72);      /* Secondary text */
+    --fg-3: rgba(225,230,240,0.60);      /* Muted/hints */
+    --fg-4: rgba(225,230,240,0.38);      /* Disabled */
     
     --text-1: var(--fg-1);
     --text-2: var(--fg-2);
