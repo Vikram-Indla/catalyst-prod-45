@@ -47,6 +47,7 @@ function useTeamMembers(): TeamMemberOption[] {
 }
 
 export function AssignmentTableView({ cycleId }: AssignmentTableViewProps) {
+  const teamMembers = useTeamMembers();
   const [columnsOpen, setColumnsOpen] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => {
     const stored = localStorage.getItem('assignment-table-columns');
