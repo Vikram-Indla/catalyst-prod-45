@@ -58,10 +58,12 @@ export default function FreezeWindowsPage() {
     return windows.find((fw: any) => d >= fw.start_date && d <= fw.end_date);
   };
 
-  const isToday = (date: Date) =>
-    date.getFullYear() === today.getFullYear() &&
-    date.getMonth() === today.getMonth() &&
-    date.getDate() === today.getDate();
+  const isToday = (date: Date) => {
+    const riyadh = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh' }));
+    return date.getFullYear() === riyadh.getFullYear() &&
+      date.getMonth() === riyadh.getMonth() &&
+      date.getDate() === riyadh.getDate();
+  };
 
   const handleCreate = async () => {
     setFormError('');
