@@ -71956,6 +71956,10 @@ export type Database = {
         Returns: Json
       }
       retry_failed_sync_events: { Args: never; Returns: number }
+      rh_import_jira_versions: {
+        Args: { p_project_key: string }
+        Returns: Json
+      }
       save_entity_snapshot: {
         Args: {
           p_change_reason?: string
