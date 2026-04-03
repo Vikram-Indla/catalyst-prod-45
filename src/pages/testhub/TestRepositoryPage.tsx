@@ -181,7 +181,7 @@ export function TestRepositoryPage() {
    const fetchTestCases = async () => {
      setIsLoading(true);
 
-     let query = supabase.from('tm_test_cases').select('*');
+     let query = supabase.from('tm_test_cases').select('*, priority_ref:tm_case_priorities(name), type_ref:tm_case_types(name)');
 
      if (selectedFolderId) {
        query = query.eq('folder_id', selectedFolderId);
