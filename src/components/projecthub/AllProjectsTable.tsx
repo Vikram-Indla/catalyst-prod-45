@@ -1,4 +1,4 @@
-import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown } from 'lucide-react';
+import { Star, MoreHorizontal, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { ProjectListItem, SortColumn, SortDirection } from '@/types/projecthub';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
@@ -25,32 +25,6 @@ function getInitials(name: string): string {
 
 function isActiveStatus(status: string): boolean {
   return status === 'active';
-}
-
-const SORTABLE_COLS: { key: SortColumn; label: string }[] = [
-  { key: 'name', label: 'Project' },
-  { key: 'status', label: 'Status' },
-  { key: 'total_issues', label: 'Updated' },
-];
-
-interface Props {
-  projects: ProjectListItem[];
-  favoriteIds: Set<string>;
-  onToggleFav: (id: string, fav: boolean) => void;
-  onSelectProject: (id: string) => void;
-  sortCol: SortColumn;
-  sortDir: SortDirection;
-  onSort: (col: SortColumn) => void;
-  selectedRows: Set<string>;
-  onToggleRow: (id: string) => void;
-  onToggleAll: () => void;
-}
-
-function SortIcon({ col, currentCol, dir }: { col: SortColumn; currentCol: SortColumn; dir: SortDirection }) {
-  if (col !== currentCol) return <span style={{ opacity: 0.3, fontSize: 10, marginLeft: 2 }}>↕</span>;
-  return dir === 'asc'
-    ? <ChevronUp size={12} style={{ marginLeft: 2 }} />
-    : <ChevronDown size={12} style={{ marginLeft: 2 }} />;
 }
 
 function RowActionMenu({ project }: { project: ProjectListItem }) {
@@ -103,174 +77,144 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
   );
 }
 
-export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectProject, sortCol, sortDir, onSort, selectedRows, onToggleRow, onToggleAll }: Props) {
+interface Props {
+  projects: ProjectListItem[];
+  favoriteIds: Set<string>;
+  onToggleFav: (id: string, fav: boolean) => void;
+  onSelectProject: (id: string) => void;
+  sortCol: SortColumn;
+  sortDir: SortDirection;
+  onSort: (col: SortColumn) => void;
+  selectedRows: Set<string>;
+  onToggleRow: (id: string) => void;
+  onToggleAll: () => void;
+}
+
+export function AllProjectsTable({ projects, favoriteIds, onToggleFav, selectedRows, onToggleRow }: Props) {
   const navigate = useNavigate();
-  const allChecked = projects.length > 0 && projects.every(p => selectedRows.has(p.id));
 
   return (
-    <table className="w-full border-collapse font-['Inter',sans-serif]" style={{ color: 'var(--text-1)' }}>
-      <thead>
-        <tr>
-          <th className="w-10 px-2 text-center" style={{ height: 36, borderBottom: '2px solid var(--bd-default)', background: 'var(--bg-sunken)', fontSize: 11, fontWeight: 600 }}>
-            <input type="checkbox" checked={allChecked} onChange={onToggleAll} style={{ width: 14, height: 14, cursor: 'pointer' }} />
-          </th>
-          <th className="w-9 px-1" style={{ height: 36, borderBottom: '2px solid var(--bd-default)', background: 'var(--bg-sunken)' }} />
-          {/* Project column (Key + Name + Badge) */}
-          <th
-            onClick={() => onSort('name')}
-            className="cursor-pointer select-none text-left"
-            style={{ height: 36, borderBottom: '2px solid var(--bd-default)', background: 'var(--bg-sunken)', padding: '0 16px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)' }}
-          >
-            <span className="inline-flex items-center">
-              Project <SortIcon col="name" currentCol={sortCol} dir={sortDir} />
-            </span>
-          </th>
-          <th
-            onClick={() => onSort('status')}
-            className="cursor-pointer select-none text-left"
-            style={{ height: 36, borderBottom: '2px solid var(--bd-default)', background: 'var(--bg-sunken)', padding: '0 16px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', width: 110 }}
-          >
-            <span className="inline-flex items-center">
-              Status <SortIcon col="status" currentCol={sortCol} dir={sortDir} />
-            </span>
-          </th>
-          <th
-            style={{ height: 36, borderBottom: '2px solid var(--bd-default)', background: 'var(--bg-sunken)', padding: '0 16px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', width: 160 }}
-          >
-            Lead
-          </th>
-          <th
-            style={{ height: 36, borderBottom: '2px solid var(--bd-default)', background: 'var(--bg-sunken)', padding: '0 12px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', width: 100 }}
-          >
-            Members
-          </th>
-          <th
-            onClick={() => onSort('total_issues')}
-            className="cursor-pointer select-none text-right"
-            style={{ height: 36, borderBottom: '2px solid var(--bd-default)', background: 'var(--bg-sunken)', padding: '0 16px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', width: 120 }}
-          >
-            <span className="inline-flex items-center justify-end w-full">
-              Updated <SortIcon col="total_issues" currentCol={sortCol} dir={sortDir} />
-            </span>
-          </th>
-          <th style={{ height: 36, borderBottom: '2px solid var(--bd-default)', background: 'var(--bg-sunken)', width: 44 }} />
-        </tr>
-      </thead>
-      <tbody>
-        {projects.map(p => {
-          const isFav = favoriteIds.has(p.id);
-          const checked = selectedRows.has(p.id);
-          const active = isActiveStatus(p.status);
-          const badgeColor = getBadgeColor(p.id);
-          const badgeText = p.project_key.substring(0, 2);
+    <div className="font-['Inter',sans-serif]" style={{ color: 'var(--text-1)' }}>
+      {projects.map(p => {
+        const isFav = favoriteIds.has(p.id);
+        const checked = selectedRows.has(p.id);
+        const active = isActiveStatus(p.status);
+        const badgeColor = getBadgeColor(p.id);
+        const badgeText = p.project_key.substring(0, 2);
 
-          return (
-            <tr
-              key={p.id}
-              onClick={() => active && onSelectProject(p.id)}
-              onDoubleClick={() => active && navigate(`/project-hub/${p.project_key}/dashboard`)}
-              className="group transition-colors"
-              style={{
-                minHeight: 64,
-                borderBottom: '1px solid var(--bd-subtle)',
-                opacity: active ? 1 : 0.45,
-                pointerEvents: active ? 'auto' : 'none',
-                cursor: active ? 'pointer' : 'not-allowed',
-                background: checked ? 'var(--sel)' : 'transparent',
-              }}
-              onMouseEnter={e => { if (active && !checked) (e.currentTarget.style.background = 'var(--hover)'); }}
-              onMouseLeave={e => { if (active) (e.currentTarget.style.background = checked ? 'var(--sel)' : 'transparent'); }}
-            >
+        return (
+          <div
+            key={p.id}
+            className="group transition-colors"
+            style={{
+              minHeight: 64,
+              padding: '12px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
+              borderBottom: '0.75px solid var(--bd-default)',
+              cursor: active ? 'pointer' : 'not-allowed',
+              opacity: active ? 1 : 0.45,
+              pointerEvents: active ? 'auto' : 'none',
+              background: checked ? 'var(--sel)' : 'transparent',
+            }}
+            onMouseEnter={e => { if (active && !checked) e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; }}
+            onMouseLeave={e => { if (active) e.currentTarget.style.background = checked ? 'var(--sel)' : 'transparent'; }}
+          >
+            {/* Line 1 */}
+            <div className="flex items-center" style={{ gap: 12 }}>
               {/* Checkbox */}
-              <td className="px-2 text-center align-middle" style={{ pointerEvents: 'auto' }} onClick={e => e.stopPropagation()}>
+              <div style={{ pointerEvents: 'auto' }} onClick={e => e.stopPropagation()}>
                 <input
-                  type="checkbox" checked={checked} onChange={() => onToggleRow(p.id)}
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => onToggleRow(p.id)}
                   className="opacity-0 group-hover:opacity-100"
-                  style={{ width: 14, height: 14, cursor: 'pointer', ...(checked ? { opacity: 1 } : {}) }}
+                  style={{ width: 16, height: 16, cursor: 'pointer', ...(checked ? { opacity: 1 } : {}) }}
                 />
-              </td>
+              </div>
+
               {/* Star */}
-              <td className="px-1 text-center align-middle" style={{ pointerEvents: 'auto' }} onClick={e => e.stopPropagation()}>
-                <button onClick={() => onToggleFav(p.id, isFav)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
-                  <Star size={14} fill={isFav ? '#F59E0B' : 'none'} color={isFav ? '#F59E0B' : 'var(--text-4)'} />
+              <div style={{ pointerEvents: 'auto' }} onClick={e => e.stopPropagation()}>
+                <button onClick={() => onToggleFav(p.id, isFav)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
+                  <Star size={16} fill={isFav ? '#F59E0B' : 'none'} color={isFav ? '#F59E0B' : 'var(--text-4)'} />
                 </button>
-              </td>
-              {/* Project: Badge + Name + Key (two lines) */}
-              <td className="align-middle" style={{ padding: '10px 16px' }}>
-                <div className="flex items-start gap-3">
-                  {/* Badge circle */}
+              </div>
+
+              {/* Badge */}
+              <div
+                className="flex-shrink-0 flex items-center justify-center rounded-full"
+                style={{ width: 28, height: 28, background: badgeColor, color: '#FFF', fontSize: 11, fontWeight: 700 }}
+              >
+                {badgeText}
+              </div>
+
+              {/* Project Name — clickable */}
+              <span
+                onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
+                className="truncate hover:underline"
+                style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-1)', cursor: 'pointer' }}
+              >
+                {p.name}
+              </span>
+
+              {/* Key */}
+              <span className="flex-shrink-0" style={{ fontSize: 12, color: 'var(--text-3)', fontFamily: "'JetBrains Mono', monospace", marginLeft: -4 }}>
+                {p.project_key}
+              </span>
+
+              {/* Status Lozenge */}
+              <ProjectStatusBadge status={p.status} />
+
+              {/* Spacer */}
+              <div style={{ flex: 1 }} />
+
+              {/* Lead */}
+              {p.lead_name && (
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <div
                     className="flex-shrink-0 flex items-center justify-center rounded-full"
-                    style={{ width: 28, height: 28, background: badgeColor, color: '#FFF', fontSize: 11, fontWeight: 700 }}
+                    style={{
+                      width: 24, height: 24,
+                      background: p.lead_avatar_url ? `url(${p.lead_avatar_url}) center/cover` : getBadgeColor(p.lead_id || ''),
+                      color: '#FFF', fontSize: 9, fontWeight: 700,
+                    }}
                   >
-                    {badgeText}
+                    {!p.lead_avatar_url && getInitials(p.lead_name)}
                   </div>
-                  <div className="flex flex-col gap-0.5 min-w-0">
-                    {/* Line 1: Name + Key */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>{p.name}</span>
-                      <span className="text-xs font-mono flex-shrink-0" style={{ color: 'var(--text-3)', fontFamily: "'JetBrains Mono', monospace" }}>{p.project_key}</span>
-                    </div>
-                    {/* Line 2: Issues + Updated */}
-                    <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-3)' }}>
-                      {p.total_issues > 0 && (
-                        <span>{p.total_issues} issues</span>
-                      )}
-                      {p.last_synced_at && (
-                        <span>Synced {formatDistanceToNowStrict(new Date(p.last_synced_at), { addSuffix: false })} ago</span>
-                      )}
-                    </div>
-                  </div>
+                  <span style={{ fontSize: 13, color: 'var(--text-2)' }}>
+                    {p.lead_name.split(' ')[0]}
+                  </span>
                 </div>
-              </td>
-              {/* Status */}
-              <td className="align-middle" style={{ padding: '0 16px' }}>
-                <ProjectStatusBadge status={p.status} />
-              </td>
-              {/* Lead */}
-              <td className="align-middle" style={{ padding: '0 16px' }}>
-                {p.lead_name ? (
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="flex-shrink-0 flex items-center justify-center rounded-full"
-                      style={{
-                        width: 24, height: 24,
-                        background: p.lead_avatar_url ? `url(${p.lead_avatar_url}) center/cover` : getBadgeColor(p.lead_id || ''),
-                        color: '#FFF', fontSize: 9, fontWeight: 700,
-                      }}
-                    >
-                      {!p.lead_avatar_url && getInitials(p.lead_name)}
-                    </div>
-                    <span className="text-xs truncate" style={{ color: 'var(--text-2)' }}>
-                      {p.lead_name.split(' ')[0]}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="text-xs" style={{ color: 'var(--text-4)' }}>—</span>
-                )}
-              </td>
-              {/* Members */}
-              <td className="align-middle" style={{ padding: '0 12px' }}>
-                <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
-              </td>
-              {/* Updated */}
-              <td className="align-middle text-right" style={{ padding: '0 16px' }}>
-                <span className="text-xs" style={{ color: 'var(--text-3)', fontFamily: "'JetBrains Mono', monospace" }}>
-                  {p.updated_at ? formatDistanceToNowStrict(new Date(p.updated_at), { addSuffix: true }) : '—'}
-                </span>
-              </td>
+              )}
+
               {/* Action */}
-              <td className="align-middle text-center" style={{ pointerEvents: 'auto', width: 44 }}>
+              <div style={{ pointerEvents: 'auto', flexShrink: 0, width: 32 }}>
                 {active ? (
                   <RowActionMenu project={p} />
                 ) : (
-                  <Lock size={14} style={{ color: 'var(--text-4)', margin: '0 auto' }} />
+                  <Lock size={14} style={{ color: 'var(--text-4)', opacity: 1 }} />
                 )}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+              </div>
+            </div>
+
+            {/* Line 2 */}
+            <div className="flex items-center" style={{ gap: 8, paddingLeft: 68 }}>
+              {p.member_ids && p.member_ids.length > 0 && (
+                <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
+              )}
+              {p.member_ids && p.member_ids.length > 0 && p.updated_at && (
+                <span style={{ color: 'var(--text-4)', fontSize: 12 }}>·</span>
+              )}
+              {p.updated_at && (
+                <span style={{ fontSize: 12, color: 'var(--text-3)' }}>
+                  {formatDistanceToNowStrict(new Date(p.updated_at), { addSuffix: true })}
+                </span>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }

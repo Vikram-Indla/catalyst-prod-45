@@ -10,7 +10,6 @@ import { useMemo } from 'react';
 import {
   LayoutGrid,
   LayoutDashboard,
-  Activity,
   Settings,
   UserSearch,
   Layers,
@@ -110,7 +109,6 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
       items: [
         { id: 'all-projects', title: 'All Projects', path: '/project-hub/projects', icon: LayoutGrid, exact: false },
         { id: 'all-resources', title: 'Resource 360™', path: '/project-hub/resources', icon: UserSearch, exact: true },
-        { id: 'portfolio-health', title: 'Portfolio Health', path: '/project-hub/portfolio-health', icon: Activity, exact: true },
       ],
     },
   ];
