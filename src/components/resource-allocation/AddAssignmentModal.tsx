@@ -209,7 +209,7 @@ export function AddAssignmentModal({
                       <div className="flex items-center gap-2">
                         <div 
                           className="w-2.5 h-2.5 rounded-full"
-                          style={{ backgroundColor: filteredAssignments.find(a => a.id === selectedAssignmentId)?.color || '#2563eb' }}
+                          style={{ backgroundColor: filteredAssignments.find(a => a.id === selectedAssignmentId)?.color || 'var(--cp-blue)' }}
                         />
                         <span className="truncate">
                           {filteredAssignments.find(a => a.id === selectedAssignmentId)?.name || 'Select an assignment...'}

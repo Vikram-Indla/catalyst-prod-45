@@ -36,13 +36,13 @@ export default function KanbanColumn({ column, cards, maxWip, onCardClick }: Pro
         <div style={{
           minHeight: 60, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center', gap: 4,
-          border: `0.75px dashed ${isOver ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
+          border: `0.75px dashed ${isOver ? 'var(--cp-blue)' : 'rgba(15,23,42,0.12)'}`,
           borderRadius: 6,
-          background: isOver ? '#EFF6FF' : 'transparent',
+          background: isOver ? 'var(--cp-blue-wash)' : 'transparent',
           transition: 'all 150ms',
         }}>
           <span style={{
-            fontSize: 11, color: isOver ? '#2563EB' : '#94A3B8',
+            fontSize: 11, color: isOver ? 'var(--cp-blue)' : 'var(--fg-4)',
             fontFamily: "'Inter', sans-serif",
           }}>Drop issues here</span>
         </div>
@@ -51,7 +51,7 @@ export default function KanbanColumn({ column, cards, maxWip, onCardClick }: Pro
       {/* Active drop indicator when cards exist */}
       {cards.length > 0 && isOver && (
         <div style={{
-          height: 2, background: '#2563EB',
+          height: 2, background: 'var(--cp-blue)',
           borderRadius: 1, margin: '4px 0',
           boxShadow: '0 0 4px rgba(37,99,235,0.5)',
         }} />
@@ -62,7 +62,7 @@ export default function KanbanColumn({ column, cards, maxWip, onCardClick }: Pro
         display: 'flex', alignItems: 'center', gap: 4,
         padding: '6px 8px', marginTop: 6,
         border: 'none', background: 'transparent', cursor: 'pointer',
-        fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif",
+        fontSize: 12, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif",
         borderRadius: 4, transition: 'background 80ms',
       }}
         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}

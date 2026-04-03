@@ -14,9 +14,9 @@ const MAX_PER_PAGE = 8;
 
 // Ring-fenced tokens
 const T = {
-  bg: '#F5F0EB', surface: '#FFFFFF', text1: '#0A0A0A', text2: '#1A1A2E',
-  text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9', borderStrong: '#C5BDB3',
-  todo: '#E23636', progress: '#2563EB', done: '#0E8A5F',
+  bg: '#F5F0EB', surface: 'var(--bg-app)', text1: 'var(--fg-1)', text2: '#1A1A2E',
+  text3: '#3D3D56', text4: 'var(--fg-3)', border: 'var(--divider)', borderStrong: 'var(--divider)',
+  todo: '#E23636', progress: 'var(--cp-blue)', done: '#0E8A5F',
   shadow: '0 2px 8px rgba(0,0,0,.12)', shadowHover: '0 6px 20px rgba(0,0,0,.15)',
   mono: "'JetBrains Mono', 'SF Mono', monospace",
 };
@@ -108,7 +108,7 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
                 style={{
                   padding: '4px 12px', fontSize: 10, fontWeight: 700,
                   borderRadius: 5, cursor: 'pointer', transition: 'all .12s',
-                  background: active ? '#2563EB' : T.surface,
+                  background: active ? 'var(--cp-blue)' : T.surface,
                   color: active ? '#fff' : T.text3,
                   border: active ? 'none' : `1px solid ${T.borderStrong}`,
                 }}>

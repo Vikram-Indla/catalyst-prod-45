@@ -11,7 +11,7 @@ export function RoadmapFilters({ teams, activeTeam, onTeamChange, ideaCount }: R
   return (
     <div style={{
       height: 44, display: 'flex', alignItems: 'center', gap: 6,
-      padding: '0 24px', background: '#FAFBFC', borderBottom: '1px solid #E2E8F0',
+      padding: '0 24px', background: '#FAFBFC', borderBottom: '1px solid var(--divider)',
     }}>
       {teams.map(t => (
         <button
@@ -21,7 +21,7 @@ export function RoadmapFilters({ teams, activeTeam, onTeamChange, ideaCount }: R
             height: 24, padding: '0 10px', borderRadius: 100, border: 'none', cursor: 'pointer',
             fontSize: 12, fontWeight: 600, fontFamily: "'Inter', sans-serif",
             background: activeTeam === t ? '#1E293B' : '#F1F5F9',
-            color: activeTeam === t ? '#FFFFFF' : '#64748B',
+            color: activeTeam === t ? 'var(--bg-app)' : 'var(--fg-3)',
             transition: 'background 120ms, color 120ms',
           }}
           onMouseEnter={e => {
@@ -35,7 +35,7 @@ export function RoadmapFilters({ teams, activeTeam, onTeamChange, ideaCount }: R
         </button>
       ))}
       <div style={{ flex: 1 }} />
-      <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
+      <span style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>
         Showing {ideaCount} ideas
       </span>
     </div>

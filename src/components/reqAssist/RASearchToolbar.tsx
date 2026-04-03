@@ -36,28 +36,28 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12,
       padding: '12px 28px',
-      background: '#FFFFFF',
+      background: 'var(--bg-app)',
       borderBottom: '0.75px solid rgba(15,23,42,0.08)',
     }}>
       {/* Search Input */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         width: 280, height: 36, borderRadius: 6,
-        border: `0.75px solid ${focused ? '#2563EB' : 'rgba(15,23,42,0.15)'}`,
+        border: `0.75px solid ${focused ? 'var(--cp-blue)' : 'rgba(15,23,42,0.15)'}`,
         boxShadow: focused ? '0 0 0 3px rgba(37,99,235,0.12)' : 'none',
-        padding: '0 12px', background: '#FFFFFF',
+        padding: '0 12px', background: 'var(--bg-app)',
         transition: 'border-color 150ms, box-shadow 150ms',
       }}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       >
-        <Search size={14} color="#94A3B8" strokeWidth={2} style={{ flexShrink: 0 }} />
+        <Search size={14} color="var(--fg-4)" strokeWidth={2} style={{ flexShrink: 0 }} />
         <input
           type="text" value={local} onChange={e => handleChange(e.target.value)}
           placeholder="Search by title, Jira ticket, domain..."
           style={{
             flex: 1, border: 'none', outline: 'none', background: 'transparent',
-            fontSize: 13, color: '#0F172A', fontFamily: "'Inter', sans-serif",
+            fontSize: 13, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif",
             appearance: 'none' as any,
           }}
         />
@@ -79,18 +79,18 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
                 height: 28, padding: '0 12px', borderRadius: 6,
                 fontSize: 12, fontWeight: active ? 600 : 500,
                 border: 'none', cursor: 'pointer',
-                background: active ? '#FFFFFF' : 'transparent',
-                color: active ? '#0F172A' : '#64748B',
+                background: active ? 'var(--bg-app)' : 'transparent',
+                color: active ? 'var(--fg-1)' : 'var(--fg-3)',
                 boxShadow: active ? '0 1px 3px rgba(15,23,42,0.10)' : 'none',
                 fontFamily: "'Inter', sans-serif",
                 transition: 'all 120ms ease',
               }}
-              onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.6)'; e.currentTarget.style.color = active ? '#0F172A' : '#374151'; }}
-              onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = active ? '#0F172A' : '#64748B'; }}
+              onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.6)'; e.currentTarget.style.color = active ? 'var(--fg-1)' : 'var(--fg-2)'; }}
+              onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = active ? 'var(--fg-1)' : 'var(--fg-3)'; }}
             >
               {t.label}
               {t.key === 'all' && totalCount != null && (
-                <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 400 }}>({totalCount})</span>
+                <span style={{ fontSize: 12, color: 'var(--fg-4)', fontWeight: 400 }}>({totalCount})</span>
               )}
             </button>
           );
@@ -111,7 +111,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
             padding: '0 14px', height: 36, fontSize: 13, fontWeight: 600,
             border: 'none', borderRadius: 6,
             background: syncingAll
-              ? '#94A3B8'
+              ? 'var(--fg-4)'
               : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
             boxShadow: syncingAll ? 'none' : '0 1px 3px rgba(37,99,235,0.35)',
             color: '#FFFFFF',

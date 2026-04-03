@@ -13,8 +13,8 @@ const DK = {
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'rgba(248,244,240,0.10)',
-  borderSubtle: 'rgba(248,244,240,0.08)',
+  border: 'rgba(235,238,245,0.10)',
+  borderSubtle: 'rgba(235,238,245,0.08)',
 };
 
 const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
@@ -35,14 +35,14 @@ function getAvatarColors(name: string) {
 
 function statusBadge(status: string, isDark = false) {
   const map: Record<string, { dot: string; bg: string; text: string; bgDk: string; txtDk: string; label: string }> = {
-    active:      { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#1A2A1E', txtDk: '#86EFAC', label: 'Active' },
-    on_track:    { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#1A2A1E', txtDk: '#86EFAC', label: 'On Track' },
-    completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDk: '#1E2636', txtDk: '#93C5FD', label: 'Completed' },
+    active:      { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#182820', txtDk: '#86EFAC', label: 'Active' },
+    on_track:    { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#182820', txtDk: '#86EFAC', label: 'On Track' },
+    completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDk: '#1A2030', txtDk: '#93C5FD', label: 'Completed' },
     at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDk: '#2A2418', txtDk: '#FBBF24', label: 'At Risk' },
-    off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', bgDk: '#2E1C18', txtDk: '#FCA5A5', label: 'Off Track' },
-    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#2C2926', txtDk: '#B8BCC8', label: 'Draft' },
-    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#2C2926', txtDk: '#B8BCC8', label: 'Not Started' },
-    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#2C2926', txtDk: '#B8BCC8', label: 'Cancelled' },
+    off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', bgDk: '#2A1C1E', txtDk: '#FCA5A5', label: 'Off Track' },
+    draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#262830', txtDk: '#B8BCC8', label: 'Draft' },
+    not_started: { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#262830', txtDk: '#B8BCC8', label: 'Not Started' },
+    cancelled:   { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', bgDk: '#262830', txtDk: '#B8BCC8', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
@@ -92,15 +92,15 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
     return String(av).localeCompare(String(bv)) * dir;
   });
 
-  const tableBorder = isDark ? DK.border : '#E2E8F0';
-  const rowBorder = isDark ? DK.borderSubtle : '#F1F5F9';
+  const tableBorder = isDark ? DK.border : 'var(--divider)';
+  const rowBorder = isDark ? DK.borderSubtle : 'var(--cp-bd-zone)';
   const rowBg = isDark ? 'transparent' : 'transparent';
-  const rowHover = isDark ? 'rgba(248,244,240,0.03)' : '#F8FAFC';
+  const rowHover = isDark ? 'rgba(235,238,245,0.03)' : 'var(--bg-1)';
 
   return (
-    <div style={{ border: `1px solid ${tableBorder}`, borderRadius: 10, overflow: 'hidden', background: isDark ? 'transparent' : '#FFFFFF' }}>
+    <div style={{ border: `1px solid ${tableBorder}`, borderRadius: 10, overflow: 'hidden', background: isDark ? 'transparent' : 'var(--bg-app)' }}>
       {/* Header */}
-      <div style={{ display: 'grid', gridTemplateColumns: gridCols, height: 36, alignItems: 'center', padding: '0 16px', background: isDark ? 'transparent' : '#FFFFFF', borderBottom: `2px solid ${tableBorder}`, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: isDark ? DK.t3 : '#64748B' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: gridCols, height: 36, alignItems: 'center', padding: '0 16px', background: isDark ? 'transparent' : 'var(--bg-app)', borderBottom: `2px solid ${tableBorder}`, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: isDark ? DK.t3 : 'var(--fg-3)' }}>
         {COLS.map(c => (
           <span
             key={c.key}
@@ -129,10 +129,10 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
             onMouseEnter={e => (e.currentTarget.style.background = rowHover)}
             onMouseLeave={e => (e.currentTarget.style.background = rowBg)}
           >
-            <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : '#475569', background: isDark ? 'rgba(248,244,240,0.04)' : '#F1F5F9', padding: '2px 8px', borderRadius: 4, justifySelf: 'start', fontFamily: 'ui-monospace, monospace' }}>{goal.goal_key}</span>
-            <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? DK.t1 : '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.title}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'rgba(235,238,245,0.04)' : 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, justifySelf: 'start', fontFamily: 'ui-monospace, monospace' }}>{goal.goal_key}</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.title}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              {theme && (<><span style={{ width: 8, height: 8, borderRadius: 2, background: theme.color, flexShrink: 0 }} /><span style={{ fontSize: 12, color: isDark ? DK.t2 : '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{theme.title}</span></>)}
+              {theme && (<><span style={{ width: 8, height: 8, borderRadius: 2, background: theme.color, flexShrink: 0 }} /><span style={{ fontSize: 12, color: isDark ? DK.t2 : 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{theme.title}</span></>)}
             </div>
             <div>{statusBadge(goal.status, isDark)}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -141,20 +141,20 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
                   <div style={{ width: 28, height: 28, borderRadius: '50%', background: ownerColors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: ownerColors.text, flexShrink: 0 }}>
                     {initials}
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? DK.t1 : '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.owner_name}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.owner_name}</span>
                 </>
               ) : (
                 <span style={{ fontSize: 11, color: isDark ? DK.t4 : '#CBD5E1' }}>—</span>
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'rgba(248,244,240,0.08)' : '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
+              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'rgba(235,238,245,0.08)' : 'var(--divider)', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 3 }} />
               </div>
               <span style={{ fontSize: 13, fontWeight: 600, color: barColor }}>{pct}%</span>
             </div>
-            <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : '#475569' }}>{goal.kr_count || 0}</span>
-            <span style={{ fontSize: 11, color: isDark ? DK.t3 : '#64748B' }}>{goal.fiscal_quarter || '—'}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{goal.kr_count || 0}</span>
+            <span style={{ fontSize: 11, color: isDark ? DK.t3 : 'var(--fg-3)' }}>{goal.fiscal_quarter || '—'}</span>
           </div>
         );
       })}

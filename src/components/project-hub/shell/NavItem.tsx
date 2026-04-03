@@ -28,18 +28,18 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         fontSize: 13,
         fontWeight: isActive ? 600 : 500,
         color: isActive
-          ? '#2563EB'
-          : isDark ? 'rgba(248,244,240,0.72)' : '#334155',
+          ? 'var(--cp-blue)'
+          : isDark ? 'rgba(235,238,245,0.72)' : 'var(--fg-2)',
         background: isActive
-          ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF')
+          ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)')
           : 'transparent',
-        borderLeft: isActive && !collapsed ? '3px solid #2563EB' : '3px solid transparent',
+        borderLeft: isActive && !collapsed ? '3px solid var(--cp-blue)' : '3px solid transparent',
         fontFamily: "'Inter', sans-serif",
         border: 'none',
         cursor: 'pointer',
       }}
       onMouseEnter={(e) => {
-        if (!isActive) e.currentTarget.style.background = isDark ? 'rgba(248,244,240,0.03)' : '#F1F5F9';
+        if (!isActive) e.currentTarget.style.background = isDark ? 'rgba(235,238,245,0.03)' : 'var(--cp-bd-zone)';
       }}
       onMouseLeave={(e) => {
         if (!isActive) e.currentTarget.style.background = 'transparent';
@@ -56,7 +56,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
                 fontSize: 9,
                 fontWeight: 700,
                 color: '#FFFFFF',
-                background: '#2563EB',
+                background: 'var(--cp-blue)',
                 borderRadius: 4,
                 padding: '1px 5px',
                 lineHeight: '14px',
@@ -72,10 +72,10 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: isDark ? 'rgba(248,244,240,0.55)' : '#94A3B8',
+                color: isDark ? 'rgba(235,238,245,0.55)' : 'var(--fg-4)',
                 fontFamily: "'JetBrains Mono', monospace",
                 borderRadius: 10,
-                background: isDark ? 'rgba(248,244,240,0.06)' : '#F1F5F9',
+                background: isDark ? 'rgba(235,238,245,0.06)' : 'var(--cp-bd-zone)',
                 padding: '1px 6px',
               }}
             >

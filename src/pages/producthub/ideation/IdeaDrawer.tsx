@@ -197,7 +197,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '560px',
-        background: isDark ? '#232019' : '#FFFFFF', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
+        background: isDark ? '#1F2128' : '#FFFFFF', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
         display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
@@ -268,7 +268,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localStatus} onValueChange={setLocalStatus}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">{STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    <SelectContent className="bg-white dark:bg-[#1F2128] dark:border-gray-700 dark:text-white">{STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <StatusLoz status={localStatus} />}
               </FieldBlock>
@@ -276,7 +276,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localPriority} onValueChange={setLocalPriority}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">{PRIORITIES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
+                    <SelectContent className="bg-white dark:bg-[#1F2128] dark:border-gray-700 dark:text-white">{PRIORITIES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <span style={{ fontSize: '13px', fontWeight: 650, color: '#334155' }}>{localPriority}</span>}
               </FieldBlock>
@@ -284,7 +284,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localType} onValueChange={setLocalType}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">{TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                    <SelectContent className="bg-white dark:bg-[#1F2128] dark:border-gray-700 dark:text-white">{TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <span style={{ fontSize: '13px', color: '#0F172A' }}>{localType || '—'}</span>}
               </FieldBlock>
@@ -292,7 +292,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localSource} onValueChange={setLocalSource}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">{SOURCES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    <SelectContent className="bg-white dark:bg-[#1F2128] dark:border-gray-700 dark:text-white">{SOURCES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <span style={{ fontSize: '13px', color: '#0F172A' }}>{localSource || '—'}</span>}
               </FieldBlock>
@@ -300,7 +300,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localTheme || '__none__'} onValueChange={(v: string) => setLocalTheme(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select theme" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">
+                    <SelectContent className="bg-white dark:bg-[#1F2128] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— None —</SelectItem>
                       {THEMES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                     </SelectContent>
@@ -311,7 +311,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localTeam || '__none__'} onValueChange={(v: string) => setLocalTeam(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select team" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">
+                    <SelectContent className="bg-white dark:bg-[#1F2128] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— None —</SelectItem>
                       {TEAMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                     </SelectContent>
@@ -322,7 +322,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localRelease || '__none__'} onValueChange={(v: string) => setLocalRelease(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select release" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">
+                    <SelectContent className="bg-white dark:bg-[#1F2128] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— None —</SelectItem>
                       {RELEASES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                     </SelectContent>
@@ -333,7 +333,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localQuarter || '__none__'} onValueChange={(v: string) => setLocalQuarter(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Unassigned" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white">
+                    <SelectContent className="bg-white dark:bg-[#1F2128] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— Unassigned —</SelectItem>
                       {QUARTERS.map(q => <SelectItem key={q} value={q}>{q} 2026</SelectItem>)}
                     </SelectContent>
@@ -351,7 +351,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localAssigneeId || '__none__'} onValueChange={(v: string) => setLocalAssigneeId(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select assignee" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#232019] dark:border-gray-700 dark:text-white max-h-[200px]">
+                    <SelectContent className="bg-white dark:bg-[#1F2128] dark:border-gray-700 dark:text-white max-h-[200px]">
                       <SelectItem value="__none__">— Unassigned —</SelectItem>
                       {profiles.map((p) => <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>)}
                     </SelectContent>

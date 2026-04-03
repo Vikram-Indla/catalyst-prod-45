@@ -25,7 +25,7 @@ export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPag
         justifyContent: 'space-between',
         padding: '24px 28px 16px',
         borderBottom: `0.75px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.06)'}`,
-        background: isDark ? 'transparent' : '#FFFFFF',
+        background: isDark ? 'transparent' : 'var(--bg-app)',
       }}
     >
       <div>
@@ -34,7 +34,7 @@ export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPag
             fontFamily: "'Sora', system-ui",
             fontSize: 22,
             fontWeight: 700,
-            color: isDark ? 'rgba(248,244,240,0.92)' : '#09090B',
+            color: isDark ? 'rgba(235,238,245,0.92)' : '#09090B',
             letterSpacing: '-0.025em',
             margin: 0,
             lineHeight: 1.3,
@@ -45,7 +45,7 @@ export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPag
         <p
           style={{
             fontSize: 13,
-            color: isDark ? 'rgba(248,244,240,0.50)' : '#71717A',
+            color: isDark ? 'rgba(235,238,245,0.50)' : '#71717A',
             marginTop: 2,
             margin: 0,
             marginBlockStart: 2,

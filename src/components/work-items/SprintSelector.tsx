@@ -86,11 +86,11 @@ export function SprintSelector({ storyId, currentSprintId, teamId, onSprintChang
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['stories'] });
       queryClient.invalidateQueries({ queryKey: ['story', storyId] });
-      toast.success('Sprint updated');
+      toast.success('Release updated');
       onSprintChange?.(selectedSprintId);
     },
     onError: () => {
-      toast.error('Failed to update sprint');
+      toast.error('Failed to update release');
     },
   });
 
@@ -125,23 +125,23 @@ export function SprintSelector({ storyId, currentSprintId, teamId, onSprintChang
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
           <CalendarDays className="h-4 w-4 text-brand-primary" />
-          Sprint Assignment
+          Release Assignment
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 space-y-3">
         <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">Assigned Sprint</Label>
+          <Label className="text-xs text-muted-foreground">Assigned Release</Label>
           <Select
             value={selectedSprintId || 'none'}
             onValueChange={handleSprintChange}
             disabled={updateSprintMutation.isPending || isLoading}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select sprint..." />
+              <SelectValue placeholder="Select release..." />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">
-                <span className="text-muted-foreground">No Sprint (Backlog)</span>
+                <span className="text-muted-foreground">No Release (Backlog)</span>
               </SelectItem>
               {Object.entries(sprintsByPI).map(([piName, piSprints]) => (
                 <div key={piName}>
@@ -204,7 +204,7 @@ export function SprintSelector({ storyId, currentSprintId, teamId, onSprintChang
 
         {!currentSprint && selectedSprintId === null && (
           <p className="text-xs text-muted-foreground">
-            This story is in the backlog and not assigned to any sprint.
+            This story is in the backlog and not assigned to any release.
           </p>
         )}
       </CardContent>

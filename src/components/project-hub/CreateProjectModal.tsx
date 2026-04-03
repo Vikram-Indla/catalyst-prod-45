@@ -23,6 +23,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
 
   const [details, setDetails] = useState<StepDetailsData>({
     name: '', key: '', department: '', description: '', icon: 'rocket', color: '#2563EB',
+    lead_id: '', linkJira: false, jiraKey: '',
   });
   const [workflow, setWorkflow] = useState<StepWorkflowData>({
     useDefault: true, copyFromProject: null, featureLayer: false,
@@ -32,7 +33,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   useEffect(() => {
     if (open) {
       setStep(0);
-      setDetails({ name: '', key: '', department: '', description: '', icon: 'rocket', color: '#2563EB' });
+      setDetails({ name: '', key: '', department: '', description: '', icon: 'rocket', color: '#2563EB', lead_id: '', linkJira: false, jiraKey: '' });
       setWorkflow({ useDefault: true, copyFromProject: null, featureLayer: false });
       setMembers([]);
       setStep1Valid(false);
@@ -59,10 +60,35 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         p_feature_layer: workflow.featureLayer, p_user_id: user.id,
       });
       if (error) throw new Error(error.message);
+
+      // Add lead as member with role 'lead'
+      if (details.lead_id && projectId) {
+        const { error: leadErr } = await supabase.from('ph_project_members').insert({
+          project_id: projectId, user_id: details.lead_id, role: 'lead',
+        });
+        if (leadErr) console.warn('Failed to add lead as member:', leadErr.message);
+      }
+
+      // Link to Jira if enabled
+      if (details.linkJira && details.jiraKey && projectId) {
+        const { error: syncErr } = await supabase.from('sync_entity_map').insert({
+          catalyst_entity_id: projectId, catalyst_entity_type: 'project',
+          jira_entity_id: details.jiraKey.trim().toUpperCase(),
+          jira_entity_type: 'project',
+          jira_entity_key: details.jiraKey.trim().toUpperCase(),
+          sync_direction: 'bidirectional',
+        });
+        if (syncErr) console.warn('Failed to create Jira link:', syncErr.message);
+      }
+
       if (members.length > 0 && projectId) {
-        const rows = members.map(m => ({ project_id: projectId, user_id: m.userId, role: m.role }));
-        const { error: memErr } = await supabase.from('ph_project_members').insert(rows);
-        if (memErr) console.warn('Failed to add some members:', memErr.message);
+        const rows = members
+          .filter(m => m.userId !== details.lead_id) // avoid duplicate if lead already added
+          .map(m => ({ project_id: projectId, user_id: m.userId, role: m.role }));
+        if (rows.length > 0) {
+          const { error: memErr } = await supabase.from('ph_project_members').insert(rows);
+          if (memErr) console.warn('Failed to add some members:', memErr.message);
+        }
       }
       queryClient.invalidateQueries({ queryKey: ['ph-projects'] });
       queryClient.invalidateQueries({ queryKey: ['ph-projects-list'] });
@@ -88,7 +114,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="relative flex flex-col animate-scale-in bg-white dark:bg-[#232019]"
+        className="relative flex flex-col animate-scale-in bg-white dark:bg-[#1F2128]"
         style={{
           width: 640,
           maxHeight: '90vh',
@@ -98,15 +124,15 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-0">
-          <h2 className="text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]" style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>
+          <h2 className="text-[var(--fg-1)] dark:text-[rgba(235,238,245,0.92)]" style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>
             Create New Project
           </h2>
           <button
             onClick={onClose}
-            className="flex items-center justify-center rounded-md transition-colors hover:bg-[#F1F5F9] dark:hover:bg-[rgba(248,244,240,0.03)]"
+            className="flex items-center justify-center rounded-md transition-colors hover:bg-[#F1F5F9] dark:hover:bg-[rgba(235,238,245,0.03)]"
             style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
-            <X size={18} className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" />
+            <X size={18} className="text-[#64748B] dark:text-[rgba(235,238,245,0.55)]" />
           </button>
         </div>
 
@@ -119,10 +145,10 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[#E2E8F0] dark:border-[rgba(248,244,240,0.08)]">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[#E2E8F0] dark:border-[rgba(235,238,245,0.08)]">
           <button
             onClick={step === 0 ? onClose : () => setStep(s => s - 1)}
-            className="rounded-md transition-colors hover:bg-[#F8FAFC] dark:hover:bg-[rgba(248,244,240,0.03)] bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)] text-[#334155] dark:text-[rgba(248,244,240,0.72)]"
+            className="rounded-md transition-colors hover:bg-[#F8FAFC] dark:hover:bg-[rgba(235,238,245,0.03)] bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)] text-[#334155] dark:text-[rgba(235,238,245,0.72)]"
             style={{
               height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',
@@ -137,7 +163,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
             className="rounded-md transition-opacity hover:opacity-90 disabled:opacity-40"
             style={{
               height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
-              color: '#FFFFFF', background: '#2563EB', border: 'none',
+              color: '#FFFFFF', background: 'var(--cp-blue)', border: 'none',
               borderRadius: 6, cursor: canNext && !submitting ? 'pointer' : 'default',
             }}
           >

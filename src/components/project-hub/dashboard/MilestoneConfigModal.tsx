@@ -52,29 +52,29 @@ export default function MilestoneConfigModal({ open, onClose, projectId }: Props
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.35)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div onClick={e => e.stopPropagation()} style={{ background: '#FFFFFF', borderRadius: 16, width: 480, maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 24px 64px rgba(0,0,0,.15)' }}>
+        <div onClick={e => e.stopPropagation()} style={{ background: 'var(--cp-float)', borderRadius: 16, width: 480, maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 24px 64px rgba(0,0,0,.15)' }}>
           <div style={{ padding: '20px 24px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>Configure Key Milestones</div>
-              <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>Select which statuses appear. Super admin only.</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>Configure Key Milestones</div>
+              <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 2 }}>Select which statuses appear. Super admin only.</div>
             </div>
             <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <X size={16} color="#94A3B8" />
+              <X size={16} color="var(--fg-4)" />
             </button>
           </div>
 
           <div style={{ flex: 1, overflowY: 'auto', padding: '8px 24px 16px' }}>
             {ALL_STATUSES.map(s => (
-              <label key={s} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', cursor: 'pointer', borderBottom: '1px solid #F8FAFC' }}>
-                <input type="checkbox" checked={selected.includes(s)} onChange={() => toggle(s)} style={{ accentColor: '#2563EB', width: 16, height: 16 }} />
+              <label key={s} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', cursor: 'pointer', borderBottom: '1px solid var(--bg-1)' }}>
+                <input type="checkbox" checked={selected.includes(s)} onChange={() => toggle(s)} style={{ accentColor: 'var(--cp-blue)', width: 16, height: 16 }} />
                 <StatusBadge status={s} />
               </label>
             ))}
           </div>
 
-          <div style={{ padding: '14px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <button onClick={onClose} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #E2E8F0', background: '#FFFFFF', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#64748B' }}>Cancel</button>
-            <button onClick={save} style={{ padding: '8px 20px', borderRadius: 6, border: 'none', background: '#2563EB', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>Save</button>
+          <div style={{ padding: '14px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            <button onClick={onClose} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid var(--divider)', background: 'var(--cp-float)', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: 'var(--fg-3)' }}>Cancel</button>
+            <button onClick={save} style={{ padding: '8px 20px', borderRadius: 6, border: 'none', background: 'var(--cp-blue)', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>Save</button>
           </div>
         </div>
       </div>

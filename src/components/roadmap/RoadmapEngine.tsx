@@ -998,10 +998,10 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                         style={{ 
                           backgroundColor: 'hsl(var(--roadmap-charcoal))',
                           color: 'white',
-                          border: '1px solid hsla(35, 46%, 60%, 0.3)'
+                          border: '1px solid rgba(184,148,79,0.3)'
                         }}
                       >
-                        <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: 'hsl(35, 46%, 70%)' }}>
+                        <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: '#C5A86E' }}>
                           {item.key || item.id.slice(0, 8)}
                         </div>
                         <div className="font-medium" style={{ color: 'white' }}>
@@ -1035,7 +1035,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
             >
               {todayPosition !== null && (
                 <div className="absolute pointer-events-none z-20" style={{ left: `${todayPosition}%`, top: '6px', transform: 'translateX(-50%)' }}>
-                  <div className="px-2 py-0.5 text-[10px] font-semibold rounded-full whitespace-nowrap" style={{ backgroundColor: 'hsla(35, 46%, 60%, 0.2)', color: 'hsl(var(--roadmap-status-new))', border: '1px solid hsla(35, 46%, 60%, 0.4)' }}>
+                  <div className="px-2 py-0.5 text-[10px] font-semibold rounded-full whitespace-nowrap" style={{ backgroundColor: 'rgba(184,148,79,0.2)', color: 'hsl(var(--roadmap-status-new))', border: '1px solid rgba(184,148,79,0.4)' }}>
                     {isRTL ? 'اليوم' : 'Today'}
                   </div>
                 </div>
@@ -1081,7 +1081,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                   
                   {/* Today line */}
                   {todayPosition !== null && (
-                    <div className="absolute top-0 bottom-0 pointer-events-none" style={{ left: `${todayPosition}%`, width: '1px', borderLeft: '1px dashed hsla(35, 46%, 60%, 0.6)', zIndex: 5 }} />
+                    <div className="absolute top-0 bottom-0 pointer-events-none" style={{ left: `${todayPosition}%`, width: '1px', borderLeft: '1px dashed rgba(184,148,79,0.6)', zIndex: 5 }} />
                   )}
                   
                   {/* Timeline Bar */}
@@ -1172,23 +1172,23 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                             align="center"
                             sideOffset={12}
                             className="max-w-[380px] px-4 py-3.5 rounded-lg shadow-2xl z-[9999]"
-                            style={{ backgroundColor: 'hsl(20, 8%, 20%)', color: 'white', border: 'none' }}
+                            style={{ backgroundColor: '#373432', color: 'white', border: 'none' }}
                           >
-                            <div className="text-xs font-medium mb-1.5" style={{ color: 'hsl(35, 30%, 65%)' }}>{item.key || `TH-${item.id.slice(0, 4).toUpperCase()}`}</div>
+                            <div className="text-xs font-medium mb-1.5" style={{ color: '#B5A48A' }}>{item.key || `TH-${item.id.slice(0, 4).toUpperCase()}`}</div>
                             <div className="font-medium text-sm mb-3 leading-snug" style={{ color: 'white' }}>{isRTL ? item.titleAr : item.titleEn}</div>
                             <div className="flex items-center gap-2 mb-3">
-                              <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: 'hsl(35, 30%, 60%)' }}>STATUS:</span>
-                              <span className="text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: 'hsla(35, 30%, 50%, 0.3)', color: 'hsl(35, 30%, 85%)' }}>{getStatusLabel(item.status)}</span>
+                              <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: '#A89778' }}>STATUS:</span>
+                              <span className="text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(166,144,94,0.3)', color: '#DED6CA' }}>{getStatusLabel(item.status)}</span>
                             </div>
-                            <div className="flex items-center gap-2 py-2 px-3 rounded-md mb-3" style={{ backgroundColor: 'hsla(35, 30%, 50%, 0.15)' }}>
-                              <Calendar className="w-3.5 h-3.5" style={{ color: 'hsl(35, 30%, 60%)' }} />
-                              <span className="text-xs" style={{ color: 'hsl(35, 30%, 80%)' }}>{startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                              <span style={{ color: 'hsl(35, 30%, 50%)' }}>→</span>
-                              <span className="text-xs" style={{ color: 'hsl(35, 30%, 80%)' }}>{endDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                            <div className="flex items-center gap-2 py-2 px-3 rounded-md mb-3" style={{ backgroundColor: 'rgba(166,144,94,0.15)' }}>
+                              <Calendar className="w-3.5 h-3.5" style={{ color: '#A89778' }} />
+                              <span className="text-xs" style={{ color: '#D4CABC' }}>{startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                              <span style={{ color: '#A6905E' }}>→</span>
+                              <span className="text-xs" style={{ color: '#D4CABC' }}>{endDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                             </div>
                             {showMilestones && item.milestones.length > 0 && (
                               <div>
-                                <div className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'hsl(35, 30%, 60%)' }}>
+                                <div className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: '#A89778' }}>
                                   {/* Show appropriate label based on roadmap type */}
                                   {config.workItemType === 'theme' ? `CHILD EPICS (${item.milestones.length})` : 
                                    config.workItemType === 'epic' ? `CHILD FEATURES (${item.milestones.length})` : 
@@ -1202,23 +1202,23 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                                     
                                     return (
                                       <div key={idx} className="flex items-center gap-2 text-xs">
-                                        <div className="w-4 h-4 rounded-full border flex items-center justify-center text-[8px] font-bold shrink-0" style={{ backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'transparent', borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(35, 30%, 45%)', color: ms.state === 'complete' ? 'white' : 'hsl(35, 30%, 70%)' }}>
+                                        <div className="w-4 h-4 rounded-full border flex items-center justify-center text-[8px] font-bold shrink-0" style={{ backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'transparent', borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : '#957F51', color: ms.state === 'complete' ? 'white' : '#BFB097' }}>
                                           {ms.state === 'complete' ? <Check className="w-2 h-2" /> : (idx + 1)}
                                         </div>
                                         {/* Theme-specific: show Epic key and name */}
                                         {isEpicMarker ? (
                                           <>
-                                            <span className="font-medium" style={{ color: 'hsl(35, 30%, 85%)' }}>{milestoneData.epicKey}</span>
-                                            <span className="truncate max-w-[120px]" style={{ color: 'hsl(35, 30%, 70%)' }}>{milestoneData.epicName}</span>
+                                            <span className="font-medium" style={{ color: '#DED6CA' }}>{milestoneData.epicKey}</span>
+                                            <span className="truncate max-w-[120px]" style={{ color: '#BFB097' }}>{milestoneData.epicName}</span>
                                           </>
                                         ) : isFeatureMarker ? (
                                           <>
-                                            <span className="font-medium truncate max-w-[180px]" style={{ color: 'hsl(35, 30%, 85%)' }}>{milestoneData.featureName}</span>
+                                            <span className="font-medium truncate max-w-[180px]" style={{ color: '#DED6CA' }}>{milestoneData.featureName}</span>
                                           </>
                                         ) : (
-                                          <span style={{ color: 'hsl(35, 30%, 80%)' }}>{new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}</span>
+                                          <span style={{ color: '#D4CABC' }}>{new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}</span>
                                         )}
-                                        <span className="text-[10px] px-1.5 py-0.5 rounded capitalize" style={{ backgroundColor: ms.state === 'complete' ? 'hsla(142, 50%, 45%, 0.25)' : ms.state === 'current' ? 'hsla(35, 50%, 50%, 0.25)' : 'hsla(35, 30%, 50%, 0.2)', color: ms.state === 'complete' ? 'hsl(142, 50%, 65%)' : ms.state === 'current' ? 'hsl(35, 50%, 70%)' : 'hsl(35, 30%, 65%)' }}>
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded capitalize" style={{ backgroundColor: ms.state === 'complete' ? 'rgba(59,163,98,0.25)' : ms.state === 'current' ? 'rgba(191,149,64,0.25)' : 'rgba(166,144,94,0.2)', color: ms.state === 'complete' ? '#6BC98F' : ms.state === 'current' ? '#CCB27A' : '#B5A48A' }}>
                                           {isEpicMarker ? (milestoneData.epicStatus || 'proposed').replace('_', ' ') : 
                                            isFeatureMarker ? (milestoneData.featureStatus || 'funnel').replace('_', ' ') : 
                                            (ms.state === 'complete' ? 'Complete' : ms.state === 'current' ? 'Current' : 'Pending')}
@@ -1227,7 +1227,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                                     );
                                   })}
                                   {item.milestones.length > 5 && (
-                                    <div className="text-[10px] italic" style={{ color: 'hsl(35, 30%, 50%)' }}>
+                                    <div className="text-[10px] italic" style={{ color: '#A6905E' }}>
                                       +{item.milestones.length - 5} more {config.workItemType === 'theme' ? 'epics' : config.workItemType === 'epic' ? 'features' : 'milestones'}
                                     </div>
                                   )}

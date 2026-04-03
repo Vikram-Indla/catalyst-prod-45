@@ -41,7 +41,7 @@ function ContextMenuItem({ icon: Icon, children, onClick, danger }: MenuItemProp
         backgroundColor: 'transparent',
         fontFamily: 'Inter, sans-serif',
         fontSize: 13,
-        color: danger ? '#DC2626' : '#334155',
+        color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
@@ -49,13 +49,13 @@ function ContextMenuItem({ icon: Icon, children, onClick, danger }: MenuItemProp
         transition: 'background-color 0.15s',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = danger ? '#FEF2F2' : '#F8FAFC';
+        e.currentTarget.style.backgroundColor = danger ? '#FEF2F2' : 'var(--bg-1)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent';
       }}
     >
-      <Icon style={{ width: 16, height: 16, color: danger ? '#DC2626' : '#64748B' }} />
+      <Icon style={{ width: 16, height: 16, color: danger ? 'var(--sem-danger)' : 'var(--fg-3)' }} />
       {children}
     </button>
   );
@@ -84,8 +84,8 @@ export function TestCaseContextMenu({
         position: 'fixed',
         left: Math.max(8, adjustedX),
         top: Math.max(8, adjustedY),
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        backgroundColor: 'var(--cp-float)',
+        border: '1px solid var(--divider)',
         borderRadius: 8,
         boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
         minWidth: menuWidth,
@@ -104,7 +104,7 @@ export function TestCaseContextMenu({
         Clone
       </ContextMenuItem>
       
-      <div style={{ height: 1, background: '#E2E8F0', margin: '6px 0' }} />
+      <div style={{ height: 1, background: 'var(--divider)', margin: '6px 0' }} />
       
       <ContextMenuItem icon={FolderInput} onClick={onMove}>
         Move to...
@@ -113,7 +113,7 @@ export function TestCaseContextMenu({
         Change Status
       </ContextMenuItem>
       
-      <div style={{ height: 1, background: '#E2E8F0', margin: '6px 0' }} />
+      <div style={{ height: 1, background: 'var(--divider)', margin: '6px 0' }} />
       
       <ContextMenuItem icon={Trash2} onClick={onDelete} danger>
         Delete

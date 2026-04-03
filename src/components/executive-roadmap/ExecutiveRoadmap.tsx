@@ -730,8 +730,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       <div 
         className="h-[52px] flex items-center justify-between px-6 print:hidden shrink-0 relative z-[100]"
         style={{ 
-          backgroundColor: 'hsl(var(--background))',
-          borderBottom: '1px solid hsl(var(--border))'
+          backgroundColor: 'var(--bg-app)',
+          borderBottom: '1px solid var(--divider)'
         }}
       >
         {/* Left - Search Input */}
@@ -1103,7 +1103,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       {/* Main Content Area - Sticky Left Panel + Scrollable Timeline */}
       <div 
         className="flex-1 flex overflow-hidden print:overflow-visible"
-        style={{ borderTop: '1px solid hsl(var(--border))' }}
+        style={{ borderTop: '1px solid var(--divider)' }}
       >
         {/* STICKY LEFT PANEL - Never scrolls horizontally */}
         <div 
@@ -1195,11 +1195,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                         style={{ 
                           backgroundColor: 'hsl(var(--roadmap-charcoal))',
                           color: 'white',
-                          border: '1px solid hsla(35, 46%, 60%, 0.3)',
-                          boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px hsla(35, 46%, 60%, 0.15)'
+                          border: '1px solid rgba(184,148,79,0.3)',
+                          boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(184,148,79,0.15)'
                         }}
                       >
-                        <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: 'hsl(35, 46%, 70%)' }}>
+                        <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: '#C5A86E' }}>
                           {formatDisplayKey(item)}
                         </div>
                         <div className="font-medium" style={{ color: 'white' }}>
@@ -1235,7 +1235,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               {/* Today indicator in header */}
               {todayPosition !== null && (
                 <div className="absolute pointer-events-none z-20" style={{ left: `${todayPosition}%`, top: '6px', transform: 'translateX(-50%)' }}>
-                  <div className="px-2 py-0.5 text-[10px] font-semibold rounded-full whitespace-nowrap" style={{ backgroundColor: 'hsla(35, 46%, 60%, 0.2)', color: 'hsl(var(--roadmap-status-new))', border: '1px solid hsla(35, 46%, 60%, 0.4)' }}>
+                  <div className="px-2 py-0.5 text-[10px] font-semibold rounded-full whitespace-nowrap" style={{ backgroundColor: 'rgba(184,148,79,0.2)', color: 'hsl(var(--roadmap-status-new))', border: '1px solid rgba(184,148,79,0.4)' }}>
                     {isRTL ? 'اليوم' : 'Today'}
                   </div>
                 </div>
@@ -1288,7 +1288,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   
                   {/* Today line */}
                   {todayPosition !== null && (
-                    <div className="absolute top-0 bottom-0 pointer-events-none" style={{ left: `${todayPosition}%`, width: '1px', borderLeft: '1px dashed hsla(35, 46%, 60%, 0.6)', zIndex: 5 }} />
+                    <div className="absolute top-0 bottom-0 pointer-events-none" style={{ left: `${todayPosition}%`, width: '1px', borderLeft: '1px dashed rgba(184,148,79,0.6)', zIndex: 5 }} />
                   )}
                   
                   {/* Timeline Bar - Centered vertically with dates */}
@@ -1391,7 +1391,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                                   barPos.continuesLeft ? "rounded-l-none" : "rounded-l-full",
                                   barPos.continuesRight ? "rounded-r-none" : "rounded-r-full"
                                 )}
-                                style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.7))', position: 'relative', zIndex: 5 }}
+                                style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, var(--cp-blue), color-mix(in srgb, var(--cp-blue) 70%, transparent))', position: 'relative', zIndex: 5 }}
                               >
 
                                 {/* Milestones - Properly centered on bar */}
@@ -1430,7 +1430,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                             sideOffset={12}
                             className="max-w-[380px] px-4 py-3.5 rounded-lg shadow-2xl z-[9999] animate-in fade-in-0 zoom-in-95"
                             style={{ 
-                              backgroundColor: 'hsl(20, 8%, 20%)',
+                              backgroundColor: '#373432',
                               color: 'white',
                               border: 'none',
                               boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.4)'
@@ -1439,7 +1439,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                             {/* Header - ID */}
                             <div 
                               className="text-xs font-medium mb-1.5"
-                              style={{ color: 'hsl(35, 30%, 65%)' }}
+                              style={{ color: '#B5A48A' }}
                             >
                               {formatDisplayKey(item)}
                             </div>
@@ -1456,15 +1456,15 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                             <div className="flex items-center gap-2 mb-3">
                               <span 
                                 className="text-[10px] font-medium uppercase tracking-wide"
-                                style={{ color: 'hsl(35, 30%, 60%)' }}
+                                style={{ color: '#A89778' }}
                               >
                                 STATUS:
                               </span>
                               <span 
                                 className="text-xs font-medium px-2 py-0.5 rounded"
                                 style={{ 
-                                  backgroundColor: 'hsla(35, 30%, 50%, 0.3)',
-                                  color: 'hsl(35, 30%, 85%)'
+                                  backgroundColor: 'rgba(166,144,94,0.3)',
+                                  color: '#DED6CA'
                                 }}
                               >
                                 {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
@@ -1474,14 +1474,14 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                             {/* Date Range */}
                             <div 
                               className="flex items-center gap-2 py-2 px-3 rounded-md mb-3"
-                              style={{ backgroundColor: 'hsla(35, 30%, 50%, 0.15)' }}
+                              style={{ backgroundColor: 'rgba(166,144,94,0.15)' }}
                             >
-                              <Calendar className="w-3.5 h-3.5" style={{ color: 'hsl(35, 30%, 60%)' }} />
-                              <span className="text-xs" style={{ color: 'hsl(35, 30%, 80%)' }}>
+                              <Calendar className="w-3.5 h-3.5" style={{ color: '#A89778' }} />
+                              <span className="text-xs" style={{ color: '#D4CABC' }}>
                                 {startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                               </span>
-                              <span style={{ color: 'hsl(35, 30%, 50%)' }}>→</span>
-                              <span className="text-xs" style={{ color: 'hsl(35, 30%, 80%)' }}>
+                              <span style={{ color: '#A6905E' }}>→</span>
+                              <span className="text-xs" style={{ color: '#D4CABC' }}>
                                 {endDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                               </span>
                             </div>
@@ -1491,7 +1491,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                               <div>
                                 <div 
                                   className="text-[10px] font-semibold uppercase tracking-wide mb-2"
-                                  style={{ color: 'hsl(35, 30%, 60%)' }}
+                                  style={{ color: '#A89778' }}
                                 >
                                   MILESTONES ({item.milestones.length})
                                 </div>
@@ -1506,28 +1506,28 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                                             ? 'hsl(var(--roadmap-milestone-complete))' 
                                             : ms.state === 'current' 
                                               ? 'hsl(var(--roadmap-milestone-current))' 
-                                              : 'hsl(35, 30%, 45%)',
-                                          color: ms.state === 'complete' ? 'white' : 'hsl(35, 30%, 70%)'
+                                              : '#957F51',
+                                          color: ms.state === 'complete' ? 'white' : '#BFB097'
                                         }}
                                       >
                                         {ms.state === 'complete' ? <Check className="w-2 h-2" /> : (idx + 1)}
                                       </div>
-                                      <span style={{ color: 'hsl(35, 30%, 80%)' }}>
+                                      <span style={{ color: '#D4CABC' }}>
                                         {new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}
                                       </span>
                                       <span 
                                         className="text-[10px] px-1.5 py-0.5 rounded capitalize"
                                         style={{ 
                                           backgroundColor: ms.state === 'complete' 
-                                            ? 'hsla(142, 50%, 45%, 0.25)' 
+                                            ? 'rgba(59,163,98,0.25)' 
                                             : ms.state === 'current' 
-                                              ? 'hsla(35, 50%, 50%, 0.25)' 
-                                              : 'hsla(35, 30%, 50%, 0.2)',
+                                              ? 'rgba(191,149,64,0.25)' 
+                                              : 'rgba(166,144,94,0.2)',
                                           color: ms.state === 'complete' 
-                                            ? 'hsl(142, 50%, 65%)' 
+                                            ? '#6BC98F' 
                                             : ms.state === 'current' 
-                                              ? 'hsl(35, 50%, 70%)' 
-                                              : 'hsl(35, 30%, 65%)'
+                                              ? '#CCB27A' 
+                                              : '#B5A48A'
                                         }}
                                       >
                                         {ms.state === 'complete' ? 'Complete' : ms.state === 'current' ? 'Current' : 'Pending'}
@@ -1535,7 +1535,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                                     </div>
                                   ))}
                                   {item.milestones.length > 5 && (
-                                    <div className="text-[10px] italic" style={{ color: 'hsl(35, 30%, 50%)' }}>
+                                    <div className="text-[10px] italic" style={{ color: '#A6905E' }}>
                                       +{item.milestones.length - 5} more milestones
                                     </div>
                                   )}

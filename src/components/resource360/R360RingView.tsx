@@ -137,11 +137,11 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       <div style={{
         position: 'relative', width: '100%', height: '720px', overflow: 'hidden',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%)',
-        borderRadius: 12, border: '1px solid #E2E8F0',
+        background: 'radial-gradient(circle at center, #fff 0%, var(--bg-1) 55%, var(--bg-3) 100%)',
+        borderRadius: 12, border: '1px solid var(--divider)',
       }}>
-        <div style={{ textAlign: 'center', color: '#64748B' }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No active items</div>
+        <div style={{ textAlign: 'center', color: 'var(--fg-3)' }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No active items</div>
           <div style={{ fontSize: 13 }}>Assigned work items will orbit here.</div>
         </div>
       </div>
@@ -177,8 +177,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           <div key={`label-${i}`} style={{
             position: 'absolute', left: `${mx}%`, top: `${my}%`,
             transform: 'translate(-50%, -50%)', zIndex: 4, pointerEvents: 'none',
-            fontSize: '11px', fontWeight: 600, color: '#334155', background: '#F8FAFC',
-            padding: '2px 8px', borderRadius: '10px', border: '1px solid #E2E8F0',
+            fontSize: '11px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-1)',
+            padding: '2px 8px', borderRadius: '10px', border: '1px solid var(--divider)',
             whiteSpace: 'nowrap', fontFamily: "'Inter', system-ui, sans-serif",
             fontVariantNumeric: 'tabular-nums',
           }}>
@@ -190,8 +190,8 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       {/* CENTER AVATAR */}
       <div style={{ position: 'absolute', left: '50%', top: `${centerTopPct}%`, transform: 'translate(-50%, -50%)', textAlign: 'center', zIndex: 5 }}>
         <div style={{
-          width: '96px', height: '96px', borderRadius: '50%', border: '3px solid #2563EB',
-          overflow: 'hidden', margin: '0 auto 6px', boxShadow: '0 0 0 6px rgba(37,99,235,.12)', background: '#FFFFFF',
+          width: '96px', height: '96px', borderRadius: '50%', border: '3px solid var(--cp-blue)',
+          overflow: 'hidden', margin: '0 auto 6px', boxShadow: '0 0 0 6px rgba(37,99,235,.12)', background: 'var(--bg-app)',
         }}>
           <img src={member?.avatar_url || `/admin/users/${avatarSlug}/avatar`} alt={memberName}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -199,13 +199,13 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           />
           <div style={{
             width: '100%', height: '100%', display: 'none', alignItems: 'center', justifyContent: 'center',
-            background: 'linear-gradient(135deg, #2563EB, #0D9488)', fontSize: '32px', fontWeight: 700, color: 'white',
+            background: 'linear-gradient(135deg, var(--cp-blue), var(--sem-success))', fontSize: '32px', fontWeight: 700, color: 'white',
           }}>
             {getInitials(memberName)}
           </div>
         </div>
-        <div style={{ fontSize: '13px', fontWeight: 600, color: '#020617' }}>{memberName}</div>
-        <div style={{ fontSize: '11px', fontWeight: 500, color: '#334155' }}>{memberRole}</div>
+        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--fg-1)' }}>{memberName}</div>
+        <div style={{ fontSize: '11px', fontWeight: 500, color: 'var(--fg-2)' }}>{memberRole}</div>
       </div>
 
       {/* ORBITAL CARDS */}
@@ -216,24 +216,24 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
         return (
           <div key={item.id || item.item_key} onClick={() => onItemClick(item)} style={{
             position: 'absolute', left: `${pos.x}%`, top: `${pos.y}%`, width: '195px',
-            background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px',
+            background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: '8px',
             padding: '10px 12px 10px 15px', cursor: 'pointer', zIndex: 3,
             boxShadow: '0 1px 3px rgba(15,23,42,.05)', fontFamily: "'Inter', system-ui, sans-serif",
             transition: 'border-color .15s, box-shadow .15s',
           }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#94A3B8'; e.currentTarget.style.boxShadow = '0 3px 10px rgba(15,23,42,.08)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(15,23,42,.05)'; }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 3px 10px rgba(15,23,42,.08)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(15,23,42,.05)'; }}
           >
             <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: s.accent }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <JiraIcon type={item.item_type} />
-                <span style={{ fontSize: '10.5px', fontWeight: 700, textTransform: 'uppercase', color: '#334155' }}>{item.item_type}</span>
+                <span style={{ fontSize: '10.5px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--fg-2)' }}>{item.item_type}</span>
               </div>
-              <span style={{ fontSize: '10.5px', fontWeight: 500, color: '#64748B', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
+              <span style={{ fontSize: '10.5px', fontWeight: 500, color: 'var(--fg-3)', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', 'SF Mono', monospace" }}>{item.item_key}</span>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', 'SF Mono', monospace" }}>{item.item_key}</span>
               {item.project_key && (
                 <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', color: '#FFFFFF', background: projColor }}>{item.project_key}</span>
               )}
@@ -295,14 +295,14 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           {showDone && (
             <div style={{
               position: 'absolute', right: '64px', top: '50%', transform: 'translateY(-50%)',
-              width: '340px', maxHeight: '420px', background: '#FFFFFF',
-              border: '1px solid #E2E8F0', borderRadius: '12px',
+              width: '340px', maxHeight: '420px', background: 'var(--cp-float)',
+              border: '1px solid var(--divider)', borderRadius: '12px',
               boxShadow: '0 8px 30px rgba(15,23,42,.12), 0 2px 8px rgba(15,23,42,.06)',
               overflow: 'hidden', zIndex: 11,
             }}>
               {/* Header */}
               <div style={{
-                padding: '14px 16px', borderBottom: '1px solid #F1F5F9',
+                padding: '14px 16px', borderBottom: '1px solid var(--bg-3)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -334,7 +334,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                     style={{
                       display: 'flex', alignItems: 'flex-start', gap: '10px',
                       padding: '10px 16px', cursor: 'pointer',
-                      borderBottom: '1px solid #F8FAFC', transition: 'background .1s',
+                      borderBottom: '1px solid var(--bg-1)', transition: 'background .1s',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = '#F0FDF4')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -355,7 +355,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
                         <span style={{
-                          fontSize: '11.5px', fontWeight: 600, color: '#16A34A',
+                          fontSize: '11.5px', fontWeight: 600, color: 'var(--sem-success)',
                           fontFamily: "'JetBrains Mono', monospace",
                         }}>
                           {item.item_key}
@@ -373,13 +373,13 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                       }}>
                         {item.title}
                       </div>
-                      <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                      <div style={{ fontSize: '11px', color: 'var(--fg-3)', marginTop: '2px' }}>
                         Resolved · {formatResolvedDate(item.resolved_at || item.updated_at)}
                       </div>
                     </div>
 
                     {/* Age */}
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#16A34A', flexShrink: 0 }}>
+                    <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--sem-success)', flexShrink: 0 }}>
                       {item.age_days ?? 0}d
                     </span>
                   </div>

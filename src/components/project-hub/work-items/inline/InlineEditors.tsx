@@ -39,7 +39,7 @@ function FixedDropdown({ anchorRef, children, onClose, width = 180 }: {
       id="inline-dropdown-portal"
       style={{
         position: 'fixed', top: pos.top, left: pos.left, width,
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6,
+        background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6,
         boxShadow: '0 12px 32px rgba(0,0,0,0.18)', zIndex: 9999,
         maxHeight: 280, overflowY: 'auto',
       }}
@@ -69,7 +69,7 @@ export function InlineSummaryEditor({ value, onSave, onCancel }: {
       onKeyDown={e => { if (e.key === 'Enter') save(); if (e.key === 'Escape') onCancel(); }}
       onBlur={save}
       className="w-full text-[12px] font-medium px-1 py-0.5 rounded outline-none"
-      style={{ border: '2px solid #2563EB', fontFamily: 'Inter, sans-serif', color: '#0F172A', background: '#FFF' }}
+      style={{ border: '2px solid var(--cp-blue)', fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', background: 'var(--cp-float)' }}
     />
   );
 }
@@ -94,9 +94,9 @@ export function InlineStatusPicker({ currentStatusId, statuses, anchorRef, onSel
             key={s.id}
             onClick={() => { onSelect(s.id); onClose(); }}
             className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] transition-colors text-left"
-            style={{ color: '#0F172A' }}
+            style={{ color: 'var(--fg-1)' }}
           >
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: STATUS_COLORS[s.category] || '#94A3B8' }} />
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: STATUS_COLORS[s.category] || 'var(--fg-4)' }} />
             <span className="flex-1">{s.name}</span>
             {s.id === currentStatusId && <Check size={12} className="text-[#2563EB]" />}
           </button>
@@ -130,7 +130,7 @@ export function InlinePriorityPicker({ current, anchorRef, onSelect, onClose }: 
               key={p.value}
               onClick={() => { onSelect(p.value); onClose(); }}
               className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] transition-colors text-left"
-              style={{ color: '#0F172A' }}
+              style={{ color: 'var(--fg-1)' }}
             >
               <Icon size={13} style={{ color: p.color }} />
               <span className="flex-1">{p.value}</span>
@@ -156,8 +156,8 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
 
   return (
     <FixedDropdown anchorRef={anchorRef} onClose={onClose} width={220}>
-      <div className="p-2 border-b" style={{ borderColor: '#F1F5F9' }}>
-        <div className="flex items-center gap-1.5 px-2 py-1 rounded" style={{ border: '1px solid #E2E8F0' }}>
+      <div className="p-2 border-b" style={{ borderColor: 'var(--cp-bd-zone)' }}>
+        <div className="flex items-center gap-1.5 px-2 py-1 rounded" style={{ border: '1px solid var(--divider)' }}>
           <Search size={12} className="text-[#94A3B8]" />
           <input
             autoFocus
@@ -172,7 +172,7 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
         <button
           onClick={() => { onSelect(null); onClose(); }}
           className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] text-left"
-          style={{ color: '#94A3B8' }}
+          style={{ color: 'var(--fg-4)' }}
         >
           Unassigned
           {!currentId && <Check size={12} className="ml-auto text-[#2563EB]" />}
@@ -182,7 +182,7 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
             key={p.id}
             onClick={() => { onSelect(p.id); onClose(); }}
             className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] text-left"
-            style={{ color: '#0F172A' }}
+            style={{ color: 'var(--fg-1)' }}
           >
             <AvatarCircle name={p.name} size={18} />
             <span className="flex-1 truncate">{p.name}</span>
@@ -220,7 +220,7 @@ export function InlineDatePicker({ current, anchorRef, onSelect, onClose }: {
           <button
             onClick={() => { onSelect(null); onClose(); }}
             className="w-full text-center text-[11px] py-1 mt-1 rounded hover:bg-[#FEF2F2]"
-            style={{ color: '#DC2626' }}
+            style={{ color: 'var(--sem-danger)' }}
           >
             Clear date
           </button>

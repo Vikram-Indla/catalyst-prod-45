@@ -28,8 +28,8 @@ export function Sidebar() {
       style={{
         position: 'fixed', top: 48, left: 0, bottom: 0,
         width: 220, zIndex: 40,
-        background: '#FFFFFF',
-        borderRight: '1px solid #E2E8F0',
+        background: 'var(--bg-app)',
+        borderRight: '1px solid var(--divider)',
         display: 'flex', flexDirection: 'column',
         fontFamily: "'Inter', sans-serif",
       }}
@@ -37,7 +37,7 @@ export function Sidebar() {
       {/* Header */}
       <div style={{
         padding: '14px 16px 10px',
-        fontSize: 10.5, fontWeight: 700, color: '#94A3B8',
+        fontSize: 10.5, fontWeight: 700, color: 'var(--fg-4)',
         textTransform: 'uppercase', letterSpacing: '0.08em',
       }}>
         PROJECTHUB
@@ -56,7 +56,7 @@ export function Sidebar() {
                 height: 36, padding: '0 10px',
                 borderRadius: 6, fontSize: 13,
                 fontWeight: active ? 600 : 500,
-                color: active ? '#2563EB' : '#64748B',
+                color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
                 background: active ? '#F1F5F9' : 'transparent',
                 border: 'none', cursor: 'pointer',
                 position: 'relative',
@@ -79,7 +79,7 @@ export function Sidebar() {
               {active && (
                 <span style={{
                   position: 'absolute', right: 0, top: 5, bottom: 5,
-                  width: 3, background: '#2563EB',
+                  width: 3, background: 'var(--cp-blue)',
                   borderRadius: '3px 0 0 3px',
                 }} />
               )}

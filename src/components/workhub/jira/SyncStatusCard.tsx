@@ -43,7 +43,7 @@ export function SyncStatusCards({ projects, totalItems, syncLogs }: SyncStatusCa
   ).length;
 
   const cards = [
-    { icon: FolderGit2, value: activeCount, label: 'Projects Connected', iconBg: '#dbeafe', iconColor: '#2563eb' },
+    { icon: FolderGit2, value: activeCount, label: 'Projects Connected', iconBg: '#dbeafe', iconColor: 'var(--cp-blue)' },
     { icon: FileStack, value: totalItems, label: 'Total Items', iconBg: '#d1fae5', iconColor: '#059669' },
     { icon: RefreshCw, value: lastSyncTime, label: 'Last Sync', iconBg: '#e0e7ff', iconColor: '#4f46e5' },
     {
@@ -51,7 +51,7 @@ export function SyncStatusCards({ projects, totalItems, syncLogs }: SyncStatusCa
       value: recentErrors === 0 ? 'All Clear' : `${recentErrors} Errors`,
       label: recentErrors === 0 ? 'No Issues' : 'Action Required',
       iconBg: recentErrors === 0 ? '#dcfce7' : '#fee2e2',
-      iconColor: recentErrors === 0 ? '#16a34a' : '#dc2626',
+      iconColor: recentErrors === 0 ? 'var(--sem-success)' : 'var(--sem-danger)',
     },
   ];
 
@@ -64,8 +64,8 @@ export function SyncStatusCards({ projects, totalItems, syncLogs }: SyncStatusCa
             key={i}
             className="flex items-center gap-3 p-4 rounded-lg border"
             style={{
-              background: 'var(--wh-surface)',
-              borderColor: 'var(--wh-border)',
+              background: 'var(--cp-float)',
+              borderColor: 'var(--divider)',
               borderRadius: 'var(--wh-radius-lg)',
             }}
           >
@@ -78,11 +78,11 @@ export function SyncStatusCards({ projects, totalItems, syncLogs }: SyncStatusCa
             <div>
               <div
                 className="text-xl font-bold"
-                style={{ fontFamily: 'var(--wh-font-display)', color: 'var(--wh-text-primary)' }}
+                style={{ fontFamily: 'var(--wh-font-display)', color: 'var(--fg-1)' }}
               >
                 {card.value}
               </div>
-              <div className="text-xs" style={{ color: 'var(--wh-text-tertiary)' }}>
+              <div className="text-xs" style={{ color: 'var(--fg-4)' }}>
                 {card.label}
               </div>
             </div>

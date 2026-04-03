@@ -48,7 +48,7 @@ const menuItems: MenuItem[] = [
   { id: 'objective-tree', label: 'Objective tree (OKR hub)', icon: Target, path: '/teams/:teamId/objective-tree' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/teams/:teamId/roadmaps' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/teams/:teamId/work-tree' },
-  { id: 'sprints', label: 'Sprints', icon: Calendar, path: '/teams/:teamId/sprints' },
+  { id: 'sprints', label: 'Releases', icon: Calendar, path: '/teams/:teamId/sprints' },
   { id: 'velocity', label: 'Velocity', icon: TrendingUp, path: '/teams/:teamId/velocity' },
   { id: 'meetings', label: 'Team meetings', icon: Calendar, path: '/teams/:teamId/meetings' },
   { id: 'defects', label: 'Defects', icon: Bug, path: '/teams/:teamId/backlog?type=defect' },
@@ -187,16 +187,16 @@ export function TeamRoomSidebar({
               {/* Sprint Filter */}
               <div>
                 <label className="text-[11px] font-semibold text-muted-foreground uppercase mb-2 block tracking-wider">
-                  SPRINT
+                  RELEASE
                 </label>
                 <Select value={selectedSprint || undefined} onValueChange={onSprintChange}>
                   <SelectTrigger className="h-9 text-sm w-full bg-background border-border">
-                    <SelectValue placeholder="Select Sprint" />
+                    <SelectValue placeholder="Select Release" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border-border z-[100]">
-                    <SelectItem value="sprint-1">Sprint 1</SelectItem>
-                    <SelectItem value="sprint-2">Sprint 2</SelectItem>
-                    <SelectItem value="sprint-3">Sprint 3</SelectItem>
+                    <SelectItem value="sprint-1">Release 1</SelectItem>
+                    <SelectItem value="sprint-2">Release 2</SelectItem>
+                    <SelectItem value="sprint-3">Release 3</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

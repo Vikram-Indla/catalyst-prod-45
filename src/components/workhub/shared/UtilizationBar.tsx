@@ -5,10 +5,10 @@
 import { AlertTriangle } from 'lucide-react';
 
 export function getUtilColor(pct: number): string {
-  if (pct > 80) return 'var(--wh-danger, #ef4444)';
-  if (pct > 60) return 'var(--wh-warning, #d97706)';
-  if (pct >= 40) return 'var(--wh-success, #16a34a)';
-  return 'var(--wh-text-tertiary, #94a3b8)';
+  if (pct > 80) return 'var(--sem-danger)';
+  if (pct > 60) return 'var(--sem-warning)';
+  if (pct >= 40) return 'var(--sem-success)';
+  return 'var(--fg-4)';
 }
 
 interface UtilizationBarProps {
@@ -36,7 +36,7 @@ export function UtilizationBar({
           flex: 1,
           height,
           borderRadius: 9999,
-          backgroundColor: 'var(--wh-border-light, #f1f5f9)',
+          backgroundColor: 'var(--bg-1)',
           position: 'relative',
           overflow: 'hidden',
         }}

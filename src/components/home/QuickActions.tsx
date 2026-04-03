@@ -12,7 +12,7 @@ export function QuickActions({ presets, onSelect }: {
   return (
     <div style={{ marginBottom: 16 }}>
       <span style={{
-        fontSize: 10, fontWeight: 700, color: '#8B8FA3',
+        fontSize: 10, fontWeight: 700, color: 'var(--fg-3)',
         textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: F.inter,
       }}>
         QUICK ACTIONS
@@ -24,19 +24,19 @@ export function QuickActions({ presets, onSelect }: {
             onClick={() => onSelect(p.query)}
             style={{
               padding: '8px 14px', borderRadius: 8,
-              border: '1.5px solid #ECEEF2', background: '#FFFFFF',
-              cursor: 'pointer', fontSize: 12, fontWeight: 500, color: '#1A1D23',
+              border: '1.5px solid var(--divider)', background: 'var(--cp-float)',
+              cursor: 'pointer', fontSize: 12, fontWeight: 500, color: 'var(--fg-1)',
               fontFamily: F.inter, transition: 'all 100ms',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = '#4C6EF5';
-              e.currentTarget.style.background = '#EDF2FF';
-              e.currentTarget.style.color = '#4C6EF5';
+              e.currentTarget.style.borderColor = 'var(--cp-blue)';
+              e.currentTarget.style.background = 'var(--cp-blue-wash)';
+              e.currentTarget.style.color = 'var(--cp-blue)';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.borderColor = '#ECEEF2';
-              e.currentTarget.style.background = '#FFFFFF';
-              e.currentTarget.style.color = '#1A1D23';
+              e.currentTarget.style.borderColor = 'var(--divider)';
+              e.currentTarget.style.background = 'var(--cp-float)';
+              e.currentTarget.style.color = 'var(--fg-1)';
             }}
           >
             {p.label}

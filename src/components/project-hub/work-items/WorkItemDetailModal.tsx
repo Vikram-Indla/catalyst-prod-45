@@ -119,15 +119,15 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
       <div className="absolute inset-0" style={{ background: 'rgba(9,30,66,0.54)' }} />
       <div
         className="relative flex flex-col"
-        style={{ width: 960, maxHeight: '90vh', background: '#FFFFFF', borderRadius: 10, boxShadow: '0 0 0 1px rgba(9,30,66,0.08), 0 2px 1px rgba(9,30,66,0.08), 0 0 20px -6px rgba(9,30,66,0.31)', overflow: 'hidden' }}
+        style={{ width: 960, maxHeight: '90vh', background: 'var(--cp-float)', borderRadius: 10, boxShadow: '0 0 0 1px rgba(9,30,66,0.08), 0 2px 1px rgba(9,30,66,0.08), 0 0 20px -6px rgba(9,30,66,0.31)', overflow: 'hidden' }}
         onClick={e => e.stopPropagation()}
       >
         {/* HEADER */}
-        <div className="flex items-center justify-between px-6 shrink-0" style={{ borderBottom: '1px solid #E2E8F0', height: 52 }}>
+        <div className="flex items-center justify-between px-6 shrink-0" style={{ borderBottom: '1px solid var(--divider)', height: 52 }}>
           <div className="flex items-center gap-2.5 min-w-0">
             <span style={{ color: typeColor }}>{TYPE_ICONS[item?.type_name ?? ''] || <CheckSquare size={18} />}</span>
-            <span className="text-[13px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B' }}>{item?.item_key ?? '…'}</span>
-            {item?.is_flagged && <Flag size={13} style={{ color: '#DC2626' }} />}
+            <span className="text-[13px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{item?.item_key ?? '…'}</span>
+            {item?.is_flagged && <Flag size={13} style={{ color: 'var(--sem-danger)' }} />}
           </div>
           <div className="flex items-center gap-0.5">
             <HeaderBtn title="Watchers"><Eye size={15} /></HeaderBtn>
@@ -151,11 +151,11 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                   <input autoFocus value={titleDraft} onChange={e => setTitleDraft(e.target.value)} onBlur={handleSaveTitle}
                     onKeyDown={e => { if (e.key === 'Enter') handleSaveTitle(); if (e.key === 'Escape') setEditingTitle(false); }}
                     className="w-full text-[22px] font-semibold px-1 py-0.5 rounded"
-                    style={{ fontFamily: 'Sora, sans-serif', color: '#0F172A', lineHeight: '30px', border: '2px solid #2563EB', outline: 'none' }}
+                    style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg-1)', lineHeight: '30px', border: '2px solid var(--cp-blue)', outline: 'none' }}
                   />
                 ) : (
                   <h2 className="text-[22px] font-semibold cursor-text rounded px-1 py-0.5 border-2 border-transparent hover:border-[#E2E8F0] transition-colors"
-                    style={{ fontFamily: 'Sora, sans-serif', color: '#0F172A', lineHeight: '30px' }}
+                    style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg-1)', lineHeight: '30px' }}
                     onClick={() => { setTitleDraft(item.title); setEditingTitle(true); }}
                   >{item.title}</h2>
                 )}
@@ -164,10 +164,10 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
               {/* Parent breadcrumb */}
               {showParentBreadcrumb && (
                 <div className="mb-4">
-                  <button className="flex items-center gap-2 px-3 py-2 rounded-md w-full text-left transition-colors" style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }} onClick={() => onNavigate?.(item.parent_id!)}>
-                    <span style={{ color: item.parent_type_color || '#94A3B8' }}>{TYPE_ICONS[item.parent_type_name ?? ''] || <CheckSquare size={14} />}</span>
-                    <span className="text-[11px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B' }}>{item.parent_key}</span>
-                    <span className="text-[13px] font-medium truncate" style={{ color: '#0F172A' }}>{item.parent_title}</span>
+                  <button className="flex items-center gap-2 px-3 py-2 rounded-md w-full text-left transition-colors" style={{ background: 'var(--bg-1)', border: '1px solid var(--divider)' }} onClick={() => onNavigate?.(item.parent_id!)}>
+                    <span style={{ color: item.parent_type_color || 'var(--fg-4)' }}>{TYPE_ICONS[item.parent_type_name ?? ''] || <CheckSquare size={14} />}</span>
+                    <span className="text-[11px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{item.parent_key}</span>
+                    <span className="text-[13px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>{item.parent_title}</span>
                     {item.parent_status_name && <StatusLozenge name={item.parent_status_name} category={item.parent_status_category || 'todo'} />}
                   </button>
                 </div>
@@ -177,16 +177,16 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
               <CollapsibleSection title="Key Details" defaultOpen={true}>
                 <div className="grid gap-y-3 gap-x-4" style={{ gridTemplateColumns: '110px 1fr' }}>
                   <FieldLabel>Start Date</FieldLabel>
-                  <span className="text-[13px]" style={{ fontFamily: 'JetBrains Mono, monospace', color: item.start_date ? '#334155' : '#94A3B8' }}>
+                  <span className="text-[13px]" style={{ fontFamily: 'JetBrains Mono, monospace', color: item.start_date ? 'var(--fg-2)' : 'var(--fg-4)' }}>
                     {item.start_date ? new Date(item.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'None'}
                   </span>
                   <FieldLabel>Due Date</FieldLabel>
                   <div className="flex items-center gap-2">
-                    <span className="text-[13px]" style={{ fontFamily: 'JetBrains Mono, monospace', color: item.due_date && new Date(item.due_date) < new Date() ? '#DC2626' : '#334155' }}>
-                      {item.due_date ? new Date(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : <span style={{ color: '#94A3B8' }}>None</span>}
+                    <span className="text-[13px]" style={{ fontFamily: 'JetBrains Mono, monospace', color: item.due_date && new Date(item.due_date) < new Date() ? 'var(--sem-danger)' : 'var(--fg-2)' }}>
+                      {item.due_date ? new Date(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : <span style={{ color: 'var(--fg-4)' }}>None</span>}
                     </span>
                     {item.due_date && new Date(item.due_date) < new Date() && (
-                      <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ background: '#FEF2F2', color: '#DC2626' }}>Overdue</span>
+                      <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ background: 'var(--sem-danger-bg)', color: 'var(--sem-danger)' }}>Overdue</span>
                     )}
                   </div>
                 </div>
@@ -194,7 +194,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
 
               {/* Description */}
               <CollapsibleSection title="Description" defaultOpen={true}>
-                <div className="rounded-md px-3 py-2 min-h-[60px] border border-transparent hover:border-[#DFE1E6] cursor-text transition-colors" style={{ fontSize: 14, lineHeight: '22px', color: item.description ? '#0F172A' : '#94A3B8' }}>
+                <div className="rounded-md px-3 py-2 min-h-[60px] border border-transparent hover:border-[#DFE1E6] cursor-text transition-colors" style={{ fontSize: 14, lineHeight: '22px', color: item.description ? 'var(--fg-1)' : 'var(--fg-4)' }}>
                   {item.description || 'Add a description...'}
                 </div>
               </CollapsibleSection>
@@ -204,15 +204,15 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                 {acceptanceCriteria.map((ac: any) => (
                   <div key={ac.id} className="flex items-start gap-2 py-1.5 group">
                     <button onClick={() => handleToggleCriterion(ac.id, ac.is_checked)} className="mt-0.5 w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors"
-                      style={{ borderColor: ac.is_checked ? '#16A34A' : '#CBD5E1', background: ac.is_checked ? '#16A34A' : 'transparent' }}>
+                      style={{ borderColor: ac.is_checked ? 'var(--sem-success)' : 'var(--divider)', background: ac.is_checked ? 'var(--sem-success)' : 'transparent' }}>
                       {ac.is_checked && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
                     </button>
-                    <span className="text-[13px]" style={{ color: ac.is_checked ? '#94A3B8' : '#1E293B', textDecoration: ac.is_checked ? 'line-through' : 'none', lineHeight: '20px' }}>{ac.title}</span>
+                    <span className="text-[13px]" style={{ color: ac.is_checked ? 'var(--fg-4)' : 'var(--fg-1)', textDecoration: ac.is_checked ? 'line-through' : 'none', lineHeight: '20px' }}>{ac.title}</span>
                   </div>
                 ))}
                 <div className="flex items-center gap-2 mt-1">
                   <input value={newCriterion} onChange={e => setNewCriterion(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleAddCriterion(); }}
-                    placeholder="+ Add acceptance criterion" className="flex-1 text-[13px] px-2 py-1.5 rounded border border-transparent hover:border-[#E2E8F0] focus:border-[#2563EB] focus:outline-none transition-colors" style={{ color: '#334155', background: 'transparent' }} />
+                    placeholder="+ Add acceptance criterion" className="flex-1 text-[13px] px-2 py-1.5 rounded border border-transparent hover:border-[var(--divider)] focus:border-[var(--cp-blue)] focus:outline-none transition-colors" style={{ color: 'var(--fg-2)', background: 'transparent' }} />
                 </div>
               </CollapsibleSection>
 
@@ -224,12 +224,12 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                 {totalChildren > 0 && (
                   <>
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: '#E2E8F0' }}>
-                        <div className="h-full rounded-full transition-all" style={{ width: `${progressPct}%`, background: '#0D9488' }} />
+                      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--divider)' }}>
+                        <div className="h-full rounded-full transition-all" style={{ width: `${progressPct}%`, background: 'var(--sem-success)' }} />
                       </div>
-                      <span className="text-[11px] font-medium shrink-0" style={{ color: '#64748B' }}>{doneCount}/{totalChildren} · {progressPct}%</span>
+                      <span className="text-[11px] font-medium shrink-0" style={{ color: 'var(--fg-3)' }}>{doneCount}/{totalChildren} · {progressPct}%</span>
                     </div>
-                    <div className="grid gap-2 px-2 py-1.5" style={{ gridTemplateColumns: '1fr 80px 100px 90px', fontSize: 11, fontWeight: 600, color: '#626F86', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '2px solid #E2E8F0' }}>
+                    <div className="grid gap-2 px-2 py-1.5" style={{ gridTemplateColumns: '1fr 80px 100px 90px', fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '2px solid var(--divider)' }}>
                       <span>Work</span><span>Priority</span><span>Assignee</span><span>Status</span>
                     </div>
                     {item.children.map(child => (
@@ -243,12 +243,12 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                   <div className="flex items-center gap-2 mt-2">
                     <input autoFocus value={subtaskTitle} onChange={e => setSubtaskTitle(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter') handleCreateSubtask(); if (e.key === 'Escape') { setCreatingSubtask(false); setSubtaskTitle(''); } }}
-                      placeholder="Subtask title..." className="flex-1 text-[13px] px-2.5 py-1.5 rounded border focus:outline-none focus:ring-1 focus:ring-[#2563EB]" style={{ borderColor: '#E2E8F0', height: 32 }} />
-                    <button onClick={handleCreateSubtask} disabled={subtaskSubmitting} className="px-3 py-1 text-[11px] font-semibold rounded text-white" style={{ background: '#2563EB', height: 32 }}>{subtaskSubmitting ? '…' : 'Create'}</button>
-                    <button onClick={() => { setCreatingSubtask(false); setSubtaskTitle(''); }} className="px-2 py-1 text-[11px] font-medium rounded hover:bg-[#F1F5F9]" style={{ color: '#64748B', height: 32 }}>Cancel</button>
+                      placeholder="Subtask title..." className="flex-1 text-[13px] px-2.5 py-1.5 rounded border focus:outline-none focus:ring-1 focus:ring-[var(--cp-blue)]" style={{ borderColor: 'var(--divider)', height: 32 }} />
+                    <button onClick={handleCreateSubtask} disabled={subtaskSubmitting} className="px-3 py-1 text-[11px] font-semibold rounded text-white" style={{ background: 'var(--cp-blue)', height: 32 }}>{subtaskSubmitting ? '…' : 'Create'}</button>
+                    <button onClick={() => { setCreatingSubtask(false); setSubtaskTitle(''); }} className="px-2 py-1 text-[11px] font-medium rounded hover:bg-[var(--cp-bd-zone)]" style={{ color: 'var(--fg-3)', height: 32 }}>Cancel</button>
                   </div>
                 ) : (
-                  <button onClick={() => setCreatingSubtask(true)} className="flex items-center gap-1.5 mt-2 text-[11px] font-medium hover:bg-[#F8FAFC] px-2 py-1.5 rounded transition-colors" style={{ color: '#94A3B8' }}>
+                  <button onClick={() => setCreatingSubtask(true)} className="flex items-center gap-1.5 mt-2 text-[11px] font-medium hover:bg-[var(--bg-1)] px-2 py-1.5 rounded transition-colors" style={{ color: 'var(--fg-4)' }}>
                     <Plus size={13} /> Create subtask
                   </button>
                 )}
@@ -278,14 +278,14 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
 // ─── Primitives ─────────────────────────────────────────
 function HeaderBtn({ title, onClick, children }: { title: string; onClick?: () => void; children: React.ReactNode }) {
   return (
-    <button onClick={onClick} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-[#F1F5F9] transition-colors" title={title} style={{ color: '#94A3B8' }}>
+    <button onClick={onClick} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-[var(--cp-bd-zone)] transition-colors" title={title} style={{ color: 'var(--fg-4)' }}>
       {children}
     </button>
   );
 }
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
-  return <span className="text-[12px] font-medium self-center" style={{ color: '#44546F' }}>{children}</span>;
+  return <span className="text-[12px] font-medium self-center" style={{ color: 'var(--fg-2)' }}>{children}</span>;
 }
 
 function SubtaskRow({ child, statuses, onStatusChange, onClick }: { child: ChildItem; statuses: { id: string; name: string; category: string }[]; onStatusChange: (id: string) => void; onClick: () => void }) {
@@ -297,14 +297,14 @@ function SubtaskRow({ child, statuses, onStatusChange, onClick }: { child: Child
   };
   const TYPE_COLORS: Record<string, string> = { Epic: '#7C3AED', Feature: '#2563EB', Story: '#0D9488', Bug: '#DC2626', Task: '#D97706', Subtask: '#94A3B8' };
   return (
-    <div className="grid gap-2 px-2 py-2 hover:bg-[#F8FAFC] rounded cursor-pointer transition-colors" style={{ gridTemplateColumns: '1fr 80px 100px 90px', fontSize: 13 }} onClick={onClick}>
+    <div className="grid gap-2 px-2 py-2 hover:bg-[var(--bg-1)] rounded cursor-pointer transition-colors" style={{ gridTemplateColumns: '1fr 80px 100px 90px', fontSize: 13 }} onClick={onClick}>
       <div className="flex items-center gap-2 min-w-0">
         <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: TYPE_COLORS[child.type_name] || child.type_color }} />
-        <span className="text-[10px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B' }}>{child.item_key}</span>
-        <span className="truncate font-medium" style={{ color: '#0F172A' }}>{child.title}</span>
+        <span className="text-[10px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{child.item_key}</span>
+        <span className="truncate font-medium" style={{ color: 'var(--fg-1)' }}>{child.title}</span>
       </div>
-      <span className="text-[12px]" style={{ color: '#475569' }}>{child.priority}</span>
-      <span className="text-[12px] truncate" style={{ color: '#475569' }}>{child.assignee_name || '—'}</span>
+      <span className="text-[12px]" style={{ color: 'var(--fg-2)' }}>{child.priority}</span>
+      <span className="text-[12px] truncate" style={{ color: 'var(--fg-2)' }}>{child.assignee_name || '—'}</span>
       <button onClick={handleStatusClick}><StatusLozenge name={child.status_name} category={child.status_category} /></button>
     </div>
   );

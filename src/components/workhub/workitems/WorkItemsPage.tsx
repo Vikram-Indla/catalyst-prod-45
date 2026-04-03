@@ -186,9 +186,9 @@ export function WorkItemsPage() {
             onClick={() => setShowAdvanced(!showAdvanced)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors shrink-0 mb-0 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             style={{
-              borderColor: showAdvanced || advancedConditions.length > 0 ? 'var(--wh-primary, #2563eb)' : 'var(--wh-border, #e2e8f0)',
-              color: showAdvanced || advancedConditions.length > 0 ? 'var(--wh-primary, #2563eb)' : 'var(--wh-text-secondary, #64748b)',
-              backgroundColor: showAdvanced ? '#eff6ff' : 'transparent',
+              borderColor: showAdvanced || advancedConditions.length > 0 ? 'var(--cp-blue)' : 'var(--divider)',
+              color: showAdvanced || advancedConditions.length > 0 ? 'var(--cp-blue)' : 'var(--fg-3)',
+              backgroundColor: showAdvanced ? 'var(--cp-primary-5)' : 'transparent',
               height: 36,
             }}
           >
@@ -196,7 +196,7 @@ export function WorkItemsPage() {
             Advanced
             {advancedConditions.length > 0 && (
               <>
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--wh-primary, #2563eb)' }} />
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--cp-blue)' }} />
                 <span className="text-[10px]">({advancedConditions.length})</span>
               </>
             )}
@@ -251,20 +251,20 @@ export function WorkItemsPage() {
       {totalCount > PAGE_SIZE && (
         <div
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-3 px-4 py-2.5 rounded-lg border gap-2"
-          style={{ backgroundColor: 'var(--wh-surface, #fff)', borderColor: 'var(--wh-border, #e2e8f0)' }}
+          style={{ backgroundColor: 'var(--cp-float)', borderColor: 'var(--divider)' }}
         >
-          <span className="text-xs" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
-            Showing <b style={{ color: 'var(--wh-text-primary, #0f172a)' }}>{pageStart}–{pageEnd}</b> of{' '}
-            <b style={{ color: 'var(--wh-text-primary, #0f172a)' }}>{totalCount.toLocaleString()}</b> items
+          <span className="text-xs" style={{ color: 'var(--fg-4)' }}>
+            Showing <b style={{ color: 'var(--fg-1)' }}>{pageStart}–{pageEnd}</b> of{' '}
+            <b style={{ color: 'var(--fg-1)' }}>{totalCount.toLocaleString()}</b> items
           </span>
           <div className="flex items-center gap-1">
             <button
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 0}
               className="p-1.5 rounded-md border disabled:opacity-30 transition-colors"
-              style={{ borderColor: 'var(--wh-border, #e2e8f0)' }}
+              style={{ borderColor: 'var(--divider)' }}
             >
-              <ChevronLeft className="w-3.5 h-3.5" style={{ color: 'var(--wh-text-secondary, #64748b)' }} />
+              <ChevronLeft className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
             </button>
             {Array.from({ length: Math.min(totalPages, 7) }).map((_, i) => {
               let pageNum: number;
@@ -278,8 +278,8 @@ export function WorkItemsPage() {
                   onClick={() => goToPage(pageNum)}
                   className="w-7 h-7 rounded-md text-xs font-medium transition-colors"
                   style={{
-                    backgroundColor: pageNum === currentPage ? 'var(--wh-primary, #2563eb)' : 'transparent',
-                    color: pageNum === currentPage ? 'white' : 'var(--wh-text-secondary, #64748b)',
+                    backgroundColor: pageNum === currentPage ? 'var(--cp-blue)' : 'transparent',
+                    color: pageNum === currentPage ? 'var(--bg-app)' : 'var(--fg-3)',
                   }}
                 >
                   {pageNum + 1}
@@ -290,9 +290,9 @@ export function WorkItemsPage() {
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage >= totalPages - 1}
               className="p-1.5 rounded-md border disabled:opacity-30 transition-colors"
-              style={{ borderColor: 'var(--wh-border, #e2e8f0)' }}
+              style={{ borderColor: 'var(--divider)' }}
             >
-              <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--wh-text-secondary, #64748b)' }} />
+              <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
             </button>
           </div>
         </div>

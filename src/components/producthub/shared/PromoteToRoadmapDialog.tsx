@@ -117,7 +117,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
             transition={{ duration: 0.2 }}
           >
             {/* Header */}
-            <div className="p-4 px-5" style={{ background: '#2563EB' }}>
+            <div className="p-4 px-5" style={{ background: 'var(--cp-blue)' }}>
               <div className="flex items-center gap-2 mb-1">
                 <Map className="w-5 h-5 text-white" />
                 <span className="text-[15px] font-bold text-white">Add to Roadmap</span>
@@ -128,10 +128,10 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
             {/* Body */}
             <div className="p-4 px-5">
               {/* Type Selector */}
-              <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1.5" style={{ color: '#334155' }}>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1.5" style={{ color: 'var(--fg-2)' }}>
                 Confirm Initiative Type
               </div>
-              <div className="grid grid-cols-4 gap-1.5 p-1 rounded-lg border" style={{ background: '#F8FAFC', borderColor: '#E2E8F0' }}>
+              <div className="grid grid-cols-4 gap-1.5 p-1 rounded-lg border" style={{ background: 'var(--bg-1)', borderColor: 'var(--divider)' }}>
                 {TYPE_OPTIONS.map(opt => {
                   const colors = INITIATIVE_TYPE_COLORS[opt.key];
                   const isActive = selectedType === opt.key;
@@ -146,8 +146,8 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
                       )}
                       style={{ borderColor: isActive ? colors.border : 'transparent' }}
                     >
-                      <opt.Icon className="w-[18px] h-[18px]" style={{ color: isActive ? colors.text : '#64748B' }} />
-                      <span className="text-[11px] font-semibold block mt-0.5" style={{ color: isActive ? colors.text : '#64748B' }}>
+                      <opt.Icon className="w-[18px] h-[18px]" style={{ color: isActive ? colors.text : 'var(--fg-3)' }} />
+                      <span className="text-[11px] font-semibold block mt-0.5" style={{ color: isActive ? colors.text : 'var(--fg-3)' }}>
                         {opt.label}
                       </span>
                     </button>
@@ -157,14 +157,14 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
 
               {/* Priority */}
               <div className="mt-3">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1.5" style={{ color: '#334155' }}>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1.5" style={{ color: 'var(--fg-2)' }}>
                   Roadmap Priority
                 </div>
                 <select
                   value={priority}
                   onChange={e => setPriority(e.target.value)}
                   className="w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none"
-                  style={{ borderColor: '#E2E8F0' }}
+                  style={{ borderColor: 'var(--divider)' }}
                 >
                   {PRIORITY_OPTIONS.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -174,7 +174,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
             </div>
 
             {/* Footer */}
-            <div className="p-3 px-5 border-t flex justify-end gap-2" style={{ borderColor: '#E2E8F0' }}>
+            <div className="p-3 px-5 border-t flex justify-end gap-2" style={{ borderColor: 'var(--divider)' }}>
               <button
                 onClick={onClose}
                 className="px-4 py-1.5 text-[12.5px] font-medium rounded-md text-[#64748B] hover:bg-[#F1F5F9] transition-colors"
@@ -185,7 +185,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
                 onClick={handleConfirm}
                 disabled={promoteMutation.isPending}
                 className="px-4 py-1.5 text-[12.5px] font-semibold text-white rounded-md transition-colors flex items-center gap-1.5"
-                style={{ background: '#2563EB' }}
+                style={{ background: 'var(--cp-blue)' }}
               >
                 {promoteMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 ✓ Add to Roadmap

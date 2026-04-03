@@ -178,25 +178,25 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
       justifyContent: 'center', zIndex: 1000,
     }} onClick={handleClose}>
       <div style={{
-        width: 600, backgroundColor: '#FFFFFF', borderRadius: 12,
+        width: 600, backgroundColor: 'var(--cp-float)', borderRadius: 12,
         boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
       }} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div style={{
-          padding: '20px 24px', borderBottom: '1px solid #E2E8F0',
+          padding: '20px 24px', borderBottom: '1px solid var(--divider)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
         }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
               Import Test Cases
             </h2>
-            <p style={{ fontSize: 14, color: '#64748B', marginTop: 4 }}>
+            <p style={{ fontSize: 14, color: 'var(--fg-3)', marginTop: 4 }}>
               {step === 'upload' ? 'Upload CSV or Excel file' : 'Review and import'}
             </p>
           </div>
           <button onClick={handleClose} style={{
             width: 32, height: 32, border: 'none', borderRadius: 8,
-            backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer',
+            backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <X size={20} />
@@ -207,9 +207,9 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
         <div style={{ padding: 24 }}>
           {error && (
             <div style={{
-              padding: '12px 16px', backgroundColor: '#FEF2F2', border: '1px solid #FECACA',
+              padding: '12px 16px', backgroundColor: '#FEF2F2', border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)',
               borderRadius: 8, marginBottom: 16, display: 'flex', alignItems: 'center',
-              gap: 8, color: '#DC2626', fontSize: 13,
+              gap: 8, color: 'var(--sem-danger)', fontSize: 13,
             }}>
               <AlertCircle size={16} /> {error}
             </div>
@@ -222,16 +222,16 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
                 onDragOver={(e) => e.preventDefault()}
                 onClick={() => fileInputRef.current?.click()}
                 style={{
-                  border: '2px dashed #E2E8F0', borderRadius: 12, padding: 48,
-                  textAlign: 'center', backgroundColor: '#FAFBFC', cursor: 'pointer',
+                  border: '2px dashed var(--divider)', borderRadius: 12, padding: 48,
+                  textAlign: 'center', backgroundColor: 'var(--bg-1)', cursor: 'pointer',
                 }}
               >
-                <Upload size={32} style={{ color: '#94A3B8', marginBottom: 12 }} />
-                <p style={{ fontSize: 14, color: '#334155', marginBottom: 4 }}>
+                <Upload size={32} style={{ color: 'var(--fg-4)', marginBottom: 12 }} />
+                <p style={{ fontSize: 14, color: 'var(--fg-2)', marginBottom: 4 }}>
                   Drag and drop your file here
                 </p>
-                <p style={{ fontSize: 13, color: '#64748B' }}>or click to browse</p>
-                <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 8 }}>Supported: .csv, .xlsx</p>
+                <p style={{ fontSize: 13, color: 'var(--fg-3)' }}>or click to browse</p>
+                <p style={{ fontSize: 12, color: 'var(--fg-4)', marginTop: 8 }}>Supported: .csv, .xlsx</p>
               </div>
               
               <input ref={fileInputRef} type="file" accept=".csv,.xlsx"
@@ -239,7 +239,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
                 style={{ display: 'none' }} />
 
               <button onClick={downloadTemplate} style={{
-                marginTop: 16, background: 'none', border: 'none', color: '#2563EB',
+                marginTop: 16, background: 'none', border: 'none', color: 'var(--cp-blue)',
                 fontSize: 13, fontWeight: 500, cursor: 'pointer', display: 'flex',
                 alignItems: 'center', gap: 6,
               }}>
@@ -250,14 +250,14 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
             <>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <FileText size={20} style={{ color: '#64748B' }} />
+                  <FileText size={20} style={{ color: 'var(--fg-3)' }} />
                   <div>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{file?.name}</p>
-                    <p style={{ fontSize: 13, color: '#10B981' }}>Found {parsedData.length} test cases</p>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)' }}>{file?.name}</p>
+                    <p style={{ fontSize: 13, color: 'var(--sem-success)' }}>Found {parsedData.length} test cases</p>
                   </div>
                 </div>
                 <button onClick={resetState} style={{
-                  background: 'none', border: 'none', color: '#2563EB', fontSize: 13, cursor: 'pointer',
+                  background: 'none', border: 'none', color: 'var(--cp-blue)', fontSize: 13, cursor: 'pointer',
                 }}>Change File</button>
               </div>
 
@@ -266,27 +266,27 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
                   Import to folder:
                 </label>
                 <select value={selectedFolderId} onChange={(e) => setSelectedFolderId(e.target.value)}
-                  style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14 }}>
+                  style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14 }}>
                   <option value="">No folder (root)</option>
                   {folders.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
                 </select>
               </div>
 
-              <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', maxHeight: 180, overflowY: 'auto' }}>
+              <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', maxHeight: 180, overflowY: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                   <thead>
-                    <tr style={{ backgroundColor: '#F8FAFC' }}>
-                      <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '1px solid #E2E8F0' }}>Title</th>
-                      <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '1px solid #E2E8F0' }}>Priority</th>
-                      <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '1px solid #E2E8F0' }}>Type</th>
+                    <tr style={{ backgroundColor: 'var(--bg-1)' }}>
+                      <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '1px solid var(--divider)' }}>Title</th>
+                      <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '1px solid var(--divider)' }}>Priority</th>
+                      <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '1px solid var(--divider)' }}>Type</th>
                     </tr>
                   </thead>
                   <tbody>
                     {parsedData.slice(0, 5).map((tc, i) => (
                       <tr key={i}>
-                        <td style={{ padding: '8px 12px', borderBottom: '1px solid #E2E8F0' }}>{tc.title}</td>
-                        <td style={{ padding: '8px 12px', borderBottom: '1px solid #E2E8F0' }}>{tc.priority}</td>
-                        <td style={{ padding: '8px 12px', borderBottom: '1px solid #E2E8F0' }}>{tc.type}</td>
+                        <td style={{ padding: '8px 12px', borderBottom: '1px solid var(--divider)' }}>{tc.title}</td>
+                        <td style={{ padding: '8px 12px', borderBottom: '1px solid var(--divider)' }}>{tc.priority}</td>
+                        <td style={{ padding: '8px 12px', borderBottom: '1px solid var(--divider)' }}>{tc.type}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -297,14 +297,14 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={handleClose} style={{
-            height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0',
-            borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer',
+            height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)',
+            borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
           }}>Cancel</button>
           {step === 'preview' && (
             <button onClick={handleImport} disabled={isImporting} style={{
-              height: 40, padding: '0 20px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              height: 40, padding: '0 20px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
               cursor: isImporting ? 'wait' : 'pointer', opacity: isImporting ? 0.7 : 1,
             }}>

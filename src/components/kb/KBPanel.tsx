@@ -23,7 +23,7 @@ const BRIEFING_MESSAGES = [
   'Your queries are matched against multiple sources — Jira data, ministry regulations, and project documentation — with answers traced back to their origin for full accountability.',
   'Answers include source citations so you can trace every fact back to its origin document.',
   'Answers include source citations so you can trace every fact back to its origin document.',
-  '25 knowledge domains are indexed and searchable. Ask about licensing, permits, compliance, sprints, or any Catalyst module.',
+  '25 knowledge domains are indexed and searchable. Ask about licensing, permits, compliance, releases, or any Catalyst module.',
 ];
 
 function getGreeting(): string {
@@ -216,7 +216,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           position: 'fixed',
           top: 48, right: 0, bottom: 0,
           width: 624,
-          background: 'var(--cp-bg-page, #FFFFFF)',
+          background: 'var(--cp-bg-page, var(--bg-app))',
           borderLeft: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
           boxShadow: 'var(--cp-shadow-overlay, 0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31))',
           zIndex: 50,
@@ -231,11 +231,11 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
         <div style={{
           height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '0 var(--cp-space-3, 24px)', borderBottom: '0.75px solid var(--cp-border-subtle, rgba(15,23,42,0.06))',
-          background: 'var(--cp-bg-surface, #F8FAFC)', flexShrink: 0,
+          background: 'var(--cp-bg-surface, var(--bg-1))', flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--cp-primary-60, #2563EB)', animation: 'kb-status-pulse 3s infinite' }} />
-            <span style={{ fontSize: 'var(--cp-type-body, 14px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-text-primary, #0F172A)', letterSpacing: 'var(--cp-tracking-tight, -0.02em)', fontFamily: 'var(--cp-font-heading, Sora, sans-serif)' }}>Intelligence</span>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--cp-primary-60, var(--cp-blue))', animation: 'kb-status-pulse 3s infinite' }} />
+            <span style={{ fontSize: 'var(--cp-type-body, 14px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-text-primary, var(--fg-1))', letterSpacing: 'var(--cp-tracking-tight, -0.02em)', fontFamily: 'var(--cp-font-heading, Sora, sans-serif)' }}>Intelligence</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <button
@@ -277,7 +277,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           {error && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', marginTop: 16,
-              background: 'var(--cp-danger-5, #FEF2F2)', border: '1px solid var(--cp-danger-20, #FECACA)', borderRadius: 'var(--cp-radius-md, 4px)', fontSize: 'var(--cp-type-caption-md, 12px)', color: 'var(--cp-danger-60, #DC2626)',
+              background: 'var(--cp-danger-5, #FEF2F2)', border: '1px solid var(--cp-danger-20, #FECACA)', borderRadius: 'var(--cp-radius-md, 4px)', fontSize: 'var(--cp-type-caption-md, 12px)', color: 'var(--cp-danger-60, var(--sem-danger))',
             }}>
               <AlertCircle size={14} />
               <span style={{ flex: 1 }}>{error}</span>
@@ -290,26 +290,26 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           {/* Welcome state */}
           {messages.length === 0 && (
             <div style={{ textAlign: 'center', paddingTop: 48, flex: 1 }}>
-              <p style={{ fontSize: 'var(--cp-type-heading-sm, 20px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-text-primary, #0F172A)', margin: 0, fontFamily: 'var(--cp-font-heading, Sora, sans-serif)' }}>
+              <p style={{ fontSize: 'var(--cp-type-heading-sm, 20px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-text-primary, var(--fg-1))', margin: 0, fontFamily: 'var(--cp-font-heading, Sora, sans-serif)' }}>
                 {getGreeting()}, {firstName}
               </p>
-              <p style={{ fontSize: 'var(--cp-type-body, 14px)', color: 'var(--cp-text-tertiary, #64748B)', marginTop: 8, fontWeight: 'var(--cp-weight-regular, 400)' }}>
+              <p style={{ fontSize: 'var(--cp-type-body, 14px)', color: 'var(--cp-text-tertiary, var(--fg-3))', marginTop: 8, fontWeight: 'var(--cp-weight-regular, 400)' }}>
                 How can I help?
               </p>
 
               {/* Intelligence Briefing Card */}
               <div style={{
                 marginTop: 28, textAlign: isRTL ? 'right' : 'left',
-                background: 'linear-gradient(135deg, var(--cp-bg-surface, #F8FAFC) 0%, var(--cp-primary-5, #EFF6FF) 100%)',
+                background: 'linear-gradient(135deg, var(--cp-bg-surface, var(--bg-1)) 0%, var(--cp-primary-5, var(--cp-blue-wash)) 100%)',
                 border: '1px solid var(--cp-primary-10, #DBEAFE)', borderRadius: 'var(--cp-radius-lg, 6px)', padding: '20px 24px',
               }}>
                 <p style={{
-                  fontSize: 'var(--cp-type-caption, 11px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-primary-60, #2563EB)', letterSpacing: '1.5px',
+                  fontSize: 'var(--cp-type-caption, 11px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-primary-60, var(--cp-blue))', letterSpacing: '1.5px',
                   textTransform: 'uppercase', margin: 0, fontFamily: 'var(--cp-font-heading, Sora, sans-serif)',
                 }}>INTELLIGENCE BRIEFING</p>
-                <div style={{ width: 24, height: 1.5, background: 'var(--cp-primary-60, #2563EB)', margin: '8px 0 12px', borderRadius: 1 }} />
+                <div style={{ width: 24, height: 1.5, background: 'var(--cp-primary-60, var(--cp-blue))', margin: '8px 0 12px', borderRadius: 1 }} />
                 <p style={{
-                  fontSize: 'var(--cp-type-body-sm, 13px)', color: 'var(--cp-text-secondary, #334155)', lineHeight: 'var(--cp-leading-relaxed, 1.6)', margin: 0,
+                  fontSize: 'var(--cp-type-body-sm, 13px)', color: 'var(--cp-text-secondary, var(--fg-2))', lineHeight: 'var(--cp-leading-relaxed, 1.6)', margin: 0,
                   fontFamily: "Georgia, 'Times New Roman', serif",
                 }}>{BRIEFING_MESSAGES[briefingIndex]}</p>
               </div>
@@ -327,8 +327,8 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                   }}>
                     <div style={{
                       maxWidth: '85%', padding: '10px 16px',
-                      borderRadius: '14px 14px 4px 14px', background: 'var(--cp-primary-60, #2563EB)',
-                      color: 'var(--cp-text-inverse, #FFFFFF)', fontSize: 'var(--cp-type-body, 14px)', fontWeight: 'var(--cp-weight-regular, 400)', lineHeight: 'var(--cp-leading-normal, 1.5)',
+                      borderRadius: '14px 14px 4px 14px', background: 'var(--cp-primary-60, var(--cp-blue))',
+                      color: 'var(--cp-text-inverse, var(--bg-app))', fontSize: 'var(--cp-type-body, 14px)', fontWeight: 'var(--cp-weight-regular, 400)', lineHeight: 'var(--cp-leading-normal, 1.5)',
                     }}>{msg.content}</div>
                   </div>
                 );
@@ -363,7 +363,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               <div style={{ display: 'flex', gap: 5, padding: '12px 0', animation: 'kb-msg-in 200ms ease' }}>
                 {[0, 1, 2].map((i) => (
                   <span key={i} style={{
-                    width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-primary-60, #2563EB)',
+                    width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-primary-60, var(--cp-blue))',
                     animation: 'kb-dot-bounce 1.2s infinite', animationDelay: `${i * 150}ms`,
                   }} />
                 ))}

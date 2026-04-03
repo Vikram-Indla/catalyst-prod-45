@@ -59,10 +59,10 @@ export function TestCasesTable({
   };
 
   const getAvatarColor = (initials: string | null | undefined): string => {
-    if (!initials) return '#94A3B8';
+    if (!initials) return 'var(--fg-4)';
     const letter = initials.charAt(0).toUpperCase();
-    if (letter <= 'E') return '#3B82F6'; // Blue
-    if (letter <= 'J') return '#10B981'; // Green
+    if (letter <= 'E') return 'var(--cp-blue)'; // Blue
+    if (letter <= 'J') return 'var(--sem-success)'; // Green
     if (letter <= 'O') return '#8B5CF6'; // Purple
     if (letter <= 'T') return '#F97316'; // Orange
     return '#EC4899'; // Pink
@@ -93,13 +93,13 @@ export function TestCasesTable({
   const headerCellStyle: React.CSSProperties = {
     height: 44,
     padding: '0 12px',
-    backgroundColor: '#F8FAFC',
-    borderBottom: '1px solid #E2E8F0',
+    backgroundColor: 'var(--bg-1)',
+    borderBottom: '1px solid var(--divider)',
     fontSize: 11,
     fontWeight: 600,
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
-    color: '#64748B',
+    color: 'var(--fg-3)',
     verticalAlign: 'middle',
   };
 
@@ -107,14 +107,14 @@ export function TestCasesTable({
   const bodyCellStyle: React.CSSProperties = {
     height: 36,
     padding: '0 12px',
-    borderBottom: '1px solid #E2E8F0',
+    borderBottom: '1px solid var(--divider)',
     verticalAlign: 'middle',
   };
 
   return (
     <div className="th-table-wrapper" style={{
-      backgroundColor: '#FFFFFF',
-      border: '1px solid #E2E8F0',
+      backgroundColor: 'var(--cp-float)',
+      border: '1px solid var(--divider)',
       borderRadius: 8,
       overflow: 'hidden',
     }}>
@@ -212,7 +212,7 @@ export function TestCasesTable({
                 onMouseLeave={() => setHoveredRowId(null)}
                 style={{
                   height: 36,
-                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? '#F1F5F9' : '#FFFFFF',
+                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? 'var(--cp-bd-zone)' : 'var(--cp-float)',
                   cursor: 'pointer',
                   transition: 'background-color 0.1s',
                 }}
@@ -236,7 +236,7 @@ export function TestCasesTable({
                   ...bodyCellStyle,
                   fontFamily: 'Consolas, Monaco, monospace',
                   fontSize: 12,
-                  color: '#64748B',
+                  color: 'var(--fg-3)',
                 }}>
                   {tc.caseKey}
                 </td>
@@ -245,7 +245,7 @@ export function TestCasesTable({
                 <td className="th-table-col-title" style={{
                   ...bodyCellStyle,
                   fontWeight: 500,
-                  color: '#0F172A',
+                  color: 'var(--fg-1)',
                   lineHeight: 1.4,
                   paddingTop: 10,
                   paddingBottom: 10,
@@ -261,7 +261,7 @@ export function TestCasesTable({
                     fontSize: 13,
                     color: tc.priority === 'critical' ? '#991B1B' :
                            tc.priority === 'high' ? '#C2410C' :
-                           tc.priority === 'medium' ? '#A16207' : '#64748B',
+                           tc.priority === 'medium' ? '#A16207' : 'var(--fg-3)',
                   }}>
                     {tc.priority.charAt(0).toUpperCase() + tc.priority.slice(1)}
                   </span>
@@ -281,10 +281,10 @@ export function TestCasesTable({
                     borderRadius: 4,
                     backgroundColor: tc.type === 'security' ? 'rgba(239,68,68,0.1)' :
                                     tc.type === 'performance' ? 'rgba(215,119,6,0.1)' :
-                                    tc.type === 'api' ? 'rgba(139,92,246,0.1)' : '#F1F5F9',
-                    color: tc.type === 'security' ? '#DC2626' :
+                                    tc.type === 'api' ? 'rgba(139,92,246,0.1)' : 'var(--cp-bd-zone)',
+                    color: tc.type === 'security' ? 'var(--sem-danger)' :
                            tc.type === 'performance' ? '#B45309' :
-                           tc.type === 'api' ? '#7C3AED' : '#475569',
+                           tc.type === 'api' ? '#2563EB' : 'var(--fg-2)',
                   }}>
                     {tc.type.toUpperCase()}
                   </span>
@@ -304,10 +304,10 @@ export function TestCasesTable({
                     borderRadius: 4,
                     backgroundColor: tc.status === 'approved' ? 'rgba(16,185,129,0.1)' :
                                     tc.status === 'ready' ? 'rgba(37,99,235,0.1)' :
-                                    tc.status === 'deprecated' ? 'rgba(239,68,68,0.1)' : '#F1F5F9',
-                    color: tc.status === 'approved' ? '#059669' :
-                           tc.status === 'ready' ? '#2563EB' :
-                           tc.status === 'deprecated' ? '#DC2626' : '#64748B',
+                                    tc.status === 'deprecated' ? 'rgba(239,68,68,0.1)' : 'var(--cp-bd-zone)',
+                    color: tc.status === 'approved' ? 'var(--sem-success)' :
+                           tc.status === 'ready' ? 'var(--cp-blue)' :
+                           tc.status === 'deprecated' ? 'var(--sem-danger)' : 'var(--fg-3)',
                   }}>
                     {tc.status.toUpperCase()}
                   </span>
@@ -349,18 +349,18 @@ export function TestCasesTable({
                           {tc.ownerInitials}
                         </div>
                       )}
-                      <span style={{ fontSize: 12, color: '#334155', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <span style={{ fontSize: 12, color: 'var(--fg-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {tc.ownerName}
                       </span>
                     </div>
                   ) : (
-                    <span style={{ color: '#94A3B8', fontSize: 12, fontStyle: 'italic' }}>Unassigned</span>
+                    <span style={{ color: 'var(--fg-4)', fontSize: 12, fontStyle: 'italic' }}>Unassigned</span>
                   )}
                 </td>
                 
                 {/* Updated - Gray relative time */}
                 <td className="th-table-col-updated" style={bodyCellStyle}>
-                  <span style={{ fontSize: 12, color: '#94A3B8' }}>
+                  <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>
                     {formatRelativeTime(tc.updatedAt)}
                   </span>
                 </td>
@@ -381,7 +381,7 @@ export function TestCasesTable({
                       border: 'none',
                       borderRadius: 6,
                       backgroundColor: 'transparent',
-                      color: '#94A3B8',
+                      color: 'var(--fg-4)',
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -390,12 +390,12 @@ export function TestCasesTable({
                       transition: 'opacity 0.15s, background-color 0.15s',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#F1F5F9';
-                      e.currentTarget.style.color = '#64748B';
+                      e.currentTarget.style.backgroundColor = 'var(--cp-bd-zone)';
+                      e.currentTarget.style.color = 'var(--fg-3)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.color = '#94A3B8';
+                      e.currentTarget.style.color = 'var(--fg-4)';
                     }}
                   >
                     <MoreVertical style={{ width: 16, height: 16 }} />

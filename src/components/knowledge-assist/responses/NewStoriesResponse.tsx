@@ -8,7 +8,7 @@ export function NewStoriesResponse({ onItemClick }: { onItemClick?: (key: string
   const { data: earlierData, loading: loadingEarlier, loaded: earlierLoaded, loadEarlier } = useEarlierStories();
 
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Loader2 size={20} className="animate-spin" color="#2563EB" /></div>;
-  if (!data.length) return <div style={{ padding: 24, color: '#64748B', fontSize: 13, textAlign: 'center' }}>No new stories created in the last 2 weeks.</div>;
+  if (!data.length) return <div style={{ padding: 24, color: 'var(--fg-3)', fontSize: 13, textAlign: 'center' }}>No new stories created in the last 2 weeks.</div>;
 
   return (
     <div>
@@ -23,7 +23,7 @@ export function NewStoriesResponse({ onItemClick }: { onItemClick?: (key: string
             <Cell>{item.summary}</Cell>
             <Cell bold>{item.project_name || item.project_key}</Cell>
             <Cell>{item.assignee_display_name || '—'}</Cell>
-            <Cell><span style={{ fontSize: 12, color: '#64748B' }}>{item.status}</span></Cell>
+            <Cell><span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{item.status}</span></Cell>
             <Cell mono muted>{formatTimeAgo(item.jira_created_at)}</Cell>
           </Row>
         ))}
@@ -43,7 +43,7 @@ export function NewStoriesResponse({ onItemClick }: { onItemClick?: (key: string
       {loadingEarlier && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px' }}>
           <Loader2 size={14} className="animate-spin" color="#2563EB" />
-          <span style={{ fontSize: 12, color: '#64748B' }}>Loading earlier stories…</span>
+          <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>Loading earlier stories…</span>
         </div>
       )}
 
@@ -60,7 +60,7 @@ export function NewStoriesResponse({ onItemClick }: { onItemClick?: (key: string
                 <Cell>{item.summary}</Cell>
                 <Cell bold>{item.project_name || item.project_key}</Cell>
                 <Cell>{item.assignee_display_name || '—'}</Cell>
-                <Cell><span style={{ fontSize: 12, color: '#64748B' }}>{item.status}</span></Cell>
+                <Cell><span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{item.status}</span></Cell>
                 <Cell mono muted>{formatTimeAgo(item.jira_created_at)}</Cell>
               </Row>
             ))}
@@ -69,7 +69,7 @@ export function NewStoriesResponse({ onItemClick }: { onItemClick?: (key: string
       )}
 
       {earlierLoaded && earlierData.length === 0 && (
-        <div style={{ padding: '12px 14px', fontSize: 12, color: '#94A3B8' }}>No earlier stories found (2–6 weeks ago).</div>
+        <div style={{ padding: '12px 14px', fontSize: 12, color: 'var(--fg-4)' }}>No earlier stories found (2–6 weeks ago).</div>
       )}
     </div>
   );

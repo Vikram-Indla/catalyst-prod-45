@@ -25,11 +25,11 @@ export function AllWorkHeader({ activeTab, onTabChange }: Props) {
     <div className="px-8 pt-5 pb-0" style={{ borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 mb-2" aria-label="Breadcrumb">
-        <a href="#" className="text-[12px] hover:underline" style={{ color: '#2563EB', fontFamily: 'Inter, sans-serif' }}>Projects</a>
+        <a href="#" className="text-[12px] hover:underline" style={{ color: 'var(--cp-blue)', fontFamily: 'Inter, sans-serif' }}>Projects</a>
         <span className="text-[12px]" style={{ color: '#6b6e76' }} aria-hidden="true">/</span>
         <span className="text-[12px]" style={{ color: '#6b6e76', fontFamily: 'Inter, sans-serif' }}>Senaei BAU</span>
         <span className="text-[12px]" style={{ color: '#6b6e76' }} aria-hidden="true">/</span>
-        <span className="text-[12px] font-medium" style={{ color: '#0F172A', fontFamily: 'Inter, sans-serif' }} aria-current="page">All Work</span>
+        <span className="text-[12px] font-medium" style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }} aria-current="page">All Work</span>
       </nav>
 
       {/* Title row */}
@@ -37,12 +37,12 @@ export function AllWorkHeader({ activeTab, onTabChange }: Props) {
         <div className="flex items-center gap-3">
           <div
             className="flex items-center justify-center rounded"
-            style={{ width: 24, height: 24, backgroundColor: '#0d9488', color: '#fff', fontSize: 12, fontWeight: 700 }}
+            style={{ width: 24, height: 24, backgroundColor: 'var(--sem-success)', color: 'var(--bg-app)', fontSize: 12, fontWeight: 700 }}
             aria-hidden="true"
           >
             B
           </div>
-          <h1 className="text-[20px] font-semibold" style={{ color: '#0F172A', letterSpacing: '-0.01em', fontFamily: 'Inter, sans-serif' }}>
+          <h1 className="text-[20px] font-semibold" style={{ color: 'var(--fg-1)', letterSpacing: '-0.01em', fontFamily: 'Inter, sans-serif' }}>
             Senaei BAU
           </h1>
         </div>

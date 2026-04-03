@@ -108,22 +108,23 @@ export function ForYouTable({
   };
 
   return (
-    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '1px solid var(--cp-bd)', borderRadius: 6, overflow: 'hidden' }}>
+    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '1px solid var(--cp-bd)', borderRadius: 6, overflowX: 'auto', overflowY: 'hidden' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
         <thead>
           <tr>
             <th style={{ ...thStyle, width: 36 }}>
               <input type="checkbox" checked={isAllSelected} onChange={e => handleSelectAll(e.target.checked)} style={{ width: 16, height: 16, accentColor: 'var(--cp-blue)', cursor: 'pointer' }} />
             </th>
-            <th style={{ ...thStyle, width: 32 }} />
-            <th style={{ ...thStyle, width: 140 }}>Key</th>
+            <th style={{ ...thStyle, width: 28 }} />
+            <th style={{ ...thStyle, width: 120 }}>Key</th>
             <th style={thStyle}>Summary</th>
-            <th style={{ ...thStyle, width: 150, textAlign: 'center' }}>Status</th>
-            <th style={{ ...thStyle, width: 180 }}>Project</th>
-            <th style={{ ...thStyle, width: 95 }}>Hub</th>
-            <th style={{ ...thStyle, width: 75 }}>Priority</th>
-            <th style={{ ...thStyle, width: 100 }}>Updated</th>
-            <th style={{ ...thStyle, width: 170 }}>Reported by</th>
+            <th style={{ ...thStyle, width: 130, textAlign: 'center' }}>Status</th>
+            <th style={{ ...thStyle, width: 120 }}>Project</th>
+            <th style={{ ...thStyle, width: 80 }}>Hub</th>
+            <th style={{ ...thStyle, width: 65 }}>Priority</th>
+            <th style={{ ...thStyle, width: 90 }}>Updated</th>
+            <th style={{ ...thStyle, width: 150 }}>Assigned to</th>
+            <th style={{ ...thStyle, width: 150 }}>Reported by</th>
           </tr>
         </thead>
         <tbody>
@@ -131,7 +132,7 @@ export function ForYouTable({
             <React.Fragment key={group}>
               {/* Group header — zone borders, no fill in dark mode */}
               <tr>
-                <td colSpan={10} style={{
+                <td colSpan={11} style={{
                   height: 44, padding: '12px 12px',
                   background: 'var(--cp-bg)',
                   borderBottom: '1px solid var(--cp-bd-zone)',
@@ -170,7 +171,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Star */}
-                    <td style={{ padding: '8px 4px', width: 32 }}>
+                    <td style={{ padding: '8px 4px', width: 28 }}>
                       <button
                         onClick={e => { e.stopPropagation(); onStarToggle?.(item.id); }}
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4 }}
@@ -181,7 +182,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Key */}
-                    <td style={{ padding: '8px 12px', width: 140 }}>
+                    <td style={{ padding: '8px 12px', width: 120 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <JiraIssueTypeIcon issueType={item.issueType} size={16} />
                         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: 'var(--cp-blue-link)' }}>{item.key}</span>
@@ -194,24 +195,24 @@ export function ForYouTable({
                     </td>
 
                     {/* Status */}
-                    <td style={{ padding: '8px 8px', width: 150, textAlign: 'center' }}>
+                    <td style={{ padding: '8px 8px', width: 130, textAlign: 'center' }}>
                       <StatusBadge status={item.status} />
                     </td>
 
                     {/* Project */}
-                    <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)', width: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)', width: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       <span title={item.project}>{item.project}</span>
                     </td>
 
                     {/* Hub */}
-                    <td style={{ padding: '8px 12px', width: 95 }}>
+                    <td style={{ padding: '8px 12px', width: 80 }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
                         {item.hubLabel}
                       </span>
                     </td>
 
                     {/* Priority */}
-                    <td style={{ padding: '8px 12px', width: 75 }} title={priorityLabel}>
+                    <td style={{ padding: '8px 12px', width: 65 }} title={priorityLabel}>
                       <div style={{ display: 'flex', gap: 2 }}>
                         {[1,2,3,4].map(i => {
                           const filled = i <= item.priorityLevel;
@@ -222,12 +223,35 @@ export function ForYouTable({
                     </td>
 
                     {/* Updated */}
-                    <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', width: 100 }}>
+                    <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', width: 90 }}>
                       {item.updatedAt}
                     </td>
 
+                    {/* Assigned to */}
+                    <td style={{ padding: '8px 12px', width: 150 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        {(() => {
+                          const assigneeName = item.assignee.name;
+                          if (!assigneeName || assigneeName === 'Unassigned') return <span style={{ fontSize: 13, color: 'var(--cp-t3)' }}>—</span>;
+                          const avatarUrl = nameAvatarMap.get(assigneeName.toLowerCase());
+                          const ini = assigneeName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
+                          const clr = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'][ini.charCodeAt(0) % 5];
+                          return (
+                            <>
+                              {avatarUrl ? (
+                                <img src={avatarUrl} alt={assigneeName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-bd)' }} />
+                              ) : (
+                                <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: 'var(--bg-app)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                              )}
+                              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{assigneeName}</span>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </td>
+
                     {/* Reported by */}
-                    <td style={{ padding: '8px 12px', width: 170 }}>
+                    <td style={{ padding: '8px 12px', width: 150 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {(() => {
                           const reporterName = item.reporter || item.assignee.name;
@@ -238,7 +262,7 @@ export function ForYouTable({
                           return avatarUrl ? (
                             <img src={avatarUrl} alt={reporterName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-bd)' }} />
                           ) : (
-                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: 'var(--bg-app)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                           );
                         })()}
                         <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reporter || item.assignee.name}</span>

@@ -199,10 +199,10 @@ export function FeaturePlanningTab({ feature }: FeaturePlanningTabProps) {
 
       {/* Target Completion Sprint */}
       <div className="space-y-2">
-        <Label>Team Target Completion Sprint</Label>
+        <Label>Team Target Completion Release</Label>
         <Select defaultValue={feature?.team_target_completion_sprint_id || undefined}>
           <SelectTrigger>
-            <SelectValue placeholder="Select sprint..." />
+            <SelectValue placeholder="Select release..." />
           </SelectTrigger>
           <SelectContent>
             {iterations?.map((iteration) => (

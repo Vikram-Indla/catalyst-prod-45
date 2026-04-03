@@ -164,14 +164,14 @@ export function FeatureQuickView({ feature, onClose }: FeatureQuickViewProps) {
         <div className="space-y-2">
           <Label className="text-xs font-semibold flex items-center gap-1">
             <Calendar className="h-3 w-3" />
-            Team Target Completion Sprint
+            Team Target Completion Release
           </Label>
           <Select 
             value={formData.team_target_completion_sprint_id} 
             onValueChange={(value) => setFormData({ ...formData, team_target_completion_sprint_id: value })}
           >
             <SelectTrigger className="text-sm h-9">
-              <SelectValue placeholder="Select sprint..." />
+              <SelectValue placeholder="Select release..." />
             </SelectTrigger>
             <SelectContent className="bg-background z-50">
               {sprints?.map((sprint) => (

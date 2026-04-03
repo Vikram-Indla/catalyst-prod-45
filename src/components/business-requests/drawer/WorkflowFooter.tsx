@@ -79,7 +79,7 @@ export function WorkflowFooter({
                 <div className={cn(
                   "relative z-10 w-6 h-6 rounded-full flex items-center justify-center transition-all border-[3px]",
                   isComplete && "bg-green-500 dark:bg-green-400 border-green-500 dark:border-green-400",
-                  isCurrent && "bg-brand-primary border-brand-primary shadow-[0_0_0_4px_hsl(var(--brand-primary)/0.15)]",
+                  isCurrent && "bg-brand-primary border-brand-primary shadow-[0_0_0_4px_color-mix(in srgb, var(--brand-primary) 15%, transparent)]",
                   isPending && "bg-card border-border"
                 )}>
                   {isComplete && <Check className="w-3 h-3 text-white" strokeWidth={3} />}

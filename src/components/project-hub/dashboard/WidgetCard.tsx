@@ -3,7 +3,7 @@
  * Premium enterprise styling with hover shadow, error state, ARIA
  */
 import type { ReactNode } from 'react';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/hooks/useTheme';
 
 interface Props {
   title: string;
@@ -25,13 +25,13 @@ export function WidgetCard(props: Props) {
 }
 
 function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, headerRight, children, maxHeight, actionLabel, onAction, error, onRetry }: Props) {
-  const { theme } = useTheme();
-  const dark = theme === 'dark';
+  const { isDark: dark } = useTheme();
+  
 
   const getCountBadgeStyle = () => {
     if (!countColor) return dark
-      ? { bg: 'rgba(255,255,255,0.06)', text: 'rgba(248,244,240,0.72)', border: 'rgba(255,255,255,0.12)' }
-      : { bg: '#F1F5F9', text: '#475569', border: '#CBD5E1' };
+      ? { bg: 'rgba(255,255,255,0.06)', text: 'rgba(235,238,245,0.72)', border: 'rgba(255,255,255,0.12)' }
+      : { bg: 'var(--cp-bd-zone)', text: 'var(--fg-2)', border: '#CBD5E1' };
     if (countColor === '#D97706' || countColor === '#EF4444') return dark
       ? { bg: 'rgba(220,38,38,0.15)', text: '#FCA5A5', border: 'rgba(220,38,38,0.3)' }
       : { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' };
@@ -50,8 +50,8 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
       aria-label={title}
       className="ph-widget-card"
       style={{
-        background: dark ? '#1A1714' : '#FFFFFF',
-        border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid #E2E8F0',
+        background: dark ? '#181A1E' : 'var(--bg-app)',
+        border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid var(--divider)',
         borderRadius: 10,
         borderLeft: leftBorder ? `3px solid ${leftBorder}` : undefined,
         overflow: 'hidden',
@@ -67,12 +67,12 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #F1F5F9',
+          borderBottom: dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--cp-bd-zone)',
           flexShrink: 0,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: dark ? 'rgba(248,244,240,0.92)' : '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: dark ? 'rgba(235,238,245,0.92)' : 'var(--fg-1)', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
             {title}
           </span>
           {count !== undefined && (
@@ -93,7 +93,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
               {count}
             </span>
           )}
-          {subtitle && <span style={{ fontSize: 11, color: dark ? 'rgba(248,244,240,0.50)' : '#64748B', fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>{subtitle}</span>}
+          {subtitle && <span style={{ fontSize: 11, color: dark ? 'rgba(235,238,245,0.50)' : 'var(--fg-3)', fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>{subtitle}</span>}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {headerRight}
@@ -101,7 +101,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
             <button
               onClick={onAction}
               className="ph-focus-ring"
-              style={{ fontSize: 12, color: dark ? '#60A5FA' : '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 12, color: dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               {actionLabel}
             </button>
@@ -111,12 +111,12 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
 
       {error ? (
         <div style={{ padding: '24px 16px', textAlign: 'center' }}>
-          <div style={{ fontSize: 12, color: '#EF4444', fontWeight: 600, marginBottom: 8 }}>Failed to load</div>
+          <div style={{ fontSize: 12, color: 'var(--sem-danger)', fontWeight: 600, marginBottom: 8 }}>Failed to load</div>
           {onRetry && (
             <button
               onClick={onRetry}
               className="ph-focus-ring"
-              style={{ fontSize: 11, fontWeight: 600, color: dark ? '#60A5FA' : '#2563EB', background: dark ? 'rgba(37,99,235,0.15)' : '#EFF6FF', border: dark ? '1px solid rgba(37,99,235,0.3)' : '1px solid #BFDBFE', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}
+              style={{ fontSize: 11, fontWeight: 600, color: dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)', background: dark ? 'rgba(37,99,235,0.15)' : 'var(--cp-blue-wash)', border: dark ? '1px solid rgba(37,99,235,0.3)' : '1px solid var(--cp-primary-20)', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}
             >
               Retry
             </button>
@@ -130,7 +130,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
 
       <style>{`
         .ph-widget-card:hover { box-shadow: ${dark ? 'none' : '0 4px 12px rgba(0,0,0,.1)'} !important; }
-        .ph-focus-ring:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; border-radius: 4px; }
+        .ph-focus-ring:focus-visible { outline: 2px solid var(--cp-blue); outline-offset: 2px; border-radius: 4px; }
       `}</style>
     </div>
   );

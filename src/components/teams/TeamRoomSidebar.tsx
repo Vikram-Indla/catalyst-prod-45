@@ -66,7 +66,7 @@ const moreItemsSubMenu = [
   { id: 'estimation', label: 'Estimation', path: '/team/:teamId/estimation' },
   { id: 'impediments', label: 'Impediments', path: '/team/:teamId/impediments' },
   { id: 'kanban-boards', label: 'Kanban boards', path: '/team/:teamId/kanban-boards' },
-  { id: 'sprints', label: 'Sprints', path: '/team/:teamId/sprints' },
+  { id: 'sprints', label: 'Releases', path: '/team/:teamId/sprints' },
   { id: 'tasks', label: 'Tasks', path: '/team/:teamId/tasks' },
   { id: 'team-objectives', label: 'Team objectives', path: '/team/:teamId/objectives' },
   { id: 'teams', label: 'Teams', path: '/team/:teamId/teams' },
@@ -80,19 +80,19 @@ const reportsSubMenu = [
   { id: 'capacity-planning', label: 'Capacity planning', path: '/team/:teamId/reports/capacity-planning' },
   { id: 'cumulative-effort', label: 'Cumulative effort', path: '/team/:teamId/reports/cumulative-effort' },
   { id: 'dependency-maps', label: 'Dependency maps', path: '/team/:teamId/reports/dependency-maps' },
-  { id: 'detailed-sprint-progress', label: 'Detailed sprint progress', path: '/team/:teamId/reports/detailed-sprint-progress' },
+  { id: 'detailed-sprint-progress', label: 'Detailed release progress', path: '/team/:teamId/reports/detailed-sprint-progress' },
   { id: 'external-reports', label: 'External reports', path: '/team/:teamId/reports/external' },
   { id: 'impediments-risks', label: 'Impediments & risks', path: '/team/:teamId/reports/impediments-risks' },
   { id: 'organizational-hierarchy', label: 'Organizational hierarchy', path: '/team/:teamId/reports/organizational-hierarchy' },
   { id: 'risk-impediment-status', label: 'Risk and impediment status', path: '/team/:teamId/reports/risk-impediment-status' },
-  { id: 'sprint-coaching', label: 'Sprint coaching', path: '/team/:teamId/reports/sprint-coaching' },
-  { id: 'sprint-health', label: 'Sprint health', path: '/team/:teamId/reports/sprint-health' },
-  { id: 'sprint-metrics', label: 'Sprint metrics (M1)', path: '/team/:teamId/reports/sprint-metrics' },
-  { id: 'sprint-performance', label: 'Sprint performance', path: '/team/:teamId/reports/sprint-performance' },
-  { id: 'sprint-planning', label: 'Sprint planning', path: '/team/:teamId/reports/sprint-planning' },
-  { id: 'sprint-review', label: 'Sprint review', path: '/team/:teamId/reports/sprint-review' },
-  { id: 'sprint-scope-changes', label: 'Sprint scope changes', path: '/team/:teamId/reports/sprint-scope-changes' },
-  { id: 'sprint-status', label: 'Sprint status', path: '/team/:teamId/reports/sprint-status' },
+  { id: 'sprint-coaching', label: 'Release coaching', path: '/team/:teamId/reports/sprint-coaching' },
+  { id: 'sprint-health', label: 'Release health', path: '/team/:teamId/reports/sprint-health' },
+  { id: 'sprint-metrics', label: 'Release metrics (M1)', path: '/team/:teamId/reports/sprint-metrics' },
+  { id: 'sprint-performance', label: 'Release performance', path: '/team/:teamId/reports/sprint-performance' },
+  { id: 'sprint-planning', label: 'Release planning', path: '/team/:teamId/reports/sprint-planning' },
+  { id: 'sprint-review', label: 'Release review', path: '/team/:teamId/reports/sprint-review' },
+  { id: 'sprint-scope-changes', label: 'Release scope changes', path: '/team/:teamId/reports/sprint-scope-changes' },
+  { id: 'sprint-status', label: 'Release status', path: '/team/:teamId/reports/sprint-status' },
   { id: 'stories-by-state', label: 'Stories by state', path: '/team/:teamId/reports/stories-by-state' },
   { id: 'story-point-progress', label: 'Story point progress by team', path: '/team/:teamId/reports/story-point-progress' },
   { id: 'team-velocity-trend', label: 'Detailed team velocity (trend)', path: '/team/:teamId/reports/team-velocity-trend' },
@@ -135,9 +135,9 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
 
   // Mock sprints data - replace with actual query
   const sprints = [
-    { id: 'sprint-1', name: 'Sprint 1' },
-    { id: 'sprint-2', name: 'Sprint 2' },
-    { id: 'sprint-3', name: 'Sprint 3' },
+    { id: 'sprint-1', name: 'Release 1' },
+    { id: 'sprint-2', name: 'Release 2' },
+    { id: 'sprint-3', name: 'Release 3' },
   ];
 
   const handleNavigation = (path: string) => {
@@ -243,11 +243,11 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
         {expanded && (
           <div className="px-3 py-2 border-b" style={{ borderColor: 'var(--divider)' }}>
             <label className="text-[10px] font-semibold text-muted-foreground uppercase mb-1.5 block tracking-wider">
-              SPRINT
+              RELEASE
             </label>
             <Select value={selectedSprint || undefined} onValueChange={setSelectedSprint}>
               <SelectTrigger className="h-8 text-xs w-full bg-background border-border">
-                <SelectValue placeholder="Select Sprint" />
+                <SelectValue placeholder="Select Release" />
               </SelectTrigger>
               <SelectContent className="bg-background border-border z-[100]">
                 {sprints.map(sprint => (

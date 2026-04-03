@@ -36,22 +36,22 @@ export default function ReleaseDropdown({ projectId }: { projectId: string | nul
         <button
           style={{
             height: 34, padding: '0 14px', borderRadius: 8,
-            border: '1px solid #CBD5E1', background: '#FFFFFF', cursor: 'pointer',
-            fontSize: 13, fontWeight: 600, color: '#334155',
+            border: '1px solid var(--divider)', background: 'var(--cp-float)', cursor: 'pointer',
+            fontSize: 13, fontWeight: 600, color: 'var(--fg-2)',
             display: 'flex', alignItems: 'center', gap: 6,
             transition: 'border-color 150ms, box-shadow 150ms',
           }}
-          onMouseEnter={e => { (e.target as HTMLElement).style.borderColor = '#93C5FD'; (e.target as HTMLElement).style.boxShadow = '0 1px 4px rgba(37,99,235,.1)'; }}
-          onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = '#CBD5E1'; (e.target as HTMLElement).style.boxShadow = 'none'; }}
+          onMouseEnter={e => { (e.target as HTMLElement).style.borderColor = 'var(--cp-primary-30)'; (e.target as HTMLElement).style.boxShadow = '0 1px 4px rgba(37,99,235,.1)'; }}
+          onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = 'var(--divider)'; (e.target as HTMLElement).style.boxShadow = 'none'; }}
         >
-          <Tag size={13} color="#0D9488" />
+          <Tag size={13} color="var(--sem-success)" />
           {activeCount === (releases?.length ?? 0) ? `All Active Releases (${activeCount})` : `${activeCount} Release${activeCount !== 1 ? 's' : ''}`}
-          <ChevronDown size={14} color="#64748B" />
+          <ChevronDown size={14} color="var(--fg-3)" />
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" sideOffset={6} style={{ width: 340, padding: 0, borderRadius: 10, border: '1px solid #E2E8F0', background: '#FFFFFF', boxShadow: '0 4px 12px rgba(0,0,0,.08)' }}>
-        <div style={{ padding: '10px 14px 6px', borderBottom: '1px solid #F1F5F9' }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#0F172A' }}>Select Releases</div>
+      <PopoverContent align="end" sideOffset={6} style={{ width: 340, padding: 0, borderRadius: 10, border: '1px solid var(--divider)', background: 'var(--cp-float)', boxShadow: '0 4px 12px rgba(0,0,0,.08)' }}>
+        <div style={{ padding: '10px 14px 6px', borderBottom: '1px solid var(--cp-bd-zone)' }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--fg-1)' }}>Select Releases</div>
         </div>
         <div style={{ padding: '6px 8px', maxHeight: 240, overflowY: 'auto' }}>
           {(releases ?? []).map((r: any) => {
@@ -70,15 +70,15 @@ export default function ReleaseDropdown({ projectId }: { projectId: string | nul
                   type="checkbox"
                   checked={checked}
                   onChange={() => toggle(r.id)}
-                  style={{ accentColor: '#2563EB', width: 14, height: 14 }}
+                  style={{ accentColor: 'var(--cp-blue)', width: 14, height: 14 }}
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 700, color: '#0F172A' }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 700, color: 'var(--fg-1)' }}>
                       {rKey}
                     </span>
                   </div>
-                  <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
+                  <div style={{ fontSize: 11, color: 'var(--fg-3)', marginTop: 2 }}>
                     {r.status} · {r.target_date ? format(new Date(r.target_date), 'MMM d, yyyy') : 'No date'}
                   </div>
                 </div>
@@ -86,10 +86,10 @@ export default function ReleaseDropdown({ projectId }: { projectId: string | nul
             );
           })}
         </div>
-        <div style={{ padding: '8px 14px', borderTop: '1px solid #F1F5F9' }}>
+        <div style={{ padding: '8px 14px', borderTop: '1px solid var(--cp-bd-zone)' }}>
           <button
             onClick={() => setOpen(false)}
-            style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
+            style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
           >
             Open ReleaseHub <ExternalLink size={10} />
           </button>

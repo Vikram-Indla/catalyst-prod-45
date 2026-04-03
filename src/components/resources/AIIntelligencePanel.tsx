@@ -142,7 +142,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
             <div style={{
               margin: '0 0 16px 0',
               padding: '16px 20px',
-              background: 'var(--rai-primary-bg, #EFF6FF)',
+              background: 'var(--rai-primary-bg, var(--cp-blue-wash))',
               border: '1px solid rgba(37, 99, 235, 0.15)',
               borderRadius: 8,
               display: 'flex',
@@ -151,7 +151,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
             }}>
               <div style={{
                 width: 20, height: 20,
-                border: '2px solid #2563EB',
+                border: '2px solid var(--cp-blue)',
                 borderTopColor: 'transparent',
                 borderRadius: '50%',
                 animation: 'spin 1s linear infinite',
@@ -160,7 +160,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#1E40AF' }}>
                   Generating AI Intelligence…
                 </div>
-                <div style={{ fontSize: 11, color: '#3B82F6', marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: 'var(--cp-blue)', marginTop: 2 }}>
                   First-time analysis — computing metrics and generating behavioral patterns.
                 </div>
               </div>

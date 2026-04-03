@@ -20,13 +20,13 @@ export function WorkHubBreadcrumb({ items }: WorkHubBreadcrumbProps) {
       {items.map((item, index) => (
         <div key={index} className="flex items-center gap-2">
           {index > 0 && (
-            <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--wh-text-tertiary)' }} />
+            <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--fg-4)' }} />
           )}
           {item.path && index < items.length - 1 ? (
             <Link
               to={item.path}
               className="text-sm hover:underline transition-colors"
-              style={{ color: 'var(--wh-text-tertiary)' }}
+              style={{ color: 'var(--fg-4)' }}
             >
               {item.label}
             </Link>
@@ -38,8 +38,8 @@ export function WorkHubBreadcrumb({ items }: WorkHubBreadcrumbProps) {
               style={{
                 color:
                   index === items.length - 1
-                    ? 'var(--wh-text-primary)'
-                    : 'var(--wh-text-tertiary)',
+                    ? 'var(--fg-1)'
+                    : 'var(--fg-4)',
               }}
             >
               {item.label}

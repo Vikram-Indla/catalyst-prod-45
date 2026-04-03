@@ -44,9 +44,9 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
         onClick={() => setOpen(!open)}
         className="inline-flex items-center gap-1.5 px-3 h-8 text-[13px] rounded border transition-colors duration-[80ms] hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
         style={{
-          borderColor: selected.length > 0 ? '#2563EB' : 'rgba(15,23,42,0.12)',
-          color: selected.length > 0 ? '#2563EB' : '#44546f',
-          backgroundColor: selected.length > 0 ? 'rgba(37,99,235,0.08)' : '#fff',
+          borderColor: selected.length > 0 ? 'var(--cp-blue)' : 'rgba(15,23,42,0.12)',
+          color: selected.length > 0 ? 'var(--cp-blue)' : '#44546f',
+          backgroundColor: selected.length > 0 ? 'rgba(37,99,235,0.08)' : 'var(--bg-app)',
           fontWeight: selected.length > 0 ? 500 : 400,
           fontFamily: 'Inter, sans-serif',
         }}
@@ -55,7 +55,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
       >
         {label}
         {selected.length > 0 && (
-          <span className="text-[11px] font-semibold px-1.5 rounded" style={{ backgroundColor: '#2563EB', color: '#fff' }}>
+          <span className="text-[11px] font-semibold px-1.5 rounded" style={{ backgroundColor: 'var(--cp-blue)', color: 'var(--bg-app)' }}>
             {selected.length}
           </span>
         )}
@@ -70,26 +70,26 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
         >
           {isLoading ? (
             <div className="flex items-center justify-center py-4">
-              <Loader2 className="w-4 h-4 animate-spin" style={{ color: '#71717A' }} />
-              <span className="ml-2 text-[12px]" style={{ color: '#71717A' }}>Loading...</span>
+              <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--fg-3)' }} />
+              <span className="ml-2 text-[12px]" style={{ color: 'var(--fg-3)' }}>Loading...</span>
             </div>
           ) : options.length === 0 ? (
-            <div className="px-3 py-4 text-center text-[12px]" style={{ color: '#71717A' }}>No options</div>
+            <div className="px-3 py-4 text-center text-[12px]" style={{ color: 'var(--fg-3)' }}>No options</div>
           ) : (
             options.map(opt => (
               <button
                 key={opt}
                 onClick={() => onToggle(opt)}
                 className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] hover:bg-[rgba(15,23,42,0.04)] text-left transition-colors duration-[80ms]"
-                style={{ color: '#0F172A', fontFamily: 'Inter, sans-serif' }}
+                style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
                 role="option"
                 aria-selected={selected.includes(opt)}
               >
                 <span
                   className="w-4 h-4 rounded border flex items-center justify-center shrink-0"
                   style={{
-                    borderColor: selected.includes(opt) ? '#2563EB' : 'rgba(15,23,42,0.12)',
-                    backgroundColor: selected.includes(opt) ? '#2563EB' : '#fff',
+                    borderColor: selected.includes(opt) ? 'var(--cp-blue)' : 'rgba(15,23,42,0.12)',
+                    backgroundColor: selected.includes(opt) ? 'var(--cp-blue)' : 'var(--bg-app)',
                   }}
                 >
                   {selected.includes(opt) && <Check className="w-3 h-3 text-white" />}
@@ -153,7 +153,7 @@ export function AllWorkToolbar({
         <button
           onClick={() => onFilterChange({})}
           className="inline-flex items-center gap-1 px-2 h-8 text-[12px] rounded hover:bg-[rgba(220,38,38,0.06)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-          style={{ color: '#dc2626' }}
+          style={{ color: 'var(--sem-danger)' }}
           aria-label="Clear all filters"
         >
           <X className="w-3.5 h-3.5" />
@@ -166,7 +166,7 @@ export function AllWorkToolbar({
         className="flex items-center gap-2 h-8 px-2.5 rounded border bg-white focus-within:border-[#2563EB] transition-colors duration-[80ms]"
         style={{ minWidth: 140, borderColor: 'rgba(15,23,42,0.12)' }}
       >
-        <Search className="w-3.5 h-3.5 shrink-0" style={{ color: '#71717A' }} />
+        <Search className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--fg-3)' }} />
         <input
           id="aw-search-input"
           type="text"
@@ -174,7 +174,7 @@ export function AllWorkToolbar({
           onChange={(e) => { setSearchValue(e.target.value); onSearch(e.target.value); }}
           placeholder="Search"
           className="text-[13px] border-none outline-none shadow-none bg-transparent w-full"
-          style={{ color: '#0F172A', fontFamily: 'Inter, sans-serif' }}
+          style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
           aria-label="Search work items"
         />
       </div>
@@ -205,7 +205,7 @@ export function AllWorkToolbar({
       <div className="flex-1" />
 
       {isFetching && (
-        <span className="inline-flex items-center gap-1 text-[11px]" style={{ color: '#71717A' }} aria-label="Loading">
+        <span className="inline-flex items-center gap-1 text-[11px]" style={{ color: 'var(--fg-3)' }} aria-label="Loading">
           <Loader2 className="w-3 h-3 animate-spin" />
         </span>
       )}
@@ -225,8 +225,8 @@ export function AllWorkToolbar({
             onClick={() => onViewModeChange(key)}
             className="flex items-center gap-1.5 px-3 h-8 text-[12px] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
             style={{
-              backgroundColor: viewMode === key ? 'rgba(37,99,235,0.08)' : '#fff',
-              color: viewMode === key ? '#2563EB' : '#6b6e76',
+              backgroundColor: viewMode === key ? 'rgba(37,99,235,0.08)' : 'var(--bg-app)',
+              color: viewMode === key ? 'var(--cp-blue)' : '#6b6e76',
               fontWeight: viewMode === key ? 500 : 400,
               borderLeft: key === 'split' ? '1px solid rgba(15,23,42,0.12)' : 'none',
               boxShadow: viewMode === key ? 'inset 0 1px 2px rgba(0,0,0,0.06)' : 'none',

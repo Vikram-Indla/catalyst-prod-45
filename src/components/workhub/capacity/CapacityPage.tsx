@@ -21,16 +21,16 @@ export function CapacityPage() {
     : 0;
 
   const kpis = [
-    { label: 'Team Size', value: totalMembers, suffix: '', icon: Users, color: 'var(--wh-primary)' },
-    { label: 'Total Capacity', value: totalCapacity, suffix: 'h/wk', icon: Clock, color: 'var(--wh-primary)' },
-    { label: 'Estimated Load', value: totalEstimated, suffix: 'h', icon: TrendingUp, color: 'var(--wh-primary)' },
+    { label: 'Team Size', value: totalMembers, suffix: '', icon: Users, color: 'var(--cp-blue)' },
+    { label: 'Total Capacity', value: totalCapacity, suffix: 'h/wk', icon: Clock, color: 'var(--cp-blue)' },
+    { label: 'Estimated Load', value: totalEstimated, suffix: 'h', icon: TrendingUp, color: 'var(--cp-blue)' },
     { label: 'Avg Utilization', value: avgUtil, suffix: '%', icon: BarChart3, color: getUtilColor(avgUtil) },
   ];
 
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
-        <div style={{ color: 'var(--wh-text-tertiary)', fontFamily: 'Inter, system-ui, sans-serif' }}>Loading capacity data…</div>
+        <div style={{ color: 'var(--fg-4)', fontFamily: 'Inter, system-ui, sans-serif' }}>Loading capacity data…</div>
       </div>
     );
   }
@@ -54,8 +54,8 @@ export function CapacityPage() {
             <div
               key={kpi.label}
               style={{
-                backgroundColor: 'var(--wh-surface)',
-                border: '1px solid var(--wh-border)',
+                backgroundColor: 'var(--cp-float)',
+                border: '1px solid var(--divider)',
                 borderRadius: 'var(--wh-radius-xl, 16px)',
                 padding: '20px 20px',
                 display: 'flex', alignItems: 'center', gap: 14,
@@ -63,7 +63,7 @@ export function CapacityPage() {
             >
               <div style={{
                 width: 36, height: 36, borderRadius: 10,
-                backgroundColor: '#f1f5f9', display: 'flex',
+                backgroundColor: 'var(--bg-1)', display: 'flex',
                 alignItems: 'center', justifyContent: 'center',
               }}>
                 <kpi.icon size={18} style={{ color: kpi.color }} />
@@ -77,7 +77,7 @@ export function CapacityPage() {
                 </div>
                 <div style={{
                   fontFamily: 'Inter, system-ui, sans-serif', fontSize: 12,
-                  color: 'var(--wh-text-tertiary)', marginTop: 2,
+                  color: 'var(--fg-4)', marginTop: 2,
                 }}>
                   {kpi.label}
                 </div>

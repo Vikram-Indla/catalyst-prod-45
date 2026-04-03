@@ -53,13 +53,13 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
     <div
       className="flex items-center gap-2 py-2 overflow-x-auto"
       style={{
-        borderBottom: '1px solid var(--wh-border-light, #f1f5f9)',
+        borderBottom: '1px solid var(--bg-1)',
         fontFamily: 'Inter, system-ui, sans-serif',
         scrollbarWidth: 'none',
       }}
     >
-      <Bookmark className="w-4 h-4 shrink-0" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }} />
-      <span className="text-xs font-medium shrink-0" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+      <Bookmark className="w-4 h-4 shrink-0" style={{ color: 'var(--fg-4)' }} />
+      <span className="text-xs font-medium shrink-0" style={{ color: 'var(--fg-4)' }}>
         Saved:
       </span>
 
@@ -82,16 +82,16 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
                   if (e.key === 'Escape') setRenamingId(null);
                 }}
                 className="px-3 py-1 text-xs rounded-full border outline-none"
-                style={{ borderColor: 'var(--wh-primary, #2563eb)', width: 120, height: 28 }}
+                style={{ borderColor: 'var(--cp-blue)', width: 120, height: 28 }}
               />
             ) : (
               <button
                 onClick={() => isActive ? onDeactivate() : onApplyFilter(sf.filter_config, sf.id)}
                 className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full border transition-all whitespace-nowrap"
                 style={{
-                  backgroundColor: isActive ? 'var(--wh-primary, #2563eb)' : sf.is_shared ? '#eff6ff' : '#f1f5f9',
-                  color: isActive ? '#fff' : sf.is_shared ? '#1d4ed8' : 'var(--wh-text-primary, #0f172a)',
-                  borderColor: isActive ? 'var(--wh-primary, #2563eb)' : 'var(--wh-border, #e2e8f0)',
+                  backgroundColor: isActive ? 'var(--cp-blue)' : sf.is_shared ? 'var(--cp-primary-5)' : 'var(--bg-1)',
+                  color: isActive ? 'var(--bg-app)' : sf.is_shared ? '#1d4ed8' : 'var(--fg-1)',
+                  borderColor: isActive ? 'var(--cp-blue)' : 'var(--divider)',
                 }}
               >
                 {sf.is_shared && !isActive && <Users2 className="w-3 h-3" />}
@@ -109,7 +109,7 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
             {dropdownId === sf.id && (
               <div
                 className="absolute top-full left-0 mt-1 min-w-[160px] bg-white rounded-lg border shadow-xl"
-                style={{ zIndex: 9999, borderColor: 'var(--wh-border, #e2e8f0)' }}
+                style={{ zIndex: 9999, borderColor: 'var(--divider)' }}
               >
                 {[
                   { label: 'Apply', action: () => { onApplyFilter(sf.filter_config, sf.id); setDropdownId(null); } },
@@ -122,7 +122,7 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
                     key={item.label}
                     onClick={item.action}
                     className="w-full text-left px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-                    style={{ color: (item as any).danger ? '#ef4444' : 'var(--wh-text-primary, #0f172a)' }}
+                    style={{ color: (item as any).danger ? 'var(--sem-danger)' : 'var(--fg-1)' }}
                   >
                     {item.label}
                   </button>
@@ -145,20 +145,20 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
             onChange={e => setSaveName(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSave()}
             className="px-2 py-1 text-xs rounded-md border outline-none"
-            style={{ borderColor: 'var(--wh-border, #e2e8f0)', width: 140, height: 28 }}
+            style={{ borderColor: 'var(--divider)', width: 140, height: 28 }}
           />
-          <label className="flex items-center gap-1 text-[11px] shrink-0 cursor-pointer" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
+          <label className="flex items-center gap-1 text-[11px] shrink-0 cursor-pointer" style={{ color: 'var(--fg-3)' }}>
             <input type="checkbox" checked={saveShared} onChange={e => setSaveShared(e.target.checked)} className="w-3 h-3" />
             Share
           </label>
-          <button onClick={() => setShowSaveForm(false)} className="text-xs px-2 py-1 rounded-md hover:bg-slate-50" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>Cancel</button>
-          <button onClick={handleSave} disabled={!saveName.trim()} className="text-xs px-2 py-1 rounded-md font-medium disabled:opacity-40" style={{ backgroundColor: 'var(--wh-primary, #2563eb)', color: '#fff' }}>Save</button>
+          <button onClick={() => setShowSaveForm(false)} className="text-xs px-2 py-1 rounded-md hover:bg-slate-50" style={{ color: 'var(--fg-3)' }}>Cancel</button>
+          <button onClick={handleSave} disabled={!saveName.trim()} className="text-xs px-2 py-1 rounded-md font-medium disabled:opacity-40" style={{ backgroundColor: 'var(--cp-blue)', color: 'var(--bg-app)' }}>Save</button>
         </div>
       ) : (
         <button
           onClick={() => setShowSaveForm(true)}
           className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full border transition-colors shrink-0 hover:bg-slate-50"
-          style={{ borderColor: 'var(--wh-border, #e2e8f0)', color: 'var(--wh-primary, #2563eb)' }}
+          style={{ borderColor: 'var(--divider)', color: 'var(--cp-blue)' }}
         >
           <Bookmark className="w-3 h-3" /> Save Current
         </button>
@@ -167,7 +167,7 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
       <button
         onClick={onClearAll}
         className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full transition-colors shrink-0 hover:bg-red-50"
-        style={{ color: '#ef4444' }}
+        style={{ color: 'var(--sem-danger)' }}
       >
         <X className="w-3 h-3" /> Clear
       </button>

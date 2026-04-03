@@ -22,13 +22,13 @@ export function CollapsibleSection({ title, count, defaultOpen = true, children 
           className="transition-transform duration-150 text-[#94A3B8]"
           style={{ transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}
         />
-        <span className="text-[14px] font-semibold" style={{ color: '#0F172A' }}>
+        <span className="text-[14px] font-semibold" style={{ color: 'var(--fg-1)' }}>
           {title}
         </span>
         {count != null && count > 0 && (
           <span
             className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full ml-1"
-            style={{ background: '#F1F5F9', color: '#64748B' }}
+            style={{ background: 'var(--cp-bd-zone)', color: 'var(--fg-3)' }}
           >
             {count}
           </span>

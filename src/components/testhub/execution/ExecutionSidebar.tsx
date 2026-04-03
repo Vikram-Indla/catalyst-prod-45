@@ -33,9 +33,9 @@ export function ExecutionSidebar({
   const [activeTab, setActiveTab] = useState<'attachments' | 'defects'>('attachments');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'hsl(var(--card))' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--bg-app)' }}>
       {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid hsl(var(--border))' }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid var(--divider)' }}>
         {[
           { key: 'attachments' as const, label: 'Attachments', icon: Paperclip, count: attachments.length },
           { key: 'defects' as const, label: 'Defects', icon: Bug, count: defectIds.length },
@@ -45,9 +45,9 @@ export function ExecutionSidebar({
             onClick={() => setActiveTab(tab.key)}
             style={{
               flex: 1, padding: '12px 8px', border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid hsl(var(--primary))' : '2px solid transparent',
+              borderBottom: activeTab === tab.key ? '2px solid var(--cp-blue)' : '2px solid transparent',
               backgroundColor: 'transparent',
-              color: activeTab === tab.key ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
+              color: activeTab === tab.key ? 'var(--cp-blue)' : 'var(--fg-3)',
               fontSize: 12, fontWeight: 600, cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
             }}
@@ -56,8 +56,8 @@ export function ExecutionSidebar({
             {tab.label}
             {tab.count > 0 && (
               <span style={{
-                fontSize: 10, fontWeight: 700, backgroundColor: activeTab === tab.key ? 'hsl(var(--primary))' : 'hsl(var(--muted))',
-                color: activeTab === tab.key ? 'hsl(var(--primary-foreground))' : 'hsl(var(--muted-foreground))',
+                fontSize: 10, fontWeight: 700, backgroundColor: activeTab === tab.key ? 'var(--cp-blue)' : 'var(--bg-2)',
+                color: activeTab === tab.key ? 'var(--fg-on-blue)' : 'var(--fg-3)',
                 padding: '1px 6px', borderRadius: 10, minWidth: 18, textAlign: 'center',
               }}>
                 {tab.count}
@@ -83,7 +83,7 @@ export function ExecutionSidebar({
               onClick={onCreateDefect}
               style={{
                 width: '100%', padding: '10px 14px', marginBottom: 16,
-                background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
                 border: 'none', borderRadius: 8, color: '#FFFFFF',
                 fontSize: 13, fontWeight: 600, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -93,7 +93,7 @@ export function ExecutionSidebar({
             </button>
 
             {defectIds.length === 0 ? (
-              <div style={{ padding: 24, textAlign: 'center', color: 'hsl(var(--muted-foreground))' }}>
+              <div style={{ padding: 24, textAlign: 'center', color: 'var(--fg-3)' }}>
                 <Bug size={24} style={{ marginBottom: 8, opacity: 0.4 }} />
                 <p style={{ fontSize: 13, margin: 0 }}>No linked defects</p>
               </div>
@@ -103,15 +103,15 @@ export function ExecutionSidebar({
                   <div
                     key={defId}
                     style={{
-                      padding: '10px 12px', backgroundColor: 'hsl(var(--muted) / 0.3)',
-                      borderRadius: 8, border: '1px solid hsl(var(--border))',
+                      padding: '10px 12px', backgroundColor: 'color-mix(in srgb, var(--bg-2) 30%, transparent)',
+                      borderRadius: 8, border: '1px solid var(--divider)',
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     }}
                   >
-                    <span style={{ fontSize: 13, fontWeight: 500, color: 'hsl(var(--foreground))' }}>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>
                       {defId}
                     </span>
-                    <ExternalLink size={14} style={{ color: 'hsl(var(--muted-foreground))' }} />
+                    <ExternalLink size={14} style={{ color: 'var(--fg-3)' }} />
                   </div>
                 ))}
               </div>

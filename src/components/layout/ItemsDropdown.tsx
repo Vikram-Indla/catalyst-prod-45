@@ -51,7 +51,7 @@ const otherItems = [
   { key: 'objectives', label: 'Objectives', icon: Target, color: 'text-brand-primary', path: '/portfolio/:portfolioId/objectives', moduleCode: 'ENTERPRISE' },
   { key: 'dependencies', label: 'Dependencies', icon: GitBranch, color: 'text-brand-primary', path: '/programs/:programId/dependencies', moduleCode: 'PROGRAM' },
   { key: 'risks', label: 'Risks', icon: AlertTriangle, color: 'text-destructive', path: '/programs/:programId/risks', moduleCode: 'ENTERPRISE' },
-  { key: 'sprints', label: 'Sprints', icon: Calendar, color: 'text-brand-primary', path: '/teams/:teamId/sprints', moduleCode: 'PROGRAM' },
+  { key: 'sprints', label: 'Releases', icon: Calendar, color: 'text-brand-primary', path: '/teams/:teamId/sprints', moduleCode: 'PROGRAM' },
   { key: 'program-increments', label: 'Program Increments', icon: Package, color: 'text-workitem-theme', path: '/programs/:programId/increments', moduleCode: 'PROGRAM' },
   { key: 'incidents', label: 'Incidents', icon: Siren, color: 'text-destructive', path: '/release/incidents', moduleCode: null },
 ];

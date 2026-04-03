@@ -41,7 +41,7 @@ export function KBInputArea({
     <div
       style={{
         flexShrink: 0,
-        background: 'var(--cp-bg-page, #FFFFFF)',
+        background: 'var(--cp-bg-page, var(--bg-app))',
         borderTop: '0.75px solid var(--cp-border-subtle, rgba(15,23,42,0.06))',
         padding: '12px 24px 16px',
       }}
@@ -60,7 +60,7 @@ export function KBInputArea({
               borderRadius: 16,
               border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
               background: 'transparent',
-              color: 'var(--cp-text-secondary, #334155)',
+              color: 'var(--cp-text-secondary, var(--fg-2))',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               transition: 'all 150ms ease',
@@ -88,8 +88,8 @@ export function KBInputArea({
           display: 'flex',
           alignItems: 'center',
           gap: 10,
-          background: 'var(--cp-input-bg, #FFFFFF)',
-          border: `1.5px solid ${inputFocused ? 'var(--cp-input-border-focus, #2563EB)' : 'var(--cp-input-border, rgba(15,23,42,0.14))'}`,
+          background: 'var(--cp-input-bg, var(--bg-app))',
+          border: `1.5px solid ${inputFocused ? 'var(--cp-input-border-focus, var(--cp-blue))' : 'var(--cp-input-border, rgba(15,23,42,0.14))'}`,
           borderRadius: 12,
           padding: '6px 12px',
           minHeight: 48,
@@ -110,7 +110,7 @@ export function KBInputArea({
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            background: isListening ? 'var(--cp-danger-60, #DC2626)' : 'transparent',
+            background: isListening ? 'var(--cp-danger-60, var(--sem-danger))' : 'transparent',
             transition: 'all 200ms ease',
             animation: isListening ? 'kb-mic-pulse 1.5s infinite' : 'none',
           }}
@@ -141,7 +141,7 @@ export function KBInputArea({
             minWidth: 0,
             fontSize: 'var(--cp-type-body, 14px)',
             fontWeight: 400,
-            color: 'var(--cp-text-primary, #0F172A)',
+            color: 'var(--cp-text-primary, var(--fg-1))',
             direction: isRTL ? 'rtl' : 'ltr',
             fontFamily: "var(--cp-font-body, 'Inter', system-ui, sans-serif)",
           }}
@@ -161,7 +161,7 @@ export function KBInputArea({
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            background: hasText ? 'var(--cp-primary-60, #2563EB)' : 'transparent',
+            background: hasText ? 'var(--cp-primary-60, var(--cp-blue))' : 'transparent',
             transition: 'all 200ms ease',
           }}
           onMouseEnter={(e) => {
@@ -177,7 +177,7 @@ export function KBInputArea({
       </div>
 
       {/* Footer text */}
-      <p style={{ fontSize: 'var(--cp-type-caption, 11px)', color: 'var(--cp-text-muted, #94A3B8)', textAlign: 'center', marginTop: 8, margin: '8px 0 0' }}>
+      <p style={{ fontSize: 'var(--cp-type-caption, 11px)', color: 'var(--cp-text-muted, var(--fg-4))', textAlign: 'center', marginTop: 8, margin: '8px 0 0' }}>
         Verified against indexed sources · Cited responses
       </p>
 

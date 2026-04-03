@@ -234,13 +234,13 @@ export function WorkItemsTable({
       />
 
       <div className="border rounded-t-md overflow-hidden" style={{
-        borderColor: '#E2E8F0', background: '#FFFFFF',
+        borderColor: 'var(--divider)', background: 'var(--cp-float)',
         borderTopLeftRadius: selectedIds.size > 0 ? 0 : undefined,
         borderTopRightRadius: selectedIds.size > 0 ? 0 : undefined,
       }}>
         <table className="w-full border-collapse table-fixed" style={{ fontFamily: 'Inter, sans-serif' }}>
           <thead>
-            <tr style={{ height: 34, background: '#F8FAFC' }} className="sticky top-0 z-10">
+            <tr style={{ height: 34, background: 'var(--bg-1)' }} className="sticky top-0 z-10">
               {visibleCols.map(col => {
                 const sort = getSortState(col.field);
                 return (
@@ -249,9 +249,9 @@ export function WorkItemsTable({
                     className="text-left px-1 select-none"
                     style={{
                       width: col.width ?? undefined,
-                      fontSize: 11, fontWeight: 700, color: '#94A3B8', letterSpacing: '0.06em',
+                      fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', letterSpacing: '0.06em',
                       textTransform: 'uppercase', fontFamily: 'Inter, sans-serif',
-                      borderBottom: '1px solid #E2E8F0',
+                      borderBottom: '1px solid var(--divider)',
                       cursor: col.sortable ? 'pointer' : 'default',
                     }}
                     onClick={col.key === 'checkbox'
@@ -290,14 +290,14 @@ export function WorkItemsTable({
                       <button
                         onClick={() => toggleGroup(group.key)}
                         className="w-full flex items-center gap-2 px-3 text-left transition-colors hover:bg-[#EFF6FF]"
-                        style={{ height: 32, background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}
+                        style={{ height: 32, background: 'var(--bg-1)', borderBottom: '1px solid var(--divider)' }}
                       >
                         {collapsedGroups.has(group.key)
                           ? <ChevronRight size={14} className="text-[#94A3B8]" />
                           : <ChevronDown size={14} className="text-[#94A3B8]" />
                         }
-                        <span className="text-[12px] font-semibold" style={{ color: '#0F172A' }}>{group.label}</span>
-                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: '#E2E8F0', color: '#64748B' }}>
+                        <span className="text-[12px] font-semibold" style={{ color: 'var(--fg-1)' }}>{group.label}</span>
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: 'var(--divider)', color: 'var(--fg-3)' }}>
                           {group.items.length}
                         </span>
                       </button>
@@ -307,7 +307,7 @@ export function WorkItemsTable({
                     group.items.length > 0 ? renderRows(group.items) : (
                       <tr>
                         <td colSpan={visibleCols.length} className="text-center py-4">
-                          <span className="text-[12px] italic" style={{ color: '#94A3B8' }}>No items</span>
+                          <span className="text-[12px] italic" style={{ color: 'var(--fg-4)' }}>No items</span>
                         </td>
                       </tr>
                     )
@@ -320,11 +320,11 @@ export function WorkItemsTable({
                   {hasSearchOrFilter ? (
                     /* No search results */
                     <div className="flex flex-col items-center justify-center py-16">
-                      <SearchX size={32} style={{ color: '#CBD5E1', marginBottom: 8 }} />
-                      <p style={{ fontSize: 14, fontWeight: 500, color: '#64748B', marginBottom: 4 }}>No items match your search</p>
+                      <SearchX size={32} style={{ color: 'var(--divider)', marginBottom: 8 }} />
+                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-3)', marginBottom: 4 }}>No items match your search</p>
                       <button
                         onClick={onClearFilters}
-                        style={{ fontSize: 12, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}
+                        style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer' }}
                       >
                         Clear filters
                       </button>
@@ -332,28 +332,28 @@ export function WorkItemsTable({
                   ) : sourceFilter === 'jira' ? (
                     /* Jira filter with no Jira items */
                     <div className="flex flex-col items-center justify-center py-16">
-                      <Link2 size={32} style={{ color: '#CBD5E1', marginBottom: 8 }} />
-                      <p style={{ fontSize: 14, fontWeight: 500, color: '#64748B', marginBottom: 4 }}>No Jira-sourced items in this project</p>
-                      <p style={{ fontSize: 12, color: '#94A3B8' }}>Connect Jira to start syncing.</p>
+                      <Link2 size={32} style={{ color: 'var(--divider)', marginBottom: 8 }} />
+                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-3)', marginBottom: 4 }}>No Jira-sourced items in this project</p>
+                      <p style={{ fontSize: 12, color: 'var(--fg-4)' }}>Connect Jira to start syncing.</p>
                     </div>
                   ) : sourceFilter === 'catalyst' ? (
                     /* Catalyst filter with no Catalyst items */
                     <div className="flex flex-col items-center justify-center py-16">
-                      <FileText size={32} style={{ color: '#CBD5E1', marginBottom: 8 }} />
-                      <p style={{ fontSize: 14, fontWeight: 500, color: '#64748B', marginBottom: 4 }}>All items in this project come from Jira.</p>
+                      <FileText size={32} style={{ color: 'var(--divider)', marginBottom: 8 }} />
+                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-3)', marginBottom: 4 }}>All items in this project come from Jira.</p>
                     </div>
                   ) : (
                     /* No items at all */
                     <div className="flex flex-col items-center justify-center py-16">
-                      <div className="flex items-center justify-center mb-3" style={{ width: 56, height: 56, borderRadius: '50%', background: '#F1F5F9' }}>
-                        <FileText size={28} style={{ color: '#94A3B8' }} />
+                      <div className="flex items-center justify-center mb-3" style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--cp-bd-zone)' }}>
+                        <FileText size={28} style={{ color: 'var(--fg-4)' }} />
                       </div>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No work items yet</p>
-                      <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 12 }}>Create your first work item to get started</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items yet</p>
+                      <p style={{ fontSize: 12, color: 'var(--fg-4)', marginBottom: 12 }}>Create your first work item to get started</p>
                       {onCreateClick && (
                         <button
                           onClick={onCreateClick}
-                          style={{ padding: '6px 16px', fontSize: 12, fontWeight: 600, borderRadius: 4, color: '#FFFFFF', background: '#2563EB', border: 'none', cursor: 'pointer' }}
+                          style={{ padding: '6px 16px', fontSize: 12, fontWeight: 600, borderRadius: 4, color: '#FFFFFF', background: 'var(--cp-blue)', border: 'none', cursor: 'pointer' }}
                         >
                           Create work item
                         </button>
@@ -371,7 +371,7 @@ export function WorkItemsTable({
                   <button
                     onClick={onCreateClick}
                     className="w-full flex items-center gap-2 px-4 py-2 text-[11px] font-medium hover:bg-[#F8FAFC] transition-colors cursor-pointer"
-                    style={{ color: '#94A3B8', height: 36, border: 'none', background: 'transparent' }}
+                    style={{ color: 'var(--fg-4)', height: 36, border: 'none', background: 'transparent' }}
                   >
                     <Plus size={14} />
                     Create work item

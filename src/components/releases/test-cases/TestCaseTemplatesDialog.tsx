@@ -201,7 +201,7 @@ export function TestCaseTemplatesDialog({
       <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-600" />
+            <Sparkles className="w-5 h-5 text-blue-600" />
             Test Case Templates
           </DialogTitle>
           <DialogDescription>
@@ -279,7 +279,7 @@ export function TestCaseTemplatesDialog({
                       </div>
                       <div className="flex items-center gap-1">
                         {template.popular && (
-                          <Badge className="text-[10px] px-1.5 py-0 bg-purple-100 text-purple-700 border-0">
+                          <Badge className="text-[10px] px-1.5 py-0 bg-blue-100 text-blue-700 border-0">
                             Popular
                           </Badge>
                         )}

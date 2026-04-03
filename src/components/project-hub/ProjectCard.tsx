@@ -15,7 +15,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
   return (
     <button
       onClick={() => navigate(`/project-hub/${project.key}/dashboard`)}
-      className="relative flex flex-col text-left rounded-xl transition-all p-4 cursor-pointer bg-[#FFFFFF] dark:!bg-[#1A1714] border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-none hover:-translate-y-0.5 hover:shadow-md dark:hover:shadow-none"
+      className="relative flex flex-col text-left rounded-xl transition-all p-4 cursor-pointer bg-[#FFFFFF] dark:!bg-[#181A1E] border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-none hover:-translate-y-0.5 hover:shadow-md dark:hover:shadow-none"
     >
       {/* Star top-right */}
       <div className="absolute top-3 right-3">
@@ -31,7 +31,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
         <div
           className="flex items-center justify-center rounded flex-shrink-0 w-8 h-8 text-white text-[11px] font-bold font-['Sora',sans-serif]"
           style={{
-            background: project.color || '#2563EB',
+            background: project.color || 'var(--cp-blue)',
             borderRadius: 6,
           }}
         >

@@ -71,7 +71,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
     }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{
         width: '100%', maxWidth: 640, maxHeight: '90vh',
-        background: '#FFFFFF', borderRadius: 10,
+        background: 'var(--cp-float)', borderRadius: 10,
         boxShadow: '0 20px 60px rgba(15,23,42,0.25)',
         display: 'flex', flexDirection: 'column',
         border: '0.75px solid rgba(15,23,42,0.12)',
@@ -83,7 +83,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
         }}>
           <h2 style={{
             fontSize: 15, fontFamily: "'Sora', sans-serif", fontWeight: 700,
-            color: '#0F172A', margin: 0,
+            color: 'var(--fg-1)', margin: 0,
           }}>Create Board</h2>
           <button onClick={onClose} style={{
             width: 28, height: 28, borderRadius: 4, border: 'none',
@@ -102,8 +102,8 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
             style={{
               width: '100%', height: 36, padding: '0 12px',
               border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
-              fontSize: 13, fontFamily: "'Inter', sans-serif", color: '#0F172A',
-              outline: 'none', background: '#FFFFFF', marginBottom: 20, boxSizing: 'border-box',
+              fontSize: 13, fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)',
+              outline: 'none', background: 'var(--bg-app)', marginBottom: 20, boxSizing: 'border-box',
             }}
           />
 
@@ -112,22 +112,22 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
             {TEMPLATES.map(t => (
               <button key={t.id} onClick={() => setTemplate(t.id)} style={{
                 padding: '10px 12px', borderRadius: 6, cursor: 'pointer', textAlign: 'left',
-                border: `0.75px solid ${template === t.id ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
-                background: template === t.id ? 'rgba(37,99,235,0.04)' : '#FFFFFF',
+                border: `0.75px solid ${template === t.id ? 'var(--cp-blue)' : 'rgba(15,23,42,0.12)'}`,
+                background: template === t.id ? 'rgba(37,99,235,0.04)' : 'var(--bg-app)',
                 transition: 'all 100ms',
               }}>
-                <div style={{ fontSize: 12.5, fontWeight: 600, color: '#0F172A', fontFamily: "'Inter', sans-serif", marginBottom: 6 }}>
+                <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif", marginBottom: 6 }}>
                   {t.name}
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {t.cols.length > 0 ? t.cols.map(c => (
                     <span key={c.name} style={{
                       fontSize: 10, padding: '2px 6px', borderRadius: 4,
-                      background: '#F8FAFC', color: '#64748B',
+                      background: 'var(--bg-1)', color: 'var(--fg-3)',
                       fontFamily: "'Inter', sans-serif",
                     }}>{c.name}</span>
                   )) : (
-                    <span style={{ fontSize: 10.5, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>
+                    <span style={{ fontSize: 10.5, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>
                       Start from scratch
                     </span>
                   )}
@@ -142,16 +142,16 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
               <button key={opt.value} onClick={() => setSwimlane(opt.value)} style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
                 borderRadius: 6, cursor: 'pointer', textAlign: 'left',
-                border: `0.75px solid ${swimlane === opt.value ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
-                background: swimlane === opt.value ? 'rgba(37,99,235,0.04)' : '#FFFFFF',
+                border: `0.75px solid ${swimlane === opt.value ? 'var(--cp-blue)' : 'rgba(15,23,42,0.12)'}`,
+                background: swimlane === opt.value ? 'rgba(37,99,235,0.04)' : 'var(--bg-app)',
                 transition: 'all 100ms',
               }}>
                 <RadioCircle selected={swimlane === opt.value} />
                 <div>
-                  <div style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
+                  <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
                     {opt.label}
                   </div>
-                  <div style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>
+                  <div style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>
                     {opt.desc}
                   </div>
                 </div>
@@ -165,7 +165,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
               <button key={c} onClick={() => setColor(c)} style={{
                 width: 28, height: 28, borderRadius: 6, border: 'none',
                 background: c, cursor: 'pointer',
-                outline: color === c ? '2px solid #2563EB' : 'none',
+                outline: color === c ? '2px solid var(--cp-blue)' : 'none',
                 outlineOffset: color === c ? 2 : 0,
                 transition: 'outline 100ms',
               }} />
@@ -178,14 +178,14 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
               <button key={opt.value} onClick={() => setVisibility(opt.value)} style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
                 borderRadius: 6, cursor: 'pointer', textAlign: 'left',
-                border: `0.75px solid ${visibility === opt.value ? '#2563EB' : 'rgba(15,23,42,0.12)'}`,
-                background: visibility === opt.value ? 'rgba(37,99,235,0.04)' : '#FFFFFF',
+                border: `0.75px solid ${visibility === opt.value ? 'var(--cp-blue)' : 'rgba(15,23,42,0.12)'}`,
+                background: visibility === opt.value ? 'rgba(37,99,235,0.04)' : 'var(--bg-app)',
                 transition: 'all 100ms',
               }}>
                 <RadioCircle selected={visibility === opt.value} />
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
                       {opt.label}
                     </span>
                     {opt.warning && (
@@ -194,7 +194,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
                       </span>
                     )}
                   </div>
-                  <div style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>
+                  <div style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>
                     {opt.desc}
                   </div>
                 </div>
@@ -210,16 +210,16 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
         }}>
           <button onClick={onClose} style={{
             height: 34, padding: '0 16px', borderRadius: 6,
-            border: '0.75px solid rgba(15,23,42,0.12)', background: '#FFFFFF',
-            fontSize: 12.5, fontWeight: 500, color: '#334155',
+            border: '0.75px solid rgba(15,23,42,0.12)', background: 'var(--bg-app)',
+            fontSize: 12.5, fontWeight: 500, color: 'var(--fg-2)',
             fontFamily: "'Inter', sans-serif", cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={handleCreate} disabled={!name.trim() || createBoard.isPending}
             style={{
               height: 34, padding: '0 18px', borderRadius: 6, border: 'none',
-              background: name.trim() ? '#2563EB' : '#E2E8F0',
+              background: name.trim() ? 'var(--cp-blue)' : 'var(--divider)',
               fontSize: 12.5, fontWeight: 600,
-              color: name.trim() ? '#FFFFFF' : '#94A3B8',
+              color: name.trim() ? '#FFFFFF' : 'var(--fg-4)',
               fontFamily: "'Inter', sans-serif",
               cursor: name.trim() ? 'pointer' : 'not-allowed',
             }}>
@@ -235,10 +235,10 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
   return (
     <label style={{
       display: 'block', fontSize: 12, fontWeight: 600,
-      color: '#334155', fontFamily: "'Inter', sans-serif",
+      color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif",
       marginBottom: 6,
     }}>
-      {children}{required && <span style={{ color: '#DC2626' }}> *</span>}
+      {children}{required && <span style={{ color: 'var(--sem-danger)' }}> *</span>}
     </label>
   );
 }
@@ -247,9 +247,9 @@ function RadioCircle({ selected }: { selected: boolean }) {
   return (
     <div style={{
       width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
-      border: `1.5px solid ${selected ? '#2563EB' : 'rgba(15,23,42,0.15)'}`,
+      border: `1.5px solid ${selected ? 'var(--cp-blue)' : 'rgba(15,23,42,0.15)'}`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: selected ? '#2563EB' : '#FFFFFF',
+      background: selected ? 'var(--cp-blue)' : 'var(--bg-app)',
       transition: 'all 100ms',
     }}>
       {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFFFFF' }} />}

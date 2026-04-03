@@ -41,7 +41,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
       onClick={() => onSelectIdea(idea)}
       title={idea.title.length > 60 ? idea.title : undefined}
       style={{
-        background: isDark ? 'transparent' : '#FFFFFF',
+        background: isDark ? 'transparent' : 'var(--bg-app)',
         border: `1px solid ${dk.border}`,
         borderRadius: 8,
         padding: 12, cursor: 'grab', position: 'relative',
@@ -74,17 +74,17 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
               className="move-btn"
               style={{
                 width: 22, height: 18, borderRadius: 4, border: `1px solid ${dk.border}`,
-                background: isDark ? 'transparent' : '#FFFFFF', cursor: 'pointer',
+                background: isDark ? 'transparent' : 'var(--bg-app)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 opacity: 0, transition: 'opacity 150ms',
               }}
             >
-              <Move size={10} color={isDark ? 'rgba(248,244,240,0.50)' : '#94A3B8'} />
+              <Move size={10} color={isDark ? 'rgba(235,238,245,0.50)' : '#94A3B8'} />
             </button>
             {moveOpen && (
               <div style={{
                 position: 'absolute', top: 22, right: 0, zIndex: 20,
-                background: isDark ? '#232019' : '#FFFFFF',
+                background: isDark ? '#1F2128' : 'var(--bg-app)',
                 border: `1px solid ${dk.border}`, borderRadius: 6,
                 boxShadow: isDark ? 'none' : '0 4px 12px rgba(0,0,0,.12)',
                 minWidth: 140, padding: 4,
@@ -118,13 +118,13 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             title={idea.isCommitted ? 'Uncommit' : 'Commit'}
             style={{
               width: 32, height: 18, borderRadius: 9, border: 'none', cursor: 'pointer',
-              background: idea.isCommitted ? '#0D9488' : (isDark ? 'rgba(255,255,255,0.20)' : '#CBD5E1'),
+              background: idea.isCommitted ? 'var(--sem-success)' : (isDark ? 'rgba(255,255,255,0.20)' : '#CBD5E1'),
               position: 'relative', transition: 'background 150ms',
             }}
           >
             <span style={{
               position: 'absolute', top: 3, width: 12, height: 12, borderRadius: 6,
-              background: '#FFFFFF', transition: 'left 150ms',
+              background: 'var(--bg-app)', transition: 'left 150ms',
               left: idea.isCommitted ? 17 : 3,
             }} />
           </button>
@@ -172,7 +172,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             beta: { bg: isDark ? 'rgba(13,148,136,0.15)' : '#CCFBF1', text: isDark ? '#5EEAD4' : '#0F766E', border: isDark ? 'rgba(13,148,136,0.25)' : '#5EEAD4' },
             prod: { bg: isDark ? 'rgba(22,163,74,0.15)' : '#D1FAE5', text: isDark ? '#86EFAC' : '#065F46', border: isDark ? 'rgba(22,163,74,0.25)' : '#6EE7B7' },
           };
-          const unsetStyle = { bg: isDark ? 'rgba(255,255,255,0.04)' : '#F1F5F9', text: isDark ? 'rgba(248,244,240,0.25)' : '#CBD5E1', border: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' };
+          const unsetStyle = { bg: isDark ? 'rgba(255,255,255,0.04)' : '#F1F5F9', text: isDark ? 'rgba(235,238,245,0.25)' : '#CBD5E1', border: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' };
           const style = isSet ? CHIP_STYLES[m.key] : unsetStyle;
           return (
             <span key={m.key} style={{
@@ -194,7 +194,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           display: 'inline-flex', alignItems: 'center', height: 24, padding: '0 8px',
           borderRadius: 4,
           background: isDark ? 'rgba(22,163,74,0.12)' : '#1B7F37',
-          color: isDark ? '#86EFAC' : '#FFFFFF',
+          color: isDark ? '#86EFAC' : 'var(--bg-app)',
           border: `1px solid ${isDark ? 'rgba(22,163,74,0.25)' : '#B7EBD1'}`,
           fontSize: 10, fontWeight: 700,
           fontFamily: "'Inter', sans-serif",
@@ -207,7 +207,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           style={{
             height: 24, padding: '0 8px', borderRadius: 4,
             border: `1px solid ${dk.border}`,
-            background: isDark ? 'transparent' : '#FFFFFF',
+            background: isDark ? 'transparent' : 'var(--bg-app)',
             color: dk.t3, fontSize: 10, fontWeight: 600,
             fontFamily: "'Inter', sans-serif", cursor: 'pointer',
             transition: 'all 120ms',
@@ -219,7 +219,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           }}
           onMouseLeave={e => {
             e.currentTarget.style.background = isDark ? 'transparent' : '#FFFFFF';
-            e.currentTarget.style.color = isDark ? 'rgba(248,244,240,0.60)' : '#64748B';
+            e.currentTarget.style.color = isDark ? 'rgba(235,238,245,0.60)' : '#64748B';
             e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0';
           }}
         >

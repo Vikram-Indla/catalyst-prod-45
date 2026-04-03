@@ -436,7 +436,7 @@ function UtilizationBadge({ value }: { value: number }) {
         <span className="text-xl font-extrabold tabular-nums leading-none" style={{ color: '#1e40af' }}>
           {value}%
         </span>
-        <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: '#334155' }}>
+        <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: 'var(--fg-2)' }}>
           Utilization
         </span>
       </div>

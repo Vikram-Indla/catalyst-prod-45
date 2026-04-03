@@ -26,7 +26,7 @@ function DonutChart({ budget, acceptedSpend }: { budget: number; acceptedSpend: 
           cy="80"
           r={radius}
           fill="none"
-          stroke="hsl(var(--muted))"
+          stroke="var(--bg-2)"
           strokeWidth="20"
         />
         <circle
@@ -34,7 +34,7 @@ function DonutChart({ budget, acceptedSpend }: { budget: number; acceptedSpend: 
           cy="80"
           r={radius}
           fill="none"
-          stroke="hsl(var(--success))"
+          stroke="var(--sem-success)"
           strokeWidth="20"
           strokeLinecap="round"
           strokeDasharray={circumference}

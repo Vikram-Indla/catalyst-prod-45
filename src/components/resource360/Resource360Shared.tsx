@@ -34,7 +34,7 @@ export function InlineExpansionPanel({ item, onOpenDetail }: { item: Resource360
   return (
     <div style={{
       padding: '10px 16px 10px 28px', background: '#FAF8F5',
-      borderBottom: '1px solid #D9D2C9', borderLeft: '4px solid #2563EB',
+      borderBottom: '1px solid var(--divider)', borderLeft: '4px solid var(--cp-blue)',
       animation: 'expandIn 200ms ease-out',
     }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 8, fontSize: 11 }}>
@@ -47,26 +47,26 @@ export function InlineExpansionPanel({ item, onOpenDetail }: { item: Resource360
           ['Assigned Date', item.assigned_at?.slice(0, 10) ?? ''],
         ].map(([label, value]) => (
           <div key={label}>
-            <p style={{ color: '#6B6B80', fontWeight: 700, fontSize: 9, margin: '0 0 2px', textTransform: 'uppercase' }}>{label}</p>
-            <p style={{ color: '#0A0A0A', fontWeight: 600, margin: 0 }}>{value}</p>
+            <p style={{ color: 'var(--fg-3)', fontWeight: 700, fontSize: 9, margin: '0 0 2px', textTransform: 'uppercase' }}>{label}</p>
+            <p style={{ color: 'var(--fg-1)', fontWeight: 600, margin: 0 }}>{value}</p>
           </div>
         ))}
         {item.parent_key && (
           <div>
-            <p style={{ color: '#6B6B80', fontWeight: 700, fontSize: 9, margin: '0 0 2px', textTransform: 'uppercase' }}>Parent</p>
-            <p style={{ color: '#0A0A0A', fontWeight: 600, margin: 0 }}>{item.parent_key} — {item.parent_title ?? ''}</p>
+            <p style={{ color: 'var(--fg-3)', fontWeight: 700, fontSize: 9, margin: '0 0 2px', textTransform: 'uppercase' }}>Parent</p>
+            <p style={{ color: 'var(--fg-1)', fontWeight: 600, margin: 0 }}>{item.parent_key} — {item.parent_title ?? ''}</p>
           </div>
         )}
         {item.project_name && (
           <div>
-            <p style={{ color: '#6B6B80', fontWeight: 700, fontSize: 9, margin: '0 0 2px', textTransform: 'uppercase' }}>Project</p>
-            <p style={{ color: '#0A0A0A', fontWeight: 600, margin: 0 }}>{item.project_name}</p>
+            <p style={{ color: 'var(--fg-3)', fontWeight: 700, fontSize: 9, margin: '0 0 2px', textTransform: 'uppercase' }}>Project</p>
+            <p style={{ color: 'var(--fg-1)', fontWeight: 600, margin: 0 }}>{item.project_name}</p>
           </div>
         )}
         {item.release_name && (
           <div>
-            <p style={{ color: '#6B6B80', fontWeight: 700, fontSize: 9, margin: '0 0 2px', textTransform: 'uppercase' }}>Release</p>
-            <p style={{ color: '#0A0A0A', fontWeight: 600, margin: 0 }}>{item.release_name}</p>
+            <p style={{ color: 'var(--fg-3)', fontWeight: 700, fontSize: 9, margin: '0 0 2px', textTransform: 'uppercase' }}>Release</p>
+            <p style={{ color: 'var(--fg-1)', fontWeight: 600, margin: 0 }}>{item.release_name}</p>
           </div>
         )}
       </div>
@@ -96,7 +96,7 @@ export function ExpandChevron({ expanded, onClick }: { expanded: boolean; onClic
     <span
       onClick={onClick}
       style={{
-        cursor: 'pointer', fontSize: 10, color: '#6B6B80',
+        cursor: 'pointer', fontSize: 10, color: 'var(--fg-3)',
         transition: 'transform .15s', display: 'inline-block',
         transform: expanded ? 'rotate(90deg)' : 'rotate(0)',
         marginRight: 6, flexShrink: 0, width: 14, userSelect: 'none',

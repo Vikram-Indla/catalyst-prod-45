@@ -370,7 +370,7 @@ export function StepsTab({ data, onChange, onOpenTemplates, onOpenAIGenerate }: 
         <Button 
           size="sm" 
           onClick={onOpenAIGenerate}
-          className="bg-violet-600 hover:bg-violet-700 text-white"
+          className="bg-blue-600 hover:bg-blue-700 text-white"
         >
           <Sparkles className="w-4 h-4 mr-1.5" />
           AI Generate

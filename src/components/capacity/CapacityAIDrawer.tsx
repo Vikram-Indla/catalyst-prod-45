@@ -404,9 +404,9 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
             <div className="p-4 rounded-lg border border-[#C8CCD0]/30 bg-white dark:bg-[#1A1A1A]">
               <div className="flex items-center gap-3">
                 <div className="flex gap-1">
-                  <span className="w-2 h-2 bg-[#0d9488] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-2 h-2 bg-[#0d9488] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-2 h-2 bg-[#0d9488] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <span className="w-2 h-2 bg-[var(--sem-success)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 bg-[var(--sem-success)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 bg-[var(--sem-success)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
                 <span className="text-sm text-[#0d9488]">Querying Catalyst database...</span>
               </div>

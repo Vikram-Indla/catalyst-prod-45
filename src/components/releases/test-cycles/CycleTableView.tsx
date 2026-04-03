@@ -56,7 +56,7 @@ const statusColors: Record<string, string> = {
 };
 
 const envColors: Record<string, string> = {
-  dev: 'bg-purple-100 text-purple-700',
+  dev: 'bg-blue-100 text-blue-700',
   qa: 'bg-cyan-100 text-cyan-700',
   beta: 'bg-amber-100 text-amber-700',
   staging: 'bg-orange-100 text-orange-700',
@@ -68,7 +68,7 @@ const envColors: Record<string, string> = {
 const avatarColors: Record<string, string> = {
   blue: 'bg-blue-100 text-blue-700',
   green: 'bg-green-100 text-green-700',
-  purple: 'bg-purple-100 text-purple-700',
+  purple: 'bg-blue-100 text-blue-700',
   orange: 'bg-orange-100 text-orange-700',
 };
 

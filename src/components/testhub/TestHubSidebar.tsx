@@ -71,7 +71,7 @@ export function TestHubSidebar({
           fontWeight: 600,
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
-          color: '#64748B',
+          color: 'var(--fg-3)',
         }}>
           {title}
         </span>
@@ -90,7 +90,7 @@ export function TestHubSidebar({
                 padding: '0 16px',
                 textDecoration: 'none',
                 backgroundColor: active ? 'rgba(37, 99, 235, 0.1)' : 'transparent',
-                color: active ? '#2563EB' : '#334155',
+                color: active ? 'var(--cp-blue)' : 'var(--fg-2)',
                 borderRadius: 0,
                 transition: 'all 0.15s',
               }}
@@ -106,7 +106,7 @@ export function TestHubSidebar({
               }}
             >
               <span style={{
-                color: active ? '#2563EB' : '#64748B',
+                color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
                 marginRight: 12,
               }}>
                 {item.icon}
@@ -124,8 +124,8 @@ export function TestHubSidebar({
                   height: 20,
                   padding: '0 6px',
                   borderRadius: 10,
-                  backgroundColor: active ? '#2563EB' : '#E2E8F0',
-                  color: active ? '#FFFFFF' : '#64748B',
+                  backgroundColor: active ? 'var(--cp-blue)' : 'var(--divider)',
+                  color: active ? '#FFFFFF' : 'var(--fg-3)',
                   fontSize: 11,
                   fontWeight: 600,
                   display: 'flex',
@@ -145,8 +145,8 @@ export function TestHubSidebar({
   return (
     <div style={{
       width: 220,
-      backgroundColor: '#FFFFFF',
-      borderRight: '1px solid #E2E8F0',
+      backgroundColor: 'var(--cp-float)',
+      borderRight: '1px solid var(--divider)',
       display: 'flex',
       flexDirection: 'column',
       flexShrink: 0,

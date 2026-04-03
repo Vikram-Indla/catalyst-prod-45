@@ -58,7 +58,7 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
 
   const inputStyle: React.CSSProperties = {
     height: 36, padding: '0 12px', fontSize: 13,
-    color: '#0F172A', background: '#FFFFFF', border: '1px solid #E2E8F0',
+    color: 'var(--fg-1)', background: 'var(--cp-float)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
     flex: 1, minWidth: 0,
     transition: 'border-color 150ms, box-shadow 150ms',
@@ -73,10 +73,10 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
           {[1,2,3].map(i => <div key={i} className="ph-skeleton rounded" style={{ height: 32, width: '25%' }} />)}
         </div>
       ) : components.length === 0 ? (
-        <div className="flex flex-col items-center py-8" style={{ color: '#CBD5E1' }}>
+        <div className="flex flex-col items-center py-8" style={{ color: 'var(--divider)' }}>
           <Puzzle size={32} strokeWidth={1.25} />
-          <p style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', marginTop: 12, fontFamily: "'Sora', sans-serif" }}>No components yet</p>
-          <p style={{ fontSize: 14, color: '#64748B', marginTop: 4, textAlign: 'center', maxWidth: 320 }}>
+          <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg-1)', marginTop: 12, fontFamily: "'Sora', sans-serif" }}>No components yet</p>
+          <p style={{ fontSize: 14, color: 'var(--fg-3)', marginTop: 4, textAlign: 'center', maxWidth: 320 }}>
             Components represent areas like Backend, Frontend, API.
           </p>
         </div>
@@ -88,17 +88,17 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
               className="inline-flex items-center gap-2 rounded-full transition-colors hover:opacity-80"
               style={{
                 padding: '4px 10px 4px 12px',
-                background: '#F1F5F9',
-                border: '1px solid #E2E8F0',
+                background: 'var(--cp-bd-zone)',
+                border: '1px solid var(--divider)',
               }}
             >
-              <span style={{ fontSize: 13, color: '#0F172A', fontWeight: 500 }}>{c.name}</span>
+              <span style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500 }}>{c.name}</span>
               <button
                 onClick={() => handleDelete(c.id)}
                 className="flex items-center justify-center rounded-full transition-colors hover:bg-[#FEE2E2]"
                 style={{ width: 18, height: 18, border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
-                <X size={12} color="#94A3B8" />
+                <X size={12} color="var(--fg-4)" />
               </button>
             </div>
           ))}
@@ -106,7 +106,7 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
       )}
 
       {/* Add component */}
-      <div className="flex items-center gap-2 pt-4" style={{ borderTop: components.length > 0 ? '1px solid #E2E8F0' : 'none' }}>
+      <div className="flex items-center gap-2 pt-4" style={{ borderTop: components.length > 0 ? '1px solid var(--divider)' : 'none' }}>
         <input
           value={newName}
           onChange={e => setNewName(e.target.value)}
@@ -114,8 +114,8 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
           placeholder="Component name..."
           disabled={atMax}
           style={{ ...inputStyle, opacity: atMax ? 0.5 : 1 }}
-          onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
-          onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+          onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+          onBlur={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }}
         />
         <button
           onClick={handleAdd}
@@ -123,10 +123,10 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
           className="flex-shrink-0 transition-all disabled:opacity-40"
           style={{
             height: 36, padding: '0 14px', fontSize: 13, fontWeight: 500,
-            color: '#334155', border: '1px solid #E2E8F0', borderRadius: 6,
+            color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
             background: 'transparent', cursor: !newName.trim() || atMax ? 'default' : 'pointer',
           }}
-          onMouseEnter={e => { if (newName.trim() && !atMax) e.currentTarget.style.background = '#F8FAFC'; }}
+          onMouseEnter={e => { if (newName.trim() && !atMax) e.currentTarget.style.background = 'var(--bg-1)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
         >
           Add
@@ -134,7 +134,7 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
       </div>
 
       {atMax && (
-        <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 8 }}>Maximum 30 components reached.</p>
+        <p style={{ fontSize: 11, color: 'var(--fg-4)', marginTop: 8 }}>Maximum 30 components reached.</p>
       )}
     </div>
   );

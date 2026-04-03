@@ -19,10 +19,10 @@ function deriveHub(item: any): string {
 
 const MetaField = ({ label, children, span }: { label: string; children: React.ReactNode; span?: number }) => (
   <div style={{ gridColumn: span === 2 ? '1 / -1' : undefined }}>
-    <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', marginBottom: 4 }}>
+    <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--fg-2)', marginBottom: 4 }}>
       {label}
     </div>
-    <div style={{ fontSize: 13, color: '#0F172A' }}>{children}</div>
+    <div style={{ fontSize: 13, color: 'var(--fg-1)' }}>{children}</div>
   </div>
 );
 
@@ -60,7 +60,7 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
 
   const sc = getStatusCategory(item.status_category || item.status);
   const colors = SC_COLORS[sc];
-  const witStyle = WIT_STYLES[item.work_item_type] || { bg: '#F1F5F9', color: '#334155' };
+  const witStyle = WIT_STYLES[item.work_item_type] || { bg: 'var(--bg-3)', color: 'var(--fg-2)' };
   const hub = deriveHub(item);
   const hubColor = HUB_COLORS[hub] || '#64748B';
   const hubShort = HUB_SHORT[hub] || hub;
@@ -90,7 +90,7 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
         ref={modalRef}
         onClick={e => e.stopPropagation()}
         style={{
-          background: '#FFFFFF', borderRadius: 12,
+          background: 'var(--cp-float)', borderRadius: 12,
           width: 720, maxHeight: '85vh', overflow: 'auto',
           boxShadow: '0 8px 32px rgba(0,0,0,.18)',
           animation: 'ctxModalIn 250ms ease-out',
@@ -98,22 +98,22 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
       >
         {/* ── Header ── */}
         <div style={{
-          padding: '20px 24px 16px', borderBottom: '1px solid #E2E8F0',
+          padding: '20px 24px 16px', borderBottom: '1px solid var(--divider)',
           display: 'flex', alignItems: 'flex-start', gap: 12,
         }}>
           <div style={{ flex: 1 }}>
             {/* Parent breadcrumb */}
             {item.parent_item_key && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                <span style={{ fontSize: 11, fontFamily: 'monospace', color: '#2563EB', fontWeight: 600 }}>
+                <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--cp-blue)', fontWeight: 600 }}>
                   {item.parent_item_key}
                 </span>
                 {item.parent_summary && (
-                  <span style={{ fontSize: 11, color: '#64748B' }}>
+                  <span style={{ fontSize: 11, color: 'var(--fg-3)' }}>
                     {item.parent_summary}
                   </span>
                 )}
-                <span style={{ fontSize: 10, color: '#94A3B8' }}>›</span>
+                <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>›</span>
               </div>
             )}
 
@@ -121,10 +121,10 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 15, fontWeight: 900, fontFamily: 'monospace', color: '#0F172A' }}>
+                  <span style={{ fontSize: 15, fontWeight: 900, fontFamily: 'monospace', color: 'var(--fg-1)' }}>
                     {item.item_key}
                   </span>
-                  <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: 0 }}>{item.title}</h2>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>{item.title}</h2>
                 </div>
                 <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {/* WIT badge */}
@@ -144,7 +144,7 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
                     {item.status}
                   </span>
                   {/* Priority */}
-                  <span style={{ fontSize: 11, color: '#475569', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                  <span style={{ fontSize: 11, color: 'var(--fg-2)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                     {PRIORITY_ICONS[item.priority] || ''} {item.priority}
                   </span>
                 </div>
@@ -158,8 +158,8 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
             aria-label="Close modal"
             style={{
               width: 32, height: 32, borderRadius: 8,
-              border: '1px solid #E2E8F0', background: '#FFFFFF',
-              cursor: 'pointer', fontSize: 16, color: '#64748B',
+              border: '1px solid var(--divider)', background: 'var(--cp-float)',
+              cursor: 'pointer', fontSize: 16, color: 'var(--fg-3)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
             }}
@@ -186,15 +186,15 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
               }}>
                 {item.release_key}
                 {item.release_end_date && (
-                  <span style={{ fontWeight: 400, marginLeft: 6, fontSize: 10, color: '#64748B' }}>
+                  <span style={{ fontWeight: 400, marginLeft: 6, fontSize: 10, color: 'var(--fg-3)' }}>
                     ends {item.release_end_date.slice(0, 10)}
                   </span>
                 )}
               </span>
-            ) : <span style={{ color: '#64748B', fontSize: 12 }}>—</span>}
+            ) : <span style={{ color: 'var(--fg-3)', fontSize: 12 }}>—</span>}
           </MetaField>
           <MetaField label="Age">
-            <span style={{ fontWeight: 700, color: ageDays != null && ageDays > 14 ? '#DC2626' : ageDays != null && ageDays > 7 ? '#D97706' : '#059669' }}>
+            <span style={{ fontWeight: 700, color: ageDays != null && ageDays > 14 ? 'var(--sem-danger)' : ageDays != null && ageDays > 7 ? 'var(--sem-warning)' : '#059669' }}>
               {ageDays != null ? `${ageDays}d` : '—'}
             </span>
           </MetaField>
@@ -202,17 +202,17 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
             {daysUntilDue != null ? (
               <span style={{
                 fontSize: 13, fontWeight: 700,
-                color: daysUntilDue < 0 ? '#DC2626' : daysUntilDue <= 7 ? '#D97706' : '#059669',
+                color: daysUntilDue < 0 ? 'var(--sem-danger)' : daysUntilDue <= 7 ? 'var(--sem-warning)' : '#059669',
               }}>
                 {daysUntilDue < 0 ? `${Math.abs(daysUntilDue)}d overdue` : daysUntilDue === 0 ? 'Due today' : `${daysUntilDue}d remaining`}
               </span>
-            ) : <span style={{ color: '#64748B', fontSize: 12 }}>No due date</span>}
+            ) : <span style={{ color: 'var(--fg-3)', fontSize: 12 }}>No due date</span>}
           </MetaField>
         </div>
 
         {/* ── Status Transition Timeline ── */}
         <div style={{ padding: '0 24px 16px' }}>
-          <div style={{ fontSize: 10.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', marginBottom: 10 }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--fg-2)', marginBottom: 10 }}>
             Status Transition Timeline
           </div>
           {transitions && transitions.length > 0 ? (
@@ -227,26 +227,26 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
                       <div style={{
                         minWidth, padding: '8px 10px',
                         background: tColors.bg,
-                        borderRight: i < transitions.length - 1 ? '2px solid #FFFFFF' : 'none',
+                        borderRight: i < transitions.length - 1 ? '2px solid var(--bg-app)' : 'none',
                       }}>
                         <div style={{ fontSize: 10.5, fontWeight: 700, color: tColors.text, whiteSpace: 'nowrap' }}>{t.to_status}</div>
-                        <div style={{ fontSize: 9.5, color: '#64748B', marginTop: 2 }}>
+                        <div style={{ fontSize: 9.5, color: 'var(--fg-3)', marginTop: 2 }}>
                           {t.dwell_days != null ? `${t.dwell_days}d` : '—'}
                         </div>
                       </div>
                       {i < transitions.length - 1 && (
-                        <span style={{ fontSize: 10, color: '#94A3B8', padding: '0 2px' }}>→</span>
+                        <span style={{ fontSize: 10, color: 'var(--fg-4)', padding: '0 2px' }}>→</span>
                       )}
                     </React.Fragment>
                   );
                 })}
               </div>
-              <div style={{ fontSize: 11, color: '#475569', marginTop: 8, fontWeight: 600 }}>
+              <div style={{ fontSize: 11, color: 'var(--fg-2)', marginTop: 8, fontWeight: 600 }}>
                 Total: {transitions.reduce((sum: number, t: any) => sum + (t.dwell_days || 0), 0)}d
               </div>
             </>
           ) : (
-            <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
+            <div style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>
               No transition history available
             </div>
           )}
@@ -255,11 +255,11 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
         {/* ── Description (capped) ── */}
         {description && (
           <div style={{ padding: '0 24px 16px' }}>
-            <div style={{ fontSize: 10.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', marginBottom: 6 }}>
+            <div style={{ fontSize: 10.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--fg-2)', marginBottom: 6 }}>
               Description
             </div>
             <div style={{
-              fontSize: 12, color: '#334155', lineHeight: 1.6,
+              fontSize: 12, color: 'var(--fg-2)', lineHeight: 1.6,
               position: 'relative',
               ...(!showFullDesc && description.length > 200 ? {
                 maxHeight: '4.8em', overflow: 'hidden',
@@ -269,13 +269,13 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
               {!showFullDesc && description.length > 200 && (
                 <div style={{
                   position: 'absolute', bottom: 0, left: 0, right: 0, height: 32,
-                  background: 'linear-gradient(transparent, #FFFFFF)',
+                  background: 'linear-gradient(transparent, var(--cp-float))',
                 }} />
               )}
             </div>
             {description.length > 200 && (
               <button onClick={() => setShowFullDesc(!showFullDesc)} style={{
-                fontSize: 11, fontWeight: 600, color: '#2563EB', background: 'none',
+                fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', background: 'none',
                 border: 'none', cursor: 'pointer', padding: '4px 0', marginTop: 2,
               }}>
                 {showFullDesc ? 'Show less' : 'Show more'}
@@ -288,7 +288,7 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
         {parentDescription && item.parent_item_key && (
           <div style={{ padding: '0 24px 20px' }}>
             <button onClick={() => setShowParentDesc(!showParentDesc)} style={{
-              fontSize: 11, fontWeight: 600, color: '#64748B', background: 'none',
+              fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', background: 'none',
               border: 'none', cursor: 'pointer', padding: '4px 0',
               display: 'flex', alignItems: 'center', gap: 4,
             }}>
@@ -296,8 +296,8 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
             </button>
             {showParentDesc && (
               <div style={{
-                fontSize: 12, color: '#334155', lineHeight: 1.6, marginTop: 6,
-                padding: '8px 12px', background: '#F8FAFC', borderRadius: 6,
+                fontSize: 12, color: 'var(--fg-2)', lineHeight: 1.6, marginTop: 6,
+                padding: '8px 12px', background: 'var(--bg-1)', borderRadius: 6,
                 maxHeight: 200, overflow: 'auto',
               }}>
                 {parentDescription}

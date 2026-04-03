@@ -66,9 +66,9 @@ export function DrawerMetadataChips({
         <div
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium"
           style={{
-            background: 'var(--surface-hover, hsl(var(--muted)))',
-            border: '1px solid var(--border-default, hsl(var(--border)))',
-            color: 'var(--text-secondary, hsl(var(--muted-foreground)))',
+            background: 'var(--surface-hover, var(--bg-2))',
+            border: '1px solid var(--border-default, var(--divider))',
+            color: 'var(--text-secondary, var(--fg-3))',
           }}
         >
           {quarter}

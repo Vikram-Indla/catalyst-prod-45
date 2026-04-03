@@ -36,8 +36,8 @@ export function DepartmentUtilizationChart({ departments }: Props) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--wh-surface)',
-        border: '1px solid var(--wh-border)',
+        backgroundColor: 'var(--cp-float)',
+        border: '1px solid var(--divider)',
         borderRadius: 'var(--wh-radius-xl, 16px)',
         padding: 24,
       }}
@@ -47,7 +47,7 @@ export function DepartmentUtilizationChart({ departments }: Props) {
           fontFamily: 'Inter, system-ui, sans-serif',
           fontSize: 16,
           fontWeight: 600,
-          color: 'var(--wh-text-primary)',
+          color: 'var(--fg-1)',
           marginBottom: 20,
         }}
       >

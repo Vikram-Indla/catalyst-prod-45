@@ -27,8 +27,8 @@ export default function PortfolioSettings() {
         .in('key', ['program_estimation_system', 'program_display_weeks_in']);
       if (error) throw error;
       const settings = new Map((data || []).map((s: any) => [s.key, s.value]));
-      if (settings.has('program_estimation_system')) setEstimationSystem(settings.get('program_estimation_system'));
-      if (settings.has('program_display_weeks_in')) setDisplayWeeksIn(settings.get('program_display_weeks_in'));
+      if (settings.has('program_estimation_system')) setEstimationSystem(settings.get('program_estimation_system') as string);
+      if (settings.has('program_display_weeks_in')) setDisplayWeeksIn(settings.get('program_display_weeks_in') as string);
       return data;
     },
   });

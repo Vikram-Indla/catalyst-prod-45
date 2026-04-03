@@ -36,12 +36,12 @@ export default function WorkHubHeader({ columns, sort, onSort, allSelected, onSe
   return (
     <div role="row" style={{
       display: 'flex', alignItems: 'center', height: 40,
-      background: '#F8FAFC', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+      background: 'var(--bg-1)', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
       position: 'sticky', top: 0, zIndex: 20, flexShrink: 0,
     }}>
       <div style={{ width: 44, minWidth: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} role="columnheader">
         <input type="checkbox" checked={allSelected} onChange={e => onSelectAll(e.target.checked)}
-          aria-label="Select all items" style={{ width: 18, height: 18, accentColor: '#2563EB', cursor: 'pointer' }} />
+          aria-label="Select all items" style={{ width: 18, height: 18, accentColor: 'var(--cp-blue)', cursor: 'pointer' }} />
       </div>
 
       {visibleCols.map(col => {
@@ -57,7 +57,7 @@ export default function WorkHubHeader({ columns, sort, onSort, allSelected, onSe
                 display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none',
                 cursor: col.sortable ? 'pointer' : 'default', padding: 0,
                 fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.06em',
-                color: isActive ? '#2563EB' : '#64748B', fontFamily: 'Inter, sans-serif',
+                color: isActive ? 'var(--cp-blue)' : 'var(--fg-3)', fontFamily: 'Inter, sans-serif',
               }}>
               {col.label}
               {isActive && (sort!.direction === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />)}

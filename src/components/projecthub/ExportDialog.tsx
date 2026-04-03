@@ -47,7 +47,7 @@ export function ExportDialog({ open, onClose, projects }: Props) {
         <DialogHeader>
           <DialogTitle style={{ fontFamily: "'Sora', sans-serif", fontSize: 18 }}>Export Projects</DialogTitle>
         </DialogHeader>
-        <p className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" style={{ fontSize: 13, marginTop: -4, marginBottom: 12 }}>
+        <p className="text-[#64748B] dark:text-[rgba(235,238,245,0.55)]" style={{ fontSize: 13, marginTop: -4, marginBottom: 12 }}>
           Export {projects.length} project{projects.length !== 1 ? 's' : ''} matching current filters.
         </p>
         <div className="grid grid-cols-3 gap-3">
@@ -55,11 +55,11 @@ export function ExportDialog({ open, onClose, projects }: Props) {
             <button
               key={f.key}
               onClick={() => handleExport(f.action)}
-              className="flex flex-col items-center gap-2 rounded-lg transition-all hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-[rgba(248,244,240,0.03)] bg-[#F8FAFC] dark:bg-[rgba(248,244,240,0.03)] border border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)]"
+              className="flex flex-col items-center gap-2 rounded-lg transition-all hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-[rgba(235,238,245,0.03)] bg-[#F8FAFC] dark:bg-[rgba(235,238,245,0.03)] border border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
               style={{ padding: '20px 12px', cursor: 'pointer' }}
             >
-              <f.icon size={24} color="#2563EB" />
-              <span className="text-[#334155] dark:text-[rgba(248,244,240,0.72)]" style={{ fontSize: 12, fontWeight: 600 }}>{f.label}</span>
+              <f.icon size={24} color="var(--cp-blue)" />
+              <span className="text-[#334155] dark:text-[rgba(235,238,245,0.72)]" style={{ fontSize: 12, fontWeight: 600 }}>{f.label}</span>
             </button>
           ))}
         </div>

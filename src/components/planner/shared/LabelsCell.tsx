@@ -19,7 +19,7 @@ export const LabelsCell: React.FC<LabelsCellProps> = ({
 
   if (!labels || labels.length === 0) {
     return (
-      <span style={{ color: '#94a3b8', fontSize: '13px' }}>—</span>
+      <span style={{ color: 'var(--fg-4)', fontSize: '13px' }}>—</span>
     );
   }
 

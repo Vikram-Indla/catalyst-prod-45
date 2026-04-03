@@ -4,17 +4,18 @@
  * Navigation stack for nested drill-down with breadcrumb
  */
 
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, createContext, useContext } from 'react';
 import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft, Paperclip, FileText, Image, Download, File, ListTree, Loader2, GitPullRequest } from 'lucide-react';
 import { TransitionsTab } from './TransitionsTab';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { supabase } from '@/integrations/supabase/client';
+import { useIsDark } from '@/components/strategy/themes/useIsDark';
 import type { WorkItem } from '@/hooks/useForYouData';
 
-// Design tokens (ring-fenced)
-const T = {
+// Design tokens — light mode
+const TL = {
   ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
   surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
@@ -26,26 +27,48 @@ const T = {
   danger: '#DC2626', dangerText: '#D92525', dangerBg: '#FEF2F2',
 };
 
-
-const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
-  Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
-  Product:  { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
-  Task:     { bg: T.surfaceTertiary, color: T.inkMutedStrong, border: T.borderStrong },
-  Incident: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
-  Release:  { bg: T.successBg, color: T.successText, border: T.success },
-  Test:     { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
+// Design tokens — dark mode (NOCTURNE)
+const TD = {
+  ink: '#F5F3F0', inkSecondary: 'rgba(235,238,245,0.82)', inkTertiary: 'rgba(235,238,245,0.60)',
+  inkMuted: 'rgba(235,238,245,0.45)', inkMutedStrong: 'rgba(235,238,245,0.50)',
+  surface: '#1F2128', surfaceSecondary: '#181A1E', surfaceTertiary: 'rgba(255,255,255,0.04)',
+  border: 'rgba(255,255,255,0.10)', borderStrong: 'rgba(255,255,255,0.18)',
+  primary: '#60A5FA', primaryHover: '#93C5FD', primaryBg: 'rgba(59,130,246,0.12)',
+  teal: '#5EEAD4', tealText: '#5EEAD4', tealBg: 'rgba(13,148,136,0.15)',
+  success: '#86EFAC', successText: '#86EFAC', successBg: 'rgba(22,163,74,0.15)',
+  warning: '#FCD34D', warningText: '#FCD34D', warningBg: 'rgba(217,119,6,0.15)',
+  danger: '#FCA5A5', dangerText: '#FCA5A5', dangerBg: 'rgba(220,38,38,0.15)',
 };
 
-const PRI: Record<number, { label: string; color: string }> = {
-  1: { label: 'Lowest', color: T.inkMuted },
-  2: { label: 'Low', color: T.inkMuted },
-  3: { label: 'Medium', color: T.warning },
-  4: { label: 'High', color: T.danger },
-  5: { label: 'Highest', color: T.danger },
-};
+type Tokens = typeof TL;
+const TokenCtx = createContext<Tokens>(TL);
+const useT = () => useContext(TokenCtx);
+
+
+function getHubCfg(T: Tokens): Record<string, { bg: string; color: string; border: string }> {
+  return {
+    Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
+    Product:  { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
+    Task:     { bg: T.surfaceTertiary, color: T.inkMutedStrong, border: T.borderStrong },
+    Incident: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
+    Release:  { bg: T.successBg, color: T.successText, border: T.success },
+    Test:     { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
+  };
+}
+
+function getPri(T: Tokens): Record<number, { label: string; color: string }> {
+  return {
+    1: { label: 'Lowest', color: T.inkMuted },
+    2: { label: 'Low', color: T.inkMuted },
+    3: { label: 'Medium', color: T.warning },
+    4: { label: 'High', color: T.danger },
+    5: { label: 'Highest', color: T.danger },
+  };
+}
 
 // --- Linkify utility: detect URLs, special-case Figma ---
 function Linkify({ text }: { text: string }) {
+  const T = useT();
   if (!text) return null;
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const parts = text.split(urlRegex);
@@ -88,11 +111,13 @@ function Linkify({ text }: { text: string }) {
 }
 
 function StatusPill({ status }: { status: string }) {
+  const T = useT();
   return <StatusLozenge status={status} />;
 }
 
 function HubBadge({ hub }: { hub: string }) {
-  const h = HUB_CFG[hub] || HUB_CFG.Task;
+  const T = useT();
+  const HUB_CFG = getHubCfg(T); const h = HUB_CFG[hub] || HUB_CFG.Task;
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: h.bg, color: h.color, borderLeft: `3px solid ${h.border}` }}>
       {hub}
@@ -101,19 +126,21 @@ function HubBadge({ hub }: { hub: string }) {
 }
 
 function PriorityBars({ level = 3, showLabel = false }: { level?: number; showLabel?: boolean }) {
+  const T = useT();
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: showLabel ? 8 : 2 }}>
       <div style={{ display: 'flex', gap: 2 }}>
         {[1,2,3,4].map(i => (
-          <div key={i} style={{ width: showLabel ? 5 : 4, height: showLabel ? 16 : 14, borderRadius: 1, background: i <= level ? (showLabel ? (PRI[level]?.color || T.inkMuted) : T.inkMuted) : T.border }} />
+          <div key={i} style={{ width: showLabel ? 5 : 4, height: showLabel ? 16 : 14, borderRadius: 1, background: i <= level ? (showLabel ? (getPri(T)[level]?.color || T.inkMuted) : T.inkMuted) : T.border }} />
         ))}
       </div>
-      {showLabel && <span style={{ fontSize: 13, fontWeight: 500, color: T.ink }}>{PRI[level]?.label || 'Medium'}</span>}
+      {showLabel && <span style={{ fontSize: 13, fontWeight: 500, color: T.ink }}>{getPri(T)[level]?.label || 'Medium'}</span>}
     </div>
   );
 }
 
 function Avatar({ name, size = 24 }: { name: string; size?: number }) {
+  const T = useT();
   const nameAvatarMap = useProfileAvatarsByName();
   const avatarUrl = nameAvatarMap.get(name.toLowerCase());
   const ini = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -122,10 +149,11 @@ function Avatar({ name, size = 24 }: { name: string; size?: number }) {
   if (avatarUrl) {
     return <img src={avatarUrl} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: `1px solid ${T.border}` }} />;
   }
-  return <div style={{ width: size, height: size, borderRadius: '50%', background: clr, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.4, fontWeight: 700, flexShrink: 0 }}>{ini}</div>;
+  return <div style={{ width: size, height: size, borderRadius: '50%', background: clr, color: 'var(--bg-app)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.4, fontWeight: 700, flexShrink: 0 }}>{ini}</div>;
 }
 
 function FieldRow({ icon, label, children, last }: { icon: React.ReactNode; label: string; children: React.ReactNode; last?: boolean }) {
+  const T = useT();
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '152px 1fr', borderBottom: last ? 'none' : `1px solid ${T.border}`, minHeight: 38 }}>
       <div style={{ padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 7, fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.06em', background: T.surfaceSecondary, borderRight: `1px solid ${T.border}` }}>
@@ -262,6 +290,7 @@ function getStatusCategory(status: string): 'todo' | 'inprogress' | 'done' {
 }
 
 function SubTaskCard({ item, onClick }: { item: SubTaskItem; onClick: () => void }) {
+  const T = useT();
   const bars = PRI_MAP[item.priority] || 2;
   return (
     <button
@@ -304,6 +333,7 @@ function SubTaskCard({ item, onClick }: { item: SubTaskItem; onClick: () => void
 }
 
 function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; onSubTaskClick: (st: SubTaskItem) => void }) {
+  const T = useT();
   const { subTasks, isLoading } = useSubTasksForPanel(parentKey);
 
   if (isLoading) {
@@ -348,9 +378,9 @@ function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; 
             ))}
           </div>
         </div>
-        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 3, overflow: 'hidden', backgroundColor: '#DFE1E6' }}>
-          {doneTasks.length > 0 && <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: '#00875A', transition: 'width 0.3s ease' }} />}
-          {progressTasks.length > 0 && <div style={{ width: `${(progressTasks.length / total) * 100}%`, backgroundColor: '#0065FF', transition: 'width 0.3s ease' }} />}
+        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 3, overflow: 'hidden', backgroundColor: 'var(--divider)' }}>
+          {doneTasks.length > 0 && <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: 'var(--sem-success)', transition: 'width 0.3s ease' }} />}
+          {progressTasks.length > 0 && <div style={{ width: `${(progressTasks.length / total) * 100}%`, backgroundColor: 'var(--cp-blue)', transition: 'width 0.3s ease' }} />}
         </div>
       </div>
 
@@ -362,7 +392,7 @@ function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; 
 }
 
 // Convert SubTaskItem to a WorkItem-like shape for the panel to render
-function subTaskToWorkItem(st: SubTaskItem): WorkItem {
+function subTaskToWorkItem(st: SubTaskItem, T: Tokens): WorkItem {
   return {
     id: st.key,
     key: st.key,
@@ -398,6 +428,9 @@ interface ForYouDetailPanelProps {
 }
 
 export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
+  const isDark = useIsDark();
+  const tokens = isDark ? TD : TL;
+  const T = tokens;
   const [tab, setTab] = useState('details');
   const [attachments, setAttachments] = useState<any[]>([]);
   const [attachmentsLoading, setAttachmentsLoading] = useState(false);
@@ -495,7 +528,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
 
   // Navigation handlers
   const handleSubTaskClick = (st: SubTaskItem) => {
-    const workItem = subTaskToWorkItem(st);
+    const workItem = subTaskToWorkItem(st, T);
     setPanelStack(prev => {
       if (prev.length === 0) return [item, workItem];
       return [...prev, workItem];
@@ -552,6 +585,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
       ];
 
   return (
+    <TokenCtx.Provider value={tokens}>
     <>
       {/* Overlay */}
       <div onClick={onClose} className="fy-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(9,9,11,0.4)', zIndex: 200, animation: 'fy-fadeIn .15s ease' }} />
@@ -888,5 +922,6 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
         @keyframes fy-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </>
+    </TokenCtx.Provider>
   );
 }

@@ -47,8 +47,8 @@ export const TimelineLeftRow: React.FC<TimelineLeftRowProps> = ({ initiative }) 
         style={{
           fontFamily: "'JetBrains Mono', monospace",
           fontVariantNumeric: 'tabular-nums',
-          background: '#EFF6FF',
-          color: '#2563EB',
+          background: 'var(--cp-blue-wash)',
+          color: 'var(--cp-blue)',
         }}
       >
         {initiative.initiative_key}

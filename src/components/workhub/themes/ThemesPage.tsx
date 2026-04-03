@@ -40,7 +40,7 @@ export function ThemesPage() {
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: '100%', color: 'var(--wh-text-secondary, #64748b)',
+        height: '100%', color: 'var(--fg-3)',
       }}>
         <Loader2 className="animate-spin" size={24} />
         <span style={{ marginLeft: 8, fontSize: 14 }}>Loading themes...</span>
@@ -54,10 +54,10 @@ export function ThemesPage() {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         height: '100%', gap: 12,
       }}>
-        <p style={{ color: '#ef4444', fontSize: 14 }}>Failed to load themes</p>
+        <p style={{ color: 'var(--sem-danger)', fontSize: 14 }}>Failed to load themes</p>
         <button onClick={() => refetch()} style={{
-          padding: '8px 16px', borderRadius: 6, border: '1px solid var(--wh-border)',
-          background: 'var(--wh-surface)', fontSize: 13, cursor: 'pointer',
+          padding: '8px 16px', borderRadius: 6, border: '1px solid var(--divider)',
+          background: 'var(--cp-float)', fontSize: 13, cursor: 'pointer',
         }}>
           Retry
         </button>
@@ -78,7 +78,7 @@ export function ThemesPage() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '8px 16px', borderRadius: 8, border: 'none',
-              background: 'var(--wh-primary, #2563eb)', color: '#fff',
+              background: 'var(--cp-blue)', color: 'var(--bg-app)',
               fontSize: 13, fontWeight: 600, cursor: 'pointer',
             }}
           >
@@ -99,8 +99,8 @@ export function ThemesPage() {
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
               padding: '6px 16px', borderRadius: 9999, border: 'none',
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
-              background: isActive ? 'var(--wh-primary, #2563eb)' : 'var(--wh-border-light, #f1f5f9)',
-              color: isActive ? '#fff' : 'var(--wh-text-secondary, #64748b)',
+              background: isActive ? 'var(--cp-blue)' : 'var(--bg-1)',
+              color: isActive ? 'var(--bg-app)' : 'var(--fg-3)',
               transition: 'background 150ms, color 150ms',
             }}>
               {tab} ({tabCounts[tab] ?? 0})
@@ -113,7 +113,7 @@ export function ThemesPage() {
       {filtered.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '48px 0',
-          color: 'var(--wh-text-tertiary, #94a3b8)', fontSize: 14,
+          color: 'var(--fg-4)', fontSize: 14,
         }}>
           No {activeTab === 'All' ? '' : activeTab.toLowerCase() + ' '}themes found
         </div>
@@ -139,7 +139,7 @@ export function ThemesPage() {
       <style>{`
         .wh-theme-card:hover {
           box-shadow: var(--wh-shadow-md) !important;
-          border-color: var(--wh-border-hover, #cbd5e1) !important;
+          border-color: var(--divider) !important;
         }
       `}</style>
       </div>{/* end content wrapper */}

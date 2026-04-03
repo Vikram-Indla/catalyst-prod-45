@@ -69,7 +69,7 @@ function FilterDropdown({ label, value, options, onChange }: {
       {open && (
         <div style={{
           position: 'absolute', top: '100%', left: 0, marginTop: 4,
-          background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
+          background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 8,
           boxShadow: '0 4px 12px rgba(0,0,0,.1)', zIndex: 200,
           minWidth: 180, maxHeight: 240, overflowY: 'auto',
           padding: 4,
@@ -81,7 +81,7 @@ function FilterDropdown({ label, value, options, onChange }: {
               style={{
                 display: 'block', width: '100%', textAlign: 'left',
                 padding: '6px 10px', fontSize: 12, fontWeight: value === o.key ? 600 : 400,
-                color: value === o.key ? '#2563EB' : '#334155',
+                color: value === o.key ? 'var(--cp-blue)' : 'var(--fg-2)',
                 background: value === o.key ? '#EFF6FF' : 'transparent',
                 border: 'none', borderRadius: 4, cursor: 'pointer',
               }}
@@ -135,7 +135,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     >
       {/* View Tabs */}
       <div role="tablist" aria-label="View tabs" style={{
-        display: 'flex', background: '#F1F5F9', borderRadius: 8, padding: 3, gap: 2,
+        display: 'flex', background: 'var(--bg-3)', borderRadius: 8, padding: 3, gap: 2,
       }}>
         {views.map(v => (
           <button
@@ -151,7 +151,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         ))}
       </div>
 
-      <div style={{ width: 1, height: 24, background: '#E2E8F0' }} />
+      <div style={{ width: 1, height: 24, background: 'var(--divider)' }} />
 
       {/* Dynamic Filters */}
       <FilterDropdown
@@ -188,11 +188,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
         Group: {groupBy === 'status' ? 'Status' : 'Hub'}
       </button>
 
-      <div style={{ width: 1, height: 24, background: '#E2E8F0' }} />
+      <div style={{ width: 1, height: 24, background: 'var(--divider)' }} />
 
       {/* Role Toggle */}
       <div role="tablist" aria-label="Role filter" style={{
-        display: 'flex', background: '#F1F5F9', borderRadius: 6, padding: 2, gap: 1,
+        display: 'flex', background: 'var(--bg-3)', borderRadius: 6, padding: 2, gap: 1,
       }}>
         {roles.map(r => (
           <button
@@ -215,7 +215,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         onClick={onAiClick}
         aria-label="Open AI Intelligence overlay"
         style={{
-          background: '#2563EB',
+          background: 'var(--cp-blue)',
           color: '#FFFFFF', border: 'none', borderRadius: 20,
           padding: '0 16px', height: 32, fontSize: 12, fontWeight: 600,
           letterSpacing: '0.3px', cursor: 'pointer',

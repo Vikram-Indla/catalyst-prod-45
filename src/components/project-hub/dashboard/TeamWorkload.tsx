@@ -37,14 +37,14 @@ export default function TeamWorkload({ projectId }: Props) {
               key={m.user_id}
               onClick={() => openWorkload(m.user_id, name)}
               className="ph-focus-ring ph-table-row"
-              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #F1F5F9', cursor: 'pointer', textAlign: 'left', transition: 'background 120ms ease' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', width: '100%', background: 'none', border: 'none', borderBottom: '1px solid var(--cp-bd-zone)', cursor: 'pointer', textAlign: 'left', transition: 'background 120ms ease' }}
             >
               <PersonAvatar name={name} size={24} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#0F172A', fontFamily: "'Inter', sans-serif", maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
-                <div style={{ fontSize: 10, color: '#64748B', fontWeight: 500, marginTop: 1, fontFamily: "'Inter', sans-serif" }}>{parts.join(', ') || 'No items'}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif", maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
+                <div style={{ fontSize: 10, color: 'var(--fg-3)', fontWeight: 500, marginTop: 1, fontFamily: "'Inter', sans-serif" }}>{parts.join(', ') || 'No items'}</div>
               </div>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 800, color: m.total_count > 8 ? '#DC2626' : '#2563EB' }}>{m.total_count}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 800, color: m.total_count > 8 ? 'var(--sem-danger)' : 'var(--cp-blue)' }}>{m.total_count}</span>
             </button>
           );
         })}</div>

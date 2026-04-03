@@ -83,8 +83,8 @@ export function CapacityTable({ resources }: Props) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--wh-surface)',
-        border: '1px solid var(--wh-border)',
+        backgroundColor: 'var(--cp-float)',
+        border: '1px solid var(--divider)',
         borderRadius: 'var(--wh-radius-xl, 16px)',
         overflow: 'hidden',
       }}
@@ -93,7 +93,7 @@ export function CapacityTable({ resources }: Props) {
         <h3 style={{
           fontFamily: 'Inter, system-ui, sans-serif',
           fontSize: 16, fontWeight: 600,
-          color: 'var(--wh-text-primary)',
+          color: 'var(--fg-1)',
         }}>
           Individual Capacity
         </h3>
@@ -102,7 +102,7 @@ export function CapacityTable({ resources }: Props) {
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, system-ui, sans-serif' }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--wh-border)' }}>
+            <tr style={{ borderBottom: '1px solid var(--divider)' }}>
               {COLUMNS.map(col => {
                 const isSorted = sortableMap[col.key] === sortKey;
                 return (
@@ -114,13 +114,13 @@ export function CapacityTable({ resources }: Props) {
                       fontSize: 11,
                       fontWeight: 600,
                       textAlign: 'left',
-                      color: isSorted ? 'var(--wh-primary)' : 'var(--wh-text-tertiary)',
+                      color: isSorted ? 'var(--cp-blue)' : 'var(--fg-4)',
                       cursor: col.sortable ? 'pointer' : 'default',
                       userSelect: 'none',
                       whiteSpace: 'nowrap',
                       position: 'sticky',
                       top: 0,
-                      backgroundColor: 'var(--wh-surface)',
+                      backgroundColor: 'var(--cp-float)',
                     }}
                     className={`${col.hideOnMobile ? 'hidden md:table-cell' : ''} ${col.hideOnTablet ? 'hidden lg:table-cell' : ''}`}
                   >
@@ -143,19 +143,19 @@ export function CapacityTable({ resources }: Props) {
                   style={{
                     height: 44,
                     cursor: 'pointer',
-                    backgroundColor: idx % 2 === 1 ? '#fafbfc' : 'transparent',
-                    borderBottom: '1px solid var(--wh-border-light, #f1f5f9)',
+                    backgroundColor: idx % 2 === 1 ? 'var(--bg-1)' : 'transparent',
+                    borderBottom: '1px solid var(--bg-1)',
                   }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#f1f5f9'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = idx % 2 === 1 ? '#fafbfc' : 'transparent'; }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-1)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = idx % 2 === 1 ? 'var(--bg-1)' : 'transparent'; }}
                 >
-                  <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--wh-text-tertiary)' }}>
+                  <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--fg-4)' }}>
                     {idx + 1}
                   </td>
                   <td style={{ padding: '8px 12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <AvatarChip name={r.name} color={r.color} size={28} />
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--wh-text-primary)' }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>
                         {r.name}
                       </span>
                     </div>
@@ -163,7 +163,7 @@ export function CapacityTable({ resources }: Props) {
                   <td style={{ padding: '8px 12px' }} className="hidden md:table-cell">
                     <DepartmentBadge department={r.department || 'Unassigned'} />
                   </td>
-                  <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--wh-text-secondary)' }} className="hidden lg:table-cell">
+                  <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--fg-3)' }} className="hidden lg:table-cell">
                     <span style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
                       {r.role || '—'}
                     </span>
@@ -177,9 +177,9 @@ export function CapacityTable({ resources }: Props) {
                   <td style={{ padding: '8px 12px', fontSize: 12 }} className="hidden lg:table-cell">
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                       {r.total_actual_hours}h
-                      {variance > 0 && <TrendingUp size={12} style={{ color: '#ef4444' }} />}
-                      {variance < 0 && <TrendingDown size={12} style={{ color: '#16a34a' }} />}
-                      {variance === 0 && <span style={{ color: 'var(--wh-text-tertiary)' }}>—</span>}
+                      {variance > 0 && <TrendingUp size={12} style={{ color: 'var(--sem-danger)' }} />}
+                      {variance < 0 && <TrendingDown size={12} style={{ color: 'var(--sem-success)' }} />}
+                      {variance === 0 && <span style={{ color: 'var(--fg-4)' }}>—</span>}
                     </span>
                   </td>
                   <td style={{ padding: '8px 12px', minWidth: 120 }}>
@@ -188,11 +188,11 @@ export function CapacityTable({ resources }: Props) {
                   <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 600 }}>
                     {r.active_items}
                   </td>
-                  <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--wh-text-secondary)' }} className="hidden md:table-cell">
+                  <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--fg-3)' }} className="hidden md:table-cell">
                     {r.completed_items}
                   </td>
                   <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 600 }} className="">
-                    <span style={{ color: r.blocked_items > 0 ? '#ef4444' : 'var(--wh-text-tertiary)' }}>
+                    <span style={{ color: r.blocked_items > 0 ? 'var(--sem-danger)' : 'var(--fg-4)' }}>
                       {r.blocked_items}
                     </span>
                   </td>

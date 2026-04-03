@@ -121,24 +121,24 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
       <div className="relative mb-4">
         <div
           className="flex items-center gap-2 rounded-md"
-          style={{ height: 40, padding: '0 12px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, transition: 'border-color 150ms, box-shadow 150ms' }}
-          onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = '#2563EB'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
-          onBlur={e => { (e.currentTarget as HTMLElement).style.borderColor = '#E2E8F0'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
+          style={{ height: 40, padding: '0 12px', background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 6, transition: 'border-color 150ms, box-shadow 150ms' }}
+          onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--cp-blue)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+          onBlur={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--divider)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
         >
-          <Search size={14} color="#94A3B8" strokeWidth={2} />
+          <Search size={14} color="var(--fg-4)" strokeWidth={2} />
           <input
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search by name or email to add..."
             className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: 13, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}
+            style={{ fontSize: 13, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}
           />
         </div>
 
         {searchResults.length > 0 && (
           <div
             className="absolute top-full left-0 right-0 mt-1 z-10 max-h-[200px] overflow-y-auto"
-            style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)' }}
+            style={{ background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)' }}
           >
             {searchResults.map(user => (
               <button
@@ -148,13 +148,13 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
                 style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
                 <div className="flex items-center justify-center rounded-full flex-shrink-0"
-                  style={{ width: 28, height: 28, background: AVATAR_COLORS[user.name.charCodeAt(0) % AVATAR_COLORS.length], color: '#FFFFFF', fontSize: 11, fontWeight: 600 }}
+                  style={{ width: 28, height: 28, background: AVATAR_COLORS[user.name.charCodeAt(0) % AVATAR_COLORS.length], color: 'var(--bg-app)', fontSize: 11, fontWeight: 600 }}
                 >
                   {user.name[0]?.toUpperCase() || '?'}
                 </div>
                 <div className="min-w-0">
-                  <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>{user.name}</div>
-                  <div className="truncate" style={{ fontSize: 11, color: '#64748B' }}>{user.email}</div>
+                  <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{user.name}</div>
+                  <div className="truncate" style={{ fontSize: 11, color: 'var(--fg-3)' }}>{user.email}</div>
                 </div>
               </button>
             ))}
@@ -168,7 +168,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
           {[1,2,3].map(i => <div key={i} className="ph-skeleton rounded" style={{ height: 48 }} />)}
         </div>
       ) : members.length === 0 ? (
-        <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>No members yet</div>
+        <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>No members yet</div>
       ) : (
         <div className="space-y-1">
           {members.map(m => (
@@ -179,8 +179,8 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
         </div>
       )}
 
-      <div className="mt-4 pt-4" style={{ borderTop: '1px solid #E2E8F0' }}>
-        <p style={{ fontSize: 11, color: '#94A3B8', lineHeight: 1.6 }}>
+      <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--divider)' }}>
+        <p style={{ fontSize: 11, color: 'var(--fg-4)', lineHeight: 1.6 }}>
           <strong>Admin</strong> — Full access including settings ·{' '}
           <strong>Member</strong> — Create, edit, and manage work items ·{' '}
           <strong>Viewer</strong> — Read-only access, can add comments

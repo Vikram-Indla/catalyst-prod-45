@@ -25,7 +25,7 @@ export function CatyFAB({ isOpen, onClick }: CatyFABProps) {
       onClick={onClick}
       className="fixed bottom-6 right-6 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform animate-in fade-in-0 duration-300"
       style={{
-        background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+        background: 'linear-gradient(135deg, #2563eb, #1D4ED8)',
         zIndex: 'calc(var(--wh-z-caty) - 1)',
         boxShadow: '0 4px 16px rgba(37, 99, 235, 0.4)',
       }}

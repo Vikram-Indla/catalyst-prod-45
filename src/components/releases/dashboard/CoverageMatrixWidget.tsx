@@ -30,7 +30,7 @@ export function CoverageMatrixWidget({ coverage }: CoverageMatrixWidgetProps) {
         <TooltipProvider>
           {coverage.map((item) => (
             <div key={item.requirementId} className="flex items-center gap-2 px-3.5 py-2">
-              <span className="w-16 text-[11px] font-semibold text-purple-600 shrink-0">
+              <span className="w-16 text-[11px] font-semibold text-blue-600 shrink-0">
                 {item.requirementId}
               </span>
               <span className="flex-1 text-xs text-foreground truncate">

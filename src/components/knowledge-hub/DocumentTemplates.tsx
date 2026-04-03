@@ -114,11 +114,11 @@ const templates = [
   {
     id: 'retrospective',
     title: 'Retrospective',
-    description: 'Sprint or project retrospective',
+    description: 'Release or project retrospective',
     icon: Lightbulb,
     content: `
       <h1>Retrospective</h1>
-      <p><strong>Sprint/Project:</strong> [Name]</p>
+      <p><strong>Release/Project:</strong> [Name]</p>
       <p><strong>Date:</strong> [Date]</p>
       <p><strong>Participants:</strong> [Names]</p>
       <h2>What Went Well 🎉</h2>

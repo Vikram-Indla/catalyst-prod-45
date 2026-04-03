@@ -32,7 +32,7 @@ const statusConfig: Record<AutomationStatus, {
     shortLabel: 'Auto',
     icon: Bot,
     tooltip: 'This test case is fully automated',
-    className: 'bg-violet-500/15 text-violet-700 dark:text-violet-400 border-violet-500/30',
+    className: 'bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/30',
   },
   manual: {
     label: 'Manual',

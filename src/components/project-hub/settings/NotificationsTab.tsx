@@ -20,13 +20,13 @@ export function NotificationsTab() {
             className="flex items-center justify-between px-3 rounded-lg"
             style={{ height: 44, opacity: 0.6 }}
           >
-            <span style={{ fontSize: 13, color: '#94A3B8' }}>{label}</span>
+            <span style={{ fontSize: 13, color: 'var(--fg-4)' }}>{label}</span>
 
             {/* Disabled toggle — not clickable */}
             <div
               className="flex-shrink-0 rounded-full"
               style={{
-                width: 40, height: 22, borderRadius: 11, background: '#E2E8F0',
+                width: 40, height: 22, borderRadius: 11, background: 'var(--divider)',
                 position: 'relative', cursor: 'not-allowed',
                 pointerEvents: 'none',
                 opacity: 0.5,
@@ -35,7 +35,7 @@ export function NotificationsTab() {
               <span
                 className="rounded-full"
                 style={{
-                  width: 16, height: 16, background: '#FFFFFF', borderRadius: '50%',
+                  width: 16, height: 16, background: 'var(--cp-float)', borderRadius: '50%',
                   position: 'absolute', top: 3, left: 3,
                   boxShadow: '0 1px 2px rgba(0,0,0,0.15)',
                 }}
@@ -45,9 +45,9 @@ export function NotificationsTab() {
         ))}
       </div>
 
-      <div className="flex items-center gap-2 mt-4 pt-4" style={{ borderTop: '1px solid #E2E8F0' }}>
-        <Bell size={14} color="#94A3B8" />
-        <p style={{ fontSize: 12, color: '#94A3B8' }}>
+      <div className="flex items-center gap-2 mt-4 pt-4" style={{ borderTop: '1px solid var(--divider)' }}>
+        <Bell size={14} color="var(--fg-4)" />
+        <p style={{ fontSize: 12, color: 'var(--fg-4)' }}>
           Email and in-app notifications. Coming soon.
         </p>
       </div>

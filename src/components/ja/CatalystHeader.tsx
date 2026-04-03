@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Search, ChevronDown, LogOut, Settings, Bell, User } from "lucide-react";
+import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -13,7 +14,7 @@ import { useSingleItemNavigation } from "@/hooks/useSingleItemNavigation";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 const CreateDropdown = lazy(() => import("./CreateDropdown").then(m => ({ default: m.CreateDropdown })));
-const GlobalSearchPalette = lazy(() => import("@/components/ui/global-search-palette").then(m => ({ default: m.GlobalSearchPalette })));
+import { useGlobalSearchStore } from "@/store/globalSearchStore";
 const NotificationsPanel = lazy(() => import("./NotificationsPanel").then(m => ({ default: m.NotificationsPanel })));
 const ProgramSelectorDropdown = lazy(() => import("./ProgramSelectorDropdown").then(m => ({ default: m.ProgramSelectorDropdown })));
 const ProjectSelectorDropdown = lazy(() => import("./ProjectSelectorDropdown").then(m => ({ default: m.ProjectSelectorDropdown })));
@@ -45,7 +46,15 @@ import catalystLogoMark2 from "@/assets/catalyst-logo-mark-2.svg";
 export function CatalystHeader() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+  const globalSearch = useGlobalSearchStore();
+
+  useEffect(() => {
+    const handler = () => globalSearch.open();
+    window.addEventListener('open-global-search', handler);
+    return () => window.removeEventListener('open-global-search', handler);
+  }, []);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   
@@ -535,58 +544,36 @@ export function CatalystHeader() {
 
             {/* Search Trigger */}
             <button
-              onClick={() => setIsSearchOpen(true)}
-              className="hidden sm:flex items-center gap-2 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cp-focus-ring)] focus-visible:ring-offset-1"
-              style={{ 
-                minWidth: '240px',
-                height: '34px',
-                padding: '0 12px',
-                background: 'var(--cp-bg)',
-                border: '1px solid var(--cp-bd)',
-                borderRadius: '8px',
+              onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+              className="hidden sm:flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cp-focus-ring)] focus-visible:ring-offset-1"
+              style={{
+                minWidth: '200px',
+                height: '32px',
+                padding: '0 10px',
+                background: isDark ? '#232019' : '#F8FAFC',
+                border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`,
+                borderRadius: '6px',
                 cursor: 'pointer',
+                gap: '8px',
+                alignItems: 'center',
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'var(--cp-bd-hover)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'var(--cp-bd)';
-              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(248,244,240,0.14)' : '#CBD5E1'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'; }}
             >
-              <Search className="h-4 w-4" style={{ color: 'var(--cp-t4)' }} />
-              <span style={{ fontSize: '13px', fontFamily: "'Inter', sans-serif", color: 'var(--cp-t4)', flex: 1, textAlign: 'left' }}>
-                Search anything...
+              <Search style={{ width: '14px', height: '14px', color: isDark ? 'rgba(248,244,240,0.55)' : '#94A3B8', flexShrink: 0 }} />
+              <span style={{ flex: 1, fontSize: '12px', fontFamily: "'Inter', sans-serif", color: isDark ? 'rgba(248,244,240,0.55)' : '#94A3B8', textAlign: 'left' }}>
+                Search...
               </span>
-              <div className="flex gap-1">
-                <kbd style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '22px', height: '22px', padding: '0 6px', background: 'var(--cp-bg)', border: '1px solid var(--cp-bd)', borderRadius: '4px', fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: 'var(--cp-t4)' }}>
-                  ⌘
-                </kbd>
-                <kbd style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '22px', height: '22px', padding: '0 6px', background: 'var(--cp-bg)', border: '1px solid var(--cp-bd)', borderRadius: '4px', fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: 'var(--cp-t4)' }}>
-                  K
-                </kbd>
-              </div>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#1A1714' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>⌘</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#1A1714' : '#F1F5F9', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: '3px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? 'rgba(248,244,240,0.55)' : '#64748B' }}>K</kbd>
             </button>
             {/* Mobile search icon */}
             <button
-              onClick={() => setIsSearchOpen(true)}
-              className="sm:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cp-focus-ring)] focus-visible:ring-offset-1"
-              style={{
-                width: '36px',
-                height: '36px',
-                color: 'var(--cp-t3)',
-                background: 'transparent',
-                borderRadius: '8px',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--cp-t1)';
-                e.currentTarget.style.background = 'var(--cp-hover)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'var(--cp-t3)';
-                e.currentTarget.style.background = 'transparent';
-              }}
+              onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+              className="sm:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none"
+              style={{ width: '36px', height: '36px', color: isDark ? 'rgba(235,238,245,0.55)' : '#94A3B8', background: 'transparent', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
             >
-              <Search className="h-5 w-5" />
+              <Search style={{ width: '18px', height: '18px' }} />
             </button>
 
 
@@ -675,8 +662,7 @@ export function CatalystHeader() {
         </div>
       </header>
 
-      {/* Global Search Command Palette */}
-      <GlobalSearchPalette open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+      {/* Global Search is rendered by CatalystShell via zustand store */}
 
       {/* Create Entity Dialog */}
       {createDialogType && (

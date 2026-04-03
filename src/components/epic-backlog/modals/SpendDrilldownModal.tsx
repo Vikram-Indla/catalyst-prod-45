@@ -116,7 +116,7 @@ export function SpendDrilldownModal({
               <div className="col-span-1">ID</div>
               <div className="col-span-3">Story Title</div>
               <div className="col-span-2">Team</div>
-              <div className="col-span-2">Sprint</div>
+              <div className="col-span-2">Release</div>
               <div className="col-span-1 text-right">
                 <TooltipProvider>
                   <Tooltip>

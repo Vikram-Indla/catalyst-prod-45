@@ -50,7 +50,7 @@ const HEALTH_STYLES: Record<string, { bg: string; color: string }> = {
 };
 
 export function HealthBadge({ health }: { health: string | null }) {
-  if (!health) return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
+  if (!health) return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
   const s = HEALTH_STYLES[health] || HEALTH_STYLES.on_track;
   const label = health.split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
   return (
@@ -77,7 +77,7 @@ export function HealthBadge({ health }: { health: string | null }) {
 const AVATAR_COLORS = ['#7C3AED', '#2563EB', '#0D9488', '#D97706', '#DC2626'];
 
 export function AvatarStack({ count }: { count: number }) {
-  if (count === 0) return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
+  if (count === 0) return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
 
   const show = Math.min(count, 3);
   const overflow = count - show;
@@ -95,7 +95,7 @@ export function AvatarStack({ count }: { count: number }) {
             color: '#FFFFFF',
             fontSize: 9,
             fontWeight: 600,
-            border: '2px solid #FFFFFF',
+            border: '2px solid var(--cp-float)',
             fontFamily: "'Inter', sans-serif",
           }}
         >
@@ -108,11 +108,11 @@ export function AvatarStack({ count }: { count: number }) {
           style={{
             width: 24,
             height: 24,
-            background: '#F1F5F9',
-            color: '#64748B',
+            background: 'var(--cp-bd-zone)',
+            color: 'var(--fg-3)',
             fontSize: 9,
             fontWeight: 600,
-            border: '2px solid #FFFFFF',
+            border: '2px solid var(--cp-float)',
             fontFamily: "'Inter', sans-serif",
           }}
         >

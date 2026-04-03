@@ -53,7 +53,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
       </div>
 
       {/* Name */}
-      <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>
+      <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)' }}>
         {name}
       </span>
 
@@ -66,7 +66,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
       </span>
 
       {/* Item count or disabled label */}
-      <span className="flex-shrink-0 text-right" style={{ fontSize: 12, color: '#94A3B8', minWidth: 100, fontFamily: isDisabledFeature ? "'Inter', sans-serif" : "'JetBrains Mono', monospace" }}>
+      <span className="flex-shrink-0 text-right" style={{ fontSize: 12, color: 'var(--fg-4)', minWidth: 100, fontFamily: isDisabledFeature ? "'Inter', sans-serif" : "'JetBrains Mono', monospace" }}>
         {isDisabledFeature ? (
           <span style={{ fontSize: 11, fontStyle: 'italic' }}>Disabled — enable Feature Layer</span>
         ) : (
@@ -82,7 +82,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="View Fields"
         >
-          <MoreHorizontal size={16} color="#64748B" />
+          <MoreHorizontal size={16} color="var(--fg-3)" />
         </button>
       </div>
     </div>

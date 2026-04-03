@@ -208,7 +208,7 @@ export function SpendDrilldownModal({ epicId, spendType, open, onOpenChange }: S
                     <TableHead>Story ID</TableHead>
                     <TableHead>Title</TableHead>
                     <TableHead>Team</TableHead>
-                    <TableHead>Sprint</TableHead>
+                    <TableHead>Release</TableHead>
                     <TableHead className="text-right">Spend/Point</TableHead>
                     <TableHead className="text-right">Estimate</TableHead>
                     <TableHead className="text-right">Total Spend</TableHead>

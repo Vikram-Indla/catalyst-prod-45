@@ -73,6 +73,14 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
       const isDefect = /defects?|bugs?/i.test(lower);
       const isTransition = /transitions?/i.test(lower);
 
+      // Extract specific status from "to 'STATUS'" pattern (e.g. "1 item to 'Monitor'")
+      const statusMatch = lower.match(/to\s+'([^']+)'/);
+      const targetStatus = statusMatch ? statusMatch[1] : null;
+
+      // Extract the expected count from claim text
+      const countMatch = claimText.match(/^(\d+)/);
+      const expectedCount = countMatch ? parseInt(countMatch[1], 10) : null;
+
       // Calculate week end
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekEnd.getDate() + 5);
@@ -96,19 +104,20 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
 
       // Filter by resource (assignee OR reporter)
       if (accountIds.length > 0) {
-        // Use OR: assignee OR reporter
         query = query.or(
           `assignee_account_id.in.(${accountIds.join(',')}),reporter_account_id.in.(${accountIds.join(',')})`
         );
       } else {
-        // Fallback: match by display name
         query = query.or(
           `assignee_display_name.ilike.%${resourceName}%,reporter_display_name.ilike.%${resourceName}%`
         );
       }
 
-      // Apply status/type filter based on claim
-      if (isClosure) {
+      // Apply status/type filter based on claim context
+      if (targetStatus) {
+        // Specific status target: "moved 1 item to 'Monitor'" → filter by that status
+        query = query.ilike('status', targetStatus);
+      } else if (isClosure) {
         query = query.eq('status_category', 'Done');
       } else if (isReopen) {
         query = query.neq('status_category', 'Done');
@@ -122,7 +131,13 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
         console.error('[ClaimDrillIn] Query error:', error);
         setTickets([]);
       } else {
-        setTickets(data || []);
+        // If we have an expected count and more results, limit to expected count
+        const results = data || [];
+        if (expectedCount && results.length > expectedCount) {
+          setTickets(results.slice(0, expectedCount));
+        } else {
+          setTickets(results);
+        }
       }
     } catch (err) {
       console.error('[ClaimDrillIn] Error:', err);
@@ -221,7 +236,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                       <JiraIssueTypeIcon type={t.issue_type} size={16} />
-                      <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: '#2563eb' }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'monospace', color: 'var(--cp-blue)' }}>
                         {t.issue_key}
                       </span>
                       <span style={{

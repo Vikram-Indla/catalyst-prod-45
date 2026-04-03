@@ -240,7 +240,7 @@ export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicSt
               <div className="flex items-center gap-2">
                 <div 
                   className="w-2.5 h-2.5 rounded-full" 
-                  style={{ backgroundColor: theme.color_tag || 'hsl(var(--primary))' }}
+                  style={{ backgroundColor: theme.color_tag || 'var(--cp-blue)' }}
                 />
                 <span className="text-sm font-medium">{theme.name}</span>
                 {theme.status && (

@@ -103,9 +103,9 @@ export function IntegrationTab() {
   ];
 
   return (
-    <div className="space-y-6 dark:bg-[#1A1714]">
+    <div className="space-y-6 dark:bg-[#181A1E]">
       {/* Section 1 — Connection Status */}
-      <div className="bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[#2C2820] rounded-md p-4">
+      <div className="bg-white dark:bg-[#1F2128] border border-[#E2E8F0] dark:border-[#262830] rounded-md p-4">
         <h3 className="text-sm font-semibold text-[#0F172A] dark:text-white mb-3">Jira Connection</h3>
         {connLoading ? (
           <Skeleton className="h-10 w-64" />
@@ -114,12 +114,12 @@ export function IntegrationTab() {
             <CheckCircle size={18} className="text-green-600" />
             <div>
               <div className="flex items-center gap-2">
-                <span style={{ fontSize: 13, fontWeight: 650 }} className="text-[#0F172A] dark:text-white">
+                <span style={{ fontSize: 13, fontWeight: 650 }} className="text-[var(--fg-1)] dark:text-white">
                   {connection.name}
                 </span>
                 <StatusLozenge status="Connected" />
               </div>
-              <span style={{ fontSize: 12 }} className="text-[#64748B] dark:text-gray-400">
+              <span style={{ fontSize: 12 }} className="text-[var(--fg-3)] dark:text-gray-400">
                 {connection.base_url}
               </span>
             </div>
@@ -131,7 +131,7 @@ export function IntegrationTab() {
               <div className="flex items-center gap-2">
                 <StatusLozenge status="Not Connected" />
               </div>
-              <span style={{ fontSize: 13 }} className="text-[#64748B] dark:text-gray-400 mt-1 block">
+              <span style={{ fontSize: 13 }} className="text-[var(--fg-3)] dark:text-gray-400 mt-1 block">
                 Configure in Admin → Jira Integration
               </span>
             </div>
@@ -146,13 +146,13 @@ export function IntegrationTab() {
           return (
             <div
               key={card.label}
-              className="relative bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[#2C2820] rounded-md p-4"
+              className="relative bg-white dark:bg-[#1F2128] border border-[#E2E8F0] dark:border-[#262830] rounded-md p-4"
             >
               <Icon size={16} className={`absolute top-4 right-4 ${card.iconClass}`} />
-              <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700 }} className="text-[#0F172A] dark:text-white">
+              <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700 }} className="text-[var(--fg-1)] dark:text-white">
                 {card.value}
               </div>
-              <div style={{ fontSize: 12 }} className="text-[#64748B] dark:text-gray-400 mt-1">
+              <div style={{ fontSize: 12 }} className="text-[var(--fg-3)] dark:text-gray-400 mt-1">
                 {card.label}
               </div>
             </div>
@@ -161,7 +161,7 @@ export function IntegrationTab() {
       </div>
 
       {/* Section 3 — Recent Sync Log */}
-      <div className="bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[#2C2820] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[#1F2128] border border-[#E2E8F0] dark:border-[#262830] rounded-md overflow-hidden">
         <h3 className="text-sm font-semibold text-[#0F172A] dark:text-white p-4 pb-2">Recent Sync Events</h3>
 
         {logsError ? (
@@ -178,12 +178,12 @@ export function IntegrationTab() {
         ) : !syncLogs || syncLogs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 gap-2">
             <RefreshCw size={32} className="text-gray-300 dark:text-gray-600" />
-            <span style={{ fontSize: 13 }} className="text-[#94A3B8] dark:text-gray-400">No sync events yet</span>
+            <span style={{ fontSize: 13 }} className="text-[var(--fg-4)] dark:text-gray-400">No sync events yet</span>
           </div>
         ) : (
           <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b border-[#E2E8F0] dark:border-[#2C2820]">
+              <tr className="border-b border-[#E2E8F0] dark:border-[#262830]">
                 {['Time', 'Event', 'Jira Key', 'Status', 'Items', 'Duration'].map((h) => (
                   <th
                     key={h}
@@ -201,25 +201,25 @@ export function IntegrationTab() {
                 return (
                   <tr
                     key={log.id}
-                    className="border-b border-[#E2E8F0] dark:border-[#2C2820]"
+                    className="border-b border-[#E2E8F0] dark:border-[#262830]"
                     style={{ height: 36, maxHeight: 36 }}
                   >
-                    <td className="px-4 text-[#0F172A] dark:text-white" style={{ fontSize: 12 }}>
+                    <td className="px-4 text-[var(--fg-1)] dark:text-white" style={{ fontSize: 12 }}>
                       {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
                     </td>
-                    <td className="px-4 text-[#0F172A] dark:text-white" style={{ fontSize: 12 }}>
+                    <td className="px-4 text-[var(--fg-1)] dark:text-white" style={{ fontSize: 12 }}>
                       {log.event_type}
                     </td>
-                    <td className="px-4 text-[#0F172A] dark:text-white" style={{ fontSize: 12 }}>
+                    <td className="px-4 text-[var(--fg-1)] dark:text-white" style={{ fontSize: 12 }}>
                       {log.jira_key || '—'}
                     </td>
                     <td className="px-4">
                       <StatusLozenge status={log.status} />
                     </td>
-                    <td className="px-4 text-[#0F172A] dark:text-white" style={{ fontSize: 12 }}>
+                    <td className="px-4 text-[var(--fg-1)] dark:text-white" style={{ fontSize: 12 }}>
                       {itemCount}
                     </td>
-                    <td className="px-4 text-[#64748B] dark:text-gray-400" style={{ fontSize: 12 }}>
+                    <td className="px-4 text-[var(--fg-3)] dark:text-gray-400" style={{ fontSize: 12 }}>
                       {log.sync_duration_ms != null ? `${log.sync_duration_ms}ms` : '—'}
                     </td>
                   </tr>

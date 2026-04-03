@@ -410,7 +410,7 @@ export function CapacityPlannerGantt({
                       {month.monthName.slice(0, 3)}
                       {month.isCurrent && (
                         <span className="cpg-current-badge">
-                          <span style={{ width: 6, height: 6, background: '#fff', borderRadius: '50%', display: 'inline-block' }} />
+                          <span style={{ width: 6, height: 6, background: 'var(--bg-app)', borderRadius: '50%', display: 'inline-block' }} />
                           Now
                         </span>
                       )}

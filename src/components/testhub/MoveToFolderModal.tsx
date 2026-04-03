@@ -97,18 +97,18 @@ export function MoveToFolderModal({
             paddingLeft: 12 + depth * 20,
             borderRadius: 6,
             cursor: isCurrent ? 'not-allowed' : 'pointer',
-            backgroundColor: isSelected ? '#EFF6FF' : 'transparent',
-            border: isSelected ? '1px solid #BFDBFE' : '1px solid transparent',
+            backgroundColor: isSelected ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent',
+            border: isSelected ? '1px solid color-mix(in srgb, var(--cp-blue) 25%, transparent)' : '1px solid transparent',
             opacity: isCurrent ? 0.5 : 1,
             transition: 'all 0.1s',
           }}
-          onMouseEnter={(e) => { if (!isSelected && !isCurrent) e.currentTarget.style.backgroundColor = '#F8FAFC'; }}
-          onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = isSelected ? '#EFF6FF' : 'transparent'; }}
+          onMouseEnter={(e) => { if (!isSelected && !isCurrent) e.currentTarget.style.backgroundColor = 'var(--bg-1)'; }}
+          onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = isSelected ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent'; }}
         >
           {hasChildren ? (
             <button
               onClick={(e) => { e.stopPropagation(); toggleExpanded(folder.id); }}
-              style={{ width: 16, height: 16, border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8' }}
+              style={{ width: 16, height: 16, border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--fg-4)' }}
             >
               <ChevronRight style={{ width: 14, height: 14, transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }} />
             </button>
@@ -116,15 +116,15 @@ export function MoveToFolderModal({
             <div style={{ width: 16 }} />
           )}
           {isExpanded ? (
-            <FolderOpen style={{ width: 16, height: 16, color: '#2563EB', flexShrink: 0 }} />
+            <FolderOpen style={{ width: 16, height: 16, color: 'var(--cp-blue)', flexShrink: 0 }} />
           ) : (
-            <Folder style={{ width: 16, height: 16, color: '#64748B', flexShrink: 0 }} />
+            <Folder style={{ width: 16, height: 16, color: 'var(--fg-3)', flexShrink: 0 }} />
           )}
-          <span style={{ fontSize: 13, fontWeight: isSelected ? 600 : 400, color: '#0F172A', flex: 1 }}>
+          <span style={{ fontSize: 13, fontWeight: isSelected ? 600 : 400, color: 'var(--fg-1)', flex: 1 }}>
             {folder.name}
           </span>
           {isCurrent && (
-            <span style={{ fontSize: 10, color: '#94A3B8', fontStyle: 'italic' }}>current</span>
+            <span style={{ fontSize: 10, color: 'var(--fg-4)', fontStyle: 'italic' }}>current</span>
           )}
         </div>
         {hasChildren && isExpanded && children.map(child => renderFolder(child, depth + 1))}
@@ -139,16 +139,16 @@ export function MoveToFolderModal({
       onClick={(e) => e.target === e.currentTarget && onClose()}
       style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}
     >
-      <div onClick={(e) => e.stopPropagation()} style={{ width: 420, maxWidth: '95vw', maxHeight: 'calc(100vh - 120px)', backgroundColor: '#FFFFFF', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: 420, maxWidth: '95vw', maxHeight: 'calc(100vh - 120px)', backgroundColor: 'var(--cp-float)', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>Move to Folder</h2>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#64748B', margin: '4px 0 0 0' }}>
+            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Move to Folder</h2>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0 0' }}>
               {testCaseIds.length} test case{testCaseIds.length > 1 ? 's' : ''} selected
             </p>
           </div>
-          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X style={{ width: 20, height: 20 }} />
           </button>
         </div>
@@ -156,7 +156,7 @@ export function MoveToFolderModal({
         {/* Folder tree */}
         <div style={{ flex: 1, overflow: 'auto', padding: '12px 16px', minHeight: 200, maxHeight: 360 }}>
           {rootFolders.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 40, color: '#94A3B8', fontSize: 13 }}>
+            <div style={{ textAlign: 'center', padding: 40, color: 'var(--fg-4)', fontSize: 13 }}>
               No folders available
             </div>
           ) : (
@@ -165,8 +165,8 @@ export function MoveToFolderModal({
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-          <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer' }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+          <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>
             Cancel
           </button>
           <button
@@ -174,7 +174,7 @@ export function MoveToFolderModal({
             disabled={!selectedFolderId || isMoving}
             style={{
               height: 40, padding: '0 20px',
-              background: !selectedFolderId || isMoving ? '#94A3B8' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              background: !selectedFolderId || isMoving ? 'var(--fg-4)' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
               cursor: !selectedFolderId || isMoving ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', gap: 6,

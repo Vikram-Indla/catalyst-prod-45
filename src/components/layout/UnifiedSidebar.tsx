@@ -192,8 +192,8 @@ export function UnifiedSidebar({
             <div 
               className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                color: '#ffffff',
+                background: 'var(--cp-blue)',
+                color: 'var(--bg-app)',
                 fontSize: '0.62rem',
                 fontWeight: 700,
                 letterSpacing: '0.02em',
@@ -224,15 +224,15 @@ export function UnifiedSidebar({
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
-              color: 'var(--text-4, #94a3b8)',
+              color: 'var(--text-4)',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--surface-2, #f8fafc)';
-              e.currentTarget.style.color = 'var(--text-2, #475569)';
+              e.currentTarget.style.background = 'var(--surface-2)';
+              e.currentTarget.style.color = 'var(--text-2)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = 'var(--text-4, #94a3b8)';
+              e.currentTarget.style.color = 'var(--text-4)';
             }}
             aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
           >
@@ -286,7 +286,7 @@ export function UnifiedSidebar({
                   position: 'relative',
                   justifyContent: expanded ? 'flex-start' : 'center',
                   background: active ? 'rgba(37, 99, 235, 0.12)' : 'transparent',
-                  color: active ? '#2563eb' : 'var(--text-2, #334155)',
+                  color: active ? 'var(--cp-blue)' : 'var(--text-2)',
                   fontWeight: active ? 600 : 500,
                   fontSize: '0.84rem',
                   fontFamily: "'Inter', sans-serif",
@@ -296,12 +296,12 @@ export function UnifiedSidebar({
                 onMouseEnter={(e) => { 
                   if (!active) {
                     e.currentTarget.style.background = 'rgba(37, 99, 235, 0.06)';
-                    e.currentTarget.style.color = 'var(--text-1, #1e293b)';
+                    e.currentTarget.style.color = 'var(--text-1)';
                   }
                 }}
                 onMouseLeave={(e) => { 
                   e.currentTarget.style.background = active ? 'rgba(37, 99, 235, 0.12)' : 'transparent';
-                  e.currentTarget.style.color = active ? '#2563eb' : 'var(--text-2, #334155)';
+                  e.currentTarget.style.color = active ? 'var(--cp-blue)' : 'var(--text-2)';
                 }}
               >
                 {/* V10: Left indicator bar for active state - 3px */}
@@ -313,7 +313,7 @@ export function UnifiedSidebar({
                       top: '7px',
                       bottom: '7px',
                       width: '3px',
-                      background: '#2563eb',
+                      background: 'var(--cp-blue)',
                       borderRadius: '0 2px 2px 0',
                     }}
                   />
@@ -324,7 +324,7 @@ export function UnifiedSidebar({
                     width: '17px', 
                     height: '17px', 
                     flexShrink: 0, 
-                    color: active ? '#2563eb' : 'var(--text-3, #64748b)',
+                    color: active ? 'var(--cp-blue)' : 'var(--text-3)',
                     strokeWidth: 1.4,
                   }} 
                 />
@@ -364,7 +364,7 @@ export function UnifiedSidebar({
                         fontSize: '11px', 
                         fontWeight: 600, 
                         background: 'hsl(var(--brand-primary))', 
-                        color: '#ffffff',
+                        color: 'var(--bg-app)',
                         borderRadius: '4px',
                         textTransform: 'uppercase',
                       }}>

@@ -27,14 +27,14 @@ export function CompletionDonut({ percent, done, total }: CompletionDonutProps) 
           transform="rotate(-90 60 60)"
           style={{ transition: 'stroke-dashoffset 800ms ease' }}
         />
-        <text x="60" y="54" textAnchor="middle" style={{ fontSize: 24, fontWeight: 700, fill: '#0F172A', fontFamily: "'Sora', sans-serif" }}>
+        <text x="60" y="54" textAnchor="middle" style={{ fontSize: 24, fontWeight: 700, fill: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>
           {percent}%
         </text>
-        <text x="60" y="72" textAnchor="middle" style={{ fontSize: 12, fill: '#64748B', fontFamily: "'Inter', sans-serif" }}>
+        <text x="60" y="72" textAnchor="middle" style={{ fontSize: 12, fill: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>
           complete
         </text>
       </svg>
-      <span style={{ fontSize: 12, color: '#64748B' }}>{done} of {total} items done</span>
+      <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{done} of {total} items done</span>
     </div>
   );
 }

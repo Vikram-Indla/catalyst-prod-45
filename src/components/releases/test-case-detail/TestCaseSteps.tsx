@@ -339,7 +339,7 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
               </>
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-purple-600" />
+                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-blue-600" />
                 AI Generate Steps
               </>
             )}
@@ -357,7 +357,7 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
           <p className="text-muted-foreground mb-4">No test steps defined yet</p>
           <div className="flex items-center justify-center gap-3">
             <Button variant="outline" size="sm" onClick={() => setShowAIDialog(true)}>
-              <Sparkles className="w-4 h-4 mr-2 text-purple-600" />
+              <Sparkles className="w-4 h-4 mr-2 text-blue-600" />
               AI Generate Steps
             </Button>
             <Button size="sm" onClick={() => setShowAddForm(true)}>
@@ -489,7 +489,7 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-purple-600" />
+              <Sparkles className="w-5 h-5 text-blue-600" />
               AI Generate Test Steps
             </DialogTitle>
             <DialogDescription>
@@ -528,7 +528,7 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
             <Button
               onClick={handleAIGenerate}
               disabled={!aiPrompt.trim() || isGenerating}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              className="bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700"
             >
               {isGenerating ? (
                 <>

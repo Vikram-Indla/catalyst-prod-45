@@ -115,44 +115,44 @@ export function TagSelector({ entityType, entityId, onTagsChanged }: TagSelector
   return (
     <div ref={dropdownRef} style={{ position: 'relative' }}>
       {/* Selected Tags */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: 8, minHeight: 44, backgroundColor: '#F8FAFC', borderRadius: 8, border: '1px solid #E2E8F0' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: 8, minHeight: 44, backgroundColor: 'var(--bg-1)', borderRadius: 8, border: '1px solid var(--divider)' }}>
         {selectedTags.map((tag) => (
-          <span key={tag.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 8px', backgroundColor: '#FFFFFF', borderRadius: 6, border: `1px solid ${tag.color}40`, fontSize: 12, fontWeight: 500 }}>
+          <span key={tag.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 8px', backgroundColor: 'var(--cp-float)', borderRadius: 6, border: `1px solid ${tag.color}40`, fontSize: 12, fontWeight: 500 }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: tag.color }} />
             {tag.name}
-            <button onClick={() => removeTag(tag.id)} style={{ width: 16, height: 16, padding: 0, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <button onClick={() => removeTag(tag.id)} style={{ width: 16, height: 16, padding: 0, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <X size={12} />
             </button>
           </span>
         ))}
-        <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', backgroundColor: '#FFFFFF', border: '1px dashed #CBD5E1', borderRadius: 6, fontSize: 12, color: '#64748B', cursor: 'pointer' }}>
+        <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', backgroundColor: 'var(--cp-float)', border: '1px dashed var(--divider)', borderRadius: 6, fontSize: 12, color: 'var(--fg-3)', cursor: 'pointer' }}>
           <Plus size={12} /> Add Tag
         </button>
       </div>
 
       {/* Dropdown */}
       {isDropdownOpen && (
-        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, backgroundColor: '#FFFFFF', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', zIndex: 100, maxHeight: 320, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: 12, borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, backgroundColor: 'var(--cp-float)', borderRadius: 10, border: '1px solid var(--divider)', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', zIndex: 100, maxHeight: 320, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: 12, borderBottom: '1px solid var(--divider)' }}>
             <div style={{ position: 'relative' }}>
-              <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+              <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)' }} />
               <input type="text" placeholder="Search tags..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} autoFocus
-                style={{ width: '100%', height: 36, padding: '0 10px 0 32px', border: '1px solid #E2E8F0', borderRadius: 6, fontSize: 13 }} />
+                style={{ width: '100%', height: 36, padding: '0 10px 0 32px', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 13 }} />
             </div>
           </div>
           <div style={{ flex: 1, overflowY: 'auto', padding: 8 }}>
             {Object.entries(groupedTags).length === 0 ? (
-              <p style={{ padding: 16, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>{searchTerm ? 'No matching tags' : 'No more tags available'}</p>
+              <p style={{ padding: 16, textAlign: 'center', color: 'var(--fg-4)', fontSize: 13 }}>{searchTerm ? 'No matching tags' : 'No more tags available'}</p>
             ) : (
               Object.entries(groupedTags).map(([category, tags]) => (
                 <div key={category} style={{ marginBottom: 8 }}>
-                  <p style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', padding: '4px 8px', margin: 0 }}>{category}</p>
+                  <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', padding: '4px 8px', margin: 0 }}>{category}</p>
                   {tags.map((tag) => (
                     <button key={tag.id} onClick={() => addTag(tag)}
                       style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 10px', backgroundColor: 'transparent', border: 'none', borderRadius: 6, cursor: 'pointer', textAlign: 'left' }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FAFC'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-1)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                       <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: tag.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 13, color: '#0F172A' }}>{tag.name}</span>
+                      <span style={{ fontSize: 13, color: 'var(--fg-1)' }}>{tag.name}</span>
                     </button>
                   ))}
                 </div>

@@ -26,7 +26,7 @@ export function AllWorkBulkBar({ selectedIds, totalCount, onSelectAll, onClear, 
         className="flex items-center gap-4 px-5 py-2.5 rounded-lg shadow-xl"
         style={{
           backgroundColor: '#1e1f21',
-          color: '#fff',
+          color: 'var(--bg-app)',
           border: '1px solid rgba(255,255,255,0.1)',
           borderRadius: 8,
         }}

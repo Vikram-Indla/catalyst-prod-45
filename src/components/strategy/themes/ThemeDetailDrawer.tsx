@@ -1,7 +1,7 @@
 /**
  * ThemeDetailDrawer — 560px right-side overlay with 6 tabs
  * Fixes: Financials uses planned_budget, enhanced empty states, activity tab, Linear badges
- * Dark mode: uses isDark prop for Nocturne surface (#232019)
+ * Dark mode: uses isDark prop for Nocturne surface (#1F2128)
  */
 import { useEffect, useState } from 'react';
 import { X, Pencil, Trash2, Plus, Loader2, Target, Rocket, Flag, Clock } from 'lucide-react';
@@ -51,15 +51,15 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
   const pri = theme.priority ? PRIORITY_CONFIG[theme.priority] : null;
 
   // Dark palette shortcuts
-  const bg = isDark ? '#232019' : '#FFFFFF';
-  const t1 = isDark ? DK.t1 : '#0F172A';
-  const t2 = isDark ? DK.t2 : '#64748B';
-  const t3 = isDark ? DK.t3 : '#94A3B8';
-  const border = isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0';
-  const borderSubtle = isDark ? 'rgba(255,255,255,0.06)' : '#F8FAFC';
-  const hoverBg = isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC';
-  const cardBg = isDark ? 'rgba(255,255,255,0.04)' : '#F8FAFC';
-  const linkBlue = isDark ? '#60A5FA' : '#2563EB';
+  const bg = isDark ? '#1F2128' : 'var(--bg-app)';
+  const t1 = isDark ? DK.t1 : 'var(--fg-1)';
+  const t2 = isDark ? DK.t2 : 'var(--fg-3)';
+  const t3 = isDark ? DK.t3 : 'var(--fg-4)';
+  const border = isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)';
+  const borderSubtle = isDark ? 'rgba(255,255,255,0.06)' : 'var(--bg-1)';
+  const hoverBg = isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-1)';
+  const cardBg = isDark ? 'rgba(255,255,255,0.04)' : 'var(--bg-1)';
+  const linkBlue = isDark ? '#60A5FA' : 'var(--cp-blue)';
 
   return (
     <>
@@ -90,7 +90,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
           <div className="shrink-0 rounded-full" style={{ width: 12, height: 12, background: theme.color }} />
           <h2 className="truncate flex-1" style={{ fontSize: 16, fontWeight: 700, color: t1 }}>{theme.title}</h2>
           <button onClick={() => onEdit(theme)} style={{ fontSize: 12, color: linkBlue, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Edit</button>
-          <button onClick={() => setConfirmDelete(true)} style={{ fontSize: 12, color: isDark ? '#F87171' : '#EF4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
+          <button onClick={() => setConfirmDelete(true)} style={{ fontSize: 12, color: isDark ? '#F87171' : 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
           <button onClick={onClose} className="flex items-center justify-center rounded" style={{ width: 28, height: 28, border: 'none', background: 'none', cursor: 'pointer' }}
             onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -104,8 +104,8 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
           <div style={{ padding: '12px 20px', background: isDark ? 'rgba(220,38,38,0.12)' : '#FEF2F2', borderBottom: `1px solid ${isDark ? 'rgba(220,38,38,0.25)' : '#FECACA'}` }}>
             <p style={{ fontSize: 12, color: isDark ? '#FCA5A5' : '#991B1B', marginBottom: 8 }}>Delete "<strong>{theme.title}</strong>"? This will also remove all milestones and links.</p>
             <div className="flex gap-2">
-              <button onClick={() => { onDelete(theme); setConfirmDelete(false); }} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: '#DC2626', color: '#FFF', cursor: 'pointer' }}>Delete</button>
-              <button onClick={() => setConfirmDelete(false)} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, border: `1px solid ${border}`, background: isDark ? 'transparent' : '#FFF', color: isDark ? DK.t1 : '#334155', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => { onDelete(theme); setConfirmDelete(false); }} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: 'var(--sem-danger)', color: '#FFF', cursor: 'pointer' }}>Delete</button>
+              <button onClick={() => setConfirmDelete(false)} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, border: `1px solid ${border}`, background: isDark ? 'transparent' : 'var(--bg-app)', color: isDark ? DK.t1 : 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
             </div>
           </div>
         )}
@@ -118,9 +118,9 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
               onClick={() => setTab(t)}
               style={{
                 fontSize: 12, fontWeight: tab === t ? 600 : 500,
-                color: tab === t ? '#2563EB' : (isDark ? DK.t3 : '#64748B'),
+                color: tab === t ? 'var(--cp-blue)' : (isDark ? DK.t3 : 'var(--fg-3)'),
                 padding: '10px 12px', border: 'none', background: 'none',
-                borderBottom: tab === t ? '2px solid #2563EB' : '2px solid transparent',
+                borderBottom: tab === t ? '2px solid var(--cp-blue)' : '2px solid transparent',
                 cursor: 'pointer', whiteSpace: 'nowrap',
               }}
             >{t}</button>
@@ -144,14 +144,14 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
 // ═══ DARK HELPERS ═══
 function dk(isDark: boolean) {
   return {
-    t1: isDark ? DK.t1 : '#0F172A',
-    t2: isDark ? DK.t2 : '#64748B',
-    t3: isDark ? DK.t3 : '#94A3B8',
-    border: isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0',
-    borderSubtle: isDark ? 'rgba(255,255,255,0.06)' : '#F8FAFC',
-    cardBg: isDark ? 'rgba(255,255,255,0.04)' : '#F8FAFC',
-    hoverBg: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC',
-    linkBlue: isDark ? '#60A5FA' : '#2563EB',
+    t1: isDark ? DK.t1 : 'var(--fg-1)',
+    t2: isDark ? DK.t2 : 'var(--fg-3)',
+    t3: isDark ? DK.t3 : 'var(--fg-4)',
+    border: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)',
+    borderSubtle: isDark ? 'rgba(255,255,255,0.06)' : 'var(--bg-1)',
+    cardBg: isDark ? 'rgba(255,255,255,0.04)' : 'var(--bg-1)',
+    hoverBg: isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-1)',
+    linkBlue: isDark ? '#60A5FA' : 'var(--cp-blue)',
   };
 }
 
@@ -221,7 +221,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
             </span>
             <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? '#93C5FD' : '#1D4ED8' }}>Strategy Health Score</span>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: isDark ? '#60A5FA' : '#2563EB', marginBottom: 8 }}>
+          <div style={{ fontSize: 28, fontWeight: 800, color: isDark ? '#60A5FA' : 'var(--cp-blue)', marginBottom: 8 }}>
             {theme.ai_health_score}<span style={{ fontSize: 14, fontWeight: 500, color: d.t3 }}>/100</span>
           </div>
           <div className="grid grid-cols-3 gap-1.5">
@@ -235,8 +235,8 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
                 border: isDark ? '1px solid rgba(255,255,255,0.08)' : 'none',
                 padding: '6px 0',
               }}>
-                <p style={{ fontSize: 13, fontWeight: 700, color: isDark ? DK.t1 : '#5B21B6' }}>{f.value}</p>
-                <p style={{ fontSize: 10, color: isDark ? DK.t3 : '#7C3AED' }}>{f.label}</p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: isDark ? DK.t1 : '#1E40AF' }}>{f.value}</p>
+                <p style={{ fontSize: 10, color: isDark ? DK.t3 : '#2563EB' }}>{f.label}</p>
               </div>
             ))}
           </div>
@@ -281,7 +281,7 @@ function GoalsTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: b
       ) : (
         <div className="space-y-2">
           {goals.map((g: any) => {
-            const statusColor = g.status === 'completed' ? '#16A34A' : g.status === 'at_risk' ? '#D97706' : '#2563EB';
+            const statusColor = g.status === 'completed' ? 'var(--sem-success)' : g.status === 'at_risk' ? 'var(--sem-warning)' : 'var(--cp-blue)';
             return (
               <div key={g.id} className="rounded-lg border p-3" style={{ borderColor: d.border, background: isDark ? 'transparent' : undefined }}>
                 <div className="flex items-start justify-between mb-2">
@@ -289,7 +289,7 @@ function GoalsTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: b
                   <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 10, fontWeight: 500, background: statusColor + (isDark ? '25' : '18'), color: isDark ? statusColor + 'CC' : statusColor }}>{g.status}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0' }}>
+                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: isDark ? 'rgba(255,255,255,0.12)' : 'var(--divider)' }}>
                     <div className="h-full rounded-full" style={{ width: `${g.progress_pct}%`, background: statusColor }} />
                   </div>
                   <span style={{ fontSize: 10, fontWeight: 600, color: d.t2 }}>{g.progress_pct}%</span>
@@ -352,18 +352,18 @@ function FinancialsTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
       <div className="grid grid-cols-3 gap-3 mb-5">
         <KpiCard label="Allocated" value={formatBudget(allocated)} isDark={isDark} />
         <KpiCard label="Spent" value={formatBudget(spent)} isDark={isDark} />
-        <KpiCard label="Remaining" value={`${remainingPct}%`} color={remainingPct < 20 ? '#DC2626' : '#059669'} isDark={isDark} />
+        <KpiCard label="Remaining" value={`${remainingPct}%`} color={remainingPct < 20 ? 'var(--sem-danger)' : '#059669'} isDark={isDark} />
       </div>
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1">
           <span style={{ fontSize: 11, color: d.t2 }}>Budget Utilization</span>
           <span style={{ fontSize: 11, fontWeight: 600, color: d.t1 }}>{utilization}%</span>
         </div>
-        <div className="rounded-full overflow-hidden" style={{ height: 8, background: isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0' }}>
+        <div className="rounded-full overflow-hidden" style={{ height: 8, background: isDark ? 'rgba(255,255,255,0.12)' : 'var(--divider)' }}>
           {utilization > 0 && (
             <div className="h-full rounded-full" style={{
               width: `${Math.min(utilization, 100)}%`,
-              background: utilization > 90 ? '#DC2626' : utilization > 70 ? '#D97706' : '#2563EB',
+              background: utilization > 90 ? 'var(--sem-danger)' : utilization > 70 ? 'var(--sem-warning)' : 'var(--cp-blue)',
             }} />
           )}
         </div>
@@ -412,7 +412,7 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
   const inputStyle: React.CSSProperties = {
     fontSize: 12, padding: '6px 8px', borderRadius: 4, outline: 'none', width: '100%',
     border: `1px solid ${d.border}`,
-    background: isDark ? 'transparent' : '#FFFFFF',
+    background: isDark ? 'transparent' : 'var(--bg-app)',
     color: d.t1,
   };
 
@@ -424,7 +424,7 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
       </div>
 
       {showForm && (
-        <div className="rounded-lg border p-3 mb-3" style={{ borderColor: isDark ? 'rgba(59,130,246,0.25)' : '#DBEAFE', background: isDark ? 'rgba(59,130,246,0.06)' : '#F8FAFC' }}>
+        <div className="rounded-lg border p-3 mb-3" style={{ borderColor: isDark ? 'rgba(59,130,246,0.25)' : '#DBEAFE', background: isDark ? 'rgba(59,130,246,0.06)' : 'var(--bg-1)' }}>
           <div className="space-y-2">
             <input style={inputStyle} placeholder="Milestone name *" value={formData.name} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} autoFocus />
             <div className="grid grid-cols-3 gap-2">
@@ -443,8 +443,8 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
               <input type="date" style={inputStyle} value={formData.due_date} onChange={e => setFormData(f => ({ ...f, due_date: e.target.value }))} />
             </div>
             <div className="flex gap-2">
-              <button onClick={handleSave} disabled={!formData.name.trim()} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: formData.name.trim() ? '#2563EB' : d.t3, color: '#FFF', cursor: formData.name.trim() ? 'pointer' : 'default' }}>{editingId ? 'Update' : 'Add'}</button>
-              <button onClick={resetForm} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, border: `1px solid ${d.border}`, background: isDark ? 'transparent' : '#FFF', color: d.t1, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleSave} disabled={!formData.name.trim()} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: formData.name.trim() ? 'var(--cp-blue)' : d.t3, color: '#FFF', cursor: formData.name.trim() ? 'pointer' : 'default' }}>{editingId ? 'Update' : 'Add'}</button>
+              <button onClick={resetForm} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, border: `1px solid ${d.border}`, background: isDark ? 'transparent' : 'var(--bg-app)', color: d.t1, cursor: 'pointer' }}>Cancel</button>
             </div>
           </div>
         </div>
@@ -500,10 +500,10 @@ function ActivityTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?
       ) : (
         <div className="relative pl-6">
           {/* Timeline line */}
-          <div className="absolute left-[11px] top-2 bottom-2" style={{ width: 2, background: isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0' }} />
+          <div className="absolute left-[11px] top-2 bottom-2" style={{ width: 2, background: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)' }} />
           {activities.map((a, i) => (
             <div key={i} className="relative flex items-start gap-3 mb-4">
-              <div className="absolute left-[-17px] top-1.5 rounded-full" style={{ width: 10, height: 10, background: a.color, border: `2px solid ${isDark ? '#232019' : '#FFFFFF'}` }} />
+              <div className="absolute left-[-17px] top-1.5 rounded-full" style={{ width: 10, height: 10, background: a.color, border: `2px solid ${isDark ? '#1F2128' : 'var(--bg-app)'}` }} />
               <div>
                 <p style={{ fontSize: 12.5, fontWeight: 500, color: d.t1 }}>{a.title}</p>
                 <p style={{ fontSize: 11, color: d.t2, marginBottom: 2 }}>{a.detail}</p>

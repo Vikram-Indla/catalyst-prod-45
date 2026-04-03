@@ -23,7 +23,7 @@ export function EmptyState({ icon: Icon = Package, title, subtitle, actions, cla
         <Icon size={24} className="text-[#94A3B8]" />
       </div>
       <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: RH.ink2 }}>{title}</h3>
-      {subtitle && <p className="text-[13px] text-[#64748B] max-w-sm text-center mb-4" style={{ fontFamily: RH.fontBody }}>{subtitle}</p>}
+      {subtitle && <p className="text-[13px] text-[var(--fg-3)] max-w-sm text-center mb-4" style={{ fontFamily: RH.fontBody }}>{subtitle}</p>}
       {actions && actions.length > 0 && (
         <div className="flex items-center gap-2">
           {actions.map(a => (
@@ -44,7 +44,7 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
       <div className="w-12 h-12 rounded-xl bg-[#FEF2F2] flex items-center justify-center mb-4">
         <AlertCircle size={24} className="text-[#DC2626]" />
       </div>
-      <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: '#DC2626' }}>Something went wrong</h3>
+      <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: 'var(--sem-danger)' }}>Something went wrong</h3>
       <p className="text-[13px] text-[#64748B] mb-4">{message}</p>
       {onRetry && (
         <button onClick={onRetry} className="h-8 px-3.5 rounded-md text-[13px] font-semibold bg-[#2563EB] text-white hover:bg-[#1D4ED8]">

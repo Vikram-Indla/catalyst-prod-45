@@ -85,14 +85,14 @@ export function DeleteTestCycleModal({
     }}>
       <div style={{
         width: 480,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'var(--cp-float)',
         borderRadius: 12,
         boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
       }}>
         {/* Header */}
         <div style={{
           padding: '20px 24px',
-          borderBottom: '1px solid #E2E8F0',
+          borderBottom: '1px solid var(--divider)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -107,9 +107,9 @@ export function DeleteTestCycleModal({
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-              <Trash2 size={20} style={{ color: '#DC2626' }} />
+              <Trash2 size={20} style={{ color: 'var(--sem-danger)' }} />
             </div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
               Delete Test Cycle
             </h2>
           </div>
@@ -123,7 +123,7 @@ export function DeleteTestCycleModal({
               border: 'none',
               borderRadius: 8,
               backgroundColor: 'transparent',
-              color: '#94A3B8',
+              color: 'var(--fg-4)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -140,13 +140,13 @@ export function DeleteTestCycleModal({
           <div style={{
             padding: 16,
             backgroundColor: '#FEF2F2',
-            border: '1px solid #FECACA',
+            border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)',
             borderRadius: 8,
             marginBottom: 16,
             display: 'flex',
             gap: 12,
           }}>
-            <AlertTriangle size={20} style={{ color: '#DC2626', flexShrink: 0, marginTop: 2 }} />
+            <AlertTriangle size={20} style={{ color: 'var(--sem-danger)', flexShrink: 0, marginTop: 2 }} />
             <div>
               <p style={{ fontSize: 14, fontWeight: 600, color: '#991B1B', margin: '0 0 4px' }}>
                 This action cannot be undone
@@ -158,13 +158,13 @@ export function DeleteTestCycleModal({
           </div>
 
           {/* Cycle Info */}
-          <p style={{ fontSize: 14, color: '#334155', margin: '0 0 12px' }}>
+          <p style={{ fontSize: 14, color: 'var(--fg-2)', margin: '0 0 12px' }}>
             Are you sure you want to delete this test cycle?
           </p>
           
           <div style={{
             padding: 16,
-            backgroundColor: '#F8FAFC',
+            backgroundColor: 'var(--bg-1)',
             borderRadius: 8,
             marginBottom: 16,
           }}>
@@ -172,19 +172,19 @@ export function DeleteTestCycleModal({
               <span style={{
                 fontSize: 12,
                 fontWeight: 600,
-                color: '#2563EB',
-                backgroundColor: '#EFF6FF',
+                color: 'var(--cp-blue)',
+                backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)',
                 padding: '3px 8px',
                 borderRadius: 4,
               }}>
                 {cycle.cycle_key}
               </span>
-              <Calendar size={14} style={{ color: '#64748B' }} />
+              <Calendar size={14} style={{ color: 'var(--fg-3)' }} />
             </div>
             <p style={{
               fontSize: 15,
               fontWeight: 600,
-              color: '#0F172A',
+              color: 'var(--fg-1)',
               margin: 0,
             }}>
               {cycle.name}
@@ -196,14 +196,14 @@ export function DeleteTestCycleModal({
             <div style={{
               padding: 12,
               backgroundColor: '#FFFBEB',
-              border: '1px solid #FDE68A',
+              border: '1px solid color-mix(in srgb, var(--sem-warning) 30%, transparent)',
               borderRadius: 8,
               marginBottom: 16,
               display: 'flex',
               gap: 10,
               alignItems: 'flex-start',
             }}>
-              <AlertTriangle size={16} style={{ color: '#D97706', flexShrink: 0, marginTop: 2 }} />
+              <AlertTriangle size={16} style={{ color: 'var(--sem-warning)', flexShrink: 0, marginTop: 2 }} />
               <div>
                 <p style={{ fontSize: 13, fontWeight: 600, color: '#92400E', margin: '0 0 2px' }}>
                   This cycle is currently active
@@ -220,14 +220,14 @@ export function DeleteTestCycleModal({
             <div style={{
               padding: 12,
               backgroundColor: '#FEF2F2',
-              border: '1px solid #FECACA',
+              border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)',
               borderRadius: 8,
               marginBottom: 16,
               display: 'flex',
               gap: 10,
               alignItems: 'flex-start',
             }}>
-              <AlertTriangle size={16} style={{ color: '#DC2626', flexShrink: 0, marginTop: 2 }} />
+              <AlertTriangle size={16} style={{ color: 'var(--sem-danger)', flexShrink: 0, marginTop: 2 }} />
               <div>
                 <p style={{ fontSize: 13, fontWeight: 600, color: '#991B1B', margin: '0 0 2px' }}>
                   This cycle contains {cycle.total_cases} test case{cycle.total_cases !== 1 ? 's' : ''}
@@ -246,14 +246,14 @@ export function DeleteTestCycleModal({
                 display: 'block',
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#0F172A',
+                color: 'var(--fg-1)',
                 marginBottom: 6,
               }}>
                 Type <code style={{ 
-                  backgroundColor: '#F1F5F9', 
+                  backgroundColor: 'var(--cp-bd-zone)', 
                   padding: '2px 6px', 
                   borderRadius: 4,
-                  color: '#DC2626',
+                  color: 'var(--sem-danger)',
                 }}>{cycle.cycle_key}</code> to confirm
               </label>
               <input
@@ -265,10 +265,10 @@ export function DeleteTestCycleModal({
                   width: '100%',
                   height: 40,
                   padding: '0 12px',
-                  border: '1.5px solid #E2E8F0',
+                  border: '1.5px solid var(--divider)',
                   borderRadius: 8,
                   fontSize: 14,
-                  color: '#0F172A',
+                  color: 'var(--fg-1)',
                   fontFamily: 'monospace',
                 }}
               />
@@ -279,7 +279,7 @@ export function DeleteTestCycleModal({
         {/* Footer */}
         <div style={{
           padding: '16px 24px',
-          borderTop: '1px solid #E2E8F0',
+          borderTop: '1px solid var(--divider)',
           display: 'flex',
           justifyContent: 'flex-end',
           gap: 12,
@@ -290,12 +290,12 @@ export function DeleteTestCycleModal({
             style={{
               height: 40,
               padding: '0 20px',
-              backgroundColor: '#FFFFFF',
-              border: '1.5px solid #E2E8F0',
+              backgroundColor: 'var(--cp-float)',
+              border: '1.5px solid var(--divider)',
               borderRadius: 8,
               fontSize: 14,
               fontWeight: 500,
-              color: '#334155',
+              color: 'var(--fg-2)',
               cursor: 'pointer',
             }}
           >
@@ -309,7 +309,7 @@ export function DeleteTestCycleModal({
               padding: '0 20px',
               background: (!hasTestCases || confirmText === cycle.cycle_key)
                 ? 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)'
-                : '#94A3B8',
+                : 'var(--fg-4)',
               border: 'none',
               borderRadius: 8,
               fontSize: 14,

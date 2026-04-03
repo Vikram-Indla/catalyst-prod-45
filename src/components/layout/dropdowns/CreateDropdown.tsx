@@ -19,7 +19,7 @@ const otherItems = [
   { label: 'Risks', icon: AlertTriangle, color: 'bg-secondary' },
   { label: 'Impediments', icon: Shield, color: 'bg-secondary' },
   { label: 'Specifications', icon: List, color: 'bg-secondary' },
-  { label: 'Sprints', icon: Clock, color: 'bg-secondary' },
+  { label: 'Releases', icon: Clock, color: 'bg-secondary' },
   { label: 'Program Increments', icon: Calendar, color: 'bg-secondary' },
   { label: 'Release Vehicles', icon: Truck, color: 'bg-secondary' },
   { label: 'Incidents', icon: Siren, color: 'bg-red-600' }
@@ -67,7 +67,7 @@ export function CreateDropdown({ onClose, onCreateEpic, onCreateIncident }: Crea
       'Risks': '/items/risks',
       'Impediments': '/items/impediments',
       'Specifications': '/items/specifications',
-      'Sprints': '/items/sprints',
+      'Releases': '/items/sprints',
       'Program Increments': '/items/program-increments',
       'Release Vehicles': '/items/release-vehicles',
       'Incidents': '/release/incidents',

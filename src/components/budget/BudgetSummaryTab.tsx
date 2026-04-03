@@ -248,16 +248,16 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
 
           {/* Licenses - Clickable with enhanced hover */}
           <div 
-            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-violet-300"
+            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-300"
             onClick={() => setActiveModal('licenses')}
           >
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-violet-600 to-violet-500" />
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 to-blue-500" />
             {/* Bottom accent bar on hover */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-violet-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Licenses
             </div>
-            <div className="font-mono text-2xl font-bold text-violet-600 dark:text-violet-400 mb-2">
+            <div className="font-mono text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">
               {formatCurrency(budget.licenses)}
             </div>
             <div className="text-[11px] text-muted-foreground">
@@ -684,10 +684,10 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                     <span className={cn(
                       "inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium",
                       r.resourceType === 'Variable' ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400" : 
-                      "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400"
+                      "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
                     )}>
                       <span className={cn("w-1.5 h-1.5 rounded-full", 
-                        r.resourceType === 'Variable' ? "bg-blue-500" : "bg-violet-500"
+                        r.resourceType === 'Variable' ? "bg-blue-500" : "bg-blue-500"
                       )} />
                       {r.resourceType}
                     </span>
@@ -841,7 +841,7 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                 );
               })}
             </tbody>
-            <tfoot className="bg-violet-50 dark:bg-violet-900/20 border-t-2 border-violet-200 dark:border-violet-800">
+            <tfoot className="bg-blue-50 dark:bg-blue-900/20 border-t-2 border-blue-200 dark:border-blue-800">
               <tr>
                 <td className="px-3 py-3 font-bold text-[#7c3aed]">Total</td>
                 <td></td>

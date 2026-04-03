@@ -331,7 +331,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
             <div>
               <label className="text-sm font-medium flex items-center gap-2 mb-2">
                 <Calendar className="h-4 w-4 text-brand-primary" />
-                Sprint
+                Release
               </label>
               {isEditing ? (
                 <Select
@@ -339,7 +339,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
                   onValueChange={(value) => setEditedStory({ ...editedStory, sprint_id: value })}
                 >
                   <SelectTrigger className="focus:ring-brand-primary">
-                    <SelectValue placeholder="Select sprint" />
+                    <SelectValue placeholder="Select release" />
                   </SelectTrigger>
                   <SelectContent>
                     {iterations?.map((i) => (

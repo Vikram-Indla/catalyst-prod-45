@@ -27,9 +27,9 @@ interface GeneratedTestCase {
 }
 
 const CATEGORY_CONFIG = {
-  positive: { label: 'Positive', icon: CheckCircle2, color: '#059669', bg: 'rgba(5,150,105,0.08)', border: '#059669' },
-  negative: { label: 'Negative', icon: XCircle, color: '#DC2626', bg: 'rgba(220,38,38,0.08)', border: '#DC2626' },
-  edge_case: { label: 'Edge Case', icon: AlertTriangle, color: '#D97706', bg: 'rgba(217,119,6,0.08)', border: '#D97706' },
+  positive: { label: 'Positive', icon: CheckCircle2, color: 'var(--sem-success)', bg: 'rgba(5,150,105,0.08)', border: 'var(--sem-success)' },
+  negative: { label: 'Negative', icon: XCircle, color: 'var(--sem-danger)', bg: 'rgba(220,38,38,0.08)', border: 'var(--sem-danger)' },
+  edge_case: { label: 'Edge Case', icon: AlertTriangle, color: 'var(--sem-warning)', bg: 'rgba(217,119,6,0.08)', border: 'var(--sem-warning)' },
 };
 
 // Build a nested tree from flat folder list
@@ -296,7 +296,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
               backgroundColor: isSelected ? 'rgba(37,99,235,0.08)' : 'transparent',
               border: isSelected ? '1px solid rgba(37,99,235,0.25)' : '1px solid transparent',
             }}
-            onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = '#F8FAFC'; }}
+            onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--bg-1)'; }}
             onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
           >
             {hasChildren ? (
@@ -305,7 +305,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                 style={{
                   width: 18, height: 18, padding: 0, border: 'none', borderRadius: 3,
                   backgroundColor: 'transparent', cursor: 'pointer', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center', color: '#94A3B8',
+                  alignItems: 'center', justifyContent: 'center', color: 'var(--fg-4)',
                 }}
               >
                 <ChevronRight size={14} style={{
@@ -316,15 +316,15 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
             ) : (
               <span style={{ width: 18 }} />
             )}
-            <FolderOpen size={16} style={{ color: isSelected ? '#2563EB' : '#94A3B8', flexShrink: 0 }} />
+            <FolderOpen size={16} style={{ color: isSelected ? 'var(--cp-blue)' : 'var(--fg-4)', flexShrink: 0 }} />
             <span style={{
               fontSize: 14, fontWeight: isSelected ? 600 : 400,
-              color: isSelected ? '#2563EB' : '#334155',
+              color: isSelected ? 'var(--cp-blue)' : 'var(--fg-2)',
             }}>
               {node.name}
             </span>
             {isSelected && (
-              <CheckCircle2 size={14} style={{ color: '#2563EB', marginLeft: 'auto' }} />
+              <CheckCircle2 size={14} style={{ color: 'var(--cp-blue)', marginLeft: 'auto' }} />
             )}
           </div>
           {hasChildren && isExpanded && renderFolderTree(node.children, depth + 1)}
@@ -347,12 +347,12 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
       justifyContent: 'center', zIndex: 1000,
     }} onClick={handleClose}>
       <div style={{
-        width: 680, backgroundColor: '#FFFFFF', borderRadius: 12,
+        width: 680, backgroundColor: 'var(--cp-float)', borderRadius: 12,
         boxShadow: '0 20px 60px rgba(0,0,0,0.15)', maxHeight: '85vh', display: 'flex', flexDirection: 'column',
       }} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div style={{
-          padding: '20px 24px', borderBottom: '1px solid #E2E8F0',
+          padding: '20px 24px', borderBottom: '1px solid var(--divider)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -366,10 +366,10 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
               {step === 'folder' ? <FolderOpen size={20} style={{ color: '#FFFFFF' }} /> : <Sparkles size={20} style={{ color: '#FFFFFF' }} />}
             </div>
             <div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
                 {stepConfig[step].title}
               </h2>
-              <p style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>
+              <p style={{ fontSize: 13, color: 'var(--fg-3)', marginTop: 2 }}>
                 {stepConfig[step].subtitle}
               </p>
             </div>
@@ -382,18 +382,18 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                   <div style={{
                     width: 22, height: 22, borderRadius: '50%', fontSize: 11, fontWeight: 700,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    backgroundColor: step === s ? '#2563EB' : (['folder', 'input', 'preview'].indexOf(step) > i ? '#059669' : '#E2E8F0'),
-                    color: step === s || (['folder', 'input', 'preview'].indexOf(step) > i) ? '#FFFFFF' : '#94A3B8',
+                    backgroundColor: step === s ? 'var(--cp-blue)' : (['folder', 'input', 'preview'].indexOf(step) > i ? 'var(--sem-success)' : 'var(--divider)'),
+                    color: step === s || (['folder', 'input', 'preview'].indexOf(step) > i) ? '#FFFFFF' : 'var(--fg-4)',
                   }}>
                     {['folder', 'input', 'preview'].indexOf(step) > i ? '✓' : i + 1}
                   </div>
-                  {i < 2 && <div style={{ width: 16, height: 1, backgroundColor: '#E2E8F0' }} />}
+                  {i < 2 && <div style={{ width: 16, height: 1, backgroundColor: 'var(--divider)' }} />}
                 </div>
               ))}
             </div>
             <button onClick={handleClose} style={{
               width: 32, height: 32, border: 'none', borderRadius: 8,
-              backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer',
+              backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <X size={20} />
@@ -408,15 +408,15 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
             <>
               {loadingFolders ? (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
-                  <Loader2 size={20} style={{ animation: 'spin 1s linear infinite', color: '#2563EB' }} />
-                  <span style={{ marginLeft: 10, color: '#64748B', fontSize: 14 }}>Loading folders...</span>
+                  <Loader2 size={20} style={{ animation: 'spin 1s linear infinite', color: 'var(--cp-blue)' }} />
+                  <span style={{ marginLeft: 10, color: 'var(--fg-3)', fontSize: 14 }}>Loading folders...</span>
                 </div>
               ) : folders.length === 0 ? (
                 <div style={{
                   padding: '32px 20px', textAlign: 'center', borderRadius: 8,
-                  backgroundColor: '#FFFBEB', border: '1px solid #FDE68A',
+                  backgroundColor: '#FFFBEB', border: '1px solid color-mix(in srgb, var(--sem-warning) 30%, transparent)',
                 }}>
-                  <AlertTriangle size={24} style={{ color: '#D97706', margin: '0 auto 8px' }} />
+                  <AlertTriangle size={24} style={{ color: 'var(--sem-warning)', margin: '0 auto 8px' }} />
                   <p style={{ fontSize: 14, fontWeight: 600, color: '#92400E', margin: 0 }}>No folders found</p>
                   <p style={{ fontSize: 13, color: '#A16207', marginTop: 4 }}>
                     Please create a folder in the Test Repository before generating test cases.
@@ -424,7 +424,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                 </div>
               ) : (
                 <div style={{
-                  border: '1px solid #E2E8F0', borderRadius: 8,
+                  border: '1px solid var(--divider)', borderRadius: 8,
                   maxHeight: 340, overflowY: 'auto', padding: '4px 0',
                 }}>
                   {renderFolderTree(tree)}
@@ -438,8 +438,8 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                   backgroundColor: 'rgba(37,99,235,0.04)', border: '1px solid rgba(37,99,235,0.12)',
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}>
-                  <FolderOpen size={14} style={{ color: '#2563EB', flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, color: '#1E40AF', fontWeight: 500 }}>
+                  <FolderOpen size={14} style={{ color: 'var(--cp-blue)', flexShrink: 0 }} />
+                  <span style={{ fontSize: 13, color: 'var(--cp-primary-70)', fontWeight: 500 }}>
                     Target: {selectedFolderPath.join(' / ')}
                   </span>
                 </div>
@@ -453,17 +453,17 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
               {/* Show selected folder */}
               <div style={{
                 marginBottom: 20, padding: '10px 14px', borderRadius: 8,
-                backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0',
+                backgroundColor: 'var(--bg-1)', border: '1px solid var(--divider)',
                 display: 'flex', alignItems: 'center', gap: 8,
               }}>
-                <FolderOpen size={14} style={{ color: '#2563EB', flexShrink: 0 }} />
-                <span style={{ fontSize: 13, color: '#334155' }}>
+                <FolderOpen size={14} style={{ color: 'var(--cp-blue)', flexShrink: 0 }} />
+                <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>
                   <strong>Folder:</strong> {selectedFolderPath.join(' / ')}
                 </span>
                 <button
                   onClick={() => setStep('folder')}
                   style={{
-                    marginLeft: 'auto', fontSize: 12, color: '#2563EB', fontWeight: 500,
+                    marginLeft: 'auto', fontSize: 12, color: 'var(--cp-blue)', fontWeight: 500,
                     background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline',
                   }}
                 >
@@ -473,7 +473,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
 
               {/* Description */}
               <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 8, color: '#0F172A' }}>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 8, color: 'var(--fg-1)' }}>
                   What do you want to test?
                 </label>
                 <textarea
@@ -482,7 +482,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                   placeholder="e.g., User login with email and password including forgot-password flow, session timeout, and multi-factor authentication..."
                   style={{
                     width: '100%', minHeight: 120, padding: 12,
-                    border: `1.5px solid ${validationError ? '#DC2626' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14,
+                    border: `1.5px solid ${validationError ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8, fontSize: 14,
                     resize: 'vertical', fontFamily: 'inherit',
                   }}
                 />
@@ -492,7 +492,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                     backgroundColor: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.15)',
                     display: 'flex', gap: 8, alignItems: 'flex-start',
                   }}>
-                    <AlertTriangle size={16} style={{ color: '#DC2626', flexShrink: 0, marginTop: 1 }} />
+                    <AlertTriangle size={16} style={{ color: 'var(--sem-danger)', flexShrink: 0, marginTop: 1 }} />
                     <span style={{ fontSize: 13, color: '#991B1B', lineHeight: 1.5 }}>{validationError}</span>
                   </div>
                 )}
@@ -500,7 +500,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
 
               {/* Count */}
               <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 8, color: '#0F172A' }}>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 8, color: 'var(--fg-1)' }}>
                   Number of test cases to generate
                 </label>
                 <input
@@ -511,10 +511,10 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                   onChange={(e) => setCount(Math.min(20, Math.max(3, parseInt(e.target.value) || 3)))}
                   style={{
                     width: 100, height: 40, padding: '0 12px',
-                    border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14,
+                    border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14,
                   }}
                 />
-                <span style={{ fontSize: 12, color: '#94A3B8', marginLeft: 10 }}>
+                <span style={{ fontSize: 12, color: 'var(--fg-4)', marginLeft: 10 }}>
                   ({Math.round(count * 0.6)} positive · {Math.round(count * 0.2)} negative · {count - Math.round(count * 0.6) - Math.round(count * 0.2)} edge)
                 </span>
               </div>
@@ -527,7 +527,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                   onChange={(e) => setIncludeSteps(e.target.checked)}
                   style={{ width: 16, height: 16 }}
                 />
-                <span style={{ fontSize: 14, color: '#334155' }}>Include detailed steps</span>
+                <span style={{ fontSize: 14, color: 'var(--fg-2)' }}>Include detailed steps</span>
               </label>
             </>
           )}
@@ -542,10 +542,10 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   padding: '6px 12px', borderRadius: 6,
-                  backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0',
-                  fontSize: 12, fontWeight: 500, color: '#334155',
+                  backgroundColor: 'var(--bg-1)', border: '1px solid var(--divider)',
+                  fontSize: 12, fontWeight: 500, color: 'var(--fg-2)',
                 }}>
-                  <FolderOpen size={13} style={{ color: '#2563EB' }} />
+                  <FolderOpen size={13} style={{ color: 'var(--cp-blue)' }} />
                   {selectedFolderPath.join(' / ')}
                 </div>
                 {(['positive', 'negative', 'edge_case'] as const).map(cat => {
@@ -575,17 +575,17 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                       key={tc.id}
                       onClick={() => toggleSelection(tc.id)}
                       style={{
-                        padding: 16, border: `1px solid ${selected.has(tc.id) ? '#2563EB' : '#E2E8F0'}`,
-                        borderRadius: 8, backgroundColor: selected.has(tc.id) ? 'rgba(37,99,235,0.04)' : '#FFFFFF',
+                        padding: 16, border: `1px solid ${selected.has(tc.id) ? 'var(--cp-blue)' : 'var(--divider)'}`,
+                        borderRadius: 8, backgroundColor: selected.has(tc.id) ? 'rgba(37,99,235,0.04)' : 'var(--cp-float)',
                         cursor: 'pointer', transition: 'all 0.15s',
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <h4 style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>
+                          <h4 style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>
                             {tc.title}
                           </h4>
-                          <p style={{ fontSize: 13, color: '#64748B', margin: '4px 0 0' }}>
+                          <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0' }}>
                             {tc.summary}
                           </p>
                         </div>
@@ -603,10 +603,10 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                             borderRadius: 4,
                             backgroundColor: tc.priority === 'critical' ? 'rgba(220,38,38,0.1)' :
                                             tc.priority === 'high' ? 'rgba(234,88,12,0.1)' :
-                                            tc.priority === 'medium' ? 'rgba(161,98,7,0.1)' : '#F1F5F9',
-                            color: tc.priority === 'critical' ? '#DC2626' :
+                                            tc.priority === 'medium' ? 'rgba(161,98,7,0.1)' : 'var(--cp-bd-zone)',
+                            color: tc.priority === 'critical' ? 'var(--sem-danger)' :
                                    tc.priority === 'high' ? '#EA580C' :
-                                   tc.priority === 'medium' ? '#A16207' : '#64748B',
+                                   tc.priority === 'medium' ? '#A16207' : 'var(--fg-3)',
                           }}>
                             {tc.priority}
                           </span>
@@ -627,7 +627,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
               <button
                 onClick={() => setStep('input')}
                 style={{
-                  marginTop: 16, background: 'none', border: 'none', color: '#2563EB',
+                  marginTop: 16, background: 'none', border: 'none', color: 'var(--cp-blue)',
                   fontSize: 13, fontWeight: 500, cursor: 'pointer',
                 }}
               >
@@ -638,10 +638,10 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={handleClose} style={{
-            height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0',
-            borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer',
+            height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)',
+            borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
           }}>Cancel</button>
 
           {step === 'folder' && (
@@ -650,7 +650,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
               disabled={!selectedFolderId || folders.length === 0}
               style={{
                 height: 40, padding: '0 20px',
-                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
                 border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
                 cursor: (!selectedFolderId || folders.length === 0) ? 'not-allowed' : 'pointer',
                 opacity: (!selectedFolderId || folders.length === 0) ? 0.5 : 1,
@@ -666,7 +666,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
               disabled={isGenerating || !description.trim()}
               style={{
                 height: 40, padding: '0 20px',
-                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)',
                 border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
                 cursor: isGenerating ? 'wait' : 'pointer',
                 opacity: (isGenerating || !description.trim()) ? 0.7 : 1,
@@ -693,7 +693,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
               disabled={isInserting || selected.size === 0}
               style={{
                 height: 40, padding: '0 20px',
-                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
                 border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
                 cursor: isInserting ? 'wait' : 'pointer',
                 opacity: (isInserting || selected.size === 0) ? 0.7 : 1,

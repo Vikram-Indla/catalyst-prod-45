@@ -88,7 +88,7 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
           className="inline-block px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide"
           style={{ 
             backgroundColor: 'transparent', 
-            color: '#64748b',
+            color: 'var(--fg-3)',
             border: 'none'
           }}
         >

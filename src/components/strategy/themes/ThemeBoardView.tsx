@@ -27,8 +27,8 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
             onClick={() => onSelect(theme)}
             className="rounded-xl border cursor-pointer overflow-hidden"
             style={{
-              background: isDark ? '#232019' : '#FFFFFF',
-              borderColor: isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0',
+              background: isDark ? '#1F2128' : 'var(--bg-app)',
+              borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)',
               transition: 'transform 200ms ease, box-shadow 200ms ease',
               animation: `fadeUp 300ms ease ${i * 60}ms both`,
             }}
@@ -50,9 +50,9 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
               {/* Header */}
               <div className="flex items-start justify-between mb-2">
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate" style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : '#0F172A', marginBottom: 2 }}>{theme.title}</h3>
+                  <h3 className="truncate" style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)', marginBottom: 2 }}>{theme.title}</h3>
                   <div className="flex items-center gap-2">
-                    <span style={{ fontSize: 10, color: isDark ? DK.t3 : '#94A3B8', fontFamily: 'monospace' }}>FY{theme.fiscal_year}</span>
+                    <span style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--fg-4)', fontFamily: 'monospace' }}>FY{theme.fiscal_year}</span>
                     <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5" style={{ fontSize: 10, fontWeight: 500, background: sc.bg, color: sc.text }}>
                       <span className="rounded-full" style={{ width: 5, height: 5, background: sc.dot }} />
                       {sc.label}
@@ -64,7 +64,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
               {/* Description */}
               {theme.description && (
                 <p style={{
-                  fontSize: 12, color: isDark ? DK.t2 : '#64748B', marginBottom: 12,
+                  fontSize: 12, color: isDark ? DK.t2 : 'var(--fg-3)', marginBottom: 12,
                   display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                   overflow: 'hidden', lineHeight: 1.5,
                 }}>{theme.description}</p>
@@ -77,9 +77,9 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
                   { label: 'KRs', value: theme.kr_count },
                   { label: 'Budget', value: formatBudget(theme.planned_budget) },
                 ].map(m => (
-                  <div key={m.label} className="rounded-md text-center" style={{ background: isDark ? 'rgba(248,244,240,0.05)' : '#F8FAFC', padding: '6px 0' }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: isDark ? DK.t1 : '#0F172A' }}>{m.value}</p>
-                    <p style={{ fontSize: 10, color: isDark ? DK.t3 : '#64748B' }}>{m.label}</p>
+                  <div key={m.label} className="rounded-md text-center" style={{ background: isDark ? 'rgba(235,238,245,0.05)' : 'var(--bg-1)', padding: '6px 0' }}>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{m.value}</p>
+                    <p style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--fg-3)' }}>{m.label}</p>
                   </div>
                 ))}
               </div>
@@ -87,10 +87,10 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
               {/* Progress + Owner */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 flex-1 mr-3">
-                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 6, background: isDark ? 'rgba(255,255,255,0.12)' : '#E2E8F0' }}>
+                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 6, background: isDark ? 'rgba(255,255,255,0.12)' : 'var(--divider)' }}>
                     <div className="h-full rounded-full" style={{ width: `${Math.min(theme.progress_pct, 100)}%`, background: progressColor }} />
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? DK.t2 : '#334155' }}>{theme.progress_pct}%</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)' }}>{theme.progress_pct}%</span>
                 </div>
                 {theme.owner_name && (
                   <div className="shrink-0 rounded-full flex items-center justify-center" style={{
@@ -107,7 +107,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
       })}
 
       {themes.length === 0 && (
-        <div className="col-span-full flex items-center justify-center rounded-xl border" style={{ height: 200, borderColor: isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0', color: isDark ? DK.t3 : '#94A3B8', fontSize: 13 }}>
+        <div className="col-span-full flex items-center justify-center rounded-xl border" style={{ height: 200, borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)', color: isDark ? DK.t3 : 'var(--fg-4)', fontSize: 13 }}>
           No themes match the current filters.
         </div>
       )}

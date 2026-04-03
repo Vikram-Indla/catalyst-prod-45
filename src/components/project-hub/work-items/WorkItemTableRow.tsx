@@ -35,10 +35,10 @@ function getStatusStyle(category: string): { bg: string; color: string } {
 
 function PriorityIcon({ priority }: { priority: string }) {
   const p = priority.toLowerCase();
-  if (p === 'critical') return <ChevronsUp size={13} style={{ color: '#DC2626' }} />;
-  if (p === 'high') return <ArrowUp size={13} style={{ color: '#D97706' }} />;
-  if (p === 'medium') return <ArrowRight size={13} style={{ color: '#2563EB' }} />;
-  return <ArrowDown size={13} style={{ color: '#94A3B8' }} />;
+  if (p === 'critical') return <ChevronsUp size={13} style={{ color: 'var(--sem-danger)' }} />;
+  if (p === 'high') return <ArrowUp size={13} style={{ color: 'var(--sem-warning)' }} />;
+  if (p === 'medium') return <ArrowRight size={13} style={{ color: 'var(--cp-blue)' }} />;
+  return <ArrowDown size={13} style={{ color: 'var(--fg-4)' }} />;
 }
 
 function priorityLabel(p: string) { return p.charAt(0).toUpperCase() + p.slice(1).toLowerCase(); }
@@ -131,7 +131,7 @@ export function WorkItemTableRow({
                 <button
                   onClick={e => { e.stopPropagation(); onToggle(); }}
                   className="w-4 h-4 flex items-center justify-center transition-transform"
-                  style={{ color: '#94A3B8', transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.15s ease' }}
+                  style={{ color: 'var(--fg-4)', transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.15s ease' }}
                 >
                   <ChevronRight size={14} />
                 </button>
@@ -139,7 +139,7 @@ export function WorkItemTableRow({
               {typeIconSvg ? (
                 <span dangerouslySetInnerHTML={{ __html: typeIconSvg }} className="flex items-center shrink-0" />
               ) : (
-                <span className="w-4 h-4 rounded-sm shrink-0" style={{ backgroundColor: item.type_color || '#94A3B8' }} />
+                <span className="w-4 h-4 rounded-sm shrink-0" style={{ backgroundColor: item.type_color || 'var(--fg-4)' }} />
               )}
             </div>
           </td>
@@ -149,7 +149,7 @@ export function WorkItemTableRow({
           <td key={col.key} style={{ width: 70, padding: '0 4px' }}>
             <span style={{
               fontSize: 10, fontFamily: 'JetBrains Mono, monospace',
-              color: isDone ? '#94A3B8' : '#64748B',
+              color: isDone ? 'var(--fg-4)' : 'var(--fg-3)',
               textDecoration: isDone ? 'line-through' : 'none',
               whiteSpace: 'nowrap',
             }}>
@@ -170,12 +170,12 @@ export function WorkItemTableRow({
               <div className="flex items-center gap-1.5 min-w-0">
                 <span className="truncate" style={{
                   fontSize: 12, fontWeight: 500, fontFamily: 'Inter, sans-serif',
-                  color: isDone ? '#94A3B8' : '#0F172A',
+                  color: isDone ? 'var(--fg-4)' : 'var(--fg-1)',
                   textDecoration: isDone ? 'line-through' : 'none',
                 }} title={item.title || item.summary}>
                   {item.title || item.summary}
                 </span>
-                {item.is_flagged && <Flag size={12} className="shrink-0" style={{ color: '#DC2626' }} />}
+                {item.is_flagged && <Flag size={12} className="shrink-0" style={{ color: 'var(--sem-danger)' }} />}
               </div>
             )}
           </td>
@@ -221,15 +221,15 @@ export function WorkItemTableRow({
               <span style={{
                 display: 'inline-block', height: 18, lineHeight: '18px',
                 padding: '0 6px', borderRadius: 3,
-                background: 'var(--cp-bg-sunken, #F1F5F9)',
+                background: 'var(--cp-bg-sunken, var(--cp-bd-zone))',
                 border: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
-                fontSize: 10.5, fontWeight: 500, color: 'var(--cp-text-secondary, #475569)',
+                fontSize: 10.5, fontWeight: 500, color: 'var(--cp-text-secondary, var(--fg-2))',
                 fontFamily: 'Inter, sans-serif', whiteSpace: 'nowrap',
               }}>
                 {releaseLabel}
               </span>
             ) : (
-              <span style={{ fontSize: 11, color: '#94A3B8' }}>—</span>
+              <span style={{ fontSize: 11, color: 'var(--fg-4)' }}>—</span>
             )}
           </td>
         );
@@ -240,12 +240,12 @@ export function WorkItemTableRow({
               {item.assignee_name ? (
                 <div className="flex items-center gap-1.5 min-w-0">
                   <AssigneeAvatar name={item.assignee_name} />
-                  <span className="truncate" style={{ fontSize: 11, fontFamily: 'Inter, sans-serif', color: '#334155' }}>
+                  <span className="truncate" style={{ fontSize: 11, fontFamily: 'Inter, sans-serif', color: 'var(--fg-2)' }}>
                     {item.assignee_name}
                   </span>
                 </div>
               ) : (
-                <span style={{ fontSize: 11, color: '#CBD5E1' }}>—</span>
+                <span style={{ fontSize: 11, color: 'var(--divider)' }}>—</span>
               )}
             </div>
             {editingField === 'assignee' && (
@@ -261,14 +261,14 @@ export function WorkItemTableRow({
             <div ref={dueDateRef} className="cursor-pointer">
               {item.due_date ? (
                 <div className="flex items-center gap-1">
-                  <Calendar size={11} style={{ color: overdue ? '#DC2626' : '#94A3B8' }} />
+                  <Calendar size={11} style={{ color: overdue ? 'var(--sem-danger)' : 'var(--fg-4)' }} />
                   <span style={{
                     fontSize: 10, fontFamily: 'JetBrains Mono, monospace',
-                    color: overdue ? '#DC2626' : '#64748B', fontWeight: overdue ? 600 : 400,
+                    color: overdue ? 'var(--sem-danger)' : 'var(--fg-3)', fontWeight: overdue ? 600 : 400,
                   }}>{formatDue(item.due_date)}</span>
                 </div>
               ) : (
-                <span style={{ fontSize: 11, color: '#94A3B8' }}>—</span>
+                <span style={{ fontSize: 11, color: 'var(--fg-4)' }}>—</span>
               )}
             </div>
             {editingField === 'dueDate' && (
@@ -283,7 +283,7 @@ export function WorkItemTableRow({
           <td key={col.key} style={{ width: 84, padding: '0 4px' }} onClick={e => handleCellClick('priority', e)}>
             <div ref={priorityRef} className="flex items-center gap-1 cursor-pointer">
               <PriorityIcon priority={item.priority} />
-              <span style={{ fontSize: 10, fontFamily: 'Inter, sans-serif', color: '#475569' }}>
+              <span style={{ fontSize: 10, fontFamily: 'Inter, sans-serif', color: 'var(--fg-2)' }}>
                 {priorityLabel(item.priority)}
               </span>
             </div>

@@ -28,19 +28,16 @@ interface JiraIssueTypeIconProps {
 export function JiraIssueTypeIcon({ issueType, size = 16, className }: JiraIssueTypeIconProps) {
   const cfg = resolveJiraTypeConfig(issueType);
 
-  const icon = (
-    <CanonicalIcon 
-      type={issueType} 
-      size={size} 
-      className={cn('flex-shrink-0', className)} 
-    />
-  );
-
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          {icon}
+          <span className={cn('inline-flex items-center justify-center flex-shrink-0', className)} style={{ width: size, height: size }}>
+            <CanonicalIcon 
+              type={issueType} 
+              size={size} 
+            />
+          </span>
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={4}>
           <p className="font-medium text-xs">{cfg.label}</p>

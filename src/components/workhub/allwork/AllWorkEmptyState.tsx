@@ -46,22 +46,22 @@ export function AllWorkEmptyState({ type, message, query, onAction, onClear, onR
   return (
     <div
       className={`flex flex-col items-center justify-center rounded-lg border ${isSmall ? 'py-8' : 'py-16'}`}
-      style={{ borderColor: 'rgba(15,23,42,0.12)', backgroundColor: '#fff' }}
+      style={{ borderColor: 'rgba(15,23,42,0.12)', backgroundColor: 'var(--bg-app)' }}
     >
       <Icon
         className={isSmall ? 'w-8 h-8 mb-2' : 'w-10 h-10 mb-3'}
-        style={{ color: isError ? '#DC2626' : '#71717A' }}
+        style={{ color: isError ? 'var(--sem-danger)' : 'var(--fg-3)' }}
         aria-hidden="true"
       />
       <p
         className={`${isSmall ? 'text-[13px]' : 'text-[14px]'} font-medium mb-1`}
-        style={{ color: '#0F172A', fontFamily: 'Inter, sans-serif' }}
+        style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
       >
         {title}
       </p>
       <p
         className={`${isSmall ? 'text-[11px]' : 'text-[13px]'} ${actionHandler && actionLabel ? 'mb-4' : ''}`}
-        style={{ color: '#64748B', fontFamily: 'Inter, sans-serif' }}
+        style={{ color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}
       >
         {subtitle}
       </p>
@@ -70,7 +70,7 @@ export function AllWorkEmptyState({ type, message, query, onAction, onClear, onR
           <button
             onClick={actionHandler}
             className="px-4 py-2 text-[13px] font-medium rounded-md text-white transition-colors duration-[80ms] hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
-            style={{ backgroundColor: isError ? '#DC2626' : '#2563EB' }}
+            style={{ backgroundColor: isError ? 'var(--sem-danger)' : 'var(--cp-blue)' }}
           >
             {actionLabel}
           </button>
@@ -78,7 +78,7 @@ export function AllWorkEmptyState({ type, message, query, onAction, onClear, onR
           <button
             onClick={actionHandler}
             className="text-[13px] font-medium transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-            style={{ color: '#2563EB' }}
+            style={{ color: 'var(--cp-blue)' }}
           >
             {actionLabel}
           </button>

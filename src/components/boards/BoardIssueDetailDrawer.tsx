@@ -138,7 +138,7 @@ export function BoardIssueDetailDrawer({ issueId, onClose }: BoardIssueDetailDra
 
         {isLoading || !issue ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 0' }}>
-            <Loader2 size={24} className="animate-spin" style={{ color: '#2563EB' }} />
+            <Loader2 size={24} className="animate-spin" style={{ color: 'var(--cp-blue)' }} />
           </div>
         ) : (
           <>
@@ -159,15 +159,15 @@ export function BoardIssueDetailDrawer({ issueId, onClose }: BoardIssueDetailDra
                 {/* Type badge */}
                 <div className="idp-type-badge" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <JiraIssueTypeIcon type={issue.issue_type?.toLowerCase() || 'task'} size={16} />
-                  <span className="idp-type-label" style={{ color: '#334155' }}>
+                  <span className="idp-type-label" style={{ color: 'var(--fg-2)' }}>
                     {issue.issue_type || 'Task'}
                   </span>
                 </div>
                 {/* Source badge */}
                 <span style={{
                   fontSize: 11, fontWeight: 600, padding: '2px 7px', borderRadius: 3,
-                  background: source === 'JIRA' ? '#E3F0FF' : '#F1F5F9',
-                  color: source === 'JIRA' ? '#0052CC' : '#525252',
+                  background: source === 'JIRA' ? '#E3F0FF' : 'var(--cp-bd-zone)',
+                  color: source === 'JIRA' ? '#0052CC' : 'var(--fg-3)',
                 }}>
                   {source}
                 </span>
@@ -240,27 +240,27 @@ function OverviewTab({ issue }: { issue: any }) {
                 {f.label === 'Assignee' && f.value ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{
-                      width: 24, height: 24, borderRadius: '50%', background: '#2563EB',
+                      width: 24, height: 24, borderRadius: '50%', background: 'var(--cp-blue)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 10, fontWeight: 700, color: '#fff',
                     }}>
                       {f.value.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>{f.value}</span>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{f.value}</span>
                   </div>
                 ) : f.label === 'Reporter' && f.value ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{
-                      width: 24, height: 24, borderRadius: '50%', background: '#D97706',
+                      width: 24, height: 24, borderRadius: '50%', background: 'var(--sem-warning)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 10, fontWeight: 700, color: '#fff',
                     }}>
                       {f.value.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>{f.value}</span>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{f.value}</span>
                   </div>
                 ) : (
-                  <span style={{ fontSize: 13, fontWeight: 500, color: f.value ? '#0F172A' : '#94A3B8' }}>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: f.value ? 'var(--fg-1)' : 'var(--fg-4)' }}>
                     {f.value || '—'}
                   </span>
                 )}
@@ -272,12 +272,12 @@ function OverviewTab({ issue }: { issue: any }) {
 
       {/* Description */}
       <div>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: '#09090B', marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>
           Description
         </h3>
         <div style={{
-          borderTop: '1px solid #E2E8F0', paddingTop: 12,
-          fontSize: 13, lineHeight: 1.65, color: issue.description ? '#334155' : '#94A3B8',
+          borderTop: '1px solid var(--divider)', paddingTop: 12,
+          fontSize: 13, lineHeight: 1.65, color: issue.description ? 'var(--fg-2)' : 'var(--fg-4)',
           fontStyle: issue.description ? 'normal' : 'italic',
         }}>
           {issue.description || 'Click to add description...'}
@@ -286,17 +286,17 @@ function OverviewTab({ issue }: { issue: any }) {
 
       {/* Comments placeholder */}
       <div>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: '#09090B', marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>
-          Comments <span style={{ fontWeight: 400, color: '#94A3B8' }}>(0)</span>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>
+          Comments <span style={{ fontWeight: 400, color: 'var(--fg-4)' }}>(0)</span>
         </h3>
-        <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: 12 }}>
-          <p style={{ fontSize: 13, color: '#94A3B8', fontStyle: 'italic', marginBottom: 12 }}>No comments yet.</p>
+        <div style={{ borderTop: '1px solid var(--divider)', paddingTop: 12 }}>
+          <p style={{ fontSize: 13, color: 'var(--fg-4)', fontStyle: 'italic', marginBottom: 12 }}>No comments yet.</p>
           <div style={{ display: 'flex', gap: 8 }}>
             <input
               placeholder="Add a comment..."
               style={{
                 flex: 1, padding: '8px 12px', borderRadius: 6,
-                border: '1px solid #E2E8F0', fontSize: 13, outline: 'none',
+                border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
                 fontFamily: "'Inter', sans-serif",
               }}
               disabled
@@ -340,7 +340,7 @@ function DetailsTab({ issue }: { issue: any }) {
             <div key={f.label} className={`idp-field-cell ${isOdd ? 'idp-field-cell--odd' : ''} ${isLastRow ? 'idp-field-cell--last' : ''}`}>
               <div className="idp-field-label">{f.label}</div>
               <div className="idp-field-value">
-                <span style={{ fontSize: 13, fontWeight: 500, color: f.value ? '#0F172A' : '#94A3B8', fontFamily: f.label.includes('Key') ? "'JetBrains Mono', monospace" : 'inherit' }}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: f.value ? 'var(--fg-1)' : 'var(--fg-4)', fontFamily: f.label.includes('Key') ? "'JetBrains Mono', monospace" : 'inherit' }}>
                   {f.value || '—'}
                 </span>
               </div>
@@ -356,7 +356,7 @@ function DetailsTab({ issue }: { issue: any }) {
 function ActivityTab({ issue }: { issue: any }) {
   return (
     <div className="idp-overview">
-      <div style={{ textAlign: 'center', padding: '40px 0', color: '#94A3B8' }}>
+      <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--fg-4)' }}>
         <p style={{ fontSize: 13, fontStyle: 'italic' }}>Activity feed coming soon</p>
         <p style={{ fontSize: 12, marginTop: 4 }}>
           Last synced: {issue.jira_updated ? new Date(issue.jira_updated).toLocaleString('en-GB') : 'Unknown'}

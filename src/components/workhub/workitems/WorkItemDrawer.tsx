@@ -19,11 +19,11 @@ interface WorkItemDrawerProps {
 
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-3 py-2 border-b" style={{ borderColor: '#f1f5f9' }}>
-      <span className="text-[12px] font-medium shrink-0" style={{ width: '110px', color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+    <div className="flex items-start gap-3 py-2 border-b" style={{ borderColor: 'var(--bg-1)' }}>
+      <span className="text-[12px] font-medium shrink-0" style={{ width: '110px', color: 'var(--fg-4)' }}>
         {label}
       </span>
-      <div className="flex-1 text-[13px]" style={{ color: 'var(--wh-text-primary, #0f172a)' }}>{children}</div>
+      <div className="flex-1 text-[13px]" style={{ color: 'var(--fg-1)' }}>{children}</div>
     </div>
   );
 }
@@ -68,15 +68,15 @@ function ThemeSelector({ issueKey, currentThemeId }: { issueKey: string; current
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-slate-50 transition-colors text-[13px]"
-        style={{ color: 'var(--wh-text-primary, #0f172a)' }}
+        style={{ color: 'var(--fg-1)' }}
       >
         {current ? (
           <>
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: current.color || '#94a3b8' }} />
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: current.color || 'var(--fg-4)' }} />
             {current.name}
           </>
         ) : (
-          <span className="italic text-[12px]" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+          <span className="italic text-[12px]" style={{ color: 'var(--fg-4)' }}>
             Assign theme…
           </span>
         )}
@@ -89,17 +89,17 @@ function ThemeSelector({ issueKey, currentThemeId }: { issueKey: string; current
             minWidth: '220px',
             maxHeight: '240px',
             boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)',
-            borderColor: 'var(--wh-border, #e2e8f0)',
+            borderColor: 'var(--divider)',
           }}
         >
           {/* None option */}
           <button
             onClick={() => handleSelect(null)}
             className="w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-            style={{ color: 'var(--wh-text-secondary, #64748b)' }}
+            style={{ color: 'var(--fg-3)' }}
           >
             <span className="italic">None</span>
-            {!currentThemeId && <Check className="w-3.5 h-3.5" style={{ color: 'var(--wh-primary, #2563eb)' }} />}
+            {!currentThemeId && <Check className="w-3.5 h-3.5" style={{ color: 'var(--cp-blue)' }} />}
           </button>
 
           {(themes ?? []).map(t => (
@@ -107,13 +107,13 @@ function ThemeSelector({ issueKey, currentThemeId }: { issueKey: string; current
               key={t.id}
               onClick={() => handleSelect(t.id)}
               className="w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-              style={{ color: 'var(--wh-text-primary, #0f172a)' }}
+              style={{ color: 'var(--fg-1)' }}
             >
               <span className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: t.color || '#94a3b8' }} />
+                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: t.color || 'var(--fg-4)' }} />
                 {t.name}
               </span>
-              {currentThemeId === t.id && <Check className="w-3.5 h-3.5" style={{ color: 'var(--wh-primary, #2563eb)' }} />}
+              {currentThemeId === t.id && <Check className="w-3.5 h-3.5" style={{ color: 'var(--cp-blue)' }} />}
             </button>
           ))}
         </div>
@@ -145,24 +145,24 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
         {/* Header */}
         <div
           className="flex items-center justify-between px-5 py-3.5 border-b shrink-0"
-          style={{ borderColor: 'var(--wh-border, #e2e8f0)' }}
+          style={{ borderColor: 'var(--divider)' }}
         >
           <div className="flex items-center gap-2.5 min-w-0">
             <span
               className="text-sm font-bold"
-              style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--wh-primary, #2563eb)' }}
+              style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--cp-blue)' }}
             >
               {item.issue_key}
             </span>
             <span
               className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold"
-              style={{ backgroundColor: '#dbeafe', color: '#2563eb' }}
+              style={{ backgroundColor: 'var(--cp-primary-20)', color: 'var(--cp-blue)' }}
             >
               {item.status}
             </span>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-md hover:bg-slate-100 transition-colors">
-            <X className="w-4 h-4" style={{ color: '#64748b' }} />
+            <X className="w-4 h-4" style={{ color: 'var(--fg-3)' }} />
           </button>
         </div>
 
@@ -170,7 +170,7 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
         <div className="flex-1 min-h-0 overflow-y-auto">
           <div className="p-5 space-y-5">
             {/* Title */}
-            <h2 className="text-lg font-semibold leading-snug" style={{ color: 'var(--wh-text-primary, #0f172a)' }}>
+            <h2 className="text-lg font-semibold leading-snug" style={{ color: 'var(--fg-1)' }}>
               {item.summary}
             </h2>
 
@@ -178,14 +178,14 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
             {item.parent_key && (
               <div
                 className="flex items-center gap-2 px-3 py-2 rounded-lg border"
-                style={{ borderColor: '#e2e8f0', backgroundColor: '#f8fafc' }}
+                style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--bg-1)' }}
               >
-                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#94a3b8' }}>Parent</span>
-                <span className="text-[12px] font-bold" style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--wh-primary, #2563eb)' }}>
+                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--fg-4)' }}>Parent</span>
+                <span className="text-[12px] font-bold" style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--cp-blue)' }}>
                   {item.parent_key}
                 </span>
                 {item.parent_summary && (
-                  <span className="text-[12px] truncate" style={{ color: '#475569' }}>— {item.parent_summary}</span>
+                  <span className="text-[12px] truncate" style={{ color: 'var(--fg-2)' }}>— {item.parent_summary}</span>
                 )}
               </div>
             )}
@@ -196,10 +196,10 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
               <DetailRow label="Priority">
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full" style={{
-                    backgroundColor: item.priority === 'Highest' ? '#dc2626' :
+                    backgroundColor: item.priority === 'Highest' ? 'var(--sem-danger)' :
                       item.priority === 'High' ? '#ea580c' :
-                      item.priority === 'Medium' ? '#d97706' :
-                      item.priority === 'Low' ? '#2563eb' : '#64748b'
+                      item.priority === 'Medium' ? 'var(--sem-warning)' :
+                      item.priority === 'Low' ? 'var(--cp-blue)' : 'var(--fg-3)'
                   }} />
                   {item.priority}
                 </div>
@@ -236,46 +236,46 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
 
             {/* Description */}
             <div>
-              <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+              <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--fg-4)' }}>
                 Description
               </h3>
               <div
                 className="rounded-lg border p-3 text-[13px] leading-relaxed whitespace-pre-wrap overflow-y-auto"
                 style={{
-                  borderColor: '#e2e8f0', backgroundColor: '#fafbfc',
-                  color: 'var(--wh-text-primary, #0f172a)', maxHeight: '300px', minHeight: '60px',
+                  borderColor: 'var(--divider)', backgroundColor: 'var(--bg-1)',
+                  color: 'var(--fg-1)', maxHeight: '300px', minHeight: '60px',
                 }}
               >
                 {item.description_text || (
-                  <span className="italic" style={{ color: '#94a3b8' }}>No description available</span>
+                  <span className="italic" style={{ color: 'var(--fg-4)' }}>No description available</span>
                 )}
               </div>
             </div>
 
             {/* Comments */}
             <div>
-              <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+              <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: 'var(--fg-4)' }}>
                 <MessageSquare className="w-3.5 h-3.5" />
                 Comments ({comments.length})
               </h3>
               {comments.length === 0 ? (
-                <p className="text-[12px] italic" style={{ color: '#94a3b8' }}>No comments synced yet.</p>
+                <p className="text-[12px] italic" style={{ color: 'var(--fg-4)' }}>No comments synced yet.</p>
               ) : (
                 <div className="space-y-2.5 max-h-[400px] overflow-y-auto">
                   {comments.map((c, i) => (
-                    <div key={c.id || i} className="rounded-lg border p-3" style={{ borderColor: '#e2e8f0', backgroundColor: '#fafbfc' }}>
+                    <div key={c.id || i} className="rounded-lg border p-3" style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--bg-1)' }}>
                       <div className="flex items-center gap-2 mb-1.5">
                         {c.authorAvatar ? (
                           <img src={c.authorAvatar} alt="" className="w-5 h-5 rounded-full" />
                         ) : (
-                          <User className="w-4 h-4" style={{ color: '#94a3b8' }} />
+                          <User className="w-4 h-4" style={{ color: 'var(--fg-4)' }} />
                         )}
-                        <span className="text-[12px] font-semibold" style={{ color: '#334155' }}>{c.author}</span>
-                        <span className="text-[10px]" style={{ color: '#94a3b8' }}>
+                        <span className="text-[12px] font-semibold" style={{ color: 'var(--fg-2)' }}>{c.author}</span>
+                        <span className="text-[10px]" style={{ color: 'var(--fg-4)' }}>
                           {c.created ? formatDistanceToNow(new Date(c.created), { addSuffix: true }) : ''}
                         </span>
                       </div>
-                      <p className="text-[12px] leading-relaxed whitespace-pre-wrap" style={{ color: '#475569' }}>{c.body}</p>
+                      <p className="text-[12px] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--fg-2)' }}>{c.body}</p>
                     </div>
                   ))}
                 </div>
@@ -284,22 +284,22 @@ export function WorkItemDrawer({ item, onClose }: WorkItemDrawerProps) {
 
             {/* Changelog */}
             <div>
-              <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+              <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ color: 'var(--fg-4)' }}>
                 <Clock className="w-3.5 h-3.5" />
                 History ({changelog.length})
               </h3>
               {changelog.length === 0 ? (
-                <p className="text-[12px] italic" style={{ color: '#94a3b8' }}>No history synced yet.</p>
+                <p className="text-[12px] italic" style={{ color: 'var(--fg-4)' }}>No history synced yet.</p>
               ) : (
                 <div className="space-y-1.5 max-h-[300px] overflow-y-auto">
                   {changelog.map((entry: any, i: number) => (
-                    <div key={i} className="flex items-start gap-2 py-1.5 border-b text-[11px]" style={{ borderColor: '#f1f5f9' }}>
-                      <span className="font-medium shrink-0" style={{ color: '#475569' }}>{entry.author || 'System'}</span>
-                      <span style={{ color: '#64748b' }}>
+                    <div key={i} className="flex items-start gap-2 py-1.5 border-b text-[11px]" style={{ borderColor: 'var(--bg-1)' }}>
+                      <span className="font-medium shrink-0" style={{ color: 'var(--fg-2)' }}>{entry.author || 'System'}</span>
+                      <span style={{ color: 'var(--fg-3)' }}>
                         changed <b>{entry.field}</b> from "{entry.from || '—'}" to "{entry.to || '—'}"
                       </span>
                       {entry.created && (
-                        <span className="ml-auto shrink-0" style={{ color: '#94a3b8' }}>
+                        <span className="ml-auto shrink-0" style={{ color: 'var(--fg-4)' }}>
                           {formatDistanceToNow(new Date(entry.created), { addSuffix: true })}
                         </span>
                       )}

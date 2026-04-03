@@ -1,0 +1,1 @@
+UPDATE ph_work_items SET jira_key = NULL, jira_sync_status = 'local_only' WHERE jira_key LIKE 'JIRA-%';

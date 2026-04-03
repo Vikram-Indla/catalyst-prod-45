@@ -138,21 +138,21 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
       {/* Panel */}
       <div ref={panelRef} style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '460px',
-        background: '#FFF', borderLeft: '1px solid #E2E8F0', zIndex: 201,
+        background: 'var(--cp-float)', borderLeft: '1px solid var(--divider)', zIndex: 201,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
         boxShadow: '-4px 0 20px rgba(15,23,42,.08)',
         fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
         animation: 'r3SlideIn 250ms cubic-bezier(.32,.72,0,1) forwards',
       }}>
         {/* Header */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', background: '#FFFFFF', position: 'sticky', top: 0, zIndex: 10 }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--divider)', background: 'var(--bg-app)', position: 'sticky', top: 0, zIndex: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '14px', fontWeight: 700, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
             <button onClick={onClose} style={{
-              width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '6px',
-              background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '28px', height: '28px', border: '1px solid var(--divider)', borderRadius: '6px',
+              background: 'var(--cp-float)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--fg-3)" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
             </button>
           </div>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
@@ -165,7 +165,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
               {statusLabel}
             </span>
-            <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: '#F1F5F9', color: '#334155', textTransform: 'capitalize' }}>
+            <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--bg-3)', color: 'var(--fg-2)', textTransform: 'capitalize' }}>
               {item.priority || '—'}
             </span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: '#FEF2F2', color: '#7F1D1D' }}>
@@ -181,7 +181,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
         {/* Scrollable body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: 0 }}>
           {/* Meta Grid 2×3 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid var(--divider)' }}>
             {[
               { label: 'PROJECT', value: item.project_name || item.project_key || '—' },
               { label: 'ASSIGNER', value: item.assigner_name || item.reporter_name || '—', hasAvatar: true },
@@ -192,15 +192,15 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             ].map((cell, i) => (
               <div key={i} style={{
                 padding: '12px 20px',
-                borderBottom: '1px solid #F1F5F9',
-                borderRight: i % 2 === 0 ? '1px solid #F1F5F9' : 'none',
+                borderBottom: '1px solid var(--bg-3)',
+                borderRight: i % 2 === 0 ? '1px solid var(--bg-3)' : 'none',
               }}>
-                <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: '4px' }}>{cell.label}</div>
+                <div style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: '4px' }}>{cell.label}</div>
                 {cell.hasAvatar ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={{
                       width: '18px', height: '18px', borderRadius: '50%',
-                      background: 'linear-gradient(135deg,#2563EB,#0D9488)',
+                      background: 'linear-gradient(135deg,var(--cp-blue),var(--sem-success))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '7px', fontWeight: 700, color: 'white', flexShrink: 0,
                     }}>{initials(cell.value as string)}</div>
@@ -209,7 +209,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 ) : cell.isBar ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '14px', fontWeight: 700, color: ageCol(cell.value as number), fontVariantNumeric: 'tabular-nums' }}>{cell.value}</span>
-                    <div style={{ width: '60px', height: '4px', borderRadius: '2px', background: '#F1F5F9', overflow: 'hidden' }}>
+                    <div style={{ width: '60px', height: '4px', borderRadius: '2px', background: 'var(--bg-3)', overflow: 'hidden' }}>
                       <div style={{
                         height: '100%', borderRadius: '2px',
                         width: `${Math.min((cell.value as number) / 21 * 100, 100)}%`,
@@ -221,7 +221,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 ) : (
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: 500, color: '#020617', wordBreak: 'break-word' }}>{cell.value}</div>
-                    {cell.sub && <div style={{ fontSize: '11px', color: '#334155', marginTop: '2px' }}>{cell.sub}</div>}
+                    {cell.sub && <div style={{ fontSize: '11px', color: 'var(--fg-2)', marginTop: '2px' }}>{cell.sub}</div>}
                   </div>
                 )}
               </div>
@@ -230,23 +230,23 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
 
           {/* Hierarchy */}
           <div style={{ padding: '16px 20px', borderBottom: '1px solid #F1F5F9' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '10px' }}>Hierarchy</div>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '10px' }}>Hierarchy</div>
             {item.parent_key ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {/* Parent */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px', borderRadius: '6px', border: '1px solid #E2E8F0', background: '#FFFFFF' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--divider)', background: 'var(--bg-app)' }}>
                   {getJiraIcon(item.parent_type || 'epic')}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#64748B', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.parent_key}</span>
-                  <span style={{ fontSize: '12px', color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--fg-3)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.parent_key}</span>
+                  <span style={{ fontSize: '12px', color: 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
                 </div>
-                <div style={{ paddingLeft: '20px', color: '#64748B', fontSize: '11px', margin: '2px 0' }}>↳</div>
+                <div style={{ paddingLeft: '20px', color: 'var(--fg-3)', fontSize: '11px', margin: '2px 0' }}>↳</div>
                 {/* Current */}
                 <div style={{
                   display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 8px',
-                  borderRadius: '6px', border: '1.5px solid #2563EB', background: '#EFF6FF',
+                  borderRadius: '6px', border: '1.5px solid var(--cp-blue)', background: '#EFF6FF',
                 }}>
                   {getJiraIcon(item.item_type)}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#2563EB', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--cp-blue)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
                   <span style={{
                     fontSize: '13px', fontWeight: 500, color: '#020617',
                     overflow: 'hidden', display: '-webkit-box',
@@ -255,7 +255,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 </div>
               </div>
             ) : (
-              <div style={{ fontSize: '12px', color: '#94A3B8' }}>—</div>
+              <div style={{ fontSize: '12px', color: 'var(--fg-4)' }}>—</div>
             )}
           </div>
 
@@ -263,8 +263,8 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
           {siblings.length > 0 && (
             <div style={{ padding: '16px 20px', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '.05em' }}>Siblings</span>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#334155', background: '#F1F5F9', padding: '2px 8px', borderRadius: '10px' }}>{doneSiblings}/{siblings.length} done</span>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Siblings</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-3)', padding: '2px 8px', borderRadius: '10px' }}>{doneSiblings}/{siblings.length} done</span>
               </div>
               <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#CBD5E1 transparent', maxHeight: '320px' }}>
                 {siblings.map(sib => {
@@ -275,14 +275,14 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                     <div key={sib.id || sib.item_key} onClick={() => !isCurrent && onSiblingClick(sib)} style={{
                       display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 10px', borderRadius: '6px',
                       cursor: isCurrent ? 'default' : 'pointer', marginBottom: '2px',
-                      border: isCurrent ? '1px solid #2563EB' : '1px solid transparent',
+                      border: isCurrent ? '1px solid var(--cp-blue)' : '1px solid transparent',
                       background: isCurrent ? '#EFF6FF' : 'transparent',
                     }}
-                      onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = '#F1F5F9'; }}
+                      onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'var(--bg-3)'; }}
                       onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}
                     >
                       <span style={{ flexShrink: 0 }}>{getJiraIcon(sib.item_type || 'Task')}</span>
-                      <span style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: '#2563EB', fontWeight: 600, width: '72px', flexShrink: 0 }}>{sib.item_key}</span>
+                      <span style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: 'var(--cp-blue)', fontWeight: 600, width: '72px', flexShrink: 0 }}>{sib.item_key}</span>
                       {/* Status pill — INLINE, small */}
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: '3px',

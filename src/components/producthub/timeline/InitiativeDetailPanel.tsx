@@ -311,7 +311,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
             {(initiative as any).source === 'catalyst' && (
               <span style={{
                 fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
-                color: '#64748B', background: '#F1F5F9', border: '1px solid #E2E8F0',
+                color: 'var(--fg-3)', background: '#F1F5F9', border: '1px solid var(--divider)',
                 borderRadius: 4, padding: '2px 6px', marginLeft: 8, userSelect: 'none',
               }}>
                 ✦ Catalyst
@@ -320,7 +320,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
             {(initiative as any).source === 'jira' && (
               <span style={{
                 fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
-                color: '#2563EB', background: '#EFF6FF', border: '1px solid #DBEAFE',
+                color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE',
                 borderRadius: 4, padding: '2px 6px', marginLeft: 8, userSelect: 'none',
               }}>
                 ⚡ Jira
@@ -365,7 +365,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteMutation.mutate()} style={{ backgroundColor: '#DC2626' }}>
+            <AlertDialogAction onClick={() => deleteMutation.mutate()} style={{ backgroundColor: 'var(--sem-danger)' }}>
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

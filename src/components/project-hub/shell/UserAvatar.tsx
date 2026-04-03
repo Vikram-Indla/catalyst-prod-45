@@ -9,7 +9,7 @@ export function UserAvatar({ letter = 'V' }: UserAvatarProps) {
       style={{
         width: 32,
         height: 32,
-        background: '#7C3AED',
+        background: 'var(--cp-purple)',
         color: '#FFFFFF',
         fontSize: 13,
         fontWeight: 700,

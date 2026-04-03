@@ -51,7 +51,7 @@ function getActionColor(action: string): string {
   switch (action) {
     case 'create': return 'text-green-600 bg-green-50';
     case 'delete': return 'text-red-600 bg-red-50';
-    case 'clone': return 'text-purple-600 bg-purple-50';
+    case 'clone': return 'text-blue-600 bg-blue-50';
     case 'execute': return 'text-blue-600 bg-blue-50';
     default: return 'text-gray-600 bg-gray-50';
   }

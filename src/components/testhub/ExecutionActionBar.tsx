@@ -60,20 +60,20 @@ export function ExecutionActionBar({
   const isExecuted = currentStatus !== 'not_run';
 
   const actionButtons = [
-    { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, activeGradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', inactiveBg: '#ECFDF5', activeColor: '#FFFFFF', inactiveColor: '#059669', shadow: 'rgba(16,185,129,0.3)' },
-    { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, activeGradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)', inactiveBg: '#FEF2F2', activeColor: '#FFFFFF', inactiveColor: '#DC2626', shadow: 'rgba(220,38,38,0.3)' },
-    { key: 'blocked', label: 'Blocked', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, activeGradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', inactiveBg: '#FFFBEB', activeColor: '#FFFFFF', inactiveColor: '#D97706', shadow: 'rgba(217,119,6,0.3)' },
-    { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, activeGradient: 'linear-gradient(135deg, #64748B 0%, #475569 100%)', inactiveBg: '#FFFFFF', activeColor: '#FFFFFF', inactiveColor: '#64748B', shadow: 'rgba(100,116,139,0.3)' },
+    { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, activeGradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', inactiveBg: '#ECFDF5', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-success)', shadow: 'rgba(16,185,129,0.3)' },
+    { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, activeGradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)', inactiveBg: '#FEF2F2', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-danger)', shadow: 'rgba(220,38,38,0.3)' },
+    { key: 'blocked', label: 'Blocked', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, activeGradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', inactiveBg: '#FFFBEB', activeColor: '#FFFFFF', inactiveColor: 'var(--sem-warning)', shadow: 'rgba(217,119,6,0.3)' },
+    { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, activeGradient: 'linear-gradient(135deg, #64748B 0%, #475569 100%)', inactiveBg: '#FFFFFF', activeColor: '#FFFFFF', inactiveColor: 'var(--fg-3)', shadow: 'rgba(100,116,139,0.3)' },
   ];
 
   return (
-    <div style={{ padding: '16px 24px', backgroundColor: '#FFFFFF', borderTop: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, position: 'relative' }}>
-      <div style={{ position: 'absolute', left: 24, fontSize: 13, color: '#64748B' }}>
+    <div style={{ padding: '16px 24px', backgroundColor: 'var(--cp-float)', borderTop: '1px solid var(--divider)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, position: 'relative' }}>
+      <div style={{ position: 'absolute', left: 24, fontSize: 13, color: 'var(--fg-3)' }}>
         Test {currentIndex + 1} of {totalCount}
       </div>
 
       <button onClick={onPrevious} disabled={!canGoPrevious || isSubmitting}
-        style={{ height: 44, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: canGoPrevious ? '#334155' : '#94A3B8', fontSize: 14, fontWeight: 500, cursor: canGoPrevious ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, opacity: canGoPrevious ? 1 : 0.5 }}>
+        style={{ height: 44, padding: '0 16px', border: '1.5px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: canGoPrevious ? 'var(--fg-2)' : 'var(--fg-4)', fontSize: 14, fontWeight: 500, cursor: canGoPrevious ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, opacity: canGoPrevious ? 1 : 0.5 }}>
         <ChevronLeft size={18} /> Prev
       </button>
 
@@ -101,17 +101,17 @@ export function ExecutionActionBar({
 
       {isExecuted && (
         <button onClick={onReset} disabled={isSubmitting} title="Reset to Not Run (Ctrl+R)"
-          style={{ height: 44, padding: '0 12px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#64748B', cursor: isSubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+          style={{ height: 44, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', cursor: isSubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
           <RotateCcw size={16} />
         </button>
       )}
 
       <button onClick={onNext} disabled={!canGoNext || isSubmitting}
-        style={{ height: 44, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: canGoNext ? '#334155' : '#94A3B8', fontSize: 14, fontWeight: 500, cursor: canGoNext ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, opacity: canGoNext ? 1 : 0.5 }}>
+        style={{ height: 44, padding: '0 16px', border: '1.5px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: canGoNext ? 'var(--fg-2)' : 'var(--fg-4)', fontSize: 14, fontWeight: 500, cursor: canGoNext ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 6, opacity: canGoNext ? 1 : 0.5 }}>
         Next <ChevronRight size={18} />
       </button>
 
-      <div style={{ position: 'absolute', right: 24, fontSize: 11, color: '#94A3B8' }}>
+      <div style={{ position: 'absolute', right: 24, fontSize: 11, color: 'var(--fg-4)' }}>
         ← → to navigate • P F B S to record
       </div>
     </div>

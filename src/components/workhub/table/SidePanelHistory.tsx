@@ -88,12 +88,12 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
     <div>
       {/* STATUS TIMELINE */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 12 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)', marginBottom: 12 }}>
           Status Timeline
         </div>
 
         {transitions.length === 0 ? (
-          <div style={{ padding: '20px 0', fontSize: 13, color: '#94A3B8' }}>
+          <div style={{ padding: '20px 0', fontSize: 13, color: 'var(--fg-4)' }}>
             Status timeline will appear once transition history is synced from Jira.
             {currentStatus && (
               <span style={{ display: 'inline-flex', marginLeft: 8 }}>
@@ -132,25 +132,25 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                         </>
                       ) : (
                         <>
-                          <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>Created</span>
+                          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>Created</span>
                           <ArrowRight size={14} color="#94A3B8" />
                           <WorkHubStatusLozenge status={t.to_status} statusCategory={t.to_status_category} />
                         </>
                       )}
                     </div>
-                    <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: '#64748B', flexShrink: 0 }}>
+                    <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-3)', flexShrink: 0 }}>
                       {format(new Date(t.transitioned_at), 'MMM d, yyyy')}
                     </span>
                   </div>
 
                   {/* Actor */}
-                  <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 2, marginBottom: 8 }}>
+                  <div style={{ fontSize: 12, color: 'var(--fg-4)', marginTop: 2, marginBottom: 8 }}>
                     by {t.transitioned_by}
                   </div>
 
                   {/* Duration card */}
                   <div style={{
-                    background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.06)', borderRadius: 4,
+                    background: 'var(--bg-1)', border: '1px solid rgba(15,23,42,0.06)', borderRadius: 4,
                     padding: '8px 12px', marginBottom: 16,
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -159,7 +159,7 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                         {formatDuration(t.durationSec)} in {t.to_status.toUpperCase()}
                       </span>
                     </div>
-                    <div style={{ height: 4, borderRadius: 2, background: '#E5E5E5', overflow: 'hidden', marginTop: 6 }}>
+                    <div style={{ height: 4, borderRadius: 2, background: 'var(--divider)', overflow: 'hidden', marginTop: 6 }}>
                       <div style={{
                         height: '100%', borderRadius: 2, transition: 'width 300ms',
                         width: `${totalSec > 0 ? (t.durationSec / totalSec) * 100 : 0}%`,
@@ -171,7 +171,7 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                         <span style={{ fontSize: 10, fontWeight: 600, background: '#FEF3C7', color: '#92400E', padding: '1px 6px', borderRadius: 3 }}>Longest phase</span>
                       )}
                       {t.durationSec > 30 * 86400 && (
-                        <span style={{ fontSize: 10, fontWeight: 600, color: '#DC2626', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                        <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--sem-danger)', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
                           <AlertTriangle size={10} /> Extended duration
                         </span>
                       )}
@@ -180,7 +180,7 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
 
                   {/* Current indicator on last item */}
                   {isActive && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748B', marginBottom: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--fg-3)', marginBottom: 8 }}>
                       <span>Currently in</span>
                       <WorkHubStatusLozenge status={t.to_status} statusCategory={t.to_status_category} />
                       <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>← now</span>
@@ -196,20 +196,20 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
       {/* AUDIT LOG */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B' }}>Audit Log</span>
-          <span style={{ fontSize: 11, color: '#94A3B8' }}>{changelogs.length} changes</span>
+          <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)' }}>Audit Log</span>
+          <span style={{ fontSize: 11, color: 'var(--fg-4)' }}>{changelogs.length} changes</span>
         </div>
 
         {changelogs.length === 0 && (
-          <div style={{ fontSize: 13, color: '#94A3B8', padding: '16px 0' }}>No audit log entries yet.</div>
+          <div style={{ fontSize: 13, color: 'var(--fg-4)', padding: '16px 0' }}>No audit log entries yet.</div>
         )}
 
         {Object.entries(clGrouped).map(([dateStr, entries]) => (
           <div key={dateStr} style={{ marginBottom: 16 }}>
             {/* Date header */}
             <div style={{
-              fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: '#64748B',
-              background: '#F8FAFC', padding: '4px 8px', borderRadius: 4, marginBottom: 4, letterSpacing: '0.04em',
+              fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: 'var(--fg-3)',
+              background: 'var(--bg-1)', padding: '4px 8px', borderRadius: 4, marginBottom: 4, letterSpacing: '0.04em',
             }}>
               {dateStr}
             </div>
@@ -222,8 +222,8 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                 <AvatarCircle name={cl.changed_by} size={24} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{cl.changed_by}</span>
-                    <span style={{ fontSize: 13, color: '#64748B' }}>changed {cl.field_name}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>{cl.changed_by}</span>
+                    <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>changed {cl.field_name}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2, flexWrap: 'wrap' }}>
                     {cl.field_name === 'status' ? (
@@ -233,10 +233,10 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                         {cl.to_display && <WorkHubStatusLozenge status={cl.to_display} statusCategory={deriveStatusCategory(cl.to_display)} />}
                       </>
                     ) : (
-                      <span style={{ fontSize: 13, color: '#334155' }}>
+                      <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>
                         {cl.from_display ? (
                           <>
-                            <span style={{ color: '#94A3B8', textDecoration: 'line-through' }}>{(cl.from_display || '').slice(0, 60)}</span>
+                            <span style={{ color: 'var(--fg-4)', textDecoration: 'line-through' }}>{(cl.from_display || '').slice(0, 60)}</span>
                             {' → '}
                             <span>{(cl.to_display || '').slice(0, 60)}</span>
                           </>
@@ -247,7 +247,7 @@ export default function SidePanelHistory({ workItemId, currentStatus, currentSta
                     )}
                   </div>
                 </div>
-                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: '#94A3B8', flexShrink: 0 }}>
+                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-4)', flexShrink: 0 }}>
                   {format(new Date(cl.changed_at), 'hh:mm a')}
                 </span>
               </div>

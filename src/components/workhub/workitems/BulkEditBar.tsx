@@ -43,14 +43,14 @@ function BulkDropdown({ label, options, onSelect }: {
       {open && (
         <div
           className="absolute top-full left-0 mt-1 min-w-[180px] max-h-[200px] overflow-y-auto bg-white rounded-lg border shadow-lg"
-          style={{ zIndex: 'var(--wh-z-dropdown)', borderColor: 'var(--wh-border)' }}
+          style={{ zIndex: 'var(--wh-z-dropdown)', borderColor: 'var(--divider)' }}
         >
           {options.map(o => (
             <button
               key={o.id}
               onClick={() => { onSelect(o.id); setOpen(false); }}
               className="w-full text-left px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-              style={{ color: 'var(--wh-text-primary)' }}
+              style={{ color: 'var(--fg-1)' }}
             >
               {o.label}
             </button>
@@ -87,7 +87,7 @@ export function BulkEditBar({ selectedCount, selectedIds, onClear }: BulkEditBar
   return (
     <div
       className="flex items-center gap-3 px-4 rounded-t-lg animate-in slide-in-from-top-2 duration-200"
-      style={{ height: '48px', backgroundColor: 'var(--wh-primary)' }}
+      style={{ height: '48px', backgroundColor: 'var(--cp-blue)' }}
       data-print-hide="true"
     >
       <span className="text-xs font-medium text-white">

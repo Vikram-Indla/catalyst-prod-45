@@ -51,8 +51,8 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
         className="fixed top-0 right-0 bottom-0 z-50 flex flex-col"
         style={{
           width: 560,
-          background: '#fff',
-          borderLeft: '1px solid #E2E8F0',
+          background: 'var(--cp-float)',
+          borderLeft: '1px solid var(--divider)',
           boxShadow: '-8px 0 30px rgba(15,23,42,.1)',
           animation: 'phSlideInRight 200ms ease',
           fontFamily: "'Inter', sans-serif",
@@ -61,10 +61,10 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
         {/* Header */}
         <div
           className="flex items-center gap-2 px-5 flex-shrink-0"
-          style={{ height: 52, borderBottom: '1px solid #E2E8F0' }}
+          style={{ height: 52, borderBottom: '1px solid var(--divider)' }}
         >
           <PHIssueTypeIcon type={issue.type} size={18} />
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>
             {getDisplayKey(issue)}
           </span>
           <PHSourceTag source={issue.source} />
@@ -73,10 +73,10 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
             onClick={onClose}
             className="p-1.5 rounded-md transition-colors"
             style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-bd-zone)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <X size={16} color="#64748B" />
+            <X size={16} color="var(--fg-3)" />
           </button>
         </div>
 
@@ -84,22 +84,22 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
         <div className="flex flex-1 overflow-hidden">
           {/* Main */}
           <div className="flex-1 overflow-y-auto p-5">
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 16, lineHeight: 1.3 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 16, lineHeight: 1.3 }}>
               {issue.title}
             </h2>
 
             {/* Description */}
             <div className="mb-5">
-              <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                 Description
               </div>
               <div
                 className="rounded-lg p-3"
                 style={{
-                  background: '#F8FAFC',
-                  border: '1px solid #E2E8F0',
+                  background: 'var(--bg-1)',
+                  border: '1px solid var(--divider)',
                   fontSize: 13,
-                  color: issue.description ? '#334155' : '#94A3B8',
+                  color: issue.description ? 'var(--fg-2)' : 'var(--fg-4)',
                   minHeight: 60,
                   lineHeight: 1.5,
                 }}
@@ -111,7 +111,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
             {/* Child Issues */}
             {childIssues.length > 0 && (
               <div className="mb-5">
-                <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                   Child Issues ({childIssues.length})
                 </div>
                 <div className="flex flex-col gap-1">
@@ -119,16 +119,16 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
                     <div
                       key={child.id}
                       className="flex items-center gap-2 px-3 rounded-md cursor-pointer transition-colors"
-                      style={{ height: 36, border: '1px solid #F1F5F9' }}
+                      style={{ height: 36, border: '1px solid var(--cp-bd-zone)' }}
                       onClick={() => onSelectIssue(child as unknown as PHIssue)}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                     >
                       <PHIssueTypeIcon type={child.type} size={14} />
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>
                         {child.key}
                       </span>
-                      <span className="truncate flex-1" style={{ fontSize: 12, color: '#334155' }}>
+                      <span className="truncate flex-1" style={{ fontSize: 12, color: 'var(--fg-2)' }}>
                         {child.title}
                       </span>
                       <PHStatusLozenge status={child.status} compact />
@@ -140,10 +140,10 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
 
             {/* Activity */}
             <div>
-              <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                 Activity
               </div>
-              <div className="rounded-lg p-4 flex items-center justify-center" style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', color: '#94A3B8', fontSize: 12 }}>
+              <div className="rounded-lg p-4 flex items-center justify-center" style={{ background: 'var(--bg-1)', border: '1px solid var(--divider)', color: 'var(--fg-4)', fontSize: 12 }}>
                 No activity yet
               </div>
             </div>
@@ -152,7 +152,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
           {/* Aside */}
           <div
             className="flex-shrink-0 border-l overflow-y-auto"
-            style={{ width: 200, borderColor: '#E2E8F0', background: '#FAFBFC', padding: 16 }}
+            style={{ width: 200, borderColor: 'var(--divider)', background: 'var(--bg-1)', padding: 16 }}
           >
             {/* Status — custom dropdown, NO native select */}
             <AsideField label="Status">
@@ -167,14 +167,14 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
             </AsideField>
 
             <AsideField label="Assignee">
-              <span className="flex items-center gap-1.5" style={{ fontSize: 12, color: '#64748B' }}>
+              <span className="flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--fg-3)' }}>
                 <span
                   className="rounded-full inline-flex items-center justify-center"
                   style={{
                     width: 20, height: 20,
-                    background: issue.assignee_id ? '#E2E8F0' : 'transparent',
-                    border: issue.assignee_id ? 'none' : '1.5px dashed #CBD5E1',
-                    fontSize: 8, color: '#64748B',
+                    background: issue.assignee_id ? 'var(--bg-3)' : 'transparent',
+                    border: issue.assignee_id ? 'none' : '1.5px dashed var(--divider)',
+                    fontSize: 8, color: 'var(--fg-3)',
                   }}
                 >
                   {issue.assignee_id ? '👤' : ''}
@@ -184,14 +184,14 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
             </AsideField>
 
             <AsideField label="Release">
-              <span style={{ fontSize: 12, color: '#334155', fontWeight: 500 }}>{relName}</span>
+              <span style={{ fontSize: 12, color: 'var(--fg-2)', fontWeight: 500 }}>{relName}</span>
             </AsideField>
 
             <AsideField label="Due Date">
               <span style={{
                 fontSize: 12,
                 fontFamily: "'JetBrains Mono', monospace",
-                color: (issue.overdue_days ?? 0) > 0 ? '#EF4444' : '#334155',
+                color: (issue.overdue_days ?? 0) > 0 ? 'var(--sem-danger)' : 'var(--fg-2)',
                 fontWeight: 500,
               }}>
                 {issue.due_date
@@ -225,7 +225,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
 function AsideField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-4">
-      <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+      <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
         {label}
       </div>
       {children}
@@ -257,19 +257,19 @@ function StatusDropdown({ value, onChange }: { value: IssueStatus; onChange: (s:
         style={{
           padding: '4px 8px',
           fontSize: 11, fontWeight: 600,
-          border: '1px solid #E2E8F0',
-          background: '#fff',
-          color: '#334155',
+          border: '1px solid var(--divider)',
+          background: 'var(--bg-app)',
+          color: 'var(--fg-2)',
           cursor: 'pointer',
         }}
       >
         <PHStatusLozenge status={value} compact />
-        <ChevronDown size={12} color="#94A3B8" />
+        <ChevronDown size={12} color="var(--fg-4)" />
       </button>
       {open && (
         <div
           className="absolute left-0 top-full mt-1 rounded-lg shadow-lg border z-50"
-          style={{ background: '#fff', borderColor: '#E2E8F0', minWidth: 160, padding: 4 }}
+          style={{ background: 'var(--cp-float)', borderColor: 'var(--divider)', minWidth: 160, padding: 4 }}
         >
           {(Object.keys(STATUS_CONFIG) as IssueStatus[]).map(s => {
             const sc = STATUS_CONFIG[s];
@@ -280,16 +280,16 @@ function StatusDropdown({ value, onChange }: { value: IssueStatus; onChange: (s:
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded transition-colors text-left"
                 style={{
                   fontSize: 11, fontWeight: value === s ? 600 : 500,
-                  color: '#334155',
-                  background: value === s ? '#F1F5F9' : 'transparent',
+                  color: 'var(--fg-2)',
+                  background: value === s ? 'var(--cp-bd-zone)' : 'transparent',
                   border: 'none', cursor: 'pointer',
                 }}
-                onMouseEnter={e => { if (value !== s) e.currentTarget.style.background = '#F8FAFC'; }}
+                onMouseEnter={e => { if (value !== s) e.currentTarget.style.background = 'var(--bg-1)'; }}
                 onMouseLeave={e => { if (value !== s) e.currentTarget.style.background = 'transparent'; }}
               >
                 <span className="rounded-full flex-shrink-0" style={{ width: 6, height: 6, background: sc.color }} />
                 {sc.label}
-                {value === s && <span className="ml-auto" style={{ fontSize: 10, color: '#2563EB' }}>✓</span>}
+                {value === s && <span className="ml-auto" style={{ fontSize: 10, color: 'var(--cp-blue)' }}>✓</span>}
               </button>
             );
           })}

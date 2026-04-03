@@ -226,14 +226,14 @@ export function CreateEditStoryPanel({ open, onClose, onSuccess, storyId, initia
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sprint">Sprint</Label>
+            <Label htmlFor="sprint">Release</Label>
             <Select 
               value={formData.sprint_id} 
               onValueChange={(value) => setFormData({ ...formData, sprint_id: value })}
               disabled={!formData.team_id}
             >
               <SelectTrigger>
-                <SelectValue placeholder={formData.team_id ? "Select sprint" : "Select team first"} />
+                <SelectValue placeholder={formData.team_id ? "Select release" : "Select team first"} />
               </SelectTrigger>
               <SelectContent>
                 {sprints.map((s) => (

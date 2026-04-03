@@ -193,14 +193,14 @@ export function WorkflowTab({ projectId }: WorkflowTabProps) {
       {/* Workflow Editor Card */}
       <div className="ph-card">
         <h3 className="ph-card-title">Workflow</h3>
-        <p style={{ fontSize: 12, color: '#64748B', marginTop: 4, marginBottom: 16 }}>
+        <p style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 4, marginBottom: 16 }}>
           Drag to reorder statuses. New items start at the Default status. Done items count toward progress %.
         </p>
 
         {isLoading ? (
-          <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>Loading...</div>
+          <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>Loading...</div>
         ) : statuses.length === 0 ? (
-          <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>No statuses configured</div>
+          <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>No statuses configured</div>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={statuses.map(s => s.id)} strategy={verticalListSortingStrategy}>
@@ -229,7 +229,7 @@ export function WorkflowTab({ projectId }: WorkflowTabProps) {
           className="flex items-center gap-1.5 mt-3 hover:bg-[#F8FAFC] transition-colors"
           style={{
             height: 36, padding: '0 14px', fontSize: 13, fontWeight: 500,
-            color: '#334155', border: '1px solid #E2E8F0', borderRadius: 6,
+            color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
             background: 'transparent', cursor: 'pointer',
           }}
         >

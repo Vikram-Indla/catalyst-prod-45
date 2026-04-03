@@ -25,7 +25,7 @@ const KPI_CARDS: KPICardDef[] = [
     getValue: k => k.active_releases,
     icon: Rocket,
     iconBg: '#dbeafe',
-    iconColor: '#2563eb',
+    iconColor: 'var(--cp-blue)',
     path: '/projecthub/releases',
   },
   {
@@ -33,8 +33,8 @@ const KPI_CARDS: KPICardDef[] = [
     getValue: k => k.at_risk_releases,
     icon: AlertTriangle,
     iconBg: '#fee2e2',
-    iconColor: '#ef4444',
-    getValueColor: k => k.at_risk_releases > 0 ? '#ef4444' : '#16a34a',
+    iconColor: 'var(--sem-danger)',
+    getValueColor: k => k.at_risk_releases > 0 ? 'var(--sem-danger)' : 'var(--sem-success)',
     path: '/projecthub/releases',
   },
   {
@@ -43,7 +43,7 @@ const KPI_CARDS: KPICardDef[] = [
     getSubtext: k => `${k.done_work_items} done`,
     icon: FileStack,
     iconBg: '#f0fdf4',
-    iconColor: '#16a34a',
+    iconColor: 'var(--sem-success)',
     path: '/projecthub/workitems',
   },
   {
@@ -51,8 +51,8 @@ const KPI_CARDS: KPICardDef[] = [
     getValue: k => k.due_this_week,
     icon: Clock,
     iconBg: '#fefce8',
-    iconColor: '#d97706',
-    getValueColor: k => k.due_this_week > 0 ? '#d97706' : undefined,
+    iconColor: 'var(--sem-warning)',
+    getValueColor: k => k.due_this_week > 0 ? 'var(--sem-warning)' : undefined,
     path: '/projecthub/workitems',
   },
   {
@@ -60,8 +60,8 @@ const KPI_CARDS: KPICardDef[] = [
     getValue: k => k.overdue_items,
     icon: AlertCircle,
     iconBg: '#fee2e2',
-    iconColor: '#ef4444',
-    getValueColor: k => k.overdue_items > 0 ? '#ef4444' : undefined,
+    iconColor: 'var(--sem-danger)',
+    getValueColor: k => k.overdue_items > 0 ? 'var(--sem-danger)' : undefined,
     getDangerBorder: k => k.overdue_items > 0,
     path: '/projecthub/workitems',
   },
@@ -86,8 +86,8 @@ export function DashboardKPIRow({ kpis, isLoading }: DashboardKPIRowProps) {
           <div
             key={i}
             style={{
-              background: 'var(--wh-surface, #fff)',
-              border: '1px solid var(--wh-border, #e2e8f0)',
+              background: 'var(--cp-float)',
+              border: '1px solid var(--divider)',
               borderRadius: 'var(--wh-radius-xl, 16px)',
               padding: 20,
               height: 120,
@@ -108,7 +108,7 @@ export function DashboardKPIRow({ kpis, isLoading }: DashboardKPIRowProps) {
       {KPI_CARDS.map(card => {
         const value = card.getValue(kpis);
         const subtext = card.getSubtext?.(kpis);
-        const valueColor = card.getValueColor?.(kpis) || 'var(--wh-text-primary, #0f172a)';
+        const valueColor = card.getValueColor?.(kpis) || 'var(--fg-1)';
         const dangerBorder = card.getDangerBorder?.(kpis);
         const Icon = card.icon;
 
@@ -120,14 +120,14 @@ export function DashboardKPIRow({ kpis, isLoading }: DashboardKPIRowProps) {
             tabIndex={0}
             onKeyDown={e => e.key === 'Enter' && navigate(card.path)}
             style={{
-              background: 'var(--wh-surface, #fff)',
-              border: '1px solid var(--wh-border, #e2e8f0)',
-              borderLeft: dangerBorder ? '4px solid #ef4444' : '1px solid var(--wh-border, #e2e8f0)',
+              background: 'var(--cp-float)',
+              border: '1px solid var(--divider)',
+              borderLeft: dangerBorder ? '4px solid #ef4444' : '1px solid var(--divider)',
               borderRadius: 'var(--wh-radius-xl, 16px)',
               padding: 20,
               boxShadow: 'var(--wh-shadow-sm, 0 1px 3px rgba(0,0,0,0.06))',
               cursor: 'pointer',
-              transition: 'var(--wh-transition-fast, all 150ms ease)',
+              transition: 'all 150ms ease',
             }}
             className="hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500/30"
           >
@@ -164,7 +164,7 @@ export function DashboardKPIRow({ kpis, isLoading }: DashboardKPIRowProps) {
               fontSize: 12,
               fontWeight: 500,
               textTransform: 'uppercase' as const,
-              color: 'var(--wh-text-tertiary, #94a3b8)',
+              color: 'var(--fg-4)',
               marginTop: 4,
               letterSpacing: '0.03em',
             }}>
@@ -176,7 +176,7 @@ export function DashboardKPIRow({ kpis, isLoading }: DashboardKPIRowProps) {
               <div style={{
                 fontFamily: 'Inter, system-ui, sans-serif',
                 fontSize: 11,
-                color: 'var(--wh-text-secondary, #64748b)',
+                color: 'var(--fg-3)',
                 marginTop: 2,
               }}>
                 {subtext}

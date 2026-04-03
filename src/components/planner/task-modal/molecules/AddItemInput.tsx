@@ -54,7 +54,7 @@ export const AddItemInput: React.FC<AddItemInputProps> = ({
           flexShrink: 0
         }}
       >
-        <Plus size={14} style={{ color: '#ffffff' }} />
+        <Plus size={14} style={{ color: 'var(--bg-app)' }} />
       </div>
 
       {/* INPUT */}

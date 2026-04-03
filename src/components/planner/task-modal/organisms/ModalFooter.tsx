@@ -60,7 +60,7 @@ export const ModalFooter: React.FC<ModalFooterProps> = ({
           </>
         ) : lastSaved ? (
           <>
-            <Check size={14} style={{ color: '#16a34a' }} />
+            <Check size={14} style={{ color: 'var(--sem-success)' }} />
             <span style={{ fontSize: '12px', color: COLORS.textMuted }}>
               Saved
             </span>

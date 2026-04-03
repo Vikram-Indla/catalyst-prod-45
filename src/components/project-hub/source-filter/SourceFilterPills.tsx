@@ -30,7 +30,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
   const total = catalystCount + jiraCount;
 
   const pills: PillConfig[] = [
-    { key: 'all', label: 'All', count: total, activeBg: '#0F172A', activeText: '#FFFFFF', activeBorder: '#0F172A' },
+    { key: 'all', label: 'All', count: total, activeBg: 'var(--fg-1)', activeText: '#FFFFFF', activeBorder: 'var(--fg-1)' },
     { key: 'catalyst', label: 'Catalyst', count: catalystCount, activeBg: 'var(--src-catalyst-bg, #EFF6FF)', activeText: 'var(--src-catalyst-text, #2563EB)', activeBorder: 'var(--src-catalyst-border, #BFDBFE)', icon: 'catalyst' },
     { key: 'jira', label: 'Jira', count: jiraCount, activeBg: 'var(--src-jira-bg, #FFF7ED)', activeText: 'var(--src-jira-text, #9A3412)', activeBorder: 'var(--src-jira-border, #FED7AA)', icon: 'jira' },
   ];
@@ -40,7 +40,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
       <span style={{
         fontSize: 11.5,
         fontWeight: 500,
-        color: 'var(--cp-text-tertiary, #94A3B8)',
+        color: 'var(--cp-text-tertiary, var(--fg-4))',
         fontFamily: 'Inter, sans-serif',
       }}>
         Source:
@@ -60,8 +60,8 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
               fontWeight: 500,
               fontFamily: 'Inter, sans-serif',
               border: `0.75px solid ${isActive ? pill.activeBorder : 'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
-              background: isActive ? pill.activeBg : '#FFFFFF',
-              color: isActive ? pill.activeText : 'var(--cp-text-secondary, #475569)',
+              background: isActive ? pill.activeBg : 'var(--cp-float)',
+              color: isActive ? pill.activeText : 'var(--cp-text-secondary, var(--fg-2))',
               cursor: 'pointer',
               transition: 'background 150ms ease, color 150ms ease, border-color 150ms ease',
             }}
@@ -73,7 +73,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
                   width: 8,
                   height: 8,
                   borderRadius: 1.5,
-                  background: isActive ? '#2563EB' : '#94A3B8',
+                  background: isActive ? 'var(--cp-blue)' : 'var(--fg-4)',
                   color: '#FFFFFF',
                   fontSize: 6,
                   fontWeight: 700,
@@ -86,7 +86,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
             {pill.icon === 'jira' && (
               <span
                 className="flex items-center"
-                style={{ color: isActive ? 'var(--src-jira-text)' : '#94A3B8' }}
+                style={{ color: isActive ? 'var(--src-jira-text)' : 'var(--fg-4)' }}
                 dangerouslySetInnerHTML={{ __html: JIRA_DIAMOND_SVG_SMALL }}
               />
             )}

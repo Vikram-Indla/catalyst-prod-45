@@ -24,7 +24,7 @@ export function SettingsTabs({ active, onChange }: SettingsTabsProps) {
     <div
       ref={containerRef}
       className="flex overflow-x-auto"
-      style={{ borderBottom: '1px solid #E2E8F0', gap: 0 }}
+      style={{ borderBottom: '1px solid var(--divider)', gap: 0 }}
     >
       {TABS.map(tab => {
         const isActive = tab === active;
@@ -39,13 +39,13 @@ export function SettingsTabs({ active, onChange }: SettingsTabsProps) {
               padding: '0 16px',
               fontSize: 13,
               fontWeight: isActive ? 600 : 500,
-              color: isActive ? '#2563EB' : '#64748B',
-              borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
+              color: isActive ? 'var(--cp-blue)' : 'var(--fg-3)',
+              borderBottom: isActive ? '2px solid var(--cp-blue)' : '2px solid transparent',
               background: 'transparent',
               border: 'none',
               borderBottomWidth: 2,
               borderBottomStyle: 'solid',
-              borderBottomColor: isActive ? '#2563EB' : 'transparent',
+              borderBottomColor: isActive ? 'var(--cp-blue)' : 'transparent',
               cursor: 'pointer',
               fontFamily: "'Inter', sans-serif",
               whiteSpace: 'nowrap',

@@ -9,7 +9,7 @@ interface AvatarChipProps {
   avatarUrl?: string;
 }
 
-export function AvatarChip({ name, color = 'var(--wh-primary)', size = 28, avatarUrl }: AvatarChipProps) {
+export function AvatarChip({ name, color = 'var(--cp-blue)', size = 28, avatarUrl }: AvatarChipProps) {
   const parts = name.trim().split(/\s+/);
   const initials = parts.length >= 2 ? `${parts[0][0]}${parts[parts.length - 1][0]}` : parts[0]?.[0] || '?';
 

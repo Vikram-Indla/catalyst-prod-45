@@ -31,11 +31,11 @@ export default function WorkHubDatePicker({ value, onChange, placeholder = '— 
       <PopoverTrigger asChild>
         <button style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
-          fontSize: 13, color: date ? '#0F172A' : '#94A3B8',
+          fontSize: 13, color: date ? 'var(--fg-1)' : 'var(--fg-4)',
           fontFamily: date && compact ? "'JetBrains Mono', monospace" : 'Inter, sans-serif',
           cursor: 'pointer', background: 'transparent', border: 'none', padding: 0,
         }}>
-          {!compact && <CalendarIcon size={14} style={{ color: '#94A3B8' }} />}
+          {!compact && <CalendarIcon size={14} style={{ color: 'var(--fg-4)' }} />}
           {displayText}
         </button>
       </PopoverTrigger>
@@ -43,7 +43,7 @@ export default function WorkHubDatePicker({ value, onChange, placeholder = '— 
         <Calendar mode="single" selected={date} onSelect={handleSelect} initialFocus className={cn('p-3 pointer-events-auto')} />
         {date && (
           <div style={{ padding: '0 12px 8px', display: 'flex', justifyContent: 'flex-end' }}>
-            <button onClick={() => { onChange(null); setOpen(false); }} style={{ fontSize: 12, color: '#DC2626', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <button onClick={() => { onChange(null); setOpen(false); }} style={{ fontSize: 12, color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
               <X size={12} /> Clear
             </button>
           </div>

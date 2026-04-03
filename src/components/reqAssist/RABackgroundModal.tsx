@@ -146,39 +146,39 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 60 }} />
-      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 500, background: '#FFFFFF', borderRadius: 8, zIndex: 70, padding: 28, border: '0.75px solid #E2E8F0' }}>
-        <div style={{ width: 48, height: 48, borderRadius: 12, background: jobStatus === 'failed' ? '#FEF2F2' : jobStatus === 'done' ? '#F0FDF4' : '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 500, background: 'var(--cp-float)', borderRadius: 8, zIndex: 70, padding: 28, border: '0.75px solid var(--divider)' }}>
+        <div style={{ width: 48, height: 48, borderRadius: 12, background: jobStatus === 'failed' ? '#FEF2F2' : jobStatus === 'done' ? '#F0FDF4' : 'var(--cp-primary-5)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
           {jobStatus === 'failed' ? (
-            <AlertTriangle size={22} color="#DC2626" />
+            <AlertTriangle size={22} color="var(--sem-danger)" />
           ) : jobStatus === 'done' ? (
-            <Check size={22} color="#16A34A" />
+            <Check size={22} color="var(--sem-success)" />
           ) : (
-            <Loader2 size={22} color="#2563EB" style={{ animation: 'ra-spin 1s linear infinite' }} />
+            <Loader2 size={22} color="var(--cp-blue)" style={{ animation: 'ra-spin 1s linear infinite' }} />
           )}
         </div>
-        <h3 style={{ fontSize: 18, fontWeight: 650, color: '#0F172A', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>
+        <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>
           {jobStatus === 'done' ? 'Generation Complete' : jobStatus === 'failed' ? 'Generation Failed' : config.title}
         </h3>
-        <p style={{ fontSize: 13, color: '#64748B', margin: '0 0 20px', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>
+        <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '0 0 20px', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>
           {jobStatus === 'failed' ? (
-            <span style={{ color: '#DC2626' }}>{jobError || 'An unexpected error occurred. Please try again.'}</span>
+            <span style={{ color: 'var(--sem-danger)' }}>{jobError || 'An unexpected error occurred. Please try again.'}</span>
           ) : jobStatus === 'done' ? (
             <>Artifacts have been generated and are ready for review.</>
           ) : (
-            <>From: {doc.jira_ticket_key} · {doc.title}<br /><span style={{ color: '#94A3B8' }}>This typically takes {etaLabel}. You can leave this screen — we'll notify you when it's done.</span></>
+            <>From: {doc.jira_ticket_key} · {doc.title}<br /><span style={{ color: 'var(--fg-4)' }}>This typically takes {etaLabel}. You can leave this screen — we'll notify you when it's done.</span></>
           )}
         </p>
 
         {jobStatus !== 'failed' && (
           <>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, padding: '0 0' }}>
-              <span style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>{currentStep || config.steps[activeStep]}</span>
-              <span style={{ fontSize: 12, color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>{jobStatus === 'done' ? '100' : Math.min(progress, 99)}%</span>
+              <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>{currentStep || config.steps[activeStep]}</span>
+              <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>{jobStatus === 'done' ? '100' : Math.min(progress, 99)}%</span>
             </div>
-            <div style={{ height: 6, background: '#E5E5E5', borderRadius: 3, overflow: 'hidden', marginBottom: 20, position: 'relative' }}>
+            <div style={{ height: 6, background: 'var(--divider)', borderRadius: 3, overflow: 'hidden', marginBottom: 20, position: 'relative' }}>
               <div style={{
                 height: '100%', borderRadius: 3,
-                background: jobStatus === 'done' ? '#16A34A' : '#2563EB',
+                background: jobStatus === 'done' ? 'var(--sem-success)' : 'var(--cp-blue)',
                 width: `${jobStatus === 'done' ? 100 : Math.min(progress, 99)}%`,
                 transition: 'width 800ms ease', position: 'relative', overflow: 'hidden',
               }}>
@@ -197,10 +197,10 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
               const isActive = jobStatus !== 'done' && i === activeStep;
               return (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDone ? '#DCFCE7' : isActive ? '#DBEAFE' : '#F5F5F5', color: isDone ? '#16A34A' : isActive ? '#2563EB' : '#A3A3A3', fontSize: 11, fontWeight: 600, flexShrink: 0 }}>
+                  <div style={{ width: 22, height: 22, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDone ? '#DCFCE7' : isActive ? '#DBEAFE' : 'var(--bg-2)', color: isDone ? 'var(--sem-success)' : isActive ? 'var(--cp-blue)' : 'var(--fg-4)', fontSize: 11, fontWeight: 600, flexShrink: 0 }}>
                     {isDone ? <Check size={12} /> : isActive ? <Loader2 size={12} style={{ animation: 'ra-spin 1s linear infinite' }} /> : i + 1}
                   </div>
-                  <span style={{ fontSize: 13, color: isDone ? '#16A34A' : isActive ? '#0F172A' : '#94A3B8', fontWeight: isActive ? 500 : 400, fontFamily: "'Inter', sans-serif" }}>
+                  <span style={{ fontSize: 13, color: isDone ? 'var(--sem-success)' : isActive ? 'var(--fg-1)' : 'var(--fg-4)', fontWeight: isActive ? 500 : 400, fontFamily: "'Inter', sans-serif" }}>
                     {isActive && currentStep ? currentStep : step}
                   </span>
                 </div>
@@ -210,8 +210,8 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
         )}
 
         {jobStatus !== 'done' && jobStatus !== 'failed' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '14px 14px', background: '#EFF6FF', borderRadius: 'var(--ra-radius-card)', marginBottom: 20, borderTop: '1px solid #DBEAFE' }}>
-            <Clock size={14} color="#2563EB" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '14px 14px', background: 'var(--cp-primary-5)', borderRadius: 'var(--ra-radius-card)', marginBottom: 20, borderTop: '1px solid #DBEAFE' }}>
+            <Clock size={14} color="var(--cp-blue)" />
             <span style={{ fontSize: 12, color: '#1E40AF', fontFamily: "'Inter', sans-serif" }}>Estimated: {etaLabel} · You'll be notified when done</span>
           </div>
         )}
@@ -219,15 +219,15 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '1px solid rgba(15,23,42,0.06)', paddingTop: 16 }}>
           {jobStatus === 'failed' ? (
             <>
-              <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#334155', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>Close</button>
-              <button onClick={handleRetry} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>Retry</button>
+              <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>Close</button>
+              <button onClick={handleRetry} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--cp-blue)', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>Retry</button>
             </>
           ) : jobStatus === 'done' ? (
-            <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: '#16A34A', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>Done</button>
+            <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--sem-success)', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>Done</button>
           ) : (
             <>
-              <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#334155', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>Stay on this page</button>
-              <button onClick={handleLeave} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '0.75px solid #CBD5E1', borderRadius: 'var(--ra-radius-btn)', background: '#FFFFFF', color: '#374151', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'} onMouseLeave={e => e.currentTarget.style.background = '#FFFFFF'}>Leave & Notify Me When Done</button>
+              <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>Stay on this page</button>
+              <button onClick={handleLeave} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '0.75px solid #CBD5E1', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.04)'} onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-app)'}>Leave & Notify Me When Done</button>
             </>
           )}
         </div>

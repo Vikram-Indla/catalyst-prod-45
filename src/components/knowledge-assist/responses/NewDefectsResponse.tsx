@@ -27,7 +27,7 @@ export function NewDefectsResponse({ onItemClick }: { onItemClick?: (key: string
   const { data: olderData, loading: loadingOlder, loaded: olderLoaded, loadAll } = useLoadAllItems(fetchOlder);
 
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Loader2 size={20} className="animate-spin" color="#DC2626" /></div>;
-  if (!data.length) return <div style={{ padding: 24, color: '#64748B', fontSize: 13, textAlign: 'center' }}>No new defects logged in the last 2 weeks.</div>;
+  if (!data.length) return <div style={{ padding: 24, color: 'var(--fg-3)', fontSize: 13, textAlign: 'center' }}>No new defects logged in the last 2 weeks.</div>;
 
   return (
     <div>
@@ -55,7 +55,7 @@ export function NewDefectsResponse({ onItemClick }: { onItemClick?: (key: string
       {loadingOlder && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px' }}>
           <Loader2 size={14} className="animate-spin" color="#DC2626" />
-          <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.inter }}>Loading older defects…</span>
+          <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: F.inter }}>Loading older defects…</span>
         </div>
       )}
       {olderLoaded && olderData.length > 0 && (
@@ -80,7 +80,7 @@ export function NewDefectsResponse({ onItemClick }: { onItemClick?: (key: string
         </div>
       )}
       {olderLoaded && olderData.length === 0 && (
-        <div style={{ padding: '12px 14px', fontSize: 12, color: '#94A3B8' }}>No older defects found (2–6 weeks ago).</div>
+        <div style={{ padding: '12px 14px', fontSize: 12, color: 'var(--fg-4)' }}>No older defects found (2–6 weeks ago).</div>
       )}
     </div>
   );

@@ -26,8 +26,8 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
           letterSpacing: '0.02em',
           border: 'none',
           cursor: 'pointer',
-          background: '#2563EB',
-          color: '#FFFFFF',
+          background: 'var(--cp-blue)',
+          color: 'var(--bg-app)',
           fontFamily: "'Inter', system-ui, sans-serif",
           overflow: 'hidden',
           transition: 'transform 80ms, box-shadow 80ms',
@@ -51,7 +51,7 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
             width: 6,
             height: 6,
             borderRadius: '50%',
-            background: '#16A34A',
+            background: 'var(--sem-success)',
             animation: 'ka-btn-pulse 2s ease-in-out infinite',
           }} />
         )}

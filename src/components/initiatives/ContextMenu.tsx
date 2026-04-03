@@ -80,7 +80,7 @@ export function ContextMenu({ position, initiative, onAction, onClose }: Context
         left: adjustedPos?.x ?? position.x,
         boxShadow: '0 10px 40px rgba(0,0,0,0.18)',
         border: '1px solid #e4e4e7',
-        background: '#ffffff',
+        background: 'var(--bg-app)',
         zIndex: 99999,
       }}
     >
@@ -211,7 +211,7 @@ function Submenu({ children, parentRef }: { children: React.ReactNode; parentRef
       className={`absolute top-0 min-w-[180px] rounded-lg p-1 ${
         side === 'right' ? 'left-full ml-1' : 'right-full mr-1'
       }`}
-      style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.18)', border: '1px solid #e4e4e7', background: '#ffffff', zIndex: 99999 }}
+      style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.18)', border: '1px solid #e4e4e7', background: 'var(--bg-app)', zIndex: 99999 }}
     >
       {children}
     </div>

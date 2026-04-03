@@ -52,7 +52,7 @@ export function WorkItemRow({
       style={{
         gridTemplateColumns: '36px 36px minmax(140px, auto) 1fr 120px 140px 120px 130px 90px 90px 90px',
         height: 'var(--wh-row-height, 44px)',
-        borderColor: '#f1f5f9',
+        borderColor: 'var(--bg-1)',
         fontFamily: 'var(--wh-font-sans)',
       }}
       onClick={onOpenDrawer}
@@ -64,7 +64,7 @@ export function WorkItemRow({
           checked={isSelected}
           onChange={onToggleSelect}
           className="w-4 h-4 rounded cursor-pointer"
-          style={{ accentColor: 'var(--wh-primary, #2563eb)' }}
+          style={{ accentColor: 'var(--cp-blue)' }}
         />
       </div>
 
@@ -73,7 +73,7 @@ export function WorkItemRow({
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
         <div
           className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 rounded text-[10px] font-semibold whitespace-nowrap opacity-0 group-hover/type:opacity-100 pointer-events-none transition-opacity z-50"
-          style={{ backgroundColor: '#1e293b', color: '#fff' }}
+          style={{ backgroundColor: '#1e293b', color: 'var(--bg-app)' }}
         >
           {item.issue_type}
         </div>
@@ -87,20 +87,20 @@ export function WorkItemRow({
             className="w-4 h-4 flex items-center justify-center shrink-0 rounded hover:bg-slate-200 transition-colors"
           >
             {isExpanded
-              ? <ChevronDown className="w-3.5 h-3.5" style={{ color: '#64748b' }} />
-              : <ChevronRight className="w-3.5 h-3.5" style={{ color: '#94a3b8' }} />
+              ? <ChevronDown className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
+              : <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--fg-4)' }} />
             }
           </button>
         ) : (
           <span className="w-4 shrink-0" />
         )}
-        <span className="text-[12px] font-semibold truncate" style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--wh-primary, #2563eb)' }}>
+        <span className="text-[12px] font-semibold truncate" style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--cp-blue)' }}>
           {item.issue_key}
         </span>
       </div>
 
       {/* 4. Summary */}
-      <span className="text-[13px] truncate pr-2" style={{ fontWeight: depth === 0 ? 700 : depth === 1 ? 500 : 400, color: 'var(--wh-text-primary, #0f172a)' }}>
+      <span className="text-[13px] truncate pr-2" style={{ fontWeight: depth === 0 ? 700 : depth === 1 ? 500 : 400, color: 'var(--fg-1)' }}>
         {item.summary}
       </span>
 
@@ -121,7 +121,7 @@ export function WorkItemRow({
             {item.fix_versions.length > 1 && ` +${item.fix_versions.length - 1}`}
           </span>
         ) : (
-          <span className="text-[10.5px] italic" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>—</span>
+          <span className="text-[10.5px] italic" style={{ color: 'var(--fg-4)' }}>—</span>
         )}
       </div>
 
@@ -129,11 +129,11 @@ export function WorkItemRow({
       <div className="flex items-center gap-1.5 min-w-0">
         {themeName ? (
           <>
-            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: themeColor || '#94a3b8' }} />
-            <span className="text-[11px] truncate" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>{themeName}</span>
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: themeColor || 'var(--fg-4)' }} />
+            <span className="text-[11px] truncate" style={{ color: 'var(--fg-3)' }}>{themeName}</span>
           </>
         ) : (
-          <span className="text-[10.5px] italic" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>—</span>
+          <span className="text-[10.5px] italic" style={{ color: 'var(--fg-4)' }}>—</span>
         )}
       </div>
 
@@ -148,26 +148,26 @@ export function WorkItemRow({
                 {item.assignee_display_name[0]?.toUpperCase()}
               </span>
             )}
-            <span className="text-[11px] truncate" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
+            <span className="text-[11px] truncate" style={{ color: 'var(--fg-3)' }}>
               {item.assignee_display_name.split(' ').slice(0, 2).join(' ')}
             </span>
           </>
         ) : (
-          <span className="text-[11px] italic" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>—</span>
+          <span className="text-[11px] italic" style={{ color: 'var(--fg-4)' }}>—</span>
         )}
       </div>
 
       {/* 8. Priority */}
       <div className="flex items-center gap-1">
         <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: priorityColor }} />
-        <span className="text-[11px] font-medium" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>{item.priority}</span>
+        <span className="text-[11px] font-medium" style={{ color: 'var(--fg-3)' }}>{item.priority}</span>
       </div>
 
       {/* 9. Updated */}
-      <span className="text-[10.5px] truncate" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>{formatDate(item.jira_updated_at)}</span>
+      <span className="text-[10.5px] truncate" style={{ color: 'var(--fg-4)' }}>{formatDate(item.jira_updated_at)}</span>
 
       {/* 10. Created */}
-      <span className="text-[10.5px] truncate" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>{formatDate(item.jira_created_at)}</span>
+      <span className="text-[10.5px] truncate" style={{ color: 'var(--fg-4)' }}>{formatDate(item.jira_created_at)}</span>
     </div>
   );
 }

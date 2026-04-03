@@ -115,7 +115,7 @@ export function WikiAdminPagesTab() {
                         <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, padding: '2px 6px', borderRadius: 3, background: 'var(--cp-bg-sunken, #F1F5F9)', color: 'var(--cp-text-secondary, #334155)' }}>{p.domain_code ?? '—'}</span>
                       </td>
                       <td style={{ padding: '8px 12px' }}><PageStatusLoz status={p.status} /></td>
-                      <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isLowConf ? '#DC2626' : 'var(--cp-text-primary, #0F172A)', fontWeight: isLowConf ? 700 : 400 }}>
+                      <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isLowConf ? 'var(--sem-danger)' : 'var(--cp-text-primary, #0F172A)', fontWeight: isLowConf ? 700 : 400 }}>
                         {p.ai_confidence != null ? `${Math.round(p.ai_confidence * 100)}%` : '—'}
                       </td>
                       <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>

@@ -35,27 +35,27 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
       style={{ background: 'rgba(0,0,0,0.5)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white dark:bg-[#232019]" style={{ width: 440, borderRadius: 12, padding: 24, fontFamily: "'Inter', sans-serif" }}>
+      <div className="bg-white dark:bg-[#1F2128]" style={{ width: 440, borderRadius: 12, padding: 24, fontFamily: "'Inter', sans-serif" }}>
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]" style={{ fontSize: 16, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>Add Status</h3>
-          <button onClick={onClose} className="flex items-center justify-center rounded-md hover:bg-[#F1F5F9] dark:hover:bg-[rgba(248,244,240,0.03)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
-            <X size={16} className="text-[#64748B] dark:text-[rgba(248,244,240,0.55)]" />
+          <h3 className="text-[var(--fg-1)] dark:text-[rgba(235,238,245,0.92)]" style={{ fontSize: 16, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>Add Status</h3>
+          <button onClick={onClose} className="flex items-center justify-center rounded-md hover:bg-[var(--cp-bd-zone)] dark:hover:bg-[rgba(235,238,245,0.03)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
+            <X size={16} className="text-[#64748B] dark:text-[rgba(235,238,245,0.55)]" />
           </button>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="text-[#334155] dark:text-[rgba(248,244,240,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Status Name <span style={{ color: '#EF4444' }}>*</span></label>
+            <label className="text-[var(--fg-2)] dark:text-[rgba(235,238,245,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Status Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. In Review"
-              className="w-full bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)] text-[#0F172A] dark:text-[rgba(248,244,240,0.92)] placeholder:text-[#94A3B8] dark:placeholder:text-[rgba(248,244,240,0.40)]"
+              className="w-full bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)] text-[#0F172A] dark:text-[rgba(235,238,245,0.92)] placeholder:text-[#94A3B8] dark:placeholder:text-[rgba(235,238,245,0.40)]"
               style={{ height: 40, padding: '0 12px', fontSize: 13, borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif" }}
             />
           </div>
 
           <div>
-            <label className="text-[#334155] dark:text-[rgba(248,244,240,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Category <span style={{ color: '#EF4444' }}>*</span></label>
+            <label className="text-[var(--fg-2)] dark:text-[rgba(235,238,245,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Category <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <select value={category} onChange={e => setCategory(e.target.value)}
-              className="w-full bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)] text-[#0F172A] dark:text-[rgba(248,244,240,0.92)]"
+              className="w-full bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)] text-[#0F172A] dark:text-[rgba(235,238,245,0.92)]"
               style={{ height: 40, padding: '0 12px', fontSize: 13, borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}
             >
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -63,7 +63,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
           </div>
 
           <div>
-            <label className="text-[#334155] dark:text-[rgba(248,244,240,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 6 }}>Color</label>
+            <label className="text-[var(--fg-2)] dark:text-[rgba(235,238,245,0.72)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 6 }}>Color</label>
             <div className="flex gap-2">
               {COLORS.map(c => (
                 <button
@@ -82,14 +82,14 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
 
         <div className="flex justify-end gap-2 mt-6">
           <button onClick={onClose}
-            className="bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(248,244,240,0.10)] text-[#334155] dark:text-[rgba(248,244,240,0.72)]"
+            className="bg-white dark:bg-transparent border border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)] text-[#334155] dark:text-[rgba(235,238,245,0.72)]"
             style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, borderRadius: 6, cursor: 'pointer' }}
           >Cancel</button>
           <button
             onClick={() => name.trim() && onSubmit({ name: name.trim(), category, color })}
             disabled={!name.trim() || loading}
             className="hover:opacity-90 transition-opacity disabled:opacity-40"
-            style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: '#2563EB', border: 'none', borderRadius: 6, cursor: name.trim() && !loading ? 'pointer' : 'default' }}
+            style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: name.trim() && !loading ? 'pointer' : 'default' }}
           >
             {loading ? 'Adding...' : 'Add Status'}
           </button>

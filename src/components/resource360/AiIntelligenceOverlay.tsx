@@ -149,7 +149,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
     >
       {/* Purple top bar */}
       <div style={{
-        background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+        background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
         padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12, color: '#FFFFFF',
       }}>
         <span style={{ fontSize: 14, fontWeight: 800 }}>✦</span>
@@ -213,7 +213,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
         {generating && (
           <div style={{ padding: 48, textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 12 }}>🧠</div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#7C3AED', marginBottom: 4 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#3B82F6', marginBottom: 4 }}>
               Analyzing {resource?.full_name}'s work data…
             </div>
             <div style={{ fontSize: 12, color: '#64748B' }}>
@@ -221,8 +221,8 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
               <br />This may take 15-30 seconds.
             </div>
             <div style={{ marginTop: 20 }}>
-              <div style={{ width: 200, height: 4, background: '#EDE9FE', borderRadius: 2, margin: '0 auto', overflow: 'hidden' }}>
-                <div style={{ width: '60%', height: '100%', background: '#7C3AED', borderRadius: 2, animation: 'indeterminate 1.5s ease-in-out infinite' }} />
+              <div style={{ width: 200, height: 4, background: '#DBEAFE', borderRadius: 2, margin: '0 auto', overflow: 'hidden' }}>
+                <div style={{ width: '60%', height: '100%', background: '#3B82F6', borderRadius: 2, animation: 'indeterminate 1.5s ease-in-out infinite' }} />
               </div>
             </div>
           </div>
@@ -246,10 +246,10 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
                 🔄 Sync Data
               </button>
               <button onClick={handleGenerate} style={{
-                background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+                background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
                 color: '#FFFFFF', border: 'none', borderRadius: 8,
                 padding: '10px 24px', fontSize: 13, fontWeight: 700,
-                cursor: 'pointer', boxShadow: '0 2px 8px rgba(124,58,237,.3)',
+                cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,.3)',
               }}>
                 ✨ Generate AI Profile
               </button>
@@ -268,10 +268,10 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
               Data synced {stalenessLabel || 'just now'}. Click "Generate" to create the AI narrative.
             </div>
             <button onClick={handleGenerate} style={{
-              background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+              background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
               color: '#FFFFFF', border: 'none', borderRadius: 8,
               padding: '10px 24px', fontSize: 13, fontWeight: 700,
-              cursor: 'pointer', boxShadow: '0 2px 8px rgba(124,58,237,.3)',
+              cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,.3)',
             }}>
               ✨ Generate AI Profile
             </button>
@@ -288,7 +288,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
                   background: 'linear-gradient(135deg, #2563EB, #4F46E5)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: '#FFFFFF', fontSize: 28, fontWeight: 700,
-                  boxShadow: '0 0 0 3px #FFFFFF, 0 0 0 5px #7C3AED',
+                  boxShadow: '0 0 0 3px #FFFFFF, 0 0 0 5px #2563EB',
                 }}>
                   {initials}
                 </div>
@@ -395,7 +395,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
                 <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
                   {patterns.map((p: any) => (
                     <li key={p.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
-                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#7C3AED', marginTop: 5, flexShrink: 0 }} />
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#3B82F6', marginTop: 5, flexShrink: 0 }} />
                       <div>
                         <span style={{ fontSize: 13, color: '#334155', lineHeight: 1.6 }}>{p.pattern_text}</span>
                         {p.evidence_refs?.length > 0 && (
@@ -516,12 +516,12 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
   <div style={{ marginBottom: 24 }}>
     <div style={{
       fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em',
-      color: '#7C3AED', marginBottom: 12,
+      color: '#3B82F6', marginBottom: 12,
       display: 'flex', alignItems: 'center', gap: 8,
     }}>
       <span style={{ fontSize: 10, fontWeight: 800 }}>✦</span>
       {title}
-      <div style={{ flex: 1, height: 1, background: '#EDE9FE' }} />
+      <div style={{ flex: 1, height: 1, background: '#DBEAFE' }} />
     </div>
     {children}
   </div>

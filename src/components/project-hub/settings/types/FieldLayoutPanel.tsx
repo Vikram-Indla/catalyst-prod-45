@@ -33,12 +33,12 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
     <div
       className="rounded-xl mt-4"
       style={{
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
+        background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 12,
         padding: '16px 20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
       }}
     >
       <div className="flex items-center justify-between mb-4">
-        <h4 style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>
+        <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>
           {typeName} — Field Layout
         </h4>
         <button
@@ -46,21 +46,21 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
           className="flex items-center justify-center rounded-md hover:bg-[#F1F5F9] transition-colors"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
-          <X size={14} color="#64748B" />
+          <X size={14} color="var(--fg-3)" />
         </button>
       </div>
 
       {isLoading ? (
-        <div style={{ fontSize: 13, color: '#94A3B8', padding: '12px 0' }}>Loading fields...</div>
+        <div style={{ fontSize: 13, color: 'var(--fg-4)', padding: '12px 0' }}>Loading fields...</div>
       ) : fields.length === 0 ? (
-        <div style={{ fontSize: 13, color: '#94A3B8', padding: '12px 0' }}>No fields configured for this type.</div>
+        <div style={{ fontSize: 13, color: 'var(--fg-4)', padding: '12px 0' }}>No fields configured for this type.</div>
       ) : (
         <div className="space-y-0">
           {/* Header */}
-          <div className="flex items-center gap-4 px-2 pb-2" style={{ borderBottom: '1px solid #F1F5F9' }}>
-            <span style={{ flex: 1, fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Field Name</span>
-            <span style={{ width: 120, fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Type</span>
-            <span style={{ width: 100, fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</span>
+          <div className="flex items-center gap-4 px-2 pb-2" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
+            <span style={{ flex: 1, fontSize: 11, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Field Name</span>
+            <span style={{ width: 120, fontSize: 11, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Type</span>
+            <span style={{ width: 100, fontSize: 11, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</span>
           </div>
 
           {fields.map((field: any) => {
@@ -69,12 +69,12 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
               <div
                 key={field.id}
                 className="flex items-center gap-4 px-2 hover:bg-[#F8FAFC] transition-colors"
-                style={{ height: 40, borderBottom: '1px solid #F8FAFC' }}
+                style={{ height: 40, borderBottom: '1px solid var(--bg-1)' }}
               >
-                <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
+                <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-1)' }}>
                   {field.field_name}
                 </span>
-                <span style={{ width: 120, fontSize: 12, color: '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
+                <span style={{ width: 120, fontSize: 12, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace" }}>
                   {field.field_type}
                 </span>
                 <span style={{ width: 100 }}>

@@ -65,9 +65,9 @@ export function ThemeStatusDropdown({
 
   const triggerStyle: React.CSSProperties = isDraftLike(currentConfig.value)
     ? {
-        background: 'hsl(var(--surface-2))',
-        border: '1px solid hsl(var(--border-default))',
-        color: 'hsl(var(--text-secondary))',
+        background: 'var(--surface-2)',
+        border: '1px solid var(--border-default)',
+        color: 'var(--text-secondary)',
       }
     : {
         background: `hsl(var(${colorVar}) / 0.12)`,

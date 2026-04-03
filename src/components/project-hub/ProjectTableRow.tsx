@@ -70,7 +70,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
             style={{
               width: 28,
               height: 28,
-              background: project.color || '#2563EB',
+              background: project.color || 'var(--cp-blue)',
               color: '#FFFFFF',
               fontSize: 10,
               fontWeight: 700,

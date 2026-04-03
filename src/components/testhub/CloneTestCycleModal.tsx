@@ -149,14 +149,14 @@ export function CloneTestCycleModal({
     }}>
       <div style={{
         width: 500,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'var(--cp-float)',
         borderRadius: 12,
         boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
       }}>
         {/* Header */}
         <div style={{
           padding: '20px 24px',
-          borderBottom: '1px solid #E2E8F0',
+          borderBottom: '1px solid var(--divider)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -166,14 +166,14 @@ export function CloneTestCycleModal({
               width: 40,
               height: 40,
               borderRadius: 10,
-              backgroundColor: '#EFF6FF',
+              backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-              <Copy size={20} style={{ color: '#2563EB' }} />
+              <Copy size={20} style={{ color: 'var(--cp-blue)' }} />
             </div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
               Clone Test Cycle
             </h2>
           </div>
@@ -182,7 +182,7 @@ export function CloneTestCycleModal({
             disabled={isSubmitting}
             style={{
               width: 32, height: 32, padding: 0, border: 'none', borderRadius: 8,
-              backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer',
+              backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
@@ -195,29 +195,29 @@ export function CloneTestCycleModal({
           {/* Source Cycle Info */}
           <div style={{
             padding: 16,
-            backgroundColor: '#F8FAFC',
+            backgroundColor: 'var(--bg-1)',
             borderRadius: 8,
             marginBottom: 20,
           }}>
             <p style={{ 
-              fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase',
+              fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase',
               letterSpacing: '0.05em', margin: '0 0 8px',
             }}>
               Cloning from
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{
-                fontSize: 12, fontWeight: 600, color: '#2563EB',
-                backgroundColor: '#EFF6FF', padding: '3px 8px', borderRadius: 4,
+                fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)',
+                backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', padding: '3px 8px', borderRadius: 4,
               }}>
                 {cycle.cycle_key}
               </span>
-              <span style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
+              <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-1)' }}>
                 {cycle.name}
               </span>
             </div>
             {cycle.total_cases > 0 && (
-              <p style={{ fontSize: 12, color: '#64748B', margin: '8px 0 0' }}>
+              <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '8px 0 0' }}>
                 Contains {cycle.total_cases} test case{cycle.total_cases !== 1 ? 's' : ''}
               </p>
             )}
@@ -226,9 +226,9 @@ export function CloneTestCycleModal({
           {/* New Name Field */}
           <div style={{ marginBottom: 20 }}>
             <label style={{
-              display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6,
+              display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6,
             }}>
-              New Cycle Name <span style={{ color: '#EF4444' }}>*</span>
+              New Cycle Name <span style={{ color: 'var(--sem-danger)' }}>*</span>
             </label>
             <input
               type="text"
@@ -237,7 +237,7 @@ export function CloneTestCycleModal({
               placeholder="Enter name for the cloned cycle"
               style={{
                 width: '100%', height: 40, padding: '0 12px',
-                border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, color: '#0F172A',
+                border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)',
               }}
             />
           </div>
@@ -250,27 +250,27 @@ export function CloneTestCycleModal({
                 onClick={() => setIncludeTestCases(!includeTestCases)}
                 style={{
                   display: 'flex', alignItems: 'flex-start', gap: 12, padding: 16, width: '100%',
-                  backgroundColor: includeTestCases ? '#EFF6FF' : '#F8FAFC',
-                  border: `1.5px solid ${includeTestCases ? '#BFDBFE' : '#E2E8F0'}`,
+                  backgroundColor: includeTestCases ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--bg-1)',
+                  border: `1.5px solid ${includeTestCases ? 'color-mix(in srgb, var(--cp-blue) 25%, transparent)' : 'var(--divider)'}`,
                   borderRadius: 8, cursor: 'pointer', textAlign: 'left',
                 }}
               >
                 <div style={{ marginTop: 2 }}>
                   {includeTestCases ? (
-                    <CheckSquare size={20} style={{ color: '#2563EB' }} />
+                    <CheckSquare size={20} style={{ color: 'var(--cp-blue)' }} />
                   ) : (
-                    <Square size={20} style={{ color: '#94A3B8' }} />
+                    <Square size={20} style={{ color: 'var(--fg-4)' }} />
                   )}
                 </div>
                 <div>
                   <p style={{ 
                     fontSize: 14, fontWeight: 600, 
-                    color: includeTestCases ? '#1E40AF' : '#334155', margin: 0,
+                    color: includeTestCases ? 'var(--cp-primary-70)' : 'var(--fg-2)', margin: 0,
                   }}>
                     Include test cases
                   </p>
                   <p style={{ 
-                    fontSize: 13, color: includeTestCases ? '#3B82F6' : '#64748B', margin: '4px 0 0',
+                    fontSize: 13, color: includeTestCases ? 'var(--cp-blue)' : 'var(--fg-3)', margin: '4px 0 0',
                   }}>
                     Copy all {cycle.total_cases} test cases to the new cycle. 
                     Execution status will be reset to "Not Run".
@@ -282,10 +282,10 @@ export function CloneTestCycleModal({
 
           {/* Info Box */}
           <div style={{
-            padding: 12, backgroundColor: '#EFF6FF',
-            border: '1px solid #BFDBFE', borderRadius: 8,
+            padding: 12, backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--cp-blue) 25%, transparent)', borderRadius: 8,
           }}>
-            <p style={{ fontSize: 13, color: '#1E40AF', margin: 0 }}>
+            <p style={{ fontSize: 13, color: 'var(--cp-primary-70)', margin: 0 }}>
               The cloned cycle will be created in <strong>Draft</strong> status with a new cycle key.
             </p>
           </div>
@@ -293,16 +293,16 @@ export function CloneTestCycleModal({
 
         {/* Footer */}
         <div style={{
-          padding: '16px 24px', borderTop: '1px solid #E2E8F0',
+          padding: '16px 24px', borderTop: '1px solid var(--divider)',
           display: 'flex', justifyContent: 'flex-end', gap: 12,
         }}>
           <button
             onClick={onClose}
             disabled={isSubmitting}
             style={{
-              height: 40, padding: '0 20px', backgroundColor: '#FFFFFF',
-              border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14,
-              fontWeight: 500, color: '#334155', cursor: 'pointer',
+              height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)',
+              border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14,
+              fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
             }}
           >
             Cancel
@@ -314,7 +314,7 @@ export function CloneTestCycleModal({
               height: 40, padding: '0 20px',
               background: newName.trim()
                 ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
-                : '#94A3B8',
+                : 'var(--fg-4)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
               color: '#FFFFFF',
               cursor: newName.trim() ? 'pointer' : 'not-allowed',

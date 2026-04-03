@@ -131,7 +131,7 @@ export function QuickExecutionModal({
     const parts = text.split(/(\{[a-zA-Z_][a-zA-Z0-9_]*\})/g);
     return parts.map((part, i) =>
       part.match(/^\{[a-zA-Z_][a-zA-Z0-9_]*\}$/) ? (
-        <span key={i} style={{ color: '#2563EB', fontWeight: 600, backgroundColor: '#EFF6FF', padding: '1px 4px', borderRadius: 3, fontSize: 13 }}>{part}</span>
+        <span key={i} style={{ color: 'var(--cp-blue)', fontWeight: 600, backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', padding: '1px 4px', borderRadius: 3, fontSize: 13 }}>{part}</span>
       ) : (
         <span key={i}>{part}</span>
       )
@@ -144,33 +144,33 @@ export function QuickExecutionModal({
   if (!tc) return null;
 
   const priorityStyle = {
-    critical: { color: '#DC2626', bg: '#FEF2F2' },
+    critical: { color: 'var(--sem-danger)', bg: '#FEF2F2' },
     high:     { color: '#EA580C', bg: '#FFF7ED' },
-    medium:   { color: '#D97706', bg: '#FFFBEB' },
-    low:      { color: '#059669', bg: '#ECFDF5' },
-  }[tc.priority?.toLowerCase()] || { color: '#D97706', bg: '#FFFBEB' };
+    medium:   { color: 'var(--sem-warning)', bg: '#FFFBEB' },
+    low:      { color: 'var(--sem-success)', bg: '#ECFDF5' },
+  }[tc.priority?.toLowerCase()] || { color: 'var(--sem-warning)', bg: '#FFFBEB' };
 
   return (
     <div
       style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div style={{ width: 640, maxHeight: '85vh', backgroundColor: '#FFFFFF', borderRadius: 14, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ width: 640, maxHeight: '85vh', backgroundColor: 'var(--cp-float)', borderRadius: 14, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Header */}
-        <div style={{ padding: '18px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flex: 1, minWidth: 0 }}>
-            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <Play size={20} style={{ color: '#FFFFFF' }} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '3px 8px', borderRadius: 4 }}>{tc.case_key}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', padding: '3px 8px', borderRadius: 4 }}>{tc.case_key}</span>
                 <span style={{ fontSize: 11, fontWeight: 500, color: priorityStyle.color, backgroundColor: priorityStyle.bg, padding: '3px 8px', borderRadius: 4, textTransform: 'capitalize' as const }}>{tc.priority}</span>
               </div>
-              <h3 style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', margin: 0, lineHeight: 1.4 }}>{tc.title}</h3>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', margin: 0, lineHeight: 1.4 }}>{tc.title}</h3>
             </div>
           </div>
-          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <X size={20} />
           </button>
         </div>
@@ -179,8 +179,8 @@ export function QuickExecutionModal({
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
           {/* Description */}
           {tc.description && (
-            <div style={{ marginBottom: 20, padding: 14, backgroundColor: '#F8FAFC', borderRadius: 8, border: '1px solid #E2E8F0' }}>
-              <p style={{ fontSize: 14, color: '#334155', margin: 0, lineHeight: 1.6 }}>{highlightVars(tc.description)}</p>
+            <div style={{ marginBottom: 20, padding: 14, backgroundColor: 'var(--bg-1)', borderRadius: 8, border: '1px solid var(--divider)' }}>
+              <p style={{ fontSize: 14, color: 'var(--fg-2)', margin: 0, lineHeight: 1.6 }}>{highlightVars(tc.description)}</p>
             </div>
           )}
 
@@ -188,22 +188,22 @@ export function QuickExecutionModal({
           {steps.length > 0 && (
             <div style={{ marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <FileText size={16} style={{ color: '#64748B' }} />
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#334155' }}>Steps ({steps.length})</span>
+                <FileText size={16} style={{ color: 'var(--fg-3)' }} />
+                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-2)' }}>Steps ({steps.length})</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {steps.map((step, i) => (
-                  <div key={i} style={{ padding: '12px 14px', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8 }}>
+                  <div key={i} style={{ padding: '12px 14px', backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 8 }}>
                     <div style={{ display: 'flex', gap: 10 }}>
-                      <span style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: '#EFF6FF', color: '#2563EB', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', color: 'var(--cp-blue)', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         {step.step_number || i + 1}
                       </span>
                       <div style={{ flex: 1 }}>
-                        <p style={{ fontSize: 14, color: '#334155', margin: 0, lineHeight: 1.5 }}>{highlightVars(step.action)}</p>
+                        <p style={{ fontSize: 14, color: 'var(--fg-2)', margin: 0, lineHeight: 1.5 }}>{highlightVars(step.action)}</p>
                         {step.expected_result && (
                           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 8 }}>
-                            <ChevronRight size={14} style={{ color: '#059669', marginTop: 2, flexShrink: 0 }} />
-                            <p style={{ fontSize: 13, color: '#059669', margin: 0, lineHeight: 1.5 }}>{highlightVars(step.expected_result)}</p>
+                            <ChevronRight size={14} style={{ color: 'var(--sem-success)', marginTop: 2, flexShrink: 0 }} />
+                            <p style={{ fontSize: 13, color: 'var(--sem-success)', margin: 0, lineHeight: 1.5 }}>{highlightVars(step.expected_result)}</p>
                           </div>
                         )}
                       </div>
@@ -215,13 +215,13 @@ export function QuickExecutionModal({
           )}
 
           {loadingSteps && (
-            <p style={{ fontSize: 13, color: '#94A3B8', textAlign: 'center', padding: 16 }}>Loading steps...</p>
+            <p style={{ fontSize: 13, color: 'var(--fg-4)', textAlign: 'center', padding: 16 }}>Loading steps...</p>
           )}
 
           {/* Expected Result */}
           {tc.expected_result && (
             <div style={{ marginBottom: 20 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: '#334155', margin: '0 0 8px' }}>Expected Result</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-2)', margin: '0 0 8px' }}>Expected Result</p>
               <div style={{ padding: 14, backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: 8 }}>
                 <p style={{ fontSize: 14, color: '#065F46', margin: 0, lineHeight: 1.5 }}>{highlightVars(tc.expected_result)}</p>
               </div>
@@ -230,7 +230,7 @@ export function QuickExecutionModal({
 
           {/* Notes */}
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 6 }}>
               Execution Notes (optional)
             </label>
             <textarea
@@ -239,8 +239,8 @@ export function QuickExecutionModal({
               placeholder="Add any observations or notes..."
               rows={3}
               style={{
-                width: '100%', padding: 12, border: '1.5px solid #E2E8F0', borderRadius: 8,
-                fontSize: 14, color: '#334155', resize: 'vertical', fontFamily: 'inherit',
+                width: '100%', padding: 12, border: '1.5px solid var(--divider)', borderRadius: 8,
+                fontSize: 14, color: 'var(--fg-2)', resize: 'vertical', fontFamily: 'inherit',
                 boxSizing: 'border-box',
               }}
             />
@@ -248,23 +248,23 @@ export function QuickExecutionModal({
         </div>
 
         {/* Footer - Action Buttons */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', backgroundColor: '#F8FAFC' }}>
-          <p style={{ fontSize: 12, color: '#64748B', margin: '0 0 12px', textAlign: 'center' }}>Record the test result</p>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', backgroundColor: 'var(--bg-1)' }}>
+          <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '0 0 12px', textAlign: 'center' }}>Record the test result</p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
             <button onClick={() => handleExecute('passed')} disabled={isSubmitting}
-              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(16,185,129,0.3)' }}>
+              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)', color: 'var(--cp-float)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(16,185,129,0.3)' }}>
               <CheckCircle2 size={18} /> Pass
             </button>
             <button onClick={() => handleExecute('failed')} disabled={isSubmitting}
-              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(220,38,38,0.3)' }}>
+              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, var(--sem-danger) 0%, var(--sem-danger) 100%)', color: 'var(--cp-float)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(220,38,38,0.3)' }}>
               <XCircle size={18} /> Fail
             </button>
             <button onClick={() => handleExecute('blocked')} disabled={isSubmitting}
-              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(217,119,6,0.3)' }}>
+              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #F59E0B 0%, var(--sem-warning) 100%)', color: 'var(--cp-float)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(217,119,6,0.3)' }}>
               <AlertTriangle size={18} /> Blocked
             </button>
             <button onClick={() => handleExecute('skipped')} disabled={isSubmitting}
-              style={{ height: 44, padding: '0 20px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#64748B', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+              style={{ height: 44, padding: '0 20px', border: '1.5px solid var(--divider)', borderRadius: 8, backgroundColor: 'var(--cp-float)', color: 'var(--fg-3)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
               <SkipForward size={18} /> Skip
             </button>
           </div>

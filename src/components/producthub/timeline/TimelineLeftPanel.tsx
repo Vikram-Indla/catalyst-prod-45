@@ -109,7 +109,7 @@ export const TimelineLeftPanel: React.FC<TimelineLeftPanelProps> = ({
             <button
               onClick={onAddNew}
               className="w-full flex items-center gap-2 px-4 h-10 text-[12px] font-medium transition-colors hover:bg-blue-50/60 group"
-              style={{ color: '#64748B' }}
+              style={{ color: 'var(--fg-3)' }}
             >
               <Plus className="w-3.5 h-3.5 group-hover:text-blue-600 transition-colors" />
               <span className="group-hover:text-blue-600 transition-colors">Add Initiative to Roadmap</span>

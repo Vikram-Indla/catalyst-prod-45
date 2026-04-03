@@ -75,8 +75,8 @@ export default function Resource360PageNew() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: "'Inter', sans-serif" }}>
         <div style={{ textAlign: 'center' }}>
           <p style={{ fontSize: 40, marginBottom: 8 }}>👤</p>
-          <p style={{ fontSize: 16, fontWeight: 600, color: '#374151' }}>No resource selected</p>
-          <p style={{ fontSize: 13, color: '#9CA3AF', marginTop: 4 }}>Select a team member to view their 360° workload</p>
+          <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-2)' }}>No resource selected</p>
+          <p style={{ fontSize: 13, color: 'var(--fg-4)', marginTop: 4 }}>Select a team member to view their 360° workload</p>
         </div>
       </div>
     );
@@ -86,15 +86,15 @@ export default function Resource360PageNew() {
   if (isInitialLoad) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: "'Inter', sans-serif" }}>
-        <div style={{ height: 66, display: 'flex', alignItems: 'center', gap: 14, padding: '0 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
-          <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#E2E8F0' }} />
+        <div style={{ height: 66, display: 'flex', alignItems: 'center', gap: 14, padding: '0 20px', background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)' }}>
+          <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--divider)' }} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{ width: 120, height: 14, borderRadius: 4, background: '#E2E8F0' }} />
-            <div style={{ width: 180, height: 10, borderRadius: 4, background: '#F1F5F9' }} />
+            <div style={{ width: 120, height: 14, borderRadius: 4, background: 'var(--divider)' }} />
+            <div style={{ width: 180, height: 10, borderRadius: 4, background: 'var(--bg-3)' }} />
           </div>
         </div>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC' }}>
-          <div style={{ textAlign: 'center', color: '#64748B', fontSize: 13 }}>Loading Resource 360°...</div>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-1)' }}>
+          <div style={{ textAlign: 'center', color: 'var(--fg-3)', fontSize: 13 }}>Loading Resource 360°...</div>
         </div>
       </div>
     );
@@ -109,7 +109,7 @@ export default function Resource360PageNew() {
       <div ref={viewTabsRef} id="r360-view-tabs" style={{
         display: 'flex', alignItems: 'center', gap: 0,
         padding: '0 20px', height: 40, flexShrink: 0,
-        background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+        background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)',
       }}>
         {VIEW_TABS.map(tab => {
           const active = activeView === tab.key;
@@ -120,9 +120,9 @@ export default function Resource360PageNew() {
               style={{
                 padding: '0 12px', height: 40, fontSize: 13,
                 fontWeight: active ? 700 : 500,
-                color: active ? '#2563EB' : '#64748B',
+                color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
                 background: 'transparent', border: 'none',
-                borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
+                borderBottom: active ? '2px solid var(--cp-blue)' : '2px solid transparent',
                 cursor: 'pointer', fontFamily: "'Inter', sans-serif",
               }}
             >{tab.label}</button>
@@ -132,9 +132,9 @@ export default function Resource360PageNew() {
 
         {/* Quarter select */}
         <select style={{
-          height: 28, fontSize: 12, border: '1px solid #E2E8F0',
+          height: 28, fontSize: 12, border: '1px solid var(--divider)',
           borderRadius: 6, padding: '0 8px', marginRight: 8,
-          background: '#FFFFFF', color: '#0F172A',
+          background: 'var(--bg-app)', color: 'var(--fg-1)',
           fontFamily: "'Inter', sans-serif", cursor: 'pointer',
         }}>
           <option>Q1-2026</option>
@@ -146,7 +146,7 @@ export default function Resource360PageNew() {
         <button
           onClick={() => setAIOpen(true)}
           style={{
-            background: '#2563EB',
+            background: 'var(--cp-blue)',
             color: '#FFFFFF', border: 'none', borderRadius: 20,
             padding: '0 16px', height: 32, fontSize: 12, fontWeight: 600,
             letterSpacing: '0.3px', cursor: 'pointer',

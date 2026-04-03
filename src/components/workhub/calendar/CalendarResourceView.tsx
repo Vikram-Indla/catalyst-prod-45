@@ -41,7 +41,7 @@ export function CalendarResourceView({ year, month, events, isLoading, onDateCli
 
   if (workItems.length === 0) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', color: 'var(--wh-text-tertiary)', fontFamily: 'var(--wh-font-sans)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', color: 'var(--fg-4)', fontFamily: 'var(--wh-font-sans)' }}>
         <Users style={{ width: 48, height: 48, marginBottom: 16 }} />
         <p style={{ fontSize: 14, margin: 0 }}>No work items due in {getMonthName(month)} {year}</p>
       </div>
@@ -70,7 +70,7 @@ export function CalendarResourceView({ year, month, events, isLoading, onDateCli
           </div>
         ))}
         {extra > 0 && (
-          <span style={{ fontSize: 10, color: 'var(--wh-text-secondary)', fontFamily: 'var(--wh-font-sans)', lineHeight: '20px', fontWeight: 600 }}>
+          <span style={{ fontSize: 10, color: 'var(--fg-3)', fontFamily: 'var(--wh-font-sans)', lineHeight: '20px', fontWeight: 600 }}>
             +{extra}
           </span>
         )}
@@ -104,18 +104,18 @@ export function CalendarResourceView({ year, month, events, isLoading, onDateCli
                 gap: 6,
                 padding: '4px 8px',
                 borderRadius: 'var(--wh-radius-full)',
-                border: isActive ? '2px solid var(--wh-primary)' : '2px solid transparent',
+                border: isActive ? '2px solid var(--cp-blue)' : '2px solid transparent',
                 background: 'none',
                 cursor: 'pointer',
                 opacity: isFiltering && !isActive ? 0.5 : 1,
-                transition: 'all var(--wh-transition-fast)',
+                transition: 'all 150ms',
                 outline: 'none',
               }}
               onFocus={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = 'var(--wh-shadow-focus)'; }}
               onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = ''; }}
             >
               <AvatarChip name={m.name} color={m.color} size={24} />
-              <span style={{ fontSize: 12, color: 'var(--wh-text-secondary)' }}>{m.name}</span>
+              <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{m.name}</span>
             </button>
           );
         })}
@@ -125,7 +125,7 @@ export function CalendarResourceView({ year, month, events, isLoading, onDateCli
             onClick={() => setFilterAssignee(null)}
             style={{
               fontSize: 12,
-              color: 'var(--wh-primary)',
+              color: 'var(--cp-blue)',
               background: 'none',
               border: 'none',
               cursor: 'pointer',

@@ -21,7 +21,7 @@ const FIELD_OPTIONS = [
   { value: 'project_key', label: 'Project' },
   { value: 'due_date', label: 'Due Date' },
   { value: 'story_points', label: 'Story Points' },
-  { value: 'sprint_name', label: 'Sprint' },
+  { value: 'sprint_name', label: 'Release' },
   { value: 'resolution', label: 'Resolution' },
   { value: 'status_category', label: 'Status Category' },
 ];
@@ -93,12 +93,12 @@ export function AdvancedFilterPanel({
   const selectStyle: React.CSSProperties = {
     height: 36,
     borderRadius: 'var(--wh-radius-md, 8px)',
-    border: '1px solid var(--wh-border, #e2e8f0)',
+    border: '1px solid var(--divider)',
     padding: '0 10px',
     fontSize: 13,
     fontFamily: 'Inter, system-ui, sans-serif',
-    color: 'var(--wh-text-primary, #0f172a)',
-    backgroundColor: 'var(--wh-surface, #fff)',
+    color: 'var(--fg-1)',
+    backgroundColor: 'var(--cp-float)',
     minWidth: 140,
     outline: 'none',
   };
@@ -107,8 +107,8 @@ export function AdvancedFilterPanel({
     <div
       className="mb-3 animate-in slide-in-from-top-2 duration-200"
       style={{
-        background: 'var(--wh-surface, #fff)',
-        border: '1px solid var(--wh-border, #e2e8f0)',
+        background: 'var(--cp-float)',
+        border: '1px solid var(--divider)',
         borderRadius: 'var(--wh-radius-lg, 12px)',
         padding: 16,
       }}
@@ -116,13 +116,13 @@ export function AdvancedFilterPanel({
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="w-4 h-4" style={{ color: 'var(--wh-primary, #2563eb)' }} />
-          <span className="text-sm font-semibold" style={{ color: 'var(--wh-text-primary, #0f172a)', fontFamily: 'Inter, system-ui, sans-serif' }}>
+          <SlidersHorizontal className="w-4 h-4" style={{ color: 'var(--cp-blue)' }} />
+          <span className="text-sm font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'Inter, system-ui, sans-serif' }}>
             Advanced Filters
           </span>
         </div>
         <button onClick={onClose} className="p-1 rounded-md hover:bg-slate-100 transition-colors">
-          <X className="w-4 h-4" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }} />
+          <X className="w-4 h-4" style={{ color: 'var(--fg-4)' }} />
         </button>
       </div>
 
@@ -138,7 +138,7 @@ export function AdvancedFilterPanel({
           return (
             <div key={cond.id} className="flex items-center gap-2 flex-wrap">
               {/* Conjunction */}
-              <span className="text-xs font-semibold w-12 shrink-0 text-right" style={{ color: 'var(--wh-text-tertiary, #94a3b8)', textTransform: 'uppercase' }}>
+              <span className="text-xs font-semibold w-12 shrink-0 text-right" style={{ color: 'var(--fg-4)', textTransform: 'uppercase' }}>
                 {idx === 0 ? 'Where' : matchMode === 'and' ? 'AND' : 'OR'}
               </span>
 
@@ -177,7 +177,7 @@ export function AdvancedFilterPanel({
               {/* Remove */}
               <button onClick={() => removeCondition(cond.id)}
                 className="p-1.5 rounded-md hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/30">
-                <X className="w-3.5 h-3.5" style={{ color: '#ef4444' }} />
+                <X className="w-3.5 h-3.5" style={{ color: 'var(--sem-danger)' }} />
               </button>
             </div>
           );
@@ -187,33 +187,33 @@ export function AdvancedFilterPanel({
       {/* Add condition */}
       <button onClick={addCondition} disabled={conditions.length >= 8}
         className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border hover:bg-slate-50 transition-colors disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-        style={{ borderColor: 'var(--wh-border, #e2e8f0)', color: 'var(--wh-primary, #2563eb)' }}>
+        style={{ borderColor: 'var(--divider)', color: 'var(--cp-blue)' }}>
         <Plus className="w-3 h-3" /> Add Condition
       </button>
 
       {/* Match mode + actions */}
-      <div className="flex items-center justify-between mt-4 pt-3" style={{ borderTop: '1px solid var(--wh-border-light, #f1f5f9)' }}>
+      <div className="flex items-center justify-between mt-4 pt-3" style={{ borderTop: '1px solid var(--bg-1)' }}>
         <div className="flex items-center gap-4">
-          <span className="text-xs font-medium" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>Match:</span>
+          <span className="text-xs font-medium" style={{ color: 'var(--fg-3)' }}>Match:</span>
           <label className="flex items-center gap-1.5 text-xs cursor-pointer">
             <input type="radio" checked={matchMode === 'and'} onChange={() => onMatchModeChange('and')} className="accent-blue-600" />
-            <span style={{ color: 'var(--wh-text-primary, #0f172a)' }}>All conditions (AND)</span>
+            <span style={{ color: 'var(--fg-1)' }}>All conditions (AND)</span>
           </label>
           <label className="flex items-center gap-1.5 text-xs cursor-pointer">
             <input type="radio" checked={matchMode === 'or'} onChange={() => onMatchModeChange('or')} className="accent-blue-600" />
-            <span style={{ color: 'var(--wh-text-primary, #0f172a)' }}>Any condition (OR)</span>
+            <span style={{ color: 'var(--fg-1)' }}>Any condition (OR)</span>
           </label>
         </div>
 
         <div className="flex items-center gap-2">
           <button onClick={onReset}
             className="px-3 py-1.5 text-xs font-medium rounded-md border hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            style={{ borderColor: 'var(--wh-border, #e2e8f0)', color: 'var(--wh-text-secondary, #64748b)' }}>
+            style={{ borderColor: 'var(--divider)', color: 'var(--fg-3)' }}>
             Reset
           </button>
           <button onClick={onApply}
             className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            style={{ backgroundColor: 'var(--wh-primary, #2563eb)', color: '#fff' }}>
+            style={{ backgroundColor: 'var(--cp-blue)', color: 'var(--bg-app)' }}>
             Apply {conditions.length > 0 ? `${conditions.length} Condition${conditions.length > 1 ? 's' : ''}` : ''}
           </button>
         </div>

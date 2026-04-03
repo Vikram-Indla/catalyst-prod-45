@@ -98,7 +98,7 @@ export function UserSelect({
         {value && displayName ? (
           <div className="flex items-center gap-2">
             <Avatar className="w-5 h-5">
-              <AvatarFallback className="bg-[hsl(var(--secondary-bronze))] text-white text-[10px] font-semibold">
+              <AvatarFallback className="bg-[var(--secondary-bronze)] text-white text-[10px] font-semibold">
                 {getInitials(displayName)}
               </AvatarFallback>
             </Avatar>
@@ -118,7 +118,7 @@ export function UserSelect({
           <SelectItem key={user.id} value={getItemValue(user)}>
             <div className="flex items-center gap-2">
               <Avatar className="w-5 h-5">
-                <AvatarFallback className="bg-[hsl(var(--secondary-bronze))] text-white text-[10px] font-semibold">
+                <AvatarFallback className="bg-[var(--secondary-bronze)] text-white text-[10px] font-semibold">
                   {getInitials(user.full_name || user.email)}
                 </AvatarFallback>
               </Avatar>

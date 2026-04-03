@@ -285,7 +285,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
             <Switch 
               checked={data.ea_review_required ?? false}
               onCheckedChange={(checked) => handleChange('ea_review_required', checked)}
-              className="data-[state=checked]:bg-[hsl(var(--secondary-olive))]"
+              className="data-[state=checked]:bg-[var(--secondary-olive)]"
             />
             <span className="text-sm text-gray-600">
               {data.ea_review_required ? 'Yes' : 'No'}
@@ -301,7 +301,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
           {reporterName ? (
             <div className="h-9 px-3 rounded-md border flex items-center gap-2" style={{ borderColor: 'var(--divider)' }}>
               <Avatar className="w-5 h-5">
-                <AvatarFallback className="bg-[hsl(var(--secondary-bronze))] text-white text-[10px] font-semibold">
+                <AvatarFallback className="bg-[var(--secondary-bronze)] text-white text-[10px] font-semibold">
                   {reporterName?.split(' ').map(n => n[0]).join('').slice(0, 2) || '?'}
                 </AvatarFallback>
               </Avatar>
@@ -324,9 +324,9 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
         <div>
           <FieldLabel>Business Owner</FieldLabel>
           {businessOwnerName ? (
-            <div className="h-9 px-3 rounded-md border flex items-center gap-2" style={{ borderColor: 'var(--divider)', backgroundColor: 'hsl(var(--secondary-bronze) / 0.08)' }}>
+            <div className="h-9 px-3 rounded-md border flex items-center gap-2" style={{ borderColor: 'var(--divider)', backgroundColor: 'color-mix(in srgb, var(--secondary-bronze) 8%, transparent)' }}>
               <Avatar className="w-5 h-5">
-                <AvatarFallback className="bg-[hsl(var(--secondary-bronze))] text-white text-[10px] font-semibold">
+                <AvatarFallback className="bg-[var(--secondary-bronze)] text-white text-[10px] font-semibold">
                   {businessOwnerName?.split(' ').map(n => n[0]).join('').slice(0, 2) || '?'}
                 </AvatarFallback>
               </Avatar>

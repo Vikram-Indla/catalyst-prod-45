@@ -182,21 +182,21 @@ export const SkillGapAnalysis: React.FC = () => {
 
         <div className="overflow-x-auto">
           <table className="w-full border-separate border-spacing-0">
-            <thead style={{ background: 'hsl(35 46% 97%)' }}>
-              <tr style={{ background: 'hsl(35 46% 97%)' }}>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>
+            <thead style={{ background: '#F8F6F3' }}>
+              <tr style={{ background: '#F8F6F3' }}>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: '#F8F6F3' }}>
                   Skill
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: '#F8F6F3' }}>
                   Gap Severity
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: '#F8F6F3' }}>
                   Required For
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: '#F8F6F3' }}>
                   Current Coverage
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: '#F8F6F3' }}>
                   Recommendation
                 </th>
               </tr>

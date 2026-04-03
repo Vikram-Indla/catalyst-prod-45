@@ -154,18 +154,18 @@ export function WorkItemsTable({
   const themeMap = useMemo(() => {
     if (!themes) return new Map<string, { name: string; color: string }>();
     const m = new Map<string, { name: string; color: string }>();
-    themes.forEach(t => m.set(t.id, { name: t.name, color: t.color || '#94a3b8' }));
+    themes.forEach(t => m.set(t.id, { name: t.name, color: t.color || 'var(--fg-4)' }));
     return m;
   }, [themes]);
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: 'var(--wh-surface, #fff)' }}>
+      <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--cp-float)' }}>
         {Array.from({ length: 10 }).map((_, i) => (
           <div
             key={i}
             className="grid items-center px-4 border-b animate-pulse"
-            style={{ gridTemplateColumns: GRID_COLS, height: ROW_HEIGHT, borderColor: '#f1f5f9' }}
+            style={{ gridTemplateColumns: GRID_COLS, height: ROW_HEIGHT, borderColor: 'var(--bg-1)' }}
           >
             {Array.from({ length: 9 }).map((_, j) => (
               <div key={j} className="h-3 bg-slate-100 rounded" style={{ width: `${40 + Math.random() * 50}%` }} />
@@ -178,12 +178,12 @@ export function WorkItemsTable({
 
   if (error) {
     return (
-      <div className="rounded-xl border p-12 text-center" style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: 'var(--wh-surface, #fff)' }}>
-        <AlertCircle className="w-8 h-8 mx-auto mb-3" style={{ color: '#dc2626' }} />
-        <p className="text-sm font-medium mb-2" style={{ color: 'var(--wh-text-primary, #0f172a)' }}>Failed to load work items</p>
-        <p className="text-xs mb-4" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>{error.message}</p>
+      <div className="rounded-xl border p-12 text-center" style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--cp-float)' }}>
+        <AlertCircle className="w-8 h-8 mx-auto mb-3" style={{ color: 'var(--sem-danger)' }} />
+        <p className="text-sm font-medium mb-2" style={{ color: 'var(--fg-1)' }}>Failed to load work items</p>
+        <p className="text-xs mb-4" style={{ color: 'var(--fg-4)' }}>{error.message}</p>
         {onRetry && (
-          <button onClick={onRetry} className="px-4 py-1.5 text-xs font-medium rounded-lg text-white" style={{ backgroundColor: 'var(--wh-primary, #2563eb)' }}>
+          <button onClick={onRetry} className="px-4 py-1.5 text-xs font-medium rounded-lg text-white" style={{ backgroundColor: 'var(--cp-blue)' }}>
             Retry
           </button>
         )}
@@ -193,16 +193,16 @@ export function WorkItemsTable({
 
   if (!items.length) {
     return (
-      <div className="rounded-xl border p-12 text-center" style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: 'var(--wh-surface, #fff)' }}>
-        <FileStack className="w-8 h-8 mx-auto mb-3" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }} />
-        <p className="text-sm font-medium mb-1" style={{ color: 'var(--wh-text-primary, #0f172a)' }}>No work items found</p>
-        <p className="text-xs" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>Try adjusting your filters or run a Jira sync</p>
+      <div className="rounded-xl border p-12 text-center" style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--cp-float)' }}>
+        <FileStack className="w-8 h-8 mx-auto mb-3" style={{ color: 'var(--fg-4)' }} />
+        <p className="text-sm font-medium mb-1" style={{ color: 'var(--fg-1)' }}>No work items found</p>
+        <p className="text-xs" style={{ color: 'var(--fg-4)' }}>Try adjusting your filters or run a Jira sync</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border overflow-x-auto" style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: 'var(--wh-surface, #fff)', height: fillHeight ? '100%' : 'auto', display: fillHeight ? 'flex' : 'block', flexDirection: 'column' }}>
+    <div className="rounded-xl border overflow-x-auto" style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--cp-float)', height: fillHeight ? '100%' : 'auto', display: fillHeight ? 'flex' : 'block', flexDirection: 'column' }}>
       <div style={{ minWidth: MIN_TABLE_WIDTH, flex: fillHeight ? 1 : undefined, display: fillHeight ? 'flex' : 'block', flexDirection: 'column' }}>
         {/* Header */}
         <div
@@ -210,8 +210,8 @@ export function WorkItemsTable({
           style={{
             gridTemplateColumns: GRID_COLS,
             height: '36px',
-            backgroundColor: '#f8fafc',
-            borderColor: 'var(--wh-border, #e2e8f0)',
+            backgroundColor: 'var(--bg-1)',
+            borderColor: 'var(--divider)',
             zIndex: 10,
           }}
         >
@@ -222,11 +222,11 @@ export function WorkItemsTable({
               ref={el => { if (el) el.indeterminate = selectAllState === 'some'; }}
               onChange={onSelectAll}
               className="w-4 h-4 rounded cursor-pointer"
-              style={{ accentColor: 'var(--wh-primary, #2563eb)' }}
+              style={{ accentColor: 'var(--cp-blue)' }}
             />
           </div>
           {HEADER_COLS.map(col => (
-            <span key={col} className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+            <span key={col} className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--fg-4)' }}>
               {col}
             </span>
           ))}

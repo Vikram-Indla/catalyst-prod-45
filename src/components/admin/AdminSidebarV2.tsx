@@ -293,8 +293,8 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
             <div 
               className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                color: '#ffffff',
+                background: 'linear-gradient(135deg, var(--cp-blue) 0%, #1d4ed8 100%)',
+                color: 'var(--bg-app)',
                 fontSize: '10px',
                 fontWeight: 600,
                 letterSpacing: '0.02em',
@@ -428,7 +428,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                               top: '6px',
                               bottom: '6px',
                               width: '3px',
-                              background: 'var(--nav-accent-bar, #2563eb)',
+                              background: 'var(--nav-accent-bar, var(--cp-blue))',
                               borderRadius: '0 2px 2px 0',
                             }}
                           />
@@ -465,7 +465,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                           top: '4px',
                           bottom: '4px',
                           width: '3px',
-                          background: 'var(--nav-accent-bar, #2563eb)',
+                          background: 'var(--nav-accent-bar, var(--cp-blue))',
                           borderRadius: '0 2px 2px 0',
                         }}
                       />
@@ -476,7 +476,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                         width: '17px', 
                         height: '17px', 
                         strokeWidth: 1.4,
-                        color: active ? '#2563EB' : 'var(--nav-text-secondary, #3F3F46)',
+                        color: active ? 'var(--cp-blue)' : 'var(--nav-text-secondary)',
                       }} 
                     />
                     <span className="truncate">{pocket.label}</span>
@@ -509,7 +509,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                             top: '4px',
                             bottom: '4px',
                             width: '3px',
-                            background: 'var(--nav-accent-bar, #2563eb)',
+                            background: 'var(--nav-accent-bar, var(--cp-blue))',
                             borderRadius: '0 2px 2px 0',
                           }}
                         />
@@ -520,7 +520,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                           width: '17px', 
                           height: '17px', 
                           strokeWidth: 1.4,
-                          color: active ? '#2563EB' : 'var(--nav-text-secondary, #3F3F46)',
+                          color: active ? 'var(--cp-blue)' : 'var(--nav-text-secondary)',
                         }} 
                       />
                       <span className="truncate flex-1 text-left">{pocket.label}</span>
@@ -556,7 +556,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                                 top: '4px',
                                 bottom: '4px',
                                 width: '3px',
-                                background: 'var(--nav-accent-bar, #2563eb)',
+                                background: 'var(--nav-accent-bar, var(--cp-blue))',
                                 borderRadius: '0 2px 2px 0',
                               }}
                             />

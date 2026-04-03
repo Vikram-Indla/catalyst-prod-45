@@ -35,8 +35,8 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
       onClick={onClick}
       className="wh-theme-card"
       style={{
-        background: 'var(--wh-surface, #fff)',
-        border: '1px solid var(--wh-border, #e2e8f0)',
+        background: 'var(--cp-float)',
+        border: '1px solid var(--divider)',
         borderRadius: 'var(--wh-radius-xl, 12px)',
         borderTop: `3px solid ${theme.color}`,
         padding: 24,
@@ -69,7 +69,7 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
       <div style={{
         fontFamily: 'var(--wh-font-sans, Inter, sans-serif)',
         fontSize: 16, fontWeight: 600,
-        color: 'var(--wh-text-primary, #0f172a)',
+        color: 'var(--fg-1)',
       }}>
         {theme.name}
       </div>
@@ -77,7 +77,7 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
       {/* Description */}
       {theme.description && (
         <div style={{
-          fontSize: 12, color: 'var(--wh-text-secondary, #64748b)',
+          fontSize: 12, color: 'var(--fg-3)',
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
           overflow: 'hidden', lineHeight: '1.5',
         }}>
@@ -86,16 +86,16 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
       )}
 
       {/* Item breakdown */}
-      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--wh-text-secondary, #64748b)', display: 'flex', gap: 8, alignItems: 'center' }}>
+      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)', display: 'flex', gap: 8, alignItems: 'center' }}>
         {hasItems || theme.epic_count > 0 || theme.story_count > 0 || theme.subtask_count > 0 ? (
           <>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#2563eb' }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-blue)' }} />
               E {theme.epic_count}
             </span>
             <span style={{ color: '#cbd5e1' }}>·</span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16a34a' }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--sem-success)' }} />
               S {theme.story_count}
             </span>
             <span style={{ color: '#cbd5e1' }}>·</span>
@@ -105,12 +105,12 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
             </span>
           </>
         ) : (
-          <span style={{ fontStyle: 'italic', color: 'var(--wh-text-tertiary, #94a3b8)' }}>No items</span>
+          <span style={{ fontStyle: 'italic', color: 'var(--fg-4)' }}>No items</span>
         )}
       </div>
 
       {/* Date range */}
-      <div style={{ fontSize: 12, color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+      <div style={{ fontSize: 12, color: 'var(--fg-4)' }}>
         {dateRange || <span style={{ fontStyle: 'italic' }}>No dates set</span>}
       </div>
 
@@ -119,7 +119,7 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
         <div style={{ width: '100%' }}>
           <div style={{
             height: 4, borderRadius: 9999, overflow: 'hidden',
-            background: 'var(--wh-border-light, #f1f5f9)',
+            background: 'var(--bg-1)',
           }}>
             <div style={{
               height: '100%', borderRadius: 9999,
@@ -128,7 +128,7 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
               transition: 'width 400ms ease',
             }} />
           </div>
-          <div style={{ fontSize: 11, color: 'var(--wh-text-tertiary, #94a3b8)', marginTop: 4, textAlign: 'right' }}>
+          <div style={{ fontSize: 11, color: 'var(--fg-4)', marginTop: 4, textAlign: 'right' }}>
             {theme.done_items}/{theme.total_items} done
           </div>
         </div>

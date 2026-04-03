@@ -112,6 +112,9 @@ export interface ProjectListItem {
   member_count: number;
   member_ids: string[] | null;
   last_synced_at: string | null;
+  lead_id: string | null;
+  lead_name: string | null;
+  lead_avatar_url: string | null;
 }
 
 // get_project_team RPC row shape
@@ -155,4 +158,6 @@ export interface CreateProjectInput {
   department?: string;
   description?: string;
   status_category?: string;
+  lead_id?: string;
+  jira_key?: string;
 }

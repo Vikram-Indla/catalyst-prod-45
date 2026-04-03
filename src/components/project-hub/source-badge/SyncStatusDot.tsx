@@ -51,16 +51,16 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
       break;
     case 'stale':
       label = relativeTime(lastSyncedAt);
-      labelColor = '#D97706';
+      labelColor = 'var(--sem-warning)';
       break;
     case 'conflict':
       label = 'Conflict';
-      labelColor = '#DC2626';
+      labelColor = 'var(--sem-danger)';
       fontWeight = 500;
       break;
     case 'syncing':
       label = 'Syncing…';
-      labelColor = '#2563EB';
+      labelColor = 'var(--cp-blue)';
       break;
     default:
       label = 'Pending';
@@ -101,7 +101,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
             side="top"
             sideOffset={4}
             style={{
-              background: '#0F172A',
+              background: 'var(--fg-1)',
               color: '#FFFFFF',
               padding: '4px 8px',
               borderRadius: 4,
@@ -112,7 +112,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
             }}
           >
             {exactDateTime(lastSyncedAt)}
-            <Tooltip.Arrow style={{ fill: '#0F172A' }} />
+            <Tooltip.Arrow style={{ fill: 'var(--fg-1)' }} />
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>

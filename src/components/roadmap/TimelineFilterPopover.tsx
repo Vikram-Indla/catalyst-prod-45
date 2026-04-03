@@ -182,7 +182,7 @@ export function TimelineFilterPopover({
                   className={cn(
                     "px-4 py-2 text-sm rounded-lg border transition-colors",
                     draft.selectedYears.includes(year)
-                      ? "bg-[hsl(var(--brand-primary))] text-white border-[hsl(var(--brand-primary))]"
+                      ? "bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]"
                       : "bg-background border-border hover:bg-muted text-foreground"
                   )}
                   onClick={() => toggleYear(year)}
@@ -204,7 +204,7 @@ export function TimelineFilterPopover({
                   "text-sm transition-colors",
                   allQuartersSelected 
                     ? "text-muted-foreground" 
-                    : "text-[hsl(var(--brand-primary))] hover:underline"
+                    : "text-[var(--brand-primary)] hover:underline"
                 )}
                 onClick={selectAllQuarters}
               >
@@ -218,7 +218,7 @@ export function TimelineFilterPopover({
                   className={cn(
                     "flex-1 px-4 py-2 text-sm rounded-lg border transition-colors",
                     draft.selectedQuarters.includes(quarter)
-                      ? "bg-[hsl(var(--brand-primary))] text-white border-[hsl(var(--brand-primary))]"
+                      ? "bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]"
                       : "bg-background border-border hover:bg-muted text-foreground"
                   )}
                   onClick={() => toggleQuarter(quarter)}
@@ -249,7 +249,7 @@ export function TimelineFilterPopover({
               className={cn(
                 "flex-1 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors",
                 draft.selectedYears.length > 0
-                  ? "bg-[hsl(var(--secondary-olive))] text-white hover:bg-[hsl(var(--secondary-olive)/0.9)]"
+                  ? "bg-[var(--secondary-olive)] text-white hover:bg-[color-mix(in srgb, var(--secondary-olive) 90%, transparent)]"
                   : "bg-muted text-muted-foreground cursor-not-allowed"
               )}
               onClick={handleApply}

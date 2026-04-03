@@ -211,3 +211,82 @@ export const useCommandCenterKPIs = () =>
 
 export const useCommandCenterMappings = () =>
   useQuery({ queryKey: KEYS.commandCenter, queryFn: commandCenterService.getMappings, staleTime: 30_000 });
+
+// ── Freeze Windows ───────────────────────────────────────────────
+export function useFreezeWindows() {
+  return useQuery({
+    queryKey: ['release-hub', 'freeze-windows'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('rh_freeze_windows')
+        .select('*')
+        .order('start_date', { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
+export function useCreateFreezeWindow() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: {
+      name: string;
+      start_date: string;
+      end_date: string;
+      reason?: string;
+    }) => {
+      const { data, error } = await supabase
+        .from('rh_freeze_windows')
+        .insert(payload)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['release-hub', 'freeze-windows'] });
+    },
+  });
+}
+
+export function useDeleteFreezeWindow() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('rh_freeze_windows')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['release-hub', 'freeze-windows'] });
+    },
+  });
+}
+
+export function useUnlinkTestCycle() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      releaseId,
+      testCycleId,
+    }: {
+      releaseId: string;
+      testCycleId: string;
+    }) => {
+      const { error } = await supabase
+        .from('rh_release_test_cycle_links')
+        .delete()
+        .eq('release_id', releaseId)
+        .eq('test_cycle_id', testCycleId);
+      if (error) throw error;
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({
+        queryKey: ['release-hub', 'test-cycles', vars.releaseId],
+      });
+    },
+  });
+}

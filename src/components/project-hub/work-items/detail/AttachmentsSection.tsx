@@ -120,10 +120,10 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
             <div
               key={att.id}
               className="relative group rounded overflow-hidden"
-              style={{ width: 140, border: '1px solid #E2E8F0' }}
+              style={{ width: 140, border: '1px solid var(--divider)' }}
             >
               {/* Preview */}
-              <div className="h-[90px] flex items-center justify-center" style={{ background: '#F8FAFC' }}>
+              <div className="h-[90px] flex items-center justify-center" style={{ background: 'var(--bg-1)' }}>
                 {isImage(att.mime_type) ? (
                   <img
                     src={getPublicUrl(att.storage_path)}
@@ -144,8 +144,8 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
               </button>
               {/* Info */}
               <div className="px-2 py-1.5">
-                <div className="text-[11px] font-medium truncate" style={{ color: '#0F172A' }}>{att.file_name}</div>
-                <div className="text-[10px]" style={{ color: '#94A3B8' }}>{formatSize(att.file_size)}</div>
+                <div className="text-[11px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>{att.file_name}</div>
+                <div className="text-[10px]" style={{ color: 'var(--fg-4)' }}>{formatSize(att.file_size)}</div>
               </div>
             </div>
           ))}
@@ -156,8 +156,8 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
       <div
         className="relative rounded-md text-center cursor-pointer transition-colors"
         style={{
-          border: dragOver ? '2px dashed #2563EB' : '2px dashed #DFE1E6',
-          background: dragOver ? '#E9F2FF' : '#FAFBFC',
+          border: dragOver ? '2px dashed var(--cp-blue)' : '2px dashed var(--divider)',
+          background: dragOver ? 'var(--cp-blue-wash)' : 'var(--bg-1)',
           padding: '14px 12px',
         }}
         onDragOver={e => { e.preventDefault(); setDragOver(true); }}
@@ -169,8 +169,8 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
           <Loader2 size={18} className="animate-spin text-[#2563EB] mx-auto" />
         ) : (
           <>
-            <Upload size={16} className="mx-auto mb-1" style={{ color: '#94A3B8' }} />
-            <div className="text-[12px]" style={{ color: '#626F86' }}>Drop files or click to upload</div>
+            <Upload size={16} className="mx-auto mb-1" style={{ color: 'var(--fg-4)' }} />
+            <div className="text-[12px]" style={{ color: 'var(--fg-3)' }}>Drop files or click to upload</div>
           </>
         )}
         <input

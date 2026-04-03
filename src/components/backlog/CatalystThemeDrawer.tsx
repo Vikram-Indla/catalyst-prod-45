@@ -112,63 +112,63 @@ function normalizeProgress(value: number | null | undefined): { percent: number;
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; icon: React.ElementType }> = {
   proposed: {
     label: 'Draft',
-    bg: 'hsl(var(--muted))',
-    text: 'hsl(var(--muted-foreground))',
-    border: 'hsl(var(--border))',
+    bg: 'var(--bg-2)',
+    text: 'var(--fg-3)',
+    border: 'var(--divider)',
     icon: FileText,
   },
   draft: {
     label: 'Draft',
-    bg: 'hsl(var(--muted))',
-    text: 'hsl(var(--muted-foreground))',
-    border: 'hsl(var(--border))',
+    bg: 'var(--bg-2)',
+    text: 'var(--fg-3)',
+    border: 'var(--divider)',
     icon: FileText,
   },
   active: {
     label: 'Active',
-    bg: 'hsl(217 91% 60% / 0.12)',
-    text: 'hsl(var(--primary))',
-    border: 'hsl(217 91% 60% / 0.3)',
+    bg: 'rgba(59,130,246,0.12)',
+    text: 'var(--cp-blue)',
+    border: 'rgba(59,130,246,0.3)',
     icon: Sparkles,
   },
   approved: {
     label: 'Approved',
-    bg: 'hsl(173 58% 39% / 0.12)',
-    text: 'hsl(var(--success))',
-    border: 'hsl(173 58% 39% / 0.3)',
+    bg: 'rgba(38,166,154,0.12)',
+    text: 'var(--sem-success)',
+    border: 'rgba(38,166,154,0.3)',
     icon: CheckCircle2,
   },
   on_hold: {
     label: 'On Hold',
-    bg: 'hsl(38 92% 50% / 0.12)',
-    text: 'hsl(var(--warning))',
-    border: 'hsl(38 92% 50% / 0.3)',
+    bg: 'rgba(245,158,11,0.12)',
+    text: 'var(--sem-warning)',
+    border: 'rgba(245,158,11,0.3)',
     icon: Clock,
   },
   done: {
     label: 'Retired',
-    bg: 'hsl(var(--muted))',
-    text: 'hsl(var(--muted-foreground))',
-    border: 'hsl(var(--border))',
+    bg: 'var(--bg-2)',
+    text: 'var(--fg-3)',
+    border: 'var(--divider)',
     icon: FileText,
   },
   cancelled: {
     label: 'Cancelled',
-    bg: 'hsl(0 84% 60% / 0.12)',
-    text: 'hsl(var(--destructive))',
-    border: 'hsl(0 84% 60% / 0.3)',
+    bg: 'rgba(239,68,68,0.12)',
+    text: 'var(--sem-danger)',
+    border: 'rgba(239,68,68,0.3)',
     icon: AlertTriangle,
   },
 };
 
 // Epic states for breakdown
 const EPIC_STATES: Record<string, { label: string; color: string }> = {
-  funnel: { label: 'Funnel', color: 'hsl(var(--muted-foreground))' },
-  candidate: { label: 'Candidate', color: 'hsl(217 91% 60%)' },
-  analysis: { label: 'Analysis', color: 'hsl(38 92% 50%)' },
-  backlog: { label: 'Backlog', color: 'hsl(var(--primary))' },
-  implementing: { label: 'Implementing', color: 'hsl(var(--success))' },
-  done: { label: 'Done', color: 'hsl(var(--muted-foreground))' },
+  funnel: { label: 'Funnel', color: 'var(--fg-3)' },
+  candidate: { label: 'Candidate', color: '#3B82F6' },
+  analysis: { label: 'Analysis', color: '#F59E0B' },
+  backlog: { label: 'Backlog', color: 'var(--cp-blue)' },
+  implementing: { label: 'Implementing', color: 'var(--sem-success)' },
+  done: { label: 'Done', color: 'var(--fg-3)' },
 };
 
 // =============================================================================
@@ -178,19 +178,19 @@ const EPIC_STATES: Record<string, { label: string; color: string }> = {
 function PremiumProgressBar({ progress }: { progress: number }) {
   const getProgressColor = () => {
     if (progress === 0) return {
-      fill: 'hsl(var(--muted))',
+      fill: 'var(--bg-2)',
       glow: 'none',
-      text: 'hsl(var(--muted-foreground))'
+      text: 'var(--fg-3)'
     };
     if (progress === 100) return {
-      fill: 'linear-gradient(90deg, hsl(var(--success)) 0%, hsl(173 58% 45%) 100%)',
-      glow: '0 0 20px hsl(var(--success) / 0.4), 0 0 40px hsl(var(--success) / 0.2)',
-      text: 'hsl(var(--success))'
+      fill: 'linear-gradient(90deg, var(--sem-success) 0%, #2EB8A6 100%)',
+      glow: '0 0 20px color-mix(in srgb, var(--sem-success) 40%, transparent), 0 0 40px color-mix(in srgb, var(--sem-success) 20%, transparent)',
+      text: 'var(--sem-success)'
     };
     return {
-      fill: 'linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(217 91% 65%) 100%)',
-      glow: '0 0 16px hsl(var(--primary) / 0.3)',
-      text: 'hsl(var(--primary))'
+      fill: 'linear-gradient(90deg, var(--cp-blue) 0%, #5B9BF7 100%)',
+      glow: '0 0 16px color-mix(in srgb, var(--cp-blue) 30%, transparent)',
+      text: 'var(--cp-blue)'
     };
   };
 
@@ -200,8 +200,8 @@ function PremiumProgressBar({ progress }: { progress: number }) {
     <div 
       className="px-6 py-5"
       style={{ 
-        background: 'linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted) / 0.3) 100%)',
-        borderBottom: '1px solid hsl(var(--border))'
+        background: 'linear-gradient(180deg, var(--bg-app) 0%, color-mix(in srgb, var(--bg-2) 30%, transparent) 100%)',
+        borderBottom: '1px solid var(--divider)'
       }}
     >
       {/* Header Row */}
@@ -209,13 +209,13 @@ function PremiumProgressBar({ progress }: { progress: number }) {
         <div className="flex items-center gap-2">
           <div 
             className="p-1.5 rounded-lg"
-            style={{ background: 'hsl(var(--primary) / 0.1)' }}
+            style={{ background: 'color-mix(in srgb, var(--cp-blue) 10%, transparent)' }}
           >
-            <TrendingUp className="h-4 w-4" style={{ color: 'hsl(var(--primary))' }} />
+            <TrendingUp className="h-4 w-4" style={{ color: 'var(--cp-blue)' }} />
           </div>
           <span 
             className="text-sm font-semibold uppercase tracking-wide"
-            style={{ color: 'hsl(var(--foreground))' }}
+            style={{ color: 'var(--fg-1)' }}
           >
             Overall Progress
           </span>
@@ -230,7 +230,7 @@ function PremiumProgressBar({ progress }: { progress: number }) {
           </span>
           <button
             className="p-1.5 rounded-lg hover:bg-muted transition-colors"
-            style={{ color: 'hsl(var(--muted-foreground))' }}
+            style={{ color: 'var(--fg-3)' }}
             title="How is progress calculated?"
           >
             <HelpCircle className="h-4 w-4" />
@@ -242,7 +242,7 @@ function PremiumProgressBar({ progress }: { progress: number }) {
       <div 
         className="relative h-3 w-full rounded-full overflow-hidden"
         style={{ 
-          background: 'hsl(var(--muted))',
+          background: 'var(--bg-2)',
           boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
         }}
       >
@@ -279,7 +279,7 @@ function PremiumProgressBar({ progress }: { progress: number }) {
             className="absolute top-0 bottom-0 w-px"
             style={{ 
               left: `${marker}%`,
-              background: 'hsl(var(--border))',
+              background: 'var(--divider)',
               opacity: 0.5
             }}
           />
@@ -288,9 +288,9 @@ function PremiumProgressBar({ progress }: { progress: number }) {
       
       {/* Progress Labels */}
       <div className="flex justify-between mt-2">
-        <span className="text-[10px] font-medium" style={{ color: 'hsl(var(--muted-foreground))' }}>0%</span>
-        <span className="text-[10px] font-medium" style={{ color: 'hsl(var(--muted-foreground))' }}>50%</span>
-        <span className="text-[10px] font-medium" style={{ color: 'hsl(var(--muted-foreground))' }}>100%</span>
+        <span className="text-[10px] font-medium" style={{ color: 'var(--fg-3)' }}>0%</span>
+        <span className="text-[10px] font-medium" style={{ color: 'var(--fg-3)' }}>50%</span>
+        <span className="text-[10px] font-medium" style={{ color: 'var(--fg-3)' }}>100%</span>
       </div>
     </div>
   );
@@ -319,24 +319,24 @@ function KPICard({
 }) {
   const variantStyles = {
     default: {
-      iconBg: 'hsl(0 0% 92%)',
-      iconColor: 'hsl(0 0% 45%)',
-      valueColor: 'hsl(var(--foreground))',
+      iconBg: '#EBEBEB',
+      iconColor: '#737373',
+      valueColor: 'var(--fg-1)',
     },
     warning: {
-      iconBg: 'hsl(38 92% 50% / 0.15)',
-      iconColor: 'hsl(38 92% 45%)',
-      valueColor: 'hsl(38 92% 45%)',
+      iconBg: 'rgba(245,158,11,0.15)',
+      iconColor: '#D97706',
+      valueColor: '#D97706',
     },
     success: {
-      iconBg: 'hsl(173 58% 39% / 0.15)',
-      iconColor: 'hsl(173 58% 39%)',
-      valueColor: 'hsl(173 58% 39%)',
+      iconBg: 'rgba(38,166,154,0.15)',
+      iconColor: '#26A69A',
+      valueColor: '#26A69A',
     },
     info: {
-      iconBg: 'hsl(217 91% 60% / 0.15)',
-      iconColor: 'hsl(217 91% 55%)',
-      valueColor: 'hsl(217 91% 55%)',
+      iconBg: 'rgba(59,130,246,0.15)',
+      iconColor: '#2563EB',
+      valueColor: '#2563EB',
     },
   };
 
@@ -354,8 +354,8 @@ function KPICard({
         "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       )}
       style={{ 
-        background: 'hsl(var(--background))',
-        borderColor: 'hsl(var(--border))',
+        background: 'var(--bg-app)',
+        borderColor: 'var(--divider)',
         boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)'
       }}
     >
@@ -363,7 +363,7 @@ function KPICard({
       <div 
         className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
         style={{
-          background: 'linear-gradient(135deg, hsl(var(--primary) / 0.03) 0%, transparent 50%)'
+          background: 'linear-gradient(135deg, color-mix(in srgb, var(--cp-blue) 3%, transparent) 0%, transparent 50%)'
         }}
       />
       
@@ -378,7 +378,7 @@ function KPICard({
           </div>
           <span 
             className="text-[11px] font-semibold uppercase tracking-wider"
-            style={{ color: 'hsl(var(--muted-foreground))' }}
+            style={{ color: 'var(--fg-3)' }}
           >
             {label}
           </span>
@@ -386,7 +386,7 @@ function KPICard({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <AlertTriangle size={12} style={{ color: 'hsl(38 92% 50%)' }} />
+                  <AlertTriangle size={12} style={{ color: '#F59E0B' }} />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="text-xs">Rollup exceeds 100%</p>
@@ -408,7 +408,7 @@ function KPICard({
         {subtext && (
           <p 
             className="text-xs mt-2 leading-relaxed"
-            style={{ color: 'hsl(var(--muted-foreground))' }}
+            style={{ color: 'var(--fg-3)' }}
           >
             {subtext}
           </p>
@@ -418,7 +418,7 @@ function KPICard({
       {/* Hover indicator */}
       <div 
         className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-        style={{ background: 'hsl(var(--primary))' }}
+        style={{ background: 'var(--cp-blue)' }}
       />
     </button>
   );
@@ -449,8 +449,8 @@ function SectionCard({
     <div 
       className="rounded-2xl border overflow-hidden"
       style={{ 
-        background: 'hsl(var(--background))',
-        borderColor: 'hsl(var(--border))',
+        background: 'var(--bg-app)',
+        borderColor: 'var(--divider)',
         boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)'
       }}
     >
@@ -461,19 +461,19 @@ function SectionCard({
         <div className="flex items-center gap-3">
           <div 
             className="p-2 rounded-xl"
-            style={{ background: 'hsl(var(--primary) / 0.1)' }}
+            style={{ background: 'color-mix(in srgb, var(--cp-blue) 10%, transparent)' }}
           >
-            <Icon className="h-4 w-4" style={{ color: 'hsl(var(--primary))' }} />
+            <Icon className="h-4 w-4" style={{ color: 'var(--cp-blue)' }} />
           </div>
-          <span className="text-sm font-semibold" style={{ color: 'hsl(var(--foreground))' }}>
+          <span className="text-sm font-semibold" style={{ color: 'var(--fg-1)' }}>
             {title}
           </span>
           {badge !== undefined && badge > 0 && (
             <span 
               className="text-[10px] font-bold px-1.5 py-0.5 rounded-md min-w-[20px] text-center"
               style={{ 
-                background: 'hsl(var(--muted))',
-                color: 'hsl(var(--muted-foreground))'
+                background: 'var(--bg-2)',
+                color: 'var(--fg-3)'
               }}
             >
               {badge}
@@ -485,7 +485,7 @@ function SectionCard({
           {action && <div onClick={(e) => e.stopPropagation()}>{action}</div>}
           <ChevronRight 
             className={cn("h-4 w-4 transition-transform duration-200", isOpen && "rotate-90")}
-            style={{ color: 'hsl(var(--muted-foreground))' }}
+            style={{ color: 'var(--fg-3)' }}
           />
         </div>
       </button>
@@ -494,7 +494,7 @@ function SectionCard({
         "overflow-hidden transition-all duration-300 ease-out",
         isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
       )}>
-        <div style={{ borderTop: '1px solid hsl(var(--border) / 0.5)' }}>
+        <div style={{ borderTop: '1px solid color-mix(in srgb, var(--divider) 50%, transparent)' }}>
           {children}
         </div>
       </div>
@@ -526,31 +526,31 @@ function EmptyState({
         <div 
           className="absolute inset-0 rounded-full animate-ping opacity-20"
           style={{ 
-            background: 'hsl(var(--primary))',
+            background: 'var(--cp-blue)',
             animationDuration: '3s'
           }}
         />
         <div 
           className="relative w-16 h-16 rounded-full flex items-center justify-center"
           style={{ 
-            background: 'linear-gradient(135deg, hsl(var(--muted)) 0%, hsl(var(--muted) / 0.5) 100%)',
+            background: 'linear-gradient(135deg, var(--bg-2) 0%, color-mix(in srgb, var(--bg-2) 50%, transparent) 100%)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
           }}
         >
-          <Icon className="h-7 w-7" style={{ color: 'hsl(var(--muted-foreground))' }} />
+          <Icon className="h-7 w-7" style={{ color: 'var(--fg-3)' }} />
         </div>
       </div>
       
       <h4 
         className="text-sm font-semibold mb-1.5"
-        style={{ color: 'hsl(var(--foreground))' }}
+        style={{ color: 'var(--fg-1)' }}
       >
         {title}
       </h4>
       {description && (
         <p 
           className="text-xs text-center max-w-[220px] mb-5 leading-relaxed"
-          style={{ color: 'hsl(var(--muted-foreground))' }}
+          style={{ color: 'var(--fg-3)' }}
         >
           {description}
         </p>
@@ -586,9 +586,9 @@ function ProgressBar({ value, showOverflowWarning = false }: { value: number | n
   const { percent, overflow } = normalizeProgress(value);
   
   const getTextColor = () => {
-    if (percent === 0) return 'hsl(var(--muted-foreground))';
-    if (percent === 100) return 'hsl(var(--success))';
-    return 'hsl(var(--primary))';
+    if (percent === 0) return 'var(--fg-3)';
+    if (percent === 100) return 'var(--sem-success)';
+    return 'var(--cp-blue)';
   };
   
   return (
@@ -596,11 +596,11 @@ function ProgressBar({ value, showOverflowWarning = false }: { value: number | n
       <div className="flex items-center gap-2">
         <div 
           className="w-16 h-1.5 rounded-full overflow-hidden"
-          style={{ backgroundColor: 'hsl(var(--muted))' }}
+          style={{ backgroundColor: 'var(--bg-2)' }}
         >
           <div 
             className="h-full rounded-full transition-all"
-            style={{ width: `${percent}%`, backgroundColor: 'hsl(var(--success))' }}
+            style={{ width: `${percent}%`, backgroundColor: 'var(--sem-success)' }}
           />
         </div>
         <span 
@@ -612,7 +612,7 @@ function ProgressBar({ value, showOverflowWarning = false }: { value: number | n
         {showOverflowWarning && overflow && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <AlertTriangle size={10} style={{ color: 'hsl(var(--warning))' }} />
+              <AlertTriangle size={10} style={{ color: 'var(--sem-warning)' }} />
             </TooltipTrigger>
             <TooltipContent>
               <p className="text-xs">Rollup exceeds 100%</p>
@@ -973,21 +973,21 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
             {/* Breadcrumb + Controls */}
             <div 
               className="flex items-center justify-between px-6 py-3"
-              style={{ borderBottom: '1px solid hsl(var(--border) / 0.5)' }}
+              style={{ borderBottom: '1px solid color-mix(in srgb, var(--divider) 50%, transparent)' }}
             >
               <div className="flex items-center gap-2.5">
                 <span 
                   className="text-[10px] font-semibold uppercase tracking-[0.5px]"
-                  style={{ color: 'hsl(var(--muted-foreground))' }}
+                  style={{ color: 'var(--fg-3)' }}
                 >
                   Strategic Themes
                 </span>
-                <span style={{ color: 'hsl(var(--muted-foreground))' }}>/</span>
+                <span style={{ color: 'var(--fg-3)' }}>/</span>
                 <span 
                   className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-md"
                   style={{ 
-                    color: 'hsl(var(--primary))',
-                    background: 'hsl(var(--primary) / 0.1)'
+                    color: 'var(--cp-blue)',
+                    background: 'color-mix(in srgb, var(--cp-blue) 10%, transparent)'
                   }}
                 >
                   {formatThemeKey(theme.id)}
@@ -995,7 +995,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                 <button
                   onClick={handleCopyLink}
                   className="p-1.5 rounded-lg hover:bg-muted transition-colors"
-                  style={{ color: 'hsl(var(--muted-foreground))' }}
+                  style={{ color: 'var(--fg-3)' }}
                   title="Copy link"
                 >
                   <LinkIcon className="h-3.5 w-3.5" />
@@ -1005,9 +1005,9 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                   <span 
                     className="ml-2 text-[10px] px-2 py-0.5 rounded-full"
                     style={{ 
-                      backgroundColor: 'hsl(var(--muted))',
-                      border: '1px solid hsl(var(--border))',
-                      color: 'hsl(var(--muted-foreground))'
+                      backgroundColor: 'var(--bg-2)',
+                      border: '1px solid var(--divider)',
+                      color: 'var(--fg-3)'
                     }}
                   >
                     <Eye size={10} className="inline mr-1" style={{ marginTop: -1 }} />
@@ -1024,7 +1024,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                       variant="ghost" 
                       size="icon" 
                       className="h-8 w-8 rounded-lg hover:bg-muted transition-colors"
-                      style={{ color: 'hsl(var(--muted-foreground))' }}
+                      style={{ color: 'var(--fg-3)' }}
                     >
                       <MoreVertical className="h-4 w-4" />
                     </Button>
@@ -1033,8 +1033,8 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                     align="end" 
                     className="w-48 rounded-xl"
                     style={{ 
-                      background: 'hsl(var(--background))',
-                      borderColor: 'hsl(var(--border))',
+                      background: 'var(--bg-app)',
+                      borderColor: 'var(--divider)',
                     }}
                   >
                     <DropdownMenuItem className="rounded-lg" onSelect={() => duplicateMutation.mutate()}>
@@ -1054,7 +1054,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                   size="icon" 
                   onClick={handleAttemptClose}
                   className="h-8 w-8 rounded-lg hover:bg-muted transition-colors"
-                  style={{ color: 'hsl(var(--muted-foreground))' }}
+                  style={{ color: 'var(--fg-3)' }}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -1075,22 +1075,22 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                       onKeyDown={handleNameKeyDown}
                       className="text-2xl font-bold h-auto py-1.5 px-2 max-w-[480px] border-primary focus-visible:ring-primary/20"
                       style={{ 
-                        background: 'hsl(var(--muted))',
-                        color: 'hsl(var(--foreground))'
+                        background: 'var(--bg-2)',
+                        color: 'var(--fg-1)'
                       }}
                     />
                   ) : (
                     <>
                       <SheetTitle 
                         className="text-2xl font-bold tracking-tight truncate max-w-[520px] leading-tight"
-                        style={{ color: 'hsl(var(--foreground))' }}
+                        style={{ color: 'var(--fg-1)' }}
                       >
                         {formData.name || theme.name || 'Untitled Theme'}
                       </SheetTitle>
                       <button
                         onClick={handleStartEditName}
                         className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-muted transition-all"
-                        style={{ color: 'hsl(var(--muted-foreground))' }}
+                        style={{ color: 'var(--fg-3)' }}
                         title="Rename"
                       >
                         <Pencil className="h-3.5 w-3.5" />
@@ -1107,12 +1107,12 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                     isLoading={updateStatusMutation.isPending}
                   />
 
-                  <div className="w-px h-5" style={{ background: 'hsl(var(--border))' }} />
+                  <div className="w-px h-5" style={{ background: 'var(--divider)' }} />
 
                   {/* Timestamp */}
                   <div 
                     className="flex items-center gap-1.5 text-xs"
-                    style={{ color: 'hsl(var(--muted-foreground))' }}
+                    style={{ color: 'var(--fg-3)' }}
                   >
                     <Clock className="h-3.5 w-3.5" />
                     <span>Updated {formatDistanceToNow(new Date(lastUpdated), { addSuffix: true })}</span>
@@ -1177,7 +1177,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
             {/* TAB CONTENT */}
             <div 
               className="flex-1 min-h-0 overflow-y-auto"
-              style={{ background: 'hsl(var(--muted) / 0.3)' }}
+              style={{ background: 'color-mix(in srgb, var(--bg-2) 30%, transparent)' }}
             >
               {/* OVERVIEW */}
               <TabsContent value="overview" className="mt-0 p-6 space-y-5 focus-visible:outline-none">
@@ -1225,8 +1225,8 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                         }}
                         className="text-sm leading-relaxed min-h-[80px] border-primary focus-visible:ring-primary/20"
                         style={{ 
-                          background: 'hsl(var(--muted))',
-                          color: 'hsl(var(--foreground))'
+                          background: 'var(--bg-2)',
+                          color: 'var(--fg-1)'
                         }}
                         autoFocus
                       />
@@ -1237,7 +1237,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                           setIsEditingDescription(true);
                         }}
                         className="text-sm leading-relaxed cursor-pointer hover:bg-muted/50 rounded-lg p-2 -m-2 transition-colors"
-                        style={{ color: 'hsl(var(--foreground))' }}
+                        style={{ color: 'var(--fg-1)' }}
                       >
                         {formData.description || theme.description || 'Click to add a description...'}
                       </div>
@@ -1265,9 +1265,9 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                   }
                 >
                   {objectives.length > 0 && (
-                    <div className="flex items-center gap-2 px-5 py-3 border-b" style={{ borderColor: 'hsl(var(--border) / 0.5)' }}>
+                    <div className="flex items-center gap-2 px-5 py-3 border-b" style={{ borderColor: 'color-mix(in srgb, var(--divider) 50%, transparent)' }}>
                       <div className="relative flex-1">
-                        <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'hsl(var(--muted-foreground))' }} />
+                        <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--fg-3)' }} />
                         <Input
                           placeholder="Search objectives..."
                           value={objectiveSearch}
@@ -1299,7 +1299,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                   ) : filteredObjectives.length === 0 ? (
                     <EmptyState icon={Search} title="No matching objectives" />
                   ) : (
-                    <div className="divide-y" style={{ borderColor: 'hsl(var(--border) / 0.3)' }}>
+                    <div className="divide-y" style={{ borderColor: 'color-mix(in srgb, var(--divider) 30%, transparent)' }}>
                       {filteredObjectives.map((obj) => (
                         <div 
                           key={obj.id} 
@@ -1309,7 +1309,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                             <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0">
                               OBJ
                             </span>
-                            <span className="text-[12px] font-medium truncate" style={{ color: 'hsl(var(--foreground))' }}>
+                            <span className="text-[12px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>
                               {obj.name}
                             </span>
                             {obj.status && (
@@ -1342,9 +1342,9 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                   }
                 >
                   {epics.length > 0 && (
-                    <div className="flex items-center gap-2 px-5 py-3 border-b" style={{ borderColor: 'hsl(var(--border) / 0.5)' }}>
+                    <div className="flex items-center gap-2 px-5 py-3 border-b" style={{ borderColor: 'color-mix(in srgb, var(--divider) 50%, transparent)' }}>
                       <div className="relative flex-1">
-                        <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'hsl(var(--muted-foreground))' }} />
+                        <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--fg-3)' }} />
                         <Input
                           placeholder="Search epics..."
                           value={epicSearch}
@@ -1376,7 +1376,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                   ) : filteredEpics.length === 0 ? (
                     <EmptyState icon={Search} title="No matching epics" />
                   ) : (
-                    <div className="divide-y" style={{ borderColor: 'hsl(var(--border) / 0.3)' }}>
+                    <div className="divide-y" style={{ borderColor: 'color-mix(in srgb, var(--divider) 30%, transparent)' }}>
                       {filteredEpics.map((epic) => (
                         <div 
                           key={epic.id} 
@@ -1387,17 +1387,17 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                           }}
                         >
                           <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <span className="text-[10px] font-mono shrink-0" style={{ color: 'hsl(var(--primary))' }}>
+                            <span className="text-[10px] font-mono shrink-0" style={{ color: 'var(--cp-blue)' }}>
                               {epic.epic_key || 'E-???'}
                             </span>
-                            <span className="text-[12px] font-medium truncate" style={{ color: 'hsl(var(--foreground))' }}>
+                            <span className="text-[12px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>
                               {epic.name}
                             </span>
                           </div>
                           {epic.state && (
                             <span 
                               className="text-[9px] px-1.5 py-0.5 rounded shrink-0 bg-muted/50"
-                              style={{ color: EPIC_STATES[epic.state]?.color || 'hsl(var(--muted-foreground))' }}
+                              style={{ color: EPIC_STATES[epic.state]?.color || 'var(--fg-3)' }}
                             >
                               {EPIC_STATES[epic.state]?.label || epic.state}
                             </span>

@@ -46,13 +46,13 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
       ref={ref}
       style={{
         position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 240,
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6,
+        background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6,
         boxShadow: '0 4px 16px rgba(0,0,0,0.10)', zIndex: 9999, overflow: 'hidden',
       }}
     >
       {/* Search */}
       <div style={{ padding: '8px 10px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6 }}>
-        <Search size={14} color="#94A3B8" />
+        <Search size={14} color="var(--fg-4)" />
         <input
           ref={inputRef}
           value={search}
@@ -60,7 +60,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
           placeholder="Search people..."
           style={{
             flex: 1, border: 'none', outline: 'none', fontSize: 12,
-            fontFamily: "'Inter', sans-serif", color: '#0F172A', background: 'transparent',
+            fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)', background: 'transparent',
           }}
         />
       </div>
@@ -72,12 +72,12 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
           height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8,
           cursor: 'pointer', fontFamily: "'Inter', sans-serif",
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = '#F8FAFC')}
+        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
         onMouseLeave={(e) => (e.currentTarget.style.background = '')}
       >
         <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1px dashed #CBD5E1', flexShrink: 0 }} />
-        <span style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>Unassigned</span>
-        {!currentAssignee && <Check size={14} color="#2563EB" style={{ marginLeft: 'auto' }} />}
+        <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
+        {!currentAssignee && <Check size={14} color="var(--cp-blue)" style={{ marginLeft: 'auto' }} />}
       </div>
 
       {/* List */}
@@ -91,25 +91,25 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
               onClick={() => { onSelect(a); onClose(); }}
               style={{
                 height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 8,
-                cursor: 'pointer', background: isCurrent ? '#F8FAFC' : undefined,
+                cursor: 'pointer', background: isCurrent ? 'var(--bg-1)' : undefined,
                 fontFamily: "'Inter', sans-serif",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#F8FAFC')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? '#F8FAFC' : '')}
             >
-              <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.displayName}</div>
-                {a.email && <div style={{ fontSize: 10, color: '#94A3B8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.email}</div>}
+                <div style={{ fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.displayName}</div>
+                {a.email && <div style={{ fontSize: 10, color: 'var(--fg-4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.email}</div>}
               </div>
-              {isCurrent && <Check size={14} color="#2563EB" />}
+              {isCurrent && <Check size={14} color="var(--cp-blue)" />}
             </div>
           );
         })}
         {filtered.length === 0 && (
-          <div style={{ padding: '12px', fontSize: 12, color: '#94A3B8', textAlign: 'center' }}>No results</div>
+          <div style={{ padding: '12px', fontSize: 12, color: 'var(--fg-4)', textAlign: 'center' }}>No results</div>
         )}
       </div>
     </div>

@@ -74,7 +74,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 11, fontWeight: 600, color: '#334155', marginBottom: 4, display: 'block',
+    fontSize: 11, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4, display: 'block',
     fontFamily: 'Sora, sans-serif',
   };
 
@@ -83,7 +83,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.3)', zIndex: 60 }} />
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-        width: 440, maxWidth: '92vw', background: '#FFFFFF', borderRadius: 12,
+        width: 440, maxWidth: '92vw', background: 'var(--cp-float)', borderRadius: 12,
         boxShadow: '0 16px 48px rgba(0,0,0,0.12)', zIndex: 61,
         animation: 'fadeScaleIn 180ms ease-out',
       }}>
@@ -91,7 +91,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
         <div style={{ padding: '20px 24px 16px', borderBottom: '0.75px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center' }}>
           <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, margin: 0, flex: 1 }}>New Knowledge Request</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X size={16} style={{ color: '#64748B' }} />
+            <X size={16} style={{ color: 'var(--fg-3)' }} />
           </button>
         </div>
 
@@ -103,7 +103,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
               value={title} onChange={e => setTitle(e.target.value)}
               placeholder="What knowledge are you looking for?"
               style={inputStyle}
-              onFocus={e => e.currentTarget.style.borderColor = '#2563EB'}
+              onFocus={e => e.currentTarget.style.borderColor = 'var(--cp-blue)'}
               onBlur={e => e.currentTarget.style.borderColor = 'rgba(0,0,0,0.10)'}
             />
           </div>
@@ -115,7 +115,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
               placeholder="Provide additional context..."
               rows={3}
               style={{ ...inputStyle, resize: 'vertical' }}
-              onFocus={e => e.currentTarget.style.borderColor = '#2563EB'}
+              onFocus={e => e.currentTarget.style.borderColor = 'var(--cp-blue)'}
               onBlur={e => e.currentTarget.style.borderColor = 'rgba(0,0,0,0.10)'}
             />
           </div>
@@ -125,7 +125,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
               <label style={labelStyle}>Domain *</label>
               <select
                 value={domainCode} onChange={e => setDomainCode(e.target.value)}
-                style={{ ...inputStyle, cursor: 'pointer', background: '#FFFFFF' }}
+                style={{ ...inputStyle, cursor: 'pointer', background: 'var(--cp-float)' }}
               >
                 <option value="">Select domain...</option>
                 {DOMAINS.map(d => (
@@ -138,7 +138,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
               <label style={labelStyle}>Priority</label>
               <select
                 value={priority} onChange={e => setPriority(e.target.value)}
-                style={{ ...inputStyle, cursor: 'pointer', background: '#FFFFFF' }}
+                style={{ ...inputStyle, cursor: 'pointer', background: 'var(--cp-float)' }}
               >
                 {PRIORITIES.map(p => (
                   <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>
@@ -152,11 +152,11 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
         <div style={{ padding: '16px 24px 20px', borderTop: '0.75px solid rgba(0,0,0,0.06)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onClose} style={{
             fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, cursor: 'pointer',
-            border: '0.75px solid rgba(0,0,0,0.10)', background: '#FFFFFF', color: '#334155',
+            border: '0.75px solid rgba(0,0,0,0.10)', background: 'var(--cp-float)', color: 'var(--fg-2)',
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={!canSubmit || submitting} style={{
             fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6, cursor: canSubmit ? 'pointer' : 'not-allowed',
-            border: 'none', background: canSubmit ? '#2563EB' : '#94A3B8', color: '#FFFFFF',
+            border: 'none', background: canSubmit ? 'var(--cp-blue)' : 'var(--fg-4)', color: '#FFFFFF',
             display: 'flex', alignItems: 'center', gap: 6, opacity: submitting ? 0.7 : 1,
           }}>
             <Send size={12} /> {submitting ? 'Submitting...' : 'Submit Request'}

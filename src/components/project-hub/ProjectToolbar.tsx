@@ -30,11 +30,11 @@ export function ProjectToolbar({
     return () => clearTimeout(t);
   }, [localSearch, onSearchChange]);
 
-  const borderColor = isDark ? 'rgba(255,255,255,0.10)' : '#E2E8F0';
+  const borderColor = isDark ? 'rgba(255,255,255,0.10)' : 'var(--divider)';
   const surfaceBg = isDark ? 'transparent' : '#FFFFFF';
-  const textColor = isDark ? 'rgba(248,244,240,0.92)' : '#0F172A';
-  const mutedColor = isDark ? 'rgba(248,244,240,0.40)' : '#94A3B8';
-  const subtleColor = isDark ? 'rgba(248,244,240,0.60)' : '#64748B';
+  const textColor = isDark ? 'rgba(235,238,245,0.92)' : 'var(--fg-1)';
+  const mutedColor = isDark ? 'rgba(235,238,245,0.40)' : 'var(--fg-4)';
+  const subtleColor = isDark ? 'rgba(235,238,245,0.60)' : 'var(--fg-3)';
 
   return (
     <div>
@@ -46,7 +46,7 @@ export function ProjectToolbar({
           style={{
             height: 34,
             padding: '0 14px',
-            background: '#2563EB',
+            background: 'var(--cp-blue)',
             color: '#FFFFFF',
             border: 'none',
             borderRadius: 6,
@@ -98,8 +98,8 @@ export function ProjectToolbar({
             style={{
               width: 34,
               height: 32,
-              background: view === 'table' ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : surfaceBg,
-              color: view === 'table' ? (isDark ? '#60A5FA' : '#2563EB') : subtleColor,
+              background: view === 'table' ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : surfaceBg,
+              color: view === 'table' ? (isDark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : subtleColor,
               border: 'none',
               cursor: 'pointer',
             }}
@@ -113,8 +113,8 @@ export function ProjectToolbar({
             style={{
               width: 34,
               height: 32,
-              background: view === 'card' ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : surfaceBg,
-              color: view === 'card' ? (isDark ? '#60A5FA' : '#2563EB') : subtleColor,
+              background: view === 'card' ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : surfaceBg,
+              color: view === 'card' ? (isDark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : subtleColor,
               border: 'none',
               borderLeft: `1px solid ${borderColor}`,
               cursor: 'pointer',

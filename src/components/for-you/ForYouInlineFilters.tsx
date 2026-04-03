@@ -187,7 +187,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
                   return avatarUrl ? (
                     <img src={avatarUrl} alt={option} style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                   ) : (
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: clr, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: clr, color: 'var(--bg-app)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                   );
                 })()}
 

@@ -48,7 +48,7 @@ export function StoriesToolbar({ selectedCount, selectedIds, stories, onRefetch,
       : stories;
 
     // Convert to CSV
-    const headers = ['ID', 'Name', 'Status', 'Feature', 'Team', 'Sprint', 'Story Points', 'LOE', 'Created'];
+    const headers = ['ID', 'Name', 'Status', 'Feature', 'Team', 'Release', 'Story Points', 'LOE', 'Created'];
     const rows = storiesToExport.map(story => [
       story.id,
       story.name || '',
@@ -188,7 +188,7 @@ export function StoriesToolbar({ selectedCount, selectedIds, stories, onRefetch,
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>Change Status</DropdownMenuItem>
-              <DropdownMenuItem>Change Sprint</DropdownMenuItem>
+              <DropdownMenuItem>Change Release</DropdownMenuItem>
               <DropdownMenuItem>Change Team</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

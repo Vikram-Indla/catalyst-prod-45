@@ -60,7 +60,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
 
   const inputStyle: React.CSSProperties = {
     height: 36, padding: '0 12px', fontSize: 13,
-    color: '#0F172A', background: '#FFFFFF', border: '1px solid #E2E8F0',
+    color: 'var(--fg-1)', background: 'var(--cp-float)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
     flex: 1, minWidth: 0,
     transition: 'border-color 150ms, box-shadow 150ms',
@@ -75,10 +75,10 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
           {[1,2,3].map(i => <div key={i} className="ph-skeleton rounded" style={{ height: 32, width: '30%' }} />)}
         </div>
       ) : labels.length === 0 ? (
-        <div className="flex flex-col items-center py-8" style={{ color: '#CBD5E1' }}>
+        <div className="flex flex-col items-center py-8" style={{ color: 'var(--divider)' }}>
           <Tag size={32} strokeWidth={1.25} />
-          <p style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', marginTop: 12, fontFamily: "'Sora', sans-serif" }}>No labels yet</p>
-          <p style={{ fontSize: 14, color: '#64748B', marginTop: 4, textAlign: 'center', maxWidth: 320 }}>
+          <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg-1)', marginTop: 12, fontFamily: "'Sora', sans-serif" }}>No labels yet</p>
+          <p style={{ fontSize: 14, color: 'var(--fg-3)', marginTop: 4, textAlign: 'center', maxWidth: 320 }}>
             Labels help categorize and filter work items.
           </p>
         </div>
@@ -95,13 +95,13 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
               }}
             >
               <div className="flex-shrink-0 rounded-full" style={{ width: 10, height: 10, background: l.color }} />
-              <span style={{ fontSize: 13, color: '#0F172A', fontWeight: 500 }}>{l.name}</span>
+              <span style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500 }}>{l.name}</span>
               <button
                 onClick={() => handleDelete(l.id)}
                 className="flex items-center justify-center rounded-full transition-colors hover:bg-[#FEE2E2]"
                 style={{ width: 18, height: 18, border: 'none', background: 'transparent', cursor: 'pointer', marginLeft: 2 }}
               >
-                <X size={12} color="#94A3B8" />
+                <X size={12} color="var(--fg-4)" />
               </button>
             </div>
           ))}
@@ -109,7 +109,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
       )}
 
       {/* Add label */}
-      <div className="pt-4" style={{ borderTop: labels.length > 0 ? '1px solid #E2E8F0' : 'none' }}>
+      <div className="pt-4" style={{ borderTop: labels.length > 0 ? '1px solid var(--divider)' : 'none' }}>
         <div className="flex items-center gap-2 mb-3">
           <input
             value={newName}
@@ -118,8 +118,8 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
             placeholder="Label name..."
             disabled={atMax}
             style={{ ...inputStyle, opacity: atMax ? 0.5 : 1 }}
-            onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
-            onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+            onBlur={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }}
           />
           <button
             onClick={handleAdd}
@@ -127,10 +127,10 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
             className="flex-shrink-0 transition-all disabled:opacity-40"
             style={{
               height: 36, padding: '0 14px', fontSize: 13, fontWeight: 500,
-              color: '#334155', border: '1px solid #E2E8F0', borderRadius: 6,
+              color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
               background: 'transparent', cursor: !newName.trim() || atMax ? 'default' : 'pointer',
             }}
-            onMouseEnter={e => { if (newName.trim() && !atMax) e.currentTarget.style.background = '#F8FAFC'; }}
+            onMouseEnter={e => { if (newName.trim() && !atMax) e.currentTarget.style.background = 'var(--bg-1)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             Add
@@ -153,7 +153,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
         </div>
 
         {atMax && (
-          <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 8 }}>Maximum 20 labels reached.</p>
+          <p style={{ fontSize: 11, color: 'var(--fg-4)', marginTop: 8 }}>Maximum 20 labels reached.</p>
         )}
       </div>
     </div>

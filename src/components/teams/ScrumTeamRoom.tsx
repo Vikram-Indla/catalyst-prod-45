@@ -31,7 +31,7 @@ export function ScrumTeamRoom({ team }: ScrumTeamRoomProps) {
       <div className="flex items-center justify-between">
         <Select value={selectedSprintId} onValueChange={setSelectedSprintId}>
           <SelectTrigger className="w-[240px]">
-            <SelectValue placeholder="Select Sprint" />
+            <SelectValue placeholder="Select Release" />
           </SelectTrigger>
           <SelectContent>
             {sprints.map((sprint) => (
@@ -41,7 +41,7 @@ export function ScrumTeamRoom({ team }: ScrumTeamRoomProps) {
             ))}
           </SelectContent>
         </Select>
-        <Button>Sprint Planning</Button>
+        <Button>Release Planning</Button>
       </div>
 
       {/* KPI Cards */}
@@ -63,7 +63,7 @@ export function ScrumTeamRoom({ team }: ScrumTeamRoomProps) {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Target className="w-4 h-4" />
-              Sprint Commitment
+              Release Commitment
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -89,7 +89,7 @@ export function ScrumTeamRoom({ team }: ScrumTeamRoomProps) {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <AlertCircle className="w-4 h-4" />
-              Sprint Health
+              Release Health
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -99,11 +99,11 @@ export function ScrumTeamRoom({ team }: ScrumTeamRoomProps) {
         </Card>
       </div>
 
-      {/* Sprint Progress */}
+      {/* Release Progress */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Sprint Progress</CardTitle>
+            <CardTitle className="text-base">Release Progress</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -155,7 +155,7 @@ export function ScrumTeamRoom({ team }: ScrumTeamRoomProps) {
         </CardHeader>
         <CardContent>
           <div className="text-center text-muted-foreground py-8">
-            <p>No active stories in this sprint</p>
+            <p>No active stories in this release</p>
           </div>
         </CardContent>
       </Card>

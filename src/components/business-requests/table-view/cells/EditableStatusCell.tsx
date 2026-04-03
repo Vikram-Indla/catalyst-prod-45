@@ -163,7 +163,7 @@ export function EditableStatusCell({ status, requestId, onSave, disabled = false
                   {step.label.toUpperCase()}
                 </span>
                 {isSelected && (
-                  <Check className="h-4 w-4 flex-shrink-0" style={{ color: '#2563EB' }} />
+                  <Check className="h-4 w-4 flex-shrink-0" style={{ color: 'var(--cp-blue)' }} />
                 )}
               </button>
             );

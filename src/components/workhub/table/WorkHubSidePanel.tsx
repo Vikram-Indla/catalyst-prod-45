@@ -35,7 +35,7 @@ type TabKey = 'details' | 'comments' | 'history';
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', height: 36, gap: 12 }}>
-      <span style={{ width: 100, flexShrink: 0, fontSize: 12, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em', lineHeight: '36px' }}>{label}</span>
+      <span style={{ width: 100, flexShrink: 0, fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.03em', lineHeight: '36px' }}>{label}</span>
       <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', height: 36 }}>{children}</div>
     </div>
   );
@@ -91,22 +91,22 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
 
       <div role="complementary" aria-label="Work item details" style={{
         position: 'fixed', right: 0, top: 48, bottom: 0, width: 560,
-        background: '#FFFFFF', zIndex: 50,
+        background: 'var(--bg-app)', zIndex: 50,
         boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
         display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 250ms ease-out',
       }}>
         {/* Sticky Header */}
         <div style={{
-          position: 'sticky', top: 0, zIndex: 10, background: '#FFFFFF',
+          position: 'sticky', top: 0, zIndex: 10, background: 'var(--bg-app)',
           borderBottom: '0.75px solid rgba(15,23,42,0.06)',
           padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 10,
         }}>
           {isLoading ? <FieldSkeleton /> : item && (
             <>
               <WorkHubTypeIcon type={item.issue_type} size={20} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{item.issue_key}</span>
-              <span style={{ fontSize: 13, color: '#64748B' }}>· {item.issue_type}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: 'var(--fg-1)' }}>{item.issue_key}</span>
+              <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>· {item.issue_type}</span>
             </>
           )}
           <button onClick={onClose} aria-label="Close panel" style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
@@ -117,12 +117,12 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
         {/* Tabs */}
         <div style={{
           display: 'flex', borderBottom: '1px solid rgba(15,23,42,0.08)',
-          padding: '0 20px', background: '#FFFFFF', position: 'sticky', top: 62, zIndex: 10,
+          padding: '0 20px', background: 'var(--bg-app)', position: 'sticky', top: 62, zIndex: 10,
         }}>
           {TABS.map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
               padding: '10px 16px', fontSize: 13, fontWeight: activeTab === tab.key ? 650 : 400,
-              color: activeTab === tab.key ? '#0F172A' : '#64748B',
+              color: activeTab === tab.key ? 'var(--fg-1)' : 'var(--fg-3)',
               background: 'none', border: 'none', cursor: 'pointer',
               borderBottom: activeTab === tab.key ? '2px solid #2563EB' : '2px solid transparent',
               transition: 'all 150ms', display: 'flex', alignItems: 'center', gap: 6,
@@ -130,7 +130,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
               {tab.label}
               {tab.badge !== undefined && tab.badge > 0 && (
                 <span style={{
-                  fontSize: 10, fontWeight: 700, background: '#F1F5F9', color: '#64748B',
+                  fontSize: 10, fontWeight: 700, background: 'var(--bg-1)', color: 'var(--fg-3)',
                   padding: '1px 6px', borderRadius: 10, minWidth: 18, textAlign: 'center',
                 }}>{tab.badge}</span>
               )}
@@ -165,15 +165,15 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                           <WorkHubStatusLozenge status={item.status} statusCategory={item.status_category} />
                         </button>
                       </PopoverTrigger>
-                      <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
+                      <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
                         {STATUS_GROUPS.map(group => (
                           <div key={group.label}>
-                            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '6px 12px 2px' }}>{group.label}</div>
+                            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-4)', padding: '6px 12px 2px' }}>{group.label}</div>
                             {group.statuses.map(s => (
                               <button key={s} onClick={() => handleUpdate('status', s)} style={{
                                 width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
                                 background: item.status === s ? 'rgba(37,99,235,0.08)' : 'transparent',
-                                color: '#0F172A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                                color: 'var(--fg-1)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                               }}>
                                 <WorkHubStatusLozenge status={s} statusCategory={group.category} />
                               </button>
@@ -190,9 +190,9 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                       onBlur={() => { handleUpdate('summary', titleValue); setEditingTitle(false); }}
                       onKeyDown={e => { if (e.key === 'Enter') { handleUpdate('summary', titleValue); setEditingTitle(false); } if (e.key === 'Escape') setEditingTitle(false); }}
                       autoFocus
-                      style={{ width: '100%', fontSize: 20, fontWeight: 650, color: '#0F172A', border: '1.5px solid #2563EB', borderRadius: 4, padding: '4px 8px', outline: 'none', fontFamily: "'Sora', sans-serif", marginBottom: 8 }} />
+                      style={{ width: '100%', fontSize: 20, fontWeight: 650, color: 'var(--fg-1)', border: '1.5px solid #2563EB', borderRadius: 4, padding: '4px 8px', outline: 'none', fontFamily: "'Sora', sans-serif", marginBottom: 8 }} />
                   ) : (
-                    <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: '#0F172A', margin: '0 0 8px', cursor: 'text', fontFamily: "'Sora', sans-serif", lineHeight: 1.3 }}>
+                    <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: 'var(--fg-1)', margin: '0 0 8px', cursor: 'text', fontFamily: "'Sora', sans-serif", lineHeight: 1.3 }}>
                       {item.summary}
                     </h2>
                   )}
@@ -202,10 +202,10 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                     <textarea value={descValue} onChange={e => setDescValue(e.target.value)}
                       onBlur={() => { handleUpdate('description_text', descValue); setEditingDesc(false); }}
                       autoFocus rows={4}
-                      style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: '#0F172A', fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80, marginBottom: 16 }} />
+                      style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80, marginBottom: 16 }} />
                   ) : (
                     <div onClick={() => setEditingDesc(true)} style={{
-                      fontSize: 14, color: item.description_text ? '#334155' : '#94A3B8',
+                      fontSize: 14, color: item.description_text ? 'var(--fg-2)' : 'var(--fg-4)',
                       fontStyle: item.description_text ? 'normal' : 'italic',
                       cursor: 'text', marginBottom: 16, minHeight: 20, lineHeight: 1.6,
                     }}>
@@ -218,7 +218,7 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
 
                   {/* Key Details */}
                   <div style={{ border: '0.75px solid rgba(15,23,42,0.06)', borderRadius: 6, padding: '8px 16px', marginBottom: 20 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 4 }}>Key Details</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)', marginBottom: 4 }}>Key Details</div>
 
                     <DetailRow label="Status">
                       <WorkHubStatusLozenge status={item.status} statusCategory={item.status_category} />
@@ -230,12 +230,12 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                             <WorkHubPriorityIcon priority={item.priority || 'Medium'} size={16} showLabel />
                           </button>
                         </PopoverTrigger>
-                        <PopoverContent align="start" style={{ width: 160, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
+                        <PopoverContent align="start" style={{ width: 160, padding: '4px 0', background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
                           {PRIORITY_OPTIONS.map(p => (
                             <button key={p} onClick={() => handleUpdate('priority', p)} style={{
                               width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
                               background: item.priority === p ? 'rgba(37,99,235,0.08)' : 'transparent',
-                              color: '#0F172A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                              color: 'var(--fg-1)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                             }}>
                               <WorkHubPriorityIcon priority={p} size={14} showLabel />
                             </button>
@@ -247,35 +247,35 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                       {item.assignee_display_name ? (
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                           <AvatarCircle name={item.assignee_display_name} size={24} />
-                          <span style={{ fontSize: 14, color: '#0F172A' }}>{item.assignee_display_name}</span>
+                          <span style={{ fontSize: 14, color: 'var(--fg-1)' }}>{item.assignee_display_name}</span>
                         </span>
-                      ) : <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set assignee</span>}
+                      ) : <span style={{ fontSize: 14, color: 'var(--fg-4)', fontStyle: 'italic' }}>— Set assignee</span>}
                     </DetailRow>
                     <DetailRow label="Reporter">
                       {item.reporter_display_name ? (
-                        <span style={{ fontSize: 14, color: '#0F172A' }}>{item.reporter_display_name}</span>
-                      ) : <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set reporter</span>}
+                        <span style={{ fontSize: 14, color: 'var(--fg-1)' }}>{item.reporter_display_name}</span>
+                      ) : <span style={{ fontSize: 14, color: 'var(--fg-4)', fontStyle: 'italic' }}>— Set reporter</span>}
                     </DetailRow>
                     <DetailRow label="Due Date">
                       <WorkHubDatePicker value={item.due_date} onChange={d => handleUpdate('due_date', d)} />
                     </DetailRow>
                     <DetailRow label="Points">
-                      <span style={{ fontSize: 14, color: item.story_points != null ? '#0F172A' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
+                      <span style={{ fontSize: 14, color: item.story_points != null ? 'var(--fg-1)' : 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace" }}>
                         {item.story_points != null ? item.story_points : '— Set points'}
                       </span>
                     </DetailRow>
-                    <DetailRow label="Sprint">
-                      <span style={{ fontSize: 14, color: item.sprint_name ? '#0F172A' : '#94A3B8' }}>
+                    <DetailRow label="Release">
+                      <span style={{ fontSize: 14, color: item.sprint_name ? 'var(--fg-1)' : 'var(--fg-4)' }}>
                         {item.sprint_name || '—'}
                       </span>
                     </DetailRow>
                     <DetailRow label="Created">
-                      <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
+                      <span style={{ fontSize: 12, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace" }}>
                         {item.jira_created_at ? format(new Date(item.jira_created_at), 'MMM d, yyyy, hh:mm a') : '—'}
                       </span>
                     </DetailRow>
                     <DetailRow label="Updated">
-                      <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
+                      <span style={{ fontSize: 12, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace" }}>
                         {item.jira_updated_at ? format(new Date(item.jira_updated_at), 'MMM d, yyyy, hh:mm a') : '—'}
                       </span>
                     </DetailRow>
@@ -284,27 +284,27 @@ export default function WorkHubSidePanel({ itemId, projectKey, onClose }: WorkHu
                   {/* Subtasks */}
                   <div style={{ border: '0.75px solid rgba(15,23,42,0.06)', borderRadius: 6, padding: '8px 16px', marginBottom: 20 }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)' }}>
                         Subtasks ({item.completed_child_count}/{item.child_count} done)
                       </span>
                       <button style={{ background: 'none', border: 'none', cursor: 'pointer' }}><Plus size={14} color="#64748B" /></button>
                     </div>
                     {item.child_count > 0 ? (
-                      <div style={{ height: 4, background: '#F1F5F9', borderRadius: 2, overflow: 'hidden', marginBottom: 4 }}>
-                        <div style={{ height: '100%', width: `${(item.completed_child_count / item.child_count) * 100}%`, background: '#16A34A', borderRadius: 2, transition: 'width 300ms' }} />
+                      <div style={{ height: 4, background: 'var(--bg-1)', borderRadius: 2, overflow: 'hidden', marginBottom: 4 }}>
+                        <div style={{ height: '100%', width: `${(item.completed_child_count / item.child_count) * 100}%`, background: 'var(--sem-success)', borderRadius: 2, transition: 'width 300ms' }} />
                       </div>
                     ) : (
-                      <div style={{ fontSize: 13, color: '#94A3B8', padding: '4px 0' }}>No subtasks yet</div>
+                      <div style={{ fontSize: 13, color: 'var(--fg-4)', padding: '4px 0' }}>No subtasks yet</div>
                     )}
                   </div>
 
                   {/* Linked Items */}
                   <div style={{ border: '0.75px solid rgba(15,23,42,0.06)', borderRadius: 6, padding: '8px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>Linked Items</span>
-                      <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: '#2563EB' }}>+ Link an item</button>
+                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fg-3)' }}>Linked Items</span>
+                      <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--cp-blue)' }}>+ Link an item</button>
                     </div>
-                    <div style={{ fontSize: 13, color: '#94A3B8', padding: '4px 0' }}>No linked items</div>
+                    <div style={{ fontSize: 13, color: 'var(--fg-4)', padding: '4px 0' }}>No linked items</div>
                   </div>
                 </div>
               )}

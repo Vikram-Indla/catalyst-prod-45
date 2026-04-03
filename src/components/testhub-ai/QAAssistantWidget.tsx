@@ -265,15 +265,15 @@ export function QAAssistantWidget({ onClose }: QAAssistantWidgetProps) {
             <div className="caty-messages">
               {messages.length === 0 ? (
                 <div style={{ padding: 32, textAlign: 'center' }}>
-                  <div style={{ width: 56, height: 56, margin: '0 auto 16px', background: '#eff6ff', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 56, height: 56, margin: '0 auto 16px', background: 'var(--bg-1)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{ width: 32, height: 32 }}>
                       <HubIcon />
                     </div>
                   </div>
-                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#0f172a', marginBottom: 8 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 8 }}>
                     QA Assistant
                   </h3>
-                  <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5, maxWidth: 280, margin: '0 auto 24px' }}>
+                  <p style={{ fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.5, maxWidth: 280, margin: '0 auto 24px' }}>
                     Ask me about test cases, cycles, defects, execution status, and coverage — all grounded in your TestHub data.
                   </p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -298,22 +298,22 @@ export function QAAssistantWidget({ onClose }: QAAssistantWidgetProps) {
                         }}
                         style={{
                           padding: '10px 16px',
-                          border: '1px solid #e2e8f0',
+                          border: '1px solid var(--divider)',
                           borderRadius: 10,
-                          backgroundColor: '#fff',
+                          backgroundColor: 'var(--bg-app)',
                           fontSize: 13,
-                          color: '#334155',
+                          color: 'var(--fg-2)',
                           cursor: 'pointer',
                           textAlign: 'left',
                           transition: 'all 150ms',
                         }}
                         onMouseEnter={e => {
-                          (e.target as HTMLButtonElement).style.borderColor = '#2563eb';
-                          (e.target as HTMLButtonElement).style.backgroundColor = '#eff6ff';
+                          (e.target as HTMLButtonElement).style.borderColor = 'var(--cp-blue)';
+                          (e.target as HTMLButtonElement).style.backgroundColor = 'var(--bg-1)';
                         }}
                         onMouseLeave={e => {
-                          (e.target as HTMLButtonElement).style.borderColor = '#e2e8f0';
-                          (e.target as HTMLButtonElement).style.backgroundColor = '#fff';
+                          (e.target as HTMLButtonElement).style.borderColor = 'var(--divider)';
+                          (e.target as HTMLButtonElement).style.backgroundColor = 'var(--bg-app)';
                         }}
                       >
                         {suggestion}

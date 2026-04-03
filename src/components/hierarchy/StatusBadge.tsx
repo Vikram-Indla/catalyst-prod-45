@@ -1,8 +1,8 @@
 /**
- * StatusBadge — 3-color Jira/Atlassian Dual-Intensity lozenge system
- * GREY (#DFE1E6 bg, #42526E text) = not started / waiting (subtle)
- * BLUE (#0C66E4 bg, #FFFFFF text) = in progress / active (strong)
- * GREEN (#1B7F37 bg, #FFFFFF text) = done / resolved (strong)
+ * StatusBadge — V12 Pale Lozenge 3-colour guardrail (ABSOLUTE)
+ * GREY  (#DFE1E6 bg, #253858 text) = not started / waiting
+ * BLUE  (#DEEBFF bg, #0747A6 text) = in progress / active
+ * GREEN (#E3FCEF bg, #006644 text) = done / resolved
  */
 
 import React from 'react';
@@ -26,6 +26,8 @@ const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
   'On Hold': 'grey',
   'Reopened': 'grey',
   'New': 'grey',
+  'Open': 'grey',
+  'Cancelled': 'grey',
 
   'In Progress': 'blue',
   'In Development': 'blue',
@@ -41,6 +43,8 @@ const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
   'In Analysis': 'blue',
   'In Design': 'blue',
   'Selected for Development': 'blue',
+  'Active': 'blue',
+  'Planning': 'blue',
 
   'Done': 'green',
   'Closed': 'green',
@@ -52,12 +56,15 @@ const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
   'Verified': 'green',
   'Accepted': 'green',
   'Deployed': 'green',
+  'Completed': 'green',
+  'Approved': 'green',
+  'Merged': 'green',
 };
 
 const STATUS_STYLES: Record<StatusCategory, { background: string; color: string }> = {
-  grey:  { background: '#DFE1E6', color: '#42526E' },
-  blue:  { background: '#0C66E4', color: '#FFFFFF' },
-  green: { background: '#1B7F37', color: '#FFFFFF' },
+  grey:  { background: '#DFE1E6', color: '#253858' },
+  blue:  { background: '#DEEBFF', color: '#0747A6' },
+  green: { background: '#E3FCEF', color: '#006644' },
 };
 
 const STATUS_DISPLAY_NAMES: Record<string, string> = {
@@ -94,7 +101,6 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps) {
   const style = getStatusStyle(status);
-  const h = mini ? 20 : 24;
   const displayName = getStatusDisplayName(status);
 
   return (
@@ -102,23 +108,23 @@ export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps)
       onClick={onClick}
       className="status-badge"
       style={{
-        height: h,
-        padding: mini ? '0 6px' : '0 8px',
+        height: 20,
+        padding: '0 6px',
         borderRadius: 3,
         background: style.background,
         color: style.color,
         border: 'none',
         cursor: onClick ? 'pointer' : 'default',
         fontFamily: "'Inter', sans-serif",
-        fontSize: mini ? 9 : 10,
+        fontSize: 11,
         fontWeight: 700,
-        letterSpacing: '0.04em',
+        letterSpacing: '0.03em',
         textTransform: 'uppercase' as const,
         display: 'inline-flex',
         alignItems: 'center',
         gap: 4,
         whiteSpace: 'nowrap' as const,
-        lineHeight: 1,
+        lineHeight: '20px',
         flexShrink: 0,
         maxWidth: mini ? 120 : 140,
         overflow: 'hidden',

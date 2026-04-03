@@ -91,7 +91,7 @@ export function PortfolioRoomSidebar({
     { id: 'dependencies', label: 'Dependencies', path: '/portfolio/:portfolioId/dependencies', moduleCode: 'PROGRAM' },
     { id: 'risks', label: 'Risks', path: '/portfolio/:portfolioId/risks', moduleCode: 'PORTFOLIO' },
     { id: 'impediments', label: 'Impediments', path: '/portfolio/:portfolioId/impediments', moduleCode: 'TEAM' },
-    { id: 'sprints', label: 'Sprints', path: '/portfolio/:portfolioId/sprints', moduleCode: 'TEAM' },
+    { id: 'sprints', label: 'Releases', path: '/portfolio/:portfolioId/sprints', moduleCode: 'TEAM' },
     { id: 'program-increments', label: 'Program Increments', path: '/portfolio/:portfolioId/program-increments', moduleCode: 'PROGRAM' },
     { id: 'release-vehicles', label: 'Release Vehicles', path: '/portfolio/:portfolioId/release-vehicles', moduleCode: 'PROGRAM' },
   ];

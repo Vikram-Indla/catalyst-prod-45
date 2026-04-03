@@ -12,11 +12,11 @@ import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 
 const T = {
-  ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
-  inkMuted: '#71717A', border: '#E4E4E7', borderStrong: '#D4D4D8',
-  surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
-  primary: '#2563EB', primaryBg: '#EFF6FF',
-  danger: '#DC2626', warning: '#D97706', teal: '#0D9488',
+  ink: 'var(--fg-1)', inkSecondary: 'var(--fg-1)', inkTertiary: 'var(--fg-2)',
+  inkMuted: 'var(--fg-3)', border: 'var(--divider)', borderStrong: 'var(--divider)',
+  surface: 'var(--bg-app)', surfaceSecondary: 'var(--bg-1)', surfaceTertiary: 'var(--bg-2)',
+  primary: 'var(--cp-blue)', primaryBg: 'var(--cp-blue-wash)',
+  danger: 'var(--sem-danger)', warning: 'var(--sem-warning)', teal: 'var(--sem-success)',
 };
 
 const F = {

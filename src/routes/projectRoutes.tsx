@@ -15,6 +15,7 @@ const WorkItemsPage = lazy(() => import('@/pages/project/WorkItemsPage'));
 const EpicBacklogPage = lazy(() => import('@/modules/project-work-hub/pages/EpicBacklogPage'));
 const FeatureBacklogPage = lazy(() => import('@/modules/project-work-hub/pages/FeatureBacklogPage'));
 const StoryBacklogPage = lazy(() => import('@/modules/project-work-hub/pages/StoryBacklogPage'));
+const SyncSettingsPage = lazy(() => import('@/pages/project/SyncSettingsPage'));
 
 // Loading component
 function ViewLoader() {
@@ -90,6 +91,14 @@ export const projectRoutes: RouteObject[] = [
             <div className="h-full flex items-center justify-center text-gray-500">
               Feature Map View - Coming Soon
             </div>
+          </Suspense></ErrorBoundary>
+        ),
+      },
+      {
+        path: 'sync-settings',
+        element: (
+          <ErrorBoundary><Suspense fallback={<ViewLoader />}>
+            <SyncSettingsPage />
           </Suspense></ErrorBoundary>
         ),
       },

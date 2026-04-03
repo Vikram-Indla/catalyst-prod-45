@@ -77,8 +77,8 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
 
   return (
     <div style={{
-      background: 'var(--wh-surface, #fff)',
-      border: '1px solid var(--wh-border, #e2e8f0)',
+      background: 'var(--cp-float)',
+      border: '1px solid var(--divider)',
       borderRadius: 'var(--wh-radius-xl, 16px)',
       padding: 24,
     }}>
@@ -88,7 +88,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
           fontFamily: 'Inter, system-ui, sans-serif',
           fontSize: 18,
           fontWeight: 600,
-          color: 'var(--wh-text-primary, #0f172a)',
+          color: 'var(--fg-1)',
           margin: 0,
         }}>
           Release Timeline
@@ -98,7 +98,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
           style={{
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: 13,
-            color: 'var(--wh-primary, #2563eb)',
+            color: 'var(--cp-blue)',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
@@ -117,7 +117,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
         {/* Month headers */}
         <div style={{
           display: 'flex',
-          borderBottom: '1px solid var(--wh-border, #e2e8f0)',
+          borderBottom: '1px solid var(--divider)',
           paddingBottom: 8,
           marginBottom: 8,
           position: 'relative',
@@ -129,7 +129,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
               fontFamily: 'Inter, system-ui, sans-serif',
               fontSize: 11,
               fontWeight: 600,
-              color: 'var(--wh-text-tertiary, #94a3b8)',
+              color: 'var(--fg-4)',
               textTransform: 'uppercase',
               textAlign: 'center',
             }}>
@@ -148,7 +148,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
               top: -20,
               bottom: 0,
               width: 2,
-              background: 'var(--wh-primary, #2563eb)',
+              background: 'var(--cp-blue)',
               zIndex: 10,
               pointerEvents: 'none',
             }}>
@@ -160,7 +160,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                 height: 0,
                 borderLeft: '5px solid transparent',
                 borderRight: '5px solid transparent',
-                borderTop: '6px solid var(--wh-primary, #2563eb)',
+                borderTop: '6px solid var(--cp-blue)',
               }} />
             </div>
           )}
@@ -178,7 +178,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                   display: 'flex',
                   alignItems: 'center',
                   height: 48,
-                  borderBottom: '1px solid var(--wh-border-light, #f1f5f9)',
+                  borderBottom: '1px solid var(--bg-1)',
                   cursor: 'pointer',
                 }}
                 onClick={() => navigate(`/projecthub/releases/${release.id}`)}
@@ -195,7 +195,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                     fontFamily: 'Inter, system-ui, sans-serif',
                     fontSize: 13,
                     fontWeight: 600,
-                    color: 'var(--wh-text-primary, #0f172a)',
+                    color: 'var(--fg-1)',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -205,7 +205,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                   <div style={{
                     fontFamily: 'Inter, system-ui, sans-serif',
                     fontSize: 11,
-                    color: 'var(--wh-text-tertiary, #94a3b8)',
+                    color: 'var(--fg-4)',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -251,7 +251,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                       <Check style={{
                         width: 14,
                         height: 14,
-                        color: '#fff',
+                        color: 'var(--bg-app)',
                         position: 'relative',
                         zIndex: 1,
                         marginLeft: 4,
@@ -264,7 +264,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                         left: '10%',
                         right: '10%',
                         height: 2,
-                        background: '#fff',
+                        background: 'var(--bg-app)',
                         transform: 'translateY(-50%)',
                       }} />
                     )}
@@ -284,7 +284,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
           top: tooltip.y - 10,
           transform: 'translate(-50%, -100%)',
           background: '#1e293b',
-          color: '#fff',
+          color: 'var(--bg-app)',
           borderRadius: 8,
           padding: '8px 12px',
           fontSize: 12,

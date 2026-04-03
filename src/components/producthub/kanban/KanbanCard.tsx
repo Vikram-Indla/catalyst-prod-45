@@ -145,7 +145,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
             >
               {getInitials(initiative.assignee_name)}
             </div>
-            <span style={{ fontSize: 12, color: '#64748B', fontWeight: 500 }}>
+            <span style={{ fontSize: 12, color: 'var(--fg-3)', fontWeight: 500 }}>
               {initiative.assignee_name.split(' ')[0]}
             </span>
           </div>
@@ -156,7 +156,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
                 width: 20,
                 height: 20,
                 borderRadius: '50%',
-                backgroundColor: '#E2E8F0',
+                backgroundColor: 'var(--divider)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -165,14 +165,14 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
             >
               <User size={10} color="#94A3B8" />
             </div>
-            <span style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>Unassigned</span>
+            <span style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>Unassigned</span>
           </div>
         )}
         <span
           style={{
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: 11,
-            color: '#94A3B8',
+            color: 'var(--fg-4)',
             fontWeight: 500,
           }}
         >

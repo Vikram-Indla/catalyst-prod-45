@@ -43,15 +43,15 @@ export function TablePagination({
       }}
     >
       {/* Left: Items info */}
-      <div style={{ ...monoStyle, color: '#64748B' }}> {/* V12 */}
-        Showing <strong style={{ color: '#0F172A' }}>{startItem}</strong> to{' '}
-        <strong style={{ color: '#0F172A' }}>{endItem}</strong> of{' '}
-        <strong style={{ color: '#0F172A' }}>{totalItems}</strong>
+      <div style={{ ...monoStyle, color: 'var(--fg-3)' }}> {/* V12 */}
+        Showing <strong style={{ color: 'var(--fg-1)' }}>{startItem}</strong> to{' '}
+        <strong style={{ color: 'var(--fg-1)' }}>{endItem}</strong> of{' '}
+        <strong style={{ color: 'var(--fg-1)' }}>{totalItems}</strong>
       </div>
 
       {/* Center: Page size selector */}
       <div className="flex items-center gap-2">
-        <span style={{ fontSize: 12, color: '#64748B' }}>Rows per page:</span>
+        <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>Rows per page:</span>
         <Select
           value={String(pageSize)}
           onValueChange={(val) => onPageSizeChange(Number(val))}
@@ -71,9 +71,9 @@ export function TablePagination({
 
       {/* Right: Pagination controls */}
       <div className="flex items-center gap-1">
-        <span style={{ ...monoStyle, color: '#64748B', marginInlineEnd: 8 }}>
-          Page <strong style={{ color: '#0F172A' }}>{currentPage}</strong> of{' '}
-          <strong style={{ color: '#0F172A' }}>{totalPages}</strong>
+        <span style={{ ...monoStyle, color: 'var(--fg-3)', marginInlineEnd: 8 }}>
+          Page <strong style={{ color: 'var(--fg-1)' }}>{currentPage}</strong> of{' '}
+          <strong style={{ color: 'var(--fg-1)' }}>{totalPages}</strong>
         </span>
         
         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onPageChange(1)} disabled={currentPage === 1}>

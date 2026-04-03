@@ -70,8 +70,8 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
 
   if (items.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748B' }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No work items found</div>
+      <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--fg-3)' }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items found</div>
         <div style={{ fontSize: 13 }}>Items assigned to {memberName || 'this member'} will appear here.</div>
       </div>
     );
@@ -87,7 +87,7 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
             paddingBottom: '10px', marginBottom: '10px', borderBottom: `2px solid ${col.color}`,
           }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: col.color }} />
-            <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', color: '#0F172A' }}>{col.label}</span>
+            <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', color: 'var(--fg-1)' }}>{col.label}</span>
             <div style={{
               width: '22px', height: '22px', borderRadius: '50%', display: 'flex',
               alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700,
@@ -98,7 +98,7 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
           {/* Cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {col.items.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '24px 12px', color: '#94A3B8', fontSize: 12, fontWeight: 500, border: '1px dashed #E2E8F0', borderRadius: 8, background: '#FAFBFC' }}>
+              <div style={{ textAlign: 'center', padding: '24px 12px', color: 'var(--fg-4)', fontSize: 12, fontWeight: 500, border: '1px dashed var(--divider)', borderRadius: 8, background: 'var(--bg-1)' }}>
                 No items
               </div>
             ) : col.items.map(item => {
@@ -107,19 +107,19 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
               const priDot = PRI_DOT[(item.priority || '').toLowerCase()] || '#64748B';
               return (
                 <div key={item.id} onClick={() => onItemClick(item)} style={{
-                  background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px',
+                  background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: '8px',
                   padding: '12px 12px 12px 15px', cursor: 'pointer', position: 'relative',
                   boxShadow: '0 1px 3px rgba(15,23,42,.05)', transition: 'border-color .15s',
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#94A3B8'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--divider)'; }}
                 >
                   {/* 3px accent bar */}
                   <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: s.dot }} />
 
                   {/* Top: Key + Project + Age */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+                    <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
                     {item.project_key && (
                       <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', color: '#FFF', background: projColor }}>{item.project_key}</span>
                     )}
@@ -138,9 +138,9 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: priDot }} />
-                      <span style={{ fontSize: '12px', fontWeight: 500, color: '#334155', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
+                      <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--fg-2)', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
                     </div>
-                    <span style={{ fontSize: '12.5px', fontWeight: 500, color: '#334155', maxWidth: '70px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--fg-2)', maxWidth: '70px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {item.assigner_name ? item.assigner_name.split(' ')[0] : 'Unassigned'}
                     </span>
                   </div>

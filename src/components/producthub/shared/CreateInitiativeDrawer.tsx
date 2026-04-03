@@ -301,22 +301,22 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <RefreshCw className="w-3.5 h-3.5" /> Converting idea to initiative
               </div>
-              <div className="text-[12px] mt-1" style={{ color: '#334155' }}>
+              <div className="text-[12px] mt-1" style={{ color: 'var(--fg-2)' }}>
                 <span style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, color: T.primary }}>{conversionSource.primaryIdea.key}</span>
                 {' · '}{conversionSource.primaryIdea.title}
               </div>
             </div>
           )}
           {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
-            <div className="p-3 rounded-lg mb-3" style={{ background: '#F5F3FF', border: '1px solid #DDD6FE' }}>
+            <div className="p-3 rounded-lg mb-3" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 initiative
               </div>
-              <div className="text-[12px] mt-1" style={{ color: '#334155' }}>
+              <div className="text-[12px] mt-1" style={{ color: 'var(--fg-2)' }}>
                 Primary: <span style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, color: T.primary }}>{conversionSource.primaryIdea.key}</span>
                 {' · '}{conversionSource.primaryIdea.title}
               </div>
-              <div className="text-[12px] mt-0.5" style={{ color: '#334155' }}>
+              <div className="text-[12px] mt-0.5" style={{ color: 'var(--fg-2)' }}>
                 Merging: <span style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, color: T.primary }}>{conversionSource.mergeIdea.key}</span>
                 {' · '}{conversionSource.mergeIdea.title}
               </div>

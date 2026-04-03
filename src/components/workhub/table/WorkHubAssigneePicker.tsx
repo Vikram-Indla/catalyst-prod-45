@@ -30,7 +30,7 @@ function getAvatarColor(name: string): string {
 function AvatarCircle({ name, url, size = 24 }: { name: string; url?: string | null; size?: number }) {
   if (url) return <img src={url} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
   return (
-    <div style={{ width: size, height: size, borderRadius: '50%', background: getAvatarColor(name), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.4, fontWeight: 600, color: 'white', flexShrink: 0 }}>
+    <div style={{ width: size, height: size, borderRadius: '50%', background: getAvatarColor(name), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.4, fontWeight: 600, color: 'var(--bg-app)', flexShrink: 0 }}>
       {getInitials(name)}
     </div>
   );
@@ -49,7 +49,7 @@ export default function WorkHubAssigneePicker({ value, displayName, options, onC
   const handleSelect = (opt: AssigneeOption | null) => { onChange(opt?.id ?? null, opt?.name ?? null); setOpen(false); setSearch(''); };
 
   const defaultTrigger = (
-    <button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, fontSize: 13, color: displayName ? '#0F172A' : '#94A3B8' }}>
+    <button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, fontSize: 13, color: displayName ? 'var(--fg-1)' : 'var(--fg-4)' }}>
       {displayName ? <><AvatarCircle name={displayName} size={20} /><span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{displayName}</span></> : '— Unassigned'}
     </button>
   );
@@ -57,25 +57,25 @@ export default function WorkHubAssigneePicker({ value, displayName, options, onC
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>{trigger || defaultTrigger}</PopoverTrigger>
-      <PopoverContent align="start" style={{ width: 260, maxHeight: 320, padding: 0, background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden', zIndex: 9999 }}>
+      <PopoverContent align="start" style={{ width: 260, maxHeight: 320, padding: 0, background: 'var(--bg-app)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden', zIndex: 9999 }}>
         <div style={{ padding: '8px 8px 4px', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px', height: 32, background: '#F1F5F9', borderRadius: 4 }}>
-            <Search size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px', height: 32, background: 'var(--bg-1)', borderRadius: 4 }}>
+            <Search size={14} style={{ color: 'var(--fg-4)', flexShrink: 0 }} />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search people..." autoFocus
-              style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: '#0F172A', fontFamily: 'Inter, sans-serif' }} />
+              style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }} />
           </div>
         </div>
         <div style={{ overflowY: 'auto', maxHeight: 260 }}>
-          <button onClick={() => handleSelect(null)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', border: 'none', background: value === null ? 'rgba(37,99,235,0.08)' : 'transparent', cursor: 'pointer', fontSize: 13, color: '#64748B', textAlign: 'left' }}>
-            <UserX size={16} style={{ color: '#94A3B8' }} /> <span>Unassigned</span>
-            {value === null && <Check size={14} style={{ marginLeft: 'auto', color: '#2563EB' }} />}
+          <button onClick={() => handleSelect(null)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', border: 'none', background: value === null ? 'rgba(37,99,235,0.08)' : 'transparent', cursor: 'pointer', fontSize: 13, color: 'var(--fg-3)', textAlign: 'left' }}>
+            <UserX size={16} style={{ color: 'var(--fg-4)' }} /> <span>Unassigned</span>
+            {value === null && <Check size={14} style={{ marginLeft: 'auto', color: 'var(--cp-blue)' }} />}
           </button>
           {filtered.map(opt => (
             <button key={opt.id} onClick={() => handleSelect(opt)}
-              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', border: 'none', background: value === opt.id ? 'rgba(37,99,235,0.08)' : 'transparent', cursor: 'pointer', fontSize: 13, color: '#0F172A', textAlign: 'left' }}>
+              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', border: 'none', background: value === opt.id ? 'rgba(37,99,235,0.08)' : 'transparent', cursor: 'pointer', fontSize: 13, color: 'var(--fg-1)', textAlign: 'left' }}>
               <AvatarCircle name={opt.name} url={opt.avatarUrl} size={24} />
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt.name}</span>
-              {value === opt.id && <Check size={14} style={{ marginLeft: 'auto', color: '#2563EB' }} />}
+              {value === opt.id && <Check size={14} style={{ marginLeft: 'auto', color: 'var(--cp-blue)' }} />}
             </button>
           ))}
         </div>

@@ -87,8 +87,8 @@ export function Resource360Page() {
     fontSize: 13,
     fontWeight: 500,
     cursor: 'pointer',
-    background: active ? 'var(--wh-primary, #2563eb)' : 'var(--wh-border-light, #f1f5f9)',
-    color: active ? '#fff' : 'var(--wh-text-secondary, #64748b)',
+    background: active ? 'var(--cp-blue)' : 'var(--bg-1)',
+    color: active ? 'var(--bg-app)' : 'var(--fg-3)',
     transition: 'background 150ms, color 150ms',
     fontFamily: 'Inter, system-ui, sans-serif',
   });
@@ -98,7 +98,7 @@ export function Resource360Page() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-        <div style={{ color: 'var(--wh-text-tertiary)', fontSize: 14 }}>Loading resources...</div>
+        <div style={{ color: 'var(--fg-4)', fontSize: 14 }}>Loading resources...</div>
       </div>
     );
   }
@@ -130,20 +130,20 @@ export function Resource360Page() {
       {/* KPI Row */}
       <div style={{ padding: '0 24px 16px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, flexShrink: 0 }}>
         {[
-          { label: 'Team Size', value: kpis.total, icon: Users, color: 'var(--wh-text-primary, #0f172a)' },
-          { label: 'Active Subtasks', value: kpis.activeItems, icon: TrendingUp, color: kpis.activeItems > 0 ? '#2563eb' : 'var(--wh-text-primary)' },
-          { label: 'Done Subtasks', value: kpis.doneItems, icon: BarChart3, color: kpis.doneItems > 0 ? '#16a34a' : 'var(--wh-text-primary)' },
-          { label: 'Blocked Items', value: kpis.blockedSum, icon: AlertTriangle, color: kpis.blockedSum > 0 ? '#ef4444' : 'var(--wh-text-primary)' },
+          { label: 'Team Size', value: kpis.total, icon: Users, color: 'var(--fg-1)' },
+          { label: 'Active Subtasks', value: kpis.activeItems, icon: TrendingUp, color: kpis.activeItems > 0 ? 'var(--cp-blue)' : 'var(--fg-1)' },
+          { label: 'Done Subtasks', value: kpis.doneItems, icon: BarChart3, color: kpis.doneItems > 0 ? 'var(--sem-success)' : 'var(--fg-1)' },
+          { label: 'Blocked Items', value: kpis.blockedSum, icon: AlertTriangle, color: kpis.blockedSum > 0 ? 'var(--sem-danger)' : 'var(--fg-1)' },
         ].map(kpi => (
           <div key={kpi.label} style={{
-            background: 'var(--wh-surface, #fff)',
-            border: '1px solid var(--wh-border, #e2e8f0)',
+            background: 'var(--cp-float)',
+            border: '1px solid var(--divider)',
             borderRadius: 'var(--wh-radius-lg, 8px)',
             padding: '14px 16px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-              <kpi.icon style={{ width: 14, height: 14, color: 'var(--wh-text-tertiary, #94a3b8)' }} />
-              <span style={{ fontSize: 12, color: 'var(--wh-text-tertiary, #94a3b8)' }}>{kpi.label}</span>
+              <kpi.icon style={{ width: 14, height: 14, color: 'var(--fg-4)' }} />
+              <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>{kpi.label}</span>
             </div>
             <div style={{ fontSize: 24, fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
           </div>
@@ -152,7 +152,7 @@ export function Resource360Page() {
 
       {/* Sort Bar */}
       <div style={{ padding: '0 24px 12px', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        <span style={{ fontSize: 12, color: 'var(--wh-text-tertiary, #94a3b8)', fontWeight: 500 }}>Sort by:</span>
+        <span style={{ fontSize: 12, color: 'var(--fg-4)', fontWeight: 500 }}>Sort by:</span>
         {(['name', 'active', 'department'] as SortMode[]).map(mode => (
           <button key={mode} onClick={() => setSortBy(mode)} style={pillStyle(sortBy === mode)}>
             {mode === 'name' ? 'Name' : mode === 'active' ? 'Active Tasks' : 'Department'}
@@ -170,10 +170,10 @@ export function Resource360Page() {
                   display: 'flex', alignItems: 'center', gap: 8,
                   padding: '8px 0', margin: '8px 0',
                 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', color: 'var(--wh-text-tertiary, #94a3b8)', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-4)', whiteSpace: 'nowrap' }}>
                     {dept} ({items.length})
                   </span>
-                  <div style={{ flex: 1, height: 1, backgroundColor: 'var(--wh-border, #e2e8f0)' }} />
+                  <div style={{ flex: 1, height: 1, backgroundColor: 'var(--divider)' }} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {items.map(r => (
@@ -192,7 +192,7 @@ export function Resource360Page() {
           {sorted.length === 0 && (
             <div style={{
               textAlign: 'center', padding: '48px 0',
-              color: 'var(--wh-text-tertiary, #94a3b8)', fontSize: 14,
+              color: 'var(--fg-4)', fontSize: 14,
             }}>
               No resources found in this department.
             </div>

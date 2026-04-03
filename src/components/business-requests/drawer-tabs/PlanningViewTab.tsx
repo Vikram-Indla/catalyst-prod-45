@@ -65,7 +65,7 @@ export function PlanningViewTab({ data, onChange, requestId }: PlanningViewTabPr
       {/* Budget Section */}
       <CollapsibleSection
         title="Budget"
-        icon={<DollarSign className="w-4 h-4 text-[hsl(var(--secondary-olive))]" />}
+        icon={<DollarSign className="w-4 h-4 text-[var(--secondary-olive)]" />}
         defaultOpen={true}
       >
         <BudgetViewTab data={data} onChange={onChange} />
@@ -74,7 +74,7 @@ export function PlanningViewTab({ data, onChange, requestId }: PlanningViewTabPr
       {/* Milestones Section */}
       <CollapsibleSection
         title="Milestones"
-        icon={<Flag className="w-4 h-4 text-[hsl(var(--secondary-bronze))]" />}
+        icon={<Flag className="w-4 h-4 text-[var(--secondary-bronze)]" />}
         defaultOpen={false}
       >
         <MilestonesViewTab requestId={requestId} />

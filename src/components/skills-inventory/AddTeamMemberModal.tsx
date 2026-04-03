@@ -36,10 +36,10 @@ export const STANDARD_ROLES = [
 ] as const;
 
 const proficiencyOptions = [
-  { level: 'Beginner', label: 'Beginner', color: 'hsl(var(--destructive))' },
-  { level: 'Intermediate', label: 'Intermediate', color: 'hsl(var(--warning))' },
-  { level: 'Advanced', label: 'Advanced', color: 'hsl(var(--info))' },
-  { level: 'Expert', label: 'Expert', color: 'hsl(var(--health-green))' },
+  { level: 'Beginner', label: 'Beginner', color: 'var(--sem-danger)' },
+  { level: 'Intermediate', label: 'Intermediate', color: 'var(--sem-warning)' },
+  { level: 'Advanced', label: 'Advanced', color: 'var(--sem-info)' },
+  { level: 'Expert', label: 'Expert', color: 'var(--health-green)' },
 ];
 
 interface SkillEntry {

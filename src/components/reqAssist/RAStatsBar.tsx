@@ -94,7 +94,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
   const kbPct = brdStats.total > 0 ? (wikihubSynced / brdStats.total) * 100 : 0;
 
   const Skeleton = () => (
-    <div style={{ width: 52, height: 32, background: '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
+    <div style={{ width: 52, height: 32, background: 'var(--divider)', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
   );
 
   return (
@@ -105,49 +105,49 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
         {/* Card 1: Jira Tickets Imported */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ ...iconContainerStyle, background: '#EFF6FF' }}>
-              <FileText size={16} color="#2563EB" />
+            <div style={{ ...iconContainerStyle, background: 'var(--cp-primary-5)' }}>
+              <FileText size={16} color="var(--cp-blue)" />
             </div>
           </div>
           {isLoading ? <Skeleton /> : (
             <span style={bigNumberStyle}>{totalDocuments}</span>
           )}
           <span style={labelStyle}>JIRA TICKETS IMPORTED</span>
-          <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>SEN · MDT · SIMP</span>
+          <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>SEN · MDT · SIMP</span>
         </div>
 
         {/* Card 2: BRDs Processed */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ ...iconContainerStyle, background: '#F0FDF4' }}>
-              <CheckCircle size={16} color="#16A34A" />
+              <CheckCircle size={16} color="var(--sem-success)" />
             </div>
           </div>
           {isLoading ? <Skeleton /> : (
             <div style={{ marginTop: 8 }}>
-              <span style={{ fontSize: 28, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>{brdStats.ready}</span>
-              <span style={{ fontSize: 28, fontWeight: 700, color: '#94A3B8', fontFamily: "'Sora', sans-serif" }}> / {brdStats.total}</span>
+              <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>{brdStats.ready}</span>
+              <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--fg-4)', fontFamily: "'Sora', sans-serif" }}> / {brdStats.total}</span>
             </div>
           )}
           <span style={labelStyle}>BRDS PROCESSED</span>
           <div style={{ width: '100%', height: 4, background: '#E5E7EB', borderRadius: 2, marginTop: 8 }}>
             <div style={{ width: `${brdPct}%`, height: 4, borderRadius: 2, background: 'linear-gradient(90deg, #16A34A, #22C55E)', transition: 'width 400ms ease' }} />
           </div>
-          <span style={{ fontSize: 11, color: '#16A34A', fontFamily: "'Inter', sans-serif", marginTop: 4 }}>Pipeline stage: Complete</span>
+          <span style={{ fontSize: 11, color: 'var(--sem-success)', fontFamily: "'Inter', sans-serif", marginTop: 4 }}>Pipeline stage: Complete</span>
         </div>
 
         {/* Card 3: Epics Generated — D01/D03: blue icon, not purple */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ ...iconContainerStyle, background: '#EFF6FF' }}>
-              <Zap size={16} color="#2563EB" />
+            <div style={{ ...iconContainerStyle, background: 'var(--cp-primary-5)' }}>
+              <Zap size={16} color="var(--cp-blue)" />
             </div>
           </div>
           {isLoading ? <Skeleton /> : (
             <span style={bigNumberStyle}>{epicStats.total}</span>
           )}
           <span style={labelStyle}>EPICS GENERATED</span>
-          <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
+          <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>
             {epicStats.draft} draft · {epicStats.reviewed} reviewed · {epicStats.published} published
           </span>
         </div>
@@ -164,9 +164,9 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
           )}
           <span style={labelStyle}>PUBLISHED TO PROJECTS</span>
           {epicStats.published === 0 ? (
-            <span style={{ fontSize: 11, color: '#94A3B8', fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>None published yet</span>
+            <span style={{ fontSize: 11, color: 'var(--fg-4)', fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>None published yet</span>
           ) : (
-            <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>Epics live in ProjectHub</span>
+            <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Epics live in ProjectHub</span>
           )}
         </div>
       </div>
@@ -177,19 +177,19 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
         {/* AI Indexed Card — D03: blue progress bar */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ ...iconContainerStyle, background: '#EFF6FF' }}>
-              <Database size={16} color="#2563EB" />
+            <div style={{ ...iconContainerStyle, background: 'var(--cp-primary-5)' }}>
+              <Database size={16} color="var(--cp-blue)" />
             </div>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               background: '#F1F5F9', border: '0.75px solid rgba(15,23,42,0.12)',
               borderRadius: 10, padding: '2px 10px',
-              fontSize: 11, fontWeight: 500, color: '#64748B',
+              fontSize: 11, fontWeight: 500, color: 'var(--fg-3)',
               fontFamily: "'Inter', sans-serif",
             }}>
               <span style={{
                 width: 4, height: 4, borderRadius: '50%', flexShrink: 0,
-                background: queueRunning > 0 ? '#16A34A' : '#94A3B8',
+                background: queueRunning > 0 ? 'var(--sem-success)' : 'var(--fg-4)',
                 boxShadow: queueRunning > 0 ? '0 0 0 3px rgba(22,163,74,0.15)' : 'none',
                 animation: queueRunning > 0 ? 'ra-pulse-dot 1.2s ease-in-out infinite' : 'none',
               }} />
@@ -198,17 +198,17 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
           </div>
           {isLoading ? <Skeleton /> : (
             <div style={{ marginTop: 8 }}>
-              <span style={{ fontSize: 24, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>{wikihubSynced}</span>
-              <span style={{ fontSize: 16, fontWeight: 400, color: '#94A3B8', fontFamily: "'Sora', sans-serif" }}> / {brdStats.total} docs</span>
+              <span style={{ fontSize: 24, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>{wikihubSynced}</span>
+              <span style={{ fontSize: 16, fontWeight: 400, color: 'var(--fg-4)', fontFamily: "'Sora', sans-serif" }}> / {brdStats.total} docs</span>
             </div>
           )}
-          <span style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif", marginTop: 4 }}>
+          <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 4 }}>
             Searchable via Knowledge Assistant
           </span>
-          <div style={{ width: '100%', height: 4, background: '#EFF6FF', borderRadius: 2, marginTop: 8 }}>
+          <div style={{ width: '100%', height: 4, background: 'var(--cp-primary-5)', borderRadius: 2, marginTop: 8 }}>
             <div style={{
               width: `${kbPct}%`, height: 4, borderRadius: 2,
-              background: '#2563EB',
+              background: 'var(--cp-blue)',
               transition: 'width 400ms ease',
             }} />
           </div>
@@ -218,7 +218,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <span style={{
-              fontSize: 11, fontWeight: 600, color: '#64748B',
+              fontSize: 11, fontWeight: 600, color: 'var(--fg-3)',
               textTransform: 'uppercase', letterSpacing: '0.06em',
               fontFamily: "'Inter', sans-serif",
             }}>
@@ -227,7 +227,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
           </div>
 
           {activityEvents.length === 0 ? (
-            <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>
+            <div style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>
               No activity yet in this session
             </div>
           ) : (
@@ -235,7 +235,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
               {activityEvents.map((evt, idx) => (
                 <div key={evt.id} style={{
                   display: 'flex', alignItems: 'center', gap: 10,
-                  height: 32, fontSize: 12, color: '#475569',
+                  height: 32, fontSize: 12, color: 'var(--fg-2)',
                   fontFamily: "'Inter', sans-serif",
                   borderTop: idx > 0 ? '0.75px solid rgba(15,23,42,0.06)' : 'none',
                   animation: idx === 0 ? 'ra-slide-up 200ms ease-out' : undefined,
@@ -244,10 +244,10 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
                     width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
                     background: activityDotColor(evt.event_type),
                   }} />
-                  <span style={{ fontSize: 12, color: '#475569', flex: 1 }}>
+                  <span style={{ fontSize: 12, color: 'var(--fg-2)', flex: 1 }}>
                     {evt.message}
                   </span>
-                  <span style={{ fontSize: 11, color: '#94A3B8', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 11, color: 'var(--fg-4)', whiteSpace: 'nowrap' }}>
                     {formatTimeAbbreviated(evt.created_at)}
                   </span>
                 </div>
@@ -282,7 +282,7 @@ function activityDotColor(eventType: string): string {
 }
 
 const cardStyle: React.CSSProperties = {
-  background: '#FFFFFF',
+  background: 'var(--bg-app)',
   border: '0.75px solid rgba(15,23,42,0.10)',
   borderRadius: 8,
   padding: '16px 20px',
@@ -300,12 +300,12 @@ const iconContainerStyle: React.CSSProperties = {
 };
 
 const bigNumberStyle: React.CSSProperties = {
-  fontSize: 28, fontWeight: 700, color: '#0F172A',
+  fontSize: 28, fontWeight: 700, color: 'var(--fg-1)',
   fontFamily: "'Sora', sans-serif", marginTop: 8,
 };
 
 const labelStyle: React.CSSProperties = {
-  fontSize: 12, fontWeight: 500, color: '#64748B',
+  fontSize: 12, fontWeight: 500, color: 'var(--fg-3)',
   textTransform: 'uppercase', letterSpacing: '0.06em',
   fontFamily: "'Inter', sans-serif", marginTop: 2,
 };

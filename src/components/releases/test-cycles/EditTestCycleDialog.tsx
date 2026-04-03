@@ -254,7 +254,7 @@ export function EditTestCycleDialog({
                   <FormControl>
                     <Input 
                       {...field} 
-                      placeholder="e.g., Sprint 24 Regression" 
+                      placeholder="e.g., Release 24 Regression" 
                       disabled={isReadOnly || editability.lockedFields.includes('name')}
                     />
                   </FormControl>

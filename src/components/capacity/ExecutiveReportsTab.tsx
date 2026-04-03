@@ -248,13 +248,13 @@ export function ExecutiveReportsTab({
                     <div className="flex items-center gap-2">
                       <div 
                         className="w-2 h-2 rounded-full" 
-                        style={{ backgroundColor: skillColors[skill] || '#9ca3af' }}
+                        style={{ backgroundColor: skillColors[skill] || 'var(--fg-4)' }}
                       />
                       <span className="text-xs">{skill}</span>
                     </div>
                     <span 
                       className="font-semibold text-xs"
-                      style={{ color: skillColors[skill] || '#9ca3af' }}
+                      style={{ color: skillColors[skill] || 'var(--fg-4)' }}
                     >
                       {data.count} ({pct}%)
                     </span>

@@ -16,7 +16,7 @@ const DK = {
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
-  border: 'rgba(248,244,240,0.10)',
+  border: 'rgba(235,238,245,0.10)',
   cardBg: 'transparent',
 };
 
@@ -28,8 +28,8 @@ export function GoalsStatsStripSkeleton({ isDark = false }: { isDark?: boolean }
           key={i}
           className="ph-shimmer"
           style={{
-            background: isDark ? 'rgba(248,244,240,0.04)' : '#F1F5F9',
-            border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`,
+            background: isDark ? 'rgba(235,238,245,0.04)' : 'var(--cp-bd-zone)',
+            border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`,
             borderRadius: 12,
             height: 96,
           }}
@@ -55,11 +55,11 @@ export function GoalsStatsStrip({ goals, keyResults, themes, isDark = false }: G
   const uniqueThemes = themes?.length ?? new Set(goals.map(g => g.theme_id)).size;
 
   const cards = [
-    { label: 'Total Goals', value: totalGoals, icon: Target, iconBg: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', iconColor: '#2563EB', sub: `across ${uniqueThemes} themes` },
-    { label: 'On Track', value: `${onTrackPct}%`, icon: CheckCircle2, iconBg: isDark ? 'rgba(22,163,74,0.12)' : '#DCFCE7', iconColor: '#16A34A', sub: `${onTrackGoals} of ${totalGoals} goals` },
-    { label: 'Avg Progress', value: `${avgProgress}%`, icon: Activity, iconBg: isDark ? 'rgba(217,119,6,0.12)' : '#FEF3C7', iconColor: '#D97706', sub: `${100 - avgProgress}% to target` },
-    { label: 'Total KRs', value: totalKRs, icon: BarChart3, iconBg: isDark ? 'rgba(124,58,237,0.12)' : '#EDE9FE', iconColor: '#7C3AED', sub: `~${krsPerGoal} per goal` },
-    { label: 'Overdue KRs', value: overdueKRs, icon: AlertTriangle, iconBg: isDark ? (overdueKRs > 0 ? 'rgba(239,68,68,0.12)' : 'rgba(248,244,240,0.04)') : (overdueKRs > 0 ? '#FEE2E2' : '#F1F5F9'), iconColor: overdueKRs > 0 ? '#EF4444' : '#94A3B8', sub: overdueKRs > 0 ? 'needs attention' : 'all on schedule' },
+    { label: 'Total Goals', value: totalGoals, icon: Target, iconBg: isDark ? 'rgba(37,99,235,0.12)' : 'var(--cp-blue-wash)', iconColor: 'var(--cp-blue)', sub: `across ${uniqueThemes} themes` },
+    { label: 'On Track', value: `${onTrackPct}%`, icon: CheckCircle2, iconBg: isDark ? 'rgba(22,163,74,0.12)' : '#DCFCE7', iconColor: 'var(--sem-success)', sub: `${onTrackGoals} of ${totalGoals} goals` },
+    { label: 'Avg Progress', value: `${avgProgress}%`, icon: Activity, iconBg: isDark ? 'rgba(217,119,6,0.12)' : '#FEF3C7', iconColor: 'var(--sem-warning)', sub: `${100 - avgProgress}% to target` },
+    { label: 'Total KRs', value: totalKRs, icon: BarChart3, iconBg: isDark ? 'rgba(37,99,235,0.12)' : '#DBEAFE', iconColor: '#2563EB', sub: `~${krsPerGoal} per goal` },
+    { label: 'Overdue KRs', value: overdueKRs, icon: AlertTriangle, iconBg: isDark ? (overdueKRs > 0 ? 'rgba(239,68,68,0.12)' : 'rgba(235,238,245,0.04)') : (overdueKRs > 0 ? '#FEE2E2' : 'var(--cp-bd-zone)'), iconColor: overdueKRs > 0 ? 'var(--sem-danger)' : 'var(--fg-4)', sub: overdueKRs > 0 ? 'needs attention' : 'all on schedule' },
   ];
 
   return (
@@ -73,13 +73,13 @@ export function GoalsStatsStrip({ goals, keyResults, themes, isDark = false }: G
             <card.icon size={18} color={card.iconColor} />
           </div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: isDark ? DK.t2 : '#64748B', marginBottom: 4 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: isDark ? DK.t2 : 'var(--fg-3)', marginBottom: 4 }}>
               {card.label}
             </div>
-            <div style={{ fontSize: 28, fontWeight: 700, color: isDark ? DK.t1 : '#0F172A', lineHeight: 1.2 }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: isDark ? DK.t1 : 'var(--fg-1)', lineHeight: 1.2 }}>
               {card.value}
             </div>
-            <div style={{ fontSize: 12, color: isDark ? DK.t3 : '#94A3B8', marginTop: 2 }}>{card.sub}</div>
+            <div style={{ fontSize: 12, color: isDark ? DK.t3 : 'var(--fg-4)', marginTop: 2 }}>{card.sub}</div>
           </div>
         </div>
       ))}

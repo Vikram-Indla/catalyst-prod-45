@@ -49,18 +49,18 @@ function flattenTree(nodes: TreeNode[], expanded: Set<string>): TreeNode[] {
 
 // ── Constants ──
 const PRIORITY_BARS: Record<string, { bars: number; color: string }> = {
-  Highest: { bars: 4, color: '#ef4444' },
+  Highest: { bars: 4, color: 'var(--sem-danger)' },
   High: { bars: 3, color: '#f97316' },
-  Medium: { bars: 2, color: '#3b82f6' },
+  Medium: { bars: 2, color: 'var(--cp-blue)' },
   Low: { bars: 1, color: '#22c55e' },
   Lowest: { bars: 0, color: '#8c8f96' },
 };
 
 const HUB_COLORS: Record<string, { border: string; text: string; bg: string }> = {
-  project: { border: '#2563EB', text: '#2563EB', bg: '#EFF6FF' },
-  product: { border: '#3F3F46', text: '#3F3F46', bg: '#F4F4F5' },
-  task: { border: '#D4D4D8', text: '#71717A', bg: '#F4F4F5' },
-  incident: { border: '#DC2626', text: '#DC2626', bg: '#FEF2F2' },
+  project: { border: 'var(--cp-blue)', text: 'var(--cp-blue)', bg: 'var(--cp-primary-5)' },
+  product: { border: 'var(--fg-2)', text: 'var(--fg-2)', bg: '#F4F4F5' },
+  task: { border: '#D4D4D8', text: 'var(--fg-3)', bg: '#F4F4F5' },
+  incident: { border: 'var(--sem-danger)', text: 'var(--sem-danger)', bg: '#FEF2F2' },
 };
 
 const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1', '#13C2C2', '#F5222D'];
@@ -103,7 +103,7 @@ const GRID_TEMPLATE = COLUMNS.map(c => c.width).join(' ');
 
 // ── Sub-components ──
 const PriorityBars = memo(function PriorityBars({ priority }: { priority: string }) {
-  const cfg = PRIORITY_BARS[priority] || { bars: 2, color: '#3b82f6' };
+  const cfg = PRIORITY_BARS[priority] || { bars: 2, color: 'var(--cp-blue)' };
   return (
     <div className="flex items-end gap-[2px]" title={priority} aria-label={`Priority: ${priority}`}>
       {[0, 1, 2, 3].map(i => (
@@ -113,7 +113,7 @@ const PriorityBars = memo(function PriorityBars({ priority }: { priority: string
             width: 3,
             height: 6 + i * 3,
             borderRadius: 1,
-            backgroundColor: i < cfg.bars ? cfg.color : '#e2e8f0',
+            backgroundColor: i < cfg.bars ? cfg.color : 'var(--divider)',
           }}
         />
       ))}
@@ -165,7 +165,7 @@ export function AllWorkTable({
     <>
       <div
         className="rounded border overflow-hidden overflow-x-auto h-full flex flex-col"
-        style={{ borderColor: 'rgba(15,23,42,0.12)', backgroundColor: '#fff', borderRadius: 4 }}
+        style={{ borderColor: 'rgba(15,23,42,0.12)', backgroundColor: 'var(--bg-app)', borderRadius: 4 }}
         role="table"
         aria-label="Work items table"
       >
@@ -177,7 +177,7 @@ export function AllWorkTable({
             gridTemplateColumns: GRID_TEMPLATE,
             height: 44,
             maxHeight: 44,
-            backgroundColor: '#f8fafc',
+            backgroundColor: 'var(--bg-1)',
             borderBottom: '1px solid rgba(15,23,42,0.08)',
           }}
         >
@@ -278,11 +278,11 @@ const TableRow = memo(function TableRow({
         height: 44,
         maxHeight: 44,
         borderBottom: '0.75px solid rgba(15,23,42,0.08)',
-        backgroundColor: isSelected ? 'rgba(37,99,235,0.08)' : node.depth > 0 ? '#fafbfc' : '#fff',
+        backgroundColor: isSelected ? 'rgba(37,99,235,0.08)' : node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)',
         transition: 'background-color 80ms ease',
       }}
       onMouseEnter={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = 'rgba(15,23,42,0.04)'); }}
-      onMouseLeave={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = node.depth > 0 ? '#fafbfc' : '#fff'); }}
+      onMouseLeave={e => { if (!isSelected) (e.currentTarget.style.backgroundColor = node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)'); }}
       onClick={() => onOpenItem(item.issue_key)}
       onContextMenu={(e) => { e.preventDefault(); onContextMenu({ x: e.clientX, y: e.clientY, item }); }}
     >
@@ -326,7 +326,7 @@ const TableRow = memo(function TableRow({
 
       {/* Summary */}
       <div className="flex items-center gap-1 px-2 min-w-0">
-        <span className="text-[14px] truncate" style={{ color: '#0F172A', fontWeight: 400, fontFamily: 'Inter, sans-serif' }}>
+        <span className="text-[14px] truncate" style={{ color: 'var(--fg-1)', fontWeight: 400, fontFamily: 'Inter, sans-serif' }}>
           {item.summary}
         </span>
         <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 shrink-0 ml-auto transition-opacity duration-[80ms]">
@@ -385,7 +385,7 @@ const TableRow = memo(function TableRow({
             </span>
           </>
         ) : (
-          <span className="text-[12px] italic" style={{ color: '#71717A' }}>Unassigned</span>
+          <span className="text-[12px] italic" style={{ color: 'var(--fg-3)' }}>Unassigned</span>
         )}
         <button
           className="ml-auto opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[#e2e8f0] shrink-0 transition-opacity duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"

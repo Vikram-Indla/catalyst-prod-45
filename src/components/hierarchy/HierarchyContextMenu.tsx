@@ -69,14 +69,14 @@ export function HierarchyContextMenu({
 
   const menuStyle: React.CSSProperties = {
     position: 'fixed', zIndex: 99999,
-    width: 220, background: '#FFFFFF', border: '1px solid #E2E8F0',
+    width: 220, background: 'var(--cp-float)', border: '1px solid var(--divider)',
     borderRadius: 6, boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
     fontFamily: "'Inter', sans-serif", paddingBlock: 4,
   };
 
   const itemStyle: React.CSSProperties = {
     width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-    padding: '6px 12px', fontSize: 13, color: '#334155',
+    padding: '6px 12px', fontSize: 13, color: 'var(--fg-2)',
     background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
   };
 
@@ -96,11 +96,11 @@ export function HierarchyContextMenu({
       <div style={{ position: 'relative' }}
         onMouseEnter={() => setSubMenu('status')}
         onMouseLeave={() => setSubMenu(null)}>
-        <button style={{ ...itemStyle }} onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+        <button style={{ ...itemStyle }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
           onMouseLeave={e => (e.currentTarget.style.background = '')}>
-          <ArrowRightLeft size={13} color="#94A3B8" />
+          <ArrowRightLeft size={13} color="var(--fg-4)" />
           <span style={{ flex: 1 }}>Change Status</span>
-          <ChevronRight size={12} color="#94A3B8" />
+          <ChevronRight size={12} color="var(--fg-4)" />
         </button>
         {subMenu === 'status' && (
           <div data-ctx-menu style={{
@@ -108,9 +108,9 @@ export function HierarchyContextMenu({
           }}>
             {allStatuses.map(s => (
               <button key={s} style={{ ...itemStyle, fontWeight: s === currentStatus ? 600 : 400,
-                color: s === currentStatus ? '#2563EB' : '#334155' }}
+                color: s === currentStatus ? 'var(--cp-blue)' : 'var(--fg-2)' }}
                 onClick={() => { onChangeStatus(s); onClose(); }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '')}>
                 {s === currentStatus && <span style={{ fontSize: 10 }}>✓</span>}
                 {s}
@@ -124,11 +124,11 @@ export function HierarchyContextMenu({
       <div style={{ position: 'relative' }}
         onMouseEnter={() => setSubMenu('priority')}
         onMouseLeave={() => setSubMenu(null)}>
-        <button style={{ ...itemStyle }} onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+        <button style={{ ...itemStyle }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
           onMouseLeave={e => (e.currentTarget.style.background = '')}>
-          <Flag size={13} color="#94A3B8" />
+          <Flag size={13} color="var(--fg-4)" />
           <span style={{ flex: 1 }}>Change Priority</span>
-          <ChevronRight size={12} color="#94A3B8" />
+          <ChevronRight size={12} color="var(--fg-4)" />
         </button>
         {subMenu === 'priority' && (
           <div data-ctx-menu style={{
@@ -137,7 +137,7 @@ export function HierarchyContextMenu({
             {PRIORITIES.map(p => (
               <button key={p} style={{ ...itemStyle, fontWeight: p === currentPriority ? 600 : 400 }}
                 onClick={() => { onChangePriority(p); onClose(); }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '')}>
                 <PriorityBarsInline level={priorityLevel(p)} />
                 {p}
@@ -151,11 +151,11 @@ export function HierarchyContextMenu({
       <div style={{ position: 'relative' }}
         onMouseEnter={() => setSubMenu('assignee')}
         onMouseLeave={() => setSubMenu(null)}>
-        <button style={{ ...itemStyle }} onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+        <button style={{ ...itemStyle }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
           onMouseLeave={e => (e.currentTarget.style.background = '')}>
-          <Users size={13} color="#94A3B8" />
+          <Users size={13} color="var(--fg-4)" />
           <span style={{ flex: 1 }}>Change Assignee</span>
-          <ChevronRight size={12} color="#94A3B8" />
+          <ChevronRight size={12} color="var(--fg-4)" />
         </button>
         {subMenu === 'assignee' && (
           <div data-ctx-menu style={{
@@ -163,7 +163,7 @@ export function HierarchyContextMenu({
           }}>
             <button style={{ ...itemStyle, fontStyle: 'italic', color: '#94A3B8' }}
               onClick={() => { onChangeAssignee(null); onClose(); }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
               onMouseLeave={e => (e.currentTarget.style.background = '')}>
               Unassigned
             </button>
@@ -172,9 +172,9 @@ export function HierarchyContextMenu({
                 ...itemStyle, fontWeight: a.displayName === currentAssignee ? 600 : 400,
               }}
                 onClick={() => { onChangeAssignee(a); onClose(); }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
                 onMouseLeave={e => (e.currentTarget.style.background = '')}>
-                <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <span style={{ fontSize: 8, fontWeight: 700, color: '#FFFFFF' }}>
                     {a.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                   </span>
@@ -196,17 +196,17 @@ export function HierarchyContextMenu({
 
       {confirmDelete ? (
         <div style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 11, color: '#DC2626' }}>Delete?</span>
+          <span style={{ fontSize: 11, color: 'var(--sem-danger)' }}>Delete?</span>
           <button onClick={() => { onDelete(); onClose(); }} style={{
             fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 3,
-            background: '#DC2626', color: '#FFFFFF', border: 'none', cursor: 'pointer',
+            background: 'var(--sem-danger)', color: '#FFFFFF', border: 'none', cursor: 'pointer',
           }}>Yes</button>
           <button onClick={() => setConfirmDelete(false)} style={{
-            fontSize: 11, padding: '2px 8px', color: '#64748B', background: 'none', border: 'none', cursor: 'pointer',
+            fontSize: 11, padding: '2px 8px', color: 'var(--fg-3)', background: 'none', border: 'none', cursor: 'pointer',
           }}>No</button>
         </div>
       ) : (
-        <button style={{ ...itemStyle, color: '#DC2626' }}
+        <button style={{ ...itemStyle, color: 'var(--sem-danger)' }}
           onClick={() => setConfirmDelete(true)}
           onMouseEnter={e => (e.currentTarget.style.background = '#FEF2F2')}
           onMouseLeave={e => (e.currentTarget.style.background = '')}>
@@ -225,12 +225,12 @@ function MenuItem({ icon: Icon, label, onClick }: {
   return (
     <button onClick={onClick} style={{
       width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-      padding: '6px 12px', fontSize: 13, color: '#334155',
+      padding: '6px 12px', fontSize: 13, color: 'var(--fg-2)',
       background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
     }}
-      onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+      onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
       onMouseLeave={e => (e.currentTarget.style.background = '')}>
-      <Icon size={13} color="#94A3B8" /> {label}
+      <Icon size={13} color="var(--fg-4)" /> {label}
     </button>
   );
 }
@@ -239,7 +239,7 @@ function PriorityBarsInline({ level }: { level: number }) {
   return (
     <div style={{ display: 'flex', gap: 1, alignItems: 'center' }}>
       {[1, 2, 3, 4].map(i => (
-        <div key={i} style={{ width: 8, height: 3, borderRadius: 1, background: i <= level ? '#64748B' : '#E2E8F0' }} />
+        <div key={i} style={{ width: 8, height: 3, borderRadius: 1, background: i <= level ? 'var(--fg-3)' : 'var(--divider)' }} />
       ))}
     </div>
   );

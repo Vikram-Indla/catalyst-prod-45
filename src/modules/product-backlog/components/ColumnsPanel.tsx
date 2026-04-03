@@ -6,7 +6,7 @@ import React, { useEffect, useRef } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/hooks/useTheme';
 
 interface Column {
   id: string;
@@ -34,8 +34,7 @@ export function ColumnsPanel({
   storageKey = 'product_backlog_columns',
 }: ColumnsPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
+  const { isDark } = useTheme();
 
   // Save to localStorage when columns change
   useEffect(() => {
@@ -84,23 +83,23 @@ export function ColumnsPanel({
       ref={panelRef}
       className="absolute top-full right-0 mt-2 w-64 rounded-lg shadow-lg z-[500] overflow-hidden"
       style={{
-        backgroundColor: isDark ? '#232019' : 'var(--surface-1)',
-        border: isDark ? '1px solid rgba(248,244,240,0.10)' : '1px solid var(--border-color)',
+        backgroundColor: isDark ? '#1F2128' : 'var(--surface-1)',
+        border: isDark ? '1px solid rgba(235,238,245,0.10)' : '1px solid var(--border-color)',
       }}
     >
       <div 
         className="px-4 py-3 border-b flex items-center justify-between"
-        style={{ borderColor: isDark ? 'rgba(248,244,240,0.10)' : 'var(--divider)' }}
+        style={{ borderColor: isDark ? 'rgba(235,238,245,0.10)' : 'var(--divider)' }}
       >
         <span 
           className="text-sm font-semibold"
-          style={{ color: isDark ? 'rgba(248,244,240,0.92)' : 'var(--text-1)' }}
+          style={{ color: isDark ? 'rgba(235,238,245,0.92)' : 'var(--text-1)' }}
         >
           Columns
         </span>
         <span 
           className="text-xs"
-          style={{ color: isDark ? 'rgba(248,244,240,0.60)' : 'var(--text-3)' }}
+          style={{ color: isDark ? 'rgba(235,238,245,0.60)' : 'var(--text-3)' }}
         >
           {visibleColumns.length} of {columns.length}
         </span>
@@ -130,7 +129,7 @@ export function ColumnsPanel({
               />
               <span 
                 className="text-sm"
-                style={{ color: isDark ? 'rgba(248,244,240,0.92)' : 'var(--text-1)' }}
+                style={{ color: isDark ? 'rgba(235,238,245,0.92)' : 'var(--text-1)' }}
               >
                 {col.header}
               </span>
@@ -142,8 +141,8 @@ export function ColumnsPanel({
       <div 
         className="px-4 py-3 border-t flex gap-2"
         style={{ 
-          borderColor: isDark ? 'rgba(248,244,240,0.10)' : 'var(--divider)',
-          backgroundColor: isDark ? '#1e1c17' : 'var(--surface-2)',
+          borderColor: isDark ? 'rgba(235,238,245,0.10)' : 'var(--divider)',
+          backgroundColor: isDark ? '#181A1E' : 'var(--surface-2)',
         }}
       >
         <Button

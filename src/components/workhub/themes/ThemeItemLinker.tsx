@@ -116,7 +116,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
       ref={ref}
       style={{
         position: 'absolute', top: '100%', right: 0, marginTop: 4,
-        width: 400, maxHeight: 400, background: '#fff',
+        width: 400, maxHeight: 400, background: 'var(--bg-app)',
         border: '1px solid #e2e8f0', borderRadius: 12,
         boxShadow: '0 12px 40px rgba(0,0,0,.15)', zIndex: 9999,
         display: 'flex', flexDirection: 'column',
@@ -127,7 +127,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
       <div style={{ padding: '10px 12px', borderBottom: '1px solid #f1f5f9' }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6,
-          background: '#f8fafc', borderRadius: 6, padding: '6px 10px',
+          background: 'var(--bg-1)', borderRadius: 6, padding: '6px 10px',
         }}>
           <Search size={14} color="#94a3b8" />
           <input
@@ -137,7 +137,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
             autoFocus
             style={{
               border: 'none', outline: 'none', background: 'transparent',
-              fontSize: 12, width: '100%', color: '#0f172a',
+              fontSize: 12, width: '100%', color: 'var(--fg-1)',
             }}
           />
         </div>
@@ -146,11 +146,11 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
       {/* Items */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
         {isLoading ? (
-          <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: '#94a3b8' }}>
+          <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: 'var(--fg-4)' }}>
             Loading items...
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: '#94a3b8' }}>
+          <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: 'var(--fg-4)' }}>
             {search ? 'No matches' : 'No unlinked items'}
           </div>
         ) : (
@@ -167,11 +167,11 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
                 type="checkbox"
                 checked={selected.has(item.item_key)}
                 onChange={() => toggleItem(item.item_key)}
-                style={{ accentColor: '#2563eb', flexShrink: 0 }}
+                style={{ accentColor: 'var(--cp-blue)', flexShrink: 0 }}
               />
               <span style={{
                 fontFamily: 'var(--ph-font-mono, monospace)',
-                fontWeight: 600, color: '#2563eb', whiteSpace: 'nowrap',
+                fontWeight: 600, color: 'var(--cp-blue)', whiteSpace: 'nowrap',
                 fontSize: 11,
               }}>
                 {item.item_key}
@@ -179,12 +179,12 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
               <span style={{
                 padding: '1px 6px', borderRadius: 4,
                 fontSize: 10, fontWeight: 600,
-                background: '#f1f5f9', color: '#475569',
+                background: 'var(--bg-1)', color: 'var(--fg-2)',
               }}>
                 {item.item_type}
               </span>
               <span style={{
-                color: '#0f172a', overflow: 'hidden',
+                color: 'var(--fg-1)', overflow: 'hidden',
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
               }}>
                 {item.summary}
@@ -199,7 +199,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
         padding: '10px 12px', borderTop: '1px solid #f1f5f9',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
-        <span style={{ fontSize: 11, color: '#94a3b8' }}>
+        <span style={{ fontSize: 11, color: 'var(--fg-4)' }}>
           {selected.size} selected
         </span>
         <button
@@ -208,8 +208,8 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             padding: '6px 14px', borderRadius: 6, border: 'none',
-            background: selected.size > 0 ? '#2563eb' : '#e2e8f0',
-            color: selected.size > 0 ? '#fff' : '#94a3b8',
+            background: selected.size > 0 ? 'var(--cp-blue)' : 'var(--divider)',
+            color: selected.size > 0 ? 'var(--bg-app)' : 'var(--fg-4)',
             fontSize: 12, fontWeight: 600, cursor: selected.size > 0 ? 'pointer' : 'default',
           }}
         >

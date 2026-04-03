@@ -114,15 +114,15 @@ export function SidebarBase({
     hoverBg: isDark ? 'rgba(59,130,246,0.06)' : '#F1F5F9',
     hoverText: isDark ? 'var(--cp-t1)' : '#0F172A',
     iconOpacityInactive: isDark ? 0.72 : 0.65,
-    badgeBg: isDark ? 'rgba(248,244,240,0.08)' : '#F1F5F9',
+    badgeBg: isDark ? 'rgba(235,238,245,0.08)' : '#F1F5F9',
     badgeText: isDark ? 'var(--cp-t2)' : '#94A3B8',
   };
 
   const chevronColor = isDark ? 'var(--cp-t2)' : '#94A3B8';
   const chevronHoverColor = isDark ? 'var(--cp-t1)' : '#334155';
-  const sidebarBg = isDark ? '#1A1714' : '#FFFFFF';
-  const sidebarBorder = isDark ? 'rgba(248,244,240,0.08)' : '#E2E8F0';
-  const dividerColor = isDark ? 'rgba(248,244,240,0.08)' : '#F1F5F9';
+  const sidebarBg = isDark ? '#181A1E' : '#FFFFFF';
+  const sidebarBorder = isDark ? 'rgba(235,238,245,0.08)' : '#E2E8F0';
+  const dividerColor = isDark ? 'rgba(235,238,245,0.08)' : '#F1F5F9';
   const sectionLabel = isDark ? 'var(--cp-t2)' : '#94A3B8';
   const hubLabel = isDark ? 'var(--cp-t1)' : '#0F172A';
 
@@ -167,7 +167,7 @@ export function SidebarBase({
           backfaceVisibility: 'hidden',
           transition: 'width 220ms cubic-bezier(0.4, 0, 0.2, 1)',
           scrollbarWidth: 'thin' as any,
-          scrollbarColor: isDark ? 'rgba(248,244,240,0.15) transparent' : '#E2E8F0 transparent',
+          scrollbarColor: isDark ? 'rgba(235,238,245,0.15) transparent' : '#E2E8F0 transparent',
         }}
       >
         {/* Header with collapse toggle */}
@@ -191,8 +191,8 @@ export function SidebarBase({
               <div 
                 className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                  color: '#ffffff',
+                  background: 'var(--cp-blue)',
+                  color: 'var(--bg-app)',
                   fontSize: '0.62rem',
                   fontWeight: 700,
                   letterSpacing: '0.02em',
@@ -228,8 +228,8 @@ export function SidebarBase({
                 <div 
                   className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                    color: '#ffffff',
+                    background: 'var(--cp-blue)',
+                    color: 'var(--bg-app)',
                     fontSize: '0.62rem',
                     fontWeight: 700,
                     letterSpacing: '0.02em',
@@ -429,7 +429,7 @@ function renderMenuItem(
             top: '5px',
             bottom: '5px',
             width: '3px',
-            background: '#2563EB',
+            background: 'var(--cp-blue)',
             borderRadius: '0 3px 3px 0',
           }}
         />

@@ -23,13 +23,13 @@ export function RoadmapToolbar({
   return (
     <div style={{
       height: 56, display: 'flex', alignItems: 'center', gap: 12,
-      padding: '0 24px', borderBottom: '1px solid #E2E8F0', background: '#FFFFFF',
+      padding: '0 24px', borderBottom: '1px solid var(--divider)', background: 'var(--bg-app)',
     }}>
       <div>
-        <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>
           Ideas Roadmap
         </div>
-        <div style={{ fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif", marginTop: -1 }}>
+        <div style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: -1 }}>
           FY 2026 delivery pipeline
         </div>
       </div>
@@ -39,21 +39,21 @@ export function RoadmapToolbar({
       {/* Stat pills — EC-04: grey when 0 committed */}
       <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>
         <span style={{
-          background: hasCommitted ? '#F0FDFA' : '#F8FAFC',
-          color: hasCommitted ? '#0D9488' : '#94A3B8',
+          background: hasCommitted ? '#F0FDFA' : 'var(--bg-1)',
+          color: hasCommitted ? 'var(--sem-success)' : 'var(--fg-4)',
           padding: '4px 10px', borderRadius: 100,
         }}>
           {committedCount} committed
         </span>
-        <span style={{ background: '#F8FAFC', color: '#64748B', padding: '4px 10px', borderRadius: 100 }}>
+        <span style={{ background: 'var(--bg-1)', color: 'var(--fg-3)', padding: '4px 10px', borderRadius: 100 }}>
           {totalCount} total
         </span>
       </div>
 
-      <div style={{ width: 1, height: 20, background: '#E2E8F0' }} />
+      <div style={{ width: 1, height: 20, background: 'var(--divider)' }} />
 
       {/* View toggle */}
-      <div style={{ display: 'flex', border: '2px solid #E2E8F0', borderRadius: 6, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', border: '2px solid var(--divider)', borderRadius: 6, overflow: 'hidden' }}>
         {(['roadmap', 'dates'] as RoadmapView[]).map(v => (
           <button
             key={v}
@@ -61,8 +61,8 @@ export function RoadmapToolbar({
             style={{
               padding: '4px 14px', fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
               fontFamily: "'Inter', sans-serif", outline: 'none', transition: 'all 150ms',
-              background: view === v ? '#FFFFFF' : 'transparent',
-              color: view === v ? '#1E293B' : '#64748B',
+              background: view === v ? 'var(--bg-app)' : 'transparent',
+              color: view === v ? '#1E293B' : 'var(--fg-3)',
               boxShadow: view === v ? '0 1px 2px rgba(0,0,0,.06)' : 'none',
             }}
           >
@@ -76,46 +76,46 @@ export function RoadmapToolbar({
         onClick={() => onCommittedOnlyChange(!committedOnly)}
         style={{
           display: 'flex', alignItems: 'center', gap: 6,
-          padding: '4px 10px', borderRadius: 100, border: '1px solid #E2E8F0',
-          background: committedOnly ? '#F0FDFA' : '#FFFFFF', cursor: 'pointer',
+          padding: '4px 10px', borderRadius: 100, border: '1px solid var(--divider)',
+          background: committedOnly ? '#F0FDFA' : 'var(--bg-app)', cursor: 'pointer',
           fontSize: 12, fontWeight: 600, fontFamily: "'Inter', sans-serif",
-          color: committedOnly ? '#0D9488' : '#64748B', transition: 'all 150ms',
+          color: committedOnly ? 'var(--sem-success)' : 'var(--fg-3)', transition: 'all 150ms',
         }}
       >
         <span style={{
           width: 28, height: 16, borderRadius: 8, position: 'relative',
-          background: committedOnly ? '#0D9488' : '#CBD5E1',
+          background: committedOnly ? 'var(--sem-success)' : '#CBD5E1',
           display: 'inline-block', transition: 'background 150ms',
         }}>
           <span style={{
             position: 'absolute', top: 2, width: 12, height: 12, borderRadius: 6,
-            background: '#FFFFFF', transition: 'left 150ms',
+            background: 'var(--bg-app)', transition: 'left 150ms',
             left: committedOnly ? 14 : 2,
           }} />
         </span>
         Committed only
       </button>
 
-      <div style={{ width: 1, height: 20, background: '#E2E8F0' }} />
+      <div style={{ width: 1, height: 20, background: 'var(--divider)' }} />
 
       {/* INT-05/06: Toolbar buttons wired to parent callbacks */}
       <button onClick={onPresent} title="Present" style={{
-        width: 32, height: 32, borderRadius: 6, border: '1px solid #E2E8F0',
-        background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: 32, height: 32, borderRadius: 6, border: '1px solid var(--divider)',
+        background: 'var(--bg-1)', display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', transition: 'all 150ms',
       }}>
         <MonitorPlay size={15} color="#64748B" />
       </button>
       <button onClick={onGantt} title="Gantt view" style={{
-        width: 32, height: 32, borderRadius: 6, border: '1px solid #E2E8F0',
-        background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: 32, height: 32, borderRadius: 6, border: '1px solid var(--divider)',
+        background: 'var(--bg-1)', display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', transition: 'all 150ms',
       }}>
         <BarChart3 size={15} color="#64748B" />
       </button>
       <button onClick={onExport} style={{
         height: 32, padding: '0 12px', borderRadius: 6, border: 'none',
-        background: '#1E293B', color: '#FFFFFF', fontSize: 12, fontWeight: 600,
+        background: '#1E293B', color: 'var(--bg-app)', fontSize: 12, fontWeight: 600,
         fontFamily: "'Inter', sans-serif", cursor: 'pointer', transition: 'all 150ms',
       }}>
         Export PPTX

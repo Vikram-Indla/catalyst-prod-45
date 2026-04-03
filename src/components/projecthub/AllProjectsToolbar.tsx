@@ -1,6 +1,8 @@
-import { Search, SlidersHorizontal, List, LayoutGrid, X } from 'lucide-react';
+import { Search, ChevronDown, List, LayoutGrid, X } from 'lucide-react';
 import type { ProjectFilters, ViewMode } from '@/types/projecthub';
 import { useState, useEffect } from 'react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 interface ToolbarProps {
   view: ViewMode;
@@ -14,114 +16,142 @@ interface ToolbarProps {
     statusPlanning: number;
     statusCompleted: number;
     statusStarred: number;
+    statusMyProjects?: number;
   };
 }
 
-const CHIPS = [
-  { label: 'All', key: 'All', countKey: 'total' as const },
-  { label: '★ Starred', key: 'Starred', countKey: 'statusStarred' as const },
-  { label: 'Active', key: 'Active', countKey: 'statusActive' as const },
-  { label: 'On Hold', key: 'On Hold', countKey: 'statusOnHold' as const },
-  { label: 'Planning', key: 'Planning', countKey: 'statusPlanning' as const },
-  { label: 'Completed', key: 'Completed', countKey: 'statusCompleted' as const },
-];
+const TABS = ['All', 'My Projects', 'Starred'] as const;
+const STATUS_OPTIONS = ['Any', 'Active', 'Planning', 'On Hold', 'Completed'] as const;
 
 export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange, stats }: ToolbarProps) {
   const [localSearch, setLocalSearch] = useState(filters.search);
-  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  const [statusOpen, setStatusOpen] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => onFilterChange({ ...filters, search: localSearch }), 300);
     return () => clearTimeout(t);
   }, [localSearch]);
 
+  const activeTab = filters.statusChip;
+  const statusFilter = filters.statuses[0]
+    ? STATUS_OPTIONS.find(s => s.toLowerCase().replace(/\s/g, '_') === filters.statuses[0]) || 'Any'
+    : 'Any';
+
+  function getCount(tab: string): number {
+    if (tab === 'All') return stats.total;
+    if (tab === 'Starred') return stats.statusStarred;
+    if (tab === 'My Projects') return stats.statusMyProjects ?? 0;
+    return 0;
+  }
+
+  function handleTabClick(tab: string) {
+    onFilterChange({ ...filters, statusChip: tab, statuses: [] });
+  }
+
+  function handleStatusChange(s: string) {
+    const mapped = s === 'Any' ? [] : [s.toLowerCase().replace(/\s/g, '_')];
+    onFilterChange({ ...filters, statuses: mapped });
+    setStatusOpen(false);
+  }
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-      {/* Status chips */}
-      <div style={{ display: 'flex', gap: 4 }}>
-        {CHIPS.map(c => {
-          const active = filters.statusChip === c.key;
-          const count = stats[c.countKey];
+    <div className="flex items-center gap-3 flex-wrap">
+      {/* Primary tabs — pill style */}
+      <div className="flex gap-1">
+        {TABS.map(tab => {
+          const isActive = activeTab === tab;
           return (
             <button
-              key={c.key}
-              onClick={() => onFilterChange({ ...filters, statusChip: c.key })}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                height: 28, padding: '0 10px', fontSize: 12,
-                fontWeight: active ? 600 : 500,
-                color: active ? '#2563EB' : (isDark ? 'rgba(248,244,240,0.72)' : '#334155'),
-                background: active ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : (isDark ? 'transparent' : '#FFF'),
-                border: `1px solid ${active ? '#2563EB' : (isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0')}`,
-                borderRadius: 99, cursor: 'pointer',
-              }}
+              key={tab}
+              onClick={() => handleTabClick(tab)}
+              className={cn(
+                "px-3.5 py-1.5 rounded-full text-[13px] font-medium border transition-colors flex items-center gap-1.5",
+                isActive
+                  ? "bg-blue-50 text-blue-700 border-blue-600 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-500"
+                  : "bg-transparent text-slate-600 border-slate-200 hover:bg-slate-50 dark:text-slate-400 dark:border-slate-700 dark:hover:bg-slate-800"
+              )}
             >
-              {c.label}
-              <span style={{
-                padding: '1px 6px', fontSize: 10, fontWeight: 700,
-                background: active ? (isDark ? 'rgba(59,130,246,0.20)' : '#DBEAFE') : (isDark ? 'rgba(248,244,240,0.06)' : '#F1F5F9'),
-                borderRadius: 99, fontFamily: "'JetBrains Mono', monospace",
-                color: active ? (isDark ? '#60A5FA' : undefined) : (isDark ? 'rgba(248,244,240,0.55)' : undefined),
-              }}>
-                {count}
+              {tab === 'Starred' && '★ '}{tab}
+              <span className={cn(
+                "text-[11px] font-semibold px-1.5 py-px rounded-full font-['JetBrains_Mono',monospace]",
+                isActive
+                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                  : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+              )}>
+                {getCount(tab)}
               </span>
             </button>
           );
         })}
       </div>
 
-      <div style={{ flex: 1 }} />
-
-      {/* Search */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 10px',
-        background: isDark ? 'transparent' : '#FFF',
-        border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`,
-        borderRadius: 6, minWidth: 200,
-      }}>
-        <Search size={14} color={isDark ? 'rgba(248,244,240,0.40)' : '#94A3B8'} />
-        <input
-          value={localSearch}
-          onChange={e => setLocalSearch(e.target.value)}
-          placeholder="Search projects..."
-          style={{
-            border: 'none', outline: 'none', background: 'transparent',
-            fontSize: 13, color: isDark ? 'rgba(248,244,240,0.92)' : '#0F172A', flex: 1,
-            fontFamily: "'Inter', sans-serif",
-          }}
-        />
-        {localSearch && (
-          <button onClick={() => setLocalSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-            <X size={12} color={isDark ? 'rgba(248,244,240,0.40)' : '#94A3B8'} />
+      {/* Status dropdown */}
+      <Popover open={statusOpen} onOpenChange={setStatusOpen}>
+        <PopoverTrigger asChild>
+          <button className="h-8 px-3 border border-slate-200 dark:border-slate-700 rounded-md text-xs font-medium text-slate-600 dark:text-slate-400 hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 flex items-center gap-1.5 bg-transparent transition-colors">
+            Status: {statusFilter} <ChevronDown className="w-3.5 h-3.5" />
           </button>
-        )}
-      </div>
+        </PopoverTrigger>
+        <PopoverContent className="w-44 p-1 bg-white dark:bg-[#232019]" align="start">
+          {STATUS_OPTIONS.map(s => (
+            <button
+              key={s}
+              onClick={() => handleStatusChange(s)}
+              className="w-full text-left px-3 py-2 text-sm rounded hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
+              style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
+            >
+              {s}
+            </button>
+          ))}
+        </PopoverContent>
+      </Popover>
 
-      {/* View toggle */}
-      <div style={{ display: 'flex', border: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`, borderRadius: 6, overflow: 'hidden' }}>
-        <button
-          onClick={() => onViewChange('list')}
-          style={{
-            width: 32, height: 30, border: 'none',
-            borderRight: `1px solid ${isDark ? 'rgba(248,244,240,0.10)' : '#E2E8F0'}`,
-            background: view === 'list' ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : (isDark ? 'transparent' : '#FFF'),
-            color: view === 'list' ? (isDark ? '#60A5FA' : '#2563EB') : (isDark ? 'rgba(248,244,240,0.55)' : '#94A3B8'),
-            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-        >
-          <List size={14} />
-        </button>
-        <button
-          onClick={() => onViewChange('cards')}
-          style={{
-            width: 32, height: 30, border: 'none',
-            background: view === 'cards' || view === 'card' ? (isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF') : (isDark ? 'transparent' : '#FFF'),
-            color: view === 'cards' || view === 'card' ? (isDark ? '#60A5FA' : '#2563EB') : (isDark ? 'rgba(248,244,240,0.55)' : '#94A3B8'),
-            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-        >
-          <LayoutGrid size={14} />
-        </button>
+      {/* Right side: search + view toggle */}
+      <div className="ml-auto flex items-center gap-2">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+          <input
+            value={localSearch}
+            onChange={e => setLocalSearch(e.target.value)}
+            placeholder="Search projects..."
+            className="h-9 w-[220px] pl-9 pr-8 border border-slate-200 dark:border-slate-700 rounded text-[13px] bg-transparent text-slate-900 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-blue-500"
+          />
+          {localSearch && (
+            <button
+              onClick={() => setLocalSearch('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            >
+              <X size={12} className="text-slate-400 dark:text-slate-500" />
+            </button>
+          )}
+        </div>
+
+        {/* View toggle */}
+        <div className="flex border border-slate-200 dark:border-slate-700 rounded-md overflow-hidden">
+          <button
+            onClick={() => onViewChange('list')}
+            className={cn(
+              "w-8 h-8 flex items-center justify-center border-r border-slate-200 dark:border-slate-700 transition-colors",
+              view === 'list'
+                ? "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400"
+                : "bg-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600"
+            )}
+          >
+            <List size={14} />
+          </button>
+          <button
+            onClick={() => onViewChange('cards')}
+            className={cn(
+              "w-8 h-8 flex items-center justify-center transition-colors",
+              view === 'cards' || view === 'card'
+                ? "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400"
+                : "bg-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600"
+            )}
+          >
+            <LayoutGrid size={14} />
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -56,17 +56,17 @@ export function InlineThemeEditor({ itemId, currentThemeId, anchorEl, onClose }:
         maxHeight: '240px',
         zIndex: 'var(--wh-z-dropdown)',
         boxShadow: 'var(--wh-shadow-lg)',
-        borderColor: 'var(--wh-border)',
+        borderColor: 'var(--divider)',
       }}
     >
       {/* None option */}
       <button
         onClick={() => handleSelect(null)}
         className="w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-        style={{ color: 'var(--wh-text-secondary)' }}
+        style={{ color: 'var(--fg-3)' }}
       >
         <span className="italic">None</span>
-        {!currentThemeId && <Check className="w-3.5 h-3.5" style={{ color: 'var(--wh-primary)' }} />}
+        {!currentThemeId && <Check className="w-3.5 h-3.5" style={{ color: 'var(--cp-blue)' }} />}
       </button>
 
       {(themes ?? []).map(t => (
@@ -74,13 +74,13 @@ export function InlineThemeEditor({ itemId, currentThemeId, anchorEl, onClose }:
           key={t.id}
           onClick={() => handleSelect(t.id)}
           className="w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-          style={{ color: 'var(--wh-text-primary)' }}
+          style={{ color: 'var(--fg-1)' }}
         >
           <span className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: t.color }} />
             {t.name}
           </span>
-          {currentThemeId === t.id && <Check className="w-3.5 h-3.5" style={{ color: 'var(--wh-primary)' }} />}
+          {currentThemeId === t.id && <Check className="w-3.5 h-3.5" style={{ color: 'var(--cp-blue)' }} />}
         </button>
       ))}
     </div>

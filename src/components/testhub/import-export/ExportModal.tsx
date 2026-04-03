@@ -13,10 +13,10 @@ interface ExportModalProps {
 }
 
 const EXPORT_TYPES = [
-  { value: 'test_cases', label: 'Test Cases', icon: FileText, color: '#2563EB', table: 'th_test_cases' },
-  { value: 'defects', label: 'Defects', icon: Bug, color: '#DC2626', table: 'th_defects' },
-  { value: 'requirements', label: 'Requirements', icon: FileCheck, color: '#059669', table: 'th_requirements' },
-  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: '#7C3AED', table: 'th_shared_steps' },
+  { value: 'test_cases', label: 'Test Cases', icon: FileText, color: 'var(--cp-blue)', table: 'th_test_cases' },
+  { value: 'defects', label: 'Defects', icon: Bug, color: 'var(--sem-danger)', table: 'th_defects' },
+  { value: 'requirements', label: 'Requirements', icon: FileCheck, color: 'var(--sem-success)', table: 'th_requirements' },
+  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: '#2563EB', table: 'th_shared_steps' },
   { value: 'cycles', label: 'Test Cycles', icon: RefreshCcw, color: '#0891B2', table: 'th_test_cycles' },
   { value: 'tags', label: 'Tags', icon: Tags, color: '#EC4899', table: 'th_tags' },
 ];
@@ -174,24 +174,24 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
       display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24,
     }}>
       <div style={{
-        width: '100%', maxWidth: 550, maxHeight: '90vh', backgroundColor: '#FFFFFF',
+        width: '100%', maxWidth: 550, maxHeight: '90vh', backgroundColor: 'var(--cp-float)',
         borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
               width: 44, height: 44, borderRadius: 10,
-              background: 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
+              background: 'linear-gradient(135deg, #14B8A6 0%, var(--sem-success) 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Download size={22} style={{ color: '#FFFFFF' }} />
             </div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>Export Data</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Export Data</h2>
           </div>
           <button onClick={onClose} style={{
             width: 36, height: 36, border: 'none', borderRadius: 8,
-            backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer',
+            backgroundColor: 'transparent', color: 'var(--fg-3)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <X size={20} />
@@ -202,19 +202,19 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           {/* Export Name */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>Export Name</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>Export Name</label>
             <input
               type="text"
               value={exportName}
               onChange={(e) => setExportName(e.target.value)}
               placeholder="my_export"
-              style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14 }}
+              style={{ width: '100%', height: 44, padding: '0 14px', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14 }}
             />
           </div>
 
           {/* Data Type Selection */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 8 }}>What to export</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 8 }}>What to export</label>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
               {EXPORT_TYPES.map((type) => {
                 const Icon = type.icon;
@@ -225,13 +225,13 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
                     onClick={() => setExportType(type.value)}
                     style={{
                       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-                      padding: 12, border: `2px solid ${isSelected ? type.color : '#E2E8F0'}`,
-                      borderRadius: 10, backgroundColor: isSelected ? `${type.color}10` : '#FFF',
+                      padding: 12, border: `2px solid ${isSelected ? type.color : 'var(--divider)'}`,
+                      borderRadius: 10, backgroundColor: isSelected ? `${type.color}10` : 'var(--cp-float)',
                       cursor: 'pointer',
                     }}
                   >
                     <Icon size={20} style={{ color: type.color }} />
-                    <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{type.label}</span>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)' }}>{type.label}</span>
                   </button>
                 );
               })}
@@ -240,7 +240,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
 
           {/* Format Selection */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 8 }}>Format</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 8 }}>Format</label>
             <div style={{ display: 'flex', gap: 12 }}>
               {FORMAT_OPTIONS.map((format) => (
                 <button
@@ -248,13 +248,13 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
                   onClick={() => setExportFormat(format.value)}
                   style={{
                     flex: 1, padding: 14,
-                    border: `2px solid ${exportFormat === format.value ? '#14B8A6' : '#E2E8F0'}`,
-                    borderRadius: 10, backgroundColor: exportFormat === format.value ? '#F0FDFA' : '#FFF',
+                    border: `2px solid ${exportFormat === format.value ? '#14B8A6' : 'var(--divider)'}`,
+                    borderRadius: 10, backgroundColor: exportFormat === format.value ? '#F0FDFA' : 'var(--cp-float)',
                     cursor: 'pointer', textAlign: 'left',
                   }}
                 >
-                  <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>{format.label}</p>
-                  <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>{format.description}</p>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>{format.label}</p>
+                  <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '4px 0 0' }}>{format.description}</p>
                 </button>
               ))}
             </div>
@@ -262,28 +262,28 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
 
           {/* Filters */}
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 8 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 8 }}>
               <Filter size={14} /> Filter Data
             </label>
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
                 <input type="radio" checked={includeAll} onChange={() => setIncludeAll(true)} style={{ accentColor: '#14B8A6' }} />
-                <span style={{ fontSize: 13, color: '#334155' }}>Export all</span>
+                <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>Export all</span>
               </label>
               <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
                 <input type="radio" checked={!includeAll} onChange={() => setIncludeAll(false)} style={{ accentColor: '#14B8A6' }} />
-                <span style={{ fontSize: 13, color: '#334155' }}>Apply filters</span>
+                <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>Apply filters</span>
               </label>
             </div>
             
             {!includeAll && (
               <div style={{ display: 'flex', gap: 12 }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', fontSize: 12, color: '#64748B', marginBottom: 4 }}>Status</label>
+                  <label style={{ display: 'block', fontSize: 12, color: 'var(--fg-3)', marginBottom: 4 }}>Status</label>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    style={{ width: '100%', height: 36, padding: '0 10px', border: '1px solid #E2E8F0', borderRadius: 6, fontSize: 13 }}
+                    style={{ width: '100%', height: 36, padding: '0 10px', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 13 }}
                   >
                     <option value="all">All</option>
                     <option value="draft">Draft</option>
@@ -294,11 +294,11 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
                   </select>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', fontSize: 12, color: '#64748B', marginBottom: 4 }}>Priority</label>
+                  <label style={{ display: 'block', fontSize: 12, color: 'var(--fg-3)', marginBottom: 4 }}>Priority</label>
                   <select
                     value={priorityFilter}
                     onChange={(e) => setPriorityFilter(e.target.value)}
-                    style={{ width: '100%', height: 36, padding: '0 10px', border: '1px solid #E2E8F0', borderRadius: 6, fontSize: 13 }}
+                    style={{ width: '100%', height: 36, padding: '0 10px', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 13 }}
                   >
                     <option value="all">All</option>
                     <option value="critical">Critical</option>
@@ -313,21 +313,21 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
 
           {/* Preview count */}
           <div style={{
-            padding: 16, backgroundColor: '#F8FAFC', borderRadius: 10, border: '1px solid #E2E8F0',
+            padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 10, border: '1px solid var(--divider)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            <span style={{ fontSize: 13, color: '#64748B' }}>Records to export:</span>
+            <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>Records to export:</span>
             <span style={{ fontSize: 18, fontWeight: 700, color: '#14B8A6' }}>{itemCount.toLocaleString()}</span>
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button
             onClick={onClose}
             style={{
-              height: 44, padding: '0 20px', backgroundColor: '#FFF', border: '1px solid #E2E8F0',
-              borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer',
+              height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)',
+              borderRadius: 10, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
             }}
           >
             Cancel
@@ -337,7 +337,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
             disabled={isExporting || itemCount === 0}
             style={{
               height: 44, padding: '0 24px', display: 'flex', alignItems: 'center', gap: 8,
-              background: itemCount === 0 ? '#CBD5E1' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
+              background: itemCount === 0 ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
               border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFF',
               cursor: isExporting || itemCount === 0 ? 'not-allowed' : 'pointer',
             }}

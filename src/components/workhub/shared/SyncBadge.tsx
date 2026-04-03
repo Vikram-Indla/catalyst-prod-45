@@ -26,9 +26,9 @@ function getRelativeTime(dateStr: string): string {
 }
 
 const sourcePillStyles: Record<string, { bg: string; color: string; label: string }> = {
-  jira: { bg: '#dbeafe', color: '#2563eb', label: 'Jira' },
-  catalyst: { bg: '#ccfbf1', color: '#0d9488', label: 'Catalyst' },
-  manual: { bg: '#f4f4f5', color: '#71717a', label: 'Manual' },
+  jira: { bg: '#dbeafe', color: 'var(--cp-blue)', label: 'Jira' },
+  catalyst: { bg: '#ccfbf1', color: 'var(--sem-success)', label: 'Catalyst' },
+  manual: { bg: '#f4f4f5', color: 'var(--fg-3)', label: 'Manual' },
 };
 
 export function SyncBadge({ lastSyncedAt, syncSource }: SyncBadgeProps) {
@@ -38,7 +38,7 @@ export function SyncBadge({ lastSyncedAt, syncSource }: SyncBadgeProps) {
   return (
     <span
       className="inline-flex items-center gap-1.5"
-      style={{ fontSize: '12px', color: 'var(--wh-text-tertiary)' }}
+      style={{ fontSize: '12px', color: 'var(--fg-4)' }}
     >
       <RefreshCw className="w-3.5 h-3.5" />
       <span>{timeText}</span>

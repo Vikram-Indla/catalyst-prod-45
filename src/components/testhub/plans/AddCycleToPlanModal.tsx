@@ -20,10 +20,10 @@ interface UnassignedCycle {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  draft: { label: 'Draft', color: '#64748B', bg: '#F1F5F9', icon: Clock },
-  active: { label: 'Active', color: '#059669', bg: '#ECFDF5', icon: Play },
-  completed: { label: 'Completed', color: '#2563EB', bg: '#EFF6FF', icon: CheckCircle2 },
-  archived: { label: 'Archived', color: '#94A3B8', bg: '#F8FAFC', icon: Archive },
+  draft: { label: 'Draft', color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)', icon: Clock },
+  active: { label: 'Active', color: 'var(--sem-success)', bg: '#ECFDF5', icon: Play },
+  completed: { label: 'Completed', color: 'var(--cp-blue)', bg: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', icon: CheckCircle2 },
+  archived: { label: 'Archived', color: 'var(--fg-4)', bg: 'var(--bg-1)', icon: Archive },
 };
 
 export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCycleToPlanModalProps) {
@@ -117,44 +117,44 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
       justifyContent: 'center', zIndex: 1000, padding: 24,
     }}>
       <div style={{
-        width: '100%', maxWidth: 600, maxHeight: '80vh', backgroundColor: '#FFFFFF',
+        width: '100%', maxWidth: 600, maxHeight: '80vh', backgroundColor: 'var(--cp-float)',
         borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
               width: 44, height: 44, borderRadius: 10,
-              background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+              background: 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}><Plus size={22} style={{ color: '#FFFFFF' }} /></div>
             <div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>Add Cycles to Plan</h2>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>Select cycles not assigned to any plan</p>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Add Cycles to Plan</h2>
+              <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '2px 0 0' }}>Select cycles not assigned to any plan</p>
             </div>
           </div>
           <button onClick={onClose} style={{
             width: 36, height: 36, border: 'none', borderRadius: 8,
-            backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer',
+            backgroundColor: 'transparent', color: 'var(--fg-3)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}><X size={20} /></button>
         </div>
 
         {/* Search */}
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--divider)' }}>
           <div style={{ position: 'relative' }}>
-            <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+            <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)' }} />
             <input type="text" placeholder="Search cycles..." value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14 }} />
+              style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: '1.5px solid var(--divider)', borderRadius: 10, fontSize: 14 }} />
           </div>
           {filteredCycles.length > 0 && (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
-              <span style={{ fontSize: 13, color: '#64748B' }}>{selectedIds.size} of {filteredCycles.length} selected</span>
+              <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>{selectedIds.size} of {filteredCycles.length} selected</span>
               <button onClick={selectAll} style={{
                 padding: '4px 10px', border: 'none', borderRadius: 6,
-                backgroundColor: '#F1F5F9', color: '#2563EB', fontSize: 12, fontWeight: 500, cursor: 'pointer',
+                backgroundColor: 'var(--cp-bd-zone)', color: 'var(--cp-blue)', fontSize: 12, fontWeight: 500, cursor: 'pointer',
               }}>{selectedIds.size === filteredCycles.length ? 'Deselect All' : 'Select All'}</button>
             </div>
           )}
@@ -164,10 +164,10 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
           {isLoading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
-              <RefreshCw size={24} style={{ animation: 'spin 1s linear infinite', color: '#7C3AED' }} />
+              <RefreshCw size={24} style={{ animation: 'spin 1s linear infinite', color: '#2563EB' }} />
             </div>
           ) : filteredCycles.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 40, color: '#94A3B8' }}>
+            <div style={{ textAlign: 'center', padding: 40, color: 'var(--fg-4)' }}>
               <RefreshCw size={40} style={{ marginBottom: 12, opacity: 0.5 }} />
               <p style={{ margin: 0, fontSize: 14 }}>
                 {searchTerm ? 'No cycles match your search' : 'All cycles are already assigned to plans'}
@@ -183,18 +183,18 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
                 return (
                   <div key={cycle.id} onClick={() => toggleSelect(cycle.id)} style={{
                     display: 'flex', alignItems: 'center', gap: 14, padding: 14,
-                    backgroundColor: isSelected ? '#F5F3FF' : '#F8FAFC', borderRadius: 10,
-                    border: `2px solid ${isSelected ? '#7C3AED' : 'transparent'}`, cursor: 'pointer', transition: 'all 0.15s',
+                    backgroundColor: isSelected ? '#EFF6FF' : 'var(--bg-1)', borderRadius: 10,
+                    border: `2px solid ${isSelected ? '#2563EB' : 'transparent'}`, cursor: 'pointer', transition: 'all 0.15s',
                   }}>
                     <div style={{
                       width: 22, height: 22, borderRadius: 6,
-                      border: `2px solid ${isSelected ? '#7C3AED' : '#CBD5E1'}`,
-                      backgroundColor: isSelected ? '#7C3AED' : '#FFF',
+                      border: `2px solid ${isSelected ? '#2563EB' : 'var(--divider)'}`,
+                      backgroundColor: isSelected ? '#2563EB' : 'var(--cp-float)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                     }}>{isSelected && <CheckCircle2 size={14} style={{ color: '#FFF' }} />}</div>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4 }}>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', backgroundColor: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)', padding: '2px 8px', borderRadius: 4 }}>
                           {cycle.cycle_key}
                         </span>
                         <span style={{
@@ -202,15 +202,15 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
                           padding: '2px 6px', borderRadius: 4, display: 'flex', alignItems: 'center', gap: 3,
                         }}><StatusIcon size={10} /> {st.label}</span>
                       </div>
-                      <p style={{ fontSize: 14, color: '#0F172A', margin: 0 }}>{cycle.name}</p>
+                      <p style={{ fontSize: 14, color: 'var(--fg-1)', margin: 0 }}>{cycle.name}</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>{cycle.total_cases}</p>
-                      <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>tests</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>{cycle.total_cases}</p>
+                      <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: 0 }}>tests</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: '#7C3AED', margin: 0 }}>{cycle.progress_percent}%</p>
-                      <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>done</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#2563EB', margin: 0 }}>{cycle.progress_percent}%</p>
+                      <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: 0 }}>done</p>
                     </div>
                   </div>
                 );
@@ -220,14 +220,14 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting} style={{
-            height: 44, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0',
-            borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer',
+            height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)',
+            borderRadius: 10, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting || selectedIds.size === 0} style={{
             height: 44, padding: '0 24px',
-            background: selectedIds.size === 0 ? '#CBD5E1' : 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+            background: selectedIds.size === 0 ? 'var(--divider)' : 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
             border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
             cursor: selectedIds.size === 0 || isSubmitting ? 'not-allowed' : 'pointer',
             opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8,

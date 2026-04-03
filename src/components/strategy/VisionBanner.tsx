@@ -292,7 +292,7 @@ export function VisionBanner() {
                   fontSize: 12,
                   fontWeight: 500,
                   color: '#1D4ED8',
-                  background: '#FFFFFF',
+                  background: 'var(--bg-app)',
                   border: 'none',
                   padding: '4px 12px',
                   borderRadius: 6,

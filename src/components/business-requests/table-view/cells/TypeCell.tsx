@@ -33,7 +33,7 @@ export function TypeCell({ type = 'Business Request' }: TypeCellProps) {
                 background: 'rgba(37, 99, 235, 0.12)', /* V12 */
               }}
             >
-              <Box style={{ width: 12, height: 12, color: '#2563EB' }} /* V12 */ />
+              <Box style={{ width: 12, height: 12, color: 'var(--cp-blue)' }} /* V12 */ />
             </div>
           </div>
         </TooltipTrigger>

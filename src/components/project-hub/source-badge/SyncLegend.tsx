@@ -22,7 +22,7 @@ export function SyncLegend({ visible }: SyncLegendProps) {
     <div
       className="flex items-center w-full"
       style={{
-        background: 'var(--cp-bg-sunken, #F1F5F9)',
+        background: 'var(--cp-bg-sunken, var(--cp-bd-zone))',
         borderBottom: '0.75px solid var(--cp-border-subtle, rgba(15,23,42,0.07))',
         padding: '8px 28px',
         fontFamily: 'Inter, sans-serif',
@@ -30,7 +30,7 @@ export function SyncLegend({ visible }: SyncLegendProps) {
         gap: 16,
       }}
     >
-      <span style={{ fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>
+      <span style={{ fontWeight: 600, color: 'var(--fg-1)' }}>
         Jira sync status:
       </span>
       {LEGEND_ITEMS.map(item => (
@@ -45,10 +45,10 @@ export function SyncLegend({ visible }: SyncLegendProps) {
               display: 'inline-block',
             }}
           />
-          <span style={{ color: 'var(--cp-text-secondary, #475569)' }}>{item.label}</span>
+          <span style={{ color: 'var(--fg-2)' }}>{item.label}</span>
         </span>
       ))}
-      <span className="ml-auto" style={{ color: 'var(--cp-text-tertiary, #94A3B8)' }}>
+      <span className="ml-auto" style={{ color: 'var(--fg-4)' }}>
         Only shown on Jira-sourced items
       </span>
     </div>

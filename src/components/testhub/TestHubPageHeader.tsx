@@ -17,8 +17,8 @@ export function TestHubPageHeader({ title, subtitle, children }: TestHubPageHead
       style={{
         height: 64,
         padding: '0 24px',
-        backgroundColor: '#FFFFFF',
-        borderBottom: '1px solid #E2E8F0',
+        backgroundColor: 'var(--cp-float)',
+        borderBottom: '1px solid var(--divider)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -32,7 +32,7 @@ export function TestHubPageHeader({ title, subtitle, children }: TestHubPageHead
             fontFamily: 'Sora, sans-serif',
             fontSize: 18,
             fontWeight: 700,
-            color: '#0F172A',
+            color: 'var(--fg-1)',
             letterSpacing: '-0.01em',
             margin: 0,
             lineHeight: 1.3,
@@ -45,7 +45,7 @@ export function TestHubPageHeader({ title, subtitle, children }: TestHubPageHead
             style={{
               fontFamily: 'Inter, sans-serif',
               fontSize: 13,
-              color: '#64748B',
+              color: 'var(--fg-3)',
               margin: '2px 0 0 0',
               lineHeight: 1.3,
             }}

@@ -113,7 +113,7 @@ export function StoriesListView({
                 <TableHead className="w-16">Rank</TableHead>
                 <TableHead>Story</TableHead>
                 <TableHead>Feature</TableHead>
-                <TableHead>Sprint</TableHead>
+                <TableHead>Release</TableHead>
                 <TableHead>Team</TableHead>
                 <TableHead>Points</TableHead>
                 <TableHead>Assignee</TableHead>

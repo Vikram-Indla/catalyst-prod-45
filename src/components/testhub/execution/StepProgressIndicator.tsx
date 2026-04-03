@@ -15,11 +15,11 @@ interface StepProgressIndicatorProps {
 }
 
 const statusColors: Record<string, string> = {
-  not_run: 'hsl(var(--muted-foreground))',
-  passed: '#059669',
-  failed: '#DC2626',
-  blocked: '#D97706',
-  skipped: '#94A3B8',
+  not_run: 'var(--fg-3)',
+  passed: 'var(--sem-success)',
+  failed: 'var(--sem-danger)',
+  blocked: 'var(--sem-warning)',
+  skipped: 'var(--fg-4)',
 };
 
 export function StepProgressIndicator({ steps, currentIndex, onStepClick }: StepProgressIndicatorProps) {
@@ -39,11 +39,11 @@ export function StepProgressIndicator({ steps, currentIndex, onStepClick }: Step
               borderRadius: '50%',
               border: isCurrent ? `2px solid ${color}` : 'none',
               backgroundColor: step.status === 'not_run' && !isCurrent
-                ? 'hsl(var(--muted))'
+                ? 'var(--bg-2)'
                 : step.status === 'not_run' && isCurrent
-                  ? 'hsl(var(--background))'
+                  ? 'var(--bg-app)'
                   : color,
-              color: step.status !== 'not_run' ? '#FFFFFF' : 'hsl(var(--muted-foreground))',
+              color: step.status !== 'not_run' ? '#FFFFFF' : 'var(--fg-3)',
               fontSize: 11,
               fontWeight: 700,
               cursor: 'pointer',

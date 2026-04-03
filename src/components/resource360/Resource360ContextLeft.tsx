@@ -16,7 +16,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
   const dueDate = new Date(dueStr);
   const today = new Date();
   const daysLeft = Math.ceil((dueDate.getTime() - today.getTime()) / 86400000);
-  const dueColor = daysLeft < 0 ? '#EF4444' : daysLeft <= 7 ? '#D97706' : '#059669';
+  const dueColor = daysLeft < 0 ? 'var(--sem-danger)' : daysLeft <= 7 ? 'var(--sem-warning)' : '#059669';
   const dueText = daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : `${daysLeft}d left`;
 
   const transitions: { status: string; days: number }[] = Array.isArray(item.status_transitions)
@@ -41,7 +41,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-5 pb-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#64748B', fontFamily: "'Inter', monospace" }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg-3)', fontFamily: "'Inter', monospace" }}>
             {item.item_key}
           </span>
           <span
@@ -71,7 +71,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
           style={{
             width: 28, height: 28, borderRadius: 6, border: 'none',
             background: 'transparent', cursor: 'pointer',
-            fontSize: 16, color: '#9CA3AF', display: 'flex',
+            fontSize: 16, color: 'var(--fg-4)', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
             transition: 'all 120ms',
           }}
@@ -81,7 +81,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLElement).style.background = 'transparent';
-            (e.currentTarget as HTMLElement).style.color = '#9CA3AF';
+            (e.currentTarget as HTMLElement).style.color = 'var(--fg-4)';
           }}
         >
           ✕
@@ -90,7 +90,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
 
       {/* Title */}
       <div className="px-6 pb-3">
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', lineHeight: 1.35, margin: 0, fontFamily: 'Inter, sans-serif' }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', lineHeight: 1.35, margin: 0, fontFamily: 'Inter, sans-serif' }}>
           {item.title}
         </h2>
       </div>
@@ -103,18 +103,18 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
             <span style={{ fontSize: 12, fontWeight: 600, color: hubColor }}>{item.hub}</span>
           </PropertyRow>
           <PropertyRow label="Project">
-            <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{item.project_name ?? '—'}</span>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)' }}>{item.project_name ?? '—'}</span>
           </PropertyRow>
           <PropertyRow label="Reported By">
-            <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{item.assigner_name ?? '—'}</span>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)' }}>{item.assigner_name ?? '—'}</span>
           </PropertyRow>
           <PropertyRow label="Assigned">
-            <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{item.assigned_at?.slice(0, 10) ?? '—'}</span>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)' }}>{item.assigned_at?.slice(0, 10) ?? '—'}</span>
           </PropertyRow>
           <PropertyRow label="Release">
             <div className="flex flex-col">
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#334155' }}>{item.release_name ?? '—'}</span>
-              <span style={{ fontSize: 10, color: '#94A3B8' }}>ends {dueStr}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)' }}>{item.release_name ?? '—'}</span>
+              <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>ends {dueStr}</span>
             </div>
           </PropertyRow>
           <PropertyRow label="Due" isLast>
@@ -125,7 +125,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
         {/* Status Timeline */}
         {transitions.length > 0 && (
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: '#94A3B8', textTransform: 'uppercase' as const, marginBottom: 8 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--fg-4)', textTransform: 'uppercase' as const, marginBottom: 8 }}>
               Status Timeline
             </div>
             <div className="flex items-center gap-1 flex-wrap">
@@ -142,7 +142,7 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
                     }}>
                       {tr.status}
                     </span>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: '#94A3B8', fontFamily: "'Inter', monospace" }}>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--fg-4)', fontFamily: "'Inter', monospace" }}>
                       {tr.days}d
                     </span>
                     {i < transitions.length - 1 && (
@@ -157,10 +157,10 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
 
         {transitions.length === 0 && (
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: '#94A3B8', textTransform: 'uppercase' as const, marginBottom: 8 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--fg-4)', textTransform: 'uppercase' as const, marginBottom: 8 }}>
               Status Timeline
             </div>
-            <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
+            <div style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>
               No transition history available
             </div>
           </div>
@@ -168,10 +168,10 @@ export function Resource360ContextLeft({ item, onClose }: Props) {
 
         {/* Cycle time */}
         <div className="flex items-center gap-2" style={{ marginTop: 8 }}>
-          <span style={{ fontSize: 28, fontWeight: 800, color: '#0F172A', fontFamily: "'Inter', sans-serif", lineHeight: 1 }}>
+          <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif", lineHeight: 1 }}>
             {totalCycle}
           </span>
-          <span style={{ fontSize: 11, fontWeight: 500, color: '#94A3B8', lineHeight: 1.2 }}>
+          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-4)', lineHeight: 1.2 }}>
             days<br />cycle time
           </span>
         </div>
@@ -196,7 +196,7 @@ function PropertyRow({
         borderBottom: isLast ? 'none' : '1px solid #F5F5F7',
       }}
     >
-      <span style={{ fontSize: 11, fontWeight: 500, color: '#94A3B8', minWidth: 80, flexShrink: 0 }}>
+      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-4)', minWidth: 80, flexShrink: 0 }}>
         {label}
       </span>
       <div style={{ textAlign: 'right' }}>

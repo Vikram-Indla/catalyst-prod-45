@@ -144,7 +144,7 @@ describe('WorkflowEngine', () => {
       const context = createTestContext();
       const transitions = engine.getAvailableTransitions('open', context);
       
-      expect(transitions).toHaveLength(2); // Start Work + global Reopen
+      expect(transitions).toHaveLength(1); // Start Work (global Reopen excluded — already at 'open')
       expect(transitions.some(t => t.name === 'Start Work')).toBe(true);
     });
 

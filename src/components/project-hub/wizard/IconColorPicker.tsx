@@ -30,7 +30,7 @@ export function IconColorPicker({ icon, color, onIconChange, onColorChange }: Ic
     <div className="space-y-4">
       {/* Icon picker */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: '#334155', display: 'block', marginBottom: 6 }}>
+        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
           Icon
         </label>
         <div className="flex items-center gap-2 flex-wrap">
@@ -43,12 +43,12 @@ export function IconColorPicker({ icon, color, onIconChange, onColorChange }: Ic
               style={{
                 width: 36,
                 height: 36,
-                background: icon === name ? '#EFF6FF' : '#F8FAFC',
-                border: icon === name ? '2px solid #2563EB' : '1px solid #E2E8F0',
+                background: icon === name ? 'var(--cp-blue-wash)' : 'var(--bg-1)',
+                border: icon === name ? '2px solid var(--cp-blue)' : '1px solid var(--divider)',
                 cursor: 'pointer',
               }}
             >
-              <Icon size={18} color={icon === name ? '#2563EB' : '#64748B'} strokeWidth={1.75} />
+              <Icon size={18} color={icon === name ? 'var(--cp-blue)' : 'var(--fg-3)'} strokeWidth={1.75} />
             </button>
           ))}
         </div>
@@ -56,7 +56,7 @@ export function IconColorPicker({ icon, color, onIconChange, onColorChange }: Ic
 
       {/* Color picker */}
       <div>
-        <label style={{ fontSize: 12, fontWeight: 500, color: '#334155', display: 'block', marginBottom: 6 }}>
+        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6 }}>
           Color
         </label>
         <div className="flex items-center gap-2 flex-wrap">
@@ -70,9 +70,9 @@ export function IconColorPicker({ icon, color, onIconChange, onColorChange }: Ic
                 width: 28,
                 height: 28,
                 background: c,
-                border: color === c ? '3px solid #0F172A' : '2px solid transparent',
+                border: color === c ? '3px solid var(--fg-1)' : '2px solid transparent',
                 cursor: 'pointer',
-                boxShadow: color === c ? `inset 0 0 0 3px #FFFFFF` : undefined,
+                boxShadow: color === c ? `inset 0 0 0 3px var(--cp-float)` : undefined,
               }}
             />
           ))}

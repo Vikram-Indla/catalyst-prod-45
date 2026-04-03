@@ -694,30 +694,30 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
           hideClose 
           className={cn("p-0 flex flex-col", drawerWidthClass)}
           style={{ 
-            background: 'var(--surface-bg, hsl(var(--background)))',
-            borderLeft: '1px solid var(--border-default, hsl(var(--border)))'
+            background: 'var(--surface-bg, var(--bg-app))',
+            borderLeft: '1px solid var(--border-default, var(--divider))'
           }}
         >
           <SheetHeader className="flex-col space-y-0 shrink-0 p-0">
             {/* Breadcrumb Row */}
             <div 
               className="px-5 pt-2.5 pb-1.5 flex items-center gap-1.5"
-              style={{ borderBottom: '1px solid var(--border-subtle, hsl(var(--border)/0.5))' }}
+              style={{ borderBottom: '1px solid var(--border-subtle, color-mix(in srgb, var(--divider) 50%, transparent))' }}
             >
               <span 
                 className="text-[10px] font-medium uppercase tracking-[0.5px]"
-                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                style={{ color: 'var(--text-muted, var(--fg-3))' }}
               >
                 Dependencies
               </span>
-              <span className="text-[10px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>/</span>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted, var(--fg-3))' }}>/</span>
               <span className="text-[11px] font-semibold font-mono text-primary">
                 {isEdit ? `DEP-${dependencyId?.slice(0, 4).toUpperCase()}` : 'New'}
               </span>
               {isEdit && (
                 <button
                   onClick={handleCopyLink}
-                  className="p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-smooth text-muted-foreground"
+                  className="p-1 rounded hover:bg-[var(--surface-hover,var(--bg-2))] transition-smooth text-muted-foreground"
                   title="Copy link"
                 >
                   <LinkIcon className="h-3 w-3" />
@@ -730,13 +730,13 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
               <div className="flex-1 min-w-0 space-y-1">
                 <SheetTitle 
                   className="text-[18px] font-semibold tracking-[-0.3px] leading-tight"
-                  style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
+                  style={{ color: 'var(--text-primary, var(--fg-1))' }}
                 >
                   {isEdit ? 'Edit Dependency' : 'Create Dependency'}
                 </SheetTitle>
                 <SheetDescription 
                   className="text-[13px]"
-                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                  style={{ color: 'var(--text-muted, var(--fg-3))' }}
                 >
                   {isEdit && existingDependency ? (
                     isLegacyDependency ? 'Legacy team-based dependency (read-only)' :
@@ -785,8 +785,8 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
-                        style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                        className="h-8 w-8 hover:bg-[var(--surface-hover,var(--bg-2))]"
+                        style={{ color: 'var(--text-muted, var(--fg-3))' }}
                       >
                         <MoreVertical className="h-4 w-4" />
                       </Button>
@@ -825,22 +825,22 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                   variant="ghost" 
                   size="icon" 
                   onClick={handleClose}
-                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
-                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,var(--bg-2))]"
+                  style={{ color: 'var(--text-muted, var(--fg-3))' }}
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
-            <div style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }} />
+            <div style={{ borderBottom: '1px solid var(--border-default, var(--divider))' }} />
           </SheetHeader>
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
             <TabsList 
               className="w-full justify-start rounded-none h-10 shrink-0 overflow-x-auto flex-nowrap px-5 bg-transparent"
-              style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
+              style={{ borderBottom: '1px solid var(--border-default, var(--divider))' }}
             >
               <TabsTrigger 
                 value="details" 
@@ -863,12 +863,12 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
             </TabsList>
 
             {/* Body */}
-            <div className="flex-1 min-h-0 overflow-y-auto" style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}>
+            <div className="flex-1 min-h-0 overflow-y-auto" style={{ background: 'var(--surface-subtle, color-mix(in srgb, var(--bg-2) 30%, transparent))' }}>
               
               {/* Details Tab */}
               <TabsContent value="details" className="m-0 focus-visible:outline-none p-5 pb-8">
                 {isLoadingDep ? (
-                  <div className="text-center text-sm py-12" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Loading...</div>
+                  <div className="text-center text-sm py-12" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Loading...</div>
                 ) : isLegacyDependency ? (
                   renderLegacyView()
                 ) : (
@@ -876,10 +876,10 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                     {/* Dependency Level Indicator */}
                     <div 
                       className="flex items-center gap-2 p-3 rounded-md"
-                      style={{ background: 'var(--surface-bg, hsl(var(--muted)/0.5))' }}
+                      style={{ background: 'var(--surface-bg, color-mix(in srgb, var(--bg-2) 50%, transparent))' }}
                     >
-                      <Layers className="h-4 w-4" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }} />
-                      <span className="text-sm" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Dependency Level:</span>
+                      <Layers className="h-4 w-4" style={{ color: 'var(--text-muted, var(--fg-3))' }} />
+                      <span className="text-sm" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Dependency Level:</span>
                       <Badge variant="secondary">
                         {DEPENDENCY_LEVEL_LABELS[derivedLevel]}
                       </Badge>
@@ -887,12 +887,12 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
                     {/* Requesting Work Item */}
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
+                      <Label className="text-sm font-medium" style={{ color: 'var(--text-primary, var(--fg-1))' }}>
                         Requesting Work Item (Source)
                       </Label>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <Label htmlFor="req-type" className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Type</Label>
+                          <Label htmlFor="req-type" className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Type</Label>
                           <Select 
                             value={requestingWorkItemType} 
                             onValueChange={handleRequestingWorkItemTypeChange}
@@ -901,8 +901,8 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                               id="req-type" 
                               className="h-9"
                               style={{ 
-                                background: 'var(--surface-bg, hsl(var(--background)))',
-                                borderColor: 'var(--border-default, hsl(var(--border)))'
+                                background: 'var(--surface-bg, var(--bg-app))',
+                                borderColor: 'var(--border-default, var(--divider))'
                               }}
                             >
                               <SelectValue />
@@ -914,14 +914,14 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                           </Select>
                         </div>
                         <div>
-                          <Label htmlFor="req-item" className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Work Item *</Label>
+                          <Label htmlFor="req-item" className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Work Item *</Label>
                           <Select value={requestingWorkItemId} onValueChange={handleRequestingWorkItemIdChange}>
                             <SelectTrigger 
                               id="req-item" 
                               className="h-9"
                               style={{ 
-                                background: 'var(--surface-bg, hsl(var(--background)))',
-                                borderColor: 'var(--border-default, hsl(var(--border)))'
+                                background: 'var(--surface-bg, var(--bg-app))',
+                                borderColor: 'var(--border-default, var(--divider))'
                               }}
                             >
                               <SelectValue placeholder={`Select ${requestingWorkItemType}`} />
@@ -938,12 +938,12 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
                     {/* Depends On Work Item */}
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
+                      <Label className="text-sm font-medium" style={{ color: 'var(--text-primary, var(--fg-1))' }}>
                         Depends On (Target)
                       </Label>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <Label htmlFor="dep-type" className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Type</Label>
+                          <Label htmlFor="dep-type" className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Type</Label>
                           <Select 
                             value={dependsOnWorkItemType} 
                             onValueChange={handleDependsOnWorkItemTypeChange}
@@ -952,8 +952,8 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                               id="dep-type" 
                               className="h-9"
                               style={{ 
-                                background: 'var(--surface-bg, hsl(var(--background)))',
-                                borderColor: 'var(--border-default, hsl(var(--border)))'
+                                background: 'var(--surface-bg, var(--bg-app))',
+                                borderColor: 'var(--border-default, var(--divider))'
                               }}
                             >
                               <SelectValue />
@@ -965,14 +965,14 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                           </Select>
                         </div>
                         <div>
-                          <Label htmlFor="dep-item" className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Work Item *</Label>
+                          <Label htmlFor="dep-item" className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Work Item *</Label>
                           <Select value={dependsOnWorkItemId} onValueChange={handleDependsOnWorkItemIdChange}>
                             <SelectTrigger 
                               id="dep-item" 
                               className="h-9"
                               style={{ 
-                                background: 'var(--surface-bg, hsl(var(--background)))',
-                                borderColor: 'var(--border-default, hsl(var(--border)))'
+                                background: 'var(--surface-bg, var(--bg-app))',
+                                borderColor: 'var(--border-default, var(--divider))'
                               }}
                             >
                               <SelectValue placeholder={`Select ${dependsOnWorkItemType}`} />
@@ -990,13 +990,13 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                     {/* Dependency Type + Risk */}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Dependency Type *</Label>
+                        <Label className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Dependency Type *</Label>
                         <Select value={dependencyType} onValueChange={handleDependencyTypeChange}>
                           <SelectTrigger 
                             className="h-9"
                             style={{ 
-                              background: 'var(--surface-bg, hsl(var(--background)))',
-                              borderColor: 'var(--border-default, hsl(var(--border)))'
+                              background: 'var(--surface-bg, var(--bg-app))',
+                              borderColor: 'var(--border-default, var(--divider))'
                             }}
                           >
                             <SelectValue />
@@ -1012,13 +1012,13 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                         </Select>
                       </div>
                       <div>
-                        <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Risk Level</Label>
+                        <Label className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Risk Level</Label>
                         <Select value={riskLevel} onValueChange={handleRiskLevelChange}>
                           <SelectTrigger 
                             className="h-9"
                             style={{ 
-                              background: 'var(--surface-bg, hsl(var(--background)))',
-                              borderColor: 'var(--border-default, hsl(var(--border)))'
+                              background: 'var(--surface-bg, var(--bg-app))',
+                              borderColor: 'var(--border-default, var(--divider))'
                             }}
                           >
                             <SelectValue />
@@ -1034,13 +1034,13 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
                     {/* Scheduling */}
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
+                      <Label className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--text-primary, var(--fg-1))' }}>
                         <Calendar className="h-4 w-4" />
                         Scheduling
                       </Label>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Needed By Date *</Label>
+                          <Label className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Needed By Date *</Label>
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button
@@ -1050,8 +1050,8 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                                   !neededByDate && "text-muted-foreground"
                                 )}
                                 style={{ 
-                                  background: 'var(--surface-bg, hsl(var(--background)))',
-                                  borderColor: 'var(--border-default, hsl(var(--border)))'
+                                  background: 'var(--surface-bg, var(--bg-app))',
+                                  borderColor: 'var(--border-default, var(--divider))'
                                 }}
                               >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
@@ -1070,14 +1070,14 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                           </Popover>
                         </div>
                         <div>
-                          <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Quarter (derived)</Label>
+                          <Label className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Quarter (derived)</Label>
                           <Input 
                             value={derivedQuarter} 
                             readOnly 
                             className="h-9" 
                             style={{ 
-                              background: 'var(--surface-subtle, hsl(var(--muted)/0.5))',
-                              borderColor: 'var(--border-default, hsl(var(--border)))'
+                              background: 'var(--surface-subtle, color-mix(in srgb, var(--bg-2) 50%, transparent))',
+                              borderColor: 'var(--border-default, var(--divider))'
                             }}
                           />
                         </div>
@@ -1086,16 +1086,16 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                       {/* Optional sprint fields */}
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Needed By Sprint (optional)</Label>
+                          <Label className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Needed By Release (optional)</Label>
                           <Select value={neededBySprint || "__none__"} onValueChange={handleNeededBySprintChange}>
                             <SelectTrigger 
                               className="h-9"
                               style={{ 
-                                background: 'var(--surface-bg, hsl(var(--background)))',
-                                borderColor: 'var(--border-default, hsl(var(--border)))'
+                                background: 'var(--surface-bg, var(--bg-app))',
+                                borderColor: 'var(--border-default, var(--divider))'
                               }}
                             >
-                              <SelectValue placeholder="Select sprint" />
+                              <SelectValue placeholder="Select release" />
                             </SelectTrigger>
                             <SelectContent className="z-[400] bg-popover border">
                               <SelectItem value="__none__">None</SelectItem>
@@ -1106,16 +1106,16 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                           </Select>
                         </div>
                         <div>
-                          <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Committed By Sprint (optional)</Label>
+                          <Label className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Committed By Release (optional)</Label>
                           <Select value={committedBySprint || "__none__"} onValueChange={handleCommittedBySprintChange}>
                             <SelectTrigger 
                               className="h-9"
                               style={{ 
-                                background: 'var(--surface-bg, hsl(var(--background)))',
-                                borderColor: 'var(--border-default, hsl(var(--border)))'
+                                background: 'var(--surface-bg, var(--bg-app))',
+                                borderColor: 'var(--border-default, var(--divider))'
                               }}
                             >
-                              <SelectValue placeholder="Select sprint" />
+                              <SelectValue placeholder="Select release" />
                             </SelectTrigger>
                             <SelectContent className="z-[400] bg-popover border">
                               <SelectItem value="__none__">None</SelectItem>
@@ -1130,15 +1130,15 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
                     {/* Description */}
                     <div>
-                      <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Description</Label>
+                      <Label className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Description</Label>
                       <Textarea
                         value={description}
                         onChange={(e) => handleDescriptionChange(e.target.value)}
                         placeholder="Describe what is needed and why..."
                         rows={3}
                         style={{ 
-                          background: 'var(--surface-bg, hsl(var(--background)))',
-                          borderColor: 'var(--border-default, hsl(var(--border)))'
+                          background: 'var(--surface-bg, var(--bg-app))',
+                          borderColor: 'var(--border-default, var(--divider))'
                         }}
                       />
                     </div>
@@ -1149,24 +1149,24 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
               {/* Negotiation Tab */}
               <TabsContent value="negotiation" className="m-0 focus-visible:outline-none p-5 pb-8">
                 {isLegacyDependency ? (
-                  <div className="text-center text-sm py-12" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>
+                  <div className="text-center text-sm py-12" style={{ color: 'var(--text-muted, var(--fg-3))' }}>
                     Legacy dependencies cannot be edited. View details in the Details tab.
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    <h3 className="text-[13px] font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
+                    <h3 className="text-[13px] font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary, var(--fg-1))' }}>
                       <Calendar className="h-4 w-4" />
                       Negotiation & Commitment
                     </h3>
 
                     <div>
-                      <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Status *</Label>
+                      <Label className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Status *</Label>
                       <Select value={status} onValueChange={handleStatusChange}>
                         <SelectTrigger 
                           className="h-9"
                           style={{ 
-                            background: 'var(--surface-bg, hsl(var(--background)))',
-                            borderColor: 'var(--border-default, hsl(var(--border)))'
+                            background: 'var(--surface-bg, var(--bg-app))',
+                            borderColor: 'var(--border-default, var(--divider))'
                           }}
                         >
                           <SelectValue />
@@ -1185,7 +1185,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                     </div>
 
                     <div>
-                      <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Committed By Date</Label>
+                      <Label className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Committed By Date</Label>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
@@ -1195,8 +1195,8 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                               !committedByDate && "text-muted-foreground"
                             )}
                             style={{ 
-                              background: 'var(--surface-bg, hsl(var(--background)))',
-                              borderColor: 'var(--border-default, hsl(var(--border)))'
+                              background: 'var(--surface-bg, var(--bg-app))',
+                              borderColor: 'var(--border-default, var(--divider))'
                             }}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -1224,21 +1224,21 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                           checked={sourceBlocked} 
                           onCheckedChange={(checked) => handleSourceBlockedChange(checked === true)} 
                         />
-                        <Label htmlFor="source-blocked" className="font-normal text-[13px]" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
+                        <Label htmlFor="source-blocked" className="font-normal text-[13px]" style={{ color: 'var(--text-primary, var(--fg-1))' }}>
                           Source Blocked: Is the requesting party blocked?
                         </Label>
                       </div>
 
                       {sourceBlocked && (
                         <div>
-                          <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Blocked Reason</Label>
+                          <Label className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Blocked Reason</Label>
                           <Textarea 
                             value={sourceBlockedReason}
                             onChange={(e) => handleSourceBlockedReasonChange(e.target.value)}
                             placeholder="Why is the requesting party blocked?" 
                             style={{ 
-                              background: 'var(--surface-bg, hsl(var(--background)))',
-                              borderColor: 'var(--border-default, hsl(var(--border)))'
+                              background: 'var(--surface-bg, var(--bg-app))',
+                              borderColor: 'var(--border-default, var(--divider))'
                             }}
                           />
                         </div>
@@ -1250,21 +1250,21 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                           checked={targetDelayed} 
                           onCheckedChange={(checked) => handleTargetDelayedChange(checked === true)} 
                         />
-                        <Label htmlFor="target-delayed" className="font-normal text-[13px]" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
+                        <Label htmlFor="target-delayed" className="font-normal text-[13px]" style={{ color: 'var(--text-primary, var(--fg-1))' }}>
                           Target Delayed: Is the responding party delayed?
                         </Label>
                       </div>
 
                       {targetDelayed && (
                         <div>
-                          <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Delayed Reason</Label>
+                          <Label className="text-xs" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Delayed Reason</Label>
                           <Textarea 
                             value={targetDelayedReason}
                             onChange={(e) => handleTargetDelayedReasonChange(e.target.value)}
                             placeholder="Why is the responding party delayed?" 
                             style={{ 
-                              background: 'var(--surface-bg, hsl(var(--background)))',
-                              borderColor: 'var(--border-default, hsl(var(--border)))'
+                              background: 'var(--surface-bg, var(--bg-app))',
+                              borderColor: 'var(--border-default, var(--divider))'
                             }}
                           />
                         </div>
@@ -1276,7 +1276,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                           checked={noWorkRequired} 
                           onCheckedChange={(checked) => handleNoWorkRequiredChange(checked === true)} 
                         />
-                        <Label htmlFor="no-work" className="font-normal text-[13px]" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
+                        <Label htmlFor="no-work" className="font-normal text-[13px]" style={{ color: 'var(--text-primary, var(--fg-1))' }}>
                           No Work Required
                         </Label>
                       </div>
@@ -1296,10 +1296,10 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent style={{ background: 'var(--surface-bg, hsl(var(--background)))' }}>
+        <AlertDialogContent style={{ background: 'var(--surface-bg, var(--bg-app))' }}>
           <AlertDialogHeader>
-            <AlertDialogTitle style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>Delete Dependency?</AlertDialogTitle>
-            <AlertDialogDescription style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>
+            <AlertDialogTitle style={{ color: 'var(--text-primary, var(--fg-1))' }}>Delete Dependency?</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-muted, var(--fg-3))' }}>
               This action cannot be undone. The dependency will be permanently deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>

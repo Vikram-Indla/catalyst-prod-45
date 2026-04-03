@@ -70,7 +70,7 @@ const TOKENS = `
   --srd-teal:#0D9488; --srd-teal-t:#0A8277; --srd-teal-bg:#F0FDFA;
   --srd-green:#16A34A; --srd-green-t:#11853D; --srd-green-bg:#F0FDF4;
   --srd-red:#DC2626; --srd-red-t:#D92525; --srd-red-bg:#FEF2F2;
-  --srd-purple:#7C3AED;
+  --srd-purple:#2563EB;
   --srd-ai:#2563EB; --srd-ai-d:#1E40AF; --srd-ai-bg:#EFF6FF; --srd-ai-bdr:#93C5FD;
   --srd-r:4px; --srd-r2:6px; --srd-r3:8px; --srd-r4:12px; --srd-pill:9999px;
   font-family:'Inter',system-ui,sans-serif; color:var(--srd-ink);
@@ -79,15 +79,15 @@ const TOKENS = `
 
 /* ── DARK MODE — Nocturne overrides ── */
 [data-theme="dark"] [data-srd] {
-  --srd-ink: rgba(248,244,240,0.92);
-  --srd-ink-2: rgba(248,244,240,0.72);
-  --srd-ink-3: rgba(248,244,240,0.72);
-  --srd-ink-m: rgba(248,244,240,0.60);
-  --srd-bg: #1A1714;
-  --srd-bg-2: #1A1714;
-  --srd-bg-3: rgba(248,244,240,0.05);
-  --srd-bdr: rgba(248,244,240,0.10);
-  --srd-bdr-s: rgba(248,244,240,0.18);
+  --srd-ink: rgba(235,238,245,0.92);
+  --srd-ink-2: rgba(235,238,245,0.72);
+  --srd-ink-3: rgba(235,238,245,0.72);
+  --srd-ink-m: rgba(235,238,245,0.60);
+  --srd-bg: #181A1E;
+  --srd-bg-2: #181A1E;
+  --srd-bg-3: rgba(235,238,245,0.05);
+  --srd-bdr: rgba(235,238,245,0.10);
+  --srd-bdr-s: rgba(235,238,245,0.18);
   --srd-blue: #3B82F6;
   --srd-blue-h: #60A5FA;
   --srd-blue-bg: rgba(59,130,246,0.08);
@@ -101,7 +101,7 @@ const TOKENS = `
   --srd-red: #FCA5A5;
   --srd-red-t: #FCA5A5;
   --srd-red-bg: rgba(239,68,68,0.10);
-  --srd-purple: #A78BFA;
+  --srd-purple: #60A5FA;
   --srd-ai: #3B82F6;
   --srd-ai-d: #60A5FA;
   --srd-ai-bg: rgba(59,130,246,0.08);

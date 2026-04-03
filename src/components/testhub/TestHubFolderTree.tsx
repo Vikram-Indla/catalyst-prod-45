@@ -116,9 +116,9 @@ function FolderItem({
 
         {/* Folder icon */}
         {isExpanded && hasChildren ? (
-          <FolderOpen className="th-folder-icon" style={{ color: '#D97706' }} />
+          <FolderOpen className="th-folder-icon" style={{ color: 'var(--sem-warning)' }} />
         ) : (
-          <Folder className="th-folder-icon" style={{ color: '#D97706' }} />
+          <Folder className="th-folder-icon" style={{ color: 'var(--sem-warning)' }} />
         )}
 
         {/* Folder name or rename input */}
@@ -171,7 +171,7 @@ function FolderItem({
               className="th-folder-item-btn"
               onClick={() => setShowDeleteConfirm(true)}
               title="Delete"
-              style={{ color: '#DC2626' }}
+              style={{ color: 'var(--sem-danger)' }}
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>
@@ -213,7 +213,7 @@ function FolderItem({
               </div>
             </div>
             <div className="th-modal-body">
-              <p style={{ color: '#334155', fontSize: '14px' }}>
+              <p style={{ color: 'var(--fg-2)', fontSize: '14px' }}>
                 Test cases in this folder will be moved to the parent folder.
               </p>
             </div>
@@ -293,7 +293,7 @@ export function TestHubFolderTree({
 
       {/* Empty state */}
       {tree.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '32px 16px', color: '#94A3B8' }}>
+        <div style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--fg-4)' }}>
           <Folder style={{ width: '32px', height: '32px', margin: '0 auto 8px', opacity: 0.5 }} />
           <p style={{ fontSize: '12px' }}>No folders yet</p>
           <button

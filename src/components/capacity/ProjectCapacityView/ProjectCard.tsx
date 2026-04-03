@@ -102,7 +102,7 @@ export function ProjectCard({ utilization, onViewDetails, onResourceClick }: Pro
           {/* Overflow indicator for over-allocation */}
           {overflowWidth > 0 && (
             <div
-              className="absolute top-0 bottom-0 right-0 bg-purple-500 opacity-80"
+              className="absolute top-0 bottom-0 right-0 bg-blue-500 opacity-80"
               style={{ width: `${overflowWidth}%` }}
             />
           )}

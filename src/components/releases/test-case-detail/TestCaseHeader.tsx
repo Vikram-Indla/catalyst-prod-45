@@ -46,7 +46,7 @@ const priorityConfig: Record<string, { icon: typeof AlertTriangle; className: st
 
 const typeConfig: Record<string, { className: string }> = {
   'Functional': { className: 'bg-primary/10 text-primary border-primary/20' },
-  'Regression': { className: 'bg-purple-50 text-purple-700 border-purple-200' },
+  'Regression': { className: 'bg-blue-50 text-blue-700 border-blue-200' },
   'Smoke': { className: 'bg-orange-50 text-orange-700 border-orange-200' },
   'Integration': { className: 'bg-teal-50 text-teal-700 border-teal-200' },
   'E2E': { className: 'bg-indigo-50 text-indigo-700 border-indigo-200' },

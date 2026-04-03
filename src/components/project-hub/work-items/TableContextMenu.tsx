@@ -44,7 +44,7 @@ export function TableContextMenu({
     <div
       style={{
         position: 'fixed', top: adjustedY, left: adjustedX, zIndex: 99999,
-        width: 200, background: '#FFFFFF', border: '1px solid #E2E8F0',
+        width: 200, background: 'var(--cp-float)', border: '1px solid var(--divider)',
         borderRadius: 6, boxShadow: '0 12px 32px rgba(0,0,0,0.18)',
         fontFamily: 'Inter, sans-serif',
       }}
@@ -58,17 +58,17 @@ export function TableContextMenu({
               key={item.label}
               onClick={() => { item.action(); onClose(); }}
               className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[#F8FAFC] text-left transition-colors"
-              style={{ color: '#334155' }}
+              style={{ color: 'var(--fg-2)' }}
             >
               <Icon size={13} className="text-[#94A3B8]" />
               {item.label}
             </button>
           );
         })}
-        <div style={{ borderTop: '1px solid #F1F5F9', margin: '2px 0' }} />
+        <div style={{ borderTop: '1px solid var(--cp-bd-zone)', margin: '2px 0' }} />
         {deleteConfirm ? (
           <div className="px-3 py-1.5 flex items-center gap-2">
-            <span className="text-[11px]" style={{ color: '#DC2626' }}>Confirm?</span>
+            <span className="text-[11px]" style={{ color: 'var(--sem-danger)' }}>Confirm?</span>
             <button
               onClick={() => { onDelete(); onClose(); }}
               className="text-[11px] font-semibold px-2 py-0.5 rounded bg-[#DC2626] text-white"
@@ -86,7 +86,7 @@ export function TableContextMenu({
           <button
             onClick={() => setDeleteConfirm(true)}
             className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[#FEF2F2] text-left transition-colors"
-            style={{ color: '#DC2626' }}
+            style={{ color: 'var(--sem-danger)' }}
           >
             <Trash2 size={13} />
             Delete

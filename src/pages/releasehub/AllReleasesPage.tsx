@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Search, LayoutGrid, List, Plus, Package } from 'lucide-react';
-import { useReleases } from '@/hooks/useReleaseHub';
+import React, { useState, useMemo } from 'react';
+import { Search, LayoutGrid, List, Plus, Package, Download, Clock, AlertTriangle } from 'lucide-react';
+import { useReleaseSummary, useFreezeWindows } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
 import { SourceBadge } from '@/components/releasehub/SourceBadge';
@@ -8,6 +8,9 @@ import { ReleaseDrawer } from '@/components/releasehub/ReleaseDrawer';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 function mapStatus(status: string) {
   if (status === 'todo') return 'planning';
@@ -15,13 +18,38 @@ function mapStatus(status: string) {
   return status;
 }
 
+function relativeTime(dateStr: string | null | undefined): string {
+  if (!dateStr) return '';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+
 export default function AllReleasesPage() {
-  const { data: releases = [], isLoading, error, refetch } = useReleases();
+  const { data: releases = [], isLoading, error, refetch } = useReleaseSummary();
+  const { data: freezeWindows = [] } = useFreezeWindows();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<string>('all');
   const [view, setView] = useState<'cards' | 'table'>('cards');
   const [selectedRelease, setSelectedRelease] = useState<any>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [importing, setImporting] = useState(false);
+
+  const freezeConflicts = useMemo(() => {
+    if (!freezeWindows.length || !releases.length) return [];
+    return releases.filter((r: any) => {
+      if (!r.target_date) return false;
+      const t = new Date(r.target_date);
+      return freezeWindows.some((fw: any) => {
+        const s = new Date(fw.start_date);
+        const e = new Date(fw.end_date);
+        return t >= s && t <= e;
+      });
+    });
+  }, [releases, freezeWindows]);
 
   const filtered = releases.filter((r: any) => {
     const mapped = mapStatus(r.status);
@@ -45,6 +73,32 @@ export default function AllReleasesPage() {
     return 'rgba(15,23,42,0.12)';
   };
 
+  const getProgress = (r: any) => {
+    const total = Number(r.change_count) || 0;
+    const completed = Number(r.completed_change_count) || 0;
+    if (total === 0) return { pct: 0, total, completed, empty: true };
+    const pct = Math.min(Math.round((completed / total) * 100), 100);
+    return { pct, total, completed, empty: false };
+  };
+
+  const handleImport = async () => {
+    setImporting(true);
+    try {
+      const { data, error: rpcErr } = await supabase.rpc('rh_import_jira_versions', { p_project_key: 'CATALYST' });
+      if (rpcErr) throw rpcErr;
+      const result = data as any;
+      if (result?.queued) {
+        toast.success('Import queued. Jira versions will sync shortly.');
+      } else {
+        toast.info(result?.reason || 'Import already requested recently.');
+      }
+    } catch (err) {
+      toast.error('Failed to queue import: ' + String(err));
+    } finally {
+      setTimeout(() => setImporting(false), 3000);
+    }
+  };
+
   return (
     <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px' }}>
       <div className="flex items-center justify-between mb-5">
@@ -52,12 +106,43 @@ export default function AllReleasesPage() {
           <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>All Releases</h1>
           <p className="text-[13px] text-[#64748B]" style={{ fontFamily: RH.fontBody }}>Manage and track all releases</p>
         </div>
-        <button onClick={() => setShowCreate(true)}
-          className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"
-          style={{ background: 'linear-gradient(to bottom, #3B82F6, #2563EB)', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
-          <Plus size={14} /> New Release
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleImport} disabled={importing}
+            className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5 border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#475569] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            <Download size={14} /> Import from Jira
+          </button>
+          <button onClick={() => setShowCreate(true)}
+            className="h-9 px-4 rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-colors">
+            <Plus size={14} /> New Release
+          </button>
+        </div>
       </div>
+
+      {/* Freeze conflict banner */}
+      {freezeConflicts.length > 0 && (
+        <div style={{
+          background: '#FEF3C7',
+          border: '1px solid #FCD34D',
+          borderRadius: '6px',
+          padding: '10px 14px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          marginBottom: '12px',
+        }}>
+          <AlertTriangle size={16} color="#D97706" />
+          <span style={{ fontSize: '13px', color: '#92400E' }}>
+            {freezeConflicts.length === 1
+              ? `"${freezeConflicts[0].name}" targets a date within a freeze window.`
+              : `${freezeConflicts.length} releases target dates within freeze windows.`}
+            {' '}
+            <a href="/release-hub/freeze-windows"
+               style={{ color: '#B45309', textDecoration: 'underline', fontWeight: 600 }}>
+              View freeze windows →
+            </a>
+          </span>
+        </div>
+      )}
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-2 mb-4">
@@ -101,66 +186,122 @@ export default function AllReleasesPage() {
           actions={[{ label: 'Clear filters', onClick: () => { setSearch(''); setFilter('all'); }, variant: 'ghost' }]} />
       ) : view === 'cards' ? (
         <div className="grid grid-cols-3 gap-3.5">
-          {filtered.map((r: any) => (
-            <button key={r.id} onClick={() => setSelectedRelease(r)}
-              className="bg-white rounded-md border border-[rgba(15,23,42,0.12)] overflow-hidden text-left hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all relative group"
-              style={{ borderRadius: 6 }}>
-              <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: accentColor(r.status), borderRadius: '6px 0 0 6px' }} />
-              <div className="p-4 pl-5">
-                {/* Title + Key */}
-                <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: RH.ink1, fontWeight: 650 }}>{r.name}</h3>
-                {r.jira_key && <span className="text-[11px] text-[#94A3B8] block mb-2" style={{ fontFamily: RH.fontMono }}>{r.jira_key}</span>}
+          {filtered.map((r: any) => {
+            const progress = getProgress(r);
+            return (
+              <button key={r.id} onClick={() => setSelectedRelease(r)}
+                className="bg-white rounded-md border border-[rgba(15,23,42,0.12)] overflow-hidden text-left hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all relative group"
+                style={{ borderRadius: 6 }}>
+                <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: accentColor(r.status), borderRadius: '6px 0 0 6px' }} />
+                <div className="p-4 pl-5">
+                  <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: RH.ink1, fontWeight: 650 }}>{r.name}</h3>
+                  {r.jira_key && <span className="text-[11px] text-[#94A3B8] block mb-2" style={{ fontFamily: RH.fontMono }}>{r.jira_key}</span>}
 
-                {/* Status lozenge top-right area */}
-                <div className="flex items-center gap-2 flex-wrap mb-2">
-                  <StatusLozenge status={mapStatus(r.status)} />
-                </div>
+                  <div className="flex items-center gap-2 flex-wrap mb-2">
+                    <StatusLozenge status={mapStatus(r.status)} />
+                    <SourceBadge source={r.source || 'catalyst'} />
+                    {(r.source === 'jira') && relativeTime(r.synced_at || r.updated_at) && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="inline-flex items-center gap-1 text-[11px] text-[#94A3B8] cursor-default">
+                              <Clock size={12} />
+                              Synced {relativeTime(r.synced_at || r.updated_at)}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="text-xs">
+                            Last synced: {new Date(r.synced_at || r.updated_at).toLocaleString()}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
 
-                {/* Meta row */}
-                <div className="flex items-center gap-3 text-[12px] text-[#64748B] mb-3">
-                  <span>{r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date'}</span>
-                  <span>·</span>
-                  <span>{r.change_count || r.chg_count || 0} changes</span>
-                </div>
+                  <div className="flex items-center gap-3 text-[12px] text-[#64748B] mb-3">
+                    <span>{r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date'}</span>
+                    <span>·</span>
+                    <span>{progress.total} {progress.total === 1 ? 'change' : 'changes'}</span>
+                  </div>
 
-                {/* Progress bar */}
-                <div className="w-full h-1 bg-[#F1F5F9] rounded-full overflow-hidden">
-                  <div className="h-full rounded-full" style={{
-                    width: mapStatus(r.status) === 'released' ? '100%' : mapStatus(r.status) === 'in_progress' ? '50%' : '10%',
-                    background: accentColor(r.status)
-                  }} />
+                  {progress.empty ? (
+                    <p className="text-[11px] text-[#94A3B8]" style={{ fontFamily: RH.fontBody }}>No changes yet</p>
+                  ) : (
+                    <>
+                      <div className="w-full h-1 bg-[#F1F5F9] rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all" style={{
+                          width: progress.pct + '%',
+                          background: accentColor(r.status)
+                        }} />
+                      </div>
+                      <p className="text-[11px] text-[#94A3B8] mt-1" style={{ fontFamily: RH.fontBody }}>
+                        {progress.pct}% · {progress.completed} of {progress.total} {progress.total === 1 ? 'change' : 'changes'} deployed
+                      </p>
+                    </>
+                  )}
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
       ) : (
         <div className="bg-white rounded border border-[rgba(15,23,42,0.12)] overflow-hidden">
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
               <tr style={{ background: '#F1F5F9' }}>
-                {['RELEASE', 'SOURCE', 'STATUS', 'TARGET DATE', 'CHANGES', 'TEST CYCLES'].map(h => (
+                {['RELEASE', 'SOURCE', 'STATUS', 'TARGET DATE', 'CHANGES', 'PROGRESS'].map(h => (
                   <th key={h} className="px-3 py-0 h-[36px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {filtered.map((r: any) => (
-                <tr key={r.id} onClick={() => setSelectedRelease(r)}
-                  className="border-b border-[rgba(15,23,42,0.06)] cursor-pointer"
-                  style={{ height: 36, background: '#FFFFFF', transition: 'background 120ms' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}>
-                  <td className="px-3 py-0 font-medium" style={{ color: RH.ink1 }}>{r.name}</td>
-                  <td className="px-3 py-0"><SourceBadge source={r.source || 'catalyst'} /></td>
-                  <td className="px-3 py-0"><StatusLozenge status={mapStatus(r.status)} /></td>
-                  <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
-                    {r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
-                  </td>
-                  <td className="px-3 py-0"><span className="font-bold text-[#0F172A]" style={{ fontFamily: RH.fontMono }}>{r.change_count || r.chg_count || 0}</span></td>
-                  <td className="px-3 py-0 text-[#64748B]">{r.test_cycle_count || 0}</td>
-                </tr>
-              ))}
+              {filtered.map((r: any) => {
+                const progress = getProgress(r);
+                return (
+                  <tr key={r.id} onClick={() => setSelectedRelease(r)}
+                    className="border-b border-[rgba(15,23,42,0.06)] cursor-pointer"
+                    style={{ height: 36, background: '#FFFFFF', transition: 'background 120ms' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}>
+                    <td className="px-3 py-0 font-medium" style={{ color: RH.ink1 }}>
+                      <div className="flex items-center gap-2">
+                        {r.name}
+                        {r.source === 'jira' && relativeTime(r.synced_at || r.updated_at) && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="inline-flex items-center gap-0.5 text-[11px] text-[#94A3B8] cursor-default">
+                                  <Clock size={12} />
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="text-xs">
+                                Synced {relativeTime(r.synced_at || r.updated_at)}
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-3 py-0"><SourceBadge source={r.source || 'catalyst'} /></td>
+                    <td className="px-3 py-0"><StatusLozenge status={mapStatus(r.status)} /></td>
+                    <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
+                      {r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                    </td>
+                    <td className="px-3 py-0"><span className="font-bold text-[#0F172A]" style={{ fontFamily: RH.fontMono }}>{progress.total}</span></td>
+                    <td className="px-3 py-0">
+                      {progress.empty ? (
+                        <span className="text-[11px] text-[#94A3B8]">No changes yet</span>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 h-1 bg-[#F1F5F9] rounded-full overflow-hidden">
+                            <div className="h-full rounded-full" style={{ width: progress.pct + '%', background: accentColor(r.status) }} />
+                          </div>
+                          <span className="text-[11px] text-[#64748B]" style={{ fontFamily: RH.fontMono }}>{progress.pct}%</span>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

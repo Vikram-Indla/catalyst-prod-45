@@ -143,7 +143,7 @@ export function EpicView({ document }: EpicViewProps) {
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Workspace
         </button>
-        <span className="text-[11px] font-semibold font-mono px-2.5 py-0.5 rounded-md bg-violet-50 text-violet-700">
+        <span className="text-[11px] font-semibold font-mono px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700">
           {document.brd_number}
         </span>
         <h1 className="text-base font-extrabold text-foreground flex-1 truncate">{document.title}</h1>
@@ -166,7 +166,7 @@ export function EpicView({ document }: EpicViewProps) {
                 className={cn(
                   'w-full text-left border rounded-[10px] p-4 mb-3 transition-all',
                   selectedEpicIdx === i
-                    ? 'border-violet-500 bg-violet-50/50'
+                    ? 'border-blue-500 bg-blue-50/50'
                     : 'border-[hsl(var(--border))] hover:border-zinc-300 hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]'
                 )}
               >
@@ -202,7 +202,7 @@ export function EpicView({ document }: EpicViewProps) {
             <div key={story.id} className="bg-white border border-[hsl(var(--border))] rounded-[10px] p-[18px] mb-3">
               {/* Header */}
               <div className="flex items-center gap-2 mb-2.5">
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-violet-100 text-violet-700">{story.id}</span>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">{story.id}</span>
                 <span className="text-[13px] font-bold text-foreground flex-1">{story.name}</span>
                 <span className="text-[10px] font-mono text-muted-foreground">{story.points} pts</span>
               </div>
@@ -214,9 +214,9 @@ export function EpicView({ document }: EpicViewProps) {
 
               {/* Given/When/Then */}
               <div className="font-mono text-[11px] leading-[1.8] text-zinc-600 bg-zinc-50 rounded-lg p-3 mb-3">
-                <div><span className="font-bold text-violet-600">Given</span> {story.given}</div>
-                <div><span className="font-bold text-violet-600">When</span> {story.when}</div>
-                <div><span className="font-bold text-violet-600">Then</span> {story.then}</div>
+                <div><span className="font-bold text-blue-600">Given</span> {story.given}</div>
+                <div><span className="font-bold text-blue-600">When</span> {story.when}</div>
+                <div><span className="font-bold text-blue-600">Then</span> {story.then}</div>
               </div>
 
               {/* INVEST badges */}

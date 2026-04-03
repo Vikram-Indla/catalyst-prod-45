@@ -26,7 +26,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
   const [form, setForm] = useState({
     name: '', title: '', description: '',
     status: 'Planned' as ReleaseStatus,
-    color: '#2563eb',
+    color: 'var(--cp-blue)',
     start_date: '', target_date: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -39,12 +39,12 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
           title: release.title ?? '',
           description: release.description ?? '',
           status: release.status ?? 'Planned',
-          color: release.color ?? '#2563eb',
+          color: release.color ?? 'var(--cp-blue)',
           start_date: release.start_date ?? '',
           target_date: release.target_date ?? '',
         });
       } else {
-        setForm({ name: '', title: '', description: '', status: 'Planned', color: '#2563eb', start_date: '', target_date: '' });
+        setForm({ name: '', title: '', description: '', status: 'Planned', color: 'var(--cp-blue)', start_date: '', target_date: '' });
       }
       setErrors({});
     }
@@ -99,7 +99,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
     }}>
       <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }} />
       <div style={{
-        position: 'relative', background: 'var(--wh-surface, #fff)',
+        position: 'relative', background: 'var(--cp-float)',
         borderRadius: 'var(--wh-radius-xl, 12px)', boxShadow: 'var(--wh-shadow-xl)',
         width: '100%', maxWidth: 480, maxHeight: '90vh', overflowY: 'auto',
         animation: 'wh-modal-in 200ms ease-out',
@@ -112,13 +112,13 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
           <h2 style={{
             fontSize: 18, fontWeight: 700, margin: 0,
             fontFamily: 'var(--wh-font-display, Sora, sans-serif)',
-            color: 'var(--wh-text-primary, #0f172a)',
+            color: 'var(--fg-1)',
           }}>
             {isEdit ? 'Edit Release' : 'Create Release'}
           </h2>
           <button onClick={onClose} style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: 4,
-            color: 'var(--wh-text-tertiary, #94a3b8)',
+            color: 'var(--fg-4)',
           }}>
             <X size={18} />
           </button>
@@ -153,7 +153,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
               {COLOR_PRESETS.map(c => (
                 <button key={c} onClick={() => setForm(f => ({ ...f, color: c }))}
                   style={{
-                    width: 32, height: 32, borderRadius: '50%', border: form.color === c ? '2px solid #0f172a' : '2px solid transparent',
+                    width: 32, height: 32, borderRadius: '50%', border: form.color === c ? '2px solid var(--fg-1)' : '2px solid transparent',
                     background: c, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'border-color 150ms',
                   }}>
@@ -179,17 +179,17 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
           </div>
 
           {/* Actions */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8, borderTop: '1px solid var(--wh-border-light, #f1f5f9)', paddingTop: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8, borderTop: '1px solid var(--bg-1)', paddingTop: 16 }}>
             <button onClick={onClose} style={{
               height: 36, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
-              border: '1px solid var(--wh-border, #e2e8f0)', background: 'var(--wh-surface, #fff)',
-              fontSize: 13, fontWeight: 500, color: 'var(--wh-text-primary, #0f172a)', cursor: 'pointer',
+              border: '1px solid var(--divider)', background: 'var(--cp-float)',
+              fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', cursor: 'pointer',
             }}>
               Cancel
             </button>
             <button onClick={handleSubmit} disabled={isSubmitting} style={{
               height: 36, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
-              border: 'none', background: 'var(--wh-primary, #2563eb)', color: '#fff',
+              border: 'none', background: 'var(--cp-blue)', color: 'var(--bg-app)',
               fontSize: 13, fontWeight: 600, cursor: isSubmitting ? 'wait' : 'pointer',
               opacity: isSubmitting ? 0.7 : 1,
             }}>
@@ -210,12 +210,12 @@ function Field({ label, required, error, children }: {
     <div>
       <label style={{
         display: 'block', fontSize: 13, fontWeight: 500,
-        color: 'var(--wh-text-primary, #0f172a)', marginBottom: 4,
+        color: 'var(--fg-1)', marginBottom: 4,
       }}>
-        {label}{required && <span style={{ color: '#ef4444' }}> *</span>}
+        {label}{required && <span style={{ color: 'var(--sem-danger)' }}> *</span>}
       </label>
       {children}
-      {error && <span style={{ fontSize: 12, color: '#ef4444', marginTop: 2, display: 'block' }}>{error}</span>}
+      {error && <span style={{ fontSize: 12, color: 'var(--sem-danger)', marginTop: 2, display: 'block' }}>{error}</span>}
     </div>
   );
 }
@@ -224,9 +224,9 @@ const inputStyle: React.CSSProperties = {
   width: '100%', height: 40, boxSizing: 'border-box',
   padding: '0 12px',
   borderRadius: 'var(--wh-radius-md, 6px)',
-  border: '1px solid var(--wh-border, #e2e8f0)',
+  border: '1px solid var(--divider)',
   fontSize: 14, fontFamily: 'Inter, system-ui, sans-serif',
-  color: 'var(--wh-text-primary, #0f172a)',
-  background: 'var(--wh-surface, #fff)',
+  color: 'var(--fg-1)',
+  background: 'var(--cp-float)',
   outline: 'none',
 };

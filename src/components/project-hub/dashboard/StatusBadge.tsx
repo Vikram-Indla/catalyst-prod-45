@@ -16,16 +16,16 @@ export function getStatusColor(status: string): StatusColor {
 
 export function getStatusCellBg(status: string): string {
   const c = getStatusColor(status);
-  if (c === 'green') return '#F0FDF4';
-  if (c === 'blue') return '#EFF6FF';
-  return '#F8FAFC';
+  if (c === 'green') return 'var(--sem-success-bg)';
+  if (c === 'blue') return 'var(--cp-blue-wash)';
+  return 'var(--bg-1)';
 }
 
 export function getStatusBarColor(status: string): string {
   const c = getStatusColor(status);
-  if (c === 'green') return '#16A34A';
-  if (c === 'blue') return '#2563EB';
-  return '#64748B';
+  if (c === 'green') return 'var(--sem-success)';
+  if (c === 'blue') return 'var(--cp-blue)';
+  return 'var(--fg-3)';
 }
 
 export default function StatusBadge({ status }: { status: string }) {

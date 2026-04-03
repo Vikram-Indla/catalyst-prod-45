@@ -31,7 +31,7 @@ export function ChgGateModal({ changeId, chgNumber, onResolved }: Props) {
         <div className="bg-[#FEF2F2] border-b border-[#FCA5A5] px-6 py-4 flex items-center gap-3">
           <AlertTriangle size={20} className="text-[#DC2626]" />
           <div>
-            <h2 className="text-[15px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: '#DC2626' }}>CHG Gate — Work Items Required</h2>
+            <h2 className="text-[15px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: 'var(--sem-danger)' }}>CHG Gate — Work Items Required</h2>
             <p className="text-[12px] text-[#991B1B]">{chgNumber} cannot advance to Beta without linked work items.</p>
           </div>
         </div>

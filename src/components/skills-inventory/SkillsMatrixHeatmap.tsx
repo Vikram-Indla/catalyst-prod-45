@@ -13,11 +13,11 @@ interface SkillColumn {
 }
 
 const PROFICIENCY_COLORS: Record<number, string> = {
-  1: 'hsl(var(--muted-foreground) / 0.3)',
-  2: 'hsl(280 70% 50%)',
-  3: 'hsl(var(--warning))',
-  4: 'hsl(var(--info))',
-  5: 'hsl(var(--health-green))',
+  1: 'rgba(115,115,115,0.3)',
+  2: '#7B2FCC',
+  3: 'var(--sem-warning)',
+  4: 'var(--sem-info)',
+  5: 'var(--health-green)',
 };
 
 const PROFICIENCY_LABELS: Record<number, string> = {
@@ -135,16 +135,16 @@ export const SkillsMatrixHeatmap: React.FC = () => {
       {/* Matrix Table - Catalyst Table Style */}
       <div className="overflow-x-auto">
         <table className="w-full border-separate border-spacing-0">
-          <thead className="sticky top-0 z-10" style={{ background: 'hsl(35 46% 97%)' }}>
-            <tr style={{ background: 'hsl(35 46% 97%)' }}>
-              <th className="w-[200px] text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>
+          <thead className="sticky top-0 z-10" style={{ background: '#F8F6F3' }}>
+            <tr style={{ background: '#F8F6F3' }}>
+              <th className="w-[200px] text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: '#F8F6F3' }}>
                 Team Member
               </th>
               {skills.map((skill) => (
                 <th
                   key={skill.id}
                   className="text-center py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200"
-                  style={{ background: 'hsl(35 46% 97%)' }}
+                  style={{ background: '#F8F6F3' }}
                 >
                   {skill.name}
                 </th>

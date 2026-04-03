@@ -138,8 +138,8 @@ export function EpicStatusDropdown({ currentStatus, onChange, disabled = false, 
         align="start"
         className="w-52 z-[500]"
         style={{
-          background: 'var(--surface-bg, hsl(var(--background)))',
-          borderColor: 'var(--border-default, hsl(var(--border)))',
+          background: 'var(--surface-bg, var(--bg-app))',
+          borderColor: 'var(--border-default, var(--divider))',
         }}
       >
         {statuses.map((status) => {

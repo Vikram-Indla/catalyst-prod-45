@@ -14,10 +14,10 @@ interface ImportModalProps {
 }
 
 const IMPORT_TYPES = [
-  { value: 'test_cases', label: 'Test Cases', icon: FileText, color: '#2563EB' },
-  { value: 'defects', label: 'Defects', icon: Bug, color: '#DC2626' },
-  { value: 'requirements', label: 'Requirements', icon: FileCheck, color: '#059669' },
-  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: '#7C3AED' },
+  { value: 'test_cases', label: 'Test Cases', icon: FileText, color: 'var(--cp-blue)' },
+  { value: 'defects', label: 'Defects', icon: Bug, color: 'var(--sem-danger)' },
+  { value: 'requirements', label: 'Requirements', icon: FileCheck, color: 'var(--sem-success)' },
+  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: '#2563EB' },
   { value: 'tags', label: 'Tags', icon: Tags, color: '#EC4899' },
 ];
 
@@ -302,27 +302,27 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
       display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24,
     }}>
       <div style={{
-        width: '100%', maxWidth: 600, maxHeight: '90vh', backgroundColor: '#FFFFFF',
+        width: '100%', maxWidth: 600, maxHeight: '90vh', backgroundColor: 'var(--cp-float)',
         borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
               width: 44, height: 44, borderRadius: 10,
-              background: 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
+              background: 'linear-gradient(135deg, #14B8A6 0%, var(--sem-success) 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Upload size={22} style={{ color: '#FFFFFF' }} />
             </div>
             <div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>Import Data</h2>
-              <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>Step {step} of 3</p>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Import Data</h2>
+              <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>Step {step} of 3</p>
             </div>
           </div>
           <button onClick={() => { onClose(); resetModal(); }} style={{
             width: 36, height: 36, border: 'none', borderRadius: 8,
-            backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer',
+            backgroundColor: 'transparent', color: 'var(--fg-3)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <X size={20} />
@@ -333,7 +333,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           {step === 1 && (
             <>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 16 }}>What do you want to import?</h3>
+              <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 16 }}>What do you want to import?</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {IMPORT_TYPES.map((type) => {
                   const Icon = type.icon;
@@ -344,13 +344,13 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
                       onClick={() => setImportType(type.value)}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 12, padding: 16,
-                        border: `2px solid ${isSelected ? type.color : '#E2E8F0'}`,
-                        borderRadius: 10, backgroundColor: isSelected ? `${type.color}10` : '#FFF',
+                        border: `2px solid ${isSelected ? type.color : 'var(--divider)'}`,
+                        borderRadius: 10, backgroundColor: isSelected ? `${type.color}10` : 'var(--cp-float)',
                         cursor: 'pointer', textAlign: 'left',
                       }}
                     >
                       <Icon size={24} style={{ color: type.color }} />
-                      <span style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>{type.label}</span>
+                      <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-1)' }}>{type.label}</span>
                       {isSelected && <CheckCircle2 size={18} style={{ color: type.color, marginLeft: 'auto' }} />}
                     </button>
                   );
@@ -361,35 +361,35 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
 
           {step === 2 && (
             <>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 16 }}>Upload your file</h3>
+              <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 16 }}>Upload your file</h3>
               <input ref={fileInputRef} type="file" accept=".csv,.json" onChange={handleFileSelect} style={{ display: 'none' }} />
               {!file ? (
                 <div
                   onClick={() => fileInputRef.current?.click()}
                   style={{
-                    padding: 40, border: '2px dashed #CBD5E1', borderRadius: 12,
-                    textAlign: 'center', cursor: 'pointer', backgroundColor: '#F8FAFC',
+                    padding: 40, border: '2px dashed var(--divider)', borderRadius: 12,
+                    textAlign: 'center', cursor: 'pointer', backgroundColor: 'var(--bg-1)',
                   }}
                 >
-                  <Upload size={40} style={{ color: '#94A3B8', marginBottom: 12 }} />
-                  <p style={{ fontSize: 14, color: '#334155', margin: 0 }}>Click to upload or drag and drop</p>
-                  <p style={{ fontSize: 12, color: '#94A3B8', margin: '4px 0 0' }}>CSV or JSON files supported</p>
+                  <Upload size={40} style={{ color: 'var(--fg-4)', marginBottom: 12 }} />
+                  <p style={{ fontSize: 14, color: 'var(--fg-2)', margin: 0 }}>Click to upload or drag and drop</p>
+                  <p style={{ fontSize: 12, color: 'var(--fg-4)', margin: '4px 0 0' }}>CSV or JSON files supported</p>
                 </div>
               ) : (
-                <div style={{ padding: 20, backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                <div style={{ padding: 20, backgroundColor: 'var(--bg-1)', borderRadius: 12, border: '1px solid var(--divider)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                       <File size={24} style={{ color: '#14B8A6' }} />
                       <div>
-                        <p style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', margin: 0 }}>{file.name}</p>
-                        <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
+                        <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-1)', margin: 0 }}>{file.name}</p>
+                        <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '2px 0 0' }}>
                           {(file.size / 1024).toFixed(1)} KB • {parsedData.length} rows detected
                         </p>
                       </div>
                     </div>
                     <button onClick={() => { setFile(null); setParsedData([]); setHeaders([]); }} style={{
                       width: 32, height: 32, border: 'none', borderRadius: 6,
-                      backgroundColor: '#FEE2E2', color: '#DC2626', cursor: 'pointer',
+                      backgroundColor: '#FEE2E2', color: 'var(--sem-danger)', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       <Trash2 size={14} />
@@ -403,27 +403,27 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
           {step === 3 && (
             <>
               <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>Import Name</label>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>Import Name</label>
                 <input
                   type="text"
                   value={importName}
                   onChange={(e) => setImportName(e.target.value)}
                   placeholder="My Import"
-                  style={{ width: '100%', height: 40, padding: '0 12px', border: '1px solid #E2E8F0', borderRadius: 8, fontSize: 14 }}
+                  style={{ width: '100%', height: 40, padding: '0 12px', border: '1px solid var(--divider)', borderRadius: 8, fontSize: 14 }}
                 />
               </div>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 12 }}>Map your fields</h3>
+              <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 12 }}>Map your fields</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {headers.map((header) => (
                   <div key={header} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ flex: 1, fontSize: 13, color: '#334155', backgroundColor: '#F1F5F9', padding: '8px 12px', borderRadius: 6 }}>
+                    <span style={{ flex: 1, fontSize: 13, color: 'var(--fg-2)', backgroundColor: 'var(--cp-bd-zone)', padding: '8px 12px', borderRadius: 6 }}>
                       {header}
                     </span>
-                    <span style={{ color: '#94A3B8' }}>→</span>
+                    <span style={{ color: 'var(--fg-4)' }}>→</span>
                     <select
                       value={fieldMapping[header] || ''}
                       onChange={(e) => setFieldMapping({ ...fieldMapping, [header]: e.target.value })}
-                      style={{ flex: 1, height: 36, padding: '0 10px', border: '1px solid #E2E8F0', borderRadius: 6, fontSize: 13 }}
+                      style={{ flex: 1, height: 36, padding: '0 10px', border: '1px solid var(--divider)', borderRadius: 6, fontSize: 13 }}
                     >
                       <option value="">(Skip)</option>
                       {[...REQUIRED_FIELDS[importType], ...OPTIONAL_FIELDS[importType]].map((field) => (
@@ -433,18 +433,18 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
                   </div>
                 ))}
               </div>
-              <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 12 }}>* Required fields</p>
+              <p style={{ fontSize: 12, color: 'var(--fg-4)', marginTop: 12 }}>* Required fields</p>
             </>
           )}
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between' }}>
           <button
             onClick={() => step > 1 ? setStep(step - 1) : (onClose(), resetModal())}
             style={{
-              height: 44, padding: '0 20px', backgroundColor: '#FFF', border: '1px solid #E2E8F0',
-              borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer',
+              height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1px solid var(--divider)',
+              borderRadius: 10, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
             }}
           >
             {step === 1 ? 'Cancel' : 'Back'}
@@ -458,7 +458,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
             disabled={(step === 2 && !file) || isProcessing}
             style={{
               height: 44, padding: '0 24px',
-              background: (step === 2 && !file) ? '#CBD5E1' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
+              background: (step === 2 && !file) ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
               border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#FFF',
               cursor: (step === 2 && !file) || isProcessing ? 'not-allowed' : 'pointer',
             }}

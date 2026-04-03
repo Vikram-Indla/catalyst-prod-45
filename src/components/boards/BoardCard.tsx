@@ -56,7 +56,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
   const visibilityChip = () => {
     if (board.visibility === 'private') return { label: '🔒 Private', bg: 'rgba(217,119,6,0.06)', color: '#D97706' };
     if (board.visibility === 'global') return { label: '🌐 Organisation', bg: 'rgba(37,99,235,0.06)', color: '#2563EB' };
-    return { label: 'Project', bg: '#F8FAFC', color: '#64748B' };
+    return { label: 'Project', bg: 'var(--bg-1)', color: 'var(--fg-3)' };
   };
 
   const vis = visibilityChip();
@@ -68,7 +68,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         style={{
-          background: '#FFFFFF',
+          background: 'var(--bg-app)',
           border: `0.75px solid ${hover ? 'rgba(15,23,42,0.18)' : 'rgba(15,23,42,0.12)'}`,
           borderRadius: 8, cursor: 'pointer', position: 'relative',
           transition: 'box-shadow 150ms, border-color 150ms',
@@ -88,11 +88,11 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             }}>{board.icon}</div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{
-                fontSize: 13.5, fontWeight: 650, color: '#0F172A',
+                fontSize: 13.5, fontWeight: 650, color: 'var(--fg-1)',
                 fontFamily: "'Inter', sans-serif",
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{board.name}</div>
-              <div style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>Kanban Board</div>
+              <div style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>Kanban Board</div>
             </div>
           </div>
 
@@ -109,7 +109,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             {menuOpen && (
               <div style={{
                 position: 'absolute', top: 28, right: 0,
-                width: 172, background: '#FFFFFF',
+                width: 172, background: 'var(--cp-float)',
                 border: '0.75px solid rgba(15,23,42,0.12)',
                 borderRadius: 6, boxShadow: '0 4px 16px rgba(15,23,42,0.14)',
                 zIndex: 50, padding: '4px 0',
@@ -144,7 +144,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           </button>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
-            {board.isPersonal && <Chip bg="#F5F3FF" color="#7C3AED">Personal</Chip>}
+            {board.isPersonal && <Chip bg="#EFF6FF" color="#2563EB">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
               <Chip bg="#F8FAFC" color="#64748B">By {board.swimlaneType}</Chip>
@@ -167,7 +167,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12,
             borderTop: '0.75px solid rgba(15,23,42,0.08)', paddingTop: 10,
-            fontSize: 11.5, color: '#64748B', fontFamily: "'Inter', sans-serif",
+            fontSize: 11.5, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif",
           }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <LayoutGrid size={12} /> {board.issueCount} issues
@@ -175,26 +175,26 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <Users size={12} /> {board.columnCount} cols
             </span>
-            <span style={{ marginLeft: 'auto', fontSize: 11, color: '#94A3B8' }}>{timeAgo}</span>
+            <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--fg-4)' }}>{timeAgo}</span>
           </div>
         </div>
 
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
           padding: '8px 12px',
-          background: '#F8FAFC', borderTop: '0.75px solid rgba(15,23,42,0.08)',
+          background: 'var(--bg-1)', borderTop: '0.75px solid rgba(15,23,42,0.08)',
         }}>
           <button onClick={e => { e.stopPropagation(); onSettings(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 10px',
-            background: '#FFFFFF', border: '0.75px solid rgba(15,23,42,0.12)',
+            background: 'var(--bg-app)', border: '0.75px solid rgba(15,23,42,0.12)',
             borderRadius: 5, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
-            color: '#334155', fontFamily: "'Inter', sans-serif",
+            color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif",
           }}>
             <Settings size={13} /> Settings
           </button>
           <button onClick={e => { e.stopPropagation(); handleOpen(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 12px',
-            background: '#2563EB', border: 'none', borderRadius: 5, cursor: 'pointer',
+            background: 'var(--cp-blue)', border: 'none', borderRadius: 5, cursor: 'pointer',
             fontSize: 11.5, fontWeight: 600, color: '#FFFFFF', fontFamily: "'Inter', sans-serif",
           }}>
             Open Board <ArrowRight size={12} />
@@ -209,14 +209,14 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             onClick={() => setDeleteModal(false)} />
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            width: 420, background: '#FFFFFF', borderRadius: 8, zIndex: 90,
+            width: 420, background: 'var(--cp-float)', borderRadius: 8, zIndex: 90,
             padding: 24, border: '0.75px solid rgba(15,23,42,0.12)',
           }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1)', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>
               Delete Board
             </h3>
-            <p style={{ fontSize: 13, color: '#64748B', margin: '0 0 16px', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>
-              Type the board name '<strong style={{ color: '#0F172A' }}>{board.name}</strong>' to confirm deletion.
+            <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '0 0 16px', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>
+              Type the board name '<strong style={{ color: 'var(--fg-1)' }}>{board.name}</strong>' to confirm deletion.
               This action cannot be undone.
             </p>
             <input
@@ -226,23 +226,23 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               style={{
                 width: '100%', height: 36, padding: '0 12px', boxSizing: 'border-box',
                 border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
-                fontSize: 13, fontFamily: "'Inter', sans-serif", color: '#0F172A',
-                outline: 'none', background: '#FFFFFF', marginBottom: 16,
+                fontSize: 13, fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)',
+                outline: 'none', background: 'var(--bg-app)', marginBottom: 16,
               }}
             />
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => { setDeleteModal(false); setDeleteConfirm(''); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: '0.75px solid rgba(15,23,42,0.15)', background: '#FFFFFF',
-                color: '#475569', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                border: '0.75px solid rgba(15,23,42,0.15)', background: 'var(--bg-app)',
+                color: 'var(--fg-2)', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
               }}>Cancel</button>
               <button onClick={handleDelete}
                 disabled={deleteConfirm !== board.name || deleteBoard.isPending}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
                   border: 'none',
-                  background: deleteConfirm === board.name ? '#DC2626' : '#E2E8F0',
-                  color: deleteConfirm === board.name ? '#FFFFFF' : '#94A3B8',
+                  background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
+                  color: deleteConfirm === board.name ? '#FFFFFF' : 'var(--fg-4)',
                   cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
                   fontFamily: "'Inter', sans-serif",
                 }}>
@@ -262,7 +262,7 @@ function MenuItem({ children, onClick, danger }: { children: React.ReactNode; on
       display: 'flex', alignItems: 'center', gap: 8, width: '100%',
       padding: '7px 12px', border: 'none', background: 'transparent',
       cursor: 'pointer', fontSize: 12, fontWeight: 500,
-      color: danger ? '#DC2626' : '#334155',
+      color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
       fontFamily: "'Inter', sans-serif", textAlign: 'left',
     }}
       onMouseEnter={e => (e.currentTarget.style.background = danger ? '#FEF2F2' : 'rgba(15,23,42,0.04)')}

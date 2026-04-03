@@ -80,21 +80,21 @@ export const TimelineFilterBar: React.FC<TimelineFilterBarProps> = ({ typeFilter
         <span className="mx-2 w-px h-4 bg-border" />
 
         {/* Legend */}
-        <div className="flex items-center gap-3 text-[10px]" style={{ color: '#94A3B8' }}>
+        <div className="flex items-center gap-3 text-[10px]" style={{ color: 'var(--fg-4)' }}>
           <span className="font-semibold uppercase tracking-wider">Legend:</span>
           <span className="flex items-center gap-1">
-            <FolderKanban className="w-3 h-3" style={{ color: '#2563EB' }} />
-            <span className="w-4 h-2.5 rounded-sm" style={{ background: 'linear-gradient(90deg, #2563EB, #3B82F6)' }} />
+            <FolderKanban className="w-3 h-3" style={{ color: 'var(--cp-blue)' }} />
+            <span className="w-4 h-2.5 rounded-sm" style={{ background: 'linear-gradient(90deg, var(--cp-blue), var(--cp-blue))' }} />
             Project
           </span>
           <span className="flex items-center gap-1">
-            <Zap className="w-3 h-3" style={{ color: '#0D9488' }} />
-            <span className="w-4 h-2.5 rounded-sm" style={{ background: 'linear-gradient(90deg, #0D9488, #14B8A6)' }} />
+            <Zap className="w-3 h-3" style={{ color: 'var(--sem-success)' }} />
+            <span className="w-4 h-2.5 rounded-sm" style={{ background: 'linear-gradient(90deg, var(--sem-success), #14B8A6)' }} />
             Enhancement
           </span>
           <span className="flex items-center gap-1">
-            <Wrench className="w-3 h-3" style={{ color: '#D97706' }} />
-            <span className="w-4 h-2.5 rounded-sm" style={{ background: 'linear-gradient(90deg, #D97706, #F59E0B)' }} />
+            <Wrench className="w-3 h-3" style={{ color: 'var(--sem-warning)' }} />
+            <span className="w-4 h-2.5 rounded-sm" style={{ background: 'linear-gradient(90deg, var(--sem-warning), #F59E0B)' }} />
             Improvement
           </span>
         </div>

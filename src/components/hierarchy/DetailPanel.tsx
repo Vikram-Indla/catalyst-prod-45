@@ -30,9 +30,9 @@ interface DetailPanelProps {
 /* ── Skeleton ── */
 export function DetailPanelSkeleton() {
   return (
-    <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, position: 'sticky', top: 24 }}>
+    <div style={{ background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 8, position: 'sticky', top: 24 }}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0' }}>
+        <div key={i} style={{ padding: '8px 20px', borderBottom: '1px solid var(--divider)' }}>
           <div style={{ width: 60, height: 10, borderRadius: 4, background: '#F1F5F9', marginBottom: 6 }} className="hi-shimmer" />
           <div style={{ width: '60%', height: 12, borderRadius: 4, background: '#F1F5F9' }} className="hi-shimmer" />
         </div>
@@ -49,7 +49,7 @@ function PriorityBars({ level }: { level: number }) {
   return (
     <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} style={{ width: 12, height: 4, borderRadius: 1, background: i <= level ? '#64748B' : '#E2E8F0' }} />
+        <div key={i} style={{ width: 12, height: 4, borderRadius: 1, background: i <= level ? 'var(--fg-3)' : 'var(--divider)' }} />
       ))}
     </div>
   );
@@ -68,10 +68,10 @@ function priorityToLevel(name?: string): number {
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ padding: '8px 20px', borderBottom: '1px solid #F1F5F9' }}>
-      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.06em', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
         {label}
       </div>
-      <div style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
         {children}
       </div>
     </div>
@@ -79,7 +79,7 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
 }
 
 function EmptyValue() {
-  return <span style={{ color: '#94A3B8', fontWeight: 400 }}>—</span>;
+  return <span style={{ color: 'var(--fg-4)', fontWeight: 400 }}>—</span>;
 }
 
 function Section({ title, count, defaultOpen = true, children }: { title: string; count?: number; defaultOpen?: boolean; children: React.ReactNode }) {
@@ -90,13 +90,13 @@ function Section({ title, count, defaultOpen = true, children }: { title: string
         onClick={() => setOpen(o => !o)}
         style={{
           width: '100%', display: 'flex', alignItems: 'center', gap: 6, padding: '10px 20px',
-          background: 'none', border: 'none', borderBottom: '1px solid #E2E8F0', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+          background: 'none', border: 'none', borderBottom: '1px solid var(--divider)', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
         }}
       >
-        {open ? <ChevronDown size={14} color="#64748B" /> : <ChevronRight size={14} color="#64748B" />}
-        <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.06em' }}>{title}</span>
+        {open ? <ChevronDown size={14} color="var(--fg-3)" /> : <ChevronRight size={14} color="var(--fg-3)" />}
+        <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em' }}>{title}</span>
         {count !== undefined && (
-          <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B', background: '#F1F5F9', borderRadius: 9999, padding: '1px 6px' }}>{count}</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-3)', background: '#F1F5F9', borderRadius: 9999, padding: '1px 6px' }}>{count}</span>
         )}
       </button>
       {open && children}
@@ -140,8 +140,8 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200,
-        background: '#F8FAFC', border: '1px dashed #E2E8F0', borderRadius: 8,
-        color: '#64748B', fontSize: 13, fontFamily: "'Inter', sans-serif",
+        background: 'var(--bg-1)', border: '1px dashed var(--divider)', borderRadius: 8,
+        color: 'var(--fg-3)', fontSize: 13, fontFamily: "'Inter', sans-serif",
       }}>
         Select a work item to view details
       </div>
@@ -193,38 +193,38 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
         exit={{ opacity: 0, y: -4 }}
         transition={{ duration: 0.15 }}
         style={{
-          background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
+          background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 8,
           position: 'sticky', top: 16, fontFamily: "'Inter', sans-serif",
           maxHeight: 'calc(100vh - 200px)', overflowY: 'auto',
         }}
       >
         {/* A. Header with breadcrumb */}
-        <div style={{ padding: '12px 16px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 6, position: 'sticky', top: 0, background: '#FFFFFF', zIndex: 10 }}>
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', gap: 6, position: 'sticky', top: 0, background: 'var(--bg-app)', zIndex: 10 }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4, overflow: 'hidden' }}>
             {parentItem && (
               <>
                 {parentItem.issueType && <JiraIssueTypeIcon type={parentItem.issueType} size={14} />}
                 <span
                   onClick={() => onSelectItem?.(parentItem)}
-                  style={{ fontSize: 12, fontWeight: 500, color: '#2563EB', cursor: 'pointer', flexShrink: 0 }}
+                  style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', cursor: 'pointer', flexShrink: 0 }}
                 >
                   {parentItem.key}
                 </span>
-                <span style={{ color: '#94A3B8', fontSize: 12 }}>/</span>
+                <span style={{ color: 'var(--fg-4)', fontSize: 12 }}>/</span>
               </>
             )}
             {item.issueType && <JiraIssueTypeIcon type={item.issueType} size={14} />}
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)' }}>{item.key}</span>
           </div>
           {onClose && (
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}>
-              <X size={16} color="#64748B" />
+              <X size={16} color="var(--fg-3)" />
             </button>
           )}
         </div>
 
         {/* B. Status + Type bar */}
-        <div style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
+        <div style={{ padding: '8px 20px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
           <StatusBadge
             status={item.status.name}
             onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === 'status' ? null : 'status'); }}
@@ -242,7 +242,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
         </div>
 
         {/* C. Title + Description */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--divider)' }}>
           <InlineEditTitle
             value={item.title}
             onSave={handleTitleSave}
@@ -250,7 +250,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
             fontWeight={700}
             style={{ display: 'block', whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: '1.35' }}
           />
-          <p style={{ fontSize: 13, color: '#94A3B8', margin: '8px 0 0', fontStyle: 'italic' }}>
+          <p style={{ fontSize: 13, color: 'var(--fg-4)', margin: '8px 0 0', fontStyle: 'italic' }}>
             No description
           </p>
         </div>
@@ -273,8 +273,8 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 onClick={() => setActiveDropdown(activeDropdown === 'priority' ? null : 'priority')}
               >
                 <PriorityBars level={priorityToLevel(item.priority?.name)} />
-                <span style={{ fontSize: 12, color: '#64748B' }}>{item.priority?.name || 'None'}</span>
-                <span style={{ fontSize: 8, color: '#94A3B8' }}>▾</span>
+                <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{item.priority?.name || 'None'}</span>
+                <span style={{ fontSize: 8, color: 'var(--fg-4)' }}>▾</span>
               </div>
               {activeDropdown === 'priority' && (
                 <PriorityDropdown
@@ -294,7 +294,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
               >
                 {item.assignee ? (
                   <>
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF' }}>
                         {item.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                       </span>
@@ -302,7 +302,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                     <span>{item.assignee.displayName}</span>
                   </>
                 ) : <EmptyValue />}
-                <span style={{ fontSize: 8, color: '#94A3B8' }}>▾</span>
+                <span style={{ fontSize: 8, color: 'var(--fg-4)' }}>▾</span>
               </div>
               {activeDropdown === 'assignee' && (
                 <AssigneeDropdown
@@ -316,7 +316,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
           </FieldRow>
 
           <FieldRow label="Reporter">
-            <span style={{ color: '#94A3B8', fontStyle: 'italic' }}>—</span>
+            <span style={{ color: 'var(--fg-4)', fontStyle: 'italic' }}>—</span>
           </FieldRow>
 
           {item.fixVersion && (
@@ -336,13 +336,13 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
           </FieldRow>
 
           <FieldRow label="Created">
-            <span style={{ fontSize: 12, color: '#94A3B8' }}>
+            <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>
               {item.createdAt ? new Date(item.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
             </span>
           </FieldRow>
 
           <FieldRow label="Updated">
-            <span style={{ fontSize: 12, color: '#94A3B8' }}>
+            <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>
               {item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
             </span>
           </FieldRow>
@@ -351,9 +351,9 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
             <FieldRow label="Progress">
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ flex: 1, height: 6, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? '#16A34A' : '#2563EB', borderRadius: 3, transition: 'width 300ms ease' }} />
+                  <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? 'var(--sem-success)' : 'var(--cp-blue)', borderRadius: 3, transition: 'width 300ms ease' }} />
                 </div>
-                <span style={{ fontSize: 12, color: '#64748B', fontVariantNumeric: 'tabular-nums' }}>
+                <span style={{ fontSize: 12, color: 'var(--fg-3)', fontVariantNumeric: 'tabular-nums' }}>
                   {item.stats.completedCount}/{item.stats.totalDescendants}
                 </span>
               </div>
@@ -378,11 +378,11 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
                   {child.issueType && <JiraIssueTypeIcon type={child.issueType} size={12} />}
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', flexShrink: 0 }}>{child.key}</span>
-                  <span style={{ fontSize: 12, color: '#0F172A', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.title}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', flexShrink: 0 }}>{child.key}</span>
+                  <span style={{ fontSize: 12, color: 'var(--fg-1)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.title}</span>
                   <StatusBadge status={child.status.name} mini />
                   {child.assignee && (
-                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <span style={{ fontSize: 8, fontWeight: 700, color: '#FFFFFF' }}>
                         {child.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                       </span>
@@ -392,21 +392,21 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
               ))}
             </div>
           ) : (
-            <div style={{ padding: '12px 20px', fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
+            <div style={{ padding: '12px 20px', fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>
               No subtasks
             </div>
           )}
           {childLevel && (
-            <div style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0' }}>
+            <div style={{ padding: '8px 20px', borderBottom: '1px solid var(--divider)' }}>
               <button
                 onClick={() => onAddChild?.(item)}
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                  fontSize: 12, color: '#64748B', fontFamily: "'Inter', sans-serif",
-                  display: 'flex', alignItems: 'center', gap: 4, borderBottom: '1px dashed #E2E8F0',
+                  fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif",
+                  display: 'flex', alignItems: 'center', gap: 4, borderBottom: '1px dashed var(--divider)',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#2563EB')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--cp-blue)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-3)')}
               >
                 <Plus size={12} /> Add subtask
               </button>
@@ -416,20 +416,20 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
 
         {/* F. Linked Work Items placeholder */}
         <Section title="Linked Work Items" defaultOpen={false}>
-          <div style={{ padding: '12px 20px', fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
+          <div style={{ padding: '12px 20px', fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic' }}>
             No linked work items
           </div>
         </Section>
 
         {/* G. Activity placeholder */}
         <Section title="Activity" defaultOpen={false}>
-          <div style={{ padding: '8px 20px', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ padding: '8px 20px', borderBottom: '1px solid var(--divider)' }}>
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               {['All', 'Comments', 'History'].map((tab, i) => (
                 <button key={tab} style={{
-                  background: 'none', border: 'none', borderBottom: i === 0 ? '2px solid #2563EB' : '2px solid transparent',
+                  background: 'none', border: 'none', borderBottom: i === 0 ? '2px solid var(--cp-blue)' : '2px solid transparent',
                   padding: '4px 0', fontSize: 12, fontWeight: i === 0 ? 600 : 400,
-                  color: i === 0 ? '#2563EB' : '#64748B', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                  color: i === 0 ? 'var(--cp-blue)' : 'var(--fg-3)', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
                 }}>
                   {tab}
                 </button>
@@ -442,11 +442,11 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 rows={2}
                 style={{
                   flex: 1, padding: 8, fontSize: 13, fontFamily: "'Inter', sans-serif",
-                  border: '1px solid #E2E8F0', borderRadius: 6, outline: 'none', resize: 'none',
+                  border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'none',
                 }}
               />
             </div>
-            <p style={{ fontSize: 12, color: '#94A3B8', margin: '8px 0 0', textAlign: 'center' }}>
+            <p style={{ fontSize: 12, color: 'var(--fg-4)', margin: '8px 0 0', textAlign: 'center' }}>
               Comments and activity will appear here.
             </p>
           </div>
