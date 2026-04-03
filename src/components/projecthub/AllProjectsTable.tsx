@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { ProjectListItem, SortColumn, SortDirection } from '@/types/projecthub';
@@ -9,6 +9,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 // ── Utilities ──────────────────────────────────────────
 const BADGE_COLORS = ['#3B82F6', '#6366F1', '#0891B2', '#475569', '#0D9488', '#78716C'];
@@ -29,9 +31,8 @@ function isActiveStatus(status: string): boolean {
   return status === 'active';
 }
 
-// ── 9-column grid ──────────────────────────────────────
-const GRID_COLS = '48px 16px 36px minmax(200px,1fr) 120px 140px 120px 120px 48px';
-const CELL_BORDER = '0.75px solid var(--bd-default)';
+// ── 7-column grid ──────────────────────────────────────
+const GRID_COLS = '48px minmax(280px,1fr) 110px 150px 130px 100px 40px';
 
 const STATUS_OPTIONS = [
   { value: 'active', label: 'ACTIVE', bg: '#DEEBFF', color: '#0747A6' },
@@ -66,15 +67,15 @@ function StatusChangePopover({ project }: { project: ProjectListItem }) {
       </PopoverTrigger>
       <PopoverContent
         align="center"
-        className="w-44 p-1"
-        style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6 }}
+        className="w-44 p-1 bg-white dark:bg-[#232019]"
+        style={{ border: '1px solid #E2E8F0', borderRadius: 6 }}
         onClick={e => e.stopPropagation()}
       >
         {STATUS_OPTIONS.map(opt => (
           <button
             key={opt.value}
             onClick={() => handleChange(opt.value, opt.label)}
-            className="flex w-full items-center gap-2 rounded px-3 py-2 text-sm hover:bg-gray-50"
+            className="flex w-full items-center gap-2 rounded px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-slate-800"
             style={{ border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
           >
             <span style={{
@@ -110,28 +111,28 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
       <PopoverTrigger asChild>
         <button
           onClick={e => e.stopPropagation()}
-          className="flex h-7 w-7 items-center justify-center rounded opacity-0 group-hover:opacity-100 transition-opacity"
-          style={{ color: 'var(--text-2)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+          className="flex h-7 w-7 items-center justify-center rounded opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200"
+          style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
         >
           <MoreHorizontal size={16} />
         </button>
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-48 p-1"
-        style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6 }}
+        className="w-48 p-1 bg-white dark:bg-[#232019]"
+        style={{ border: '1px solid #E2E8F0', borderRadius: 6 }}
         onClick={e => e.stopPropagation()}
       >
         <button
           onClick={() => navigate(`/project-hub/${project.project_key}/dashboard`)}
-          className="flex w-full items-center rounded px-3 py-2 text-sm hover:bg-gray-50"
-          style={{ color: '#0F172A', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
+          className="flex w-full items-center rounded px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-200"
+          style={{ border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
         >
           Open Project
         </button>
         <button
           onClick={handleArchive}
-          className="flex w-full items-center rounded px-3 py-2 text-sm hover:bg-red-50"
+          className="flex w-full items-center rounded px-3 py-2 text-sm hover:bg-red-50 dark:hover:bg-red-950"
           style={{ color: '#DC2626', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
         >
           Archive
@@ -169,8 +170,8 @@ export function AllProjectsTable({
 }: Props) {
   const navigate = useNavigate();
 
-  const headerLabels = ['#', '', '', 'PROJECT', 'STATUS', 'LEAD', 'MEMBERS', 'UPDATED', ''];
-  const sortableMap: Record<number, SortColumn> = { 3: 'name', 4: 'status' };
+  const headerLabels = ['#', 'PROJECT', 'STATUS', 'LEAD', 'MEMBERS', 'UPDATED', ''];
+  const sortableMap: Record<number, SortColumn> = { 1: 'name', 2: 'status' };
 
   return (
     <div
@@ -208,7 +209,7 @@ export function AllProjectsTable({
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              justifyContent: i === 0 || i === 4 ? 'center' : undefined,
+              justifyContent: i === 0 ? 'center' : undefined,
               whiteSpace: 'nowrap',
             }}
           >
@@ -227,6 +228,11 @@ export function AllProjectsTable({
         const badgeText = p.project_key.substring(0, 2);
         const rowNum = pageOffset + idx + 1;
 
+        const syncHealthy = !!p.last_synced_at;
+        const syncAge = p.last_synced_at
+          ? formatDistanceToNowStrict(new Date(p.last_synced_at), { addSuffix: false })
+          : null;
+
         return (
           <div
             key={p.id}
@@ -238,7 +244,7 @@ export function AllProjectsTable({
             }}
           >
             {/* Cell 1: # / Checkbox */}
-            <div style={{ padding: '8px 8px', textAlign: 'center', borderBottom: CELL_BORDER, opacity: active ? 1 : 0.45 }}>
+            <div style={{ padding: '12px 8px', textAlign: 'center', borderBottom: '0.75px solid var(--bd-default)', opacity: active ? 1 : 0.45 }}>
               <span
                 className="group-hover:hidden"
                 style={{ fontSize: 12, color: 'var(--text-3)', fontVariantNumeric: 'tabular-nums', ...(checked ? { display: 'none' } : {}) }}
@@ -255,42 +261,45 @@ export function AllProjectsTable({
               />
             </div>
 
-            {/* Cell 2: Star */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '8px 0', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
-              <button
-                onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', pointerEvents: 'auto' }}
-              >
-                <Star size={14} fill={isFav ? '#F59E0B' : 'none'} color={isFav ? '#F59E0B' : 'var(--text-4)'} />
-              </button>
-            </div>
-
-            {/* Cell 3: Badge */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '8px 0', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
-              <div
-                className="flex items-center justify-center rounded-full"
-                style={{ width: 28, height: 28, background: badgeColor, color: '#FFF', fontSize: 11, fontWeight: 700, flexShrink: 0 }}
-              >
-                {badgeText}
+            {/* Cell 2: Project — 2 lines */}
+            <div className="flex flex-col items-start gap-1 py-3 px-3" style={{ borderBottom: '0.75px solid var(--bd-default)', opacity: active ? 1 : 0.45 }}>
+              {/* Line 1: star + badge + name + key */}
+              <div className="flex items-center gap-2.5 w-full">
+                <button
+                  onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }}
+                  className="text-sm"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, pointerEvents: 'auto', color: isFav ? '#F59E0B' : undefined }}
+                >
+                  <Star size={14} fill={isFav ? '#F59E0B' : 'none'} color={isFav ? '#F59E0B' : 'var(--text-4)'} />
+                </button>
+                <div
+                  className="flex items-center justify-center rounded-lg flex-shrink-0"
+                  style={{ width: 32, height: 32, background: badgeColor, color: '#FFF', fontSize: 11, fontWeight: 700 }}
+                >
+                  {badgeText}
+                </div>
+                <span
+                  onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
+                  className="font-semibold text-sm truncate hover:text-blue-600 hover:underline cursor-pointer"
+                  style={{ color: 'var(--text-1)', pointerEvents: 'auto' }}
+                >
+                  {p.name}
+                </span>
+                <span className="font-mono text-xs flex-shrink-0" style={{ color: 'var(--text-4)' }}>
+                  {p.project_key}
+                </span>
+              </div>
+              {/* Line 2: sync chip */}
+              <div className="flex items-center gap-2 pl-[42px]">
+                <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  <span className={cn("w-1.5 h-1.5 rounded-full", syncHealthy ? "bg-green-500" : "bg-amber-500")} />
+                  {syncAge ? `↔ ${syncAge}` : 'Not synced'} · {p.total_issues ?? 0} issues
+                </div>
               </div>
             </div>
 
-            {/* Cell 4: Project name + key (single line) */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', opacity: active ? 1 : 0.45, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span
-                onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
-                className="truncate hover:underline"
-                style={{ fontWeight: 600, fontSize: 14, cursor: 'pointer', color: 'var(--text-1)', pointerEvents: 'auto' }}
-              >
-                {p.name}
-              </span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: 'var(--text-4)', flexShrink: 0 }}>
-                {p.project_key}
-              </span>
-            </div>
-
-            {/* Cell 5: Status */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', textAlign: 'center', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
+            {/* Cell 3: Status */}
+            <div style={{ borderBottom: '0.75px solid var(--bd-default)', padding: '8px 8px', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
               {active ? (
                 <StatusChangePopover project={p} />
               ) : (
@@ -298,22 +307,20 @@ export function AllProjectsTable({
               )}
             </div>
 
-            {/* Cell 6: Lead */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', opacity: active ? 1 : 0.45 }}>
+            {/* Cell 4: Lead */}
+            <div style={{ borderBottom: '0.75px solid var(--bd-default)', padding: '8px 8px', opacity: active ? 1 : 0.45 }}>
               {p.lead_name ? (
-                <div className="flex items-center gap-2">
-                  <div
-                    className="flex-shrink-0 flex items-center justify-center rounded-full"
-                    style={{
-                      width: 24, height: 24,
-                      background: p.lead_avatar_url ? `url(${p.lead_avatar_url}) center/cover` : getBadgeColor(p.lead_id || ''),
-                      color: '#FFF', fontSize: 9, fontWeight: 700,
-                    }}
-                  >
-                    {!p.lead_avatar_url && getInitials(p.lead_name)}
-                  </div>
-                  <span className="truncate" style={{ fontSize: 13, color: 'var(--text-2)' }}>
-                    {p.lead_name.split(' ')[0]}
+                <div className="flex items-center gap-2 cursor-pointer hover:text-blue-600">
+                  <Avatar className="w-6 h-6">
+                    <AvatarFallback
+                      className="text-[10px] font-bold text-white"
+                      style={{ background: getBadgeColor(p.lead_id || '') }}
+                    >
+                      {getInitials(p.lead_name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-[13px] font-medium truncate" style={{ color: 'var(--text-2)' }}>
+                    {p.lead_name.split(' ').slice(0, 2).join(' ')}
                   </span>
                 </div>
               ) : (
@@ -321,24 +328,26 @@ export function AllProjectsTable({
               )}
             </div>
 
-            {/* Cell 7: Members */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', opacity: active ? 1 : 0.45 }}>
+            {/* Cell 5: Members */}
+            <div style={{ borderBottom: '0.75px solid var(--bd-default)', padding: '8px 8px', opacity: active ? 1 : 0.45 }}>
               {p.member_ids && p.member_ids.length > 0 ? (
-                <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
+                <div className="flex items-center cursor-pointer">
+                  <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
+                </div>
               ) : (
                 <span style={{ fontSize: 13, color: 'var(--text-4)' }}>—</span>
               )}
             </div>
 
-            {/* Cell 8: Updated */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', fontSize: 12, color: 'var(--text-3)', opacity: active ? 1 : 0.45 }}>
+            {/* Cell 6: Updated */}
+            <div style={{ borderBottom: '0.75px solid var(--bd-default)', padding: '8px 8px', fontSize: 12, color: 'var(--text-3)', opacity: active ? 1 : 0.45 }}>
               {p.updated_at
                 ? formatDistanceToNowStrict(new Date(p.updated_at), { addSuffix: true })
                 : '—'}
             </div>
 
-            {/* Cell 9: Actions */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', display: 'flex', justifyContent: 'center', pointerEvents: 'auto', opacity: active ? 1 : 0.45 }}>
+            {/* Cell 7: Actions */}
+            <div style={{ borderBottom: '0.75px solid var(--bd-default)', padding: '8px 4px', display: 'flex', justifyContent: 'center', pointerEvents: 'auto', opacity: active ? 1 : 0.45 }}>
               {active ? (
                 <RowActionMenu project={p} />
               ) : (

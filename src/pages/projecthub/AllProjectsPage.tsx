@@ -17,8 +17,11 @@ import { AllProjectsTable } from '@/components/projecthub/AllProjectsTable';
 import { AllProjectsCardGrid } from '@/components/projecthub/AllProjectsCardGrid';
 import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateProjectDialog } from '@/components/projecthub/CreateProjectDialog';
+import { JiraSyncPanel } from '@/components/projecthub/JiraSyncPanel';
 import { toast } from 'sonner';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Select,
   SelectContent,
@@ -37,6 +40,14 @@ export default function AllProjectsPage() {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // Get current user for "My Projects" tab
+  useMemo(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) setCurrentUserId(data.user.id);
+    });
+  }, []);
 
   const { data: projects = [], isLoading, error } = useProjects();
   const { data: favorites = new Set<string>() } = useProjectFavorites();
@@ -46,8 +57,29 @@ export default function AllProjectsPage() {
   const allMemberIds = useMemo(() => projects.flatMap(p => p.member_ids ?? []), [projects]);
   useMemberProfiles(allMemberIds);
 
-  const filtered = useMemo(() => filterAndSortProjects(projects, filters, sortCol, sortDir, favorites), [projects, filters, sortCol, sortDir, favorites]);
-  const stats = useMemo(() => computePortfolioStats(projects, favorites), [projects, favorites]);
+  // Apply "My Projects" filter before standard filtering
+  const preFiltered = useMemo(() => {
+    if (filters.statusChip === 'My Projects' && currentUserId) {
+      return projects.filter(p => p.lead_id === currentUserId || (p.member_ids ?? []).includes(currentUserId));
+    }
+    return projects;
+  }, [projects, filters.statusChip, currentUserId]);
+
+  const filtered = useMemo(() => {
+    const effectiveFilters = filters.statusChip === 'My Projects'
+      ? { ...filters, statusChip: 'All' }
+      : filters;
+    return filterAndSortProjects(preFiltered, effectiveFilters, sortCol, sortDir, favorites);
+  }, [preFiltered, filters, sortCol, sortDir, favorites]);
+
+  const stats = useMemo(() => {
+    const base = computePortfolioStats(projects, favorites);
+    const myCount = currentUserId
+      ? projects.filter(p => p.lead_id === currentUserId || (p.member_ids ?? []).includes(currentUserId)).length
+      : 0;
+    return { ...base, statusMyProjects: myCount };
+  }, [projects, favorites, currentUserId]);
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const pageData = filtered.slice((page - 1) * perPage, page * perPage);
 
@@ -84,14 +116,31 @@ export default function AllProjectsPage() {
         title="All Projects"
         subtitle={`${filtered.length} projects across your portfolio`}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {/* Jira Sync CTA */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="h-10 px-4 bg-white dark:bg-[#232019] border-[1.5px] border-slate-200 dark:border-slate-700 rounded-lg text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300">
+                  <span className="w-2 h-2 rounded-full bg-green-500" />
+                  <span>↔ Jira Sync</span>
+                  <span className="w-px h-5 bg-slate-200 dark:bg-slate-700" />
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Connected</span>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[360px] p-5 bg-white dark:bg-[#232019]" align="end">
+                <JiraSyncPanel />
+              </PopoverContent>
+            </Popover>
+
+            {/* New Project */}
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-1.5 rounded-md"
+              className="h-10 px-5 rounded-md text-sm font-semibold flex items-center gap-2 text-white"
               style={{
-                height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600,
-                color: '#FFF', background: '#2563EB', border: 'none',
-                borderRadius: 6, cursor: 'pointer',
+                background: '#2563EB',
+                boxShadow: '0 2px 8px rgba(37,99,235,0.15)',
+                border: 'none',
+                cursor: 'pointer',
               }}
             >
               <Plus size={16} strokeWidth={2.5} /> New Project
@@ -134,8 +183,24 @@ export default function AllProjectsPage() {
               {filters.search || filters.statusChip !== 'All' ? 'No projects match your filters' : 'No projects yet'}
             </h3>
             <p className="mt-1 max-w-[360px] text-[13px]" style={{ color: 'var(--text-3)' }}>
-              {filters.search || filters.statusChip !== 'All' ? 'Try adjusting your search or filter criteria.' : 'Create your first project to get started.'}
+              {filters.search || filters.statusChip !== 'All'
+                ? 'Try adjusting your search or filter criteria.'
+                : 'Connect Jira to sync your projects, or create one manually.'}
             </p>
+            {!filters.search && filters.statusChip === 'All' && (
+              <div className="flex gap-3 mt-4">
+                <button className="px-4 py-2 text-sm font-medium rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" style={{ background: 'transparent', cursor: 'pointer' }}>
+                  Connect Jira
+                </button>
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="px-4 py-2 text-sm font-semibold rounded-md text-white"
+                  style={{ background: '#2563EB', border: 'none', cursor: 'pointer' }}
+                >
+                  New Project
+                </button>
+              </div>
+            )}
           </div>
         ) : view === 'list' ? (
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border" style={{ borderColor: 'var(--bd-default)', background: 'var(--bg-elevated)' }}>
@@ -154,7 +219,7 @@ export default function AllProjectsPage() {
                 pageOffset={startIdx}
               />
             </div>
-            {/* Pagination Footer */}
+            {/* Pagination Footer — page numbers only, no Prev/Next */}
             <div
               className="flex shrink-0 items-center justify-between px-4 py-2"
               style={{ borderTop: '1px solid var(--bd-default)', background: 'var(--bg-surface)', fontSize: 13 }}
@@ -163,17 +228,6 @@ export default function AllProjectsPage() {
                 Showing {startIdx + 1}–{endIdx} of {filtered.length} projects
               </span>
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="px-3 py-1 rounded text-sm"
-                  style={{
-                    border: '1px solid var(--bd-default)', cursor: page === 1 ? 'not-allowed' : 'pointer',
-                    opacity: page === 1 ? 0.4 : 1, color: 'var(--text-2)', background: 'transparent',
-                  }}
-                >
-                  Previous
-                </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
                   <button
                     key={n}
@@ -190,17 +244,6 @@ export default function AllProjectsPage() {
                     {n}
                   </button>
                 ))}
-                <button
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                  disabled={page >= totalPages}
-                  className="px-3 py-1 rounded text-sm"
-                  style={{
-                    border: '1px solid var(--bd-default)', cursor: page >= totalPages ? 'not-allowed' : 'pointer',
-                    opacity: page >= totalPages ? 0.4 : 1, color: 'var(--text-2)', background: 'transparent',
-                  }}
-                >
-                  Next
-                </button>
                 <Select value={String(perPage)} onValueChange={v => { setPerPage(Number(v)); setPage(1); }}>
                   <SelectTrigger className="h-8 w-[72px] text-xs" style={{ borderColor: 'var(--bd-default)', color: 'var(--text-2)' }}>
                     <SelectValue />
