@@ -63,15 +63,19 @@ interface RawTestCase {
   id: string;
   case_key: string;
   title: string;
-  objective: string | null;
+  description: string | null;
   preconditions: string | null;
   folder_id: string | null;
-  priority: string;
-  type: string;
+  priority_id: string | null;
+  case_type_id: string | null;
   status: string;
   version: number;
   updated_at: string;
-  owner_id?: string | null;
+  created_by?: string | null;
+  assigned_to?: string | null;
+  objective?: string | null;
+  priority?: string;
+  type?: string;
 }
 
 interface ContextMenuState {
