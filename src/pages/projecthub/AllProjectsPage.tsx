@@ -17,7 +17,7 @@ import { AllProjectsTable } from '@/components/projecthub/AllProjectsTable';
 import { AllProjectsCardGrid } from '@/components/projecthub/AllProjectsCardGrid';
 import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateProjectDialog } from '@/components/projecthub/CreateProjectDialog';
-import { JiraSyncPanel } from '@/components/projecthub/JiraSyncPanel';
+import { JiraSyncPanel, SyncCTALabel } from '@/components/projecthub/JiraSyncPanel';
 import { toast } from 'sonner';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
