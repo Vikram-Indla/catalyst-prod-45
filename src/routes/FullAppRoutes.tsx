@@ -155,6 +155,7 @@ const KanbanPage = lazy(() => import("../modules/planner").then(m => ({ default:
 const MyTasksPage = lazy(() => import("../modules/planner").then(m => ({ default: m.MyTasksPage })));
 
 const TestHubPage = lazy(() => import("../pages/testhub/TestHubPage"));
+const TestHubVerifyPage = lazy(() => import("../pages/testhub/TestHubVerifyPage"));
 const TestRepositoryPage = lazy(() => import("../pages/testhub/TestRepositoryPage"));
 const TestHubDashboardPage = lazy(() => import("../pages/testhub/TestHubDashboardPage"));
 const SharedStepsPage = lazy(() => import("../pages/testhub/SharedStepsPage"));
@@ -572,6 +573,7 @@ export default function FullAppRoutes() {
           <Route path="releases/:releaseId" element={<S><ReleaseDetailPage /></S>} />
           <Route path="caty" element={<MG k="ai_features" t="Caty AI"><S><CatyAIPage /></S></MG>} />
           <Route path="docs" element={<S><TestHubDocsPage /></S>} />
+          <Route path="verify" element={<S><TestHubVerifyPage /></S>} />
         </Route>
 
         {/* ═══ IncidentHub ═══ */}
