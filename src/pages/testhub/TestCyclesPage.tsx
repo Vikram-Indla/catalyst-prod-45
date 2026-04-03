@@ -23,26 +23,29 @@ interface TestCycle {
   name: string;
   description: string | null;
   status: string;
-  start_date: string | null;
-  end_date: string | null;
-  progress_percent: number;
+  planned_start: string | null;
+  planned_end: string | null;
   total_cases: number;
   passed_count: number;
   failed_count: number;
   blocked_count: number;
   skipped_count: number;
   not_run_count: number;
+  in_progress_count: number;
   created_at: string;
   updated_at: string;
-  owner_id?: string | null;
-  owner?: { id: string; full_name: string };
+  environment_id: string | null;
+  project_id: string;
 }
 
-const statusConfig = {
-  draft: { label: 'Draft', color: '#64748B', bg: '#F1F5F9' },
-  active: { label: 'Active', color: '#059669', bg: '#ECFDF5' },
-  completed: { label: 'Completed', color: '#2563EB', bg: '#EFF6FF' },
-  archived: { label: 'Archived', color: '#94A3B8', bg: '#F8FAFC' },
+const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
+  draft: { label: 'DRAFT', color: '#253858', bg: '#DFE1E6' },
+  planned: { label: 'PLANNED', color: '#253858', bg: '#DFE1E6' },
+  active: { label: 'ACTIVE', color: '#0747A6', bg: '#DEEBFF' },
+  in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
+  completed: { label: 'COMPLETED', color: '#006644', bg: '#E3FCEF' },
+  done: { label: 'DONE', color: '#006644', bg: '#E3FCEF' },
+  archived: { label: 'ARCHIVED', color: '#253858', bg: '#DFE1E6' },
 };
 
 export default function TestCyclesPage() {
