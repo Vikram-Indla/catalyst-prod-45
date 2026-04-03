@@ -1004,7 +1004,7 @@ export function TestRepositoryPage() {
           setIsViewModalOpen(false);
           setSelectedTestCase(null);
         }}
-        testCase={selectedTestCase}
+        testCase={selectedTestCase as any}
         onEdit={handleEditFromView}
         onClone={handleCloneFromView}
       />
