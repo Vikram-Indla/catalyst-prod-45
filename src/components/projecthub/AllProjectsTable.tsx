@@ -266,7 +266,7 @@ export function AllProjectsTable({
             </div>
 
             {/* Cell 3: Badge */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 0', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 0', display: 'flex', justifyContent: 'center', opacity: active ? 1 : 0.45 }}>
               <div
                 className="flex items-center justify-center rounded-full"
                 style={{ width: 28, height: 28, background: badgeColor, color: '#FFF', fontSize: 11, fontWeight: 700, flexShrink: 0 }}
