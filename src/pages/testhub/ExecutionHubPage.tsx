@@ -195,8 +195,7 @@ export default function ExecutionHubPage() {
                     </div>
                     <h3 className="text-sm font-semibold text-foreground truncate">{cycle.name}</h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {formatDate(cycle.start_date)} — {formatDate(cycle.end_date)}
-                      {cycle.owner && <span className="ml-2">• {cycle.owner.full_name}</span>}
+                      {cycle.planned_start ? formatDate(cycle.planned_start) : '—'} — {cycle.planned_end ? formatDate(cycle.planned_end) : '—'}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
