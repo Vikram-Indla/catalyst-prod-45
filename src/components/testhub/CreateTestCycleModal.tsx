@@ -115,8 +115,8 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           updated_at: new Date().toISOString(),
         };
 
-        const { error } = await supabase
-          .from('th_test_cycles')
+        const { error } = await (supabase as any)
+          .from('tm_test_cycles')
           .update(updateData)
           .eq('id', cycle.id);
 
