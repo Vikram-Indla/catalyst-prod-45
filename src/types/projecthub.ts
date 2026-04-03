@@ -158,4 +158,6 @@ export interface CreateProjectInput {
   department?: string;
   description?: string;
   status_category?: string;
+  lead_id?: string;
+  jira_key?: string;
 }
