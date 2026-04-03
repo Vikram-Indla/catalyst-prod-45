@@ -138,8 +138,8 @@ export function JiraSyncPanel() {
           supabase.from('jira_write_back_queue').select('id', { count: 'exact', head: true }).in('status', ['queued', 'approved']),
         ]);
         results.projectCount = phConnRes.data?.project_count || 0;
-        // Use total_issue_count from connection (more reliable than counting via API which may hit limits)
-        results.issueCount = phConnRes.data?.total_issue_count || issuesRes.count || 0;
+        // Prefer actual ph_issues count over stale total_issue_count on connection
+        results.issueCount = issuesRes.count || phConnRes.data?.total_issue_count || 0;
         results.queueDepth = writeBackRes.count || 0;
         results.lastChecked = syncLogRes.data?.completed_at || phConnRes.data?.last_tested_at || null;
         results.webhookActive = !!phConnRes.data?.last_tested_at;
