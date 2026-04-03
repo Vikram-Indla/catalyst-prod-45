@@ -53,10 +53,10 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete 
             <TableCell style={{ padding: '0 12px' }} onClick={e => e.stopPropagation()}><Checkbox checked={selectedIds.has(d.id)} onCheckedChange={() => toggleOne(d.id)} /></TableCell>
             <TableCell style={{ padding: '0 12px' }} className="font-mono text-sm text-primary">{d.defect_key}</TableCell>
             <TableCell style={{ padding: '0 12px' }} className="max-w-md truncate font-medium">{d.title}</TableCell>
-            <TableCell><SeverityBadge severity={d.severity} /></TableCell>
-            <TableCell><PriorityBadge priority={d.priority} /></TableCell>
-            <TableCell><StatusBadge status={d.status} /></TableCell>
-            <TableCell>
+            <TableCell style={{ padding: '0 12px' }}><SeverityBadge severity={d.severity} /></TableCell>
+            <TableCell style={{ padding: '0 12px' }}><PriorityBadge priority={d.priority} /></TableCell>
+            <TableCell style={{ padding: '0 12px' }}><StatusBadge status={d.status} /></TableCell>
+            <TableCell style={{ padding: '0 12px' }}>
               {d.assignee ? (
                 <div className="flex items-center gap-2">
                   <Avatar className="h-6 w-6"><AvatarImage src={d.assignee.avatar_url || undefined} /><AvatarFallback className="text-xs">{initials(d.assignee.full_name)}</AvatarFallback></Avatar>
