@@ -53,7 +53,8 @@ export default function FreezeWindowsPage() {
   }, [calMonth]);
 
   const isFreezeDate = (date: Date) => {
-    const d = date.toISOString().slice(0, 10);
+    const riyadh = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Riyadh' }));
+    const d = riyadh.getFullYear() + '-' + String(riyadh.getMonth() + 1).padStart(2, '0') + '-' + String(riyadh.getDate()).padStart(2, '0');
     return windows.find((fw: any) => d >= fw.start_date && d <= fw.end_date);
   };
 
