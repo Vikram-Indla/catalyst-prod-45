@@ -155,6 +155,7 @@ const KanbanPage = lazy(() => import("../modules/planner").then(m => ({ default:
 const MyTasksPage = lazy(() => import("../modules/planner").then(m => ({ default: m.MyTasksPage })));
 
 const TestHubPage = lazy(() => import("../pages/testhub/TestHubPage"));
+const TestHubVerifyPage = lazy(() => import("../pages/testhub/TestHubVerifyPage"));
 const TestRepositoryPage = lazy(() => import("../pages/testhub/TestRepositoryPage"));
 const TestHubDashboardPage = lazy(() => import("../pages/testhub/TestHubDashboardPage"));
 const SharedStepsPage = lazy(() => import("../pages/testhub/SharedStepsPage"));
