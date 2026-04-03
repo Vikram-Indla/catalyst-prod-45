@@ -148,7 +148,16 @@ export default function CoverageMatrixPage() {
         .order('req_key');
       const { data, error } = await query;
       if (error) throw error;
-      setRequirements((data as any[]) || []);
+      // tm_requirements doesn't have coverage columns — default them
+      const enriched = ((data as any[]) || []).map((r: any) => ({
+        ...r,
+        coverage_percent: r.coverage_percent ?? 0,
+        total_linked_tests: r.total_linked_tests ?? 0,
+        passed_tests: r.passed_tests ?? 0,
+        failed_tests: r.failed_tests ?? 0,
+        not_run_tests: r.not_run_tests ?? 0,
+      }));
+      setRequirements(enriched);
     } catch (err) {
       console.error('Fetch error:', err);
       catalystToast.error('Failed to load coverage data');
