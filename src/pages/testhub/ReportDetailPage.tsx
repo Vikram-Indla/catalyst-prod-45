@@ -50,8 +50,8 @@ export default function ReportDetailPage() {
         .from('th_reports')
         .select(`
           *,
-          cycle:th_test_cycles!th_reports_cycle_id_fkey(cycle_key, name),
-          plan:th_test_plans!th_reports_plan_id_fkey(plan_key, name),
+          cycle:tm_test_cycles!th_reports_cycle_id_fkey(cycle_key, name),
+          plan:tm_test_plans!th_reports_plan_id_fkey(plan_key, name),
           generated_by_user:profiles!th_reports_generated_by_fkey(full_name)
         `)
         .eq('id', reportId)

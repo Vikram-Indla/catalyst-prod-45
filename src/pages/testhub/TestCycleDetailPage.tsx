@@ -179,8 +179,8 @@ export default function TestCycleDetailPage() {
     if (selectedTestCaseIds.size === 0) return;
     try {
       const idsToRemove = Array.from(selectedTestCaseIds);
-      const { error } = await supabase
-        .from('th_cycle_test_cases')
+      const { error } = await (supabase as any)
+        .from('tm_cycle_scope')
         .delete()
         .in('id', idsToRemove);
 

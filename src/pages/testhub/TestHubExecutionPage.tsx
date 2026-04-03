@@ -376,7 +376,7 @@ export default function TestHubExecutionPage() {
     const timer = setTimeout(async () => {
       const currentTC = testCases.find(tc => tc.id === selectedTestCaseId);
       if (notes !== (currentTC?.notes || '')) {
-        await supabase.from('th_cycle_test_cases').update({ notes, updated_at: new Date().toISOString() }).eq('id', selectedTestCaseId);
+        await (supabase as any).from('tm_cycle_scope').update({ notes, updated_at: new Date().toISOString() }).eq('id', selectedTestCaseId);
       }
     }, 800);
     return () => clearTimeout(timer);

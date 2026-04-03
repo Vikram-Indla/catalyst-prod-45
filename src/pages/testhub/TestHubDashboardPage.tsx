@@ -73,9 +73,9 @@ export default function TestHubDashboardPage() {
             id: a.id,
             execution_status: a.execution_status ?? 'not_run',
             executed_at: a.executed_at ?? '',
-            case_key: a.th_test_cases?.case_key ?? '',
-            title: a.th_test_cases?.title ?? '',
-            cycle_key: a.th_test_cycles?.cycle_key ?? '',
+            case_key: a.tm_test_cases?.case_key ?? '',
+            title: a.tm_test_cases?.title ?? '',
+            cycle_key: a.tm_test_cycles?.cycle_key ?? '',
             cycle_id: a.cycle_id,
             executed_by_name: a.profiles?.full_name ?? 'Unknown',
           }))
