@@ -66,9 +66,9 @@ export default function TestCyclesPage() {
   const fetchCycles = async () => {
     setIsLoading(true);
     try {
-      let query = supabase
-        .from('th_test_cycles')
-        .select(`*, owner:profiles!th_test_cycles_owner_id_fkey ( id, full_name )`)
+      let query = (supabase as any)
+        .from('tm_test_cycles')
+        .select(`*, owner:profiles!tm_test_cycles_owner_id_fkey ( id, full_name )`)
         .order(sortField, { ascending: sortDirection === 'asc' });
       if (statusFilter.length > 0) query = query.in('status', statusFilter);
       if (searchQuery.trim()) query = query.or(`name.ilike.%${searchQuery}%,cycle_key.ilike.%${searchQuery}%`);
