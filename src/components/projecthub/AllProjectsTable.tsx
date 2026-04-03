@@ -195,14 +195,14 @@ export function AllProjectsTable({
             key={i}
             onClick={isSortable ? () => onSort(sortCol_) : undefined}
             style={{
-              padding: '10px 8px',
+              padding: '12px 8px',
               fontSize: 11,
-              fontWeight: 600,
+              fontWeight: 700,
               textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: 'var(--text-3)',
+              letterSpacing: '0.06em',
+              color: 'var(--text-2)',
               background: 'var(--bg-sunken)',
-              borderBottom: '1px solid var(--bd-default)',
+              borderBottom: '2px solid var(--bd-default)',
               cursor: isSortable ? 'pointer' : 'default',
               userSelect: isSortable ? 'none' : undefined,
               display: 'flex',
