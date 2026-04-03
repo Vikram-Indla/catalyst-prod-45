@@ -20,7 +20,7 @@ export function ExportTestCasesModal({ isOpen, onClose, testCaseCount, selectedF
     
     try {
       // Fetch test cases
-      let query = supabase.from('th_test_cases').select('*');
+      let query = supabase.from('tm_test_cases').select('*');
       if (selectedFolderId) {
         query = query.eq('folder_id', selectedFolderId);
       }
@@ -32,7 +32,7 @@ export function ExportTestCasesModal({ isOpen, onClose, testCaseCount, selectedF
       let stepsMap: Record<string, Array<{ step_number: number; action: string; expected_result: string }>> = {};
       if (includeSteps && testCases?.length) {
         const { data: steps } = await supabase
-          .from('th_test_steps')
+          .from('tm_test_steps')
           .select('*')
           .in('test_case_id', testCases.map(tc => tc.id))
           .order('step_number');

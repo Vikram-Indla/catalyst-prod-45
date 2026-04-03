@@ -49,7 +49,7 @@ export function CloneTestCaseModal({
     try {
       // 1. Generate new case_key
       const { data: lastCase } = await supabase
-        .from('th_test_cases')
+        .from('tm_test_cases')
         .select('case_key')
         .order('created_at', { ascending: false })
         .limit(1);
@@ -63,7 +63,7 @@ export function CloneTestCaseModal({
 
       // 2. Insert cloned test case
       const { data: newCase, error } = await supabase
-        .from('th_test_cases')
+        .from('tm_test_cases')
         .insert({
           case_key: newCaseKey,
           title: newTitle.trim(),
@@ -84,7 +84,7 @@ export function CloneTestCaseModal({
       // 3. Clone steps if checked
       if (includeSteps) {
         const { data: originalSteps } = await supabase
-          .from('th_test_steps')
+          .from('tm_test_steps')
           .select('*')
           .eq('test_case_id', testCase.id)
           .order('step_number');
@@ -96,7 +96,7 @@ export function CloneTestCaseModal({
             action: s.action,
             expected_result: s.expected_result,
           }));
-          await supabase.from('th_test_steps').insert(clonedSteps);
+          await supabase.from('tm_test_steps').insert(clonedSteps);
         }
       }
 

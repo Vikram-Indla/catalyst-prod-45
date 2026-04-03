@@ -35,7 +35,7 @@ export function DeleteTestCaseModal({
       
       // Delete from th_test_cases (cascade will handle related data)
       const { error } = await supabase
-        .from('th_test_cases')
+        .from('tm_test_cases')
         .delete()
         .in('id', ids);
 

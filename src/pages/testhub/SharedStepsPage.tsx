@@ -144,7 +144,7 @@ export default function SharedStepsPage() {
   const fetchCategories = async () => {
     try {
       const { data: categoriesData, error: catError } = await supabase
-        .from('th_shared_step_categories')
+        .from('tm_shared_step_categories')
         .select('*')
         .order('sort_order', { ascending: true });
 
@@ -189,7 +189,7 @@ export default function SharedStepsPage() {
         .from('th_shared_steps')
         .select(`
           *,
-          category:th_shared_step_categories (
+          category:tm_shared_step_categories (
             id, name, color, icon
           )
         `, { count: 'exact' })
@@ -244,7 +244,7 @@ export default function SharedStepsPage() {
         variables: step.variables as any,
         usage_count: 0,
       })
-      .select(`*, category:th_shared_step_categories ( id, name, color, icon )`)
+      .select(`*, category:tm_shared_step_categories ( id, name, color, icon )`)
       .single();
     if (error) { catalystToast.error('Failed to duplicate'); return; }
     if (data) {

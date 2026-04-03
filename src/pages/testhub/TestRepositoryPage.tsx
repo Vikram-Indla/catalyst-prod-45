@@ -141,7 +141,7 @@ export function TestRepositoryPage() {
   // Fetch folders
   const fetchFolders = async () => {
     const { data, error } = await supabase
-      .from('th_folders')
+      .from('tm_folders')
       .select('*')
       .order('sort_order');
 
@@ -151,7 +151,7 @@ export function TestRepositoryPage() {
     }
 
     const { data: counts } = await supabase
-      .from('th_test_cases')
+      .from('tm_test_cases')
       .select('folder_id');
 
     const countMap: Record<string, number> = {};
@@ -177,7 +177,7 @@ export function TestRepositoryPage() {
    const fetchTestCases = async () => {
      setIsLoading(true);
 
-     let query = supabase.from('th_test_cases').select('*');
+     let query = supabase.from('tm_test_cases').select('*');
 
      if (selectedFolderId) {
        query = query.eq('folder_id', selectedFolderId);
@@ -280,7 +280,7 @@ export function TestRepositoryPage() {
     if (!viewId) return;
     const openFromUrl = async () => {
       const { data } = await supabase
-        .from('th_test_cases')
+        .from('tm_test_cases')
         .select('*')
         .eq('id', viewId)
         .maybeSingle();
@@ -360,7 +360,7 @@ export function TestRepositoryPage() {
 
   const openEditModal = async (tc: RawTestCase) => {
     const { data: stepsData } = await supabase
-      .from('th_test_steps')
+      .from('tm_test_steps')
       .select('*')
       .eq('test_case_id', tc.id)
       .order('step_number');
@@ -380,7 +380,7 @@ export function TestRepositoryPage() {
   const handleViewFromContext = async () => {
     if (!contextMenu) return;
     const { data: fullTC } = await supabase
-      .from('th_test_cases')
+      .from('tm_test_cases')
       .select('*')
       .eq('id', contextMenu.testCase.id)
       .single();
@@ -395,7 +395,7 @@ export function TestRepositoryPage() {
   const handleEditFromContext = async () => {
     if (!contextMenu) return;
     const { data: fullTC } = await supabase
-      .from('th_test_cases')
+      .from('tm_test_cases')
       .select('*')
       .eq('id', contextMenu.testCase.id)
       .single();
@@ -409,7 +409,7 @@ export function TestRepositoryPage() {
   const handleCloneFromContext = async () => {
     if (!contextMenu) return;
     const { data: fullTC } = await supabase
-      .from('th_test_cases')
+      .from('tm_test_cases')
       .select('*')
       .eq('id', contextMenu.testCase.id)
       .single();
@@ -527,7 +527,7 @@ export function TestRepositoryPage() {
 
     // Delete folder
     const { error } = await supabase
-      .from('th_folders')
+      .from('tm_folders')
       .delete()
       .eq('id', folderId);
 
@@ -564,7 +564,7 @@ export function TestRepositoryPage() {
     if (!renameFolderId) return;
     setIsRenaming(true);
     const { error } = await supabase
-      .from('th_folders')
+      .from('tm_folders')
       .update({ name: newName })
       .eq('id', renameFolderId);
     setIsRenaming(false);

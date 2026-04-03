@@ -104,7 +104,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
     try {
       for (const tc of parsedData) {
         const { data: lastCase } = await supabase
-          .from('th_test_cases')
+          .from('tm_test_cases')
           .select('case_key')
           .order('created_at', { ascending: false })
           .limit(1);
@@ -116,7 +116,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
         }
         
         const { data: newCase, error: tcError } = await supabase
-          .from('th_test_cases')
+          .from('tm_test_cases')
           .insert({
             case_key: `TC-${String(nextNum).padStart(3, '0')}`,
             title: tc.title,
@@ -134,7 +134,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
         if (tcError) throw tcError;
         
         if (tc.steps?.length && newCase) {
-          await supabase.from('th_test_steps').insert(
+          await supabase.from('tm_test_steps').insert(
             tc.steps.map((s, i) => ({
               test_case_id: newCase.id,
               step_number: i + 1,
