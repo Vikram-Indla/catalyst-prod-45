@@ -299,7 +299,7 @@ export function AllProjectsTable({
             </div>
 
             {/* Cell 6: Lead */}
-            <div style={{ borderBottom: CELL_BORDER, padding: '14px 8px', opacity: active ? 1 : 0.45 }}>
+            <div style={{ borderBottom: CELL_BORDER, padding: '8px 8px', opacity: active ? 1 : 0.45 }}>
               {p.lead_name ? (
                 <div className="flex items-center gap-2">
                   <div
