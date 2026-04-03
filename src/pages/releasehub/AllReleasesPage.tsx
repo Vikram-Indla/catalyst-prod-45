@@ -112,9 +112,9 @@ export default function AllReleasesPage() {
             <Download size={14} /> Import from Jira
           </button>
           <button onClick={() => setShowCreate(true)}
-            className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"
-            style={{ background: 'linear-gradient(to bottom, #3B82F6, #2563EB)', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
+            className="h-9 px-4 rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-colors">
             <Plus size={14} /> New Release
+          </button>
           </button>
         </div>
       </div>
