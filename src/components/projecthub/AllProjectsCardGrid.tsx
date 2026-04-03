@@ -44,7 +44,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
           <div
             key={p.id}
             onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
-            className="border border-slate-200 dark:border-slate-700 rounded-lg p-5 bg-white dark:bg-[#232019] hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all cursor-pointer flex flex-col gap-3.5"
+            className="border border-slate-200 dark:border-slate-700 rounded-lg p-5 bg-white dark:bg-[#1E2027] hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all cursor-pointer flex flex-col gap-3.5"
             style={{ height: '100%' }}
           >
             {/* Header: badge + name + dept + key + star */}

@@ -46,7 +46,7 @@ function useAllProfiles() {
 }
 
 // ── 7-column grid ──────────────────────────────────────
-const GRID_COLS = '48px minmax(280px,1fr) 110px 150px 130px 100px 40px';
+const GRID_COLS = '48px minmax(280px,1fr) 110px 170px 130px 100px 40px';
 
 const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
   { value: 'active', label: 'ACTIVE' },
@@ -81,7 +81,7 @@ function StatusChangePopover({ project }: { project: ProjectListItem }) {
       </PopoverTrigger>
       <PopoverContent
         align="center"
-        className="w-44 p-1 bg-white dark:!bg-[#232019] border-slate-200 dark:border-slate-700"
+        className="w-44 p-1 bg-white dark:!bg-[#1E2027] border-slate-200 dark:border-slate-700"
         onClick={e => e.stopPropagation()}
       >
         {STATUS_OPTIONS.map(opt => (
@@ -131,7 +131,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
                   {getInitials(project.lead_name)}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-[13px] font-medium truncate text-slate-600 dark:text-slate-300">
+              <span className="text-[13px] font-medium truncate text-slate-600 dark:text-slate-300" title={project.lead_name}>
                 {project.lead_name.split(' ').slice(0, 2).join(' ')}
               </span>
             </>
@@ -142,7 +142,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-60 p-3 bg-white dark:!bg-[#232019] border-slate-200 dark:border-slate-700"
+        className="w-60 p-3 bg-white dark:!bg-[#1E2027] border-slate-200 dark:border-slate-700"
         onClick={e => e.stopPropagation()}
       >
         <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Reassign lead</p>
@@ -234,7 +234,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-[260px] p-3 bg-white dark:!bg-[#232019] border-slate-200 dark:border-slate-700"
+        className="w-[260px] p-3 bg-white dark:!bg-[#1E2027] border-slate-200 dark:border-slate-700"
         onClick={e => e.stopPropagation()}
       >
         <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Manage members</p>

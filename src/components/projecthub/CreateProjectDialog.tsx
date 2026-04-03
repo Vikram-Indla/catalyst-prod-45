@@ -300,7 +300,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               </PopoverTrigger>
               <PopoverContent
                 className="w-[calc(100%-48px)] p-2"
-                style={{ background: dk ? '#232019' : '#FFF', border: `1px solid ${border}`, borderRadius: 6, zIndex: 9999, minWidth: 260 }}
+                style={{ background: dk ? '#1E2027' : '#FFF', border: `1px solid ${border}`, borderRadius: 6, zIndex: 9999, minWidth: 260 }}
                 align="start"
               >
                 <div className="relative mb-2">
