@@ -21,18 +21,16 @@ interface TestCycle {
   name: string;
   description: string | null;
   status: string;
-  start_date: string | null;
-  end_date: string | null;
-  progress_percent: number;
+  planned_start: string | null;
+  planned_end: string | null;
   total_cases: number;
   passed_count: number;
   failed_count: number;
   blocked_count: number;
   skipped_count: number;
   not_run_count: number;
+  in_progress_count?: number;
   environment_id?: string | null;
-  owner?: { id: string; full_name: string };
-  environment?: { id: string; name: string; type: string; health_status: string } | null;
 }
 
 interface CycleTestCase {

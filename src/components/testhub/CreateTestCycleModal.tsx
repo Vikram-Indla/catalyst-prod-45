@@ -107,9 +107,8 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         const updateData: any = {
           name: name.trim(),
           description: description.trim() || null,
-          start_date: startDate || null,
-          end_date: endDate || null,
-          owner_id: ownerId || null,
+          planned_start: startDate || null,
+          planned_end: endDate || null,
           environment_id: environmentId || null,
           updated_at: new Date().toISOString(),
         };
@@ -131,13 +130,13 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           cycle_key: cycleKey,
           name: name.trim(),
           description: description.trim() || null,
-          start_date: startDate || null,
-          end_date: endDate || null,
-          owner_id: ownerId || null,
+          planned_start: startDate || null,
+          planned_end: endDate || null,
           environment_id: environmentId || null,
           status: 'draft',
-          progress_percent: 0, total_cases: 0, passed_count: 0, failed_count: 0,
+          total_cases: 0, passed_count: 0, failed_count: 0,
           blocked_count: 0, skipped_count: 0, not_run_count: 0,
+          project_id: '00000000-0000-0000-0000-000000000001',
         };
         const { error } = await (supabase as any).from('tm_test_cycles').insert(insertData).select().single();
 

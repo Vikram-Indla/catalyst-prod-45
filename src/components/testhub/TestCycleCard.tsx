@@ -83,12 +83,8 @@ export function TestCycleCard({
     return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  const getOwnerInitials = () => {
-    if (!cycle.owner?.full_name) return '?';
-    return cycle.owner.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  };
-
   const executedCount = cycle.passed_count + cycle.failed_count + cycle.blocked_count + cycle.skipped_count;
+  const progressPercent = cycle.total_cases > 0 ? Math.round((executedCount / cycle.total_cases) * 100) : 0;
 
   return (
     <div
