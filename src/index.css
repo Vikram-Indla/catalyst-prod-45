@@ -889,24 +889,24 @@ html:has(body[data-scroll-locked]) {
     --brand-gold-hover: #0f766e;
     --brand-teal: #0d9488;
     
-    /* === A) SURFACE LADDER (Nocturne Warm Charcoal) === */
-    --bg-0: #181A1E;                     /* App background — Nocturne warm charcoal */
+    /* === A) SURFACE LADDER (Cool Steel blue-grey) === */
+    --bg-0: #181A1E;                     /* App background — Cool Steel */
     --bg-1: #181A1E;                     /* Page canvas */
-    --bg-2: #1F2128;                     /* Panels / elevated float */
-    --bg-3: #1F2128;                     /* Cards — same as panels for flush */
-    --bg-4: #2A2720;                     /* Raised/hover */
-    --bg-5: #312E27;                     /* Active/selected surface */
+    --bg-2: #1E2027;                     /* Panels / elevated float */
+    --bg-3: #1E2027;                     /* Cards — same as panels for flush */
+    --bg-4: #262830;                     /* Raised/hover */
+    --bg-5: #2C2E36;                     /* Active/selected surface */
     --bg-app: var(--bg-0);
     
     /* Shadcn surface mappings */
-    --background: 30 13% 9%;             /* #181A1E */
-    --foreground: 0 0% 92%;              /* rgba(255,255,255,0.92) */
+    --background: 222 13% 11%;            /* #181A1E Cool Steel */
+    --foreground: 216 25% 91%;            /* Cool Steel text */
     
-    --card: 30 13% 9%;                   /* Same as --background — flush cards */
-    --card-foreground: 0 0% 92%;
+    --card: 222 13% 11%;                  /* Same as --background — flush cards */
+    --card-foreground: 216 25% 91%;
     
-    --popover: 228 14% 14%;               /* #1F2128 - NOCTURNE float */
-    --popover-foreground: 0 0% 92%;
+    --popover: 228 12% 13%;               /* #1E2027 - Cool Steel float */
+    --popover-foreground: 216 25% 91%;
     
     --primary: 217 91% 60%;              /* #3b82f6 blue */
     --primary-foreground: 0 0% 100%;     /* pure white on buttons only */
