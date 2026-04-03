@@ -44,9 +44,6 @@ function useAllProfiles() {
     staleTime: 60_000,
   });
 }
-    staleTime: 60_000,
-  });
-}
 
 // ── 7-column grid ──────────────────────────────────────
 const GRID_COLS = '48px minmax(280px,1fr) 110px 150px 130px 100px 40px';
