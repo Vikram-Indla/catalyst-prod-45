@@ -47,10 +47,10 @@ export function ReleaseDrawer({ release, onClose }: Props) {
   const { data: testCycles = [] } = useReleaseTestCycles(release.id);
   const relChanges = allChanges.filter((c: any) => c.release_id === release.id);
 
-  // Activity query
+  // Change activity query
   const relChangeIds = relChanges.map((c: any) => c.id).filter(Boolean);
-  const { data: activityEntries = [], isLoading: activityLoading } = useQuery({
-    queryKey: ['release-hub', 'release-activity', release.id, relChangeIds],
+  const { data: changeActivity = [], isLoading: changeActivityLoading } = useQuery({
+    queryKey: ['release-hub', 'change-activity', release.id, relChangeIds],
     queryFn: async () => {
       if (relChangeIds.length === 0) return [];
       const { data, error } = await supabase
@@ -64,6 +64,39 @@ export function ReleaseDrawer({ release, onClose }: Props) {
     },
     enabled: relChangeIds.length > 0,
   });
+
+  // Release activity query
+  const { data: releaseActivity = [], isLoading: releaseActivityLoading } = useQuery({
+    queryKey: ['release-hub', 'release-activity', release.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('rh_release_activity_log')
+        .select('*')
+        .eq('release_id', release.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      return data ?? [];
+    },
+    enabled: !!release.id,
+  });
+
+  const activityLoading = changeActivityLoading || releaseActivityLoading;
+
+  const mergedActivity = useMemo(() => {
+    const changeItems = (changeActivity ?? []).map((a: any) => ({
+      ...a,
+      _source: 'change',
+    }));
+    const releaseItems = (releaseActivity ?? []).map((a: any) => ({
+      ...a,
+      _source: 'release',
+    }));
+    return [...changeItems, ...releaseItems].sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() -
+        new Date(a.created_at).getTime()
+    );
+  }, [changeActivity, releaseActivity]);
 
   // ── COMPUTED QUALITY GATES ──
   const allSignoffsComplete = (release.pending_signoffs ?? 0) === 0;
