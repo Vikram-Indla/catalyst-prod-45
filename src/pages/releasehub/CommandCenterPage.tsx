@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Rocket, ArrowLeftRight, CheckSquare, FlaskConical, Sparkles, ChevronRight, CheckCircle, Clock, Circle } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Rocket, ArrowLeftRight, CheckSquare, FlaskConical, Sparkles, ChevronRight, CheckCircle2, XCircle, Minus, Clock } from 'lucide-react';
 import { useReleases, useChanges, useCommandCenterKPIs, usePendingSignOffs, useProductionEvents } from '@/hooks/useReleaseHub';
 import { RH, CHG_STATUS_LABELS, CHG_STATUS_ORDER } from '@/constants/releasehub.design';
 import { ReleaseStatusBadge } from '@/components/releasehub/ReleaseStatusBadge';
@@ -12,6 +12,8 @@ import { ReleaseDrawer } from '@/components/releasehub/ReleaseDrawer';
 import { ChgDrawer } from '@/components/releasehub/ChgDrawer';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 function KPICard({ label, value, delta, deltaLabel, color, icon: Icon, loading, onClick }: {
   label: string; value: number | string; delta?: string; deltaLabel?: string; color: string; icon: any; loading?: boolean; onClick?: () => void;
@@ -53,13 +55,36 @@ export default function CommandCenterPage() {
   const { data: releases = [], isLoading: relLoading } = useReleases();
   const { data: changes = [], isLoading: chgLoading } = useChanges();
   const { data: kpis, isLoading: kpiLoading } = useCommandCenterKPIs();
-  const { data: pendingSignoffs = [] } = usePendingSignOffs();
-  const { data: prodEvents = [] } = useProductionEvents();
+  const { data: pendingSignoffs = [], isLoading: soLoading } = usePendingSignOffs();
+  const { data: prodEvents = [], isLoading: evLoading } = useProductionEvents();
   const navigate = useNavigate();
   const [selectedRelease, setSelectedRelease] = useState<any>(null);
   const [selectedChange, setSelectedChange] = useState<any>(null);
 
+  // Two permitted inline queries
+  const { data: allSignoffs = [] } = useQuery({
+    queryKey: ['release-hub', 'all-signoffs'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('rh_change_signoffs')
+        .select('id, status, change_id');
+      return data ?? [];
+    },
+  });
+
+  const { data: testCycles = [] } = useQuery({
+    queryKey: ['release-hub', 'cmd-test-cycles'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('rh_change_test_cycles')
+        .select('result, total_cases, passed_cases');
+      return data ?? [];
+    },
+  });
+
   const isLoading = relLoading || chgLoading || kpiLoading;
+  const coreDataReady = !relLoading && !chgLoading && !kpiLoading && !soLoading && !evLoading;
+
   const activeReleases = kpis?.active_releases ?? releases.filter((r: any) => ['in_progress', 'planning'].includes(r.status)).length;
   const changesInFlight = kpis?.changes_in_flight ?? changes.filter((c: any) => c.status !== 'in_production').length;
   const signoffsPending = kpis?.signoffs_pending ?? 0;
@@ -82,6 +107,129 @@ export default function CommandCenterPage() {
     { key: 'in_beta', label: 'IN BETA', loz: { bg: '#0C66E4', text: '#FFFFFF' } },
     { key: 'in_production', label: 'IN PROD', loz: { bg: '#1B7F37', text: '#FFFFFF' } },
   ];
+
+  // ═══════════════════════════════════════════
+  // READINESS COMPUTATION
+  // ═══════════════════════════════════════════
+  const computed = useMemo(() => {
+    const totalSignoffs = allSignoffs.length;
+    const pendingCount = pendingSignoffs.length;
+    const approvedCount = totalSignoffs - pendingCount;
+    const signoffRate = totalSignoffs > 0 ? approvedCount / totalSignoffs : 0;
+
+    const totalCases = testCycles.reduce((s: number, t: any) => s + (t.total_cases ?? 0), 0);
+    const passedCases = testCycles.reduce((s: number, t: any) => s + (t.passed_cases ?? 0), 0);
+    const testPassRate = totalCases > 0 ? passedCases / totalCases : 0;
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const productionEvents = prodEvents ?? [];
+    const recentEvents = productionEvents.filter(
+      (e: any) => new Date(e.deployed_at) >= thirtyDaysAgo
+    );
+    const successEvents = recentEvents.filter((e: any) => e.deployment_result === 'SUCCESS').length;
+    const deployRate = recentEvents.length > 0 ? successEvents / recentEvents.length : 0;
+
+    const allChanges = changes ?? [];
+    const inProduction = allChanges.filter((c: any) => c.status === 'in_production').length;
+    const changeCompletionRate = allChanges.length > 0 ? inProduction / allChanges.length : 0;
+
+    const readinessScore = Math.round(
+      (signoffRate * 0.35 + testPassRate * 0.30 + deployRate * 0.20 + changeCompletionRate * 0.15) * 100
+    );
+
+    const scoreColor = readinessScore >= 75 ? '#006644' : readinessScore >= 50 ? '#B45309' : '#AE2A19';
+    const scoreBg = readinessScore >= 75 ? '#E3FCEF' : readinessScore >= 50 ? '#FFF7ED' : '#FFEBE6';
+
+    // Post-deploy summary
+    const lastSuccessEvent = [...productionEvents]
+      .filter((e: any) => e.deployment_result === 'SUCCESS')
+      .sort((a: any, b: any) =>
+        new Date(b.deployed_at).getTime() - new Date(a.deployed_at).getTime()
+      )[0];
+    const lastDeployDate = lastSuccessEvent
+      ? new Date(lastSuccessEvent.deployed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+      : null;
+
+    const postDeploySummary = allChanges.length === 0
+      ? 'No changes have been tracked in this release cycle yet.'
+      : `${inProduction} of ${allChanges.length} changes have been deployed to production` +
+        (lastDeployDate ? `. Last successful deployment: ${lastDeployDate}.` : '. No successful deployments recorded yet.') +
+        (approvedCount === totalSignoffs && totalSignoffs > 0
+          ? ' All sign-off gates are complete.'
+          : totalSignoffs > 0
+            ? ` ${pendingCount} sign-off${pendingCount !== 1 ? 's' : ''} still pending.`
+            : '');
+
+    // Conflict alert
+    const scheduledChanges = allChanges.filter((c: any) =>
+      c.deployment_date && c.status !== 'in_production'
+    );
+    const dateGroups = scheduledChanges.reduce((acc: Record<string, any[]>, c: any) => {
+      const d = c.deployment_date!.slice(0, 10);
+      acc[d] = acc[d] ? [...acc[d], c] : [c];
+      return acc;
+    }, {} as Record<string, any[]>);
+    const conflictDates = Object.entries(dateGroups).filter(([, items]) => items.length > 1);
+    const hasConflicts = conflictDates.length > 0;
+    const hasPendingSignoffs = pendingCount > 0;
+
+    const conflictMessage = hasConflicts
+      ? `${conflictDates.length} deployment date conflict${conflictDates.length !== 1 ? 's' : ''} detected. ${conflictDates.length > 1 ? 'Multiple dates have' : 'One date has'} more than one change scheduled simultaneously. Review scheduling to avoid overlap.`
+      : hasPendingSignoffs
+        ? `${pendingCount} sign-off${pendingCount !== 1 ? 's' : ''} pending approval. No deployment date conflicts detected.`
+        : 'No conflicts or pending sign-offs detected. Release path is clear.';
+
+    const alertSeverity = hasConflicts ? 'destructive' : hasPendingSignoffs ? 'warning' : 'success';
+
+    // Gates
+    const gates = [
+      {
+        label: 'Sign-Off Rate',
+        rate: signoffRate,
+        value: Math.round(signoffRate * 100) + '%',
+        threshold: 100,
+        detail: `${approvedCount} of ${totalSignoffs} sign-offs approved`,
+        noData: totalSignoffs === 0,
+      },
+      {
+        label: 'Test Pass Rate',
+        rate: testPassRate,
+        value: Math.round(testPassRate * 100) + '%',
+        threshold: 85,
+        detail: `${passedCases} of ${totalCases} test cases passed`,
+        noData: totalCases === 0,
+      },
+      {
+        label: 'Deployment Success',
+        rate: deployRate,
+        value: Math.round(deployRate * 100) + '%',
+        threshold: 90,
+        detail: `${successEvents} of ${recentEvents.length} deployments successful (last 30d)`,
+        noData: recentEvents.length === 0,
+      },
+      {
+        label: 'Change Completion',
+        rate: changeCompletionRate,
+        value: Math.round(changeCompletionRate * 100) + '%',
+        threshold: 75,
+        detail: `${inProduction} of ${allChanges.length} changes in production`,
+        noData: allChanges.length === 0,
+      },
+    ];
+
+    return {
+      readinessScore, scoreColor, scoreBg,
+      postDeploySummary,
+      conflictMessage, alertSeverity, hasConflicts, hasPendingSignoffs,
+      gates,
+    };
+  }, [allSignoffs, pendingSignoffs, testCycles, prodEvents, changes]);
+
+  const alertBorderColor = computed.alertSeverity === 'destructive' ? '#DC2626'
+    : computed.alertSeverity === 'warning' ? '#D97706' : '#16A34A';
+  const alertBgColor = computed.alertSeverity === 'destructive' ? '#FEF2F2'
+    : computed.alertSeverity === 'warning' ? '#FFFBEB' : '#F0FDF4';
 
   return (
     <div className="p-6" style={{ background: '#FFFFFF' }}>
@@ -129,7 +277,11 @@ export default function CommandCenterPage() {
               <Sparkles size={12} style={{ color: '#2563EB' }} />
               <span className="text-[11px] font-bold text-[#2563EB] uppercase">AI Post-Deploy Summary</span>
             </div>
-            <p className="text-[12px] text-[#334155]">Deployment completed successfully. No anomalies detected in the first 24h monitoring window.</p>
+            {!coreDataReady ? (
+              <div className="h-3 w-3/4 bg-[#DBEAFE] rounded animate-pulse" />
+            ) : (
+              <p className="text-[12px] text-[#334155]">{computed.postDeploySummary}</p>
+            )}
           </div>
         </div>
 
@@ -197,53 +349,105 @@ export default function CommandCenterPage() {
             ))}
           </div>
 
-          {/* AI Conflict Alert */}
-          {changes.filter((c: any) => c.release_id && c.status !== 'in_production').length > 1 && (
-            <div className="mt-4 rounded-[6px] p-3.5" style={{ background: '#EFF6FF', border: '0.75px solid #DBEAFE' }}>
-              <div className="flex items-center gap-1.5 mb-1">
-                <Sparkles size={12} style={{ color: '#2563EB' }} />
-                <span className="text-[11px] font-bold text-[#2563EB] uppercase">AI Conflict Alert</span>
-              </div>
-              <p className="text-[12px] text-[#334155]">
-                Multiple changes target the same release. Review migration order before advancing to Beta.
-              </p>
+          {/* AI Conflict Alert — computed */}
+          <div className="mt-4 rounded-[6px] p-3.5" style={{ background: alertBgColor, border: `0.75px solid ${alertBorderColor}33` }}>
+            <div className="flex items-center gap-1.5 mb-1">
+              <Sparkles size={12} style={{ color: '#2563EB' }} />
+              <span className="text-[11px] font-bold text-[#2563EB] uppercase">AI Conflict Alert</span>
             </div>
-          )}
+            {!coreDataReady ? (
+              <div className="h-3 w-3/4 bg-[#DBEAFE] rounded animate-pulse" />
+            ) : (
+              <p className="text-[12px] text-[#334155]">{computed.conflictMessage}</p>
+            )}
+          </div>
         </div>
 
-        {/* AI Release Readiness */}
+        {/* AI Release Readiness — computed */}
         <div className="bg-white rounded-[6px] p-5" style={{ border: '0.75px solid rgba(15,23,42,0.12)' }}>
           <div className="flex items-center gap-2 mb-4">
             <Sparkles size={14} style={{ color: '#2563EB' }} />
             <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: RH.ink1 }}>AI Release Readiness</h2>
             {activeRels[0] && <span className="text-[12px] text-[#64748B]">— {activeRels[0]?.name}</span>}
           </div>
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-[28px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 700, color: '#2563EB' }}>65%</span>
-            <div className="flex-1 h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
-              <div className="h-full bg-[#2563EB] rounded-full" style={{ width: '65%' }} />
-            </div>
-          </div>
-          <div className="space-y-2.5">
-            {[
-              { icon: CheckCircle, label: 'Release Status', detail: 'IN_PROGRESS', score: '10/10%', pass: true },
-              { icon: Clock, label: 'Change Status', detail: `${statusCounts['in_uat'] || 0} at UAT+`, score: '10/20%', pass: false },
-              { icon: CheckCircle, label: 'Sign-off Status', detail: `${signoffsPending} pending`, score: `${signoffsPending === 0 ? '25' : '10'}/25%`, pass: signoffsPending === 0 },
-              { icon: Clock, label: 'Work Item Status', detail: 'Review needed', score: '10/20%', pass: false },
-              { icon: Clock, label: 'Test Cycle Status', detail: `${kpis?.test_cycles_running || 0} running`, score: '10/25%', pass: false },
-            ].map(gate => (
-              <div key={gate.label} className="flex items-center gap-2.5">
-                <gate.icon size={14} style={{ color: gate.pass ? '#16A34A' : '#2563EB' }} />
-                <span className="text-[13px] flex-1" style={{ fontWeight: 500, color: RH.ink2 }}>{gate.label}</span>
-                <span className="text-[12px] text-[#64748B]">{gate.detail}</span>
-                <span className="text-[12px]" style={{ fontFamily: RH.fontMono, fontWeight: 650, color: gate.pass ? '#16A34A' : '#64748B' }}>{gate.score}</span>
+
+          {!coreDataReady ? (
+            <>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-8 w-14 bg-[#F1F5F9] rounded animate-pulse" />
+                <div className="flex-1 h-1.5 bg-[#F1F5F9] rounded-full" />
               </div>
-            ))}
-          </div>
+              <div className="grid grid-cols-2 gap-3">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="rounded-[6px] p-3" style={{ border: '0.75px solid #DFE1E6', borderLeft: '4px solid #DFE1E6' }}>
+                    <div className="h-3 w-20 bg-[#F1F5F9] rounded animate-pulse mb-2" />
+                    <div className="h-5 w-10 bg-[#F1F5F9] rounded animate-pulse mb-1" />
+                    <div className="h-2.5 w-24 bg-[#F1F5F9] rounded animate-pulse" />
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Score display */}
+              <div className="flex items-center gap-3 mb-4">
+                <span
+                  className="text-[28px] px-3 py-0.5 rounded-[6px]"
+                  style={{
+                    fontFamily: RH.fontDisplay,
+                    fontWeight: 700,
+                    color: computed.scoreColor,
+                    background: computed.scoreBg,
+                  }}
+                >
+                  {computed.readinessScore}%
+                </span>
+                <div className="flex-1 h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${computed.readinessScore}%`,
+                      background: computed.scoreColor,
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* 2×2 Gate Cards */}
+              <div className="grid grid-cols-2 gap-3">
+                {computed.gates.map(gate => {
+                  const pass = !gate.noData && Math.round(gate.rate * 100) >= gate.threshold;
+                  const borderColor = gate.noData ? '#DFE1E6' : pass ? '#16A34A' : '#DC2626';
+                  const GateIcon = gate.noData ? Minus : pass ? CheckCircle2 : XCircle;
+                  const iconColor = gate.noData ? '#94A3B8' : pass ? '#16A34A' : '#DC2626';
+
+                  return (
+                    <div
+                      key={gate.label}
+                      className="rounded-[6px] p-3"
+                      style={{
+                        border: '0.75px solid rgba(15,23,42,0.08)',
+                        borderLeft: `4px solid ${borderColor}`,
+                      }}
+                    >
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <GateIcon size={16} style={{ color: iconColor }} />
+                        <span className="text-[13px]" style={{ fontWeight: 600, color: RH.ink1 }}>{gate.label}</span>
+                      </div>
+                      <p className="text-[22px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 700, color: RH.ink1 }}>
+                        {gate.noData ? '—' : gate.value}
+                      </p>
+                      <p className="text-[11px] text-[#64748B]">{gate.noData ? 'No data yet' : gate.detail}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Row 4: Sign-off Queue + Test Cycle Health */}
+      {/* Row 4: Sign-off Queue + Production Events */}
       <div className="grid grid-cols-2 gap-4">
         {/* Sign-off Queue Widget */}
         <div className="bg-white rounded-[6px] overflow-hidden" style={{ border: '0.75px solid rgba(15,23,42,0.12)' }}>
@@ -282,7 +486,7 @@ export default function CommandCenterPage() {
           )}
         </div>
 
-        {/* Test Cycle Health */}
+        {/* Recent Production Events */}
         <div className="bg-white rounded-[6px] overflow-hidden" style={{ border: '0.75px solid rgba(15,23,42,0.12)' }}>
           <div className="px-5 py-3.5">
             <SectionHeader title="Recent Production Events" action={<button onClick={() => navigate('/release-hub/production-events')} className="text-[12px] font-medium text-[#2563EB] hover:underline">View all</button>} />
