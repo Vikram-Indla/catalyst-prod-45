@@ -69,16 +69,18 @@ export default function TestCyclesPage() {
   const fetchCycles = async () => {
     setIsLoading(true);
     try {
+      const safeSortField = ['created_at', 'name', 'status', 'cycle_key', 'planned_start', 'planned_end', 'updated_at'].includes(sortField) ? sortField : 'created_at';
       let query = (supabase as any)
         .from('tm_test_cycles')
-        .select(`*, owner:profiles!tm_test_cycles_owner_id_fkey ( id, full_name )`)
-        .order(sortField, { ascending: sortDirection === 'asc' });
+        .select('id, cycle_key, name, description, status, planned_start, planned_end, environment_id, project_id, total_cases, passed_count, failed_count, blocked_count, skipped_count, not_run_count, in_progress_count, created_at, updated_at')
+        .eq('project_id', '00000000-0000-0000-0000-000000000001')
+        .order(safeSortField, { ascending: sortDirection === 'asc' });
       if (statusFilter.length > 0) query = query.in('status', statusFilter);
       if (searchQuery.trim()) query = query.or(`name.ilike.%${searchQuery}%,cycle_key.ilike.%${searchQuery}%`);
-      if (dateFrom) query = query.gte('start_date', dateFrom);
-      if (dateTo) query = query.lte('end_date', dateTo);
+      if (dateFrom) query = query.gte('planned_start', dateFrom);
+      if (dateTo) query = query.lte('planned_end', dateTo);
       const { data, error } = await query;
-      if (error) { catalystToast.error('Failed to load test cycles'); return; }
+      if (error) { catalystToast.error('Failed to load test cycles'); console.error('Cycles query error:', error); return; }
       setCycles(data || []);
     } catch { catalystToast.error('Failed to load test cycles'); }
     finally { setIsLoading(false); }
