@@ -542,7 +542,7 @@ export function AllProjectsTable({
               <div className="flex items-center gap-2 pl-[42px]">
                 <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-medium text-slate-500 dark:text-slate-400">
                   <span className={cn("w-1.5 h-1.5 rounded-full", syncHealthy ? "bg-green-500" : "bg-amber-500")} />
-                  {syncAge ? `↔ ${syncAge}` : 'Not synced'} · {p.total_issues ?? 0} issues
+                  {syncAge ? `${dirIcon} ${syncAge}` : 'Not synced'} · {p.total_issues ?? 0} issues
                 </div>
               </div>
             </div>
