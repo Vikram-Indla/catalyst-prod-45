@@ -160,6 +160,22 @@ export default function AllReleasesPage() {
 
                   <div className="flex items-center gap-2 flex-wrap mb-2">
                     <StatusLozenge status={mapStatus(r.status)} />
+                    <SourceBadge source={r.source || 'catalyst'} />
+                    {(r.source === 'jira') && relativeTime(r.synced_at || r.updated_at) && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="inline-flex items-center gap-1 text-[11px] text-[#94A3B8] cursor-default">
+                              <Clock size={12} />
+                              Synced {relativeTime(r.synced_at || r.updated_at)}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="text-xs">
+                            Last synced: {new Date(r.synced_at || r.updated_at).toLocaleString()}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-3 text-[12px] text-[#64748B] mb-3">
