@@ -125,9 +125,9 @@ export default function CommandCenterPage() {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const productionEvents = prodEvents ?? [];
     const recentEvents = productionEvents.filter(
-      (e: any) => new Date(e.event_date || e.deployed_at) >= thirtyDaysAgo
+      (e: any) => new Date(e.deployed_at) >= thirtyDaysAgo
     );
-    const successEvents = recentEvents.filter((e: any) => (e.deployment_result || e.status) === 'SUCCESS').length;
+    const successEvents = recentEvents.filter((e: any) => e.deployment_result === 'SUCCESS').length;
     const deployRate = recentEvents.length > 0 ? successEvents / recentEvents.length : 0;
 
     const allChanges = changes ?? [];
