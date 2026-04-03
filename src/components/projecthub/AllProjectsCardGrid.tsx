@@ -47,7 +47,7 @@ interface Props {
 export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSelectProject }: Props) {
   const navigate = useNavigate();
   return (
-    <div className="grid gap-2.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16, width: '100%' }}>
       {projects.map(p => {
         const isFav = favoriteIds.has(p.id);
         const grad = getGradient(p.project_key);
