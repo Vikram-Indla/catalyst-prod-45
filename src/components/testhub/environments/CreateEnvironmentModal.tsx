@@ -68,7 +68,7 @@ export function CreateEnvironmentModal({ isOpen, onClose, onCreated }: CreateEnv
     setIsSubmitting(true);
     try {
       const { data, error } = await (supabase as any)
-        .from('th_environments')
+        .from('tm_environments')
         .insert({
           name: name.trim(),
           type,
@@ -79,6 +79,7 @@ export function CreateEnvironmentModal({ isOpen, onClose, onCreated }: CreateEnv
           database_info: databaseInfo.trim() || null,
           description: description.trim() || null,
           owner_id: ownerId || null,
+          project_id: '00000000-0000-0000-0000-000000000001',
         })
         .select()
         .single();

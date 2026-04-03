@@ -27,8 +27,8 @@ export function DeleteSharedStepModal({ isOpen, sharedStep, onClose, onSuccess }
     if (!sharedStep) return;
     setIsDeleting(true);
     try {
-      await supabase.from('th_shared_step_usage').delete().eq('shared_step_id', sharedStep.id);
-      const { error } = await supabase.from('th_shared_steps').delete().eq('id', sharedStep.id);
+      await (supabase as any).from('th_shared_step_usage').delete().eq('shared_step_id', sharedStep.id);
+      const { error } = await (supabase as any).from('tm_shared_steps').delete().eq('id', sharedStep.id);
       if (error) {
         catalystToast.error(error.message || 'Failed to delete', { title: 'Delete Failed' });
         return;

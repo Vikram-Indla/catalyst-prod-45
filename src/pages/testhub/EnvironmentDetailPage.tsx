@@ -130,7 +130,7 @@ export default function EnvironmentDetailPage() {
     if (!environment) return;
     if (!confirm(`Delete ${environment.name}? This cannot be undone.`)) return;
     try {
-      const { error } = await (supabase as any).from('th_environments').delete().eq('id', environment.id);
+      const { error } = await (supabase as any).from('tm_environments').delete().eq('id', environment.id);
       if (error) throw error;
       catalystToast.success('Environment deleted');
       navigate('/testhub/environments');
