@@ -12,6 +12,7 @@ import {
   ArrowLeftRight,
   CheckSquare,
   Clock,
+  CalendarOff,
   Settings,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
