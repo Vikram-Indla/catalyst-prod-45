@@ -10,7 +10,6 @@ interface TestCase {
   objective: string | null;
   preconditions: string | null;
   folder_id: string | null;
-  folderId?: string | null;
   priority: string;
   type: string;
 }
