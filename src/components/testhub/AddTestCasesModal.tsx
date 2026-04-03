@@ -56,10 +56,10 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
     try {
       const [foldersRes, casesRes] = await Promise.all([
         supabase.from('tm_folders').select('id, name, parent_id').order('name'),
-        supabase.from('tm_test_cases').select('id, case_key, title, priority, type, folder_id').order('case_key'),
+        (supabase as any).from('tm_test_cases').select('id, case_key, title, priority_id, case_type_id, folder_id').order('case_key'),
       ]);
       setFolders((foldersRes.data as any[]) || []);
-      setTestCases(casesRes.data || []);
+      setTestCases((casesRes.data || []).map((tc: any) => ({ id: tc.id, case_key: tc.case_key, title: tc.title, priority: 'medium', type: 'functional', folder_id: tc.folder_id })));
     } catch (err) {
       console.error('Fetch error:', err);
     } finally {

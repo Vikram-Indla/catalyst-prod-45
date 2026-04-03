@@ -62,20 +62,20 @@ export function CloneTestCaseModal({
       const newCaseKey = `TC-${String(nextNum).padStart(3, '0')}`;
 
       // 2. Insert cloned test case
-      const { data: newCase, error } = await supabase
+      const { data: newCase, error } = await (supabase as any)
         .from('tm_test_cases')
-        .insert({
+        .insert([{
           case_key: newCaseKey,
           title: newTitle.trim(),
-          objective: testCase.objective,
+          description: testCase.objective || testCase.description,
           preconditions: testCase.preconditions,
           folder_id: testCase.folder_id,
-          priority: testCase.priority,
-          type: testCase.type,
-          status: 'draft', // Always start as draft
-          automation: 'manual', // Default automation status
+          priority_id: testCase.priority_id || null,
+          case_type_id: testCase.case_type_id || null,
+          status: 'draft',
+          automation_status: 'manual',
           version: 1,
-        })
+        }])
         .select()
         .single();
 

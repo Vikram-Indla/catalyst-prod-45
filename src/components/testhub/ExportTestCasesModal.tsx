@@ -54,16 +54,16 @@ export function ExportTestCasesModal({ isOpen, onClose, testCaseCount, selectedF
         }
       }
       
-      const rows = testCases?.map(tc => {
+      const rows = testCases?.map((tc: any) => {
         const row: string[] = [
           tc.case_key,
           tc.title,
-          tc.objective || '',
+          tc.description || '',
           tc.preconditions || '',
-          tc.priority,
-          tc.type,
+          tc.priority_id || '',
+          tc.case_type_id || '',
           tc.status,
-          tc.automation,
+          tc.automation_status || 'manual',
         ];
         
         if (includeSteps) {

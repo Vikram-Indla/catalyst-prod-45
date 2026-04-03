@@ -115,19 +115,17 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
           if (match) nextNum = parseInt(match[1]) + 1;
         }
         
-        const { data: newCase, error: tcError } = await supabase
+        const { data: newCase, error: tcError } = await (supabase as any)
           .from('tm_test_cases')
-          .insert({
+          .insert([{
             case_key: `TC-${String(nextNum).padStart(3, '0')}`,
             title: tc.title,
-            objective: tc.objective,
+            description: tc.objective,
             preconditions: tc.preconditions,
             folder_id: selectedFolderId || null,
-            priority: tc.priority,
-            type: tc.type,
             status: 'draft',
-            automation: tc.automation,
-          })
+            automation_status: tc.automation || 'manual',
+          }])
           .select()
           .single();
         
