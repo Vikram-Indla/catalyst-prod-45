@@ -233,17 +233,14 @@ export default function TestCycleDetailPage() {
             <h1 style={{ fontSize: 22, fontWeight: 700, color: '#0F172A', margin: '0 0 8px' }}>{cycle.name}</h1>
             {cycle.description && <p style={{ fontSize: 14, color: '#64748B', margin: '0 0 8px', maxWidth: 600 }}>{cycle.description}</p>}
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: '#64748B' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={14} />{formatDate(cycle.start_date)} — {formatDate(cycle.end_date)}</span>
-              {cycle.owner && <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><User size={14} />{cycle.owner.full_name}</span>}
-              {cycle.environment && (
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={14} />{formatDate(cycle.planned_start)} — {formatDate(cycle.planned_end)}</span>
+              {cycle.environment_id && (
                 <span
-                  onClick={() => navigate(`/testhub/environments/${cycle.environment!.id}`)}
+                  onClick={() => navigate(`/testhub/environments/${cycle.environment_id}`)}
                   style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '2px 8px', backgroundColor: '#EFF6FF', borderRadius: 6, color: '#2563EB', fontWeight: 500 }}
-                  title={`Health: ${cycle.environment.health_status}`}
                 >
                   <Server size={14} />
-                  {cycle.environment.name}
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: cycle.environment.health_status === 'healthy' ? '#10B981' : cycle.environment.health_status === 'degraded' ? '#F59E0B' : cycle.environment.health_status === 'down' ? '#EF4444' : '#94A3B8' }} />
+                  Environment
                 </span>
               )}
             </div>
