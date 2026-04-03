@@ -20,7 +20,16 @@ export function useSyncConnection() {
   return useQuery({
     queryKey: ['jira-connection-status'],
     queryFn: async () => {
-      // Check Native V2 first
+      // 1. Check ph_jira_connection (authoritative singleton — has actual credentials)
+      const { data: phConn } = await supabase
+        .from('ph_jira_connection')
+        .select('id, site_url, status, project_count, last_tested_at')
+        .single();
+      if (phConn?.status === 'connected') {
+        return { id: phConn.id, jira_base_url: phConn.site_url, jira_project_key: null, is_active: true, webhook_id: null, source: 'workhub' as const, connected: true, projectCount: phConn.project_count };
+      }
+
+      // 2. Fallback: sync_connections (V2)
       const { data: v2, error: v2err } = await supabase
         .from('sync_connections')
         .select('id, jira_base_url, jira_project_key, is_active, webhook_id')
@@ -29,7 +38,7 @@ export function useSyncConnection() {
         .maybeSingle();
       if (v2 && !v2err) return { ...v2, source: 'v2' as const, connected: true };
 
-      // Fallback: check Legacy
+      // 3. Fallback: jira_connections (legacy admin)
       const { data: legacy } = await supabase
         .from('jira_connections')
         .select('id, jira_url, is_active')
@@ -49,6 +58,17 @@ export function useSyncHealthLatest() {
   return useQuery({
     queryKey: ['sync-health-latest'],
     queryFn: async () => {
+      // Try ph_sync_log first (authoritative sync history)
+      const { data: syncLog } = await (supabase as any)
+        .from('ph_sync_log')
+        .select('completed_at, status, issues_upserted, duration_ms')
+        .in('status', ['success', 'warning'])
+        .order('completed_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (syncLog) return { checked_at: syncLog.completed_at, status: syncLog.status, details: { issues: syncLog.issues_upserted, duration_ms: syncLog.duration_ms } };
+
+      // Fallback: sync_health (V2)
       const { data } = await supabase
         .from('sync_health')
         .select('checked_at, status, details')
@@ -106,20 +126,20 @@ export function JiraSyncPanel() {
   const { data: syncStats } = useQuery({
     queryKey: ['sync-stats'],
     queryFn: async () => {
-      const results = { projectCount: 0, issueCount: 0, queueDepth: 0, lastChecked: null as string | null, failedCount: 0, webhookActive: !!conn?.webhook_id };
+      const results = { projectCount: 0, issueCount: 0, queueDepth: 0, lastChecked: null as string | null, failedCount: 0, webhookActive: false };
       try {
-        const [connRes, issuesRes, queueRes, healthRes, failedRes] = await Promise.all([
-          supabase.from('sync_connections').select('id', { count: 'exact', head: true }).eq('is_active', true),
-          supabase.from('catalyst_issues').select('id', { count: 'exact', head: true }),
-          supabase.from('sync_events').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-          supabase.from('sync_health').select('checked_at, status').order('checked_at', { ascending: false }).limit(1).maybeSingle(),
-          supabase.from('sync_events').select('id', { count: 'exact', head: true }).eq('status', 'failed'),
+        // Read from authoritative tables: ph_jira_connection, ph_issues, ph_sync_log
+        const [phConnRes, issuesRes, syncLogRes, writeBackRes] = await Promise.all([
+          supabase.from('ph_jira_connection').select('project_count, total_issue_count, last_tested_at').single(),
+          (supabase as any).from('ph_issues').select('id', { count: 'exact', head: true }),
+          (supabase as any).from('ph_sync_log').select('completed_at, status').order('completed_at', { ascending: false }).limit(1).maybeSingle(),
+          supabase.from('jira_write_back_queue').select('id', { count: 'exact', head: true }).in('status', ['queued', 'approved']),
         ]);
-        results.projectCount = connRes.count || 0;
+        results.projectCount = phConnRes.data?.project_count || 0;
         results.issueCount = issuesRes.count || 0;
-        results.queueDepth = queueRes.count || 0;
-        results.lastChecked = healthRes.data?.checked_at || null;
-        results.failedCount = failedRes.count || 0;
+        results.queueDepth = writeBackRes.count || 0;
+        results.lastChecked = syncLogRes.data?.completed_at || phConnRes.data?.last_tested_at || null;
+        results.webhookActive = !!phConnRes.data?.last_tested_at;
       } catch (e) { console.error('Sync stats error:', e); }
       return results;
     },
@@ -129,11 +149,18 @@ export function JiraSyncPanel() {
   const handleSyncNow = async () => {
     setSyncing(true);
     try {
-      const { error } = await supabase.rpc('process_sync_events', { batch_size: 50 });
+      const { data, error } = await supabase.functions.invoke('wh-jira-sync', {
+        body: { sync_type: 'full' },
+      });
       if (error) throw error;
-      toast.success('Sync triggered — processing pending events.');
+      if (data?.success) {
+        toast.success(`Sync complete: ${data.issues_upserted ?? 0} issues synced`);
+      } else {
+        toast.error(data?.error || 'Sync returned no data');
+      }
       queryClient.invalidateQueries({ queryKey: ['sync-stats'] });
       queryClient.invalidateQueries({ queryKey: ['sync-health-latest'] });
+      queryClient.invalidateQueries({ queryKey: ['jira-connection-status'] });
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
     } catch (err) {
       toast.error(`Sync failed: ${String(err)}`);
