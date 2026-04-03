@@ -215,7 +215,7 @@ export default function TestCycleDetailPage() {
     );
   }
 
-  const status = statusConfig[cycle.status];
+  const status = statusConfig[(cycle.status || 'draft').toLowerCase().replace(/-/g, '_')] ?? statusConfig['draft'];
   const canEdit = cycle.status === 'draft' || cycle.status === 'active';
 
   return (

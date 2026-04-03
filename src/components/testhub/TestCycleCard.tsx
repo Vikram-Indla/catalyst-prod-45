@@ -68,7 +68,7 @@ export function TestCycleCard({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const status = statusConfig[cycle.status];
+  const status = statusConfig[(cycle.status || 'draft').toLowerCase().replace(/-/g, '_')] ?? statusConfig['draft'];
 
   useEffect(() => {
     if (!menuOpen) return;
