@@ -107,8 +107,8 @@ export function CloneTestCycleModal({
             execution_status: 'not_run',
           }));
 
-          const { error: testCasesError } = await supabase
-            .from('th_cycle_test_cases')
+          const { error: testCasesError } = await (supabase as any)
+            .from('tm_cycle_scope')
             .insert(newTestCaseRecords);
 
           if (testCasesError) {

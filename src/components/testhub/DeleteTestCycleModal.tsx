@@ -38,8 +38,8 @@ export function DeleteTestCycleModal({
     setIsDeleting(true);
 
     try {
-      const { error } = await supabase
-        .from('th_test_cycles')
+      const { error } = await (supabase as any)
+        .from('tm_test_cycles')
         .delete()
         .eq('id', cycle.id);
 

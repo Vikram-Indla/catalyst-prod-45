@@ -140,7 +140,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           progress_percent: 0, total_cases: 0, passed_count: 0, failed_count: 0,
           blocked_count: 0, skipped_count: 0, not_run_count: 0,
         };
-        const { error } = await supabase.from('th_test_cycles').insert(insertData).select().single();
+        const { error } = await (supabase as any).from('tm_test_cycles').insert(insertData).select().single();
 
         if (error) {
           catalystToast.error(error.message || 'Failed to create test cycle', { title: 'Creation Failed' });
