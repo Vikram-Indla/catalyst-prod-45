@@ -121,10 +121,7 @@ export default function AllProjectsPage() {
             <Popover>
               <PopoverTrigger asChild>
                 <button className="h-10 px-4 bg-white dark:bg-[#232019] border-[1.5px] border-slate-200 dark:border-slate-700 rounded-lg text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300">
-                  <span className="w-2 h-2 rounded-full bg-green-500" />
-                  <span>↔ Jira Sync</span>
-                  <span className="w-px h-5 bg-slate-200 dark:bg-slate-700" />
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Connected</span>
+                  <SyncCTALabel />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-[360px] p-5 bg-white dark:bg-[#232019]" align="end">
