@@ -201,7 +201,7 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, selectedR
             {/* Line 2 */}
             <div className="flex items-center" style={{ gap: 8, paddingLeft: 68 }}>
               {p.member_ids && p.member_ids.length > 0 && (
-                <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} size={20} />
+                <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
               )}
               {p.member_ids && p.member_ids.length > 0 && p.updated_at && (
                 <span style={{ color: 'var(--text-4)', fontSize: 12 }}>·</span>
