@@ -296,6 +296,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
               {members.map(m => (
                 <div key={m.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800">
                   <Avatar className="w-5 h-5">
+                    {m.avatar_url && <AvatarImage src={m.avatar_url} alt={m.display_name} />}
                     <AvatarFallback className="text-[9px] font-bold text-white" style={{ background: getBadgeColor(m.id) }}>
                       {getInitials(m.display_name)}
                     </AvatarFallback>
