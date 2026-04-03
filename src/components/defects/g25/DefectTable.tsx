@@ -49,10 +49,10 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete 
       </TableHeader>
       <TableBody>
         {defects.map(d => (
-          <TableRow key={d.id} className={cn("h-9 cursor-pointer hover:bg-muted/50", selectedIds.has(d.id) && "bg-primary/5")} onClick={() => navigate(`/testhub/defects/${d.id}`)}>
-            <TableCell onClick={e => e.stopPropagation()}><Checkbox checked={selectedIds.has(d.id)} onCheckedChange={() => toggleOne(d.id)} /></TableCell>
-            <TableCell className="font-mono text-sm text-primary">{d.defect_key}</TableCell>
-            <TableCell className="max-w-md truncate font-medium">{d.title}</TableCell>
+          <TableRow key={d.id} className={cn("cursor-pointer hover:bg-muted/50", selectedIds.has(d.id) && "bg-primary/5")} style={{ height: 36, maxHeight: 36, minHeight: 36 }} onClick={() => navigate(`/testhub/defects/${d.id}`)}>
+            <TableCell style={{ padding: '0 12px' }} onClick={e => e.stopPropagation()}><Checkbox checked={selectedIds.has(d.id)} onCheckedChange={() => toggleOne(d.id)} /></TableCell>
+            <TableCell style={{ padding: '0 12px' }} className="font-mono text-sm text-primary">{d.defect_key}</TableCell>
+            <TableCell style={{ padding: '0 12px' }} className="max-w-md truncate font-medium">{d.title}</TableCell>
             <TableCell><SeverityBadge severity={d.severity} /></TableCell>
             <TableCell><PriorityBadge priority={d.priority} /></TableCell>
             <TableCell><StatusBadge status={d.status} /></TableCell>
