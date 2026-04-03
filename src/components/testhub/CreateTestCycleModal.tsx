@@ -228,12 +228,12 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
               <Server size={14} style={{ color: 'var(--fg-3)' }} /> Environment
             </label>
             <select value={environmentId} onChange={(e) => setEnvironmentId(e.target.value)}
-              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)' }}
+              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', appearance: 'none', WebkitAppearance: 'none' }}
             >
               <option value="">Select environment (optional)</option>
               {environments.map(env => (
                 <option key={env.id} value={env.id}>
-                  {env.name} ({env.type}) {env.health_status === 'healthy' ? '🟢' : env.health_status === 'degraded' ? '🟡' : env.health_status === 'down' ? '🔴' : '⚪'}
+                  {env.name} ({env.type})
                 </option>
               ))}
             </select>
