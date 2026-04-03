@@ -116,11 +116,11 @@ export function TestCycleCard({
             {cycle.cycle_key}
           </span>
           <span style={{
-            fontSize: 12, fontWeight: 500, color: status.color, backgroundColor: status.bg,
-            border: `1px solid ${status.border}`, padding: '4px 10px', borderRadius: 6,
-            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+            color: status.color, backgroundColor: status.bg,
+            padding: '2px 6px', borderRadius: 3, height: 20,
+            display: 'inline-flex', alignItems: 'center',
           }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: status.color }} />
             {status.label}
           </span>
         </div>

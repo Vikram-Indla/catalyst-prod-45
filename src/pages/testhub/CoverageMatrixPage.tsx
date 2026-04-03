@@ -141,9 +141,9 @@ export default function CoverageMatrixPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      let query = supabase
-        .from('th_requirements' as any)
-        .select('id, req_key, title, type, priority, status, coverage_percent, total_linked_tests, passed_tests, failed_tests, not_run_tests, release_version')
+      let query = (supabase as any)
+        .from('tm_requirements')
+        .select('id, req_key, title, type, priority, status, release_version')
         .neq('status', 'deprecated')
         .order('req_key');
       const { data, error } = await query;
