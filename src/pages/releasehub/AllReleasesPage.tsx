@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, LayoutGrid, List, Plus, Package } from 'lucide-react';
+import { Search, LayoutGrid, List, Plus, Package, Download, Clock } from 'lucide-react';
 import { useReleaseSummary } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
@@ -8,11 +8,24 @@ import { ReleaseDrawer } from '@/components/releasehub/ReleaseDrawer';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 function mapStatus(status: string) {
   if (status === 'todo') return 'planning';
   if (status === 'done') return 'released';
   return status;
+}
+
+function relativeTime(dateStr: string | null | undefined): string {
+  if (!dateStr) return '';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
 }
 
 export default function AllReleasesPage() {
@@ -22,6 +35,7 @@ export default function AllReleasesPage() {
   const [view, setView] = useState<'cards' | 'table'>('cards');
   const [selectedRelease, setSelectedRelease] = useState<any>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   const filtered = releases.filter((r: any) => {
     const mapped = mapStatus(r.status);
@@ -53,6 +67,24 @@ export default function AllReleasesPage() {
     return { pct, total, completed, empty: false };
   };
 
+  const handleImport = async () => {
+    setImporting(true);
+    try {
+      const { data, error: rpcErr } = await supabase.rpc('rh_import_jira_versions', { p_project_key: 'CATALYST' });
+      if (rpcErr) throw rpcErr;
+      const result = data as any;
+      if (result?.queued) {
+        toast.success('Import queued. Jira versions will sync shortly.');
+      } else {
+        toast.info(result?.reason || 'Import already requested recently.');
+      }
+    } catch (err) {
+      toast.error('Failed to queue import: ' + String(err));
+    } finally {
+      setTimeout(() => setImporting(false), 3000);
+    }
+  };
+
   return (
     <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px' }}>
       <div className="flex items-center justify-between mb-5">
@@ -60,11 +92,17 @@ export default function AllReleasesPage() {
           <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>All Releases</h1>
           <p className="text-[13px] text-[#64748B]" style={{ fontFamily: RH.fontBody }}>Manage and track all releases</p>
         </div>
-        <button onClick={() => setShowCreate(true)}
-          className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"
-          style={{ background: 'linear-gradient(to bottom, #3B82F6, #2563EB)', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
-          <Plus size={14} /> New Release
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleImport} disabled={importing}
+            className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5 border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#475569] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            <Download size={14} /> Import from Jira
+          </button>
+          <button onClick={() => setShowCreate(true)}
+            className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"
+            style={{ background: 'linear-gradient(to bottom, #3B82F6, #2563EB)', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
+            <Plus size={14} /> New Release
+          </button>
+        </div>
       </div>
 
       {/* Filter Tabs */}
@@ -122,6 +160,22 @@ export default function AllReleasesPage() {
 
                   <div className="flex items-center gap-2 flex-wrap mb-2">
                     <StatusLozenge status={mapStatus(r.status)} />
+                    <SourceBadge source={r.source || 'catalyst'} />
+                    {(r.source === 'jira') && relativeTime(r.synced_at || r.updated_at) && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="inline-flex items-center gap-1 text-[11px] text-[#94A3B8] cursor-default">
+                              <Clock size={12} />
+                              Synced {relativeTime(r.synced_at || r.updated_at)}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="text-xs">
+                            Last synced: {new Date(r.synced_at || r.updated_at).toLocaleString()}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-3 text-[12px] text-[#64748B] mb-3">
@@ -169,7 +223,25 @@ export default function AllReleasesPage() {
                     style={{ height: 36, background: '#FFFFFF', transition: 'background 120ms' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}>
-                    <td className="px-3 py-0 font-medium" style={{ color: RH.ink1 }}>{r.name}</td>
+                    <td className="px-3 py-0 font-medium" style={{ color: RH.ink1 }}>
+                      <div className="flex items-center gap-2">
+                        {r.name}
+                        {r.source === 'jira' && relativeTime(r.synced_at || r.updated_at) && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="inline-flex items-center gap-0.5 text-[11px] text-[#94A3B8] cursor-default">
+                                  <Clock size={12} />
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="text-xs">
+                                Synced {relativeTime(r.synced_at || r.updated_at)}
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-3 py-0"><SourceBadge source={r.source || 'catalyst'} /></td>
                     <td className="px-3 py-0"><StatusLozenge status={mapStatus(r.status)} /></td>
                     <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
