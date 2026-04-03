@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown, ExternalLink, Settings, Archive, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ProjectListItem, SortColumn, SortDirection } from '@/types/projecthub';
+import type { ProjectListItem, SortColumn, SortDirection, ProjectStatus } from '@/types/projecthub';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
 import { MemberStack } from './MemberStack';
 import { formatDistanceToNowStrict } from 'date-fns';
