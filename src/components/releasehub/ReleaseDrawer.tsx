@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Download, RefreshCw, ExternalLink } from 'lucide-react';
+import { X, Download, RefreshCw, ExternalLink, CheckCircle2, XCircle, Minus, Activity } from 'lucide-react';
 import { RH } from '@/constants/releasehub.design';
 import { StatusLozenge } from './StatusLozenge';
 import { SourceBadge } from './SourceBadge';
@@ -23,6 +23,20 @@ function mapStatus(status: string) {
   return status;
 }
 
+function relativeTime(dateStr: string): string {
+  const now = Date.now();
+  const then = new Date(dateStr).getTime();
+  const diffMs = now - then;
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins} min ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
+  return new Date(dateStr).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
 const TABS = ['Overview', 'Changes', 'Test Cycles', 'Sign-offs', 'Activity'] as const;
 
 export function ReleaseDrawer({ release, onClose }: Props) {
@@ -31,6 +45,87 @@ export function ReleaseDrawer({ release, onClose }: Props) {
   const { data: allChanges = [] } = useChanges();
   const { data: testCycles = [] } = useReleaseTestCycles(release.id);
   const relChanges = allChanges.filter((c: any) => c.release_id === release.id);
+
+  // Activity query
+  const relChangeIds = relChanges.map((c: any) => c.id).filter(Boolean);
+  const { data: activityEntries = [], isLoading: activityLoading } = useQuery({
+    queryKey: ['release-hub', 'release-activity', release.id, relChangeIds],
+    queryFn: async () => {
+      if (relChangeIds.length === 0) return [];
+      const { data, error } = await supabase
+        .from('rh_change_activity_log')
+        .select('*')
+        .in('change_id', relChangeIds)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: relChangeIds.length > 0,
+  });
+
+  // ── COMPUTED QUALITY GATES ──
+  const allSignoffsComplete = (release.pending_signoffs ?? 0) === 0;
+
+  const tcTotalCases = testCycles.reduce((sum: number, tc: any) => sum + (tc.tm_test_cycles?.total_cases ?? 0), 0);
+  const tcPassedCases = testCycles.reduce((sum: number, tc: any) => sum + (tc.tm_test_cycles?.pass_count ?? 0), 0);
+  const testPassRate = tcTotalCases > 0 ? tcPassedCases / tcTotalCases : null;
+  const testPassRateOk = testPassRate !== null && testPassRate >= 0.85;
+
+  const emergencyOpen = relChanges.filter(
+    (c: any) => c.risk_level === 'EMERGENCY' && c.status !== 'IN_PRODUCTION'
+  ).length;
+  const noEmergencyOpen = emergencyOpen === 0;
+
+  const newCount = relChanges.filter((c: any) => c.status === 'NEW').length;
+  const allStarted = relChanges.length > 0 && newCount === 0;
+
+  const highRiskPending = relChanges.filter(
+    (c: any) => c.risk_level === 'HIGH' && c.status !== 'IN_PRODUCTION'
+  ).length;
+  const noHighRiskPending = highRiskPending === 0;
+
+  const computedGates = [
+    {
+      label: 'Sign-offs complete',
+      pass: allSignoffsComplete ? true : false,
+      unknown: false,
+      detail: allSignoffsComplete ? 'All changes approved' : `${release.pending_signoffs} pending`,
+    },
+    {
+      label: 'Test pass rate ≥85%',
+      pass: testPassRateOk,
+      unknown: testPassRate === null,
+      detail: testPassRate !== null
+        ? `${Math.round(testPassRate * 100)}% (${tcPassedCases}/${tcTotalCases})`
+        : 'No test cycles linked',
+    },
+    {
+      label: 'No emergency items open',
+      pass: noEmergencyOpen,
+      unknown: false,
+      detail: noEmergencyOpen ? 'Clear' : `${emergencyOpen} emergency change${emergencyOpen > 1 ? 's' : ''} open`,
+    },
+    {
+      label: 'All changes progressed',
+      pass: allStarted,
+      unknown: relChanges.length === 0,
+      detail: allStarted
+        ? 'All changes past NEW'
+        : relChanges.length === 0
+          ? 'No changes linked'
+          : `${newCount} change${newCount > 1 ? 's' : ''} not yet started`,
+    },
+    {
+      label: 'No high-risk items pending',
+      pass: noHighRiskPending,
+      unknown: false,
+      detail: noHighRiskPending ? 'Clear' : `${highRiskPending} high-risk change${highRiskPending > 1 ? 's' : ''} not deployed`,
+    },
+  ];
+
+  const gatesPassCount = computedGates.filter(g => g.pass && !g.unknown).length;
+  const gatesTotalCount = computedGates.length;
 
   const handleStatusChange = (status: ReleaseStatus) => {
     updateStatus.mutate({ id: release.id, status }, {
@@ -79,26 +174,45 @@ export function ReleaseDrawer({ release, onClose }: Props) {
 
         {/* Tab Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          {activeTab === 'Overview' && <OverviewTab release={release} changesCount={relChanges.length} />}
+          {activeTab === 'Overview' && (
+            <OverviewTab
+              release={release}
+              changesCount={relChanges.length}
+              computedGates={computedGates}
+              gatesPassCount={gatesPassCount}
+              gatesTotalCount={gatesTotalCount}
+            />
+          )}
           {activeTab === 'Changes' && <ChangesTab changes={relChanges} />}
           {activeTab === 'Test Cycles' && <TestCyclesTab testCycles={testCycles} release={release} />}
           {activeTab === 'Sign-offs' && <SignoffsTab releaseId={release.id} changes={relChanges} />}
-          {activeTab === 'Activity' && <ActivityTab />}
+          {activeTab === 'Activity' && (
+            <ActivityFeed entries={activityEntries} loading={activityLoading} />
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function OverviewTab({ release, changesCount }: { release: any; changesCount: number }) {
-  const gates = [
-    { label: 'Build Success', pass: true },
-    { label: 'Pass Rate ≥85%', pass: false },
-    { label: 'Open Blockers = 0', pass: true },
-    { label: 'Code Coverage ≥80%', pass: false },
-    { label: 'Security Scan', pass: true },
-    { label: 'Critical Defects = 0', pass: true },
-  ];
+// ── Gate type ──────────────────────────────────────────
+interface ComputedGate {
+  label: string;
+  pass: boolean;
+  unknown: boolean;
+  detail: string;
+}
+
+// ── Overview Tab ───────────────────────────────────────
+function OverviewTab({
+  release, changesCount, computedGates, gatesPassCount, gatesTotalCount,
+}: {
+  release: any;
+  changesCount: number;
+  computedGates: ComputedGate[];
+  gatesPassCount: number;
+  gatesTotalCount: number;
+}) {
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-3">
@@ -112,24 +226,60 @@ function OverviewTab({ release, changesCount }: { release: any; changesCount: nu
         </div>
         <div className="bg-[#F8FAFC] rounded-lg p-3">
           <p className="text-[10px] font-bold uppercase text-[#64748B] mb-1">Quality Gates</p>
-          <p className="text-[20px] font-extrabold" style={{ fontFamily: RH.fontMono, color: RH.ink1 }}>{gates.filter(g => g.pass).length}/{gates.length}</p>
+          <p className="text-[20px] font-extrabold" style={{ fontFamily: RH.fontMono, color: RH.ink1 }}>{gatesPassCount}/{gatesTotalCount}</p>
         </div>
       </div>
       <div>
         <h3 className="text-[13px] font-bold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Quality Gates</h3>
         <div className="grid grid-cols-2 gap-2">
-          {gates.map(g => (
-            <div key={g.label} className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${g.pass ? 'bg-[#1B7F37] border-[#86EFAC]' : 'bg-[#FEF2F2] border-[#FCA5A5]'}`}>
-              <span className={`text-[14px] ${g.pass ? 'text-white' : 'text-[#DC2626]'}`}>{g.pass ? '✓' : '✕'}</span>
-              <span className="text-[12px] font-medium" style={{ color: RH.ink2 }}>{g.label}</span>
-            </div>
-          ))}
+          {computedGates.map(g => {
+            const isUnknown = g.unknown;
+            const isPass = !isUnknown && g.pass;
+            const isFail = !isUnknown && !g.pass;
+
+            let bgColor: string, borderColor: string, labelColor: string, detailColor: string;
+            let Icon: typeof CheckCircle2;
+
+            if (isPass) {
+              bgColor = '#E3FCEF'; borderColor = '#36B37E'; labelColor = '#006644'; detailColor = '#0F7B4D';
+              Icon = CheckCircle2;
+            } else if (isFail) {
+              bgColor = '#FFEBE6'; borderColor = '#FF5630'; labelColor = '#BF2600'; detailColor = '#7A2300';
+              Icon = XCircle;
+            } else {
+              bgColor = '#F4F5F7'; borderColor = '#C1C7D0'; labelColor = '#42526E'; detailColor = '#6B778C';
+              Icon = Minus;
+            }
+
+            return (
+              <div
+                key={g.label}
+                style={{
+                  background: bgColor,
+                  borderLeft: `3px solid ${borderColor}`,
+                  borderRadius: 6,
+                  padding: '10px 12px',
+                  minHeight: 52,
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 8,
+                }}
+              >
+                <Icon size={14} style={{ color: labelColor, marginTop: 1, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 500, color: labelColor, lineHeight: '16px' }}>{g.label}</p>
+                  <p style={{ fontSize: 11, fontWeight: 400, color: detailColor, lineHeight: '15px', marginTop: 2 }}>{g.detail}</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
   );
 }
 
+// ── Changes Tab ────────────────────────────────────────
 function ChangesTab({ changes }: { changes: any[] }) {
   if (changes.length === 0) return <div className="text-center py-10 text-[#94A3B8] text-[13px]">No changes linked to this release</div>;
   return (
@@ -156,6 +306,7 @@ function ChangesTab({ changes }: { changes: any[] }) {
   );
 }
 
+// ── Test Cycles Tab ────────────────────────────────────
 function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: any }) {
   if (testCycles.length === 0) {
     return (
@@ -197,6 +348,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
   );
 }
 
+// ── Sign-offs Tab ──────────────────────────────────────
 function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[] }) {
   const changeIds = changes.map((c: any) => c.id);
   const { data: signoffs = [], isLoading } = useQuery({
@@ -265,6 +417,82 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
   );
 }
 
-function ActivityTab() {
-  return <div className="text-center py-10 text-[#94A3B8] text-[13px]">Release activity feed — coming soon</div>;
+// ── Activity Feed ──────────────────────────────────────
+function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }) {
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="flex gap-3 animate-pulse">
+            <div className="w-7 h-7 rounded-full bg-[#F1F5F9] flex-shrink-0" />
+            <div className="flex-1 space-y-2">
+              <div className="h-3 bg-[#F1F5F9] rounded w-3/4" />
+              <div className="h-2.5 bg-[#F1F5F9] rounded w-1/2" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (entries.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <Activity size={32} style={{ color: '#C1C7D0', margin: '0 auto 12px' }} />
+        <p style={{ fontSize: 14, fontWeight: 500, color: '#42526E', marginBottom: 4 }}>No activity yet</p>
+        <p style={{ fontSize: 12, color: '#6B778C' }}>
+          Activity will appear here as changes progress through their lifecycle.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-0">
+      {entries.map((entry: any, idx: number) => {
+        const isAI = !!entry.is_ai;
+        const avatarBg = isAI ? '#F3E8FF' : '#EFF6FF';
+        const avatarColor = isAI ? '#7C3AED' : '#2563EB';
+        const initials = isAI ? 'AI' : (entry.actor_initials || '??');
+
+        return (
+          <div key={entry.id}>
+            <div className="flex gap-3 py-3">
+              <div
+                className="flex-shrink-0 flex items-center justify-center rounded-full"
+                style={{
+                  width: 28, height: 28,
+                  background: avatarBg, color: avatarColor,
+                  fontSize: 11, fontWeight: 600,
+                }}
+              >
+                {initials}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span style={{ fontSize: 12, fontWeight: 500, color: '#172B4D' }}>
+                    {entry.actor_name || (isAI ? 'Catalyst AI' : 'System')}
+                  </span>
+                  <span style={{ fontSize: 12, fontWeight: 400, color: '#42526E' }}>
+                    {entry.action}
+                  </span>
+                </div>
+                {entry.detail && (
+                  <p style={{ fontSize: 11, fontWeight: 400, color: '#6B778C', fontStyle: 'italic', marginTop: 2 }}>
+                    {entry.detail}
+                  </p>
+                )}
+                <p style={{ fontSize: 11, fontWeight: 400, color: '#97A0AF', marginTop: 2 }}>
+                  {relativeTime(entry.created_at)}
+                </p>
+              </div>
+            </div>
+            {idx < entries.length - 1 && (
+              <div style={{ height: 0.5, background: '#F4F5F7', marginLeft: 40 }} />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
