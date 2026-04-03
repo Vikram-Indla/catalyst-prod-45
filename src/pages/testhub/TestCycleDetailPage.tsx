@@ -88,9 +88,10 @@ export default function TestCycleDetailPage() {
     if (!cycleId) return;
     try {
       const { data, error } = await (supabase as any).from('tm_test_cycles')
-        .select(`*, owner:profiles!tm_test_cycles_owner_id_fkey ( id, full_name ), environment:tm_environments!tm_test_cycles_environment_id_fkey ( id, name, type, health_status )`)
-        .eq('id', cycleId).single();
+        .select('id, cycle_key, name, description, status, planned_start, planned_end, environment_id, project_id, total_cases, passed_count, failed_count, blocked_count, skipped_count, not_run_count, in_progress_count, created_at, updated_at')
+        .eq('id', cycleId).maybeSingle();
       if (error) throw error;
+      if (!data) { catalystToast.error('Cycle not found'); return; }
       setCycle(data);
     } catch { catalystToast.error('Failed to load cycle'); }
   };
