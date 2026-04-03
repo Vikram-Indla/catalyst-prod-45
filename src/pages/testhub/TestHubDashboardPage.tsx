@@ -47,12 +47,12 @@ export default function TestHubDashboardPage() {
   const fetchDashboardData = async () => {
     setIsLoading(true);
     try {
-      const [statsRes, cyclesRes, activityRes, failingRes, defectStatsRes] = await Promise.all([
+      const [statsRes, cyclesRes, activityRes, failingRes, defectStatsRes, defectDirectRes] = await Promise.all([
         supabase.rpc('get_dashboard_stats'),
         (supabase as any)
           .from('tm_test_cycles')
-          .select('id, cycle_key, name, status, progress_percent, total_cases, passed_count, failed_count, blocked_count, not_run_count')
-          .eq('status', 'active')
+          .select('id, cycle_key, name, status, total_cases, passed_count, failed_count, blocked_count, not_run_count, in_progress_count')
+          .in('status', ['active', 'in_progress'])
           .order('created_at', { ascending: false })
           .limit(5),
         (supabase as any)
@@ -63,10 +63,20 @@ export default function TestHubDashboardPage() {
           .limit(10),
         supabase.rpc('get_top_failing_tests', { p_limit: 5 }),
         supabase.rpc('get_defect_stats'),
+        (supabase as any).from('tm_defects').select('status'),
       ]);
 
       if (!statsRes.error && statsRes.data?.length) setStats(statsRes.data[0] as unknown as DashboardStats);
-      if (!cyclesRes.error && cyclesRes.data) setActiveCycles(cyclesRes.data as unknown as ActiveCycle[]);
+      if (!cyclesRes.error && cyclesRes.data) {
+        // Compute progress_percent from counts
+        const cyclesWithProgress = (cyclesRes.data as any[]).map((c: any) => ({
+          ...c,
+          progress_percent: c.total_cases > 0
+            ? Math.round(((c.passed_count + c.failed_count + c.blocked_count + (c.skipped_count || 0)) / c.total_cases) * 100)
+            : 0,
+        }));
+        setActiveCycles(cyclesWithProgress as unknown as ActiveCycle[]);
+      }
       if (!activityRes.error && activityRes.data) {
         setRecentActivity(
           (activityRes.data as any[]).map((a) => ({
@@ -82,7 +92,23 @@ export default function TestHubDashboardPage() {
         );
       }
       if (!failingRes.error && failingRes.data) setFailingTests(failingRes.data as unknown as FailingTest[]);
-      if (!defectStatsRes.error && defectStatsRes.data?.length) setDefectStats(defectStatsRes.data[0] as unknown as DefectStats);
+      
+      // Defect stats: prefer RPC, fallback to direct query
+      if (!defectStatsRes.error && defectStatsRes.data?.length) {
+        setDefectStats(defectStatsRes.data[0] as unknown as DefectStats);
+      } else if (!defectDirectRes.error && defectDirectRes.data) {
+        const counts = { open_defects: 0, in_progress_defects: 0, fixed_defects: 0, closed_defects: 0, total_defects: 0 };
+        (defectDirectRes.data as any[]).forEach((d: any) => {
+          const s = (d.status || '').toLowerCase().replace(/\s+/g, '_');
+          counts.total_defects++;
+          if (s === 'open' || s === 'new') counts.open_defects++;
+          else if (s === 'in_progress') counts.in_progress_defects++;
+          else if (s === 'fixed' || s === 'resolved') counts.fixed_defects++;
+          else if (s === 'closed') counts.closed_defects++;
+          else counts.open_defects++; // default to open
+        });
+        setDefectStats(counts as unknown as DefectStats);
+      }
 
       setLastUpdated(new Date());
     } catch (err) {
