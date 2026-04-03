@@ -80,8 +80,8 @@ export function CloneTestCycleModal({
         not_run_count: 0,
       };
 
-      const { data: newCycle, error: cycleError } = await supabase
-        .from('th_test_cycles')
+      const { data: newCycle, error: cycleError } = await (supabase as any)
+        .from('tm_test_cycles')
         .insert(newCycleData)
         .select()
         .single();
