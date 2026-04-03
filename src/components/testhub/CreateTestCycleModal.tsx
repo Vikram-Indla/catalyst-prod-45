@@ -266,12 +266,10 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           <button onClick={onClose} disabled={isSubmitting} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting || !name.trim()} style={{
             height: 40, padding: '0 24px',
-            backgroundColor: name.trim() && !isSubmitting ? '#2563EB' : undefined,
-            background: name.trim() && !isSubmitting ? undefined : undefined,
+            backgroundColor: name.trim() && !isSubmitting ? '#2563EB' : '#94A3B8',
             border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
             cursor: name.trim() ? 'pointer' : 'not-allowed',
-            opacity: !name.trim() || isSubmitting ? 0.5 : 1,
-            ...(name.trim() && !isSubmitting ? { backgroundColor: '#2563EB' } : { backgroundColor: '#94A3B8' }),
+            opacity: isSubmitting ? 0.5 : 1,
           }}>
             {isSubmitting
               ? (isEdit ? 'Saving...' : 'Creating...')
