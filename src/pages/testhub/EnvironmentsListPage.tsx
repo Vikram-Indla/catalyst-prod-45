@@ -222,24 +222,30 @@ export default function EnvironmentsListPage() {
             }}
           />
         </div>
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}
-          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
-          <option value="all">All Types</option>
-          <option value="development">Development</option>
-          <option value="testing">Testing</option>
-          <option value="staging">Staging</option>
-          <option value="uat">UAT</option>
-          <option value="production">Production</option>
-          <option value="other">Other</option>
-        </select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ height: 44, padding: '0 36px 0 14px', border: '1.5px solid #E2E8F0', borderRadius: 10, fontSize: 14, backgroundColor: '#FFF', cursor: 'pointer' }}>
-          <option value="all">All Status</option>
-          <option value="active">Active</option>
-          <option value="maintenance">Maintenance</option>
-          <option value="inactive">Inactive</option>
-          <option value="deprecated">Deprecated</option>
-        </select>
+        <Select value={typeFilter} onValueChange={setTypeFilter}>
+          <SelectTrigger className="h-[36px] w-[160px] border-[#E2E8F0] rounded text-[13px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <SelectValue placeholder="All Types" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="development">Development</SelectItem>
+            <SelectItem value="testing">Testing</SelectItem>
+            <SelectItem value="staging">Staging</SelectItem>
+            <SelectItem value="uat">UAT</SelectItem>
+            <SelectItem value="production">Production</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="h-[36px] w-[160px] border-[#E2E8F0] rounded text-[13px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="unknown">Unknown</SelectItem>
+          </SelectContent>
+        </Select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
             style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 10, backgroundColor: '#FFF', color: '#64748B', fontSize: 14, cursor: 'pointer' }}>
