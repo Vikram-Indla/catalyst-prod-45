@@ -67,6 +67,24 @@ export default function AllReleasesPage() {
     return { pct, total, completed, empty: false };
   };
 
+  const handleImport = async () => {
+    setImporting(true);
+    try {
+      const { data, error: rpcErr } = await supabase.rpc('rh_import_jira_versions', { p_project_key: 'CATALYST' });
+      if (rpcErr) throw rpcErr;
+      const result = data as any;
+      if (result?.queued) {
+        toast.success('Import queued. Jira versions will sync shortly.');
+      } else {
+        toast.info(result?.reason || 'Import already requested recently.');
+      }
+    } catch (err) {
+      toast.error('Failed to queue import: ' + String(err));
+    } finally {
+      setTimeout(() => setImporting(false), 3000);
+    }
+  };
+
   return (
     <div style={{ background: '#FFFFFF', minHeight: '100%', padding: '24px' }}>
       <div className="flex items-center justify-between mb-5">
