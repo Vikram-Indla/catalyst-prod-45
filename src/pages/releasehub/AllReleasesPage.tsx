@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, LayoutGrid, List, Plus, Package } from 'lucide-react';
+import { Search, LayoutGrid, List, Plus, Package, Download, Clock } from 'lucide-react';
 import { useReleaseSummary } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
@@ -8,11 +8,24 @@ import { ReleaseDrawer } from '@/components/releasehub/ReleaseDrawer';
 import { CreateReleaseModal } from '@/components/releasehub/CreateReleaseModal';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 function mapStatus(status: string) {
   if (status === 'todo') return 'planning';
   if (status === 'done') return 'released';
   return status;
+}
+
+function relativeTime(dateStr: string | null | undefined): string {
+  if (!dateStr) return '';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
 }
 
 export default function AllReleasesPage() {
@@ -22,6 +35,7 @@ export default function AllReleasesPage() {
   const [view, setView] = useState<'cards' | 'table'>('cards');
   const [selectedRelease, setSelectedRelease] = useState<any>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   const filtered = releases.filter((r: any) => {
     const mapped = mapStatus(r.status);
