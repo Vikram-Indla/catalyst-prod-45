@@ -100,8 +100,8 @@ export default function TestCycleDetailPage() {
   const fetchTestCases = async () => {
     if (!cycleId) return;
     try {
-      const { data, error } = await supabase.from('th_cycle_test_cases')
-        .select(`*, test_case:th_test_cases ( id, case_key, title, priority, type ), assignee:profiles!th_cycle_test_cases_assigned_to_fkey ( id, full_name )`)
+      const { data, error } = await (supabase as any).from('tm_cycle_scope')
+        .select(`*, test_case:tm_test_cases ( id, case_key, title, priority, type ), assignee:profiles!tm_cycle_scope_assigned_to_fkey ( id, full_name )`)
         .eq('cycle_id', cycleId).order('created_at');
       if (error) throw error;
       setTestCases(data || []);
