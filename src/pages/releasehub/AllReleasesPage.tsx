@@ -223,7 +223,25 @@ export default function AllReleasesPage() {
                     style={{ height: 36, background: '#FFFFFF', transition: 'background 120ms' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}>
-                    <td className="px-3 py-0 font-medium" style={{ color: RH.ink1 }}>{r.name}</td>
+                    <td className="px-3 py-0 font-medium" style={{ color: RH.ink1 }}>
+                      <div className="flex items-center gap-2">
+                        {r.name}
+                        {r.source === 'jira' && relativeTime(r.synced_at || r.updated_at) && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="inline-flex items-center gap-0.5 text-[11px] text-[#94A3B8] cursor-default">
+                                  <Clock size={12} />
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="text-xs">
+                                Synced {relativeTime(r.synced_at || r.updated_at)}
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-3 py-0"><SourceBadge source={r.source || 'catalyst'} /></td>
                     <td className="px-3 py-0"><StatusLozenge status={mapStatus(r.status)} /></td>
                     <td className="px-3 py-0 text-[#475569]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
