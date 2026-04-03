@@ -1,5 +1,5 @@
 import { useLocation, Link } from 'react-router-dom';
-import { FileText, List, Clock, Folder, Shield } from 'lucide-react';
+import { FileText, List, Clock, Folder, Shield, CheckSquare } from 'lucide-react';
 
 interface NavItem {
   label: string;
@@ -154,6 +154,13 @@ export function TestHubSidebar({
     }}>
       <NavSection title="Test Management" items={testManagementItems} />
       <NavSection title="Releases" items={releaseItems} />
+      <NavSection title="Settings" items={[
+        {
+          label: 'Verification',
+          href: '/testhub/verify',
+          icon: <CheckSquare style={{ width: 16, height: 16 }} />,
+        },
+      ]} />
     </div>
   );
 }
