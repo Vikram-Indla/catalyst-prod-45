@@ -153,6 +153,7 @@ export function useCreateProject() {
           status: 'active',
           status_category: input.status_category ?? 'todo',
           description: input.description ?? null,
+          lead_id: input.lead_id ?? null,
           owner_id: user.id,
           created_by: user.id,
           health_status: 'on_track',
@@ -175,9 +176,31 @@ export function useCreateProject() {
       await (supabase as any).from('project_members').insert({
         project_id: data.id,
         user_id: user.id,
-        role_name: 'admin',
+        role: 'admin',
         added_by: user.id,
       });
+
+      // If lead is different from creator, add lead as member too
+      if (input.lead_id && input.lead_id !== user.id) {
+        await (supabase as any).from('project_members').insert({
+          project_id: data.id,
+          user_id: input.lead_id,
+          role: 'lead',
+          added_by: user.id,
+        });
+      }
+
+      // If Jira key provided, create sync entity map entry
+      if (input.jira_key) {
+        await (supabase as any).from('sync_entity_map').insert({
+          catalyst_entity_type: 'project',
+          catalyst_entity_id: data.id,
+          jira_entity_type: 'project',
+          jira_entity_id: input.jira_key,
+          jira_entity_key: input.jira_key,
+          sync_direction: 'bidirectional',
+        });
+      }
 
       return data;
     },
