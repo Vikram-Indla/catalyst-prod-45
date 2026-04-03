@@ -399,7 +399,175 @@ export default function TestHubVerifyPage() {
                 : '✓ All 20 checks passed — TestHub data integrity confirmed'}
           </div>
         )}
+
+        {/* ═══ MODULE HEALTH SCORES ═══ */}
+        <ModuleHealthSection checks={checks} loadingCount={loadingCount} />
       </div>
     </div>
+  );
+}
+
+/* ── Module Health Section ── */
+
+interface ModuleDef {
+  key: string;
+  name: string;
+  checkIds: string[];
+  note?: string;
+}
+
+const MODULE_DEFS: ModuleDef[] = [
+  { key: 'testAssets', name: 'Test Assets', checkIds: ['A1', 'A2', 'A3'] },
+  { key: 'execution', name: 'Test Execution', checkIds: ['A4', 'A7', 'B3', 'C1'] },
+  { key: 'quality', name: 'Quality Management', checkIds: ['A5', 'D2', 'B2'] },
+  { key: 'coverage', name: 'Requirements & Coverage', checkIds: ['A6', 'C2', 'D1'], note: 'Coverage gap expected — no requirement-test links yet' },
+  { key: 'system', name: 'System Health', checkIds: ['B1', 'B4', 'D4'] },
+  { key: 'rpc', name: 'RPC Layer', checkIds: ['C1', 'C2', 'C3'] },
+];
+
+function computeModuleScore(checks: VCheck[], checkIds: string[]): { passed: number; total: number; pct: number } {
+  const total = checkIds.length;
+  let passed = 0;
+  for (const id of checkIds) {
+    const c = checks.find(x => x.id === id);
+    if (c?.status === 'pass') passed += 1;
+    else if (c?.status === 'warn') passed += 0.5;
+  }
+  return { passed, total, pct: total > 0 ? Math.round((passed / total) * 100) : 0 };
+}
+
+function barColor(pct: number): string {
+  if (pct >= 100) return '#16A34A';
+  if (pct >= 50) return '#D97706';
+  return '#DC2626';
+}
+
+function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadingCount: number }) {
+  const scores = useMemo(() => {
+    const map: Record<string, { passed: number; total: number; pct: number }> = {};
+    MODULE_DEFS.forEach(m => { map[m.key] = computeModuleScore(checks, m.checkIds); });
+    return map;
+  }, [checks]);
+
+  const overallPassed = checks.filter(c => c.status === 'pass').length;
+  const overallPct = Math.round((overallPassed / checks.length) * 100);
+  const verdict: 'pass' | 'warn' | 'fail' =
+    checks.some(c => c.status === 'fail') ? 'fail' :
+    checks.some(c => c.status === 'warn') ? 'warn' : 'pass';
+
+  const handleExport = () => {
+    const moduleScores: Record<string, number> = {};
+    MODULE_DEFS.forEach(m => { moduleScores[m.key] = scores[m.key].pct; });
+    const payload = {
+      runAt: new Date().toISOString(),
+      checks,
+      moduleScores,
+      verdict,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `testhub-verify-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  if (loadingCount > 0) return null;
+
+  return (
+    <>
+      {/* Divider + header */}
+      <div style={{ borderTop: '0.75px solid #E2E8F0', marginTop: 32, paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: 16, fontWeight: 600, color: '#1E293B', fontFamily: 'Inter, sans-serif' }}>
+          Module health scores
+        </span>
+        <button
+          onClick={handleExport}
+          style={{
+            height: 32,
+            padding: '0 12px',
+            backgroundColor: 'transparent',
+            border: '1px solid #E2E8F0',
+            borderRadius: 6,
+            fontSize: 13,
+            fontWeight: 500,
+            color: '#475569',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          <Download style={{ width: 13, height: 13 }} />
+          Export JSON
+        </button>
+      </div>
+
+      {/* Module cards grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 16 }}>
+        {MODULE_DEFS.map(mod => {
+          const s = scores[mod.key];
+          const fill = barColor(s.pct);
+          return (
+            <div key={mod.key} style={{
+              backgroundColor: '#FFFFFF',
+              border: '0.75px solid #E2E8F0',
+              borderRadius: 8,
+              padding: 16,
+            }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#1E293B', marginBottom: 4 }}>
+                {mod.name}
+              </div>
+              <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 8 }}>
+                {s.passed}/{s.total} checks · {s.pct}%
+              </div>
+              {/* Progress bar */}
+              <div style={{ width: '100%', height: 4, backgroundColor: '#F1F5F9', borderRadius: 2 }}>
+                <div style={{ width: `${s.pct}%`, height: 4, backgroundColor: fill, borderRadius: 2, transition: 'width 0.3s' }} />
+              </div>
+              {/* Sub-lines for Test Assets */}
+              {mod.key === 'testAssets' && (
+                <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {['A1', 'A2', 'A3'].map(id => {
+                    const c = checks.find(x => x.id === id);
+                    return (
+                      <div key={id} style={{ fontSize: 11, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
+                        {c?.label}: {c?.actual ?? '—'}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {mod.note && s.pct < 100 && (
+                <div style={{ marginTop: 6, fontSize: 11, fontStyle: 'italic', color: '#94A3B8' }}>
+                  {mod.note}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Overall score badge */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 32, marginBottom: 24 }}>
+        <div style={{
+          width: 120,
+          height: 120,
+          borderRadius: '50%',
+          border: `3px solid ${overallPct >= 90 ? '#16A34A' : overallPct >= 70 ? '#D97706' : '#DC2626'}`,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <span style={{ fontSize: 32, fontWeight: 700, color: '#1E293B', lineHeight: 1 }}>
+            {overallPct}%
+          </span>
+        </div>
+        <span style={{ fontSize: 12, color: '#94A3B8', marginTop: 8 }}>Overall score</span>
+        <span style={{ fontSize: 11, color: '#94A3B8' }}>{overallPassed}/20 checks passed</span>
+      </div>
+    </>
   );
 }
