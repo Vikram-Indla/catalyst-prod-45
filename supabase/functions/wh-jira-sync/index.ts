@@ -551,7 +551,7 @@ serve(async (req) => {
     // 15. Build max lookback for log
     const maxLookback = Object.values(projectConfigs).reduce((max, pc) => Math.max(max, pc.lookback_months || 3), 3)
 
-    // 16. Update log entry
+    // 16. Update log entry (include actual projectsToSync so UI knows which projects were synced)
     const duration = Date.now() - startTime
     await supabase.from('ph_sync_log').update({
       status: warnings.length > 0 ? 'warning' : 'success',
@@ -564,6 +564,7 @@ serve(async (req) => {
       warnings,
       duration_ms: duration,
       completed_at: new Date().toISOString(),
+      projects_synced: projectsToSync,
     }).eq('id', logId)
 
     return new Response(JSON.stringify({

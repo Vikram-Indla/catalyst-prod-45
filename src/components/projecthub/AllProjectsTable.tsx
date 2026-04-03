@@ -412,7 +412,10 @@ export function AllProjectsTable({
         .limit(1)
         .maybeSingle();
 
-      const syncedProjectKeys = new Set<string>(lastSync?.projects_synced || []);
+      // Build synced set from log AND from projects that actually have issues in the DB
+      const syncedFromLog = new Set<string>(lastSync?.projects_synced || []);
+      const syncedFromIssues = new Set<string>(Object.keys(countMap).filter(k => countMap[k] > 0));
+      const syncedProjectKeys = new Set<string>([...syncedFromLog, ...syncedFromIssues]);
 
       return { countMap, lastSyncAt: lastSync?.completed_at || null, syncedProjectKeys };
     },
