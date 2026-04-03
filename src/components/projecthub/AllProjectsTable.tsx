@@ -405,6 +405,20 @@ export function AllProjectsTable({
 }: Props) {
   const navigate = useNavigate();
 
+  // Sync entity map for per-row direction info
+  const { data: syncMap } = useQuery({
+    queryKey: ['sync-entity-map'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('sync_entity_map')
+        .select('catalyst_entity_id, last_synced_at, sync_direction, sync_version')
+        .eq('catalyst_entity_type', 'project');
+      return new Map(data?.map(s => [s.catalyst_entity_id, s]) || []);
+    },
+    refetchInterval: 30000,
+    staleTime: 15_000,
+  });
+
   const headerLabels = ['#', 'PROJECT', 'STATUS', 'LEAD', 'MEMBERS', 'UPDATED', ''];
   const sortableMap: Record<number, SortColumn> = { 1: 'name', 2: 'status' };
 
@@ -461,10 +475,14 @@ export function AllProjectsTable({
         const badgeText = p.project_key.substring(0, 2);
         const rowNum = pageOffset + idx + 1;
 
-        const syncHealthy = !!p.last_synced_at;
-        const syncAge = p.last_synced_at
-          ? formatDistanceToNowStrict(new Date(p.last_synced_at), { addSuffix: false })
+        const syncInfo = syncMap?.get(p.id);
+        const syncHealthy = !!(syncInfo?.last_synced_at || p.last_synced_at);
+        const syncTs = syncInfo?.last_synced_at || p.last_synced_at;
+        const syncAge = syncTs
+          ? formatDistanceToNowStrict(new Date(syncTs), { addSuffix: false })
           : null;
+        const dirIcon = syncInfo?.sync_direction === 'inbound' ? '←'
+          : syncInfo?.sync_direction === 'outbound' ? '→' : '↔';
 
         return (
           <div
@@ -524,7 +542,7 @@ export function AllProjectsTable({
               <div className="flex items-center gap-2 pl-[42px]">
                 <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-medium text-slate-500 dark:text-slate-400">
                   <span className={cn("w-1.5 h-1.5 rounded-full", syncHealthy ? "bg-green-500" : "bg-amber-500")} />
-                  {syncAge ? `↔ ${syncAge}` : 'Not synced'} · {p.total_issues ?? 0} issues
+                  {syncAge ? `${dirIcon} ${syncAge}` : 'Not synced'} · {p.total_issues ?? 0} issues
                 </div>
               </div>
             </div>
