@@ -356,7 +356,7 @@ export default function TestCycleDetailPage() {
             <button onClick={() => setStatusFilter('passed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'passed' ? '#ECFDF5' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <CheckCircle2 size={18} style={{ color: '#059669' }} />
               <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Passed</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#059669' }}>{cycle.passed_count}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#059669' }}>{passedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('failed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'failed' ? '#FEF2F2' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <XCircle size={18} style={{ color: '#DC2626' }} />
