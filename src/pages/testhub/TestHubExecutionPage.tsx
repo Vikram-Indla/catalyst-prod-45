@@ -4,10 +4,26 @@
  * 
  * Three-pane layout: Test List | Step Runner | Sidebar (Attachments/Defects)
  * Features: Step-level execution, keyboard shortcuts (P/F/B/S/1-9/?),
- * resizable panels, FastTrack mode, Pass All Remaining, session timer.
+ * resizable panels, FastTrack mode, execution history, view/re-run modes.
  */
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { deriveOverallStatus } from '@/utils/testExecution';
+import type { StepStatus as StepStatusType } from '@/utils/testExecution';
+
+interface ExecutionHistoryRecord {
+  id: string;
+  execution_number: number;
+  result: string;
+  executed_by: string | null;
+  executed_at: string;
+  step_results: Array<{
+    step_number: number;
+    title: string;
+    status: string;
+    notes: string;
+  }>;
+  executor?: { full_name: string } | null;
+}
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, Play, Clock, CheckCircle2, XCircle,
