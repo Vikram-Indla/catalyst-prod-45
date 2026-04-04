@@ -726,6 +726,8 @@ export function CreateTestCaseModal({
               id: Date.now().toString(),
               action: sharedStep.action,
               expectedResult: sharedStep.expectedResult,
+              sharedStepId: sharedStep.sharedStepId,
+              attachments: [],
             }]);
             setIsSharedStepsModalOpen(false);
             toast({
