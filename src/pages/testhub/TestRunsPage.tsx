@@ -24,7 +24,7 @@ interface ExecutionRecord {
   execution_time_seconds: number;
   failure_reason: string | null;
   notes: string | null;
-  test_case: { id: string; case_key: string; title: string; priority: string } | null;
+  test_case: { id: string; case_key: string; title: string; priority_id: string | null; priority: { id: string; name: string; color: string } | null } | null;
   cycle: { id: string; cycle_key: string; name: string } | null;
   executor: { full_name: string } | null;
 }

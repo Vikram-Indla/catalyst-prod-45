@@ -20,7 +20,8 @@ interface TestCase {
   id: string;
   case_key: string;
   title: string;
-  priority: string;
+  priority_id: string | null;
+  priority: { id: string; name: string; color: string } | null;
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
