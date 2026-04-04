@@ -49396,7 +49396,14 @@ export type Database = {
             foreignKeyName: "th_test_executions_test_case_id_fkey"
             columns: ["test_case_id"]
             isOneToOne: false
-            referencedRelation: "th_test_cases"
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_executions_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
             referencedColumns: ["id"]
           },
         ]
@@ -51546,8 +51553,15 @@ export type Database = {
             foreignKeyName: "tm_defect_links_test_run_id_fkey"
             columns: ["test_run_id"]
             isOneToOne: false
-            referencedRelation: "tm_test_runs"
+            referencedRelation: "tm_cycle_scope"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defect_links_test_run_id_fkey"
+            columns: ["test_run_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["item_id"]
           },
         ]
       }
