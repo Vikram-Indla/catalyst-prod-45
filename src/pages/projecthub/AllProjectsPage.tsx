@@ -113,8 +113,9 @@ export default function AllProjectsPage() {
     return { ...base, statusMyProjects: myCount };
   }, [projects, favorites, currentUserId]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
-  const pageData = filtered.slice((page - 1) * perPage, page * perPage);
+  const effectivePageSize = (view === 'cards' || view === 'card') ? 8 : perPage;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / effectivePageSize));
+  const pageData = filtered.slice((page - 1) * effectivePageSize, page * effectivePageSize);
 
   const selectedProjectData = useMemo(() => projects.find(p => p.id === selectedProject) ?? null, [projects, selectedProject]);
 
