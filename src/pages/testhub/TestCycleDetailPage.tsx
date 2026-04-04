@@ -102,15 +102,41 @@ export default function TestCycleDetailPage() {
   const fetchTestCases = async () => {
     if (!cycleId) return;
     try {
-      const { data, error } = await (supabase as any).from('tm_cycle_scope')
-        .select(`id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at, test_case:tm_test_cases ( id, case_key, title, priority_id, case_type_id )`)
+      // Step 1: Fetch cycle scope rows (base query without joins that might fail)
+      const { data: scopeData, error: scopeError } = await (supabase as any).from('tm_cycle_scope')
+        .select('id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at')
         .eq('cycle_id', cycleId).order('sort_order');
-      if (error) {
-        console.error('fetchTestCases error:', error);
+
+      if (scopeError) {
+        console.error('fetchTestCases scope error:', scopeError);
+        catalystToast.error('Failed to load test cases');
+        setTestCases([]);
+        return;
       }
-      setTestCases(data || []);
+
+      if (!scopeData || scopeData.length === 0) {
+        setTestCases([]);
+        return;
+      }
+
+      // Step 2: Fetch test case details separately (avoids embedded select failures)
+      const testCaseIds = scopeData.map((s: any) => s.test_case_id).filter(Boolean);
+      const { data: tcData } = await (supabase as any).from('tm_test_cases')
+        .select('id, case_key, title, priority_id, case_type_id')
+        .in('id', testCaseIds);
+
+      const tcMap = new Map((tcData || []).map((tc: any) => [tc.id, tc]));
+
+      // Step 3: Merge scope + test case data
+      const merged = scopeData.map((scope: any) => ({
+        ...scope,
+        test_case: tcMap.get(scope.test_case_id) || null,
+      }));
+
+      setTestCases(merged);
     } catch (err) {
       console.error('fetchTestCases exception:', err);
+      catalystToast.error('Failed to load test cases');
     }
     finally { setIsLoading(false); }
   };
