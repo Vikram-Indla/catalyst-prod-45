@@ -335,7 +335,7 @@ export function TestRepositoryPage() {
       id: testCase.id,
       case_key: testCase.caseKey,
       title: testCase.title,
-      description: testCase.objective || null,
+      description: testCase.description || null,
       preconditions: testCase.preconditions || null,
       folder_id: testCase.folderId || null,
       priority_id: null,
