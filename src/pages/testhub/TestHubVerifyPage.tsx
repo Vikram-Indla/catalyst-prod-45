@@ -117,7 +117,7 @@ async function runCheck(id: string): Promise<Partial<VCheck>> {
         const { count, error } = await supabase
           .from('tm_test_cycles')
           .select('*', { count: 'exact', head: true })
-          .in('status', ['active', 'in_progress']);
+          .in('status', ['active']);
         if (error) return { actual: error.message, status: 'fail' };
         return { actual: String(count ?? 0), status: (count ?? 0) >= 1 ? 'pass' : 'fail' };
       }

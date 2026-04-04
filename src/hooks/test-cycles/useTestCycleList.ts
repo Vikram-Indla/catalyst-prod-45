@@ -216,8 +216,8 @@ export function useTestCycleListSummary(projectId: string | undefined, filters?:
       // Total cycles (excluding archived)
       const totalCycles = rows.filter(r => r.status !== 'archived').length;
       
-      // In progress: active, paused, in_progress
-      const inProgressStatuses = ['active', 'paused', 'in_progress'];
+      // In progress: active, paused
+      const inProgressStatuses = ['active', 'paused'];
       const inProgressCount = rows.filter(r => inProgressStatuses.includes(r.status)).length;
       
       // Completed this month
