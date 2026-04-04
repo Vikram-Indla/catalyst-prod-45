@@ -312,6 +312,7 @@ export function useDashboardDefects(projectId: string | null | undefined, projec
     queryKey: ['ph-dashboard-defects', projectId, projectKey],
     queryFn: async () => {
       let allDefects: any[] = [];
+      const avatarMap = await getAvatarMap();
 
       // Fetch Jira-synced defects by project key
       if (projectKey) {
@@ -346,6 +347,7 @@ export function useDashboardDefects(projectId: string | null | undefined, projec
 
       return allDefects.map(d => ({
         ...d,
+        assignee_avatar_url: resolveAvatarUrl(avatarMap, d.jira_assignee_name),
         days_open: d.created_at
           ? Math.max(0, Math.floor((Date.now() - new Date(d.created_at).getTime()) / 86400000))
           : 0,
