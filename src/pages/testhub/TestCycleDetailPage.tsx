@@ -41,7 +41,7 @@ interface CycleTestCase {
   executed_at: string | null;
   notes: string | null;
   assigned_to: string | null;
-  test_case: { id: string; case_key: string; title: string; priority: string; type: string } | null;
+  test_case: { id: string; case_key: string; title: string; priority_id: string; case_type_id: string } | null;
   assignee?: { id: string; full_name: string } | null;
 }
 
