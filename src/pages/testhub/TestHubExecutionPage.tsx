@@ -146,6 +146,11 @@ export default function TestHubExecutionPage() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [stepStatuses, setStepStatuses] = useState<Map<string, StepStatus[]>>(new Map());
 
+  // View mode / re-run state
+  const [viewMode, setViewMode] = useState(false);
+  const [executionHistory, setExecutionHistory] = useState<ExecutionHistoryRecord | null>(null);
+  const [previousRunData, setPreviousRunData] = useState<ExecutionHistoryRecord | null>(null);
+
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFailureModalOpen, setIsFailureModalOpen] = useState(false);
