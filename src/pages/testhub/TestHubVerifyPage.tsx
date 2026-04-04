@@ -19,7 +19,7 @@ interface VCheck {
   note?: string;
 }
 
-const VALID_CYCLE_STATUSES = ['draft', 'planned', 'in_progress', 'active', 'completed', 'closed', 'on_hold'];
+const VALID_CYCLE_STATUSES = ['draft', 'planned', 'active', 'completed', 'closed', 'on_hold', 'paused', 'archived'];
 const VALID_DEFECT_STATUSES = ['open', 'in_progress', 'fixed', 'closed', 'new', 'resolved'];
 
 function makeCheck(id: string, group: string, label: string, expected: string): VCheck {
