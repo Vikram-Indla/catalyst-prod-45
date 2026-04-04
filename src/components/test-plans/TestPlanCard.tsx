@@ -43,7 +43,7 @@ export function TestPlanCard({ plan, onDelete }: Props) {
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><MoreVertical className="h-4 w-4" /></Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={e => e.stopPropagation()}><Copy className="h-4 w-4 mr-2" />Duplicate</DropdownMenuItem>
+                <DropdownMenuItem onClick={e => { e.stopPropagation(); duplicatePlan.mutate(plan.id); }}><Copy className="h-4 w-4 mr-2" />Duplicate</DropdownMenuItem>
                 <DropdownMenuItem className="text-destructive" onClick={e => { e.stopPropagation(); onDelete(); }}><Trash2 className="h-4 w-4 mr-2" />Delete</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
