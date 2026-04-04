@@ -9,6 +9,7 @@ interface TestStep {
   id: string;
   action: string;
   expectedResult: string;
+  sharedStepId?: string;
   attachments?: StepAttachment[];
 }
 
