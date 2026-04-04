@@ -72,7 +72,7 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
       setIsLoadingLinks(true);
       supabase
         .from('th_shared_step_usage')
-        .select('test_case_id, test_case:th_test_cases (id, case_key, title)')
+        .select('test_case_id, test_case:tm_test_cases (id, case_key, title)')
         .eq('shared_step_id', sharedStep.id)
         .limit(10)
         .then(({ data, error }) => {

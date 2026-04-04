@@ -12,7 +12,7 @@ interface ImportTestCasesModalProps {
 
 interface ParsedTestCase {
   title: string;
-  objective?: string;
+  description?: string;
   preconditions?: string;
   priority: string;
   type: string;
