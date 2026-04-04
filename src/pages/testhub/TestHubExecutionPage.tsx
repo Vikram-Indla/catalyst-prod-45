@@ -298,15 +298,52 @@ export default function TestHubExecutionPage() {
     if (!selectedTestCaseId || !currentUserId) return;
     setIsSubmitting(true);
     try {
+      // 1. Update tm_cycle_scope.current_status
       const updateData: any = {
         current_status: status,
         updated_at: new Date().toISOString(),
       };
-      if (status === 'not_run') {
-        // Reset status only — no extra columns to clear
-      }
       const { error } = await (supabase as any).from('tm_cycle_scope').update(updateData).eq('id', selectedTestCaseId);
       if (error) { catalystToast.error('Failed to update test result'); return; }
+
+      // 2. INSERT execution history record (skip for reset)
+      if (status !== 'not_run' && currentTestCase) {
+        try {
+          // Get next execution number
+          const { data: lastExec } = await (supabase as any)
+            .from('th_test_executions')
+            .select('execution_number')
+            .eq('cycle_scope_id', selectedTestCaseId)
+            .order('execution_number', { ascending: false })
+            .limit(1);
+          const nextNumber = (lastExec?.[0]?.execution_number ?? 0) + 1;
+
+          // Build step snapshot
+          const key = selectedTestCaseId;
+          const currentStatuses = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+          const stepSnapshot = steps.map((s, i) => ({
+            step_number: s.step_number || i + 1,
+            title: s.action || '',
+            status: currentStatuses[i]?.status || 'not_run',
+            notes: failureReason && currentStatuses[i]?.status === 'failed' ? failureReason : '',
+          }));
+
+          await (supabase as any).from('th_test_executions').insert({
+            test_case_id: currentTestCase.test_case_id,
+            test_cycle_id: cycle?.id,
+            cycle_name: cycle?.name,
+            cycle_scope_id: selectedTestCaseId,
+            execution_number: nextNumber,
+            result: status,
+            executed_by: currentUserId,
+            executed_at: new Date().toISOString(),
+            step_results: stepSnapshot,
+            notes: failureNotes || null,
+          });
+        } catch (histErr) {
+          console.warn('Execution history insert failed (non-fatal):', histErr);
+        }
+      }
 
       const toastMap: Record<string, () => void> = {
         passed: () => catalystToast.success('Test case marked as passed', { title: 'Test Passed' }),
@@ -328,7 +365,7 @@ export default function TestHubExecutionPage() {
       }
     } catch (err: any) { catalystToast.error(err.message || 'Failed to update test result'); }
     finally { setIsSubmitting(false); }
-  }, [selectedTestCaseId, currentUserId, currentTestCase, canGoNext, fastTrackMode, fetchTestCases, fetchCycle]);
+  }, [selectedTestCaseId, currentUserId, currentTestCase, canGoNext, fastTrackMode, fetchTestCases, fetchCycle, stepStatuses, steps, cycle]);
 
   const handlePass = () => {
     if (fastTrackMode || steps.length === 0) {
