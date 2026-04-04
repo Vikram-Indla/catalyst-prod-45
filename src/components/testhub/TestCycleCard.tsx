@@ -88,7 +88,7 @@ export function TestCycleCard({
   };
 
   const executedCount = cycle.passed_count + cycle.failed_count + cycle.blocked_count + cycle.skipped_count;
-  const progressPercent = cycle.total_cases > 0 ? Math.round((executedCount / cycle.total_cases) * 100) : 0;
+  const progressPercent = cycle.total_cases > 0 ? Math.min(100, Math.round((executedCount / cycle.total_cases) * 100)) : 0;
 
   return (
     <div
