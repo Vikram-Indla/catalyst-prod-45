@@ -49340,35 +49340,58 @@ export type Database = {
       th_test_executions: {
         Row: {
           cycle_name: string | null
+          cycle_scope_id: string | null
           executed_at: string | null
           executed_by: string | null
+          execution_number: number
           id: string
           notes: string | null
           result: string | null
+          step_results: Json
           test_case_id: string
           test_cycle_id: string | null
         }
         Insert: {
           cycle_name?: string | null
+          cycle_scope_id?: string | null
           executed_at?: string | null
           executed_by?: string | null
+          execution_number?: number
           id?: string
           notes?: string | null
           result?: string | null
+          step_results?: Json
           test_case_id: string
           test_cycle_id?: string | null
         }
         Update: {
           cycle_name?: string | null
+          cycle_scope_id?: string | null
           executed_at?: string | null
           executed_by?: string | null
+          execution_number?: number
           id?: string
           notes?: string | null
           result?: string | null
+          step_results?: Json
           test_case_id?: string
           test_cycle_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "th_test_executions_cycle_scope_id_fkey"
+            columns: ["cycle_scope_id"]
+            isOneToOne: false
+            referencedRelation: "tm_cycle_scope"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_executions_cycle_scope_id_fkey"
+            columns: ["cycle_scope_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["item_id"]
+          },
           {
             foreignKeyName: "th_test_executions_test_case_id_fkey"
             columns: ["test_case_id"]
