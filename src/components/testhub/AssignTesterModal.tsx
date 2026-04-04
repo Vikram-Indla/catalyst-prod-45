@@ -236,7 +236,7 @@ export function AssignTesterModal({
               <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '8px 0' }} />
 
               {/* Team Members */}
-              {profiles.map((profile) => {
+              {filtered.map((profile) => {
                 const isSelected = selectedProfileId === profile.id;
                 return (
                   <button
@@ -277,13 +277,14 @@ export function AssignTesterModal({
                 );
               })}
 
-              {profiles.length === 0 && (
+              {filtered.length === 0 && (
                 <div style={{ textAlign: 'center', padding: 24, color: 'var(--fg-4)', fontSize: 14 }}>
-                  No team members found
+                  No users found
                 </div>
               )}
             </div>
-          )}
+            );
+          })()}
         </div>
 
         {/* Footer */}
