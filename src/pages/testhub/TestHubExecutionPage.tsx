@@ -354,11 +354,10 @@ export default function TestHubExecutionPage() {
         console.log('[ExecHistory] INSERT payload:', {
           cycle_scope_id: selectedTestCaseId,
           execution_number: nextExecutionNumber,
-          overall_status: status,
+          result: status,
           step_results: stepResultsSnapshot,
           executed_by: currentUserId,
-          started_at: sessionStartTime,
-          completed_at: completedAt,
+          executed_at: completedAt,
         });
 
         const insertPayload = {
