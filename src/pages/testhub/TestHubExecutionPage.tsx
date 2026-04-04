@@ -239,7 +239,7 @@ export default function TestHubExecutionPage() {
     setIsSubmitting(true);
     try {
       const updateData: any = {
-        execution_status: status,
+        current_status: status,
         executed_at: new Date().toISOString(),
         executed_by: currentUserId,
         execution_time_seconds: Math.floor((Date.now() - sessionStartRef.current) / 1000),
