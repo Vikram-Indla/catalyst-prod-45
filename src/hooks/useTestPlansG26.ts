@@ -60,15 +60,16 @@ export function usePlanProgress(planId: string) {
 }
 
 // ─── Create ──────────────────────────────────────────────────────
-export function useCreateTestPlan() {
+export function useCreateTestPlan(projectId?: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (plan: Record<string, any>) => {
+      const pid = plan.project_id || projectId || '00000000-0000-0000-0000-000000000001';
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
       const { data, error } = await supabase
         .from('tm_test_plans' as any)
-        .insert({ ...plan, created_by: user.id, plan_key: '' } as any)
+        .insert({ ...plan, project_id: pid, created_by: user.id, plan_key: '' } as any)
         .select()
         .single();
       if (error) throw new Error(error.message);
