@@ -68822,6 +68822,14 @@ export type Database = {
         }
         Relationships: []
       }
+      v_issue_counts: {
+        Row: {
+          cnt: number | null
+          issue_type: string | null
+          project_key: string | null
+        }
+        Relationships: []
+      }
       v_project_list: {
         Row: {
           completion_percentage: number | null
