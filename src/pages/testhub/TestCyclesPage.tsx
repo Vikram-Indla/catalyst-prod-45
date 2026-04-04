@@ -243,7 +243,7 @@ export default function TestCyclesPage() {
                 onDelete={() => setDeleteCycle(cycle)}
                 onStart={() => {
                   if (cycle.status === 'draft') handleStatusChange(cycle.id, 'planned', 'Planned');
-                  else if (cycle.status === 'planned') handleStatusChange(cycle.id, 'in_progress', 'Started');
+                  else if (cycle.status === 'planned') handleStatusChange(cycle.id, 'active', 'Started');
                 }}
                 onComplete={() => handleStatusChange(cycle.id, 'completed', 'Completed')}
                 onReopen={() => handleStatusChange(cycle.id, 'in_progress', 'Reopened')}
