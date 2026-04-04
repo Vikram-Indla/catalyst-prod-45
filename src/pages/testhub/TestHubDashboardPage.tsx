@@ -94,7 +94,7 @@ export default function TestHubDashboardPage() {
       if (!failingRes.error && failingRes.data) setFailingTests(failingRes.data as unknown as FailingTest[]);
       
       // Defect stats: prefer RPC, fallback to direct query
-      if (!defectStatsRes.error && defectStatsRes.data?.length) {
+      if (!defectStatsRes.error && defectStatsRes.data && Array.isArray(defectStatsRes.data) && defectStatsRes.data.length) {
         setDefectStats(defectStatsRes.data[0] as unknown as DefectStats);
       } else if (!defectDirectRes.error && defectDirectRes.data) {
         const counts = { open_defects: 0, in_progress_defects: 0, fixed_defects: 0, closed_defects: 0, total_defects: 0 };
