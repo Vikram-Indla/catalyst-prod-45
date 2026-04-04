@@ -311,7 +311,6 @@ export const ALL_CYCLE_STATUSES: CycleStatus[] = [
   'planned', 
   'active',
   'paused',
-  'in_progress',
   'completed',
   'archived',
 ];
