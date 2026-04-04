@@ -269,6 +269,13 @@ export interface TMDefect {
   external_url?: string;
   created_at: string;
   updated_at: string;
+  jira_key?: string | null;
+  jira_source?: boolean;
+  jira_project_key?: string | null;
+  jira_status?: string | null;
+  jira_status_category?: string | null;
+  jira_assignee_name?: string | null;
+  jira_reporter_name?: string | null;
   test_case?: TMTestCase;
   run?: TMRun;
   assignee?: { id: string; full_name: string; avatar_url?: string };
