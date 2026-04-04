@@ -207,7 +207,7 @@ export function useScopeSummary(planId: string) {
       const folderIds = (folders as any)?.map((f: any) => f.entity_id) || [];
       let testsFromFolders = 0;
       if (folderIds.length > 0) {
-        const { count } = await supabase.from('tm_test_cases' as any).select('*', { count: 'exact', head: true }).in('folder_id', folderIds).eq('is_active', true);
+        const { count } = await supabase.from('tm_test_cases' as any).select('*', { count: 'exact', head: true }).in('folder_id', folderIds);
         testsFromFolders = count || 0;
       }
 
