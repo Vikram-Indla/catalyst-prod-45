@@ -4,6 +4,7 @@ import { StepsEditor, Step, StepAttachment } from './StepsEditor';
 import { SharedStepsModal } from './SharedStepsModal';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTestHubProject } from '@/hooks/useTestHubProject';
 
 interface TestStep {
   id: string;
