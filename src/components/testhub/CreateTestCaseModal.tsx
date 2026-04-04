@@ -306,14 +306,16 @@ export function CreateTestCaseModal({
       .delete()
       .eq('test_case_id', testCase.id);
 
-    // 3. Insert new steps
+    // 3. Insert new steps (including shared steps)
     const stepsToInsert = steps
-      .filter(s => s.action.trim())
+      .filter(s => s.action.trim() || (s as any).sharedStepId)
       .map((s, i) => ({
         test_case_id: testCase.id,
         step_number: i + 1,
         action: s.action.trim(),
-        expected_result: s.expectedResult.trim() || null,
+        expected_result: s.expectedResult?.trim() || null,
+        is_shared: !!(s as any).sharedStepId,
+        shared_step_id: (s as any).sharedStepId || null,
       }));
 
     if (stepsToInsert.length > 0) {
