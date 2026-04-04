@@ -73,9 +73,6 @@ interface RawTestCase {
   updated_at: string;
   created_by?: string | null;
   assigned_to?: string | null;
-  description?: string | null;
-  priority?: string;
-  type?: string;
 }
 
 interface ContextMenuState {
