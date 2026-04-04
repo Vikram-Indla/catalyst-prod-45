@@ -309,13 +309,41 @@ export default function AllProjectsPage() {
             )}
           </div>
         ) : (
-          <div className="flex-1 min-h-0 overflow-y-auto">
-            <AllProjectsCardGrid
-              projects={filtered}
-              favoriteIds={favorites}
-              onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
-              onSelectProject={id => setSelectedProject(id)}
-            />
+          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              <AllProjectsCardGrid
+                projects={pageData}
+                favoriteIds={favorites}
+                onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
+                onSelectProject={id => setSelectedProject(id)}
+              />
+            </div>
+            {/* Pagination Footer for grid view */}
+            {totalPages > 1 && (
+              <div
+                className="flex shrink-0 items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#181A1E] mt-3 rounded-lg"
+                style={{ fontSize: 13 }}
+              >
+                <span className="text-muted-foreground">
+                  Showing {startIdx + 1}–{endIdx} of {filtered.length} projects
+                </span>
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                    <button
+                      key={n}
+                      onClick={() => setPage(n)}
+                      className={`w-8 h-8 rounded text-sm border focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none cursor-pointer ${
+                        page === n
+                          ? 'bg-blue-600 text-white border-blue-600 font-semibold'
+                          : 'bg-transparent border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
