@@ -86,9 +86,11 @@ export default function TestSetDetailPage() {
   }, [testCases, setId, reorderMutation]);
 
   // Sync items with testCases on load
-  if (testCases && items.length === 0) {
-    setItems(testCases);
-  }
+  useEffect(() => {
+    if (testCases && testCases.length > 0) {
+      setItems(testCases);
+    }
+  }, [testCases]);
 
   if (isLoadingSet) {
     return <div className="p-6"><Skeleton className="h-8 w-48 mb-4" /><Skeleton className="h-32 w-full" /></div>;
