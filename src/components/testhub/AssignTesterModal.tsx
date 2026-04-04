@@ -160,11 +160,48 @@ export function AssignTesterModal({
 
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
+          {/* Search Bar */}
+          <div style={{ position: 'relative', marginBottom: 12 }}>
+            <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+            <input
+              type="text"
+              placeholder="Search by name or email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%', height: 36, border: '1px solid #E2E8F0', borderRadius: 6,
+                padding: '0 32px 0 36px', fontFamily: 'Inter, sans-serif', fontSize: 14,
+                color: '#334155', backgroundColor: 'transparent', outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#2563EB'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{
+                  position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', padding: 2, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <X size={14} style={{ color: '#94A3B8' }} />
+              </button>
+            )}
+          </div>
+
           {isLoading ? (
             <div style={{ textAlign: 'center', padding: 40, color: 'var(--fg-3)' }}>
               Loading team members...
             </div>
-          ) : (
+          ) : (() => {
+            const filtered = profiles.filter(p => {
+              if (!searchQuery.trim()) return true;
+              const q = searchQuery.toLowerCase();
+              return (p.full_name?.toLowerCase().includes(q) || p.email?.toLowerCase().includes(q));
+            });
+            return (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {/* Unassign Option */}
               <button
