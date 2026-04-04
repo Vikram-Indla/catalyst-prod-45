@@ -41,7 +41,7 @@ interface CycleTestCase {
   executed_at: string | null;
   notes: string | null;
   assigned_to: string | null;
-  test_case: { id: string; case_key: string; title: string; priority_id: string; case_type_id: string } | null;
+  test_case: { id: string; case_key: string; title: string; priority_id: string; case_type_id: string; priority: { id: string; name: string; color: string } | null; case_type: { id: string; name: string } | null } | null;
   assignee?: { id: string; full_name: string } | null;
 }
 
@@ -103,7 +103,7 @@ export default function TestCycleDetailPage() {
     if (!cycleId) return;
     try {
       const { data, error } = await (supabase as any).from('tm_cycle_scope')
-        .select(`id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at, test_case:tm_test_cases ( id, case_key, title, priority_id, case_type_id )`)
+        .select(`id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at, test_case:tm_test_cases ( id, case_key, title, priority_id, case_type_id, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) )`)
         .eq('cycle_id', cycleId).order('sort_order');
       if (error) throw error;
       setTestCases(data || []);
@@ -141,7 +141,7 @@ export default function TestCycleDetailPage() {
     const rows = testCases.map(tc => [
       tc.test_case?.case_key || '',
       tc.test_case?.title || '',
-      tc.test_case?.priority_id || '',
+      tc.test_case?.priority?.name || '',
       tc.assignee?.full_name || '',
       tc.current_status,
       tc.executed_at ? new Date(tc.executed_at).toLocaleString() : '',
@@ -533,7 +533,7 @@ export default function TestCycleDetailPage() {
                   {filteredTestCases.map((ctc, index) => {
                     const execStatus = executionStatusConfig[ctc.current_status] || executionStatusConfig.not_run;
                     const StatusIcon = execStatus.Icon;
-                    const priority = priorityConfig[ctc.test_case?.priority_id?.toLowerCase() || ''] || priorityConfig.medium;
+                    const priority = priorityConfig[ctc.test_case?.priority?.name?.toLowerCase() || ''] ?? priorityConfig.medium;
                     const isSelected = selectedTestCaseIds.has(ctc.id);
                     return (
                       <tr key={ctc.id} style={{ borderBottom: index < filteredTestCases.length - 1 ? '1px solid #F1F5F9' : 'none', backgroundColor: isSelected ? '#EFF6FF' : 'transparent' }}>
@@ -555,7 +555,7 @@ export default function TestCycleDetailPage() {
                           </div>
                         </td>
                         <td style={{ padding: '14px 16px' }}>
-                          <span style={{ fontSize: 12, fontWeight: 500, color: priority.color, backgroundColor: priority.bg, padding: '4px 8px', borderRadius: 4, textTransform: 'capitalize' as const }}>{ctc.test_case?.priority_id || 'Medium'}</span>
+                          <span style={{ fontSize: 12, fontWeight: 500, color: priority.color, backgroundColor: priority.bg, padding: '4px 8px', borderRadius: 4, textTransform: 'capitalize' as const }}>{ctc.test_case?.priority?.name || 'Medium'}</span>
                         </td>
                         <td style={{ padding: '14px 16px' }}>
                           <button
