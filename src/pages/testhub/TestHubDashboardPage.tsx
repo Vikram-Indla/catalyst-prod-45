@@ -57,7 +57,7 @@ export default function TestHubDashboardPage() {
           .limit(5),
         (supabase as any)
           .from('tm_test_runs')
-          .select('id, status, completed_at, cycle_scope_id, executed_by, executor:profiles!tm_test_runs_executed_by_fkey(full_name), cycle_scope:tm_cycle_scope!inner(cycle_id, test_case_id, test_case:tm_test_cases(case_key, title), cycle:tm_test_cycles(cycle_key))')
+          .select('id, status, completed_at, cycle_scope_id, executed_by')
           .not('completed_at', 'is', null)
           .order('completed_at', { ascending: false })
           .limit(10),
@@ -77,18 +77,57 @@ export default function TestHubDashboardPage() {
         }));
         setActiveCycles(cyclesWithProgress as unknown as ActiveCycle[]);
       }
-      if (!activityRes.error && activityRes.data) {
+      if (!activityRes.error && activityRes.data && (activityRes.data as any[]).length > 0) {
+        // Enrich runs with scope/test case/cycle data via separate queries
+        const runs = activityRes.data as any[];
+        const scopeIds = runs.map((r: any) => r.cycle_scope_id).filter(Boolean);
+        const userIds = runs.map((r: any) => r.executed_by).filter(Boolean);
+
+        const [scopeRes, profilesRes] = await Promise.all([
+          scopeIds.length > 0
+            ? (supabase as any).from('tm_cycle_scope').select('id, cycle_id, test_case_id').in('id', scopeIds)
+            : { data: [] },
+          userIds.length > 0
+            ? (supabase as any).from('profiles').select('id, full_name').in('id', userIds)
+            : { data: [] },
+        ]);
+
+        const scopeMap = new Map((scopeRes.data || []).map((s: any) => [s.id, s]));
+        const profileMap = new Map((profilesRes.data || []).map((p: any) => [p.id, p]));
+
+        // Get test case and cycle details
+        const testCaseIds = [...new Set((scopeRes.data || []).map((s: any) => s.test_case_id).filter(Boolean))];
+        const cycleIds = [...new Set((scopeRes.data || []).map((s: any) => s.cycle_id).filter(Boolean))];
+
+        const [tcRes, cycleRes2] = await Promise.all([
+          testCaseIds.length > 0
+            ? (supabase as any).from('tm_test_cases').select('id, case_key, title').in('id', testCaseIds)
+            : { data: [] },
+          cycleIds.length > 0
+            ? (supabase as any).from('tm_test_cycles').select('id, cycle_key').in('id', cycleIds)
+            : { data: [] },
+        ]);
+
+        const tcMap = new Map((tcRes.data || []).map((t: any) => [t.id, t]));
+        const cycleMap = new Map((cycleRes2.data || []).map((c: any) => [c.id, c]));
+
         setRecentActivity(
-          (activityRes.data as any[]).map((a) => ({
-            id: a.id,
-            execution_status: a.status ?? 'not_run',
-            executed_at: a.completed_at ?? '',
-            case_key: a.cycle_scope?.test_case?.case_key ?? '',
-            title: a.cycle_scope?.test_case?.title ?? '',
-            cycle_key: a.cycle_scope?.cycle?.cycle_key ?? '',
-            cycle_id: a.cycle_scope?.cycle_id,
-            executed_by_name: a.executor?.full_name ?? 'Unknown',
-          }))
+          runs.map((a: any) => {
+            const scope = scopeMap.get(a.cycle_scope_id);
+            const tc = scope ? tcMap.get(scope.test_case_id) : null;
+            const cyc = scope ? cycleMap.get(scope.cycle_id) : null;
+            const profile = profileMap.get(a.executed_by);
+            return {
+              id: a.id,
+              execution_status: a.status ?? 'not_run',
+              executed_at: a.completed_at ?? '',
+              case_key: tc?.case_key ?? '',
+              title: tc?.title ?? '',
+              cycle_key: cyc?.cycle_key ?? '',
+              cycle_id: scope?.cycle_id,
+              executed_by_name: profile?.full_name ?? 'Unknown',
+            };
+          })
         );
       }
       if (!failingRes.error && failingRes.data) setFailingTests(failingRes.data as unknown as FailingTest[]);
