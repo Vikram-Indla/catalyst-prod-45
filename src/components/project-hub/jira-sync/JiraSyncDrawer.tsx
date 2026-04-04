@@ -102,9 +102,9 @@ export function JiraSyncDrawer({
           transition: 'opacity 200ms ease',
         }}
       />
-      <div style={{
+      <div className="bg-[var(--cp-float)]" style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 51,
-        width: 480, background: 'var(--cp-float)',
+        width: 480,
         boxShadow: '-8px 0 24px rgba(0,0,0,0.12)',
         display: 'flex', flexDirection: 'column',
         fontFamily: 'Inter, sans-serif',
@@ -133,7 +133,7 @@ export function JiraSyncDrawer({
               Current Status
             </div>
             <div className="flex items-center gap-2" style={{ marginBottom: 8 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--sem-success)', display: 'inline-block' }} />
+              <span className="bg-[var(--sem-success)]" style={{ width: 8, height: 8, borderRadius: '50%', display: 'inline-block' }} />
               <span style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500 }}>
                 Connected to {jiraProjectKey || projectKey}
               </span>
@@ -144,10 +144,9 @@ export function JiraSyncDrawer({
             <button
               onClick={onSyncNow}
               disabled={isSyncing}
-              className="inline-flex items-center gap-1.5"
+              className={`inline-flex items-center gap-1.5 ${isSyncing ? 'bg-[var(--cp-primary-30)]' : 'bg-[var(--cp-blue)]'}`}
               style={{
                 height: 32, padding: '0 14px', borderRadius: 4,
-                background: isSyncing ? 'var(--cp-primary-30)' : 'var(--cp-blue)',
                 color: '#FFFFFF', border: 'none',
                 fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif',
                 cursor: isSyncing ? 'not-allowed' : 'pointer',
@@ -159,7 +158,7 @@ export function JiraSyncDrawer({
           </div>
 
           {/* Divider */}
-          <div style={{ height: 1, background: 'var(--cp-border-subtle, rgba(15,23,42,0.07))', margin: '0 24px' }} />
+          <div className="bg-[var(--cp-border-subtle,_rgba(15,23,42,0.07))]" style={{ height: 1, margin: '0 24px' }} />
 
           {/* Recent Sync Runs */}
           <div style={{ padding: '20px 24px' }}>
@@ -195,7 +194,7 @@ export function JiraSyncDrawer({
           </div>
 
           {/* Divider */}
-          <div style={{ height: 1, background: 'var(--cp-border-subtle, rgba(15,23,42,0.07))', margin: '0 24px' }} />
+          <div className="bg-[var(--cp-border-subtle,_rgba(15,23,42,0.07))]" style={{ height: 1, margin: '0 24px' }} />
 
           {/* Write-back Queue */}
           <div style={{ padding: '20px 24px' }}>

@@ -34,9 +34,9 @@ export default function OnHoldItems({ projectId, releaseMap }: Props) {
           </thead>
           <tbody>
             {items.map((item: any, idx: number) => (
-              <tr key={item.id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', background: idx % 2 === 1 ? 'var(--bg-1)' : undefined }} className="ph-table-row">
+              <tr key={item.id} className={`ph-table-row ${idx % 2 === 1 ? 'bg-[var(--bg-1)]' : ''}`} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)' }}>
                 <td style={{ padding: '0 8px' }}>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: 'var(--sem-success-fg)', background: 'var(--sem-success-bg)', padding: '2px 7px', borderRadius: 4, border: '1px solid var(--sem-success-accent)' }}>
+                  <span className="bg-[var(--sem-success-bg)]" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: 'var(--sem-success-fg)', padding: '2px 7px', borderRadius: 4, border: '1px solid var(--sem-success-accent)' }}>
                     {releaseMap[item.release_id] || '—'}
                   </span>
                 </td>
@@ -49,7 +49,7 @@ export default function OnHoldItems({ projectId, releaseMap }: Props) {
                   {item.displayTitle}
                 </td>
                 <td style={{ padding: '0 8px' }}>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700, color: '#FFFFFF', background: item.days_on_hold > 3 ? 'var(--sem-danger)' : 'var(--sem-warning)', padding: '2px 7px', borderRadius: 9999 }}>
+                  <span className={item.days_on_hold > 3 ? 'bg-[var(--sem-danger)]' : 'bg-[var(--sem-warning)]'} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700, color: '#FFFFFF', padding: '2px 7px', borderRadius: 9999 }}>
                     {item.days_on_hold > 0 ? `${item.days_on_hold}d` : 'N/A'}
                   </span>
                 </td>

@@ -64,10 +64,10 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
       />
       {/* Drawer */}
       <div
+        className="bg-[var(--cp-float)]"
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 51,
           width: 720,
-          background: 'var(--cp-float)',
           boxShadow: '-8px 0 24px rgba(0,0,0,0.12)',
           display: 'flex', flexDirection: 'column',
           fontFamily: 'Inter, sans-serif',
@@ -114,10 +114,9 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
 
                 {isIdentical ? (
                   /* Identical values — no diff needed */
-                  <div className="flex items-center gap-2" style={{
+                  <div className="flex items-center gap-2 bg-[var(--bg-1)]" style={{
                     padding: '12px 16px', borderRadius: 6,
                     border: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
-                    background: 'var(--bg-1)',
                   }}>
                     <AlertCircle size={14} style={{ color: 'var(--fg-4)', flexShrink: 0 }} />
                     <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>
@@ -127,24 +126,24 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                 ) : (
                   <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden', border: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))' }}>
                     {/* Catalyst side */}
-                    <div style={{ flex: 1, background: 'var(--cp-blue-wash)', borderRight: '0.75px solid var(--cp-primary-20)', padding: 16 }}>
+                    <div className="bg-[var(--cp-blue-wash)]" style={{ flex: 1, borderRight: '0.75px solid var(--cp-primary-20)', padding: 16 }}>
                       <div className="flex items-center gap-[5px]" style={{ marginBottom: 8 }}>
-                        <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--cp-blue)', color: '#FFF', fontSize: 7, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>C</span>
+                        <span className="bg-[var(--cp-blue)]" style={{ width: 10, height: 10, borderRadius: 2, color: '#FFF', fontSize: 7, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>C</span>
                         <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Catalyst Version</span>
                         <span style={{ fontSize: 10, color: 'var(--fg-3)', marginLeft: 4 }}>Your edit</span>
                       </div>
-                      <div style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500, padding: '8px 12px', background: 'rgba(37,99,235,0.06)', borderRadius: 4 }}>
+                      <div className="bg-[rgba(37,99,235,0.06)]" style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500, padding: '8px 12px', borderRadius: 4 }}>
                         {conflict.catalystValue}
                       </div>
                     </div>
                     {/* Jira side */}
-                    <div style={{ flex: 1, background: 'var(--sem-warning-bg)', borderLeft: '0.75px solid var(--sem-warning-accent)', padding: 16 }}>
+                    <div className="bg-[var(--sem-warning-bg)]" style={{ flex: 1, borderLeft: '0.75px solid var(--sem-warning-accent)', padding: 16 }}>
                       <div className="flex items-center gap-[5px]" style={{ marginBottom: 8 }}>
                         <span className="flex items-center" dangerouslySetInnerHTML={{ __html: JIRA_DIAMOND_SVG }} />
                         <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--sem-warning-fg)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Jira Version</span>
                         <span style={{ fontSize: 10, color: 'var(--fg-3)', marginLeft: 4 }}>From Jira</span>
                       </div>
-                      <div style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500, padding: '8px 12px', background: 'rgba(154,52,18,0.06)', borderRadius: 4 }}>
+                      <div className="bg-[rgba(154,52,18,0.06)]" style={{ fontSize: 13, color: 'var(--fg-1)', fontWeight: 500, padding: '8px 12px', borderRadius: 4 }}>
                         {conflict.jiraValue}
                       </div>
                     </div>
@@ -159,9 +158,10 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => onResolve(conflict.id, 'keep_catalyst')}
+                        className="bg-[var(--cp-blue-wash)]"
                         style={{
                           height: 32, padding: '0 14px', borderRadius: 4,
-                          background: 'var(--cp-blue-wash)', color: 'var(--cp-blue)', border: '0.75px solid var(--cp-primary-20)',
+                          color: 'var(--cp-blue)', border: '0.75px solid var(--cp-primary-20)',
                           fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif', cursor: 'pointer',
                         }}
                       >
@@ -169,9 +169,10 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                       </button>
                       <button
                         onClick={() => onResolve(conflict.id, 'keep_jira')}
+                        className="bg-[var(--sem-warning-bg)]"
                         style={{
                           height: 32, padding: '0 14px', borderRadius: 4,
-                          background: 'var(--sem-warning-bg)', color: 'var(--sem-warning-fg)', border: '0.75px solid var(--sem-warning-accent)',
+                          color: 'var(--sem-warning-fg)', border: '0.75px solid var(--sem-warning-accent)',
                           fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif', cursor: 'pointer',
                         }}
                       >

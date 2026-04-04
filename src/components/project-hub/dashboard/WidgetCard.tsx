@@ -48,9 +48,8 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
     <div
       role="region"
       aria-label={title}
-      className="ph-widget-card"
+      className={`ph-widget-card ${dark ? 'bg-[#181A1E]' : 'bg-[var(--bg-app)]'}`}
       style={{
-        background: dark ? '#181A1E' : 'var(--bg-app)',
         border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid var(--divider)',
         borderRadius: 10,
         borderLeft: leftBorder ? `3px solid ${leftBorder}` : undefined,
@@ -116,7 +115,8 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
             <button
               onClick={onRetry}
               className="ph-focus-ring"
-              style={{ fontSize: 11, fontWeight: 600, color: dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)', background: dark ? 'rgba(37,99,235,0.15)' : 'var(--cp-blue-wash)', border: dark ? '1px solid rgba(37,99,235,0.3)' : '1px solid var(--cp-primary-20)', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}
+              className={dark ? 'bg-[rgba(37,99,235,0.15)]' : 'bg-[var(--cp-blue-wash)]'}
+              style={{ fontSize: 11, fontWeight: 600, color: dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)', border: dark ? '1px solid rgba(37,99,235,0.3)' : '1px solid var(--cp-primary-20)', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}
             >
               Retry
             </button>

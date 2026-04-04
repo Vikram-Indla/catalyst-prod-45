@@ -60,7 +60,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
 
   const inputStyle: React.CSSProperties = {
     height: 36, padding: '0 12px', fontSize: 13,
-    color: 'var(--fg-1)', background: 'var(--cp-float)', border: '1px solid var(--divider)',
+    color: 'var(--fg-1)', border: '1px solid var(--divider)',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
     flex: 1, minWidth: 0,
     transition: 'border-color 150ms, box-shadow 150ms',
@@ -117,6 +117,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
             placeholder="Label name..."
             disabled={atMax}
+            className="bg-[var(--cp-float)] dark:bg-[#232019]"
             style={{ ...inputStyle, opacity: atMax ? 0.5 : 1 }}
             onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
             onBlur={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }}

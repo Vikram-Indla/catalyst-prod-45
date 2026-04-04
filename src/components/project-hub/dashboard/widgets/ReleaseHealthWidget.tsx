@@ -17,8 +17,8 @@ export default function ReleaseHealthWidget({ projectId, projectKey, collapsed, 
     <WidgetWrapper title="Release Health" subtitle="Active release progress" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1} footer={footer}>
       {isLoading ? (
         <div className="animate-pulse space-y-3">
-          <div className="h-4 rounded" style={{ background: 'var(--cp-bg-sunken)', width: '60%' }} />
-          <div className="h-2 rounded" style={{ background: 'var(--cp-bg-sunken)' }} />
+          <div className="h-4 rounded bg-[#F1F5F9] dark:bg-[#2C2823]" style={{ width: '60%' }} />
+          <div className="h-2 rounded bg-[#F1F5F9] dark:bg-[#2C2823]" />
         </div>
       ) : !rel ? (
         <div className="flex flex-col items-center py-6 text-center">
@@ -30,17 +30,16 @@ export default function ReleaseHealthWidget({ projectId, projectKey, collapsed, 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span style={{ fontSize: 13, fontWeight: 650, color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-heading)' }}>{rel.name}</span>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
+            <span className="inline-flex items-center bg-[#DEEBFF] dark:bg-[#1a3a5c] text-[#0747A6] dark:text-[#7bb0ff]" style={{
+              height: 20, padding: '0 8px',
               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
               borderRadius: 'var(--cp-radius-sm)',
-              background: 'var(--cp-lozenge-blue-bg)', color: 'var(--cp-lozenge-blue-text)',
             }}>IN PROGRESS</span>
           </div>
           <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary)' }}>{rel.done} of {rel.total} items done</div>
           {/* Progress bar */}
-          <div style={{ height: 6, borderRadius: 3, background: 'var(--cp-neutral-10)', overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${rel.completionPct}%`, background: 'var(--cp-primary-60)', borderRadius: 3, transition: 'width 300ms ease' }} />
+          <div className="bg-[#F1F5F9] dark:bg-[#2C2823]" style={{ height: 6, borderRadius: 3, overflow: 'hidden' }}>
+            <div className="bg-[#2563EB]" style={{ height: '100%', width: `${rel.completionPct}%`, borderRadius: 3, transition: 'width 300ms ease' }} />
           </div>
           <div className="flex items-center justify-between" style={{ fontSize: 11 }}>
             <span style={{ color: 'var(--cp-text-tertiary)' }}>{rel.completionPct}% complete</span>

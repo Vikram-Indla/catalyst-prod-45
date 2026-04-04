@@ -21,7 +21,7 @@ export default function RecentActivityWidget({ projectId, projectKey, collapsed,
     <WidgetWrapper title="Recent Activity" subtitle="Latest changes" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1}>
       {isLoading ? (
         <div className="animate-pulse space-y-2">
-          {[1, 2, 3].map(i => <div key={i} className="h-4 rounded" style={{ background: 'var(--cp-bg-sunken)', width: `${90 - i * 10}%` }} />)}
+          {[1, 2, 3].map(i => <div key={i} className="h-4 rounded bg-[#F1F5F9] dark:bg-[#2C2823]" style={{ width: `${90 - i * 10}%` }} />)}
         </div>
       ) : !items?.length ? (
         <div className="flex flex-col items-center py-6 text-center">
@@ -38,14 +38,10 @@ export default function RecentActivityWidget({ projectId, projectKey, collapsed,
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
                   <span style={{ color: 'var(--cp-primary-60)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{item.issue_key}</span>
-                  <span style={{
-                    display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 6px',
+                  <span className={`inline-flex items-center ${item.status_category === 'Done' ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]' : item.status_category === 'In Progress' ? 'bg-[#DEEBFF] dark:bg-[#1a3a5c] text-[#0747A6] dark:text-[#7bb0ff]' : 'bg-[#DFE1E6] dark:bg-[#3A3530] text-[#253858] dark:text-[#A09890]'}`} style={{
+                    height: 18, padding: '0 6px',
                     fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                     borderRadius: 'var(--cp-radius-sm)',
-                    background: item.status_category === 'Done' ? 'var(--cp-lozenge-green-bg)' :
-                      item.status_category === 'In Progress' ? 'var(--cp-lozenge-blue-bg)' : 'var(--cp-lozenge-grey-bg)',
-                    color: item.status_category === 'Done' ? 'var(--cp-lozenge-green-text)' :
-                      item.status_category === 'In Progress' ? 'var(--cp-lozenge-blue-text)' : 'var(--cp-lozenge-grey-text)',
                   }}>{(item.status || '—').toUpperCase()}</span>
                 </div>
                 <div className="truncate" style={{ fontSize: 12, color: 'var(--cp-text-secondary)', marginTop: 2 }}>{item.summary}</div>

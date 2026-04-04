@@ -7,18 +7,16 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
   const count = items?.length ?? 0;
 
   const badge = (
-    <span style={{
+    <span className={count === 0 ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]' : 'bg-[#FFEBE6] dark:bg-[#3a1a1a] text-[#BF2600] dark:text-[#ff8f73]'} style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
       fontSize: 11, fontWeight: 700, borderRadius: 'var(--cp-radius-sm)',
-      background: count === 0 ? 'var(--cp-lozenge-green-bg)' : 'var(--cp-danger-10)',
-      color: count === 0 ? 'var(--cp-lozenge-green-text)' : 'var(--cp-danger-80)',
     }}>{count}</span>
   );
 
   return (
     <WidgetWrapper title="Overdue" subtitle="Past due date" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1} headerBadges={badge}>
       {isLoading ? (
-        <div className="animate-pulse"><div className="h-12 rounded" style={{ background: 'var(--cp-bg-sunken)' }} /></div>
+        <div className="animate-pulse"><div className="h-12 rounded bg-[#F1F5F9] dark:bg-[#2C2823]" /></div>
       ) : count === 0 ? (
         <div className="flex flex-col items-center py-6 text-center">
           <div style={{ fontSize: 28, color: 'var(--cp-text-muted)', marginBottom: 8 }}>✓</div>

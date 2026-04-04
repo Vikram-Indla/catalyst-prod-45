@@ -24,7 +24,7 @@ export function TypeBadge({ type }: { type: string }) {
         fontWeight: 700,
         padding: '2px 7px',
         borderRadius: 9999,
-        background: s.bg,
+        backgroundColor: s.bg,
         color: '#FFFFFF',
         whiteSpace: 'nowrap',
         fontFamily: "'Inter', sans-serif",

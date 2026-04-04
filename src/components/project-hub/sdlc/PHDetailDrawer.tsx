@@ -48,10 +48,9 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
 
       {/* Drawer */}
       <div
-        className="fixed top-0 right-0 bottom-0 z-50 flex flex-col"
+        className="fixed top-0 right-0 bottom-0 z-50 flex flex-col bg-[var(--cp-float)]"
         style={{
           width: 560,
-          background: 'var(--cp-float)',
           borderLeft: '1px solid var(--divider)',
           boxShadow: '-8px 0 30px rgba(15,23,42,.1)',
           animation: 'phSlideInRight 200ms ease',
@@ -94,9 +93,8 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
                 Description
               </div>
               <div
-                className="rounded-lg p-3"
+                className="rounded-lg p-3 bg-[var(--bg-1)]"
                 style={{
-                  background: 'var(--bg-1)',
                   border: '1px solid var(--divider)',
                   fontSize: 13,
                   color: issue.description ? 'var(--fg-2)' : 'var(--fg-4)',
@@ -143,7 +141,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
               <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                 Activity
               </div>
-              <div className="rounded-lg p-4 flex items-center justify-center" style={{ background: 'var(--bg-1)', border: '1px solid var(--divider)', color: 'var(--fg-4)', fontSize: 12 }}>
+              <div className="rounded-lg p-4 flex items-center justify-center bg-[var(--bg-1)]" style={{ border: '1px solid var(--divider)', color: 'var(--fg-4)', fontSize: 12 }}>
                 No activity yet
               </div>
             </div>
@@ -151,8 +149,8 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
 
           {/* Aside */}
           <div
-            className="flex-shrink-0 border-l overflow-y-auto"
-            style={{ width: 200, borderColor: 'var(--divider)', background: 'var(--bg-1)', padding: 16 }}
+            className="flex-shrink-0 border-l overflow-y-auto bg-[var(--bg-1)]"
+            style={{ width: 200, borderColor: 'var(--divider)', padding: 16 }}
           >
             {/* Status — custom dropdown, NO native select */}
             <AsideField label="Status">
@@ -169,10 +167,9 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
             <AsideField label="Assignee">
               <span className="flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--fg-3)' }}>
                 <span
-                  className="rounded-full inline-flex items-center justify-center"
+                  className={`rounded-full inline-flex items-center justify-center ${issue.assignee_id ? 'bg-[var(--bg-3)]' : 'bg-transparent'}`}
                   style={{
                     width: 20, height: 20,
-                    background: issue.assignee_id ? 'var(--bg-3)' : 'transparent',
                     border: issue.assignee_id ? 'none' : '1.5px dashed var(--divider)',
                     fontSize: 8, color: 'var(--fg-3)',
                   }}
@@ -253,12 +250,11 @@ function StatusDropdown({ value, onChange }: { value: IssueStatus; onChange: (s:
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between gap-1 rounded-md transition-colors"
+        className="w-full flex items-center justify-between gap-1 rounded-md transition-colors bg-[var(--bg-app)]"
         style={{
           padding: '4px 8px',
           fontSize: 11, fontWeight: 600,
           border: '1px solid var(--divider)',
-          background: 'var(--bg-app)',
           color: 'var(--fg-2)',
           cursor: 'pointer',
         }}
@@ -268,8 +264,8 @@ function StatusDropdown({ value, onChange }: { value: IssueStatus; onChange: (s:
       </button>
       {open && (
         <div
-          className="absolute left-0 top-full mt-1 rounded-lg shadow-lg border z-50"
-          style={{ background: 'var(--cp-float)', borderColor: 'var(--divider)', minWidth: 160, padding: 4 }}
+          className="absolute left-0 top-full mt-1 rounded-lg shadow-lg border z-50 bg-[var(--cp-float)]"
+          style={{ borderColor: 'var(--divider)', minWidth: 160, padding: 4 }}
         >
           {(Object.keys(STATUS_CONFIG) as IssueStatus[]).map(s => {
             const sc = STATUS_CONFIG[s];
@@ -277,11 +273,10 @@ function StatusDropdown({ value, onChange }: { value: IssueStatus; onChange: (s:
               <button
                 key={s}
                 onClick={() => { onChange(s); setOpen(false); }}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded transition-colors text-left"
+                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded transition-colors text-left ${value === s ? 'bg-[var(--cp-bd-zone)]' : 'bg-transparent'}`}
                 style={{
                   fontSize: 11, fontWeight: value === s ? 600 : 500,
                   color: 'var(--fg-2)',
-                  background: value === s ? 'var(--cp-bd-zone)' : 'transparent',
                   border: 'none', cursor: 'pointer',
                 }}
                 onMouseEnter={e => { if (value !== s) e.currentTarget.style.background = 'var(--bg-1)'; }}

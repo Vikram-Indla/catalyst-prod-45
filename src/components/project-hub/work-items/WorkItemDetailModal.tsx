@@ -116,10 +116,10 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
 
   return (
     <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 200, fontFamily: 'Inter, sans-serif' }} onClick={onClose}>
-      <div className="absolute inset-0" style={{ background: 'rgba(9,30,66,0.54)' }} />
+      <div className="absolute inset-0 bg-[rgba(9,30,66,0.54)]" />
       <div
-        className="relative flex flex-col"
-        style={{ width: 960, maxHeight: '90vh', background: 'var(--cp-float)', borderRadius: 10, boxShadow: '0 0 0 1px rgba(9,30,66,0.08), 0 2px 1px rgba(9,30,66,0.08), 0 0 20px -6px rgba(9,30,66,0.31)', overflow: 'hidden' }}
+        className="relative flex flex-col bg-[var(--cp-float)]"
+        style={{ width: 960, maxHeight: '90vh', borderRadius: 10, boxShadow: '0 0 0 1px rgba(9,30,66,0.08), 0 2px 1px rgba(9,30,66,0.08), 0 0 20px -6px rgba(9,30,66,0.31)', overflow: 'hidden' }}
         onClick={e => e.stopPropagation()}
       >
         {/* HEADER */}
@@ -164,7 +164,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
               {/* Parent breadcrumb */}
               {showParentBreadcrumb && (
                 <div className="mb-4">
-                  <button className="flex items-center gap-2 px-3 py-2 rounded-md w-full text-left transition-colors" style={{ background: 'var(--bg-1)', border: '1px solid var(--divider)' }} onClick={() => onNavigate?.(item.parent_id!)}>
+                  <button className="flex items-center gap-2 px-3 py-2 rounded-md w-full text-left transition-colors bg-[var(--bg-1)]" style={{ border: '1px solid var(--divider)' }} onClick={() => onNavigate?.(item.parent_id!)}>
                     <span style={{ color: item.parent_type_color || 'var(--fg-4)' }}>{TYPE_ICONS[item.parent_type_name ?? ''] || <CheckSquare size={14} />}</span>
                     <span className="text-[11px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{item.parent_key}</span>
                     <span className="text-[13px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>{item.parent_title}</span>
@@ -186,7 +186,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                       {item.due_date ? new Date(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : <span style={{ color: 'var(--fg-4)' }}>None</span>}
                     </span>
                     {item.due_date && new Date(item.due_date) < new Date() && (
-                      <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ background: 'var(--sem-danger-bg)', color: 'var(--sem-danger)' }}>Overdue</span>
+                      <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-[var(--sem-danger-bg)]" style={{ color: 'var(--sem-danger)' }}>Overdue</span>
                     )}
                   </div>
                 </div>
@@ -203,8 +203,9 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
               <CollapsibleSection title="Acceptance Criteria" count={acceptanceCriteria.length} defaultOpen={acceptanceCriteria.length > 0}>
                 {acceptanceCriteria.map((ac: any) => (
                   <div key={ac.id} className="flex items-start gap-2 py-1.5 group">
-                    <button onClick={() => handleToggleCriterion(ac.id, ac.is_checked)} className="mt-0.5 w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors"
-                      style={{ borderColor: ac.is_checked ? 'var(--sem-success)' : 'var(--divider)', background: ac.is_checked ? 'var(--sem-success)' : 'transparent' }}>
+                    <button onClick={() => handleToggleCriterion(ac.id, ac.is_checked)}
+                      className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${ac.is_checked ? 'bg-[var(--sem-success)]' : 'bg-transparent'}`}
+                      style={{ borderColor: ac.is_checked ? 'var(--sem-success)' : 'var(--divider)' }}>
                       {ac.is_checked && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
                     </button>
                     <span className="text-[13px]" style={{ color: ac.is_checked ? 'var(--fg-4)' : 'var(--fg-1)', textDecoration: ac.is_checked ? 'line-through' : 'none', lineHeight: '20px' }}>{ac.title}</span>
@@ -224,8 +225,8 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                 {totalChildren > 0 && (
                   <>
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--divider)' }}>
-                        <div className="h-full rounded-full transition-all" style={{ width: `${progressPct}%`, background: 'var(--sem-success)' }} />
+                      <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-[var(--divider)]">
+                        <div className="h-full rounded-full transition-all bg-[var(--sem-success)]" style={{ width: `${progressPct}%` }} />
                       </div>
                       <span className="text-[11px] font-medium shrink-0" style={{ color: 'var(--fg-3)' }}>{doneCount}/{totalChildren} · {progressPct}%</span>
                     </div>
@@ -244,7 +245,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                     <input autoFocus value={subtaskTitle} onChange={e => setSubtaskTitle(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter') handleCreateSubtask(); if (e.key === 'Escape') { setCreatingSubtask(false); setSubtaskTitle(''); } }}
                       placeholder="Subtask title..." className="flex-1 text-[13px] px-2.5 py-1.5 rounded border focus:outline-none focus:ring-1 focus:ring-[var(--cp-blue)]" style={{ borderColor: 'var(--divider)', height: 32 }} />
-                    <button onClick={handleCreateSubtask} disabled={subtaskSubmitting} className="px-3 py-1 text-[11px] font-semibold rounded text-white" style={{ background: 'var(--cp-blue)', height: 32 }}>{subtaskSubmitting ? '…' : 'Create'}</button>
+                    <button onClick={handleCreateSubtask} disabled={subtaskSubmitting} className="px-3 py-1 text-[11px] font-semibold rounded text-white bg-[var(--cp-blue)]" style={{ height: 32 }}>{subtaskSubmitting ? '…' : 'Create'}</button>
                     <button onClick={() => { setCreatingSubtask(false); setSubtaskTitle(''); }} className="px-2 py-1 text-[11px] font-medium rounded hover:bg-[var(--cp-bd-zone)]" style={{ color: 'var(--fg-3)', height: 32 }}>Cancel</button>
                   </div>
                 ) : (
@@ -299,7 +300,7 @@ function SubtaskRow({ child, statuses, onStatusChange, onClick }: { child: Child
   return (
     <div className="grid gap-2 px-2 py-2 hover:bg-[var(--bg-1)] rounded cursor-pointer transition-colors" style={{ gridTemplateColumns: '1fr 80px 100px 90px', fontSize: 13 }} onClick={onClick}>
       <div className="flex items-center gap-2 min-w-0">
-        <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: TYPE_COLORS[child.type_name] || child.type_color }} />
+        <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: TYPE_COLORS[child.type_name] || child.type_color }} />
         <span className="text-[10px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{child.item_key}</span>
         <span className="truncate font-medium" style={{ color: 'var(--fg-1)' }}>{child.title}</span>
       </div>

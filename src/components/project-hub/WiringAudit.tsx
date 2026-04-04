@@ -146,7 +146,7 @@ export function WiringAudit() {
         margin: "24px 0",
         border: "1.5px solid #E2E8F0",
         borderRadius: 8,
-        background: "#FAFBFC",
+        backgroundColor: "#FAFBFC",
         padding: 20,
         fontFamily: "Inter, sans-serif",
       }}
@@ -173,7 +173,7 @@ export function WiringAudit() {
               fontSize: 12,
               fontWeight: 600,
               fontFamily: "Inter, sans-serif",
-              background: "#2563EB",
+              backgroundColor: "#2563EB",
               color: "#FFFFFF",
               border: "none",
               borderRadius: 6,
@@ -211,7 +211,7 @@ export function WiringAudit() {
               fontSize: 11,
               fontWeight: 700,
               color: "#FFFFFF",
-              background: r.status === "pass" ? "#006644" : "#DC2626",
+              backgroundColor: r.status === "pass" ? "#006644" : "#DC2626",
               flexShrink: 0,
             }}
           >

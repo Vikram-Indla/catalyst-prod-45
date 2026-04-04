@@ -66,8 +66,8 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
     <div className="flex gap-0" style={{ minHeight: 'calc(100vh - 320px)' }}>
       {/* Release Sidebar */}
       <div
-        className="flex-shrink-0 border-r overflow-y-auto"
-        style={{ width: 180, borderColor: 'var(--divider)', background: 'var(--bg-1)' }}
+        className="flex-shrink-0 border-r overflow-y-auto bg-[var(--bg-1)]"
+        style={{ width: 180, borderColor: 'var(--divider)' }}
       >
         <div className="p-2">
           <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '4px 8px', marginBottom: 4 }}>
@@ -120,8 +120,8 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
             return (
               <div
                 key={groupId}
-                className="mb-3 rounded-xl border"
-                style={{ borderColor: 'var(--divider)', background: 'var(--cp-float)' }}
+                className="mb-3 rounded-xl border bg-[var(--cp-float)]"
+                style={{ borderColor: 'var(--divider)' }}
               >
                 {/* Group Header */}
                 <div
@@ -138,11 +138,11 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                     {getReleaseName(groupId)}
                   </span>
                   <span
-                    className="rounded-full flex items-center justify-center"
+                    className="rounded-full flex items-center justify-center bg-[var(--cp-bd-zone)]"
                     style={{
                       width: 20, height: 20,
                       fontSize: 10, fontWeight: 600,
-                      background: 'var(--cp-bd-zone)', color: 'var(--fg-3)',
+                      color: 'var(--fg-3)',
                       fontFamily: "'JetBrains Mono', monospace",
                     }}
                   >
@@ -150,8 +150,8 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                   </span>
                   <div className="flex-1" />
                   <div className="flex items-center gap-1.5">
-                    <div className="rounded-full overflow-hidden" style={{ width: 60, height: 4, background: 'var(--divider)' }}>
-                      <div className="rounded-full" style={{ width: `${progress}%`, height: '100%', background: 'var(--sem-success)', transition: 'width 200ms ease' }} />
+                    <div className="rounded-full overflow-hidden bg-[var(--divider)]" style={{ width: 60, height: 4 }}>
+                      <div className="rounded-full bg-[var(--sem-success)]" style={{ width: `${progress}%`, height: '100%', transition: 'width 200ms ease' }} />
                     </div>
                     <span style={{ fontSize: 10, color: 'var(--fg-4)' }}>{progress}%</span>
                   </div>
@@ -205,10 +205,9 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                           </span>
                           <PHStatusLozenge status={issue.status} compact />
                           <span
-                            className="rounded-full inline-flex items-center justify-center flex-shrink-0"
+                            className={`rounded-full inline-flex items-center justify-center flex-shrink-0 ${issue.assignee_id ? 'bg-[var(--divider)]' : 'bg-transparent'}`}
                             style={{
                               width: 22, height: 22,
-                              background: issue.assignee_id ? 'var(--divider)' : 'transparent',
                               border: issue.assignee_id ? 'none' : '1.5px dashed var(--divider)',
                               fontSize: 9, fontWeight: 700, color: 'var(--fg-3)',
                             }}
@@ -236,13 +235,12 @@ function SidebarButton({ label, count, progress, isActive, onClick }: {
   return (
     <button
       onClick={onClick}
-      className="w-full text-left rounded-md mb-0.5 transition-colors"
+      className={`w-full text-left rounded-md mb-0.5 transition-colors ${isActive ? 'bg-[var(--cp-blue-wash)]' : 'bg-transparent'}`}
       style={{
         padding: '6px 10px',
         fontSize: 12,
         fontWeight: isActive ? 600 : 500,
         color: isActive ? 'var(--cp-blue)' : 'var(--fg-2)',
-        background: isActive ? 'var(--cp-blue-wash)' : 'transparent',
         border: isActive ? '1px solid var(--cp-primary-20)' : '1px solid transparent',
         cursor: 'pointer',
         fontFamily: "'Inter', sans-serif",
@@ -255,8 +253,8 @@ function SidebarButton({ label, count, progress, isActive, onClick }: {
         </span>
       </div>
       {progress !== undefined && (
-        <div className="rounded-full overflow-hidden" style={{ width: '100%', height: 3, background: 'var(--divider)' }}>
-          <div className="rounded-full" style={{ width: `${progress}%`, height: '100%', background: 'var(--sem-success)', transition: 'width 200ms ease' }} />
+        <div className="rounded-full overflow-hidden bg-[var(--divider)]" style={{ width: '100%', height: 3 }}>
+          <div className="rounded-full bg-[var(--sem-success)]" style={{ width: `${progress}%`, height: '100%', transition: 'width 200ms ease' }} />
         </div>
       )}
     </button>

@@ -112,18 +112,19 @@ function ProjectRow({
   return (
     <button
       onClick={() => onSelect(project.key)}
-      className="flex items-center gap-2.5 w-full px-3 py-1.5 transition-colors"
+      className={`flex items-center gap-2.5 w-full px-3 py-1.5 transition-colors ${
+        isCurrent
+          ? 'bg-[var(--cp-blue-wash)] dark:bg-[rgba(59,130,246,0.10)]'
+          : 'hover:bg-[var(--cp-blue-wash)] dark:hover:bg-[rgba(235,238,245,0.03)]'
+      }`}
       style={{
-        background: isCurrent ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : undefined,
         border: 'none',
         cursor: 'pointer',
       }}
-      onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = isDark ? 'rgba(235,238,245,0.03)' : 'var(--cp-blue-wash)'; }}
-      onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = ''; }}
     >
       <div
         className="flex items-center justify-center rounded flex-shrink-0"
-        style={{ width: 24, height: 24, background: project.color, color: '#FFFFFF', fontSize: 10, fontWeight: 700, borderRadius: 4 }}
+        style={{ width: 24, height: 24, backgroundColor: project.color, color: '#FFFFFF', fontSize: 10, fontWeight: 700, borderRadius: 4 }}
       >
         {project.key.slice(0, 2)}
       </div>

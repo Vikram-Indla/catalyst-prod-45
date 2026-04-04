@@ -82,10 +82,9 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
         onClick={handleClose}
       />
       <div
-        className="fixed top-0 right-0 bottom-0 z-50 flex flex-col"
+        className="fixed top-0 right-0 bottom-0 z-50 flex flex-col bg-[var(--cp-float)]"
         style={{
           width: 460,
-          background: 'var(--cp-float)',
           borderLeft: '1px solid var(--divider)',
           boxShadow: '-8px 0 30px rgba(15,23,42,.1)',
           animation: 'phSlideInRight 200ms ease',
@@ -139,8 +138,8 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                 return (
                   <div
                     key={i}
-                    className="flex items-center gap-2 p-3 rounded-lg border"
-                    style={{ borderColor: 'var(--divider)', background: 'var(--bg-1)' }}
+                    className="flex items-center gap-2 p-3 rounded-lg border bg-[var(--bg-1)]"
+                    style={{ borderColor: 'var(--divider)' }}
                   >
                     <GripVertical size={14} color="#D1D5DB" className="cursor-grab flex-shrink-0" />
                     <span className="rounded-full flex-shrink-0" style={{ width: 8, height: 8, background: col.color }} />
@@ -212,20 +211,20 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
               <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 20, marginBottom: 8 }}>
                 Live Preview
               </div>
-              <div className="rounded-xl border p-3" style={{ borderColor: 'var(--divider)', background: 'var(--bg-1)' }}>
+              <div className="rounded-xl border p-3 bg-[var(--bg-1)]" style={{ borderColor: 'var(--divider)' }}>
                 <div className="rounded-lg bg-white border p-3" style={{ borderColor: 'var(--divider)', borderLeft: '3px solid var(--cp-blue)' }}>
                   <div className="flex items-center gap-1 mb-1">
-                    {cardFields.type && <span className="rounded inline-flex items-center justify-center" style={{ width: 14, height: 14, background: 'var(--cp-blue)', fontSize: 8, color: '#fff' }}>✓</span>}
+                    {cardFields.type && <span className="rounded inline-flex items-center justify-center bg-[var(--cp-blue)]" style={{ width: 14, height: 14, fontSize: 8, color: '#fff' }}>✓</span>}
                     {cardFields.key && <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-3)' }}>PROJ-123</span>}
-                    {cardFields.source && <span style={{ fontSize: 7, padding: '0 3px', borderRadius: 2, background: 'var(--cp-blue-wash)', color: 'var(--cp-blue)', fontWeight: 700 }}>JIRA</span>}
+                    {cardFields.source && <span className="bg-[var(--cp-blue-wash)]" style={{ fontSize: 7, padding: '0 3px', borderRadius: 2, color: 'var(--cp-blue)', fontWeight: 700 }}>JIRA</span>}
                   </div>
                   {cardFields.overdue && <div style={{ fontSize: 9, color: 'var(--sem-warning)' }}>⚠ 3d overdue</div>}
                   {cardFields.title && <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', marginBottom: 4 }}>Sample issue title…</div>}
                   <div className="flex items-center justify-between">
-                    {cardFields.priority && <span style={{ fontSize: 9, padding: '0 4px', borderRadius: 3, background: 'var(--sem-warning-bg)', color: 'var(--sem-warning)' }}>high</span>}
+                    {cardFields.priority && <span className="bg-[var(--sem-warning-bg)]" style={{ fontSize: 9, padding: '0 4px', borderRadius: 3, color: 'var(--sem-warning)' }}>high</span>}
                     <div className="flex items-center gap-1">
                       {cardFields.due && <span style={{ fontSize: 9, color: 'var(--fg-4)' }}>Mar 15</span>}
-                      {cardFields.assignee && <span className="rounded-full inline-flex items-center justify-center" style={{ width: 16, height: 16, background: 'var(--divider)', fontSize: 7 }}>👤</span>}
+                      {cardFields.assignee && <span className="rounded-full inline-flex items-center justify-center bg-[var(--divider)]" style={{ width: 16, height: 16, fontSize: 7 }}>👤</span>}
                     </div>
                   </div>
                 </div>
@@ -283,14 +282,14 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
               />
               <div className="flex gap-2">
                 <button
-                  className="px-4 py-2 rounded-md transition-colors"
-                  style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', background: 'var(--cp-float)', color: 'var(--fg-2)', cursor: 'pointer' }}
+                  className="px-4 py-2 rounded-md transition-colors bg-[var(--cp-float)]"
+                  style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', color: 'var(--fg-2)', cursor: 'pointer' }}
                 >
                   Duplicate Board
                 </button>
                 <button
-                  className="px-4 py-2 rounded-md transition-colors"
-                  style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--sem-danger-accent)', background: 'var(--sem-danger-bg)', color: 'var(--sem-danger)', cursor: 'pointer' }}
+                  className="px-4 py-2 rounded-md transition-colors bg-[var(--sem-danger-bg)]"
+                  style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--sem-danger-accent)', color: 'var(--sem-danger)', cursor: 'pointer' }}
                 >
                   Delete Board
                 </button>
@@ -306,8 +305,8 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
         >
           <button
             onClick={() => { setDirty(false); onClose(); }}
-            className="px-4 py-1.5 rounded-md transition-colors"
-            style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', background: 'var(--cp-float)', color: 'var(--fg-3)', cursor: 'pointer', borderRadius: 6 }}
+            className="px-4 py-1.5 rounded-md transition-colors bg-[var(--cp-float)]"
+            style={{ fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', color: 'var(--fg-3)', cursor: 'pointer', borderRadius: 6 }}
           >
             Cancel
           </button>
@@ -317,8 +316,8 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
               setDirty(false);
               onClose();
             }}
-            className="px-4 py-1.5 rounded-md transition-colors"
-            style={{ fontSize: 12, fontWeight: 600, border: 'none', background: 'var(--cp-blue)', color: '#fff', cursor: 'pointer', borderRadius: 6 }}
+            className="px-4 py-1.5 rounded-md transition-colors bg-[var(--cp-blue)]"
+            style={{ fontSize: 12, fontWeight: 600, border: 'none', color: '#fff', cursor: 'pointer', borderRadius: 6 }}
           >
             Save
           </button>

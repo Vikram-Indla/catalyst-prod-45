@@ -30,7 +30,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         color: isActive
           ? 'var(--cp-blue)'
           : isDark ? 'rgba(235,238,245,0.72)' : 'var(--fg-2)',
-        background: isActive
+        backgroundColor: isActive
           ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)')
           : 'transparent',
         borderLeft: isActive && !collapsed ? '3px solid var(--cp-blue)' : '3px solid transparent',
@@ -39,10 +39,10 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         cursor: 'pointer',
       }}
       onMouseEnter={(e) => {
-        if (!isActive) e.currentTarget.style.background = isDark ? 'rgba(235,238,245,0.03)' : 'var(--cp-bd-zone)';
+        if (!isActive) e.currentTarget.style.backgroundColor = isDark ? 'rgba(235,238,245,0.03)' : 'var(--cp-bd-zone)';
       }}
       onMouseLeave={(e) => {
-        if (!isActive) e.currentTarget.style.background = 'transparent';
+        if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
       }}
     >
       <Icon size={18} strokeWidth={1.75} />
@@ -56,7 +56,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
                 fontSize: 9,
                 fontWeight: 700,
                 color: '#FFFFFF',
-                background: 'var(--cp-blue)',
+                backgroundColor: 'var(--cp-blue)',
                 borderRadius: 4,
                 padding: '1px 5px',
                 lineHeight: '14px',
@@ -75,7 +75,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
                 color: isDark ? 'rgba(235,238,245,0.55)' : 'var(--fg-4)',
                 fontFamily: "'JetBrains Mono', monospace",
                 borderRadius: 10,
-                background: isDark ? 'rgba(235,238,245,0.06)' : 'var(--cp-bd-zone)',
+                backgroundColor: isDark ? 'rgba(235,238,245,0.06)' : 'var(--cp-bd-zone)',
                 padding: '1px 6px',
               }}
             >

@@ -123,7 +123,7 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
               style={{ width: 140, border: '1px solid var(--divider)' }}
             >
               {/* Preview */}
-              <div className="h-[90px] flex items-center justify-center" style={{ background: 'var(--bg-1)' }}>
+              <div className="h-[90px] flex items-center justify-center bg-[var(--bg-1)]">
                 {isImage(att.mime_type) ? (
                   <img
                     src={getPublicUrl(att.storage_path)}
@@ -137,8 +137,7 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
               {/* Delete button */}
               <button
                 onClick={() => deleteAttachment.mutate(att)}
-                className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ background: 'rgba(0,0,0,0.6)' }}
+                className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/60"
               >
                 <X size={10} className="text-white" />
               </button>
@@ -154,10 +153,9 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
 
       {/* Drop zone */}
       <div
-        className="relative rounded-md text-center cursor-pointer transition-colors"
+        className={`relative rounded-md text-center cursor-pointer transition-colors ${dragOver ? 'bg-[var(--cp-blue-wash)]' : 'bg-[var(--bg-1)]'}`}
         style={{
           border: dragOver ? '2px dashed var(--cp-blue)' : '2px dashed var(--divider)',
-          background: dragOver ? 'var(--cp-blue-wash)' : 'var(--bg-1)',
           padding: '14px 12px',
         }}
         onDragOver={e => { e.preventDefault(); setDragOver(true); }}

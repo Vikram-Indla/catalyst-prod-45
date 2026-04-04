@@ -88,7 +88,7 @@ export function SidebarProjectNav({
             style={{
               width: 28,
               height: 28,
-              background: projectColor,
+              backgroundColor: projectColor,
               color: '#FFFFFF',
               fontSize: 10,
               fontWeight: 700,

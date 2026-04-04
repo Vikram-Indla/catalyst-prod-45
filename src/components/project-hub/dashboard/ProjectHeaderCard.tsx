@@ -67,10 +67,11 @@ export function ProjectHeaderCard({
           <button
             onClick={onSettings}
             className="flex items-center justify-center rounded-md transition-all"
+            className="bg-[var(--bg-app)] dark:bg-[#1A1714]"
             style={{
               height: 32, padding: '0 10px', gap: 6,
               border: '1px solid var(--divider)', borderRadius: 6,
-              background: 'var(--bg-app)', cursor: 'pointer',
+              cursor: 'pointer',
               fontSize: 12, fontWeight: 500, color: 'var(--fg-2)',
               fontFamily: "'Inter', sans-serif",
               display: 'inline-flex', alignItems: 'center',
@@ -82,7 +83,8 @@ export function ProjectHeaderCard({
           </button>
           <button
             className="flex items-center justify-center rounded-md transition-all"
-            style={{ width: 32, height: 32, border: '1px solid var(--divider)', borderRadius: 6, background: 'var(--bg-app)', cursor: 'pointer' }}
+            className="bg-[var(--bg-app)] dark:bg-[#1A1714]"
+            style={{ width: 32, height: 32, border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-1)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
           >
@@ -112,8 +114,8 @@ export function ProjectHeaderCard({
         <div className="flex items-center justify-between mb-1.5">
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>{clamped}% complete</span>
         </div>
-        <div style={{ width: '100%', height: 6, borderRadius: 3, background: 'var(--bg-3)' }}>
-          <div style={{ width: `${clamped}%`, height: '100%', borderRadius: 3, background: 'var(--sem-success)', transition: 'width 500ms ease' }} />
+        <div className="bg-[var(--bg-3)]" style={{ width: '100%', height: 6, borderRadius: 3 }}>
+          <div className="bg-[var(--sem-success)]" style={{ width: `${clamped}%`, height: '100%', borderRadius: 3, transition: 'width 500ms ease' }} />
         </div>
         <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 6 }}>
           {doneCount} of {totalCount} items done · Est. completion: {estCompletion}

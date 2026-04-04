@@ -37,9 +37,10 @@ function FixedDropdown({ anchorRef, children, onClose, width = 180 }: {
   return createPortal(
     <div
       id="inline-dropdown-portal"
+      className="bg-[var(--cp-float)]"
       style={{
         position: 'fixed', top: pos.top, left: pos.left, width,
-        background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6,
+        border: '1px solid var(--divider)', borderRadius: 6,
         boxShadow: '0 12px 32px rgba(0,0,0,0.18)', zIndex: 9999,
         maxHeight: 280, overflowY: 'auto',
       }}
@@ -68,8 +69,8 @@ export function InlineSummaryEditor({ value, onSave, onCancel }: {
       onChange={e => setText(e.target.value)}
       onKeyDown={e => { if (e.key === 'Enter') save(); if (e.key === 'Escape') onCancel(); }}
       onBlur={save}
-      className="w-full text-[12px] font-medium px-1 py-0.5 rounded outline-none"
-      style={{ border: '2px solid var(--cp-blue)', fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', background: 'var(--cp-float)' }}
+      className="w-full text-[12px] font-medium px-1 py-0.5 rounded outline-none bg-[var(--cp-float)]"
+      style={{ border: '2px solid var(--cp-blue)', fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)' }}
     />
   );
 }
@@ -96,7 +97,7 @@ export function InlineStatusPicker({ currentStatusId, statuses, anchorRef, onSel
             className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] transition-colors text-left"
             style={{ color: 'var(--fg-1)' }}
           >
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: STATUS_COLORS[s.category] || 'var(--fg-4)' }} />
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: STATUS_COLORS[s.category] || 'var(--fg-4)' }} />
             <span className="flex-1">{s.name}</span>
             {s.id === currentStatusId && <Check size={12} className="text-[#2563EB]" />}
           </button>

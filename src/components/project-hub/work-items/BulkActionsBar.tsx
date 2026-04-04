@@ -31,9 +31,9 @@ export function BulkActionsBar({
 
   return (
     <div
-      className="flex items-center gap-2 px-4"
+      className="flex items-center gap-2 px-4 bg-[var(--cp-blue)]"
       style={{
-        height: 40, background: 'var(--cp-blue)', borderRadius: '6px 6px 0 0',
+        height: 40, borderRadius: '6px 6px 0 0',
         fontFamily: 'Inter, sans-serif',
       }}
     >
@@ -51,8 +51,8 @@ export function BulkActionsBar({
         </button>
         {statusOpen && (
           <div
-            className="absolute left-0 top-full mt-1 rounded-md py-1"
-            style={{ width: 160, background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.15)', zIndex: 9999 }}
+            className="absolute left-0 top-full mt-1 rounded-md py-1 bg-[var(--cp-float)]"
+            style={{ width: 160, border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.15)', zIndex: 9999 }}
           >
             {statuses.map(s => (
               <button
@@ -61,7 +61,7 @@ export function BulkActionsBar({
                 className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] text-left"
                 style={{ color: 'var(--fg-1)' }}
               >
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: STATUS_COLORS[s.category] || 'var(--fg-4)' }} />
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: STATUS_COLORS[s.category] || 'var(--fg-4)' }} />
                 {s.name}
               </button>
             ))}
@@ -81,8 +81,8 @@ export function BulkActionsBar({
         </button>
         {priorityOpen && (
           <div
-            className="absolute left-0 top-full mt-1 rounded-md py-1"
-            style={{ width: 140, background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.15)', zIndex: 9999 }}
+            className="absolute left-0 top-full mt-1 rounded-md py-1 bg-[var(--cp-float)]"
+            style={{ width: 140, border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.15)', zIndex: 9999 }}
           >
             {PRIORITIES.map(p => (
               <button

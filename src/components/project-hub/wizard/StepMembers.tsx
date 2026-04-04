@@ -64,8 +64,8 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
     <div className="space-y-4">
       {/* Info note */}
       <div
-        className="flex items-center gap-2 rounded-lg"
-        style={{ padding: '8px 12px', background: 'var(--cp-blue-wash)', fontSize: 12, color: 'var(--cp-blue)' }}
+        className="flex items-center gap-2 rounded-lg bg-[var(--cp-blue-wash)]"
+        style={{ padding: '8px 12px', fontSize: 12, color: 'var(--cp-blue)' }}
       >
         <span style={{ fontWeight: 500 }}>ℹ</span>
         You will be added as Admin automatically.
@@ -74,11 +74,10 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
       {/* Search */}
       <div className="relative">
         <div
-          className="flex items-center gap-2 rounded-md"
+          className="flex items-center gap-2 rounded-md bg-[var(--bg-app)]"
           style={{
             height: 40,
             padding: '0 12px',
-            background: 'var(--bg-app)',
             border: '1px solid var(--divider)',
             borderRadius: 6,
           }}
@@ -96,9 +95,8 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
         {/* Results dropdown */}
         {searchResults.length > 0 && (
           <div
-            className="absolute top-full left-0 right-0 mt-1 z-10 max-h-[200px] overflow-y-auto"
+            className="absolute top-full left-0 right-0 mt-1 z-10 max-h-[200px] overflow-y-auto bg-[var(--cp-float)]"
             style={{
-              background: 'var(--cp-float)',
               border: '1px solid var(--divider)',
               borderRadius: 8,
               boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',
@@ -140,8 +138,8 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
           {members.map(member => (
             <div
               key={member.userId}
-              className="flex items-center gap-3 rounded-md px-3"
-              style={{ height: 44, background: 'var(--bg-1)' }}
+              className="flex items-center gap-3 rounded-md px-3 bg-[var(--bg-1)]"
+              style={{ height: 44 }}
             >
               <div
                 className="flex items-center justify-center rounded-full flex-shrink-0"
@@ -170,10 +168,10 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                   fontWeight: 500,
                   border: '1px solid var(--divider)',
                   borderRadius: 4,
-                  background: 'var(--bg-app)',
                   color: 'var(--fg-2)',
                   cursor: 'pointer',
                 }}
+                className="bg-[var(--bg-app)]"
               >
                 <option value="admin">Admin</option>
                 <option value="member">Member</option>

@@ -11,10 +11,10 @@ function PriBadge({ pri, count }: { pri: string; count: number }) {
   };
   const s = styles[pri] ?? styles.P3;
   return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 6px',
+    <span className={`inline-flex items-center ${pri === 'P1' ? 'bg-[#FFEBE6] dark:bg-[#3a1a1a] text-[#BF2600] dark:text-[#ff8f73]' : pri === 'P2' ? 'bg-[#FFF7E6] dark:bg-[#3a2e1a] text-[#A36200] dark:text-[#ffc44d]' : 'bg-[#DFE1E6] dark:bg-[#3A3530] text-[#253858] dark:text-[#A09890]'}`} style={{
+      height: 18, padding: '0 6px',
       fontSize: 10, fontWeight: 700, borderRadius: 'var(--cp-radius-sm)',
-      background: s.bg, color: s.color, gap: 3,
+      gap: 3,
     }}>
       {pri} <span>{count}</span>
     </span>
@@ -47,20 +47,22 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
   const thStyle: React.CSSProperties = {
     fontSize: 11, fontWeight: 650, textTransform: 'uppercase', letterSpacing: '0.04em',
     color: 'var(--cp-text-tertiary)', padding: '0 12px',
-    height: 'var(--cp-size-table-row)', background: 'var(--cp-bg-sunken)',
+    height: 'var(--cp-size-table-row)',
     borderBottom: '0.75px solid var(--cp-border-subtle)', textAlign: 'left', whiteSpace: 'nowrap',
   };
+  const thClassName = 'bg-[#F1F5F9] dark:bg-[#2C2823]';
   const tdStyle: React.CSSProperties = {
     padding: '0 12px', height: 'var(--cp-size-table-row)', maxHeight: 'var(--cp-size-table-row)',
     fontSize: 12, color: 'var(--cp-text-secondary)',
-    borderBottom: '0.75px solid var(--cp-border-subtle)', background: 'var(--cp-bg-page)',
+    borderBottom: '0.75px solid var(--cp-border-subtle)',
     whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
   };
+  const tdClassName = 'bg-white dark:bg-[#1A1714]';
 
   return (
     <WidgetWrapper title="Production Incidents" subtitle="Cross-hub from IncidentHub" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={2} headerBadges={headerBadges} footer={footer} flushBody>
       {isLoading ? (
-        <div className="p-4 animate-pulse"><div className="h-24 rounded" style={{ background: 'var(--cp-bg-sunken)' }} /></div>
+        <div className="p-4 animate-pulse"><div className="h-24 rounded bg-[#F1F5F9] dark:bg-[#2C2823]" /></div>
       ) : !incidents?.length ? (
         <div className="flex flex-col items-center py-6 text-center">
           <div style={{ fontSize: 28, color: 'var(--cp-text-muted)', marginBottom: 8 }}>🛡</div>
@@ -71,28 +73,26 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={{ ...thStyle, width: 60 }}>KEY</th>
-              <th style={{ ...thStyle, width: 40 }}>PRI</th>
-              <th style={thStyle}>TITLE</th>
-              <th style={{ ...thStyle, width: 50 }}>OPEN</th>
-              <th style={{ ...thStyle, width: 80 }}>REPORTED</th>
+              <th className={thClassName} style={{ ...thStyle, width: 60 }}>KEY</th>
+              <th className={thClassName} style={{ ...thStyle, width: 40 }}>PRI</th>
+              <th className={thClassName} style={thStyle}>TITLE</th>
+              <th className={thClassName} style={{ ...thStyle, width: 50 }}>OPEN</th>
+              <th className={thClassName} style={{ ...thStyle, width: 80 }}>REPORTED</th>
             </tr>
           </thead>
           <tbody>
             {incidents.slice(0, 10).map((inc, i) => (
-              <tr key={inc.id} style={{ transition: 'background 120ms' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-interact-hover)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-page)')}>
-                <td style={{ ...tdStyle, color: 'var(--cp-primary-60)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{inc.incident_key}</td>
-                <td style={tdStyle}>
-                  <span style={{
-                    display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 6px',
+              <tr key={inc.id} className="transition-colors duration-[120ms] hover:bg-black/[0.04] dark:hover:bg-white/[0.04] bg-white dark:bg-[#1A1714]">
+                <td className={tdClassName} style={{ ...tdStyle, color: 'var(--cp-primary-60)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{inc.incident_key}</td>
+                <td className={tdClassName} style={tdStyle}>
+                  <span className={`inline-flex items-center ${(inc.priority || '').includes('1') ? 'bg-[#FFEBE6] dark:bg-[#3a1a1a] text-[#BF2600] dark:text-[#ff8f73]' : (inc.priority || '').includes('2') ? 'bg-[#FFF7E6] dark:bg-[#3a2e1a] text-[#A36200] dark:text-[#ffc44d]' : 'bg-[#DFE1E6] dark:bg-[#3A3530] text-[#253858] dark:text-[#A09890]'}`} style={{
+                    height: 18, padding: '0 6px',
                     fontSize: 10, fontWeight: 700, borderRadius: 'var(--cp-radius-sm)',
-                    background: (inc.priority || '').includes('1') ? 'var(--cp-danger-10)' : (inc.priority || '').includes('2') ? 'var(--cp-warning-10)' : 'var(--cp-lozenge-grey-bg)',
-                    color: (inc.priority || '').includes('1') ? 'var(--cp-danger-80)' : (inc.priority || '').includes('2') ? 'var(--cp-warning-80)' : 'var(--cp-lozenge-grey-text)',
                   }}>{(inc.priority || 'P3').substring(0, 2).toUpperCase()}</span>
                 </td>
-                <td style={{ ...tdStyle, maxWidth: 200 }}>{inc.title}</td>
-                <td style={{ ...tdStyle, fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{inc.days_open}d</td>
-                <td style={{ ...tdStyle, fontSize: 11 }}>{inc.reporter_name || '—'}</td>
+                <td className={tdClassName} style={{ ...tdStyle, maxWidth: 200 }}>{inc.title}</td>
+                <td className={tdClassName} style={{ ...tdStyle, fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{inc.days_open}d</td>
+                <td className={tdClassName} style={{ ...tdStyle, fontSize: 11 }}>{inc.reporter_name || '—'}</td>
               </tr>
             ))}
           </tbody>

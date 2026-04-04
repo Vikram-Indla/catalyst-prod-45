@@ -41,12 +41,11 @@ export function ActivityFeed({ workItemId }: Props) {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className="px-3 py-1.5 text-[13px] capitalize transition-colors"
+              className={`px-3 py-1.5 text-[13px] capitalize transition-colors ${isActive ? 'bg-[var(--cp-blue-wash)]' : 'bg-transparent'}`}
               style={{
                 fontWeight: isActive ? 600 : 400,
                 color: isActive ? 'var(--cp-blue)' : 'var(--fg-2)',
                 borderBottom: isActive ? '2px solid var(--cp-blue)' : '2px solid transparent',
-                background: isActive ? 'var(--cp-blue-wash)' : 'transparent',
                 borderRadius: isActive ? '3px 3px 0 0' : 0,
                 marginBottom: -2,
               }}
@@ -66,15 +65,14 @@ export function ActivityFeed({ workItemId }: Props) {
             onChange={e => setCommentText(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
             placeholder="Add a comment..."
-            className="w-full rounded text-[14px] resize-none focus:outline-none transition-colors"
+            className="w-full rounded text-[14px] resize-none focus:outline-none transition-colors bg-[var(--bg-1)]"
             style={{
               border: '1px solid var(--divider)',
               padding: '10px 12px',
               minHeight: 40,
-              background: 'var(--bg-1)',
             }}
-            onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.background = 'var(--bg-app)'; e.currentTarget.style.minHeight = '60px'; }}
-            onBlur={e => { if (!commentText) { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.background = 'var(--bg-1)'; e.currentTarget.style.minHeight = '40px'; } }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.backgroundColor = 'var(--bg-app)'; e.currentTarget.style.minHeight = '60px'; }}
+            onBlur={e => { if (!commentText) { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.backgroundColor = 'var(--bg-1)'; e.currentTarget.style.minHeight = '40px'; } }}
           />
           {commentText && (
             <div className="flex items-center justify-between mt-2">
@@ -93,8 +91,7 @@ export function ActivityFeed({ workItemId }: Props) {
               <button
                 onClick={handleSubmit}
                 disabled={isAddingComment}
-                className="px-3 py-1 text-[12px] font-semibold rounded text-white"
-                style={{ background: 'var(--cp-blue)' }}
+                className="px-3 py-1 text-[12px] font-semibold rounded text-white bg-[var(--cp-blue)]"
               >
                 {isAddingComment ? '…' : 'Save'}
               </button>
@@ -159,8 +156,8 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
       </div>
       <div className="text-[12px] mb-1" style={{ color: 'var(--fg-3)' }}>{entry.relative_time}</div>
       <div
-        className="rounded text-[13px]"
-        style={{ padding: 8, background: 'var(--bg-1)', borderRadius: 4, lineHeight: '20px', color: 'var(--fg-1)' }}
+        className="rounded text-[13px] bg-[var(--bg-1)]"
+        style={{ padding: 8, borderRadius: 4, lineHeight: '20px', color: 'var(--fg-1)' }}
       >
         {entry.body}
       </div>
@@ -171,10 +168,9 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
           <button
             key={r.emoji}
             onClick={() => onToggleReaction(r.emoji)}
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] transition-colors"
+            className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] transition-colors ${r.reacted_by_me ? 'bg-[var(--cp-blue-wash)]' : 'bg-[var(--bg-app)]'}`}
             style={{
               border: r.reacted_by_me ? '1px solid var(--cp-blue)' : '1px solid var(--divider)',
-              background: r.reacted_by_me ? 'var(--cp-blue-wash)' : 'var(--bg-app)',
               color: r.reacted_by_me ? 'var(--cp-blue)' : 'var(--fg-2)',
             }}
           >
@@ -191,8 +187,8 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
           </button>
           {pickerOpen && (
             <div
-              className="absolute left-0 bottom-full mb-1 flex gap-0.5 rounded-md p-1"
-              style={{ background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }}
+              className="absolute left-0 bottom-full mb-1 flex gap-0.5 rounded-md p-1 bg-[var(--cp-float)]"
+              style={{ border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }}
             >
               {EMOJI_OPTIONS.map(e => (
                 <button
@@ -236,8 +232,8 @@ function HistoryEntry({ entry }: { entry: ActivityEntry }) {
 function ChangePill({ value }: { value?: string | null }) {
   return (
     <span
-      className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase"
-      style={{ background: 'var(--divider)', border: '1px solid var(--divider)', color: 'var(--fg-2)' }}
+      className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[var(--divider)]"
+      style={{ border: '1px solid var(--divider)', color: 'var(--fg-2)' }}
     >
       {value || '—'}
     </span>
@@ -257,7 +253,7 @@ function ActivityAvatar({ name }: { name: string }) {
   return (
     <div
       className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
-      style={{ background: colors[Math.abs(hash) % colors.length] }}
+      style={{ backgroundColor: colors[Math.abs(hash) % colors.length] }}
     >
       {initials}
     </div>
@@ -267,8 +263,7 @@ function ActivityAvatar({ name }: { name: string }) {
 function UserAvatar() {
   return (
     <div
-      className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
-      style={{ background: 'var(--cp-blue)' }}
+      className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0 bg-[var(--cp-blue)]"
     >
       ME
     </div>

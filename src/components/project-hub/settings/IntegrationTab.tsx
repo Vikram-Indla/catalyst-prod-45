@@ -26,7 +26,7 @@ function StatusLozenge({ status }: { status: string }) {
         letterSpacing: '0.05em',
         borderRadius: 3,
         padding: '0 8px',
-        background: colors.bg,
+        backgroundColor: colors.bg,
         color: colors.text,
       }}
     >
