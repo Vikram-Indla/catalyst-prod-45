@@ -13,6 +13,7 @@ import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsDark } from '@/components/strategy/themes/useIsDark';
 import type { WorkItem } from '@/hooks/useForYouData';
+import { JiraSyncChip } from '@/components/shared/JiraSyncChip';
 
 // Design tokens — light mode
 const TL = {
