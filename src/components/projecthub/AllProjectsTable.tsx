@@ -393,15 +393,18 @@ export function AllProjectsTable({
   const { data: syncData } = useQuery({
     queryKey: ['project-sync-data'],
     queryFn: async () => {
-      // Use SECURITY DEFINER RPC to get per-project 2026 issue counts
-      // This bypasses PostgREST table cache issues
+      // Use SECURITY DEFINER RPC to get per-project issue counts from ph_issues
       const countMap: Record<string, number> = {};
 
-      const { data: rpcData } = await (supabase as any).rpc('get_project_issue_counts');
+      const { data: rpcData, error: rpcError } = await (supabase as any).rpc('get_project_issue_counts');
+      if (rpcError) console.error('[IssueCount] RPC error:', rpcError);
       if (rpcData) {
+        console.log('[IssueCount] RPC returned', rpcData.length, 'rows:', rpcData);
         rpcData.forEach((r: any) => {
           if (r.proj) countMap[r.proj] = Number(r.cnt) || 0;
         });
+      } else {
+        console.warn('[IssueCount] RPC returned no data');
       }
 
       // Get last successful sync time
