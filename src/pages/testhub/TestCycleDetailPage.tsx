@@ -533,7 +533,7 @@ export default function TestCycleDetailPage() {
                   {filteredTestCases.map((ctc, index) => {
                     const execStatus = executionStatusConfig[ctc.current_status] || executionStatusConfig.not_run;
                     const StatusIcon = execStatus.Icon;
-                    const priority = priorityConfig[ctc.test_case?.priority?.toLowerCase() || ''] || priorityConfig.medium;
+                    const priority = priorityConfig[ctc.test_case?.priority_id?.toLowerCase() || ''] || priorityConfig.medium;
                     const isSelected = selectedTestCaseIds.has(ctc.id);
                     return (
                       <tr key={ctc.id} style={{ borderBottom: index < filteredTestCases.length - 1 ? '1px solid #F1F5F9' : 'none', backgroundColor: isSelected ? '#EFF6FF' : 'transparent' }}>
