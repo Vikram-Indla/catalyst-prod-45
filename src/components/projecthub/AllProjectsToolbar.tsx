@@ -72,14 +72,17 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
               )}
             >
               {tab === 'Starred' && '★ '}{tab}
-              <span className={cn(
-                "text-[11px] font-semibold px-1.5 py-px rounded-full font-['JetBrains_Mono',monospace]",
-                isActive
-                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
-                  : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
-              )}>
-                {getCount(tab)}
-              </span>
+              {/* FIX 6: Hide badge when count is 0 for Starred tab */}
+              {!(tab === 'Starred' && getCount(tab) === 0) && (
+                <span className={cn(
+                  "text-[11px] font-semibold px-1.5 py-px rounded-full font-['JetBrains_Mono',monospace]",
+                  isActive
+                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                    : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                )}>
+                  {getCount(tab)}
+                </span>
+              )}
             </button>
           );
         })}
