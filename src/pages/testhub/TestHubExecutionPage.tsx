@@ -64,8 +64,10 @@ interface CycleTestCase {
     title: string;
     objective: string | null;
     preconditions: string | null;
-    priority: string;
-    type: string;
+    priority_id: string | null;
+    case_type_id: string | null;
+    priority?: { id: string; name: string; color: string } | null;
+    case_type?: { id: string; name: string } | null;
     steps?: TestStep[];
   } | null;
   assignee?: { id: string; full_name: string } | null;
