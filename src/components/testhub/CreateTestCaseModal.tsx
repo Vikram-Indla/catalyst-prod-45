@@ -681,6 +681,20 @@ export function CreateTestCaseModal({
                   <option value="deprecated">Deprecated</option>
                 </select>
               </div>
+
+              {/* Automation Status */}
+              <div>
+                <label style={{ ...labelStyle, fontSize: 13 }}>Automation Status</label>
+                <select
+                  value={automation}
+                  onChange={(e) => setAutomation(e.target.value)}
+                  style={{ ...selectStyle, backgroundColor: 'var(--cp-float)' }}
+                >
+                  <option value="manual">Manual</option>
+                  <option value="automated">Automated</option>
+                  <option value="hybrid">Hybrid</option>
+                </select>
+              </div>
               
               {/* Assigned To - Full width with profiles data */}
               <div>
@@ -698,6 +712,33 @@ export function CreateTestCaseModal({
                   ))}
                 </select>
               </div>
+            </div>
+          </div>
+
+          {/* TEST FORMAT TOGGLE */}
+          <div style={{ marginBottom: 8 }}>
+            <label style={labelStyle}>Test Format</label>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {([
+                { key: 'steps' as const, label: 'Steps' },
+                { key: 'gherkin' as const, label: 'Gherkin / BDD' },
+                { key: 'free_text' as const, label: 'Free Text' },
+              ]).map(opt => (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => setTestFormat(opt.key)}
+                  style={{
+                    height: 32, padding: '0 14px', border: 'none', borderRadius: 6,
+                    fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                    backgroundColor: testFormat === opt.key ? '#2563EB' : '#F1F5F9',
+                    color: testFormat === opt.key ? '#FFF' : '#475569',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {opt.label}
+                </button>
+              ))}
             </div>
           </div>
 
