@@ -39,11 +39,12 @@ interface TestCycleCardProps {
 const statusConfig: Record<string, { label: string; color: string; bg: string; border: string }> = {
   draft:       { label: 'DRAFT',       color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
   planned:     { label: 'PLANNED',     color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
-  active:      { label: 'ACTIVE',      color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
+  active:      { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
   completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
   done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
   archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
+  paused:      { label: 'PAUSED',      color: '#253858', bg: '#DFE1E6', border: '#DFE1E6' },
 };
 
 const menuItemStyle: React.CSSProperties = {
@@ -87,7 +88,7 @@ export function TestCycleCard({
   };
 
   const executedCount = cycle.passed_count + cycle.failed_count + cycle.blocked_count + cycle.skipped_count;
-  const progressPercent = cycle.total_cases > 0 ? Math.round((executedCount / cycle.total_cases) * 100) : 0;
+  const progressPercent = cycle.total_cases > 0 ? Math.min(100, Math.round((executedCount / cycle.total_cases) * 100)) : 0;
 
   return (
     <div
