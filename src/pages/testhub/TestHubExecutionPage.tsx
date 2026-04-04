@@ -842,15 +842,38 @@ export default function TestHubExecutionPage() {
                   </button>
 
                   <div style={{ position: 'absolute', right: 20, display: 'flex', gap: 8 }}>
-                    {steps.length > 0 && !fastTrackMode && (
-                      <button onClick={handlePassAllRemaining} disabled={isSubmitting} title="Pass All Remaining (Ctrl+P)" style={{
-                        height: 32, padding: '0 10px', border: '1px solid #A7F3D0', borderRadius: 5,
-                        backgroundColor: '#ECFDF5', color: '#059669', fontSize: 11, fontWeight: 600,
-                        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                      }}>
-                        <CheckCircle2 size={12} /> Pass All
-                      </button>
-                    )}
+                    {steps.length > 0 && !fastTrackMode && (() => {
+                      const isDisabled = !anyStepMarked || isSubmitting;
+                      const statusColors: Record<string, { bg: string; text: string }> = {
+                        passed:  { bg: '#16A34A', text: '#FFFFFF' },
+                        failed:  { bg: '#DC2626', text: '#FFFFFF' },
+                        blocked: { bg: '#D97706', text: '#FFFFFF' },
+                        skipped: { bg: '#475569', text: '#FFFFFF' },
+                        not_run: { bg: '#E2E8F0', text: '#64748B' },
+                      };
+                      const colors = statusColors[derivedStatus] || statusColors.not_run;
+                      const label = derivedStatus !== 'not_run'
+                        ? `Complete → ${derivedStatus.toUpperCase()}`
+                        : 'Complete Execution';
+                      return (
+                        <button
+                          onClick={handleCompleteExecution}
+                          disabled={isDisabled}
+                          title={!anyStepMarked ? 'Mark all steps before completing' : `Complete with status: ${derivedStatus}`}
+                          style={{
+                            height: 34, padding: '0 14px', border: isDisabled ? '1px solid #E2E8F0' : 'none',
+                            borderRadius: 6, backgroundColor: isDisabled ? '#F8FAFC' : colors.bg,
+                            color: isDisabled ? '#94A3B8' : colors.text, fontSize: 12, fontWeight: 700,
+                            cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                            opacity: isDisabled ? 0.7 : 1, transition: 'all 150ms ease',
+                            boxShadow: isDisabled ? 'none' : `0 2px 8px ${colors.bg}40`,
+                            letterSpacing: '0.01em',
+                          }}
+                        >
+                          <CheckCircle2 size={13} /> {label}
+                        </button>
+                      );
+                    })()}
                   </div>
                 </div>
 
