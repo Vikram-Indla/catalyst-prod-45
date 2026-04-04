@@ -242,23 +242,10 @@ export default function TestHubExecutionPage() {
     try {
       const updateData: any = {
         current_status: status,
-        executed_at: new Date().toISOString(),
-        executed_by: currentUserId,
-        execution_time_seconds: Math.floor((Date.now() - sessionStartRef.current) / 1000),
         updated_at: new Date().toISOString(),
       };
-      if (failureReason) updateData.failure_reason = failureReason;
-      if (failureNotes) {
-        const existing = currentTestCase?.notes || '';
-        updateData.notes = existing ? `${existing}\n\n[Failure Notes] ${failureNotes}` : `[Failure Notes] ${failureNotes}`;
-      }
-      if (defectId) {
-        const existing = currentTestCase?.defect_ids || [];
-        updateData.defect_ids = [...existing, defectId];
-      }
       if (status === 'not_run') {
-        updateData.executed_at = null; updateData.executed_by = null;
-        updateData.failure_reason = null; updateData.execution_time_seconds = 0;
+        // Reset status only — no extra columns to clear
       }
       const { error } = await (supabase as any).from('tm_cycle_scope').update(updateData).eq('id', selectedTestCaseId);
       if (error) { catalystToast.error('Failed to update test result'); return; }
