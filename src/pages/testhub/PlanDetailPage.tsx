@@ -317,11 +317,25 @@ export default function PlanDetailPage() {
                               {lc.linked_at ? formatDistanceToNow(new Date(lc.linked_at), { addSuffix: true }) : '—'}
                             </td>
                             <td className="px-4 py-2 text-right">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-7 w-7 p-0 hover:text-destructive opacity-0 group-hover:opacity-100"
-                                onClick={() => unlinkCycle.mutate({ linkId: lc.id, planId: plan.id })}
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                                      onClick={() => {
+                                        unlinkCycle.mutate({ linkId: lc.id, planId: plan.id }, {
+                                          onSuccess: () => toast.success('Cycle unlinked'),
+                                        });
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>Unlink cycle</TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                               >
                                 <X className="h-4 w-4" />
                               </Button>
