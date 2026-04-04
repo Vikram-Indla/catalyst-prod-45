@@ -30,12 +30,14 @@ const cycleStatusToDb = (status: string): string => {
 
 const cycleStatusFromDb = (status: string | null): 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' => {
   const map: Record<string, 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'> = {
+    'draft': 'PLANNED',
     'planned': 'PLANNED',
+    'active': 'IN_PROGRESS',
     'in_progress': 'IN_PROGRESS',
     'completed': 'COMPLETED',
     'archived': 'CANCELLED',
   };
-  return map[status || 'planned'] || 'PLANNED';
+  return map[status || 'draft'] || 'PLANNED';
 };
 
 // Execution status mapping
