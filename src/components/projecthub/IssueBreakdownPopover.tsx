@@ -35,47 +35,24 @@ function getBarColor(type: string): string {
 export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: Props) {
   const [open, setOpen] = useState(false);
 
-  // RPC first, paginated direct query fallback
+  // Query v_issue_counts view — pre-aggregated, no row limit issues
   const { data: typeSummaries = [], isLoading } = useQuery({
     queryKey: ['issue-breakdown', projectKey],
     queryFn: async () => {
-      const map = new Map<string, number>();
+      const { data, error } = await (supabase as any)
+        .from('v_issue_counts')
+        .select('issue_type, cnt')
+        .eq('project_key', projectKey);
+
+      if (error || !data) return [];
+
       let total = 0;
-
-      // Attempt 1: RPC (no row limit)
-      const { data: rpcData, error: rpcError } = await (supabase as any)
-        .rpc('get_project_issue_breakdown', { p_project_key: projectKey });
-
-      if (!rpcError && rpcData && rpcData.length > 0) {
-        for (const row of rpcData) {
-          const t = row.issue_type || 'Unknown';
-          const c = Number(row.cnt) || 0;
-          map.set(t, (map.get(t) || 0) + c);
-          total += c;
-        }
-      } else {
-        // Attempt 2: Paginated direct query
-        let offset = 0;
-        const pageSize = 1000;
-        let hasMore = true;
-        while (hasMore) {
-          const { data: page } = await (supabase as any)
-            .from('ph_issues')
-            .select('issue_type')
-            .eq('project_key', projectKey)
-            .range(offset, offset + pageSize - 1);
-          if (page && page.length > 0) {
-            for (const row of page) {
-              const t = row.issue_type || 'Unknown';
-              map.set(t, (map.get(t) || 0) + 1);
-              total++;
-            }
-            offset += pageSize;
-            hasMore = page.length === pageSize;
-          } else {
-            hasMore = false;
-          }
-        }
+      const map = new Map<string, number>();
+      for (const row of data) {
+        const t = row.issue_type || 'Unknown';
+        const c = Number(row.cnt) || 0;
+        map.set(t, (map.get(t) || 0) + c);
+        total += c;
       }
 
       return Array.from(map.entries())

@@ -389,42 +389,23 @@ export function AllProjectsTable({
 }: Props) {
   const navigate = useNavigate();
 
-  // Per-project sync data — RPC + paginated direct query fallback
+  // Per-project sync data — from v_issue_counts view (auto-exposed by PostgREST, no schema reload needed)
   const { data: syncData } = useQuery({
     queryKey: ['project-sync-data'],
     queryFn: async () => {
       const countMap: Record<string, number> = {};
 
-      // Attempt 1: RPC (SECURITY DEFINER, no row limit, no RLS issues)
-      const { data: rpcData, error: rpcError } = await (supabase as any).rpc('get_project_issue_counts');
-      if (!rpcError && rpcData && rpcData.length > 0) {
-        rpcData.forEach((r: any) => {
-          const key = r.proj || r.project_key;
-          const cnt = Number(r.cnt || r.count) || 0;
-          if (key && cnt > 0) countMap[key] = cnt;
-        });
-      }
+      // Query the view — views are auto-exposed, no NOTIFY needed
+      const { data: viewRows, error: viewError } = await (supabase as any)
+        .from('v_issue_counts')
+        .select('project_key, cnt');
 
-      // Attempt 2: If RPC failed or returned nothing, paginate direct query
-      if (Object.keys(countMap).length === 0) {
-        let offset = 0;
-        const pageSize = 1000;
-        let hasMore = true;
-        while (hasMore) {
-          const { data: page } = await (supabase as any)
-            .from('ph_issues')
-            .select('project_key')
-            .range(offset, offset + pageSize - 1);
-          if (page && page.length > 0) {
-            page.forEach((r: { project_key: string }) => {
-              if (r.project_key) countMap[r.project_key] = (countMap[r.project_key] || 0) + 1;
-            });
-            offset += pageSize;
-            hasMore = page.length === pageSize;
-          } else {
-            hasMore = false;
+      if (!viewError && viewRows) {
+        viewRows.forEach((r: any) => {
+          if (r.project_key) {
+            countMap[r.project_key] = (countMap[r.project_key] || 0) + Number(r.cnt || 0);
           }
-        }
+        });
       }
 
       // Get last successful sync time
