@@ -227,7 +227,7 @@ export function TestRepositoryPage() {
         ownerName,
         ownerAvatarUrl: owner?.avatar_url || null,
         updatedAt: tc.updated_at,
-        objective: tc.description,
+        description: tc.description,
         preconditions: tc.preconditions,
         folderId: tc.folder_id,
         version: tc.version || 1,
