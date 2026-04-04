@@ -72,22 +72,49 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
   }, []);
 
   useEffect(() => {
-    if (isOpen) {
-      supabase.from('profiles').select('id, full_name').order('full_name').then(({ data }) => {
-        if (data) setProfiles(data);
-      });
-      (supabase as any).from('tm_environments').select('id, name, type, health_status').eq('status', 'active').order('name').then(({ data }: any) => {
-        if (data) setEnvironments(data);
-      });
+    if (!isOpen) return;
 
-      if (mode === 'edit' && cycle) {
-        setName(cycle.name || '');
-        setDescription(cycle.description || '');
-        setStartDate(cycle.planned_start || '');
-        setEndDate(cycle.planned_end || '');
+    let isCancelled = false;
+
+    const loadModalData = async () => {
+      const [profilesResult, environmentsResult] = await Promise.all([
+        supabase.from('profiles').select('id, full_name').order('full_name'),
+        (supabase as any)
+          .from('tm_environments')
+          .select('id, name, type, health_status')
+          .eq('status', 'active')
+          .order('name'),
+      ]);
+
+      if (isCancelled) return;
+
+      if (profilesResult.data) setProfiles(profilesResult.data);
+      if (environmentsResult.data) setEnvironments(environmentsResult.data);
+
+      if (mode === 'edit' && cycle?.id) {
+        let sourceCycle = cycle;
+
+        const { data: latestCycle, error: cycleError } = await (supabase as any)
+          .from('tm_test_cycles')
+          .select('id, cycle_key, name, description, planned_start, planned_end, environment_id, status')
+          .eq('id', cycle.id)
+          .maybeSingle();
+
+        if (!cycleError && latestCycle) {
+          sourceCycle = latestCycle;
+        } else if (cycleError) {
+          console.error('Failed to load latest test cycle for edit modal:', cycleError);
+        }
+
+        if (isCancelled) return;
+
+        setName(sourceCycle.name || '');
+        setDescription(sourceCycle.description || '');
+        setStartDate(sourceCycle.planned_start || '');
+        setEndDate(sourceCycle.planned_end || '');
         setOwnerId('');
-        setEnvironmentId(cycle.environment_id || '');
-        setCycleStatus(cycle.status || 'draft');
+        setEnvironmentId(sourceCycle.environment_id || '');
+        setCycleStatus(sourceCycle.status || 'draft');
       } else {
         setName('');
         setDescription('');
@@ -97,9 +124,17 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         setEnvironmentId('');
         setCycleStatus('draft');
       }
+
+      setStatusDropdownOpen(false);
       setErrors({});
-    }
-  }, [isOpen, mode, cycle]);
+    };
+
+    void loadModalData();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isOpen, mode, cycle?.id]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
