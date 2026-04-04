@@ -26,11 +26,10 @@ export type CycleRole = 'lead' | 'tester' | 'reviewer';
  * in_progress → paused | completed (legacy support)
  */
 export const VALID_STATUS_TRANSITIONS: Record<CycleStatus, CycleStatus[]> = {
-  draft: ['planned', 'archived'],
+  draft: ['active', 'archived'],
   planned: ['active', 'archived'],
-  active: ['paused', 'completed'],
+  active: ['paused', 'completed', 'archived'],
   paused: ['active', 'archived'],
-  in_progress: ['paused', 'completed'], // Legacy support - treat like active
   completed: ['archived'],
   archived: [],
 };
