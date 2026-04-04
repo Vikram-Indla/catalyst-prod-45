@@ -149,7 +149,7 @@ export function isInProgressStatus(status: CycleStatus): boolean {
  * Only active and completed cycles contribute to pass rate
  */
 export function includeInPassRate(status: CycleStatus): boolean {
-  return status === 'active' || status === 'completed' || status === 'in_progress';
+  return status === 'active' || status === 'completed';
 }
 
 /**
