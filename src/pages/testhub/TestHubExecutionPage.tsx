@@ -1177,6 +1177,7 @@ export default function TestHubExecutionPage() {
                   </div>
                 )}
               </div>
+              )
             ) : (
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(var(--muted-foreground))' }}>
                 <div style={{ textAlign: 'center' }}>
