@@ -155,12 +155,7 @@ export function TestCycleCard({
               <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '6px 0' }} />
               {cycle.status === 'draft' && (
                 <button onClick={() => { onStart(); setMenuOpen(false); }} style={menuItemStyle}>
-                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Mark as Planned
-                </button>
-              )}
-              {cycle.status === 'planned' && (
-                <button onClick={() => { onStart(); setMenuOpen(false); }} style={menuItemStyle}>
-                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Start Execution
+                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Activate Cycle
                 </button>
               )}
               {cycle.status === 'active' && (
