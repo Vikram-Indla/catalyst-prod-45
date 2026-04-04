@@ -38,12 +38,12 @@ export function DefectListView({ projectId }: DefectListViewProps) {
     queryKey: ['defects', projectId, filters],
     queryFn: async () => {
       let query = supabase
-        .from('defects')
+        .from('tm_defects')
         .select('*', { count: 'exact' })
         .eq('project_id', projectId);
 
       if (filters.search) {
-        query = query.or(`title.ilike.%${filters.search}%,defect_id.ilike.%${filters.search}%`);
+        query = query.or(`title.ilike.%${filters.search}%,defect_key.ilike.%${filters.search}%,jira_key.ilike.%${filters.search}%`);
       }
       if (filters.statuses.length > 0) {
         query = query.in('status', filters.statuses);
@@ -52,7 +52,8 @@ export function DefectListView({ projectId }: DefectListViewProps) {
         query = query.in('severity', filters.severities);
       }
 
-      query = query.range((filters.page - 1) * filters.pageSize, filters.page * filters.pageSize - 1);
+      query = query.order('created_at', { ascending: false })
+        .range((filters.page - 1) * filters.pageSize, filters.page * filters.pageSize - 1);
 
       const { data, count, error } = await query;
       if (error) throw error;
