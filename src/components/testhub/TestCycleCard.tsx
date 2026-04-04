@@ -154,23 +154,23 @@ export function TestCycleCard({
               <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '6px 0' }} />
               {cycle.status === 'draft' && (
                 <button onClick={() => { onStart(); setMenuOpen(false); }} style={menuItemStyle}>
-                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Start Cycle
+                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Mark as Planned
                 </button>
               )}
-              {cycle.status === 'active' && (
+              {cycle.status === 'planned' && (
+                <button onClick={() => { onStart(); setMenuOpen(false); }} style={menuItemStyle}>
+                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Start Execution
+                </button>
+              )}
+              {cycle.status === 'in_progress' && (
                 <button onClick={() => { onComplete(); setMenuOpen(false); }} style={menuItemStyle}>
                   <CheckCircle2 size={14} style={{ color: 'var(--cp-blue)' }} /> Complete Cycle
                 </button>
               )}
               {cycle.status === 'completed' && (
-                <>
-                  <button onClick={() => { onReopen(); setMenuOpen(false); }} style={menuItemStyle}>
-                    <RotateCcw size={14} style={{ color: 'var(--sem-warning)' }} /> Reopen Cycle
-                  </button>
-                  <button onClick={() => { onArchive(); setMenuOpen(false); }} style={menuItemStyle}>
-                    <Archive size={14} style={{ color: 'var(--fg-3)' }} /> Archive
-                  </button>
-                </>
+                <button onClick={() => { onArchive(); setMenuOpen(false); }} style={menuItemStyle}>
+                  <Archive size={14} style={{ color: 'var(--fg-3)' }} /> Archive
+                </button>
               )}
               <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '6px 0' }} />
               <button onClick={() => { onDelete(); setMenuOpen(false); }} style={{ ...menuItemStyle, color: 'var(--sem-danger)' }}>
