@@ -116,10 +116,10 @@ export default function TestPlansListPage() {
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="draft">Draft</SelectItem>
             <SelectItem value="pending_approval">Pending Approval</SelectItem>
-            <SelectItem value="approved">Approved</SelectItem>
-            <SelectItem value="in_progress">In Progress</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="executing">Executing</SelectItem>
             <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
+            <SelectItem value="archived">Archived</SelectItem>
           </SelectContent>
         </Select>
         <Select value={releaseFilter} onValueChange={setReleaseFilter}>
