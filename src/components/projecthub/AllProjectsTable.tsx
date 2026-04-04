@@ -468,7 +468,7 @@ export function AllProjectsTable({
 
           // Sync status from ph_issues counts + ph_sync_log
           const issueCount = syncData?.countMap?.[p.project_key] ?? p.total_issues ?? 0;
-          const wasSynced = syncData?.syncedProjectKeys?.has(p.project_key) || !!p.last_synced_at;
+          const wasSynced = syncData?.syncedProjectKeys?.has(p.project_key) || !!p.last_synced_at || issueCount > 0;
           const syncTs = wasSynced ? (syncData?.lastSyncAt || p.last_synced_at) : null;
           const syncAge = syncTs
             ? formatDistanceToNowStrict(new Date(syncTs), { addSuffix: false })
