@@ -485,6 +485,30 @@ export default function TestHubExecutionPage() {
     }
   };
 
+  // Re-run handler — enter execution mode with fresh step states
+  const handleRerun = useCallback(async () => {
+    if (!selectedTestCaseId) return;
+    // Save current history as previous run reference
+    const history = await fetchExecutionHistory(selectedTestCaseId);
+    setPreviousRunData(history);
+    
+    // Reset all step statuses to not_run in UI
+    const key = selectedTestCaseId;
+    const freshStatuses = steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+    setStepStatuses(new Map(stepStatuses).set(key, freshStatuses));
+    setCurrentStepIndex(0);
+    
+    // Reset cycle scope status to not_run so execution flow works
+    await (supabase as any).from('tm_cycle_scope').update({
+      current_status: 'not_run',
+      updated_at: new Date().toISOString(),
+    }).eq('id', selectedTestCaseId);
+    
+    await fetchTestCases();
+    setViewMode(false);
+    setExecutionHistory(null);
+  }, [selectedTestCaseId, steps, stepStatuses, fetchExecutionHistory, fetchTestCases]);
+
   // Notes auto-save — disabled until notes column is added to tm_cycle_scope
   // useEffect(() => { ... }, [notes, selectedTestCaseId]);
 
