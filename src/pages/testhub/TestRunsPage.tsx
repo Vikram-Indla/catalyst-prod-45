@@ -24,7 +24,7 @@ interface ExecutionRecord {
   execution_time_seconds: number;
   failure_reason: string | null;
   notes: string | null;
-  test_case: { id: string; case_key: string; title: string; priority: string } | null;
+  test_case: { id: string; case_key: string; title: string; priority_id: string | null; priority: { id: string; name: string; color: string } | null } | null;
   cycle: { id: string; cycle_key: string; name: string } | null;
   executor: { full_name: string } | null;
 }
@@ -63,9 +63,9 @@ export default function TestRunsPage() {
       const [execRes, cycleRes] = await Promise.all([
         (supabase as any)
           .from('tm_cycle_scope')
-          .select(`
+           .select(`
             id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at,
-            test_case:tm_test_cases ( id, case_key, title, priority )
+            test_case:tm_test_cases ( id, case_key, title, priority_id, priority:tm_case_priorities ( id, name, color ) )
           `)
           .order('updated_at', { ascending: false, nullsFirst: false }),
         (supabase as any)
@@ -222,7 +222,7 @@ export default function TestRunsPage() {
             <tbody>
               {filtered.map(r => {
                 const st = statusConfig[r.current_status] || statusConfig.not_run;
-                const pri = priorityConfig[r.test_case?.priority?.toLowerCase() || 'medium'] || priorityConfig.medium;
+                const pri = priorityConfig[r.test_case?.priority?.name?.toLowerCase() || 'medium'] || priorityConfig.medium;
                 return (
                   <tr
                     key={r.id}

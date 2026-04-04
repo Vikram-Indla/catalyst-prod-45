@@ -64,8 +64,10 @@ interface CycleTestCase {
     title: string;
     objective: string | null;
     preconditions: string | null;
-    priority: string;
-    type: string;
+    priority_id: string | null;
+    case_type_id: string | null;
+    priority?: { id: string; name: string; color: string } | null;
+    case_type?: { id: string; name: string } | null;
     steps?: TestStep[];
   } | null;
   assignee?: { id: string; full_name: string } | null;
@@ -157,7 +159,7 @@ export default function TestHubExecutionPage() {
     if (!cycleId) return;
     const { data, error } = await (supabase as any)
       .from('tm_cycle_scope')
-      .select(`*, test_case:tm_test_cases ( id, case_key, title, objective, preconditions, priority, type ), assignee:profiles!tm_cycle_scope_assigned_to_fkey ( id, full_name )`)
+      .select(`*, test_case:tm_test_cases ( id, case_key, title, objective, preconditions, priority_id, case_type_id, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) ), assignee:profiles!assigned_to ( id, full_name )`)
       .eq('cycle_id', cycleId)
       .order('created_at');
 
@@ -646,7 +648,7 @@ export default function TestHubExecutionPage() {
                       {statusConfig[currentTestCase.current_status]?.label}
                     </span>
                     <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 5, textTransform: 'capitalize' }}>
-                      {testCase.priority}
+                      {testCase.priority?.name || 'Medium'}
                     </span>
                     {fastTrackMode && (
                       <span style={{ fontSize: 10, fontWeight: 700, color: '#D97706', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 5, display: 'flex', alignItems: 'center', gap: 3 }}>

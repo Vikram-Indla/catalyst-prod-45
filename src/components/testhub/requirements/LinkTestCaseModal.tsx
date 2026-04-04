@@ -20,7 +20,8 @@ interface TestCase {
   id: string;
   case_key: string;
   title: string;
-  priority: string;
+  priority_id: string | null;
+  priority: { id: string; name: string; color: string } | null;
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -39,7 +40,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
     const fetchTestCases = async () => {
       setIsLoading(true);
       try {
-        let query = (supabase as any).from('tm_test_cases').select('id, case_key, title, priority').order('case_key');
+        let query = (supabase as any).from('tm_test_cases').select('id, case_key, title, priority_id, priority:tm_case_priorities ( id, name, color )').order('case_key');
         if (alreadyLinkedIds.length > 0) {
           query = query.not('id', 'in', `(${alreadyLinkedIds.join(',')})`);
         }
@@ -143,7 +144,8 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
           ) : (
             filtered.map(tc => {
               const isSelected = selectedIds.has(tc.id);
-              const priorityColor = PRIORITY_COLORS[tc.priority] || '#D97706';
+              const priorityName = tc.priority?.name || 'Medium';
+              const priorityColor = PRIORITY_COLORS[priorityName.toLowerCase()] || '#D97706';
               return (
                 <div key={tc.id} onClick={() => toggleSelect(tc.id)}
                   style={{
@@ -155,7 +157,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                       <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4 }}>{tc.case_key}</span>
-                      <span style={{ fontSize: 11, fontWeight: 500, color: priorityColor }}>{tc.priority}</span>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: priorityColor }}>{priorityName}</span>
                     </div>
                     <p style={{ fontSize: 13, color: '#0F172A', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tc.title}</p>
                   </div>
