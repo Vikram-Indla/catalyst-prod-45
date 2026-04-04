@@ -7,7 +7,6 @@ import { ProjectStatusBadge } from './ProjectStatusBadge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 
 const BADGE_COLORS = ['#3B82F6', '#6366F1', '#0891B2', '#475569', '#0D9488', '#78716C'];
 
@@ -25,7 +24,7 @@ function getInitials(name: string): string {
 
 function getSyncStatus(lastSyncAt: string | null): { color: string; label: string; tooltip: string } {
   if (!lastSyncAt) return {
-    color: 'bg-slate-300',
+    color: 'bg-slate-300 dark:bg-slate-500',
     label: 'Not synced',
     tooltip: 'No Jira sync configured',
   };
@@ -68,7 +67,11 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
           <div
             key={p.id}
             onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
-            className="min-h-[280px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1E2027] p-5 flex flex-col gap-4 hover:shadow-md transition-shadow cursor-pointer"
+            className={cn(
+              "rounded-xl p-5 flex flex-col h-full cursor-pointer transition-all duration-150",
+              "bg-white border border-slate-200 shadow-sm hover:shadow-md",
+              "dark:bg-[#181A1E] dark:border-[rgba(255,255,255,0.08)] dark:hover:border-[rgba(255,255,255,0.15)]"
+            )}
           >
             {/* Header: badge + name + key + star */}
             <div className="flex items-start gap-3">
@@ -79,15 +82,15 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                 {p.project_key?.slice(0, 2)}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-[15px] leading-tight text-slate-900 dark:text-white truncate">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-[15px] leading-tight text-slate-900 dark:text-[#E2E8F0] truncate">
                     {p.name}
                   </span>
-                  <span className="ml-0 font-mono text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded tracking-wide flex-shrink-0">
+                  <span className="font-mono text-[11px] bg-slate-100 dark:bg-[rgba(255,255,255,0.08)] text-slate-500 dark:text-[#64748B] px-1.5 py-0.5 rounded tracking-wide flex-shrink-0">
                     {p.project_key}
                   </span>
                 </div>
-                <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <div className="text-[12px] text-slate-500 dark:text-[#94A3B8] mt-0.5">
                   {p.department || '—'}
                 </div>
               </div>
@@ -105,7 +108,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
             </div>
 
             {/* Status + Lead row */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mt-3">
               <ProjectStatusBadge status={p.status} />
               {p.lead_name ? (
                 <div className="flex items-center gap-1.5">
@@ -115,34 +118,41 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                       {getInitials(p.lead_name)}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs text-slate-600 dark:text-slate-400">
+                  <span className="text-xs text-slate-600 dark:text-[#94A3B8]">
                     {p.lead_name.split(' ').slice(0, 2).join(' ')}
                   </span>
                 </div>
               ) : (
-                <span className="text-xs text-slate-400">—</span>
+                <span className="text-xs text-slate-400 dark:text-[#64748B]">—</span>
               )}
             </div>
 
-            {/* E/S/T stats */}
-            <div className="grid grid-cols-3 gap-2 border-t border-slate-100 dark:border-slate-700 pt-3">
+            {/* E/S/T stats — flex-1 fills space */}
+            <div className="grid grid-cols-3 gap-2 mt-4 flex-1">
               {[
                 { v: p.total_epics, l: 'EPICS' },
                 { v: p.total_stories, l: 'STORIES' },
                 { v: p.total_tasks, l: 'TASKS' },
               ].map(s => (
-                <div key={s.l} className="text-center py-2.5 px-1 bg-slate-50 dark:bg-slate-800 rounded">
-                  <div className="text-2xl font-semibold text-slate-900 dark:text-white">{s.v || 0}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 uppercase tracking-wide">{s.l}</div>
+                <div
+                  key={s.l}
+                  className={cn(
+                    "text-center p-3 rounded-lg",
+                    "bg-slate-50",
+                    "dark:bg-[#1E2027] dark:border dark:border-[rgba(255,255,255,0.06)]"
+                  )}
+                >
+                  <div className="text-[22px] font-semibold text-slate-900 dark:text-[#E2E8F0]">{s.v || 0}</div>
+                  <div className="text-[10px] font-medium tracking-widest uppercase text-slate-400 dark:text-[#64748B] mt-1">{s.l}</div>
                 </div>
               ))}
             </div>
 
-            {/* Footer: sync + members + updated */}
-            <div className="flex items-center justify-between mt-auto text-xs text-slate-500 dark:text-slate-400">
+            {/* Footer: sync + members + updated — pinned bottom */}
+            <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100 dark:border-[rgba(255,255,255,0.06)] text-xs text-slate-500 dark:text-[#94A3B8]">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-medium cursor-default">
+                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[rgba(255,255,255,0.06)] text-[11px] font-medium cursor-default">
                     <span className={cn("w-1.5 h-1.5 rounded-full", sync.color)} />
                     {sync.label}
                   </div>
@@ -153,7 +163,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
               </Tooltip>
               <div className="flex items-center gap-2">
                 <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
-                <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                <span className="text-[11px] text-slate-400 dark:text-[#64748B]">
                   {p.updated_at ? formatDistanceToNowStrict(new Date(p.updated_at), { addSuffix: true }) : '—'}
                 </span>
               </div>
