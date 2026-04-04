@@ -20,7 +20,7 @@ interface QuickExecutionModalProps {
   isOpen: boolean;
   cycleTestCase: {
     id: string;
-    execution_status: string;
+    current_status: string;
     notes: string | null;
     test_case_id: string;
     test_case: {
