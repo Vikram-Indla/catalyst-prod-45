@@ -81,9 +81,8 @@ export function useCycleMutations(cycleId: string, options?: UseCycleMutationsOp
       const statusLabels: Record<CycleStatus, string> = {
         draft: 'Draft',
         planned: 'Planned',
-        active: 'Active',
+        active: 'In Progress',
         paused: 'Paused',
-        in_progress: 'In Progress',
         completed: 'Completed',
         archived: 'Archived',
       };

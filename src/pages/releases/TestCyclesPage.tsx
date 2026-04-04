@@ -108,7 +108,7 @@ export default function TestCyclesPage() {
   
   // Group cycles by status for card view
   const groupedCycles = useMemo(() => ({
-    in_progress: (cycles || []).filter(c => c.status === 'in_progress' || c.status === 'active'),
+    in_progress: (cycles || []).filter(c => c.status === 'active'),
     planned: (cycles || []).filter(c => c.status === 'planned' || c.status === 'draft'),
     completed: (cycles || []).filter(c => c.status === 'completed'),
   }), [cycles]);
