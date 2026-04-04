@@ -177,6 +177,11 @@ export const PRIORITY_CONFIG: Record<DefectPriority, { label: string; emoji: str
   high: { label: 'High', emoji: '🔥' },
   medium: { label: 'Medium', emoji: '●' },
   low: { label: 'Low', emoji: '○' },
+  Highest: { label: 'Highest', emoji: '⚠️' },
+  High: { label: 'High', emoji: '🔥' },
+  Medium: { label: 'Medium', emoji: '●' },
+  Low: { label: 'Low', emoji: '○' },
+  Lowest: { label: 'Lowest', emoji: '○' },
 };
 
 // =====================================================
