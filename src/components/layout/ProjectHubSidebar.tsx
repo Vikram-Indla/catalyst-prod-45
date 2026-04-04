@@ -16,7 +16,7 @@ import {
   LayoutList,
   BookOpen,
   GitBranch,
-  Star,
+  FolderKanban,
 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
@@ -62,7 +62,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
         id: `fav-${p.id}`,
         title: p.name,
         path: `/project-hub/${p.project_key}/dashboard`,
-        icon: Star,
+        icon: FolderKanban,
         exact: false,
       })),
     };
