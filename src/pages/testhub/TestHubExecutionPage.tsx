@@ -286,7 +286,7 @@ export default function TestHubExecutionPage() {
     if (fastTrackMode || steps.length === 0) {
       setIsFailureModalOpen(true); // Use failure modal for reason
     } else {
-      setIsFailureModalOpen(true); // Use failure modal for block reason
+      updateStepStatus('blocked');
     }
   };
   const handleSkip = () => {
