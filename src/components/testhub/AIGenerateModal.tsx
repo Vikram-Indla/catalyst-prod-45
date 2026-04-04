@@ -3,6 +3,8 @@ import { X, Sparkles, Loader2, CheckCircle2, XCircle, AlertTriangle, FolderOpen,
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
+
 interface AIGenerateModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -14,6 +16,7 @@ interface Folder {
   id: string;
   name: string;
   parent_id: string | null;
+  project_id: string;
 }
 
 interface GeneratedTestCase {
@@ -101,7 +104,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
     try {
       const { data, error } = await supabase
         .from('tm_folders')
-        .select('id, name, parent_id')
+        .select('id, name, parent_id, project_id')
         .order('sort_order');
       if (error) throw error;
       setFolders(data || []);
@@ -207,31 +210,72 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
     setIsInserting(true);
 
     try {
-      // Get all unique case keys for the batch upfront
-      const caseKeys = await getNextCaseKeys(toInsert.length);
+      const selectedFolder = folders.find(folder => folder.id === selectedFolderId);
+      const projectId = selectedFolder?.project_id || DEFAULT_PROJECT_ID;
+
+      const [caseKeys, priorityResponse, typeResponse] = await Promise.all([
+        getNextCaseKeys(toInsert.length),
+        supabase
+          .from('tm_case_priorities')
+          .select('id, name')
+          .eq('project_id', projectId),
+        supabase
+          .from('tm_case_types')
+          .select('id, name')
+          .eq('project_id', projectId),
+      ]);
+
+      if (priorityResponse.error) throw priorityResponse.error;
+      if (typeResponse.error) throw typeResponse.error;
+
+      const priorityIdByName = new Map(
+        (priorityResponse.data || []).map((priority) => [priority.name.toLowerCase(), priority.id])
+      );
+      const typeIdByName = new Map(
+        (typeResponse.data || []).map((type) => [type.name.toLowerCase(), type.id])
+      );
+
+      const fallbackPriorityId = priorityIdByName.get('medium') ?? null;
+      const fallbackTypeId = typeIdByName.get('functional') ?? null;
+      const typeAliases: Record<string, string> = {
+        e2e: 'functional',
+        'end-to-end': 'functional',
+        end_to_end: 'functional',
+        integration: 'functional',
+        regression: 'functional',
+        smoke: 'functional',
+        usability: 'functional',
+      };
 
       for (let i = 0; i < toInsert.length; i++) {
         const tc = toInsert[i];
+        const normalizedPriority = tc.priority?.trim().toLowerCase() || 'medium';
+        const normalizedType = tc.testType?.trim().toLowerCase() || 'functional';
+        const resolvedType = typeAliases[normalizedType] || normalizedType;
+
         const { data: newCase, error: tcError } = await supabase
           .from('tm_test_cases')
           .insert({
+            project_id: projectId,
             case_key: caseKeys[i],
-            title: tc.title,
-            objective: tc.summary,
-            folder_id: selectedFolderId,
-            priority: tc.priority,
-            type: tc.testType,
+            title: tc.title.trim(),
+            description: tc.summary?.trim() || null,
+            folder_id: selectedFolderId || null,
+            priority_id: priorityIdByName.get(normalizedPriority) ?? fallbackPriorityId,
+            case_type_id: typeIdByName.get(resolvedType) ?? fallbackTypeId,
             status: 'draft',
             automation_status: 'manual',
             is_ai_generated: true,
-          } as any)
+            ai_generation_prompt: description.trim() || null,
+            ai_generated_at: new Date().toISOString(),
+          })
           .select()
           .single();
 
         if (tcError) throw tcError;
 
         if (includeSteps && tc.steps?.length && newCase) {
-          await supabase.from('tm_test_steps').insert(
+          const { error: stepError } = await supabase.from('tm_test_steps').insert(
             tc.steps.map((s, idx) => ({
               test_case_id: newCase.id,
               step_number: s.stepNumber || idx + 1,
@@ -239,16 +283,24 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
               expected_result: s.expectedResult,
             }))
           );
+
+          if (stepError) throw stepError;
         }
       }
 
-      const folderName = folders.find(f => f.id === selectedFolderId)?.name || 'selected folder';
+      const folderName = selectedFolder?.name || 'selected folder';
       toast.success(`Created ${toInsert.length} test cases in "${folderName}"`);
       onSuccess();
       handleClose();
     } catch (err) {
       console.error('Insert failed:', err);
-      toast.error('Failed to create test cases');
+
+      const message =
+        err && typeof err === 'object' && 'message' in err
+          ? String((err as { message: string }).message)
+          : 'Failed to create test cases';
+
+      toast.error(message);
     } finally {
       setIsInserting(false);
     }
