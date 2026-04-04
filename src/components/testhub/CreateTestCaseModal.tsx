@@ -230,6 +230,7 @@ export function CreateTestCaseModal({
         gherkin_scenario: testFormat === 'gherkin' ? gherkinScenario.trim() || null : null,
         owner_id: assignedTo || null,
         version: 1,
+        project_id: projectId,
       })
       .select()
       .single();
