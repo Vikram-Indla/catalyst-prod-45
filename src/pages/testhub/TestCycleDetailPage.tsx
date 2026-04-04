@@ -103,7 +103,7 @@ export default function TestCycleDetailPage() {
     if (!cycleId) return;
     try {
       const { data, error } = await (supabase as any).from('tm_cycle_scope')
-        .select(`id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at, test_case:tm_test_cases ( id, case_key, title, priority_id, case_type_id, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) )`)
+        .select(`id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at, assignee:profiles!assigned_to ( id, full_name, avatar_url ), test_case:tm_test_cases ( id, case_key, title, priority_id, case_type_id, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) )`)
         .eq('cycle_id', cycleId).order('sort_order');
       if (error) throw error;
       setTestCases(data || []);
@@ -216,7 +216,7 @@ export default function TestCycleDetailPage() {
   }
 
   const status = statusConfig[(cycle.status || 'draft').toLowerCase().replace(/-/g, '_')] ?? statusConfig['draft'];
-  const canEdit = cycle.status === 'draft' || cycle.status === 'in_progress';
+  const canEdit = cycle.status === 'draft' || cycle.status === 'active';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
@@ -273,14 +273,14 @@ export default function TestCycleDetailPage() {
             )}
             {cycle.status === 'planned' && (
               <button onClick={async () => {
-                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'in_progress', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle execution started'); fetchCycle();
               }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 Start Execution
               </button>
             )}
-            {cycle.status === 'in_progress' && (
+            {cycle.status === 'active' && (
               <button onClick={async () => {
                 const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'completed', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
@@ -304,7 +304,7 @@ export default function TestCycleDetailPage() {
                 <Pencil size={16} /> Edit
               </button>
             )}
-            {cycle.status === 'in_progress' && (
+            {cycle.status === 'active' && (
               <button onClick={() => {
                 const notRun = testCases.find(tc => tc.current_status === 'not_run');
                 if (notRun) {
@@ -322,12 +322,17 @@ export default function TestCycleDetailPage() {
       </div>
 
       {/* Stats Cards - 3-panel layout per spec */}
+      {(() => {
+        const totalCount = testCases.length;
+        const notRunCount = testCases.filter(tc => tc.current_status === 'not_run').length;
+        const passedCount = testCases.filter(tc => tc.current_status === 'passed').length;
+        const failedCount = testCases.filter(tc => tc.current_status === 'failed').length;
+        const blockedCount = testCases.filter(tc => tc.current_status === 'blocked').length;
+        const executedCount = totalCount - notRunCount;
+        const pp = totalCount > 0 ? Math.round((executedCount / totalCount) * 100) : 0;
+        return (
       <div style={{ padding: '24px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
         {/* Progress Panel */}
-        {(() => {
-          const executedCount = cycle.total_cases - cycle.not_run_count;
-          const pp = cycle.total_cases > 0 ? Math.round((executedCount / cycle.total_cases) * 100) : 0;
-          return (
         <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24, textAlign: 'center' }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Progress</p>
           <div style={{ width: 100, height: 100, margin: '0 auto 16px', position: 'relative' }}>
@@ -339,10 +344,8 @@ export default function TestCycleDetailPage() {
               {pp}%
             </div>
           </div>
-          <p style={{ fontSize: 14, color: '#334155', margin: 0, fontWeight: 500 }}>{executedCount}/{cycle.total_cases} executed</p>
+          <p style={{ fontSize: 14, color: '#334155', margin: 0, fontWeight: 500 }}>{executedCount}/{totalCount} executed</p>
         </div>
-          );
-        })()}
 
         {/* By Status Panel */}
         <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24 }}>
@@ -351,22 +354,22 @@ export default function TestCycleDetailPage() {
             <button onClick={() => setStatusFilter('passed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'passed' ? '#ECFDF5' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <CheckCircle2 size={18} style={{ color: '#059669' }} />
               <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Passed</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#059669' }}>{cycle.passed_count}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#059669' }}>{passedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('failed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'failed' ? '#FEF2F2' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <XCircle size={18} style={{ color: '#DC2626' }} />
               <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Failed</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#DC2626' }}>{cycle.failed_count}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#DC2626' }}>{failedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('blocked')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'blocked' ? '#FFFBEB' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <AlertTriangle size={18} style={{ color: '#D97706' }} />
               <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Blocked</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#D97706' }}>{cycle.blocked_count}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#D97706' }}>{blockedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('not_run')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'not_run' ? '#F8FAFC' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <Clock size={18} style={{ color: '#64748B' }} />
               <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Not Run</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#64748B' }}>{cycle.not_run_count}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#64748B' }}>{notRunCount}</span>
             </button>
             {statusFilter !== 'all' && (
               <button onClick={() => setStatusFilter('all')} style={{ padding: '6px 12px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 12, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>
@@ -403,6 +406,8 @@ export default function TestCycleDetailPage() {
           )}
         </div>
       </div>
+        );
+      })()}
 
       {/* Blocked Items Banner */}
       {blockedTestCases.length > 0 && (
@@ -595,7 +600,7 @@ export default function TestCycleDetailPage() {
                           </span>
                         </td>
                         <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                          {cycle.status === 'in_progress' && (
+                          {cycle.status === 'active' && (
                             <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '0 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                               <Play size={12} /> Run
                             </button>
