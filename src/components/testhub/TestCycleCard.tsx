@@ -162,7 +162,7 @@ export function TestCycleCard({
                   <Play size={14} style={{ color: 'var(--sem-success)' }} /> Start Execution
                 </button>
               )}
-              {cycle.status === 'in_progress' && (
+              {cycle.status === 'active' && (
                 <button onClick={() => { onComplete(); setMenuOpen(false); }} style={menuItemStyle}>
                   <CheckCircle2 size={14} style={{ color: 'var(--cp-blue)' }} /> Complete Cycle
                 </button>
