@@ -497,6 +497,24 @@ export const DEFECT_SEVERITY_COLORS = {
     text: CATALYST_V5.slate[500],
     border: `${CATALYST_V5.slate[400]}30`,
   },
+  major: {
+    dot: CATALYST_V5.warning,
+    bg: CATALYST_V5.warningLight,
+    text: CATALYST_V5.warning,
+    border: `${CATALYST_V5.warning}30`,
+  },
+  minor: {
+    dot: CATALYST_V5.primary,
+    bg: CATALYST_V5.primaryLight,
+    text: CATALYST_V5.primary,
+    border: `${CATALYST_V5.primary}30`,
+  },
+  trivial: {
+    dot: CATALYST_V5.slate[400],
+    bg: CATALYST_V5.slate[100],
+    text: CATALYST_V5.slate[500],
+    border: `${CATALYST_V5.slate[400]}30`,
+  },
 } as const;
 
 // =====================================================
@@ -504,6 +522,11 @@ export const DEFECT_SEVERITY_COLORS = {
 // =====================================================
 export const DEFECT_STATUS_COLORS = {
   new: {
+    bg: CATALYST_V5.dangerLighter,
+    text: CATALYST_V5.danger,
+    border: `${CATALYST_V5.danger}30`,
+  },
+  open: {
     bg: CATALYST_V5.dangerLighter,
     text: CATALYST_V5.danger,
     border: `${CATALYST_V5.danger}30`,
@@ -524,6 +547,11 @@ export const DEFECT_STATUS_COLORS = {
     border: `${CATALYST_V5.teal}30`,
   },
   verified: {
+    bg: CATALYST_V5.tealLighter,
+    text: CATALYST_V5.teal,
+    border: `${CATALYST_V5.teal}30`,
+  },
+  resolved: {
     bg: CATALYST_V5.tealLighter,
     text: CATALYST_V5.teal,
     border: `${CATALYST_V5.teal}30`,

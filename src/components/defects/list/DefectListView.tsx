@@ -78,8 +78,8 @@ export function DefectListView({ projectId }: DefectListViewProps) {
       created_at: d.created_at,
       updated_at: d.updated_at,
       due_date: d.due_date || null,
-      reporter: d.jira_reporter_name || null,
-      assignee: d.jira_assignee_name || null,
+      reporter: d.jira_reporter_name ? { id: '', full_name: d.jira_reporter_name, avatar_url: null } : null,
+      assignee: d.jira_assignee_name ? { id: '', full_name: d.jira_assignee_name, avatar_url: null } : null,
       release: null,
       comments_count: 0,
       attachments_count: 0,
@@ -105,7 +105,7 @@ export function DefectListView({ projectId }: DefectListViewProps) {
   const statusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: DefectStatus }) => {
       const { error } = await supabase
-        .from('defects')
+        .from('tm_defects')
         .update({ status })
         .eq('id', id);
       if (error) throw error;
@@ -148,7 +148,7 @@ export function DefectListView({ projectId }: DefectListViewProps) {
 
   const defectCounts = useMemo(() => ({
     all: totalCount,
-    open: defects.filter(d => ['new', 'triaged', 'in_progress', 'reopened'].includes(d.status)).length,
+    open: defects.filter(d => ['new', 'open', 'triaged', 'in_progress', 'reopened'].includes(d.status)).length,
     critical: defects.filter(d => d.severity === 'critical').length,
   }), [defects, totalCount]);
 
