@@ -44,7 +44,7 @@ export function useDefectStatsG25() {
   return useQuery({
     queryKey: ['g25-defect-stats'],
     queryFn: async (): Promise<DefectStats> => {
-      const { data, error } = await supabase.rpc('get_defect_stats');
+      const { data, error } = await supabase.rpc('get_defect_stats', { p_project_id: null });
       if (error) throw new Error(error.message);
       return data as unknown as DefectStats;
     },
