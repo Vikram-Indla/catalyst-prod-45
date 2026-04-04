@@ -26,7 +26,7 @@ interface TestCase {
 
 interface CycleTestCase {
   id: string;
-  execution_status: 'not_run' | 'passed' | 'failed' | 'blocked' | 'skipped';
+  current_status: 'not_run' | 'passed' | 'failed' | 'blocked' | 'skipped';
   notes: string | null;
   execution_time_seconds: number;
   started_at: string | null;
