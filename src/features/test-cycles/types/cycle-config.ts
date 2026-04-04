@@ -4,7 +4,7 @@
 // ============================================================================
 
 // Cycle status - full lifecycle enum matching database
-export type CycleStatus = 'draft' | 'planned' | 'active' | 'paused' | 'in_progress' | 'completed' | 'archived';
+export type CycleStatus = 'draft' | 'planned' | 'active' | 'paused' | 'completed' | 'archived';
 
 // Status categories for grouping
 export type CycleStatusCategory = 'draft' | 'in_progress' | 'completed' | 'archived';
