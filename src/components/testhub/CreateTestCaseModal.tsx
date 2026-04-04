@@ -309,6 +309,9 @@ export function CreateTestCaseModal({
         case_type_id: caseTypeId || null,
         status,
         automation_status: automation,
+        test_format: testFormat,
+        gherkin_feature: testFormat === 'gherkin' ? gherkinFeature.trim() || null : null,
+        gherkin_scenario: testFormat === 'gherkin' ? gherkinScenario.trim() || null : null,
         owner_id: assignedTo || null,
         version: newVersion,
       })
