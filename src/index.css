@@ -1332,6 +1332,15 @@ html:has(body[data-scroll-locked]) {
    ════════════════════════════════════════════════════════════════════════════ */
 
 @layer utilities {
+  /* Scrollbar-none — hide scrollbar but keep scroll */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Overline - Section headers, labels */
   .c-overline {
     font-size: 0.75rem;      /* 12px */

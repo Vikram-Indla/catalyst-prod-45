@@ -62,7 +62,7 @@ export function CommandCenterHeader({
   return (
     <header
       className={cn(
-        'w-full flex items-start justify-between gap-4 border-b bg-card mb-5 flex-shrink-0',
+        'w-full flex items-start justify-between gap-4 flex-wrap border-b bg-card mb-5 flex-shrink-0 min-w-0',
         className,
       )}
       style={{
