@@ -56,6 +56,21 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [environments, setEnvironments] = useState<EnvironmentOption[]>([]);
 
+  const [cycleStatus, setCycleStatus] = useState('draft');
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const statusRef = useRef<HTMLDivElement>(null);
+
+  // Close status dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (statusRef.current && !statusRef.current.contains(e.target as Node)) {
+        setStatusDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       supabase.from('profiles').select('id, full_name').order('full_name').then(({ data }) => {
