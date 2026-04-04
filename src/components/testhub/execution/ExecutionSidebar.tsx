@@ -1,9 +1,9 @@
 /**
  * G19: Execution Sidebar (Right Pane)
- * Shows attachments and linked defects for the current test
+ * Shows attachments, linked defects, and previous run history
  */
 import { useState } from 'react';
-import { Bug, Paperclip, ExternalLink, Plus, Loader2 } from 'lucide-react';
+import { Bug, Paperclip, ExternalLink, Plus, Loader2, History } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ExecutionAttachments } from '@/components/testhub/ExecutionAttachments';
@@ -26,11 +26,26 @@ interface LinkedDefect {
   created_at: string;
 }
 
+interface PreviousRunData {
+  execution_number: number;
+  result: string;
+  executed_at: string;
+  step_results: Array<{
+    step_number: number;
+    title: string;
+    status: string;
+    notes: string;
+  }>;
+  executor?: { full_name: string } | null;
+}
+
 interface ExecutionSidebarProps {
   cycleTestCaseId: string;
   attachments: Attachment[];
   onAttachmentsChange: () => void;
   onCreateDefect: () => void;
+  previousRunData?: PreviousRunData | null;
+  isViewMode?: boolean;
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
@@ -40,13 +55,23 @@ const SEVERITY_COLORS: Record<string, string> = {
   trivial: '#16A34A',
 };
 
+const STEP_COLORS: Record<string, { text: string; bg: string; border: string }> = {
+  passed:  { text: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
+  failed:  { text: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
+  blocked: { text: '#D97706', bg: '#FFFBEB', border: '#FED7AA' },
+  skipped: { text: '#475569', bg: '#F8FAFC', border: '#E2E8F0' },
+  not_run: { text: '#64748B', bg: '#F1F5F9', border: '#E2E8F0' },
+};
+
 export function ExecutionSidebar({
   cycleTestCaseId,
   attachments,
   onAttachmentsChange,
   onCreateDefect,
+  previousRunData,
+  isViewMode,
 }: ExecutionSidebarProps) {
-  const [activeTab, setActiveTab] = useState<'attachments' | 'defects'>('attachments');
+  const [activeTab, setActiveTab] = useState<'attachments' | 'defects' | 'history'>('attachments');
   const queryClient = useQueryClient();
 
   const { data: linkedDefects = [], isLoading: defectsLoading } = useQuery({
@@ -72,20 +97,25 @@ export function ExecutionSidebar({
 
   const handleCreateDefect = () => {
     onCreateDefect();
-    // Invalidate after a delay to allow the modal flow to complete
     setTimeout(() => {
       queryClient.invalidateQueries({ queryKey: ['testcase-defects', cycleTestCaseId] });
     }, 1000);
   };
 
+  const tabs: Array<{ key: 'attachments' | 'defects' | 'history'; label: string; icon: any; count?: number }> = [
+    { key: 'attachments', label: 'Attachments', icon: Paperclip, count: attachments.length },
+    { key: 'defects', label: 'Defects', icon: Bug, count: linkedDefects.length },
+  ];
+
+  if (previousRunData) {
+    tabs.push({ key: 'history', label: `Run #${previousRunData.execution_number}`, icon: History });
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--bg-app)' }}>
       {/* Tabs */}
       <div style={{ display: 'flex', borderBottom: '1px solid var(--divider)' }}>
-        {[
-          { key: 'attachments' as const, label: 'Attachments', icon: Paperclip, count: attachments.length },
-          { key: 'defects' as const, label: 'Defects', icon: Bug, count: linkedDefects.length },
-        ].map(tab => (
+        {tabs.map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
@@ -100,7 +130,7 @@ export function ExecutionSidebar({
           >
             <tab.icon size={14} />
             {tab.label}
-            {tab.count > 0 && (
+            {tab.count !== undefined && tab.count > 0 && (
               <span style={{
                 fontSize: 10, fontWeight: 700, backgroundColor: activeTab === tab.key ? 'var(--cp-blue)' : 'var(--bg-2)',
                 color: activeTab === tab.key ? 'var(--fg-on-blue)' : 'var(--fg-3)',
@@ -125,18 +155,20 @@ export function ExecutionSidebar({
 
         {activeTab === 'defects' && (
           <div>
-            <button
-              onClick={handleCreateDefect}
-              style={{
-                width: '100%', padding: '10px 14px', marginBottom: 16,
-                background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
-                border: 'none', borderRadius: 8, color: '#FFFFFF',
-                fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              }}
-            >
-              <Plus size={16} /> Create Defect
-            </button>
+            {!isViewMode && (
+              <button
+                onClick={handleCreateDefect}
+                style={{
+                  width: '100%', padding: '10px 14px', marginBottom: 16,
+                  background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
+                  border: 'none', borderRadius: 8, color: '#FFFFFF',
+                  fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                }}
+              >
+                <Plus size={16} /> Create Defect
+              </button>
+            )}
 
             {defectsLoading ? (
               <div style={{ padding: 24, textAlign: 'center', color: 'var(--fg-3)' }}>
@@ -175,6 +207,48 @@ export function ExecutionSidebar({
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'history' && previousRunData && (
+          <div>
+            <div style={{ marginBottom: 12, padding: '8px 12px', backgroundColor: '#EFF6FF', borderRadius: 6, border: '1px solid #BFDBFE' }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: '#1D4ED8', margin: 0 }}>
+                Previous Run #{previousRunData.execution_number}
+              </p>
+              <p style={{ fontSize: 10, color: '#3B82F6', margin: '2px 0 0' }}>
+                {new Date(previousRunData.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                {' · Result: '}{previousRunData.result.toUpperCase()}
+              </p>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {previousRunData.step_results.map((step, i) => {
+                const colors = STEP_COLORS[step.status] || STEP_COLORS.not_run;
+                return (
+                  <div key={i} style={{
+                    padding: '8px 10px', backgroundColor: '#FFFFFF',
+                    border: '0.75px solid #E2E8F0', borderRadius: 6,
+                    borderLeft: `3px solid ${colors.border}`,
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: 'hsl(var(--foreground))' }}>
+                        Step {step.step_number}
+                      </span>
+                      <span style={{
+                        fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 3,
+                        color: colors.text, backgroundColor: colors.bg, textTransform: 'uppercase',
+                      }}>
+                        {step.status.replace('_', ' ')}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', margin: 0, lineHeight: 1.4 }}>{step.title}</p>
+                    {step.notes && (
+                      <p style={{ fontSize: 10, color: '#64748B', margin: '4px 0 0', fontStyle: 'italic' }}>{step.notes}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
