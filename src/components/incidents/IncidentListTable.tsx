@@ -28,6 +28,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { InlineEditCell } from './InlineEditCell';
+import { JiraSyncChip } from '@/components/shared/JiraSyncChip';
 import { InlineUserPicker } from './InlineUserPicker';
 import { DeleteIncidentDialog } from './DeleteIncidentDialog';
 import { ResizableHeader } from './ResizableHeader';
