@@ -422,8 +422,7 @@ export function useCycleScope(cycleId: string | undefined, filters?: ScopeFilter
           *,
           test_case:tm_test_cases(
             id, case_key, title, status,
-            priority:tm_case_priorities(*),
-            type:tm_case_types(*)
+            priority_id, case_type_id
           ),
           assignee:profiles(id, full_name, avatar_url)
         `)

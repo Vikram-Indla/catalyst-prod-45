@@ -38,12 +38,7 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
         .from('tm_test_cases')
         .select(`
           *,
-          priority:tm_case_priorities(*),
-          type:tm_case_types(*),
-          folder:tm_folders(id, name, path),
-          release:releases!tm_test_cases_release_id_fkey(id, name, version, status),
-          created_by_profile:profiles!tm_test_cases_created_by_fkey(id, full_name, avatar_url),
-          assigned_user:profiles!tm_test_cases_assigned_to_fkey(id, full_name, avatar_url)
+          folder:tm_folders(id, name)
         `, { count: 'exact' })
         .eq('project_id', projectId)
         .order('updated_at', { ascending: false });
@@ -185,12 +180,7 @@ export function useTestCase(caseId: string | undefined) {
         .from('tm_test_cases')
         .select(`
           *,
-          priority:tm_case_priorities(*),
-          type:tm_case_types(*),
-          folder:tm_folders(id, name, path),
-          release:releases!tm_test_cases_release_id_fkey(id, name, version, status),
-          created_by_profile:profiles!tm_test_cases_created_by_fkey(id, full_name, avatar_url),
-          assigned_user:profiles!tm_test_cases_assigned_to_fkey(id, full_name, avatar_url)
+          folder:tm_folders(id, name)
         `)
         .eq('id', caseId)
         .single();

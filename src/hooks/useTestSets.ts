@@ -55,7 +55,7 @@ export function useTestSetCases(setId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tm_test_set_cases' as any)
-        .select('id, sort_order, added_at, test_case:tm_test_cases(id, case_key, title, status, priority:tm_case_priorities(id, name))')
+        .select('id, sort_order, added_at, test_case:tm_test_cases(id, case_key, title, status, priority_id)')
         .eq('test_set_id', setId)
         .order('sort_order', { ascending: true });
       if (error) throw new Error(error.message);
@@ -288,7 +288,7 @@ export function useAvailableTestCases(projectId: string, excludeIds: string[], f
     queryFn: async () => {
       let query = supabase
         .from('tm_test_cases' as any)
-        .select('id, case_key, title, status, priority:tm_case_priorities(id, name), folder_id, folder:tm_folders(id, name)')
+        .select('id, case_key, title, status, priority_id, folder_id, folder:tm_folders(id, name)')
         .eq('project_id', projectId)
         .neq('status', 'deprecated')
         .order('case_key', { ascending: true });

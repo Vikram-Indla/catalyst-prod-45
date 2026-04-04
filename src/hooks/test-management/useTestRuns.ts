@@ -479,7 +479,7 @@ export function useMyWork(projectId: string | undefined) {
         .from('tm_cycle_scope')
         .select(`
           *,
-          test_case:tm_test_cases(id, case_key, title, priority:tm_case_priorities(*)),
+          test_case:tm_test_cases(id, case_key, title, priority_id),
           cycle:tm_test_cycles(id, cycle_key, name, status, project_id)
         `)
         .eq('assigned_to', user.id)

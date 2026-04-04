@@ -78,8 +78,8 @@ export function useCycleTestCases(cycleId: string, filters?: TestCaseFilters) {
             case_key,
             title,
             description,
-            priority:tm_case_priorities(name),
-            folder:tm_folders(name)
+            priority_id,
+            folder_id
           ),
           assignee:profiles(id, full_name, avatar_url)
         `)

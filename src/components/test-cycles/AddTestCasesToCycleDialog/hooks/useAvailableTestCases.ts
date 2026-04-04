@@ -20,9 +20,7 @@ export function useAvailableTestCases(
         .from('tm_test_cases')
         .select(`
           *,
-          priority:tm_case_priorities(*),
-          type:tm_case_types(*),
-          folder:tm_folders(id, name, path)
+          folder:tm_folders(id, name)
         `)
         .eq('project_id', projectId)
         .in('status', ['draft', 'ready', 'approved']) // Exclude deprecated
