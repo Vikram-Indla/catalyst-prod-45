@@ -6,7 +6,8 @@
  * Features: Step-level execution, keyboard shortcuts (P/F/B/S/1-9/?),
  * resizable panels, FastTrack mode, Pass All Remaining, session timer.
  */
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { deriveOverallStatus } from '@/utils/testExecution';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, Play, Clock, CheckCircle2, XCircle,
@@ -285,7 +286,7 @@ export default function TestHubExecutionPage() {
     if (fastTrackMode || steps.length === 0) {
       setIsFailureModalOpen(true); // Use failure modal for reason
     } else {
-      setIsFailureModalOpen(true); // Use failure modal for block reason
+      updateStepStatus('blocked');
     }
   };
   const handleSkip = () => {
@@ -346,17 +347,41 @@ export default function TestHubExecutionPage() {
     }
   }, [currentStepIndex, selectedTestCaseId, steps, currentUserId]);
 
-  // Pass All Remaining
-  const handlePassAllRemaining = () => {
-    if (steps.length === 0) {
-      updateExecutionStatus('passed');
-      return;
-    }
-    const key = selectedTestCaseId || '';
+  // Derive overall status from step statuses
+  const derivedStatus = useMemo(() => {
+    if (!selectedTestCaseId || steps.length === 0) return 'not_run' as const;
+    const key = selectedTestCaseId;
     const current = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
-    const updated = current.map(s => s.status === 'not_run' ? { ...s, status: 'passed' as const } : s);
-    setStepStatuses(new Map(stepStatuses).set(key, updated));
-    updateExecutionStatus('passed');
+    const statuses = current.map(s => s.status);
+    const markedStatuses = statuses.filter(s => s !== 'not_run');
+    if (markedStatuses.length === 0) return 'not_run' as const;
+    return deriveOverallStatus(markedStatuses);
+  }, [selectedTestCaseId, stepStatuses, steps]);
+
+  const allStepsMarked = useMemo(() => {
+    if (!selectedTestCaseId || steps.length === 0) return false;
+    const key = selectedTestCaseId;
+    const current = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+    return current.every(s => s.status !== 'not_run');
+  }, [selectedTestCaseId, stepStatuses, steps]);
+
+  const anyStepMarked = useMemo(() => {
+    if (!selectedTestCaseId || steps.length === 0) return false;
+    const key = selectedTestCaseId;
+    const current = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+    return current.some(s => s.status !== 'not_run');
+  }, [selectedTestCaseId, stepStatuses, steps]);
+
+  // Complete Execution — derives overall status from steps
+  const handleCompleteExecution = async () => {
+    if (!selectedTestCaseId || derivedStatus === 'not_run') return;
+    
+    await updateExecutionStatus(derivedStatus);
+    
+    // If failed, trigger defect creation prompt
+    if (derivedStatus === 'failed') {
+      setIsFailureModalOpen(true);
+    }
   };
 
   // Notes auto-save — disabled until notes column is added to tm_cycle_scope
@@ -374,8 +399,8 @@ export default function TestHubExecutionPage() {
 
       // Ctrl combos
       if (e.ctrlKey || e.metaKey) {
-        if (key === 'enter') { e.preventDefault(); handlePassAllRemaining(); return; }
-        if (key === 'p') { e.preventDefault(); handlePassAllRemaining(); return; }
+        if (key === 'enter') { e.preventDefault(); handleCompleteExecution(); return; }
+        if (key === 's') { e.preventDefault(); catalystToast.success('Progress saved'); return; }
         if (key === 's') { e.preventDefault(); catalystToast.success('Progress saved'); return; }
         return;
       }
@@ -817,15 +842,38 @@ export default function TestHubExecutionPage() {
                   </button>
 
                   <div style={{ position: 'absolute', right: 20, display: 'flex', gap: 8 }}>
-                    {steps.length > 0 && !fastTrackMode && (
-                      <button onClick={handlePassAllRemaining} disabled={isSubmitting} title="Pass All Remaining (Ctrl+P)" style={{
-                        height: 32, padding: '0 10px', border: '1px solid #A7F3D0', borderRadius: 5,
-                        backgroundColor: '#ECFDF5', color: '#059669', fontSize: 11, fontWeight: 600,
-                        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                      }}>
-                        <CheckCircle2 size={12} /> Pass All
-                      </button>
-                    )}
+                    {steps.length > 0 && !fastTrackMode && (() => {
+                      const isDisabled = !anyStepMarked || isSubmitting;
+                      const statusColors: Record<string, { bg: string; text: string }> = {
+                        passed:  { bg: '#16A34A', text: '#FFFFFF' },
+                        failed:  { bg: '#DC2626', text: '#FFFFFF' },
+                        blocked: { bg: '#D97706', text: '#FFFFFF' },
+                        skipped: { bg: '#475569', text: '#FFFFFF' },
+                        not_run: { bg: '#E2E8F0', text: '#64748B' },
+                      };
+                      const colors = statusColors[derivedStatus] || statusColors.not_run;
+                      const label = derivedStatus !== 'not_run'
+                        ? `Complete → ${derivedStatus.toUpperCase()}`
+                        : 'Complete Execution';
+                      return (
+                        <button
+                          onClick={handleCompleteExecution}
+                          disabled={isDisabled}
+                          title={!anyStepMarked ? 'Mark all steps before completing' : `Complete with status: ${derivedStatus}`}
+                          style={{
+                            height: 34, padding: '0 14px', border: isDisabled ? '1px solid #E2E8F0' : 'none',
+                            borderRadius: 6, backgroundColor: isDisabled ? '#F8FAFC' : colors.bg,
+                            color: isDisabled ? '#94A3B8' : colors.text, fontSize: 12, fontWeight: 700,
+                            cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                            opacity: isDisabled ? 0.7 : 1, transition: 'all 150ms ease',
+                            boxShadow: isDisabled ? 'none' : `0 2px 8px ${colors.bg}40`,
+                            letterSpacing: '0.01em',
+                          }}
+                        >
+                          <CheckCircle2 size={13} /> {label}
+                        </button>
+                      );
+                    })()}
                   </div>
                 </div>
 
