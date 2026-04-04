@@ -272,14 +272,17 @@ export function useDashboardIncidents(projectId: string | null | undefined, proj
     queryFn: async () => {
       if (!projectKey) return [];
 
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
-        .eq('project_key', projectKey)
-        .eq('issue_type', 'Production Incident')
-        .is('deleted_at', null)
-        .order('jira_created_at', { ascending: false })
-        .limit(10);
+      const [{ data, error }, avatarMap] = await Promise.all([
+        supabase
+          .from('ph_issues')
+          .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
+          .eq('project_key', projectKey)
+          .eq('issue_type', 'Production Incident')
+          .is('deleted_at', null)
+          .order('jira_created_at', { ascending: false })
+          .limit(10),
+        getAvatarMap(),
+      ]);
       if (error) throw error;
 
       return (data ?? []).map(inc => ({
@@ -290,6 +293,7 @@ export function useDashboardIncidents(projectId: string | null | undefined, proj
         status: inc.status,
         status_category: inc.status_category,
         assignee: inc.assignee_display_name,
+        assignee_avatar_url: resolveAvatarUrl(avatarMap, inc.assignee_display_name),
         reporter: inc.reporter_display_name,
         resolution: inc.resolution,
         days_open: inc.jira_created_at
