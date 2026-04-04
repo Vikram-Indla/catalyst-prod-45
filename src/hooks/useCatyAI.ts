@@ -164,7 +164,7 @@ export function useSaveCatyGeneratedTests() {
         if (tcError) throw new Error(tcError.message);
 
         if (tc.steps?.length > 0) {
-          await (supabase as any).from('th_test_steps').insert(
+          await (supabase as any).from('tm_test_steps').insert(
             tc.steps.map((s: any) => ({ test_case_id: testCase.id, step_number: s.step_number, action: s.action, expected_result: s.expected_result, test_data: s.test_data }))
           );
         }

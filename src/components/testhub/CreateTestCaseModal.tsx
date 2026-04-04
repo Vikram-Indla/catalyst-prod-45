@@ -21,11 +21,11 @@ interface TestCaseForEdit {
   id: string;
   case_key: string;
   title: string;
-  objective: string | null;
+  description: string | null;
   preconditions: string | null;
   folder_id: string | null;
-  priority: string;
-  type: string;
+  priority_id: string | null;
+  case_type_id: string | null;
   status: string;
   version: number;
   owner_id?: string | null;
@@ -55,11 +55,11 @@ export function CreateTestCaseModal({
 }: CreateTestCaseModalProps) {
   const { toast } = useToast();
   const [title, setTitle] = useState('');
-  const [objective, setObjective] = useState('');
+  const [description, setDescription] = useState('');
   const [preconditions, setPreconditions] = useState('');
   const [folderId, setFolderId] = useState(selectedFolderId || '');
-  const [priority, setPriority] = useState('medium');
-  const [type, setType] = useState('functional');
+  const [priorityId, setPriorityId] = useState('');
+  const [caseTypeId, setCaseTypeId] = useState('');
   const [status, setStatus] = useState('draft');
   const [automation, setAutomation] = useState('manual');
   const [assignedTo, setAssignedTo] = useState('');
@@ -72,20 +72,23 @@ export function CreateTestCaseModal({
   
   // Users from profiles table
   const [users, setUsers] = useState<Array<{ id: string; full_name: string | null; avatar_url?: string | null }>>([]);
+  // Priority & Type lookups
+  const [priorities, setPriorities] = useState<Array<{ id: string; name: string; color: string }>>([]);
+  const [caseTypes, setCaseTypes] = useState<Array<{ id: string; name: string }>>([]);
 
-  // Fetch users from profiles table
+  // Fetch users, priorities, case types
   useEffect(() => {
-    const fetchUsers = async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url')
-        .order('full_name');
-      
-      if (data && !error) {
-        setUsers(data);
-      }
+    const fetchLookups = async () => {
+      const [usersRes, prioritiesRes, caseTypesRes] = await Promise.all([
+        supabase.from('profiles').select('id, full_name, avatar_url').order('full_name'),
+        (supabase as any).from('tm_case_priorities').select('id, name, color').order('sort_order'),
+        (supabase as any).from('tm_case_types').select('id, name').order('name'),
+      ]);
+      if (usersRes.data) setUsers(usersRes.data);
+      if (prioritiesRes.data) setPriorities(prioritiesRes.data);
+      if (caseTypesRes.data) setCaseTypes(caseTypesRes.data);
     };
-    fetchUsers();
+    fetchLookups();
   }, []);
 
   // Reset or pre-fill form when modal opens
@@ -93,13 +96,13 @@ export function CreateTestCaseModal({
     if (isOpen) {
       if (editMode && testCase) {
         setTitle(testCase.title);
-        setObjective(testCase.objective || '');
+        setDescription(testCase.description || '');
         setPreconditions(testCase.preconditions || '');
         setFolderId(testCase.folder_id || '');
-        setPriority(testCase.priority);
-        setType(testCase.type);
+        setPriorityId(testCase.priority_id || '');
+        setCaseTypeId(testCase.case_type_id || '');
         setStatus(testCase.status);
-        setAutomation('manual'); // Default value
+        setAutomation('manual');
         setAssignedTo(testCase.owner_id || '');
         if (existingSteps && existingSteps.length > 0) {
           setSteps(existingSteps.map(s => ({ ...s, attachments: [] })));
@@ -109,11 +112,11 @@ export function CreateTestCaseModal({
       } else {
         // Reset for create mode
         setTitle('');
-        setObjective('');
+        setDescription('');
         setPreconditions('');
         setFolderId(selectedFolderId || '');
-        setPriority('medium');
-        setType('functional');
+        setPriorityId('');
+        setCaseTypeId('');
         setStatus('draft');
         setAutomation('manual');
         setSteps([{ id: '1', action: '', expectedResult: '', attachments: [] }]);
@@ -175,8 +178,8 @@ export function CreateTestCaseModal({
 
   const handleCreate = async () => {
     // 1. Generate case_key - get ALL keys and find the MAX number to avoid duplicates
-    const { data: allCases } = await supabase
-      .from('th_test_cases')
+    const { data: allCases } = await (supabase as any)
+      .from('tm_test_cases')
       .select('case_key');
 
     let maxNum = 0;
@@ -192,20 +195,21 @@ export function CreateTestCaseModal({
     const caseKey = `TC-${String(maxNum + 1).padStart(3, '0')}`;
 
     // 2. Insert test case
-    const { data: newCase, error } = await supabase
-      .from('th_test_cases')
+    const { data: newCase, error } = await (supabase as any)
+      .from('tm_test_cases')
       .insert({
         case_key: caseKey,
         title: title.trim(),
-        objective: objective.trim() || null,
+        description: description.trim() || null,
         preconditions: preconditions.trim() || null,
         folder_id: folderId || null,
-        priority,
-        type,
+        priority_id: priorityId || null,
+        case_type_id: caseTypeId || null,
         status,
-        automation,
+        automation_status: automation,
         owner_id: assignedTo || null,
         version: 1,
+        project_id: '00000000-0000-0000-0000-000000000001',
       })
       .select()
       .single();
@@ -223,7 +227,7 @@ export function CreateTestCaseModal({
 
     if (stepsToInsert.length > 0) {
       const { error: stepsError } = await supabase
-        .from('th_test_steps')
+        .from('tm_test_steps')
         .insert(stepsToInsert);
       if (stepsError) throw stepsError;
     }
@@ -236,10 +240,7 @@ export function CreateTestCaseModal({
           if (!attachment.file) continue;
           
           try {
-            // Generate unique file path
             const filePath = `test-cases/${newCase.id}/step-${i + 1}/${Date.now()}-${attachment.name}`;
-            
-            // Upload to Supabase Storage
             const { error: uploadError } = await supabase.storage
               .from('testhub-attachments')
               .upload(filePath, attachment.file);
@@ -249,8 +250,7 @@ export function CreateTestCaseModal({
               continue;
             }
             
-            // Save attachment record
-            await supabase.from('th_step_attachments').insert({
+            await (supabase as any).from('th_step_attachments').insert({
               test_case_id: newCase.id,
               step_number: i + 1,
               file_name: attachment.name,
@@ -258,7 +258,6 @@ export function CreateTestCaseModal({
               file_size: attachment.size,
               file_type: attachment.type,
             });
-            
           } catch (err) {
             console.error('Attachment error:', err);
           }
@@ -281,17 +280,17 @@ export function CreateTestCaseModal({
     const newVersion = (testCase.version || 1) + 1;
 
     // 1. Update test case
-    const { error: tcError } = await supabase
-      .from('th_test_cases')
+    const { error: tcError } = await (supabase as any)
+      .from('tm_test_cases')
       .update({
         title: title.trim(),
-        objective: objective.trim() || null,
+        description: description.trim() || null,
         preconditions: preconditions.trim() || null,
         folder_id: folderId || null,
-        priority,
-        type,
+        priority_id: priorityId || null,
+        case_type_id: caseTypeId || null,
         status,
-        automation,
+        automation_status: automation,
         owner_id: assignedTo || null,
         version: newVersion,
       })
@@ -301,7 +300,7 @@ export function CreateTestCaseModal({
 
     // 2. Delete existing steps
     await supabase
-      .from('th_test_steps')
+      .from('tm_test_steps')
       .delete()
       .eq('test_case_id', testCase.id);
 
@@ -317,17 +316,21 @@ export function CreateTestCaseModal({
 
     if (stepsToInsert.length > 0) {
       const { error: stepsError } = await supabase
-        .from('th_test_steps')
+        .from('tm_test_steps')
         .insert(stepsToInsert);
       if (stepsError) throw stepsError;
     }
 
-    // 4. Create version history entry
-    await supabase.from('th_test_case_versions').insert({
-      test_case_id: testCase.id,
-      version: newVersion,
-      changes: JSON.stringify({ updated: 'Test case updated' }),
-    });
+    // 4. Create version history entry (non-fatal)
+    try {
+      await (supabase as any).from('tm_test_case_versions').insert({
+        test_case_id: testCase.id,
+        version: newVersion,
+        changes: JSON.stringify({ updated: 'Test case updated' }),
+      });
+    } catch (versionErr) {
+      console.warn('Version history not saved:', versionErr);
+    }
 
     toast({
       title: 'Success',
@@ -531,11 +534,11 @@ export function CreateTestCaseModal({
               </div>
 
               <div>
-                <label style={labelStyle}>Description / Objective</label>
+                <label style={labelStyle}>Description</label>
                 <textarea
                   placeholder="What does this test verify?"
-                  value={objective}
-                  onChange={(e) => setObjective(e.target.value)}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   style={{ ...textareaStyle, minHeight: 100 }}
                   onFocus={(e) => {
                     e.target.style.borderColor = 'var(--cp-blue)';
@@ -614,14 +617,14 @@ export function CreateTestCaseModal({
                     Priority <span style={{ color: 'var(--sem-danger)' }}>*</span>
                   </label>
                   <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
+                    value={priorityId}
+                    onChange={(e) => setPriorityId(e.target.value)}
                     style={{ ...selectStyle, backgroundColor: 'var(--cp-float)' }}
                   >
-                    <option value="critical">Critical</option>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
+                    <option value="">Select...</option>
+                    {priorities.map(p => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -629,16 +632,14 @@ export function CreateTestCaseModal({
                     Type <span style={{ color: 'var(--sem-danger)' }}>*</span>
                   </label>
                   <select
-                    value={type}
-                    onChange={(e) => setType(e.target.value)}
+                    value={caseTypeId}
+                    onChange={(e) => setCaseTypeId(e.target.value)}
                     style={{ ...selectStyle, backgroundColor: 'var(--cp-float)' }}
                   >
-                    <option value="functional">Functional</option>
-                    <option value="regression">Regression</option>
-                    <option value="security">Security</option>
-                    <option value="integration">Integration</option>
-                    <option value="performance">Performance</option>
-                    <option value="api">API</option>
+                    <option value="">Select...</option>
+                    {caseTypes.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
                   </select>
                 </div>
               </div>

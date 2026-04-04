@@ -57,12 +57,12 @@ interface CycleTestCase {
   execution_time_seconds: number;
   failure_reason: string | null;
   started_at: string | null;
-  defect_ids: string[] | null;
+  
   test_case: {
     id: string;
     case_key: string;
     title: string;
-    objective: string | null;
+    description: string | null;
     preconditions: string | null;
     priority_id: string | null;
     case_type_id: string | null;
@@ -159,13 +159,13 @@ export default function TestHubExecutionPage() {
     if (!cycleId) return;
     const { data, error } = await (supabase as any)
       .from('tm_cycle_scope')
-      .select(`*, test_case:tm_test_cases ( id, case_key, title, objective, preconditions, priority_id, case_type_id, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) ), assignee:profiles!assigned_to ( id, full_name )`)
+      .select(`*, test_case:tm_test_cases ( id, case_key, title, description, preconditions, priority_id, case_type_id, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) ), assignee:profiles!assigned_to ( id, full_name )`)
       .eq('cycle_id', cycleId)
-      .order('created_at');
+      .order('added_at');
 
     if (data && data.length > 0) {
       const testCaseIds = data.map(tc => tc.test_case?.id).filter(Boolean);
-      const { data: stepsData } = await supabase.from('th_test_steps').select('*').in('test_case_id', testCaseIds).order('step_number');
+      const { data: stepsData } = await supabase.from('tm_test_steps').select('*').in('test_case_id', testCaseIds).order('step_number');
       if (stepsData) {
         const stepsMap = new Map<string, any[]>();
         stepsData.forEach(s => {
@@ -242,23 +242,10 @@ export default function TestHubExecutionPage() {
     try {
       const updateData: any = {
         current_status: status,
-        executed_at: new Date().toISOString(),
-        executed_by: currentUserId,
-        execution_time_seconds: Math.floor((Date.now() - sessionStartRef.current) / 1000),
         updated_at: new Date().toISOString(),
       };
-      if (failureReason) updateData.failure_reason = failureReason;
-      if (failureNotes) {
-        const existing = currentTestCase?.notes || '';
-        updateData.notes = existing ? `${existing}\n\n[Failure Notes] ${failureNotes}` : `[Failure Notes] ${failureNotes}`;
-      }
-      if (defectId) {
-        const existing = currentTestCase?.defect_ids || [];
-        updateData.defect_ids = [...existing, defectId];
-      }
       if (status === 'not_run') {
-        updateData.executed_at = null; updateData.executed_by = null;
-        updateData.failure_reason = null; updateData.execution_time_seconds = 0;
+        // Reset status only — no extra columns to clear
       }
       const { error } = await (supabase as any).from('tm_cycle_scope').update(updateData).eq('id', selectedTestCaseId);
       if (error) { catalystToast.error('Failed to update test result'); return; }
@@ -372,17 +359,8 @@ export default function TestHubExecutionPage() {
     updateExecutionStatus('passed');
   };
 
-  // Notes auto-save
-  useEffect(() => {
-    if (!selectedTestCaseId) return;
-    const timer = setTimeout(async () => {
-      const currentTC = testCases.find(tc => tc.id === selectedTestCaseId);
-      if (notes !== (currentTC?.notes || '')) {
-        await (supabase as any).from('tm_cycle_scope').update({ notes, updated_at: new Date().toISOString() }).eq('id', selectedTestCaseId);
-      }
-    }, 800);
-    return () => clearTimeout(timer);
-  }, [notes, selectedTestCaseId]);
+  // Notes auto-save — disabled until notes column is added to tm_cycle_scope
+  // useEffect(() => { ... }, [notes, selectedTestCaseId]);
 
   // ── Keyboard Shortcuts ─────────────────────────────────────────────────
   useEffect(() => {
@@ -657,7 +635,7 @@ export default function TestHubExecutionPage() {
                     )}
                   </div>
                   <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
-                  {testCase.objective && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.objective}</p>}
+                  {testCase.description && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.description}</p>}
                 </div>
 
                 {/* Step progress indicator */}
@@ -898,7 +876,6 @@ export default function TestHubExecutionPage() {
                     cycleTestCaseId={currentTestCase.id}
                     attachments={attachments}
                     onAttachmentsChange={fetchAttachments}
-                    defectIds={currentTestCase.defect_ids || []}
                     onCreateDefect={handleFail}
                   />
                 ) : (
