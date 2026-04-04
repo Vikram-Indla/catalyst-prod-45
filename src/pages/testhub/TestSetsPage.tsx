@@ -174,7 +174,7 @@ export default function TestSetsPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => handleEdit(set)}>Edit</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => cloneMutation.mutate({ setId: set.id })}>Clone</DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => createCycleMutation.mutate({ setId: set.id, projectId })}>Create New Cycle</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setIsCreateCycleOpen(true)}>Create New Cycle</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => archiveMutation.mutate({ setId: set.id, archive: set.is_active })}>
                         {set.is_active ? 'Archive' : 'Restore'}
                       </DropdownMenuItem>
