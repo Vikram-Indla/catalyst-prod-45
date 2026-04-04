@@ -8,7 +8,7 @@ import { RefreshCw, Link2, Loader2, ChevronDown, AlertTriangle, Settings, Extern
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useJiraConnection } from '@/modules/workhub/admin/hooks/useJiraConnection';
-import { useSyncHealth, useForceSync } from '@/modules/workhub/admin/hooks/useSyncEngine';
+import { useSyncHealth, useForceSync, useIsSyncRunning } from '@/modules/workhub/admin/hooks/useSyncEngine';
 import { useQueryClient } from '@tanstack/react-query';
 
 type PanelView = 'status' | 'webhook';
