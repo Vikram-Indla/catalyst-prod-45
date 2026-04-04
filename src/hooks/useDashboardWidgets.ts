@@ -8,6 +8,56 @@ import { supabase } from '@/integrations/supabase/client';
 // "Active" releases = not archived/released/shipped
 const INACTIVE_STATUSES = ['archived', 'released', 'shipped'] as const;
 
+// ─── Avatar resolver: maps display names → avatar URLs via resource_inventory + profiles ───
+let _avatarCache: Map<string, string | null> | null = null;
+let _avatarCachePromise: Promise<Map<string, string | null>> | null = null;
+
+async function getAvatarMap(): Promise<Map<string, string | null>> {
+  if (_avatarCache) return _avatarCache;
+  if (_avatarCachePromise) return _avatarCachePromise;
+
+  _avatarCachePromise = (async () => {
+    const { data: resources } = await supabase
+      .from('resource_inventory')
+      .select('name, profile_id')
+      .eq('is_active', true);
+
+    const profileIds = (resources || []).map(r => r.profile_id).filter((id): id is string => !!id);
+    const avatarMap = new Map<string, string | null>();
+
+    if (profileIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, avatar_url')
+        .in('id', profileIds);
+
+      const profileAvatars = new Map<string, string | null>();
+      for (const p of profiles || []) {
+        profileAvatars.set(p.id, p.avatar_url || null);
+      }
+
+      for (const r of resources || []) {
+        if (r.name && r.profile_id) {
+          const url = profileAvatars.get(r.profile_id) || null;
+          avatarMap.set(r.name.toLowerCase(), url);
+        }
+      }
+    }
+
+    _avatarCache = avatarMap;
+    // Invalidate cache after 5 minutes
+    setTimeout(() => { _avatarCache = null; _avatarCachePromise = null; }, 5 * 60 * 1000);
+    return avatarMap;
+  })();
+
+  return _avatarCachePromise;
+}
+
+export function resolveAvatarUrl(avatarMap: Map<string, string | null>, displayName: string | null): string | null {
+  if (!displayName) return null;
+  return avatarMap.get(displayName.toLowerCase()) || null;
+}
+
 async function getProjectKey(projectId: string): Promise<string | null> {
   const { data, error } = await supabase.from('projects').select('key').eq('id', projectId).single();
   if (error && error.code !== 'PGRST116') throw error;
