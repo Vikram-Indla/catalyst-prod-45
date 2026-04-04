@@ -16,6 +16,7 @@ type PanelView = 'status' | 'webhook';
 export function JiraSyncCTA() {
   const { data: conn, isLoading: connLoading, error: connError } = useJiraConnection();
   const { data: health } = useSyncHealth();
+  const { data: isSyncRunning } = useIsSyncRunning();
   const forceSync = useForceSync();
   const queryClient = useQueryClient();
 
@@ -23,6 +24,9 @@ export function JiraSyncCTA() {
   const [panelView, setPanelView] = useState<PanelView>('status');
   const [syncing, setSyncing] = useState(false);
   const popRef = useRef<HTMLDivElement>(null);
+
+  // Combine manual syncing with background sync detection
+  const isAnySyncActive = syncing || (isSyncRunning === true);
 
   // Close popover on outside click
   useEffect(() => {
