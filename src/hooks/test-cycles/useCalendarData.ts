@@ -57,7 +57,7 @@ export function useCalendarData(
         module: run.tm_test_cases?.module || 'General',
         dueDate: new Date(run.created_at),
         status: mapStatus(run.status),
-        priority: run.tm_test_cases?.priority || 'medium',
+        priority: run.tm_test_cases?.priority?.name || 'medium',
         assigneeId: null,
         assigneeName: null,
         assigneeAvatar: null,

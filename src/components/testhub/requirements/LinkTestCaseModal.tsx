@@ -39,7 +39,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
     const fetchTestCases = async () => {
       setIsLoading(true);
       try {
-        let query = (supabase as any).from('tm_test_cases').select('id, case_key, title, priority').order('case_key');
+        let query = (supabase as any).from('tm_test_cases').select('id, case_key, title, priority_id, priority:tm_case_priorities ( id, name, color )').order('case_key');
         if (alreadyLinkedIds.length > 0) {
           query = query.not('id', 'in', `(${alreadyLinkedIds.join(',')})`);
         }

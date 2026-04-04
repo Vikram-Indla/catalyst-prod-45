@@ -81,7 +81,7 @@ export default function RequirementDetailPage() {
       // Fetch linked tests via tm_requirement_tests joined to tm_test_cases
       const { data: linksData } = await (supabase as any)
         .from('tm_requirement_tests')
-        .select('id, test_case_id, test_case:tm_test_cases(id, case_key, title, priority)')
+        .select('id, test_case_id, test_case:tm_test_cases(id, case_key, title, priority_id, priority:tm_case_priorities(id, name, color))')
         .eq('requirement_id', requirementId);
       
       if (linksData) {

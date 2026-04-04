@@ -63,9 +63,9 @@ export default function TestRunsPage() {
       const [execRes, cycleRes] = await Promise.all([
         (supabase as any)
           .from('tm_cycle_scope')
-          .select(`
+           .select(`
             id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at,
-            test_case:tm_test_cases ( id, case_key, title, priority )
+            test_case:tm_test_cases ( id, case_key, title, priority_id, priority:tm_case_priorities ( id, name, color ) )
           `)
           .order('updated_at', { ascending: false, nullsFirst: false }),
         (supabase as any)

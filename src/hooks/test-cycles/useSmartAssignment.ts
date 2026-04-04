@@ -87,7 +87,7 @@ export function useSmartAssignment(cycleId: string, testCaseIds: string[]) {
     queryFn: async (): Promise<TestCaseForAssignment[]> => {
       const { data, error } = await (supabase as any)
         .from('tm_cycle_scope')
-        .select('id, test_case_id, test_case:tm_test_cases(id, case_key, title, priority)')
+        .select('id, test_case_id, test_case:tm_test_cases(id, case_key, title, priority_id, priority:tm_case_priorities(id, name, color))')
         .eq('cycle_id', cycleId);
       
       if (error || !data) return [];
