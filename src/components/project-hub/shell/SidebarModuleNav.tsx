@@ -27,8 +27,8 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         style={{ padding: collapsed ? '12px 10px' : '12px 10px' }}
       >
         <div
-          className="flex items-center justify-center rounded-full flex-shrink-0"
-          style={{ width: 28, height: 28, background: 'var(--cp-blue)', color: '#FFFFFF', fontSize: 11, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}
+          className="flex items-center justify-center rounded-full flex-shrink-0 bg-[var(--cp-blue)]"
+          style={{ width: 28, height: 28, color: '#FFFFFF', fontSize: 11, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}
         >
           PH
         </div>

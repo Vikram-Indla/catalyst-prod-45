@@ -118,8 +118,8 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
             })}
             {extra > 0 && (
               <div
-                className="w-[22px] h-[22px] rounded-full border-2 border-white flex items-center justify-center text-[8px] font-semibold"
-                style={{ background: 'var(--divider)', color: 'var(--fg-3)', zIndex: 0 }}
+                className="w-[22px] h-[22px] rounded-full border-2 border-white flex items-center justify-center text-[8px] font-semibold bg-[var(--divider)]"
+                style={{ color: 'var(--fg-3)', zIndex: 0 }}
               >
                 +{extra}
               </div>
@@ -130,12 +130,11 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
           <div ref={filterRef} className="relative">
             <button
               onClick={() => setFilterOpen(!filterOpen)}
-              className="h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[#F1F5F9] transition-colors"
+              className={`h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[#F1F5F9] transition-colors ${hasActiveFilters ? 'bg-[var(--cp-blue-wash)]' : ''}`}
               style={{
                 borderColor: hasActiveFilters ? 'var(--cp-blue)' : 'var(--divider)',
                 color: hasActiveFilters ? 'var(--cp-blue)' : 'var(--fg-2)',
                 fontFamily: 'Inter, sans-serif',
-                background: hasActiveFilters ? 'var(--cp-blue-wash)' : undefined,
               }}
             >
               <Filter size={13} />
@@ -173,8 +172,8 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
             </button>
             {groupOpen && (
               <div
-                className="absolute right-0 top-full mt-1 rounded-md py-1"
-                style={{ width: 160, background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 9999 }}
+                className="absolute right-0 top-full mt-1 rounded-md py-1 bg-[var(--cp-float)]"
+                style={{ width: 160, border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 9999 }}
               >
                 {GROUP_OPTIONS.map(o => (
                   <button
@@ -214,8 +213,8 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
           {activeFilterChips.map(chip => (
             <span
               key={chip.key}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
-              style={{ background: 'var(--cp-blue-wash)', color: 'var(--cp-blue)', border: '1px solid var(--cp-primary-20)' }}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--cp-blue-wash)]"
+              style={{ color: 'var(--cp-blue)', border: '1px solid var(--cp-primary-20)' }}
             >
               {chip.label}: {chip.value}
               <button onClick={chip.remove} className="hover:text-[#DC2626]"><X size={9} /></button>
@@ -248,8 +247,8 @@ function FilterDropdown({ filters, onChange, statuses, priorities, types, assign
 
   return (
     <div
-      className="absolute left-0 top-full mt-1 rounded-lg overflow-y-auto"
-      style={{ width: 240, maxHeight: 420, background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 12px 32px rgba(0,0,0,0.15)', zIndex: 9999 }}
+      className="absolute left-0 top-full mt-1 rounded-lg overflow-y-auto bg-[var(--cp-float)]"
+      style={{ width: 240, maxHeight: 420, border: '1px solid var(--divider)', boxShadow: '0 12px 32px rgba(0,0,0,0.15)', zIndex: 9999 }}
     >
       {/* Status */}
       <FilterSection title="Status">
@@ -369,8 +368,8 @@ function ColumnSettingsDropdown({ columns, onChange }: { columns: ColumnDef[]; o
 
   return (
     <div
-      className="absolute right-0 top-full mt-1 rounded-lg py-2"
-      style={{ width: 200, background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 9999 }}
+      className="absolute right-0 top-full mt-1 rounded-lg py-2 bg-[var(--cp-float)]"
+      style={{ width: 200, border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', zIndex: 9999 }}
     >
       <div className="px-3 pb-1.5 text-[10px] font-semibold uppercase" style={{ color: 'var(--fg-4)', letterSpacing: '0.06em' }}>
         Columns

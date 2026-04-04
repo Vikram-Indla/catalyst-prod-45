@@ -78,7 +78,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
                 width: 6,
                 height: 6,
                 borderRadius: '50%',
-                background: dotColor,
+                backgroundColor: dotColor,
                 display: 'inline-block',
                 flexShrink: 0,
               }}
@@ -101,7 +101,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
             side="top"
             sideOffset={4}
             style={{
-              background: 'var(--fg-1)',
+              backgroundColor: 'var(--fg-1)',
               color: '#FFFFFF',
               padding: '4px 8px',
               borderRadius: 4,

@@ -31,8 +31,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.5)' }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="bg-white dark:bg-[#1F2128]" style={{ width: 440, borderRadius: 12, padding: 24, fontFamily: "'Inter', sans-serif" }}>
@@ -88,8 +87,8 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
           <button
             onClick={() => name.trim() && onSubmit({ name: name.trim(), category, color })}
             disabled={!name.trim() || loading}
-            className="hover:opacity-90 transition-opacity disabled:opacity-40"
-            style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: name.trim() && !loading ? 'pointer' : 'default' }}
+            className="hover:opacity-90 transition-opacity disabled:opacity-40 bg-[var(--cp-blue)]"
+            style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: name.trim() && !loading ? 'pointer' : 'default' }}
           >
             {loading ? 'Adding...' : 'Add Status'}
           </button>

@@ -40,8 +40,8 @@ export function TopNav({ onCreateClick }: TopNavProps) {
         style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
       >
         <div
-          className="flex items-center justify-center rounded-full flex-shrink-0"
-          style={{ width: 28, height: 28, background: 'var(--cp-blue)' }}
+          className="flex items-center justify-center rounded-full flex-shrink-0 bg-[var(--cp-blue)]"
+          style={{ width: 28, height: 28 }}
         >
           <span style={{ color: 'var(--bg-app)', fontSize: 13, fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>C</span>
         </div>
@@ -89,11 +89,10 @@ export function TopNav({ onCreateClick }: TopNavProps) {
         {/* + Create */}
         <button
           onClick={onCreateClick}
-          className="flex items-center gap-1.5 rounded-md transition-colors hover:opacity-90"
+          className="flex items-center gap-1.5 rounded-md transition-colors hover:opacity-90 bg-[var(--cp-blue)]"
           style={{
             height: 32,
             padding: '0 12px',
-            background: 'var(--cp-blue)',
             color: '#FFFFFF',
             border: 'none',
             borderRadius: 6,

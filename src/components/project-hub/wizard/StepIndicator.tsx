@@ -23,7 +23,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                 style={{
                   width: 28,
                   height: 28,
-                  background: isDone ? 'var(--sem-success)' : isActive ? 'var(--cp-blue)' : 'transparent',
+                  backgroundColor: isDone ? 'var(--sem-success)' : isActive ? 'var(--cp-blue)' : 'transparent',
                   border: isUpcoming ? '2px solid var(--divider)' : 'none',
                   color: '#FFFFFF',
                   fontSize: 12,
@@ -57,7 +57,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                 style={{
                   width: 60,
                   height: 2,
-                  background: i < current ? 'var(--sem-success)' : 'var(--divider)',
+                  backgroundColor: i < current ? 'var(--sem-success)' : 'var(--divider)',
                   marginLeft: 8,
                   marginRight: 8,
                   marginBottom: 18,

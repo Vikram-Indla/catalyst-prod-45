@@ -73,10 +73,10 @@ export default function IntelligenceDrawer({ projectId }: Props) {
   return (
     <>
       <div onClick={closeDrawer} className="ph-drawer-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.15)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
-      <div role="dialog" aria-label="Project Intelligence" className="ph-drawer-panel" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, background: 'var(--cp-bg)', zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column', color: 'var(--cp-t1)' }}>
+      <div role="dialog" aria-label="Project Intelligence" className="ph-drawer-panel bg-[var(--cp-bg)] dark:bg-[#1A1714]" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column', color: 'var(--cp-t1)' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--cp-bd)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 24, height: 24, borderRadius: 6, background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="bg-[var(--cp-blue)]" style={{ width: 24, height: 24, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Sparkles size={12} color="#FFFFFF" />
             </div>
             <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--cp-t1)', fontFamily: "'Sora', sans-serif" }}>
@@ -89,7 +89,7 @@ export default function IntelligenceDrawer({ projectId }: Props) {
         </div>
 
         <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--cp-bd-zone)' }}>
-          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--cp-ai-t)', background: 'var(--cp-ai-bg)', padding: '3px 8px', borderRadius: 6 }}>
+          <span className="bg-[var(--cp-ai-bg)]" style={{ fontSize: 10, fontWeight: 600, color: 'var(--cp-ai-t)', padding: '3px 8px', borderRadius: 6 }}>
             ✦ AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </span>
         </div>
@@ -100,7 +100,7 @@ export default function IntelligenceDrawer({ projectId }: Props) {
           ) : (
             <>
               <Section label="Recommendations">
-                <div style={{ background: 'var(--cp-warn-bg)', border: '1px solid var(--cp-bd)', borderRadius: 8, padding: '12px 14px' }}>
+                <div className="bg-[var(--cp-warn-bg)]" style={{ border: '1px solid var(--cp-bd)', borderRadius: 8, padding: '12px 14px' }}>
                   <div style={{ fontSize: 12, color: 'var(--cp-t2)', lineHeight: 1.7, fontFamily: "'Inter', sans-serif" }}>
                     <div style={{ fontWeight: 700, marginBottom: 4, color: 'var(--cp-t1)' }}>Action Items</div>
                     {insights.recs.map((r, i) => <div key={i}>{i + 1}. {r}</div>)}
@@ -108,7 +108,7 @@ export default function IntelligenceDrawer({ projectId }: Props) {
                 </div>
               </Section>
               <Section label="Scope & Delays">
-                <div style={{ background: 'var(--cp-bg-sunken)', border: '1px solid var(--cp-bd)', borderRadius: 8, padding: '12px 14px', fontSize: 12, color: 'var(--cp-t2)', lineHeight: 1.6, fontFamily: "'Inter', sans-serif" }}>
+                <div className="bg-[var(--cp-bg-sunken)]" style={{ border: '1px solid var(--cp-bd)', borderRadius: 8, padding: '12px 14px', fontSize: 12, color: 'var(--cp-t2)', lineHeight: 1.6, fontFamily: "'Inter', sans-serif" }}>
                   <div><strong style={{ color: 'var(--cp-t1)' }}>{insights.overdueCount}</strong> overdue items{insights.overdueKeys.length > 0 && `: ${insights.overdueKeys.join(', ')}`}</div>
                   {insights.bottlenecks.length > 0 && (
                     <div style={{ marginTop: 6 }}>
@@ -122,7 +122,7 @@ export default function IntelligenceDrawer({ projectId }: Props) {
                 </div>
               </Section>
               <Section label="People & Capacity">
-                <div style={{ background: 'var(--cp-bg-sunken)', border: '1px solid var(--cp-bd)', borderRadius: 8, padding: '12px 14px', fontSize: 12, color: 'var(--cp-t2)', lineHeight: 1.6, fontFamily: "'Inter', sans-serif" }}>
+                <div className="bg-[var(--cp-bg-sunken)]" style={{ border: '1px solid var(--cp-bd)', borderRadius: 8, padding: '12px 14px', fontSize: 12, color: 'var(--cp-t2)', lineHeight: 1.6, fontFamily: "'Inter', sans-serif" }}>
                   {insights.workloadItems.map((m: any) => (
                     <div key={m.user_id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                       <PersonAvatar name={m.name} size={18} />
@@ -137,7 +137,7 @@ export default function IntelligenceDrawer({ projectId }: Props) {
                 </div>
               </Section>
               <Section label="Incidents & Quality">
-                <div style={{ background: 'var(--cp-bg-sunken)', border: '1px solid var(--cp-bd)', borderRadius: 8, padding: '12px 14px', fontSize: 12, color: 'var(--cp-t2)', lineHeight: 1.6, fontFamily: "'Inter', sans-serif" }}>
+                <div className="bg-[var(--cp-bg-sunken)]" style={{ border: '1px solid var(--cp-bd)', borderRadius: 8, padding: '12px 14px', fontSize: 12, color: 'var(--cp-t2)', lineHeight: 1.6, fontFamily: "'Inter', sans-serif" }}>
                   <div><strong style={{ color: 'var(--cp-t1)' }}>{insights.totalIncidents}</strong> active incidents{insights.p1Count > 0 && <span style={{ color: 'var(--cp-err)', fontWeight: 700 }}> ({insights.p1Count} P1)</span>}</div>
                   <div><strong style={{ color: 'var(--cp-t1)' }}>{insights.totalDefects}</strong> defects{insights.critDefects > 0 && <span style={{ color: 'var(--cp-err)', fontWeight: 700 }}> ({insights.critDefects} critical)</span>}</div>
                 </div>
@@ -147,7 +147,7 @@ export default function IntelligenceDrawer({ projectId }: Props) {
         </div>
 
         <div style={{ padding: '12px 20px', borderTop: '1px solid var(--cp-bd)' }}>
-          <button onClick={closeDrawer} className="ph-focus-ring" style={{ width: '100%', height: 36, borderRadius: 8, border: '1px solid var(--cp-bd)', background: 'var(--cp-bg)', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--cp-t3)' }}>
+          <button onClick={closeDrawer} className="ph-focus-ring bg-[var(--cp-bg)] dark:bg-[#1A1714]" style={{ width: '100%', height: 36, borderRadius: 8, border: '1px solid var(--cp-bd)', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--cp-t3)' }}>
             Close
           </button>
         </div>

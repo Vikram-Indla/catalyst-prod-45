@@ -122,12 +122,13 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
     padding: '0 12px',
     fontSize: 13,
     color: 'var(--fg-1)',
-    background: 'var(--cp-float)',
     border: '1px solid var(--divider)',
     borderRadius: 6,
     outline: 'none',
     fontFamily: "'Inter', sans-serif",
   };
+
+  const inputClassName = 'bg-[var(--cp-float)]';
 
   const filteredProfiles = profiles?.filter(p =>
     p.display_name.toLowerCase().includes(leadFilter.toLowerCase())
@@ -144,6 +145,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           value={data.name}
           onChange={e => onChange({ ...data, name: e.target.value })}
           placeholder="e.g. Digital Transformation Platform"
+          className={inputClassName}
           style={inputStyle}
         />
       </div>
@@ -161,6 +163,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
               onChange({ ...data, key: e.target.value.toUpperCase().slice(0, 6) });
             }}
             placeholder="AUTO"
+            className={inputClassName}
             style={{
               ...inputStyle,
               fontFamily: "'JetBrains Mono', monospace",
@@ -192,6 +195,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           value={data.department}
           onChange={e => onChange({ ...data, department: e.target.value })}
           placeholder="e.g. Mining, Digital Operations"
+          className={inputClassName}
           style={inputStyle}
         />
       </div>
@@ -204,7 +208,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
         <button
           type="button"
           onClick={() => setShowLeadPicker(!showLeadPicker)}
-          className="flex items-center justify-between w-full text-left"
+          className={`flex items-center justify-between w-full text-left ${inputClassName}`}
           style={{
             ...inputStyle,
             display: 'flex',
@@ -218,7 +222,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
               {selectedLead.avatar_url ? (
                 <img src={selectedLead.avatar_url} alt="" className="rounded-full" style={{ width: 22, height: 22, objectFit: 'cover' }} />
               ) : (
-                <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 22, height: 22, background: '#E2E8F0', fontSize: 9, fontWeight: 700, color: '#475569' }}>
+                <div className="rounded-full flex items-center justify-center shrink-0 bg-[#E2E8F0] dark:bg-[#3A3530]" style={{ width: 22, height: 22, fontSize: 9, fontWeight: 700, color: '#475569' }}>
                   {getInitials(selectedLead.display_name)}
                 </div>
               )}
@@ -262,7 +266,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                     {p.avatar_url ? (
                       <img src={p.avatar_url} alt="" className="rounded-full" style={{ width: 24, height: 24, objectFit: 'cover' }} />
                     ) : (
-                      <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 24, height: 24, background: '#E2E8F0', fontSize: 9, fontWeight: 700, color: '#475569' }}>
+                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[#E2E8F0] dark:bg-[#3A3530]" style={{ width: 24, height: 24, fontSize: 9, fontWeight: 700, color: '#475569' }}>
                         {getInitials(p.display_name)}
                       </div>
                     )}
@@ -289,6 +293,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           onChange={e => onChange({ ...data, description: e.target.value })}
           placeholder="Brief project description (optional)"
           rows={3}
+          className={inputClassName}
           style={{
             ...inputStyle,
             height: 'auto',
@@ -319,6 +324,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
               value={data.jiraKey}
               onChange={e => onChange({ ...data, jiraKey: e.target.value.toUpperCase() })}
               placeholder="e.g. DTI"
+              className={inputClassName}
               style={{
                 ...inputStyle,
                 fontFamily: "'JetBrains Mono', monospace",

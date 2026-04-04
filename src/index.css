@@ -588,8 +588,8 @@ html:has(body[data-scroll-locked]) {
     
     /* === SHADOW TOKENS (D1 Spec Compliant) === */
     --shadow-color: 0 0% 10%;            /* #1a1a1a */
-    --shadow-elev-1: 0 1px 3px hsl(0 0% 0% / 0.05);
-    --shadow-elev-2: 0 4px 12px hsl(0 0% 0% / 0.08);
+    --shadow-elev-1: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-elev-2: 0 4px 12px rgba(0, 0, 0, 0.08);
     
     /* ═══════════════════════════════════════════════════════════════
        USERS MODULE — RING-FENCED DESIGN SYSTEM
@@ -627,7 +627,7 @@ html:has(body[data-scroll-locked]) {
     --users-text-muted: 215 16% 47%;        /* #64748b - WCAG AA compliant */
     --users-border: 214 32% 91%;            /* #e2e8f0 */
     --users-border-light: 213 27% 96%;      /* #f1f5f9 */
-    --shadow-elev-3: 0 8px 24px hsl(0 0% 0% / 0.12);
+    --shadow-elev-3: 0 8px 24px rgba(0, 0, 0, 0.12);
     --shadow-brand: 0 4px 14px -2px rgba(37, 99, 235, 0.25);
     --shadow-ai: 0 4px 14px -2px rgba(124, 58, 237, 0.3);
     --shadow-focus-ring: 0 0 0 3px hsl(var(--brand-primary-light));
@@ -1007,7 +1007,7 @@ html:has(body[data-scroll-locked]) {
     --shadow-elev-1: var(--shadow-1);
     --shadow-elev-2: var(--shadow-2);
     --shadow-elev-3: 0 1px 0 rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.65);
-    --shadow-brand: 0 4px 12px hsl(217 91% 60% / 0.25);  /* Blue brand shadow */
+    --shadow-brand: 0 4px 12px rgba(59, 130, 246, 0.25);  /* Blue brand shadow */
     
     /* === SEMANTIC TOKEN ALIASES (V5 CANONICAL) === */
     --sem-info: var(--info-fg);
@@ -1322,7 +1322,7 @@ html:has(body[data-scroll-locked]) {
     textarea:focus,
     select:focus,
     [role="combobox"]:focus {
-      border-color: hsl(217 91% 60%);
+      border-color: #3B82F6;
     }
   }
 }
@@ -1687,26 +1687,26 @@ html:has(body[data-scroll-locked]) {
   
   .dark .text-muted-visible,
   [data-theme="dark"] .text-muted-visible {
-    color: hsl(0 0% 65%);
+    color: #A6A6A6;
   }
-  
+
   .text-muted-subtle {
     color: hsl(var(--muted-foreground));
   }
-  
+
   .dark .text-muted-subtle,
   [data-theme="dark"] .text-muted-subtle {
-    color: hsl(0 0% 55%);
+    color: #8C8C8C;
   }
-  
+
   /* Icon visibility boost for dark mode empty states */
   .icon-muted-visible {
     color: hsl(var(--muted-foreground));
   }
-  
+
   .dark .icon-muted-visible,
   [data-theme="dark"] .icon-muted-visible {
-    color: hsl(0 0% 50%);
+    color: #808080;
   }
 }
 
@@ -2293,7 +2293,7 @@ html:has(body[data-scroll-locked]) {
 
 /* Boost muted text visibility in light mode */
 .text-muted-foreground {
-  color: hsl(0 0% 35%) !important;
+  color: #595959 !important;
 }
 
 /* SEV badge text must be readable */
@@ -2308,14 +2308,14 @@ html:has(body[data-scroll-locked]) {
 .text-slate-400,
 .text-zinc-400,
 .text-neutral-400 {
-  color: hsl(0 0% 45%) !important;
+  color: #737373 !important;
 }
 
 .text-gray-500,
 .text-slate-500,
 .text-zinc-500,
 .text-neutral-500 {
-  color: hsl(0 0% 38%) !important;
+  color: #616161 !important;
 }
 
 /* Table meta/stats in light mode */
@@ -2323,7 +2323,7 @@ table .text-muted-foreground,
 table .text-gray-400,
 table .text-gray-500,
 [class*="Table"] .text-muted-foreground {
-  color: hsl(0 0% 35%) !important;
+  color: #595959 !important;
 }
 
 /* Badge/chip text readability in light mode */
@@ -2338,25 +2338,25 @@ table .text-gray-500,
 :root:not(.dark) .text-neutral-300,
 :root:not(.dark) .text-slate-300,
 :root:not(.dark) .text-zinc-300 {
-  color: hsl(0 0% 65%) !important;
+  color: #A6A6A6 !important;
 }
 
 :root:not(.dark) .text-gray-400,
 :root:not(.dark) .text-neutral-400,
 :root:not(.dark) .text-slate-400,
 :root:not(.dark) .text-zinc-400 {
-  color: hsl(0 0% 50%) !important;
+  color: #808080 !important;
 }
 
 :root:not(.dark) .text-gray-500,
 :root:not(.dark) .text-neutral-500,
 :root:not(.dark) .text-slate-500,
 :root:not(.dark) .text-zinc-500 {
-  color: hsl(0 0% 42%) !important;
+  color: #6B6B6B !important;
 }
 
 :root:not(.dark) .text-muted-foreground {
-  color: hsl(0 0% 38%) !important;
+  color: #616161 !important;
 }
 
 

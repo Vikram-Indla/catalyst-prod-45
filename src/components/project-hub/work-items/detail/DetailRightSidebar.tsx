@@ -47,8 +47,8 @@ const PRIORITIES = [
   { value: 'Low', icon: <ArrowDown size={14} />, color: 'var(--fg-4)' },
 ];
 
-const STATUS_BG: Record<string, string> = {
-  todo: '#44546F', in_progress: 'var(--cp-blue)', done: 'var(--sem-success)', terminal: 'var(--sem-danger)',
+const STATUS_BG_CLASS: Record<string, string> = {
+  todo: 'bg-[#44546F]', in_progress: 'bg-[var(--cp-blue)]', done: 'bg-[var(--sem-success)]', terminal: 'bg-[var(--sem-danger)]',
 };
 
 export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: SidebarProps) {
@@ -121,21 +121,20 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
 
   return (
     <div
-      className="shrink-0 overflow-y-auto"
-      style={{ width: 280, borderLeft: '1px solid var(--divider)', padding: '14px 16px', background: 'var(--bg-1)' }}
+      className="shrink-0 overflow-y-auto bg-[var(--bg-1)]"
+      style={{ width: 280, borderLeft: '1px solid var(--divider)', padding: '14px 16px' }}
       onClick={closeAll}
     >
       {/* STATUS BUTTON */}
       <div className="relative mb-3">
         <button
           onClick={e => { e.stopPropagation(); setStatusOpen(!statusOpen); setPriorityOpen(false); }}
-          className="w-full py-2 rounded-md text-white text-[11px] font-bold uppercase tracking-wider text-center transition-colors"
-          style={{ background: STATUS_BG[item.status_category] || 'var(--fg-2)' }}
+          className={`w-full py-2 rounded-md text-white text-[11px] font-bold uppercase tracking-wider text-center transition-colors ${STATUS_BG_CLASS[item.status_category] || 'bg-[var(--fg-2)]'}`}
         >
           {item.status_name}
         </button>
         {statusOpen && (
-          <div className="absolute left-0 right-0 top-full mt-1 rounded-md overflow-hidden" style={{ background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }} onClick={e => e.stopPropagation()}>
+          <div className="absolute left-0 right-0 top-full mt-1 rounded-md overflow-hidden bg-[var(--cp-float)]" style={{ border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }} onClick={e => e.stopPropagation()}>
             {statuses.map(s => (
               <button key={s.id} className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[#F1F5F9]" onClick={() => { onUpdate('status_id', s.id); setStatusOpen(false); }}>
                 <StatusLozenge name={s.name} category={s.category} />
@@ -185,7 +184,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
               <ChevronDown size={12} className="text-[#94A3B8]" />
             </button>
             {priorityOpen && (
-              <div className="absolute left-0 top-full mt-1 rounded-md overflow-hidden" style={{ width: 160, background: 'var(--cp-float)', border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }} onClick={e => e.stopPropagation()}>
+              <div className="absolute left-0 top-full mt-1 rounded-md overflow-hidden bg-[var(--cp-float)]" style={{ width: 160, border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }} onClick={e => e.stopPropagation()}>
                 {PRIORITIES.map(p => (
                   <button key={p.value} className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[#F1F5F9]" onClick={() => { onUpdate('priority', p.value); setPriorityOpen(false); }}>
                     <span style={{ color: p.color }}>{p.icon}</span>{p.value}
@@ -202,7 +201,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
               {item.due_date ? new Date(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : <span style={{ color: 'var(--fg-4)' }}>None</span>}
             </span>
             {item.due_date && new Date(item.due_date) < new Date() && (
-              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ background: 'var(--sem-danger-bg)', color: 'var(--sem-danger)' }}>Overdue</span>
+              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-[var(--sem-danger-bg)]" style={{ color: 'var(--sem-danger)' }}>Overdue</span>
             )}
           </div>
         </SidebarField>
@@ -214,37 +213,37 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
         <div className="flex flex-col gap-3">
           <SidebarField label="Components">
             {itemComponents.length > 0 ? (
-              <div className="flex flex-wrap gap-1">{itemComponents.map((c: any) => (<span key={c.id} className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: 'var(--sem-success-bg)', color: 'var(--sem-success)' }}>{c.name}</span>))}</div>
+              <div className="flex flex-wrap gap-1">{itemComponents.map((c: any) => (<span key={c.id} className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--sem-success-bg)]" style={{ color: 'var(--sem-success)' }}>{c.name}</span>))}</div>
             ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
           <SidebarField label="Labels">
             {itemLabels.length > 0 ? (
-              <div className="flex flex-wrap gap-1">{itemLabels.map((l: any) => (<span key={l.id} className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: 'var(--cp-primary-20)', color: 'var(--cp-blue)' }}>{l.name}</span>))}</div>
+              <div className="flex flex-wrap gap-1">{itemLabels.map((l: any) => (<span key={l.id} className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--cp-primary-20)]" style={{ color: 'var(--cp-blue)' }}>{l.name}</span>))}</div>
             ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
           <SidebarField label="Release">
             {release ? (
-              <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold" style={{ background: 'var(--sem-success-bg)', color: 'var(--sem-success)' }}>{release.name || release.title}</span>
+              <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold bg-[var(--sem-success-bg)]" style={{ color: 'var(--sem-success)' }}>{release.name || release.title}</span>
             ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
           <SidebarField label="Environment">
             {item.environment ? (
-              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase" style={{ background: 'var(--cp-bd-zone)', color: 'var(--fg-3)' }}>{item.environment}</span>
+              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[var(--cp-bd-zone)]" style={{ color: 'var(--fg-3)' }}>{item.environment}</span>
             ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
           <SidebarField label="Department">
             {item.department ? (
-              <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium" style={{ background: 'var(--cp-bd-zone)', color: 'var(--fg-2)' }}>{item.department}</span>
+              <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium bg-[var(--cp-bd-zone)]" style={{ color: 'var(--fg-2)' }}>{item.department}</span>
             ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
           <SidebarField label="Team">
             {item.team ? (
-              <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium" style={{ background: 'var(--cp-bd-zone)', color: 'var(--fg-2)' }}>{item.team}</span>
+              <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium bg-[var(--cp-bd-zone)]" style={{ color: 'var(--fg-2)' }}>{item.team}</span>
             ) : <span className="text-[12px]" style={{ color: 'var(--fg-4)' }}>None</span>}
           </SidebarField>
 
@@ -289,7 +288,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
           <Settings size={12} /> Configure fields
         </button>
         {configureOpen && (
-          <div className="mt-2 p-3 rounded-md" style={{ background: 'var(--bg-app)', border: '1px solid var(--divider)' }}>
+          <div className="mt-2 p-3 rounded-md bg-[var(--bg-app)]" style={{ border: '1px solid var(--divider)' }}>
             <span className="text-[10px] font-bold uppercase block mb-2" style={{ color: 'var(--fg-3)' }}>Visible Context Fields</span>
             {['Components', 'Labels', 'Release', 'Environment', 'Department', 'Team', 'Security Level', 'Flag', 'Resolution', 'Watchers'].map(f => (
               <label key={f} className="flex items-center gap-2 py-1 text-[12px] cursor-pointer" style={{ color: 'var(--fg-2)' }}>
@@ -328,7 +327,7 @@ function MiniAvatar({ name, size = 22 }: { name: string; size?: number }) {
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   const colors = ['#2563EB', '#0D9488', '#7C3AED', '#D97706', '#DC2626', '#16A34A'];
   return (
-    <div className="rounded-full flex items-center justify-center font-bold text-white shrink-0" style={{ width: size, height: size, fontSize: size * 0.38, background: colors[Math.abs(hash) % colors.length] }}>
+    <div className="rounded-full flex items-center justify-center font-bold text-white shrink-0" style={{ width: size, height: size, fontSize: size * 0.38, backgroundColor: colors[Math.abs(hash) % colors.length] }}>
       {initials}
     </div>
   );

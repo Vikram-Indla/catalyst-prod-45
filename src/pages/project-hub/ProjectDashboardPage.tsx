@@ -19,13 +19,16 @@ export default function ProjectDashboardPage() {
     queryKey: ['ph-project-dashboard-v4', key],
     queryFn: async () => {
       if (!key) return null;
-      const { data, error } = await supabase
-        .from('ph_projects')
-        .select('*')
-        .eq('key', key.toUpperCase())
-        .maybeSingle();
-      if (error) { console.warn(error.message); return null; }
-      return data;
+      const upper = key.toUpperCase();
+      // Try ph_projects first
+      const { data: d1 } = await supabase.from('ph_projects').select('*').eq('key', upper).maybeSingle();
+      if (d1) return d1;
+      // Fall back to projects table (backlog pages use this)
+      const { data: d2 } = await supabase.from('projects').select('*').eq('key', upper).maybeSingle();
+      if (d2) return d2;
+      // Last resort: try case-insensitive on projects
+      const { data: d3 } = await supabase.from('projects').select('*').ilike('key', upper).maybeSingle();
+      return d3 ?? null;
     },
     enabled: !!key,
   });
@@ -98,10 +101,8 @@ export default function ProjectDashboardPage() {
               </div>
             </div>
 
-            {/* Widget Grid */}
-            {projectId && (
-              <DashboardWidgetGrid projectId={projectId} projectKey={pKey} />
-            )}
+            {/* Widget Grid — always render; hooks gracefully handle missing projectId */}
+            <DashboardWidgetGrid projectId={projectId || pKey} projectKey={pKey} />
           </>
         )}
       </div>

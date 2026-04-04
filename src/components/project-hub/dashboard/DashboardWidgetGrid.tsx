@@ -34,7 +34,7 @@ export function useDashboardWidgetConfig(projectId: string) {
         .select('widget_id, visible, position, collapsed')
         .eq('project_id', projectId)
         .eq('user_id', userId);
-      if (error) throw error;
+      if (error) return [];
       return (data ?? []) as WidgetConfig[];
     },
     enabled: !!projectId && !!userId,

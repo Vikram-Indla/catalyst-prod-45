@@ -36,8 +36,8 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
       style={{ height: 36 }}
       onClick={() => navigate(`/project-hub/${project.key}/dashboard`)}
       onContextMenu={e => onContextMenu(e, project)}
-      onMouseEnter={e => (e.currentTarget.style.background = T.hoverBg)}
-      onMouseLeave={e => (e.currentTarget.style.background = '')}
+      onMouseEnter={e => (e.currentTarget.style.backgroundColor = T.hoverBg)}
+      onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
     >
       {/* Star */}
       <td style={{ width: 40, padding: '0 4px' }}>
@@ -70,7 +70,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
             style={{
               width: 28,
               height: 28,
-              background: project.color || 'var(--cp-blue)',
+              backgroundColor: project.color || 'var(--cp-blue)',
               color: '#FFFFFF',
               fontSize: 10,
               fontWeight: 700,

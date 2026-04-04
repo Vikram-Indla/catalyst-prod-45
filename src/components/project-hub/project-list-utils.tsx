@@ -33,7 +33,7 @@ export function StatusBadge({ status }: { status: string }) {
         fontSize: 11,
         fontWeight: 500,
         padding: '2px 8px',
-        background: s.bg,
+        backgroundColor: s.bg,
         color: s.color,
         fontFamily: "'Inter', sans-serif",
       }}
@@ -60,14 +60,14 @@ export function HealthBadge({ health }: { health: string | null }) {
         fontSize: 11,
         fontWeight: 500,
         padding: '2px 8px',
-        background: s.bg,
+        backgroundColor: s.bg,
         color: s.color,
         fontFamily: "'Inter', sans-serif",
       }}
     >
       <span
         className="rounded-full"
-        style={{ width: 6, height: 6, background: s.color, display: 'inline-block' }}
+        style={{ width: 6, height: 6, backgroundColor: s.color, display: 'inline-block' }}
       />
       {label}
     </span>
@@ -91,7 +91,7 @@ export function AvatarStack({ count }: { count: number }) {
           style={{
             width: 24,
             height: 24,
-            background: AVATAR_COLORS[i % AVATAR_COLORS.length],
+            backgroundColor: AVATAR_COLORS[i % AVATAR_COLORS.length],
             color: '#FFFFFF',
             fontSize: 9,
             fontWeight: 600,
@@ -104,11 +104,10 @@ export function AvatarStack({ count }: { count: number }) {
       ))}
       {overflow > 0 && (
         <div
-          className="flex items-center justify-center rounded-full flex-shrink-0"
+          className="flex items-center justify-center rounded-full flex-shrink-0 bg-[var(--cp-bd-zone)]"
           style={{
             width: 24,
             height: 24,
-            background: 'var(--cp-bd-zone)',
             color: 'var(--fg-3)',
             fontSize: 9,
             fontWeight: 600,

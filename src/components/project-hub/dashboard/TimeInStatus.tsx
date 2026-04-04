@@ -80,16 +80,16 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
       ) : (
         <div className="ph-tis-scroll" style={{ position: 'relative', maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, minWidth: 900 }}>
-            <thead style={{ position: 'sticky', top: 0, zIndex: 4, background: 'var(--bg-app)' }}>
+            <thead className="bg-[var(--bg-app)] dark:bg-[#1A1714]" style={{ position: 'sticky', top: 0, zIndex: 4 }}>
               <tr style={{ borderBottom: '2px solid var(--divider)' }}>
                 {['Release', 'Key', 'Type', 'Title', 'Current'].map((h, i) => (
-                  <th key={h} style={{
+                  <th key={h} className="bg-[var(--bg-app)] dark:bg-[#1A1714]" style={{
                     padding: '8px 8px', textAlign: 'left',
                     fontSize: 10, fontWeight: 700, color: 'var(--fg-2)',
                     textTransform: 'uppercase', letterSpacing: '.08em',
                     fontFamily: "'Inter', sans-serif",
                     position: 'sticky', left: i === 0 ? 0 : undefined,
-                    background: 'var(--bg-app)', zIndex: 5, whiteSpace: 'nowrap',
+                    zIndex: 5, whiteSpace: 'nowrap',
                   }}>
                     {h}
                   </th>
@@ -105,11 +105,11 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                     {TIS_ABBREV[s] || s.replace(/_/g, ' ').slice(0, 6).toUpperCase()}
                   </th>
                 ))}
-                <th style={{
+                <th className="bg-[var(--bg-1)] dark:bg-[#232019]" style={{
                   padding: '8px 12px', textAlign: 'right',
                   fontSize: 10, fontWeight: 700, color: 'var(--fg-2)',
                   textTransform: 'uppercase', fontFamily: "'Inter', sans-serif",
-                  borderLeft: '2px solid var(--divider)', background: 'var(--bg-1)',
+                  borderLeft: '2px solid var(--divider)',
                   position: 'sticky', right: 0, zIndex: 5,
                   boxShadow: '-4px 0 8px rgba(0,0,0,0.06)',
                 }}>Total</th>
@@ -121,17 +121,17 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                 for (const s of item.statuses ?? []) {
                   statusMap[s.status] = s;
                 }
-                const rowBg = idx % 2 === 1 ? 'var(--bg-1)' : 'var(--bg-app)';
+                const rowBgClass = idx % 2 === 1 ? 'bg-[var(--bg-1)] dark:bg-[#232019]' : 'bg-[var(--bg-app)] dark:bg-[#1A1714]';
                 return (
-                  <tr key={item.work_item_id} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)', background: rowBg }} className="ph-table-row">
+                  <tr key={item.work_item_id} className={`ph-table-row ${rowBgClass}`} style={{ height: 44, borderBottom: '1px solid var(--cp-bd-zone)' }}>
                     {/* Release */}
-                    <td style={{ padding: '0 8px', position: 'sticky', left: 0, background: rowBg, zIndex: 1 }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: 'var(--sem-success-fg)', background: 'var(--sem-success-bg)', padding: '2px 7px', borderRadius: 4, border: '1px solid var(--sem-success-accent)' }}>
+                    <td className={rowBgClass} style={{ padding: '0 8px', position: 'sticky', left: 0, zIndex: 1 }}>
+                      <span className="bg-[var(--sem-success-bg)]" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: 'var(--sem-success-fg)', padding: '2px 7px', borderRadius: 4, border: '1px solid var(--sem-success-accent)' }}>
                         {releaseMap[item.release_key] || '—'}
                       </span>
                     </td>
                     {/* Key */}
-                    <td style={{ padding: '0 8px', background: rowBg }}>
+                    <td className={rowBgClass} style={{ padding: '0 8px' }}>
                       <button onClick={() => openLifecycle(item.work_item_id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--cp-primary-70)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>
                         {item.work_item_key}
                       </button>
@@ -184,10 +184,9 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                                 {formatDuration(entry.duration_days)}
                               </span>
                               {isCurrent && (
-                                <span className="ph-pulse-dot" style={{
+                                <span className="ph-pulse-dot bg-[var(--cp-blue)]" style={{
                                   position: 'absolute', top: 3, right: 3,
                                   width: 5, height: 5, borderRadius: '50%',
-                                  background: 'var(--cp-blue)',
                                 }} />
                               )}
                             </div>
@@ -198,10 +197,10 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                       );
                     })}
                     {/* Total */}
-                    <td style={{
+                    <td className={idx % 2 === 1 ? 'bg-[var(--cp-bd-zone)] dark:bg-[#2C2823]' : 'bg-[var(--bg-1)] dark:bg-[#232019]'} style={{
                       padding: '0 12px', textAlign: 'right',
                       fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 800, color: 'var(--fg-1)',
-                      background: rowBg === 'var(--bg-1)' ? 'var(--cp-bd-zone)' : 'var(--bg-1)', borderLeft: '2px solid var(--divider)',
+                      borderLeft: '2px solid var(--divider)',
                       position: 'sticky', right: 0, zIndex: 2,
                       boxShadow: '-4px 0 8px rgba(0,0,0,0.06)',
                     }}>
@@ -231,10 +230,10 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
 
           {/* Tooltip */}
           {tooltip && (
-            <div style={{
+            <div className="bg-[var(--fg-1)]" style={{
               position: 'fixed', left: tooltip.x, top: tooltip.y,
               transform: 'translate(-50%, -100%)',
-              background: 'var(--fg-1)', color: 'var(--bg-1)', fontSize: 10, padding: '6px 10px',
+              color: 'var(--bg-1)', fontSize: 10, padding: '6px 10px',
               borderRadius: 6, whiteSpace: 'nowrap', zIndex: 50,
               boxShadow: '0 4px 12px rgba(0,0,0,.2)',
               pointerEvents: 'none', fontFamily: "'Inter', sans-serif",

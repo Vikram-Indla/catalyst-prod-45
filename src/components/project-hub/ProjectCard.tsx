@@ -31,7 +31,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
         <div
           className="flex items-center justify-center rounded flex-shrink-0 w-8 h-8 text-white text-[11px] font-bold font-['Sora',sans-serif]"
           style={{
-            background: project.color || 'var(--cp-blue)',
+            backgroundColor: project.color || 'var(--cp-blue)',
             borderRadius: 6,
           }}
         >

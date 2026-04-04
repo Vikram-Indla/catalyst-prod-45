@@ -59,10 +59,9 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
     <div className="space-y-5">
       {/* Radio A: Default */}
       <label
-        className="flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors"
+        className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${data.useDefault ? 'bg-[var(--bg-1)]' : 'bg-[var(--bg-app)]'}`}
         style={{
           border: data.useDefault ? '2px solid var(--cp-blue)' : '1px solid var(--divider)',
-          background: data.useDefault ? 'var(--bg-1)' : 'var(--bg-app)',
         }}
       >
         <input
@@ -79,10 +78,9 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
 
       {/* Radio B: Copy from */}
       <label
-        className="flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors"
+        className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${!data.useDefault ? 'bg-[var(--bg-1)]' : 'bg-[var(--bg-app)]'}`}
         style={{
           border: !data.useDefault ? '2px solid var(--cp-blue)' : '1px solid var(--divider)',
-          background: !data.useDefault ? 'var(--bg-1)' : 'var(--bg-app)',
         }}
       >
         <input
@@ -97,7 +95,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
             <select
               value={data.copyFromProject || ''}
               onChange={e => onChange({ ...data, copyFromProject: e.target.value || null })}
-              className="mt-2"
+              className="mt-2 bg-[var(--bg-app)]"
               style={{
                 width: '100%',
                 height: 36,
@@ -105,7 +103,6 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
                 fontSize: 13,
                 border: '1px solid var(--divider)',
                 borderRadius: 6,
-                background: 'var(--bg-app)',
                 color: 'var(--fg-1)',
                 fontFamily: "'Inter', sans-serif",
               }}
@@ -124,7 +121,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
 
       {/* Workflow preview */}
       {workflowToShow.length > 0 && (
-        <div className="p-3 rounded-lg" style={{ background: 'var(--bg-1)', border: '1px solid var(--divider)' }}>
+        <div className="p-3 rounded-lg bg-[var(--bg-1)]" style={{ border: '1px solid var(--divider)' }}>
           <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 8 }}>
             Workflow Preview
           </div>
@@ -132,12 +129,11 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
             {workflowToShow.map((s, i) => (
               <div key={s.name} className="flex items-center gap-1">
                 <span
-                  className="inline-flex items-center rounded-full"
+                  className="inline-flex items-center rounded-full bg-[var(--bg-app)]"
                   style={{
                     fontSize: 11,
                     fontWeight: 500,
                     padding: '3px 10px',
-                    background: 'var(--bg-app)',
                     border: `1px solid ${s.color}`,
                     color: s.color,
                   }}

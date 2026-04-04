@@ -201,7 +201,7 @@ export function WorkItemTableRow({
                 height: 20, lineHeight: '20px',
                 padding: '0 6px', borderRadius: 3,
                 fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-                background: statusStyle.bg, color: statusStyle.color,
+                backgroundColor: statusStyle.bg, color: statusStyle.color,
                 whiteSpace: 'nowrap',
               }}
             >
@@ -221,7 +221,7 @@ export function WorkItemTableRow({
               <span style={{
                 display: 'inline-block', height: 18, lineHeight: '18px',
                 padding: '0 6px', borderRadius: 3,
-                background: 'var(--cp-bg-sunken, var(--cp-bd-zone))',
+                backgroundColor: 'var(--cp-bg-sunken, var(--cp-bd-zone))',
                 border: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
                 fontSize: 10.5, fontWeight: 500, color: 'var(--cp-text-secondary, var(--fg-2))',
                 fontFamily: 'Inter, sans-serif', whiteSpace: 'nowrap',
@@ -301,18 +301,11 @@ export function WorkItemTableRow({
 
   return (
     <tr
-      className="group cursor-pointer"
+      className={`group cursor-pointer ${isConflict ? 'bg-[rgba(220,38,38,0.03)]' : isSelected ? 'bg-[rgba(37,99,235,0.08)]' : isHighlighted ? 'bg-[rgba(15,23,42,0.04)]' : ''}`}
       style={{
         height: 36,
         maxHeight: 36,
         borderBottom: '0.75px solid rgba(15,23,42,0.07)',
-        background: isConflict
-          ? 'rgba(220,38,38,0.03)'
-          : isSelected
-            ? 'var(--cp-interact-selected, rgba(37,99,235,0.08))'
-            : isHighlighted
-              ? 'var(--cp-interact-hover, rgba(15,23,42,0.04))'
-              : undefined,
         transition: 'background 80ms ease',
       }}
       onClick={onClick}

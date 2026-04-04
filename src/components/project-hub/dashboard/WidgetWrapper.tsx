@@ -69,10 +69,9 @@ export default function WidgetWrapper({
     <div
       role="region"
       aria-label={title}
-      className="overflow-hidden flex flex-col"
+      className={`overflow-hidden flex flex-col ${dark ? 'bg-[#181A1E]' : 'bg-[var(--cp-bg-page)]'}`}
       style={{
         gridColumn: `span ${span}`,
-        background: dark ? '#181A1E' : 'var(--cp-bg-page)',
         border: dark ? '1px solid rgba(255,255,255,0.12)' : '0.75px solid var(--cp-border-default)',
         borderRadius: 'var(--cp-radius-default)',
         boxShadow: dark ? 'none' : undefined,
@@ -81,10 +80,9 @@ export default function WidgetWrapper({
       {/* Header */}
       <button
         onClick={onToggleCollapse}
-        className="w-full flex items-center justify-between gap-2 cursor-pointer border-0 text-left"
+        className={`w-full flex items-center justify-between gap-2 cursor-pointer border-0 text-left ${dark ? 'bg-white/[0.03]' : 'bg-[var(--cp-bg-sunken)]'}`}
         style={{
           padding: '10px 14px',
-          background: dark ? 'rgba(255,255,255,0.03)' : 'var(--cp-bg-sunken)',
           borderBottom: collapsed ? 'none' : dark ? '1px solid rgba(255,255,255,0.08)' : '0.75px solid var(--cp-border-default)',
           minHeight: 38,
         }}
@@ -126,7 +124,7 @@ export default function WidgetWrapper({
 
       {/* Body */}
       {!collapsed && (
-        <div className="flex-1" style={{ padding: flushBody ? 0 : 14, background: dark ? '#181A1E' : 'var(--cp-bg-page)' }}>
+        <div className={`flex-1 ${dark ? 'bg-[#181A1E]' : 'bg-[var(--cp-bg-page)]'}`} style={{ padding: flushBody ? 0 : 14 }}>
           <WidgetErrorBoundary title={title}>
             {children}
           </WidgetErrorBoundary>
@@ -136,10 +134,10 @@ export default function WidgetWrapper({
       {/* Footer */}
       {!collapsed && footer && (
         <div
+          className={dark ? 'bg-[#181A1E]' : 'bg-[var(--cp-bg-page)]'}
           style={{
             borderTop: dark ? '1px solid rgba(255,255,255,0.08)' : '0.75px solid var(--cp-border-subtle)',
             padding: '8px 14px',
-            background: dark ? '#181A1E' : 'var(--cp-bg-page)',
           }}
         >
           {footer}

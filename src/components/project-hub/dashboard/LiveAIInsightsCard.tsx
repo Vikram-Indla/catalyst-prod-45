@@ -11,7 +11,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   // LOADING STATE
   if (loading && !insights) {
     return (
-      <div style={{ gridColumn: '1 / -1', background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
+      <div className="bg-[var(--cp-float)] dark:bg-[#232019]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Sparkles size={16} color="var(--cp-blue)" />
@@ -21,10 +21,10 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
         </div>
         <div style={{ display: 'flex', gap: 16 }}>
           {[1, 2, 3].map((i) => (
-            <div key={i} style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
-              <div style={{ height: 14, background: 'var(--divider)', borderRadius: 4, width: '60%', marginBottom: 12 }} className="ph-skeleton" />
-              <div style={{ height: 20, background: 'var(--divider)', borderRadius: 4, width: '80%', marginBottom: 8 }} className="ph-skeleton" />
-              <div style={{ height: 12, background: 'var(--divider)', borderRadius: 4, width: '50%' }} className="ph-skeleton" />
+            <div key={i} className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
+              <div className="bg-[var(--divider)] ph-skeleton" style={{ height: 14, borderRadius: 4, width: '60%', marginBottom: 12 }} />
+              <div className="bg-[var(--divider)] ph-skeleton" style={{ height: 20, borderRadius: 4, width: '80%', marginBottom: 8 }} />
+              <div className="bg-[var(--divider)] ph-skeleton" style={{ height: 12, borderRadius: 4, width: '50%' }} />
             </div>
           ))}
         </div>
@@ -35,7 +35,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   // ERROR STATE
   if (error && !insights) {
     return (
-      <div style={{ gridColumn: '1 / -1', background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
+      <div className="bg-[var(--cp-float)] dark:bg-[#232019]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Sparkles size={16} color="var(--cp-blue)" />
@@ -48,7 +48,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
         <div style={{ textAlign: 'center', padding: '20px 0' }}>
           <AlertTriangle size={24} color="var(--sem-warning)" style={{ margin: '0 auto 8px' }} />
           <p style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 8 }}>Unable to generate insights right now.</p>
-          <button onClick={refresh} style={{ fontSize: 12, color: 'var(--cp-purple)', background: 'var(--cp-purple-wash)', border: 'none', borderRadius: 6, padding: '6px 16px', cursor: 'pointer', fontWeight: 500 }}>
+          <button onClick={refresh} className="bg-[var(--cp-purple-wash)]" style={{ fontSize: 12, color: 'var(--cp-purple)', border: 'none', borderRadius: 6, padding: '6px 16px', cursor: 'pointer', fontWeight: 500 }}>
             Try again
           </button>
         </div>
@@ -68,7 +68,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   const balance = balanceColors[data.teamWorkload?.balance] || balanceColors.Balanced;
 
   return (
-    <div style={{ gridColumn: '1 / -1', background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
+    <div className="bg-[var(--cp-float)] dark:bg-[#232019]" style={{ gridColumn: '1 / -1', border: '1px solid var(--divider)', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
       {/* HEADER */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -90,7 +90,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
             <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
             {loading ? 'Refreshing...' : 'Refresh'}
           </button>
-          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-purple)', background: 'var(--cp-purple-wash)', borderRadius: 9999, padding: '2px 10px' }}>
+          <span className="bg-[var(--cp-purple-wash)]" style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-purple)', borderRadius: 9999, padding: '2px 10px' }}>
             Powered by AI
           </span>
         </div>
@@ -99,7 +99,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
       {/* THREE SUB-CARDS */}
       <div style={{ display: 'flex', gap: 16 }}>
         {/* Completion Forecast */}
-        <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
+        <div className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <Target size={15} color="var(--cp-blue)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Completion Forecast</span>
@@ -114,13 +114,13 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
               ? `${Math.abs(data.completionForecast.daysFromTarget)} days ahead of target`
               : 'On target'}
           </div>
-          <span style={{ fontSize: 12, color: 'var(--fg-3)', background: 'var(--cp-bd-zone)', borderRadius: 9999, padding: '2px 8px' }}>
+          <span className="bg-[var(--cp-bd-zone)]" style={{ fontSize: 12, color: 'var(--fg-3)', borderRadius: 9999, padding: '2px 8px' }}>
             Confidence: {data.completionForecast.confidence}%
           </span>
         </div>
 
         {/* Blockers Summary */}
-        <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
+        <div className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <AlertTriangle size={15} color="var(--sem-warning)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Blockers Summary</span>
@@ -141,7 +141,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
         </div>
 
         {/* Team Workload */}
-        <div style={{ flex: 1, background: 'var(--bg-1)', borderRadius: 8, padding: 16 }}>
+        <div className="bg-[var(--bg-1)] dark:bg-[#2C2823]" style={{ flex: 1, borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <TrendingUp size={15} color="var(--sem-success)" />
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Team Workload</span>
@@ -166,7 +166,7 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
       </div>
 
       {/* SUGGESTION BANNER */}
-      <div style={{ marginTop: 16, background: 'var(--cp-purple-wash)', borderLeft: '3px solid var(--cp-purple)', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+      <div className="bg-[var(--cp-purple-wash)]" style={{ marginTop: 16, borderLeft: '3px solid var(--cp-purple)', borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
         <Lightbulb size={15} color="var(--cp-blue)" style={{ flexShrink: 0, marginTop: 1 }} />
         <div>
           <div style={{ fontSize: 13, color: 'var(--fg-2)' }}>

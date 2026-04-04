@@ -37,7 +37,7 @@ export default function LifecycleDrawer() {
   return (
     <>
       <div onClick={closeDrawer} className="ph-drawer-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.15)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
-      <div role="dialog" aria-label="Lifecycle Timeline" className="ph-drawer-panel" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, background: 'var(--cp-float)', zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column' }}>
+      <div role="dialog" aria-label="Lifecycle Timeline" className="ph-drawer-panel bg-[var(--cp-float)] dark:bg-[#1A1714]" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Clock size={16} color="var(--cp-blue)" />
@@ -51,7 +51,7 @@ export default function LifecycleDrawer() {
         </div>
 
         <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--cp-bd-zone)', display: 'flex', gap: 8 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', background: 'var(--cp-bd-zone)', padding: '3px 8px', borderRadius: 6, fontFamily: "'JetBrains Mono', monospace" }}>
+          <span className="bg-[var(--cp-bd-zone)]" style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', padding: '3px 8px', borderRadius: 6, fontFamily: "'JetBrains Mono', monospace" }}>
             Total cycle: {Math.round(totalDays)}d
           </span>
         </div>
@@ -73,7 +73,7 @@ export default function LifecycleDrawer() {
                 <div key={t.id} style={{ display: 'flex', gap: 12, marginBottom: 0 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 20 }}>
                     <div style={{ width: 12, height: 12, borderRadius: '50%', background: dotColor, flexShrink: 0, marginTop: 4 }} />
-                    {i < transitions.length - 1 && <div style={{ width: 2, flex: 1, background: 'var(--cp-bd-zone)', minHeight: 24 }} />}
+                    {i < transitions.length - 1 && <div className="bg-[var(--cp-bd-zone)]" style={{ width: 2, flex: 1, minHeight: 24 }} />}
                   </div>
                   <div style={{ paddingBottom: 16, flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

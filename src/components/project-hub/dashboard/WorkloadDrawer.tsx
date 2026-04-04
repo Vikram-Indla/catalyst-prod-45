@@ -29,7 +29,7 @@ export default function WorkloadDrawer() {
   return (
     <>
       <div onClick={closeDrawer} className="ph-drawer-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.15)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
-      <div role="dialog" aria-label={`${name} assigned items`} className="ph-drawer-panel" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, background: 'var(--cp-float)', zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column' }}>
+      <div role="dialog" aria-label={`${name} assigned items`} className="ph-drawer-panel bg-[var(--cp-float)] dark:bg-[#1A1714]" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <User size={16} color="var(--cp-blue)" />
@@ -53,7 +53,7 @@ export default function WorkloadDrawer() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)' }}>{item.item_key}</span>
-                    <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 5px', borderRadius: 4, background: item.item_type === 'bug' ? 'var(--sem-danger-bg)' : 'var(--cp-blue-wash)', color: item.item_type === 'bug' ? 'var(--sem-danger)' : 'var(--cp-blue)' }}>
+                    <span className={item.item_type === 'bug' ? 'bg-[var(--sem-danger-bg)]' : 'bg-[var(--cp-blue-wash)]'} style={{ fontSize: 10, fontWeight: 600, padding: '2px 5px', borderRadius: 4, color: item.item_type === 'bug' ? 'var(--sem-danger)' : 'var(--cp-blue)' }}>
                       {item.item_type}
                     </span>
                     <StatusBadge status={item.status} />
@@ -79,7 +79,7 @@ export default function WorkloadDrawer() {
 
                 {/* Sibling discovery */}
                 {item.siblings && item.siblings.length > 0 && (
-                  <div style={{ marginTop: 8, background: 'var(--sem-warning-bg)', border: '1px solid var(--sem-warning-accent)', borderRadius: 6, padding: '8px 10px' }}>
+                  <div className="bg-[var(--sem-warning-bg)]" style={{ marginTop: 8, border: '1px solid var(--sem-warning-accent)', borderRadius: 6, padding: '8px 10px' }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--sem-warning-fg)', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>Working with (same parent):</div>
                     {item.siblings.map((sib: any) => (
                       <div

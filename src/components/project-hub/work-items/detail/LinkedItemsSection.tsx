@@ -58,7 +58,7 @@ export function LinkedItemsSection({ workItemId, projectId, linkedItems, onNavig
               className="flex items-center gap-2 px-3 py-1.5 rounded hover:bg-[#F8FAFC] w-full text-left transition-colors"
               onClick={() => onNavigate?.(link.id)}
             >
-              <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: TYPE_COLORS[link.type_name] || link.type_color }} />
+              <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: TYPE_COLORS[link.type_name] || link.type_color }} />
               <span className="text-[10px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{link.item_key}</span>
               <span className="text-[13px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>{link.title}</span>
               <StatusLozenge name={link.status_name} category={link.status_category} />
@@ -156,10 +156,10 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 300 }} onClick={onClose}>
-      <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.3)' }} />
+      <div className="absolute inset-0 bg-black/30" />
       <div
-        className="relative rounded-lg flex flex-col"
-        style={{ width: 440, background: 'var(--cp-float)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', maxHeight: '70vh' }}
+        className="relative rounded-lg flex flex-col bg-[var(--cp-float)]"
+        style={{ width: 440, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', maxHeight: '70vh' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -179,8 +179,8 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
           <select
             value={linkType}
             onChange={e => setLinkType(e.target.value)}
-            className="w-full text-[13px] px-3 py-2 rounded mb-4 focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
-            style={{ border: '1px solid var(--divider)', background: 'var(--cp-float)' }}
+            className="w-full text-[13px] px-3 py-2 rounded mb-4 focus:outline-none focus:ring-1 focus:ring-[#2563EB] bg-[var(--cp-float)]"
+            style={{ border: '1px solid var(--divider)' }}
           >
             {LINK_TYPES.map(t => (
               <option key={t.value} value={t.value}>{t.label}</option>
@@ -206,10 +206,9 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
               <button
                 key={item.id}
                 onClick={() => setSelectedId(item.id)}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded hover:bg-[#F8FAFC] text-left transition-colors"
-                style={{ background: selectedId === item.id ? 'var(--cp-blue-wash)' : undefined }}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded hover:bg-[#F8FAFC] text-left transition-colors ${selectedId === item.id ? 'bg-[var(--cp-blue-wash)]' : ''}`}
               >
-                <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: TYPE_COLORS[item.type_name] || item.type_color }} />
+                <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: TYPE_COLORS[item.type_name] || item.type_color }} />
                 <span className="text-[10px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{item.item_key}</span>
                 <span className="text-[13px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>{item.title}</span>
                 <StatusLozenge name={item.status_name} category={item.status_category} />
@@ -230,8 +229,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
           <button
             onClick={handleCreate}
             disabled={!selectedId || submitting}
-            className="px-4 py-1.5 text-[12px] font-semibold rounded text-white disabled:opacity-50"
-            style={{ background: 'var(--cp-blue)' }}
+            className="px-4 py-1.5 text-[12px] font-semibold rounded text-white disabled:opacity-50 bg-[var(--cp-blue)]"
           >
             {submitting ? '…' : 'Link'}
           </button>

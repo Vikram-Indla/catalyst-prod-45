@@ -233,14 +233,14 @@ export function WorkItemsTable({
         statuses={statuses}
       />
 
-      <div className="border rounded-t-md overflow-hidden" style={{
-        borderColor: 'var(--divider)', background: 'var(--cp-float)',
+      <div className="border rounded-t-md overflow-hidden bg-[var(--cp-float)]" style={{
+        borderColor: 'var(--divider)',
         borderTopLeftRadius: selectedIds.size > 0 ? 0 : undefined,
         borderTopRightRadius: selectedIds.size > 0 ? 0 : undefined,
       }}>
         <table className="w-full border-collapse table-fixed" style={{ fontFamily: 'Inter, sans-serif' }}>
           <thead>
-            <tr style={{ height: 34, background: 'var(--bg-1)' }} className="sticky top-0 z-10">
+            <tr style={{ height: 34 }} className="sticky top-0 z-10 bg-[var(--bg-1)]">
               {visibleCols.map(col => {
                 const sort = getSortState(col.field);
                 return (
@@ -289,15 +289,15 @@ export function WorkItemsTable({
                     <td colSpan={visibleCols.length}>
                       <button
                         onClick={() => toggleGroup(group.key)}
-                        className="w-full flex items-center gap-2 px-3 text-left transition-colors hover:bg-[#EFF6FF]"
-                        style={{ height: 32, background: 'var(--bg-1)', borderBottom: '1px solid var(--divider)' }}
+                        className="w-full flex items-center gap-2 px-3 text-left transition-colors hover:bg-[#EFF6FF] bg-[var(--bg-1)]"
+                        style={{ height: 32, borderBottom: '1px solid var(--divider)' }}
                       >
                         {collapsedGroups.has(group.key)
                           ? <ChevronRight size={14} className="text-[#94A3B8]" />
                           : <ChevronDown size={14} className="text-[#94A3B8]" />
                         }
                         <span className="text-[12px] font-semibold" style={{ color: 'var(--fg-1)' }}>{group.label}</span>
-                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: 'var(--divider)', color: 'var(--fg-3)' }}>
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-[var(--divider)]" style={{ color: 'var(--fg-3)' }}>
                           {group.items.length}
                         </span>
                       </button>
@@ -345,7 +345,7 @@ export function WorkItemsTable({
                   ) : (
                     /* No items at all */
                     <div className="flex flex-col items-center justify-center py-16">
-                      <div className="flex items-center justify-center mb-3" style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--cp-bd-zone)' }}>
+                      <div className="flex items-center justify-center mb-3 bg-[var(--cp-bd-zone)]" style={{ width: 56, height: 56, borderRadius: '50%' }}>
                         <FileText size={28} style={{ color: 'var(--fg-4)' }} />
                       </div>
                       <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No work items yet</p>
@@ -353,7 +353,8 @@ export function WorkItemsTable({
                       {onCreateClick && (
                         <button
                           onClick={onCreateClick}
-                          style={{ padding: '6px 16px', fontSize: 12, fontWeight: 600, borderRadius: 4, color: '#FFFFFF', background: 'var(--cp-blue)', border: 'none', cursor: 'pointer' }}
+                          className="bg-[var(--cp-blue)]"
+                          style={{ padding: '6px 16px', fontSize: 12, fontWeight: 600, borderRadius: 4, color: '#FFFFFF', border: 'none', cursor: 'pointer' }}
                         >
                           Create work item
                         </button>

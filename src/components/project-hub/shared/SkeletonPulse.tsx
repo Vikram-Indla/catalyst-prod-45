@@ -5,8 +5,8 @@
 export function SkeletonRow({ height = 36 }: { height?: number }) {
   return (
     <div
-      className="rounded-md ph-skeleton"
-      style={{ height, background: 'var(--cp-bd-zone)', width: '100%' }}
+      className="rounded-md ph-skeleton bg-[var(--cp-bd-zone)]"
+      style={{ height, width: '100%' }}
     />
   );
 }
@@ -14,8 +14,8 @@ export function SkeletonRow({ height = 36 }: { height?: number }) {
 export function SkeletonCard({ height = 200 }: { height?: number }) {
   return (
     <div
-      className="rounded-lg ph-skeleton"
-      style={{ height, background: 'var(--cp-bd-zone)', width: '100%' }}
+      className="rounded-lg ph-skeleton bg-[var(--cp-bd-zone)]"
+      style={{ height, width: '100%' }}
     />
   );
 }
