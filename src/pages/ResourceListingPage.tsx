@@ -117,6 +117,8 @@ export default function ResourceListingPage() {
   const [sortKey, setSortKey] = useState<SortKey>('full_name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [resourceTypeFilter, setResourceTypeFilter] = useState<'all' | 'core' | 'project' | 'temporary'>('all');
+  const [page, setPage] = useState(1);
+  const perPage = 10;
 
   const { data: resources = [], isLoading } = useQuery({
     queryKey: ['resources-listing', 'all-types-v1'],
@@ -221,6 +223,13 @@ export default function ResourceListingPage() {
     });
   }, [filtered, sortKey, sortDir]);
 
+  // Pagination
+  const totalPages = Math.max(1, Math.ceil(sorted.length / perPage));
+  const safePage = Math.min(page, totalPages);
+  const pageData = sorted.slice((safePage - 1) * perPage, safePage * perPage);
+  const startIdx = (safePage - 1) * perPage;
+  const endIdx = Math.min(startIdx + perPage, sorted.length);
+
   const handleSort = (key: SortKey) => {
     if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
     else { setSortKey(key); setSortDir('asc'); }
@@ -250,7 +259,7 @@ export default function ResourceListingPage() {
           <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: t.text3 }} />
           <input
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search by name, role, or department..."
             style={{
               width: '100%', padding: '10px 14px 10px 40px',
@@ -265,10 +274,10 @@ export default function ResourceListingPage() {
 
         {/* Department pills */}
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setResourceTypeFilter('all'); }}
+          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setResourceTypeFilter('all'); setPage(1); }}
             label="All" tokens={t} />
           {deptNames.map(d => (
-            <PillButton key={d} active={deptFilter === d} onClick={() => { setDeptFilter(d); setResourceTypeFilter('all'); }}
+            <PillButton key={d} active={deptFilter === d} onClick={() => { setDeptFilter(d); setResourceTypeFilter('all'); setPage(1); }}
               label={`${d} (${deptCounts[d]})`} tokens={t} />
           ))}
 
@@ -300,7 +309,7 @@ export default function ResourceListingPage() {
             <button
               key={pill.key}
               title={pill.tooltip}
-              onClick={() => setResourceTypeFilter(pill.key)}
+              onClick={() => { setResourceTypeFilter(pill.key); setPage(1); }}
               style={{
                 height: 28, padding: '0 12px', borderRadius: 14,
                 fontSize: 13, fontWeight: isActive ? 600 : 500, cursor: 'pointer',
@@ -353,7 +362,7 @@ export default function ResourceListingPage() {
                     key={col.key}
                     onClick={() => col.key !== 'actions' && handleSort(col.key as SortKey)}
                     style={{
-                      background: t.headerBg, padding: '0 12px', height: '36px',
+                      background: t.headerBg, padding: '0 16px', height: '40px',
                       fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
                       letterSpacing: '0.07em', color: t.text2,
                       borderBottom: `0.75px solid ${t.border}`,
@@ -400,31 +409,31 @@ export default function ResourceListingPage() {
                     <div style={{ fontSize: '12px', color: t.text3 }}>Try adjusting your search or filters</div>
                   </td>
                 </tr>
-              ) : sorted.map(r => (
+              ) : pageData.map(r => (
                 <tr
                   key={r.rid}
                   className="r360-row"
-                  style={{ borderBottom: `0.75px solid ${t.borderSubtle}`, cursor: 'pointer', height: '36px', maxHeight: '36px' }}
+                  style={{ borderBottom: `0.75px solid ${t.borderSubtle}`, cursor: 'pointer', height: '48px' }}
                   onClick={() => navTo(r.id, 'ring')}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = t.hoverBg; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
                   {/* RESOURCE */}
-                  <td style={{ padding: '4px 12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <td style={{ padding: '8px 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <ResourceAvatar name={r.full_name} avatarUrl={r.avatar_url} />
                       <div style={{ minWidth: 0 }}>
                         <div style={{
                           fontSize: '13px', fontWeight: 600, color: t.text1,
                           lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                          maxWidth: '200px',
+                          maxWidth: '220px',
                         }}>{r.full_name}</div>
-                        <div style={{ fontSize: '11px', color: t.textMuted, marginTop: 1 }}>RID: {r.rid}</div>
+                        <div style={{ fontSize: '11px', color: t.textMuted, marginTop: 2 }}>RID: {r.rid}</div>
                       </div>
                     </div>
                   </td>
                   {/* DEPARTMENT */}
-                  <td style={{ padding: '4px 12px' }}>
+                  <td style={{ padding: '8px 16px' }}>
                     {r.dept_name ? (
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: '6px',
@@ -439,18 +448,18 @@ export default function ResourceListingPage() {
                     ) : <span style={{ fontSize: '13px', color: t.textDim }}>—</span>}
                   </td>
                   {/* JOB ROLE */}
-                  <td style={{ padding: '4px 12px', fontSize: '13px', fontWeight: 500, color: t.text1 }}>
+                  <td style={{ padding: '8px 16px', fontSize: '13px', fontWeight: 500, color: t.text1 }}>
                     {r.job_role || '—'}
                   </td>
                   {/* ASSIGNMENT */}
                   <td style={{
-                    padding: '4px 12px', fontSize: '13px', color: t.text2,
-                    maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    padding: '8px 16px', fontSize: '13px', color: t.text2,
+                    maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>
                     {r.assignment_name || '—'}
                   </td>
                   {/* LOCATION */}
-                  <td style={{ padding: '4px 12px' }}>
+                  <td style={{ padding: '8px 16px' }}>
                     {r.location_type ? (
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500 }}>
                         <span style={{
@@ -464,7 +473,7 @@ export default function ResourceListingPage() {
                     ) : <span style={{ fontSize: '13px', color: t.textDim }}>—</span>}
                   </td>
                   {/* ACTIONS — opacity:0 hover reveal */}
-                  <td style={{ padding: '4px 12px', textAlign: 'center' }}>
+                  <td style={{ padding: '8px 16px', textAlign: 'center' }}>
                     <div className="r360-actions" style={{ display: 'inline-flex', gap: '6px', opacity: 0, transition: 'opacity 150ms ease' }}>
                       <ActionBtn
                         tooltip="Open Intelligence"
@@ -503,6 +512,66 @@ export default function ResourceListingPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Footer */}
+        {totalPages > 1 && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '10px 16px',
+            borderTop: `0.75px solid ${t.border}`,
+            fontSize: 13, color: t.text2,
+          }}>
+            <span>
+              Showing {startIdx + 1}–{endIdx} of {sorted.length} resources
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={safePage === 1}
+                style={{
+                  width: 32, height: 32, borderRadius: 6,
+                  border: `1px solid ${t.border}`, background: 'transparent',
+                  color: safePage === 1 ? t.textDim : t.text2,
+                  cursor: safePage === 1 ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 13,
+                }}
+              >
+                <ChevronUp size={14} style={{ transform: 'rotate(-90deg)' }} />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                <button
+                  key={n}
+                  onClick={() => setPage(n)}
+                  style={{
+                    width: 32, height: 32, borderRadius: 6,
+                    border: `1px solid ${safePage === n ? '#2563EB' : t.border}`,
+                    background: safePage === n ? '#2563EB' : 'transparent',
+                    color: safePage === n ? '#FFFFFF' : t.text2,
+                    fontWeight: safePage === n ? 600 : 400,
+                    cursor: 'pointer', fontSize: 13,
+                  }}
+                >
+                  {n}
+                </button>
+              ))}
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={safePage === totalPages}
+                style={{
+                  width: 32, height: 32, borderRadius: 6,
+                  border: `1px solid ${t.border}`, background: 'transparent',
+                  color: safePage === totalPages ? t.textDim : t.text2,
+                  cursor: safePage === totalPages ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 13,
+                }}
+              >
+                <ChevronUp size={14} style={{ transform: 'rotate(90deg)' }} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <style>{`
