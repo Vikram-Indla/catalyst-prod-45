@@ -55176,6 +55176,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          project_id: string | null
           steps: Json
           tags: string[] | null
           updated_at: string | null
@@ -55193,6 +55194,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          project_id?: string | null
           steps?: Json
           tags?: string[] | null
           updated_at?: string | null
@@ -55210,6 +55212,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          project_id?: string | null
           steps?: Json
           tags?: string[] | null
           updated_at?: string | null
@@ -55293,6 +55296,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_shared_steps_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_shared_steps_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_sidebar_projects"
+            referencedColumns: ["id"]
           },
         ]
       }
