@@ -6,10 +6,11 @@ import { Progress } from '@/components/ui/progress';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { PlanStatusBadge } from './PlanStatusBadge';
 import { TestPlan } from '@/types/testPlans';
-import { usePlanProgress } from '@/hooks/useTestPlansG26';
+import { usePlanProgress, useDuplicateTestPlan } from '@/hooks/useTestPlansG26';
 import { format } from 'date-fns';
 
 interface Props { plan: TestPlan; onDelete: () => void; }
+
 
 export function TestPlanCard({ plan, onDelete }: Props) {
   const navigate = useNavigate();
