@@ -8,7 +8,7 @@ import { RefreshCw, Link2, Loader2, ChevronDown, AlertTriangle, Settings, Extern
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useJiraConnection } from '@/modules/workhub/admin/hooks/useJiraConnection';
-import { useSyncHealth, useForceSync } from '@/modules/workhub/admin/hooks/useSyncEngine';
+import { useSyncHealth, useForceSync, useIsSyncRunning } from '@/modules/workhub/admin/hooks/useSyncEngine';
 import { useQueryClient } from '@tanstack/react-query';
 
 type PanelView = 'status' | 'webhook';
@@ -16,6 +16,7 @@ type PanelView = 'status' | 'webhook';
 export function JiraSyncCTA() {
   const { data: conn, isLoading: connLoading, error: connError } = useJiraConnection();
   const { data: health } = useSyncHealth();
+  const { data: isSyncRunning } = useIsSyncRunning();
   const forceSync = useForceSync();
   const queryClient = useQueryClient();
 
@@ -23,6 +24,9 @@ export function JiraSyncCTA() {
   const [panelView, setPanelView] = useState<PanelView>('status');
   const [syncing, setSyncing] = useState(false);
   const popRef = useRef<HTMLDivElement>(null);
+
+  // Combine manual syncing with background sync detection
+  const isAnySyncActive = syncing || (isSyncRunning === true);
 
   // Close popover on outside click
   useEffect(() => {
@@ -44,6 +48,7 @@ export function JiraSyncCTA() {
     : '#94A3B8';
 
   const statusLabel = connLoading ? 'Loading...'
+    : isAnySyncActive ? 'Syncing…'
     : isConnected ? 'Connected'
     : connError ? 'Error'
     : 'Not connected';
@@ -52,8 +57,10 @@ export function JiraSyncCTA() {
     setSyncing(true);
     try {
       await forceSync.mutateAsync({ sync_type: 'full' });
-      toast.success('Sync triggered successfully');
+      toast.success('Sync completed successfully');
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+      queryClient.invalidateQueries({ queryKey: ['wh', 'sync-health'] });
+      queryClient.invalidateQueries({ queryKey: ['wh', 'sync-running'] });
     } catch (err: any) {
       toast.error('Sync failed: ' + (err.message || 'Unknown error'));
     } finally {
@@ -91,15 +98,30 @@ export function JiraSyncCTA() {
           border: '1px solid var(--catalyst-border, #E2E8F0)',
           borderRadius: 6, cursor: 'pointer',
           fontFamily: "'Inter', sans-serif",
+          opacity: isAnySyncActive ? 1 : 1,
+          transition: 'opacity 0.3s ease',
         }}
       >
-        <span style={{
-          width: 7, height: 7, borderRadius: '50%',
-          background: dotColor,
-          boxShadow: isConnected && webhookActive ? `0 0 6px ${dotColor}` : 'none',
-        }} />
+        {isAnySyncActive ? (
+          <RefreshCw size={13} className="animate-spin" style={{ color: '#2563EB' }} />
+        ) : (
+          <span style={{
+            width: 7, height: 7, borderRadius: '50%',
+            background: dotColor,
+            boxShadow: isConnected && webhookActive ? `0 0 6px ${dotColor}` : 'none',
+          }} />
+        )}
         ↔ Jira Sync
-        <span style={{ fontSize: 11, color: '#94A3B8', marginLeft: 2 }}>{statusLabel}</span>
+        <span style={{
+          fontSize: 11,
+          color: isAnySyncActive ? '#2563EB' : '#94A3B8',
+          marginLeft: 2,
+          fontWeight: isAnySyncActive ? 600 : 400,
+        }}>
+          {isAnySyncActive
+            ? 'Syncing…'
+            : `${statusLabel} · Synced ${formatAge(health?.lastSync?.completed_at)}`}
+        </span>
         <ChevronDown size={12} style={{ marginLeft: 2, opacity: 0.5 }} />
       </button>
 
@@ -203,16 +225,16 @@ export function JiraSyncCTA() {
               <div style={{ padding: '12px 20px', borderTop: '1px solid #F1F5F9', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <button
                   onClick={handleSyncNow}
-                  disabled={syncing}
+                  disabled={isAnySyncActive}
                   style={{
                     width: '100%', height: 36, fontSize: 13, fontWeight: 600,
-                    color: '#FFF', background: syncing ? '#93C5FD' : '#2563EB',
-                    border: 'none', borderRadius: 8, cursor: syncing ? 'wait' : 'pointer',
+                    color: '#FFF', background: isAnySyncActive ? '#93C5FD' : '#2563EB',
+                    border: 'none', borderRadius: 8, cursor: isAnySyncActive ? 'wait' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                   }}
                 >
-                  {syncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-                  {syncing ? 'Syncing...' : 'Sync Now'}
+                  {isAnySyncActive ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                  {isAnySyncActive ? 'Syncing...' : 'Sync Now'}
                 </button>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button
