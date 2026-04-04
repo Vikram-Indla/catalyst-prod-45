@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Calendar, User, AlertCircle, Server } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+import { type CycleStatus, getAllowedNextStatuses, isValidStatusTransition, getTransitionErrorMessage, CYCLE_STATUS_CONFIG } from '@/features/test-cycles/types/cycle-config';
 
 interface EnvironmentOption {
   id: string;
@@ -41,6 +42,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
   const [endDate, setEndDate] = useState('');
   const [ownerId, setOwnerId] = useState('');
   const [environmentId, setEnvironmentId] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<CycleStatus>('draft');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -58,10 +60,12 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
       if (mode === 'edit' && cycle) {
         setName(cycle.name || '');
         setDescription(cycle.description || '');
-        setStartDate(cycle.planned_start || '');
-        setEndDate(cycle.planned_end || '');
+        // Parse ISO dates to YYYY-MM-DD for date input
+        setStartDate(cycle.planned_start ? cycle.planned_start.split('T')[0] : '');
+        setEndDate(cycle.planned_end ? cycle.planned_end.split('T')[0] : '');
         setOwnerId('');
         setEnvironmentId(cycle.environment_id || '');
+        setSelectedStatus((cycle.status || 'draft') as CycleStatus);
       } else {
         setName('');
         setDescription('');
@@ -69,6 +73,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         setEndDate('');
         setOwnerId('');
         setEnvironmentId('');
+        setSelectedStatus('draft');
       }
       setErrors({});
     }
@@ -104,6 +109,16 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
 
     try {
       if (mode === 'edit' && cycle) {
+        const currentStatus = (cycle.status || 'draft') as CycleStatus;
+
+        // Validate status transition if status is changing
+        if (selectedStatus !== currentStatus) {
+          if (!isValidStatusTransition(currentStatus, selectedStatus)) {
+            catalystToast.error(getTransitionErrorMessage(currentStatus, selectedStatus), { title: 'Invalid Transition' });
+            return;
+          }
+        }
+
         const updateData: any = {
           name: name.trim(),
           description: description.trim() || null,
@@ -112,6 +127,17 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           environment_id: environmentId || null,
           updated_at: new Date().toISOString(),
         };
+
+        // Include status change with auto-timestamps
+        if (selectedStatus !== currentStatus) {
+          updateData.status = selectedStatus;
+          if (selectedStatus === 'active' && (currentStatus === 'planned' || currentStatus === 'draft')) {
+            updateData.actual_start = new Date().toISOString();
+          }
+          if (selectedStatus === 'completed') {
+            updateData.actual_end = new Date().toISOString();
+          }
+        }
 
         const { error } = await (supabase as any)
           .from('tm_test_cycles')
@@ -191,6 +217,35 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
             />
             {errors.name && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.name}</p>}
           </div>
+
+          {/* Status (edit mode only) */}
+          {isEdit && cycle && (() => {
+            const currentCycleStatus = (cycle.status || 'draft') as CycleStatus;
+            const allowedNext = getAllowedNextStatuses(currentCycleStatus);
+            const statusOptions = [currentCycleStatus, ...allowedNext.filter(s => s !== currentCycleStatus)];
+            return (
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
+                  Status <span style={{ color: 'var(--sem-danger)' }}>*</span>
+                </label>
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value as CycleStatus)}
+                  style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid var(--divider)', borderRadius: 4, fontSize: 14, color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)', textTransform: 'uppercase', fontWeight: 600 }}
+                >
+                  {statusOptions.map(s => {
+                    const cfg = CYCLE_STATUS_CONFIG[s];
+                    return <option key={s} value={s}>{cfg.label.toUpperCase()}</option>;
+                  })}
+                </select>
+                {selectedStatus !== currentCycleStatus && (
+                  <p style={{ fontSize: 12, color: '#D97706', margin: '6px 0 0' }}>
+                    Status will change from {CYCLE_STATUS_CONFIG[currentCycleStatus].label} → {CYCLE_STATUS_CONFIG[selectedStatus].label}
+                  </p>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Description */}
           <div style={{ marginBottom: 20 }}>
