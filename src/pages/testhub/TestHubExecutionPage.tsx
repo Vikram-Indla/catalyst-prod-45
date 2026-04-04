@@ -216,6 +216,16 @@ export default function TestHubExecutionPage() {
     setAttachments(data || []);
   }, [selectedTestCaseId]);
 
+  const fetchExecutionHistory = useCallback(async (cycleScopeId: string) => {
+    const { data } = await (supabase as any)
+      .from('th_test_executions')
+      .select('id, execution_number, result, executed_by, executed_at, step_results, executor:profiles!executed_by(full_name)')
+      .eq('cycle_scope_id', cycleScopeId)
+      .order('execution_number', { ascending: false })
+      .limit(1);
+    return (data && data[0]) ? data[0] as ExecutionHistoryRecord : null;
+  }, []);
+
   useEffect(() => { fetchCycle(); fetchTestCases(); }, [cycleId]);
   useEffect(() => { if (selectedTestCaseId) fetchAttachments(); }, [selectedTestCaseId]);
 
@@ -225,12 +235,39 @@ export default function TestHubExecutionPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Reset step index on test case change
+  // Handle test case selection — determine view vs execute mode
+  const selectTest = useCallback(async (id: string) => {
+    setSelectedTestCaseId(id);
+    setCurrentStepIndex(0);
+    const tc = testCases.find(t => t.id === id);
+    setNotes(tc?.notes || '');
+    
+    if (tc && tc.current_status !== 'not_run') {
+      // Completed test → enter view mode, fetch history
+      const history = await fetchExecutionHistory(id);
+      setExecutionHistory(history);
+      setViewMode(true);
+      setPreviousRunData(null);
+    } else {
+      setViewMode(false);
+      setExecutionHistory(null);
+      setPreviousRunData(null);
+    }
+  }, [testCases, fetchExecutionHistory]);
+
+  // Reset step index on test case change (for URL-based initial selection)
   useEffect(() => {
     setCurrentStepIndex(0);
     const currentTC = testCases.find(tc => tc.id === selectedTestCaseId);
     setNotes(currentTC?.notes || '');
-  }, [selectedTestCaseId]);
+    // Check view mode for initial load
+    if (currentTC && currentTC.current_status !== 'not_run') {
+      fetchExecutionHistory(currentTC.id).then(h => {
+        setExecutionHistory(h);
+        setViewMode(true);
+      });
+    }
+  }, [selectedTestCaseId, testCases.length]);
 
   // ── Derived state ──────────────────────────────────────────────────────
   const filteredTestCases = testCases.filter(tc => {
