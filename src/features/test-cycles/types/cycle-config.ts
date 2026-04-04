@@ -85,7 +85,6 @@ export function getStatusEditability(status: CycleStatus): StatusEditability {
       };
     case 'active':
     case 'paused':
-    case 'in_progress':
       return {
         isEditable: true,
         editableFields: ['description', 'planned_end'],
