@@ -71657,6 +71657,7 @@ export type Database = {
             Args: never
             Returns: {
               active_cycles: number
+              automation_coverage: number
               completed_cycles: number
               overall_pass_rate: number
               total_blocked: number
