@@ -17,15 +17,15 @@ import { toast } from 'sonner';
 import { auditCycleCreate, auditCycleUpdate, auditCycleDelete } from '@/lib/tmAuditLogger';
 
 // Status mapping (DB uses lowercase)
-const cycleStatusToDb = (status: string): 'planned' | 'in_progress' | 'completed' | 'archived' => {
-  const map: Record<string, 'planned' | 'in_progress' | 'completed' | 'archived'> = {
-    'PLANNED': 'planned',
-    'IN_PROGRESS': 'in_progress',
+const cycleStatusToDb = (status: string): string => {
+  const map: Record<string, string> = {
+    'PLANNED': 'draft',
+    'IN_PROGRESS': 'active',
     'COMPLETED': 'completed',
     'CANCELLED': 'archived',
     'ARCHIVED': 'archived',
   };
-  return map[status] || 'planned';
+  return map[status] || status.toLowerCase();
 };
 
 const cycleStatusFromDb = (status: string | null): 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' => {
