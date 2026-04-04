@@ -389,40 +389,43 @@ export function AllProjectsTable({
 }: Props) {
   const navigate = useNavigate();
 
-  // Per-project sync data — direct ph_issues query + RPC fallback
+  // Per-project sync data — RPC + paginated direct query fallback
   const { data: syncData } = useQuery({
     queryKey: ['project-sync-data'],
     queryFn: async () => {
       const countMap: Record<string, number> = {};
-      const debug: string[] = [];
 
-      // Attempt 1: Direct table query
-      const { data: issueRows, error: issueError, count: issueCount } = await (supabase as any)
-        .from('ph_issues')
-        .select('project_key', { count: 'exact' });
-
-      debug.push(`Direct: rows=${issueRows?.length ?? 'null'}, count=${issueCount ?? 'null'}, err=${issueError?.message || 'none'}`);
-
-      if (issueRows && issueRows.length > 0) {
-        issueRows.forEach((r: { project_key: string }) => {
-          if (r.project_key) countMap[r.project_key] = (countMap[r.project_key] || 0) + 1;
+      // Attempt 1: RPC (SECURITY DEFINER, no row limit, no RLS issues)
+      const { data: rpcData, error: rpcError } = await (supabase as any).rpc('get_project_issue_counts');
+      if (!rpcError && rpcData && rpcData.length > 0) {
+        rpcData.forEach((r: any) => {
+          const key = r.proj || r.project_key;
+          const cnt = Number(r.cnt || r.count) || 0;
+          if (key && cnt > 0) countMap[key] = cnt;
         });
       }
 
-      // Attempt 2: RPC fallback if direct query returned few/no rows
-      if (Object.keys(countMap).length === 0 || (issueRows && issueRows.length < 100)) {
-        const { data: rpcData, error: rpcError } = await (supabase as any).rpc('get_project_issue_counts');
-        debug.push(`RPC: rows=${rpcData?.length ?? 'null'}, err=${rpcError?.message || 'none'}`);
-        if (rpcData && rpcData.length > 0) {
-          rpcData.forEach((r: any) => {
-            const key = r.proj || r.project_key;
-            const cnt = Number(r.cnt || r.count) || 0;
-            if (key && cnt > 0) countMap[key] = cnt;
-          });
+      // Attempt 2: If RPC failed or returned nothing, paginate direct query
+      if (Object.keys(countMap).length === 0) {
+        let offset = 0;
+        const pageSize = 1000;
+        let hasMore = true;
+        while (hasMore) {
+          const { data: page } = await (supabase as any)
+            .from('ph_issues')
+            .select('project_key')
+            .range(offset, offset + pageSize - 1);
+          if (page && page.length > 0) {
+            page.forEach((r: { project_key: string }) => {
+              if (r.project_key) countMap[r.project_key] = (countMap[r.project_key] || 0) + 1;
+            });
+            offset += pageSize;
+            hasMore = page.length === pageSize;
+          } else {
+            hasMore = false;
+          }
         }
       }
-
-      debug.push(`countMap: ${JSON.stringify(countMap)}`);
 
       // Get last successful sync time
       const { data: lastSync } = await (supabase as any)
@@ -437,7 +440,7 @@ export function AllProjectsTable({
       const syncedFromIssues = new Set<string>(Object.keys(countMap).filter(k => countMap[k] > 0));
       const syncedProjectKeys = new Set<string>([...syncedFromLog, ...syncedFromIssues]);
 
-      return { countMap, lastSyncAt: lastSync?.completed_at || null, syncedProjectKeys, _debug: debug };
+      return { countMap, lastSyncAt: lastSync?.completed_at || null, syncedProjectKeys };
     },
     refetchInterval: 30000,
     staleTime: 15_000,
@@ -448,12 +451,6 @@ export function AllProjectsTable({
 
   return (
     <div className="overflow-hidden">
-      {/* Temporary debug banner — remove after fixing */}
-      {syncData?._debug && (
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-3 py-2 text-[11px] font-mono mb-1 rounded">
-          {syncData._debug.map((d: string, i: number) => <div key={i}>{d}</div>)}
-        </div>
-      )}
       <div
         className="font-['Inter',sans-serif]"
         style={{
