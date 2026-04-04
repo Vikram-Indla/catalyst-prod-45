@@ -239,19 +239,25 @@ export function ViewTestCaseModal({
 
   const handleAddLink = async (key: string, title: string) => {
     if (!testCase) return;
-    const { data, error } = await (supabase as any).from('th_test_case_links').insert({
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data, error } = await (supabase as any).from('tm_test_case_links').insert({
       test_case_id: testCase.id,
-      link_type: addLinkType,
-      linked_item_key: key,
-      linked_item_title: title,
+      linked_item_type: addLinkType,
+      linked_item_id: key,
+      linked_by: user?.id || null,
     }).select().single();
     if (!error && data) {
-      setLinks([...links, data]);
+      setLinks([...links, {
+        id: data.id,
+        link_type: data.linked_item_type,
+        linked_item_key: data.linked_item_id || key,
+        linked_item_title: title,
+      }]);
     }
   };
 
   const handleDeleteLink = async (linkId: string) => {
-    await (supabase as any).from('th_test_case_links').delete().eq('id', linkId);
+    await (supabase as any).from('tm_test_case_links').delete().eq('id', linkId);
     setLinks(links.filter(l => l.id !== linkId));
   };
 
