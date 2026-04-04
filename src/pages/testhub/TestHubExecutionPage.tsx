@@ -7,6 +7,7 @@
  * resizable panels, FastTrack mode, execution history, view/re-run modes.
  */
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { deriveOverallStatus } from '@/utils/testExecution';
 import type { StepStatus as StepStatusType } from '@/utils/testExecution';
 
@@ -137,6 +138,7 @@ export default function TestHubExecutionPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showMyTestsOnly, setShowMyTestsOnly] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   // Session timer (overall)
   const [sessionElapsed, setSessionElapsed] = useState(0);
@@ -313,43 +315,75 @@ export default function TestHubExecutionPage() {
 
       // 2. INSERT execution history record (skip for reset)
       if (status !== 'not_run' && currentTestCase) {
-        try {
-          // Get next execution number
-          const { data: lastExec } = await (supabase as any)
-            .from('th_test_executions')
-            .select('execution_number')
-            .eq('cycle_scope_id', selectedTestCaseId)
-            .order('execution_number', { ascending: false })
-            .limit(1);
-          const nextNumber = (lastExec?.[0]?.execution_number ?? 0) + 1;
+        const { data: lastExec, error: lastExecError } = await supabase
+          .from('th_test_executions')
+          .select('execution_number')
+          .eq('cycle_scope_id', selectedTestCaseId)
+          .order('execution_number', { ascending: false })
+          .limit(1);
 
-          // Build step snapshot
-          const key = selectedTestCaseId;
-          const currentStatuses = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
-          const stepSnapshot = steps.map((s, i) => ({
-            step_number: s.step_number || i + 1,
-            title: s.action || '',
-            status: currentStatuses[i]?.status || 'not_run',
-            notes: failureReason && currentStatuses[i]?.status === 'failed' ? failureReason : '',
-          }));
+        if (lastExecError) {
+          console.error('[ExecHistory] Failed to fetch last execution number:', lastExecError.code, lastExecError.message, lastExecError.details, lastExecError.hint);
+        }
 
-          const { error: execError } = await (supabase as any).from('th_test_executions').insert({
-            test_case_id: currentTestCase.test_case_id,
-            test_cycle_id: cycle?.id,
-            cycle_name: cycle?.name,
-            cycle_scope_id: selectedTestCaseId,
-            execution_number: nextNumber,
-            result: status,
-            executed_by: currentUserId,
-            executed_at: new Date().toISOString(),
-            step_results: stepSnapshot,
-            notes: failureNotes || null,
+        const nextExecutionNumber = (lastExec?.[0]?.execution_number ?? 0) + 1;
+        const key = selectedTestCaseId;
+        const currentStatuses = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+        const stepResultsSnapshot = steps.map((s, i) => ({
+          step_number: s.step_number || i + 1,
+          title: s.action || '',
+          status: currentStatuses[i]?.status || 'not_run',
+          notes: failureReason && currentStatuses[i]?.status === 'failed' ? failureReason : '',
+        }));
+        const completedAt = new Date().toISOString();
+        const sessionStartTime = new Date(sessionStartRef.current).toISOString();
+
+        console.log('[ExecHistory] INSERT payload:', {
+          cycle_scope_id: selectedTestCaseId,
+          execution_number: nextExecutionNumber,
+          overall_status: status,
+          step_results: stepResultsSnapshot,
+          executed_by: currentUserId,
+          started_at: sessionStartTime,
+          completed_at: completedAt,
+        });
+
+        const insertPayload = {
+          test_case_id: currentTestCase.test_case_id,
+          test_cycle_id: cycle?.id ?? null,
+          cycle_name: cycle?.name ?? null,
+          cycle_scope_id: selectedTestCaseId,
+          execution_number: nextExecutionNumber ?? 1,
+          result: status,
+          step_results: stepResultsSnapshot ?? [],
+          executed_by: currentUserId,
+          executed_at: completedAt,
+          notes: failureNotes ?? null,
+        };
+
+        console.log('[ExecHistory] Attempting INSERT:', insertPayload);
+
+        const { data: execData, error: execError } = await supabase
+          .from('th_test_executions')
+          .insert(insertPayload)
+          .select('id, execution_number')
+          .single();
+
+        if (execError) {
+          console.error('[ExecHistory] INSERT FAILED:', execError.code, execError.message, execError.details, execError.hint);
+          catalystToast.error('Warning: Run history could not be saved', {
+            description: execError.message,
+            title: 'Execution History Warning',
           });
-          if (execError) {
-            console.error('[ExecutionPage] th_test_executions INSERT failed:', execError);
+        } else {
+          console.log('[ExecHistory] INSERT SUCCESS:', execData);
+          await queryClient.invalidateQueries({
+            queryKey: ['execution-history', selectedTestCaseId],
+          });
+          const refreshedHistory = await fetchExecutionHistory(selectedTestCaseId);
+          if (refreshedHistory) {
+            setExecutionHistory(refreshedHistory);
           }
-        } catch (histErr) {
-          console.error('[ExecutionPage] th_test_executions INSERT exception:', histErr);
         }
       }
 
@@ -373,7 +407,7 @@ export default function TestHubExecutionPage() {
       }
     } catch (err: any) { catalystToast.error(err.message || 'Failed to update test result'); }
     finally { setIsSubmitting(false); }
-  }, [selectedTestCaseId, currentUserId, currentTestCase, canGoNext, fastTrackMode, fetchTestCases, fetchCycle, stepStatuses, steps, cycle]);
+  }, [selectedTestCaseId, currentUserId, currentTestCase, canGoNext, fastTrackMode, fetchTestCases, fetchCycle, stepStatuses, steps, cycle, fetchExecutionHistory, queryClient]);
 
   const handlePass = () => {
     if (fastTrackMode || steps.length === 0) {
