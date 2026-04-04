@@ -600,7 +600,7 @@ export default function TestCycleDetailPage() {
                           </span>
                         </td>
                         <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                          {cycle.status === 'in_progress' && (
+                          {cycle.status === 'active' && (
                             <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '0 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                               <Play size={12} /> Run
                             </button>
