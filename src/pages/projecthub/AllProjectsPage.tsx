@@ -141,8 +141,8 @@ export default function AllProjectsPage() {
 
   if (error) toast.error('Failed to load projects');
 
-  const startIdx = (page - 1) * perPage;
-  const endIdx = Math.min(startIdx + perPage, filtered.length);
+  const startIdx = (page - 1) * effectivePageSize;
+  const endIdx = Math.min(startIdx + effectivePageSize, filtered.length);
 
   // Determine empty state context
   const isEmptyProjects = !isLoading && projects.length === 0;
