@@ -60,6 +60,7 @@ export function CreateTestCaseModal({
   existingSteps,
 }: CreateTestCaseModalProps) {
   const { toast } = useToast();
+  const projectId = useTestHubProject();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [preconditions, setPreconditions] = useState('');
