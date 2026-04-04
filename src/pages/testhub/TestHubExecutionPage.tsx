@@ -6,7 +6,8 @@
  * Features: Step-level execution, keyboard shortcuts (P/F/B/S/1-9/?),
  * resizable panels, FastTrack mode, Pass All Remaining, session timer.
  */
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { deriveOverallStatus } from '@/utils/testExecution';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, Play, Clock, CheckCircle2, XCircle,
