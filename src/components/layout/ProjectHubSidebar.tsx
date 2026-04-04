@@ -62,7 +62,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
         id: `fav-${p.id}`,
         title: p.name,
         path: `/project-hub/${p.project_key}/dashboard`,
-        icon: Star,
+        icon: FolderKanban,
         exact: false,
       })),
     };
