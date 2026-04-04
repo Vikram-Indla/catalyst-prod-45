@@ -378,9 +378,16 @@ export default function TestHubExecutionPage() {
     
     await updateExecutionStatus(derivedStatus);
     
-    // If failed, trigger defect creation prompt
+    // Only show failure modal if derived failed but NO individual step was failed
+    // (meaning user forced a fail at test level without step-level failures —
+    //  if steps were already failed, failure info was captured at step level)
     if (derivedStatus === 'failed') {
-      setIsFailureModalOpen(true);
+      const key = selectedTestCaseId;
+      const current = stepStatuses.get(key) || [];
+      const hasStepFailure = current.some(s => s.status === 'failed');
+      if (!hasStepFailure) {
+        setIsFailureModalOpen(true);
+      }
     }
   };
 
