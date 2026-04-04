@@ -336,9 +336,6 @@ export default function PlanDetailPage() {
                                   <TooltipContent>Unlink cycle</TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
                             </td>
                           </tr>
                         );
