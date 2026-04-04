@@ -56,6 +56,7 @@ export interface SidebarMenuItem {
   badgeVariant?: 'info' | 'danger' | 'purple';
   textBadge?: string;
   textBadgeVariant?: 'new' | 'beta' | 'info';
+  alwaysStarred?: boolean;
 }
 
 export interface SidebarSection {

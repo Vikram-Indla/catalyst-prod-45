@@ -64,6 +64,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
         path: `/project-hub/${p.project_key}/dashboard`,
         icon: FolderKanban,
         exact: false,
+        alwaysStarred: true,
       })),
     };
   }, [projects, favoriteIds]);
