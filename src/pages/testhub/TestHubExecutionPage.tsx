@@ -57,7 +57,7 @@ interface CycleTestCase {
   execution_time_seconds: number;
   failure_reason: string | null;
   started_at: string | null;
-  defect_ids: string[] | null;
+  
   test_case: {
     id: string;
     case_key: string;

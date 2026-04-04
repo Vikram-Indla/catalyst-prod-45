@@ -102,6 +102,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
         description: description.trim() || undefined,
         severity: sevOption?.mapped || 'MINOR',
         assigned_to: assignedTo || undefined,
+        run_id: prefill?.cycleTestCaseId || undefined,
       });
 
       onCreated();
