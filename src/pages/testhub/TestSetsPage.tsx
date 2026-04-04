@@ -21,7 +21,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Search } from 'lucide-react';
-import { useTestSets, useDeleteTestSet, useRefreshDynamicSet, useCloneTestSet, useArchiveTestSet, useCreateTestCycleFromSet } from '@/hooks/useTestSets';
+import { useTestSets, useDeleteTestSet, useRefreshDynamicSet, useCloneTestSet, useArchiveTestSet } from '@/hooks/useTestSets';
 import { useProjectContext } from '@/hooks/useProjectContext';
 
 const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
