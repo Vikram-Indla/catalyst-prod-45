@@ -261,6 +261,43 @@ export default function TestCycleDetailPage() {
               style={{ width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <RefreshCw size={18} />
             </button>
+            {/* FSM Status Transition Button */}
+            {cycle.status === 'draft' && (
+              <button onClick={async () => {
+                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'planned', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                if (error) { catalystToast.error(error.message); return; }
+                catalystToast.success('Cycle marked as planned'); fetchCycle();
+              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                Mark as Planned
+              </button>
+            )}
+            {cycle.status === 'planned' && (
+              <button onClick={async () => {
+                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'in_progress', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                if (error) { catalystToast.error(error.message); return; }
+                catalystToast.success('Cycle execution started'); fetchCycle();
+              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                Start Execution
+              </button>
+            )}
+            {cycle.status === 'in_progress' && (
+              <button onClick={async () => {
+                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'completed', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                if (error) { catalystToast.error(error.message); return; }
+                catalystToast.success('Cycle completed'); fetchCycle();
+              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                Complete
+              </button>
+            )}
+            {cycle.status === 'completed' && (
+              <button onClick={async () => {
+                const { error } = await (supabase as any).from('tm_test_cycles').update({ status: 'archived', updated_at: new Date().toISOString() }).eq('id', cycleId);
+                if (error) { catalystToast.error(error.message); return; }
+                catalystToast.success('Cycle archived'); fetchCycle();
+              }} style={{ height: 40, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                Archive
+              </button>
+            )}
             {canEdit && (
               <button onClick={() => setIsEditModalOpen(true)}
                 style={{ height: 40, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>

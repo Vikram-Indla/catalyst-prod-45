@@ -247,7 +247,7 @@ export function TestCycleCard({
         }}>
           <Eye size={14} /> View
         </button>
-        {cycle.status === 'active' && (
+        {cycle.status === 'in_progress' && (
           <button onClick={() => navigate(`/testhub/cycles/${cycle.id}`)} style={{
             height: 34, padding: '0 14px', background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)',
             border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
@@ -257,6 +257,15 @@ export function TestCycleCard({
           </button>
         )}
         {cycle.status === 'draft' && (
+          <button onClick={onStart} style={{
+            height: 34, padding: '0 14px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
+            border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+          }}>
+            <Play size={14} /> Plan
+          </button>
+        )}
+        {cycle.status === 'planned' && (
           <button onClick={onStart} style={{
             height: 34, padding: '0 14px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
             border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
