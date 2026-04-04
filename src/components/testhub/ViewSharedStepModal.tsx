@@ -70,7 +70,7 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
   useEffect(() => {
     if (isOpen && sharedStep) {
       setIsLoadingLinks(true);
-      supabase
+      (supabase as any)
         .from('th_shared_step_usage')
         .select('test_case_id, test_case:tm_test_cases (id, case_key, title)')
         .eq('shared_step_id', sharedStep.id)

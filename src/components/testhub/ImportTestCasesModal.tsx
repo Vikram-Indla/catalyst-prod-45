@@ -155,7 +155,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
   };
 
   const downloadTemplate = () => {
-    const csv = `title,objective,preconditions,priority,type,automation,step_1_action,step_1_expected
+    const csv = `title,description,preconditions,priority,type,automation,step_1_action,step_1_expected
 "Login with valid credentials","Verify user can login","User account exists",critical,functional,manual,"Navigate to login page","Login page displays"
 "Login with invalid password","Verify error on wrong password","User account exists",high,functional,manual,"Enter wrong password","Error message shown"`;
     
