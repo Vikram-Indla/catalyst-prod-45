@@ -57,12 +57,12 @@ export default function TestHubDashboardPage() {
           .limit(5),
         (supabase as any)
           .from('tm_cycle_scope')
-          .select('id, current_status, executed_at, cycle_id, test_case_id, executed_by, tm_test_cases(case_key, title), tm_test_cycles!tm_cycle_scope_cycle_id_fkey(cycle_key), profiles!tm_cycle_scope_executed_by_fkey(full_name)')
+          .select('id, current_status, executed_at, cycle_id, test_case_id, executed_by, tm_test_cases(case_key, title), tm_test_cycles!tm_cycle_scope_cycle_id_fkey(cycle_key)')
           .not('executed_at', 'is', null)
           .order('executed_at', { ascending: false })
           .limit(10),
         supabase.rpc('get_top_failing_tests', { p_limit: 5 }),
-        supabase.rpc('get_defect_stats'),
+        supabase.rpc('get_defect_stats', { p_project_id: null }),
         (supabase as any).from('tm_defects').select('status'),
       ]);
 
@@ -87,14 +87,14 @@ export default function TestHubDashboardPage() {
             title: a.tm_test_cases?.title ?? '',
             cycle_key: a.tm_test_cycles?.cycle_key ?? '',
             cycle_id: a.cycle_id,
-            executed_by_name: a.profiles?.full_name ?? 'Unknown',
+            executed_by_name: 'Tester',
           }))
         );
       }
       if (!failingRes.error && failingRes.data) setFailingTests(failingRes.data as unknown as FailingTest[]);
       
       // Defect stats: prefer RPC, fallback to direct query
-      if (!defectStatsRes.error && defectStatsRes.data?.length) {
+      if (!defectStatsRes.error && defectStatsRes.data && Array.isArray(defectStatsRes.data) && defectStatsRes.data.length) {
         setDefectStats(defectStatsRes.data[0] as unknown as DefectStats);
       } else if (!defectDirectRes.error && defectDirectRes.data) {
         const counts = { open_defects: 0, in_progress_defects: 0, fixed_defects: 0, closed_defects: 0, total_defects: 0 };
