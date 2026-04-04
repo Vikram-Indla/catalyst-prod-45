@@ -46,10 +46,10 @@ export function DefectListView({ projectId }: DefectListViewProps) {
         query = query.or(`title.ilike.%${filters.search}%,defect_key.ilike.%${filters.search}%,jira_key.ilike.%${filters.search}%`);
       }
       if (filters.statuses.length > 0) {
-        query = query.in('status', filters.statuses as string[]);
+        query = query.in('status', filters.statuses as any);
       }
       if (filters.severities.length > 0) {
-        query = query.in('severity', filters.severities as string[]);
+        query = query.in('severity', filters.severities as any);
       }
 
       query = query.order('created_at', { ascending: false })
