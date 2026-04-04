@@ -75,7 +75,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
         if (row.title) {
           parsed.push({
             title: row.title,
-            objective: row.objective || row.description,
+            description: row.description || row.objective,
             preconditions: row.preconditions,
             priority: row.priority || 'medium',
             type: row.type || 'functional',
