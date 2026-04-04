@@ -215,25 +215,39 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
   });
 }
 
-// ─── Production Incidents (cross-hub) ───
-export function useDashboardIncidents(projectId: string | null | undefined) {
+// ─── Production Incidents (cross-hub from ph_issues) ───
+export function useDashboardIncidents(projectId: string | null | undefined, projectKey?: string | null) {
   return useQuery({
-    queryKey: ['ph-dashboard-incidents', projectId],
+    queryKey: ['ph-dashboard-incidents', projectId, projectKey],
     queryFn: async () => {
+      if (!projectKey) return [];
+
       const { data, error } = await supabase
-        .from('incidents')
-        .select('id, incident_key, title, priority, status, reporter_name, assignee_id, created_at')
-        .eq('project_id', projectId!)
-        .order('created_at', { ascending: false })
-        .limit(20);
+        .from('ph_issues')
+        .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
+        .eq('project_key', projectKey)
+        .eq('issue_type', 'Production Incident')
+        .is('deleted_at', null)
+        .order('jira_created_at', { ascending: false })
+        .limit(10);
       if (error) throw error;
 
       return (data ?? []).map(inc => ({
-        ...inc,
-        days_open: Math.max(0, Math.floor((Date.now() - new Date(inc.created_at).getTime()) / 86400000)),
+        id: inc.id,
+        issue_key: inc.issue_key,
+        title: inc.summary,
+        priority: inc.priority || 'Medium',
+        status: inc.status,
+        status_category: inc.status_category,
+        assignee: inc.assignee_display_name,
+        reporter: inc.reporter_display_name,
+        resolution: inc.resolution,
+        days_open: inc.jira_created_at
+          ? Math.max(0, Math.floor((Date.now() - new Date(inc.jira_created_at).getTime()) / 86400000))
+          : 0,
       }));
     },
-    enabled: !!projectId,
+    enabled: !!projectKey,
     staleTime: 60_000,
   });
 }
@@ -249,7 +263,7 @@ export function useDashboardDefects(projectId: string | null | undefined, projec
       if (projectKey) {
         const { data: jiraDefects } = await supabase
           .from('tm_defects')
-          .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source')
+          .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
           .eq('jira_project_key', projectKey)
           .order('created_at', { ascending: false })
           .limit(10);
@@ -259,7 +273,7 @@ export function useDashboardDefects(projectId: string | null | undefined, projec
       // Also fetch native defects by project_id
       const { data: nativeDefects } = await supabase
         .from('tm_defects')
-        .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source')
+        .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
         .eq('project_id', projectId!)
         .eq('jira_source', false)
         .order('created_at', { ascending: false })

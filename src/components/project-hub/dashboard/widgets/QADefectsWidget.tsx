@@ -68,6 +68,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 <th className={thClassName} style={{ ...thStyle, width: 50 }}>SEV</th>
                 <th className={thClassName} style={thStyle}>TITLE</th>
                 <th className={thClassName} style={{ ...thStyle, width: 72 }}>STATUS</th>
+                <th className={thClassName} style={{ ...thStyle, width: 90 }}>ASSIGNEE</th>
               </tr>
             </thead>
             <tbody>
@@ -82,6 +83,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                   : isResolved
                   ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]'
                   : 'bg-[#DFE1E6] dark:bg-[#3A3530] text-[#253858] dark:text-[#A09890]';
+                const assigneeName = d.jira_assignee_name ? d.jira_assignee_name.split(' ')[0] : '—';
                 return (
                   <tr key={d.id} className="transition-colors duration-[120ms] hover:bg-black/[0.04] dark:hover:bg-white/[0.04] bg-white dark:bg-[#1A1714]">
                     <td className={tdClassName} style={{ ...tdStyle, color: 'var(--cp-primary-60)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{displayKey}</td>
@@ -96,6 +98,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                         {statusLabel}
                       </span>
                     </td>
+                    <td className={tdClassName} style={{ ...tdStyle, fontSize: 11 }}>{assigneeName}</td>
                   </tr>
                 );
               })}
