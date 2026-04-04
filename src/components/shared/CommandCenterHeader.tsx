@@ -71,7 +71,7 @@ export function CommandCenterHeader({
       }}
     >
       {/* Left: title + subtitle */}
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2.5">
           <h1
             className="m-0"
