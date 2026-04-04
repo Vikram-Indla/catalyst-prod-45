@@ -57,7 +57,7 @@ interface CycleTestCase {
   execution_time_seconds: number;
   failure_reason: string | null;
   started_at: string | null;
-  defect_ids: string[] | null;
+  
   test_case: {
     id: string;
     case_key: string;
@@ -876,7 +876,6 @@ export default function TestHubExecutionPage() {
                     cycleTestCaseId={currentTestCase.id}
                     attachments={attachments}
                     onAttachmentsChange={fetchAttachments}
-                    defectIds={currentTestCase.defect_ids || []}
                     onCreateDefect={handleFail}
                   />
                 ) : (
