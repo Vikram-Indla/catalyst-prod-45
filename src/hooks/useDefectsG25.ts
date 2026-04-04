@@ -16,8 +16,8 @@ export function useDefectsG25(filters?: DefectFilters) {
         .from('tm_defects')
         .select(`
           *,
-          reporter:profiles!tm_defects_reported_by_fkey(id, full_name, avatar_url),
-          assignee:profiles!tm_defects_assigned_to_fkey(id, full_name, avatar_url)
+          reporter:profiles!tm_defects_reporter_id_fkey(id, full_name, avatar_url),
+          assignee:profiles!tm_defects_assignee_id_fkey(id, full_name, avatar_url)
         `)
         .order('created_at', { ascending: false });
 
@@ -61,8 +61,8 @@ export function useDefectG25(defectId: string | undefined) {
         .from('tm_defects')
         .select(`
           *,
-          reporter:profiles!tm_defects_reported_by_fkey(id, full_name, avatar_url),
-          assignee:profiles!tm_defects_assigned_to_fkey(id, full_name, avatar_url)
+          reporter:profiles!tm_defects_reporter_id_fkey(id, full_name, avatar_url),
+          assignee:profiles!tm_defects_assignee_id_fkey(id, full_name, avatar_url)
         `)
         .eq('id', defectId)
         .single();
