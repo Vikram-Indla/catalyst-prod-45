@@ -1,0 +1,7 @@
+ALTER TABLE tm_shared_steps
+ADD COLUMN IF NOT EXISTS project_id UUID
+REFERENCES projects(id) ON DELETE CASCADE;
+
+UPDATE tm_shared_steps
+SET project_id = '00000000-0000-0000-0000-000000000001'
+WHERE project_id IS NULL;
