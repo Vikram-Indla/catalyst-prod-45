@@ -63,12 +63,12 @@ export function AddToCycleModal({ open, onClose, testSet }: AddToCycleModalProps
       }
 
       const { error: insertError } = await supabase
-        .from('tm_cycle_test_cases' as any)
+        .from('tm_cycle_scope' as any)
         .insert(
           newTestCases.map((tc: any) => ({
             cycle_id: cycleId,
             test_case_id: tc.test_case_id,
-            execution_status: 'not_run',
+            current_status: 'not_run',
           }))
         );
 

@@ -96,10 +96,7 @@ export function QuickExecutionModal({
       const { error } = await (supabase as any)
         .from('tm_cycle_scope')
         .update({
-          execution_status: status,
-          executed_at: new Date().toISOString(),
-          executed_by: currentUserId,
-          notes: notes.trim() || null,
+          current_status: status,
           updated_at: new Date().toISOString(),
         })
         .eq('id', cycleTestCase.id);
