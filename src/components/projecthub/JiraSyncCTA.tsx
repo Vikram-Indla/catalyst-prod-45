@@ -223,16 +223,16 @@ export function JiraSyncCTA() {
               <div style={{ padding: '12px 20px', borderTop: '1px solid #F1F5F9', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <button
                   onClick={handleSyncNow}
-                  disabled={syncing}
+                  disabled={isAnySyncActive}
                   style={{
                     width: '100%', height: 36, fontSize: 13, fontWeight: 600,
-                    color: '#FFF', background: syncing ? '#93C5FD' : '#2563EB',
-                    border: 'none', borderRadius: 8, cursor: syncing ? 'wait' : 'pointer',
+                    color: '#FFF', background: isAnySyncActive ? '#93C5FD' : '#2563EB',
+                    border: 'none', borderRadius: 8, cursor: isAnySyncActive ? 'wait' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                   }}
                 >
-                  {syncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-                  {syncing ? 'Syncing...' : 'Sync Now'}
+                  {isAnySyncActive ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                  {isAnySyncActive ? 'Syncing...' : 'Sync Now'}
                 </button>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button
