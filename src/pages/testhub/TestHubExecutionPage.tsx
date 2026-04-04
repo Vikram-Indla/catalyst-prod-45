@@ -1199,6 +1199,8 @@ export default function TestHubExecutionPage() {
                     attachments={attachments}
                     onAttachmentsChange={fetchAttachments}
                     onCreateDefect={handleFail}
+                    previousRunData={previousRunData}
+                    isViewMode={viewMode}
                   />
                 ) : (
                   <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(var(--muted-foreground))', fontSize: 13 }}>
