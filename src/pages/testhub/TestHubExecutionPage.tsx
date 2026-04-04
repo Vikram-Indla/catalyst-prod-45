@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { FailureReasonModal } from '@/components/testhub/FailureReasonModal';
 import { KeyboardShortcutsGuide } from '@/components/testhub/execution/KeyboardShortcutsGuide';
@@ -128,6 +129,7 @@ export default function TestHubExecutionPage() {
   const { cycleId } = useParams<{ cycleId: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
 
   // Core state
   const [cycle, setCycle] = useState<TestCycle | null>(null);
@@ -313,43 +315,56 @@ export default function TestHubExecutionPage() {
 
       // 2. INSERT execution history record (skip for reset)
       if (status !== 'not_run' && currentTestCase) {
-        try {
-          // Get next execution number
-          const { data: lastExec } = await (supabase as any)
-            .from('th_test_executions')
-            .select('execution_number')
-            .eq('cycle_scope_id', selectedTestCaseId)
-            .order('execution_number', { ascending: false })
-            .limit(1);
-          const nextNumber = (lastExec?.[0]?.execution_number ?? 0) + 1;
+        if (!selectedTestCaseId) return;
+        if (!currentUserId) {
+          console.error('[ExecHistory] INSERT aborted: currentUserId is null');
+          return;
+        }
 
-          // Build step snapshot
-          const key = selectedTestCaseId;
-          const currentStatuses = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
-          const stepSnapshot = steps.map((s, i) => ({
-            step_number: s.step_number || i + 1,
-            title: s.action || '',
-            status: currentStatuses[i]?.status || 'not_run',
-            notes: failureReason && currentStatuses[i]?.status === 'failed' ? failureReason : '',
-          }));
+        // Get next execution number
+        const { data: lastExec } = await supabase
+          .from('th_test_executions')
+          .select('execution_number')
+          .eq('cycle_scope_id', selectedTestCaseId)
+          .order('execution_number', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        const nextExecutionNumber = (lastExec?.execution_number ?? 0) + 1;
 
-          const { error: execError } = await (supabase as any).from('th_test_executions').insert({
-            test_case_id: currentTestCase.test_case_id,
-            test_cycle_id: cycle?.id,
-            cycle_name: cycle?.name,
+        // Build step snapshot
+        const key = selectedTestCaseId;
+        const currentStatuses = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+        const stepResultsSnapshot = steps.map((s, i) => ({
+          step_number: s.step_number || i + 1,
+          title: s.action || '',
+          status: currentStatuses[i]?.status || 'not_run',
+          notes: failureReason && currentStatuses[i]?.status === 'failed' ? failureReason : '',
+        }));
+
+        const sessionStartTime = new Date(sessionStartRef.current).toISOString();
+
+        const { data: execData, error: execError } = await supabase
+          .from('th_test_executions')
+          .insert({
             cycle_scope_id: selectedTestCaseId,
-            execution_number: nextNumber,
-            result: status,
+            execution_number: nextExecutionNumber ?? 1,
+            overall_status: status,
+            step_results: stepResultsSnapshot ?? {},
             executed_by: currentUserId,
-            executed_at: new Date().toISOString(),
-            step_results: stepSnapshot,
-            notes: failureNotes || null,
+            started_at: sessionStartTime ?? new Date().toISOString(),
+            completed_at: new Date().toISOString(),
+          })
+          .select('id, execution_number')
+          .single();
+
+        if (execError) {
+          console.error('[ExecHistory] INSERT FAILED:',
+            execError.code, execError.message, execError.details);
+        } else {
+          console.log('[ExecHistory] INSERT SUCCESS:', execData);
+          queryClient.invalidateQueries({
+            queryKey: ['execution-history', selectedTestCaseId],
           });
-          if (execError) {
-            console.error('[ExecutionPage] th_test_executions INSERT failed:', execError);
-          }
-        } catch (histErr) {
-          console.error('[ExecutionPage] th_test_executions INSERT exception:', histErr);
         }
       }
 
