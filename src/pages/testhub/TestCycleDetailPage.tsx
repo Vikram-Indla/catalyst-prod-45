@@ -141,7 +141,7 @@ export default function TestCycleDetailPage() {
     const rows = testCases.map(tc => [
       tc.test_case?.case_key || '',
       tc.test_case?.title || '',
-      tc.test_case?.priority || '',
+      tc.test_case?.priority_id || '',
       tc.assignee?.full_name || '',
       tc.current_status,
       tc.executed_at ? new Date(tc.executed_at).toLocaleString() : '',
