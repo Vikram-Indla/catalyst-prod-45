@@ -9,6 +9,7 @@ interface TestStep {
   id: string;
   action: string;
   expectedResult: string;
+  sharedStepId?: string;
   attachments?: StepAttachment[];
 }
 
@@ -216,13 +217,15 @@ export function CreateTestCaseModal({
 
     if (error) throw error;
 
-    // 3. Insert steps
-    const validSteps = steps.filter(s => s.action.trim());
+    // 3. Insert steps (including shared steps)
+    const validSteps = steps.filter(s => s.action.trim() || s.sharedStepId);
     const stepsToInsert = validSteps.map((s, i) => ({
       test_case_id: newCase.id,
       step_number: i + 1,
       action: s.action.trim(),
-      expected_result: s.expectedResult.trim() || null,
+      expected_result: s.expectedResult?.trim() || null,
+      is_shared: !!s.sharedStepId,
+      shared_step_id: s.sharedStepId || null,
     }));
 
     if (stepsToInsert.length > 0) {
@@ -304,14 +307,16 @@ export function CreateTestCaseModal({
       .delete()
       .eq('test_case_id', testCase.id);
 
-    // 3. Insert new steps
+    // 3. Insert new steps (including shared steps)
     const stepsToInsert = steps
-      .filter(s => s.action.trim())
+      .filter(s => s.action.trim() || s.sharedStepId)
       .map((s, i) => ({
         test_case_id: testCase.id,
         step_number: i + 1,
         action: s.action.trim(),
-        expected_result: s.expectedResult.trim() || null,
+        expected_result: s.expectedResult?.trim() || null,
+        is_shared: !!s.sharedStepId,
+        shared_step_id: s.sharedStepId || null,
       }));
 
     if (stepsToInsert.length > 0) {

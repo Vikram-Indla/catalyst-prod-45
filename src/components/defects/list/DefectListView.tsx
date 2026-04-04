@@ -106,7 +106,7 @@ export function DefectListView({ projectId }: DefectListViewProps) {
     mutationFn: async ({ id, status }: { id: string; status: DefectStatus }) => {
       const { error } = await supabase
         .from('tm_defects')
-        .update({ status })
+        .update({ status: status as any })
         .eq('id', id);
       if (error) throw error;
     },
