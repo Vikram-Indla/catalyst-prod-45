@@ -889,8 +889,8 @@ html:has(body[data-scroll-locked]) {
     --brand-gold-hover: #0f766e;
     --brand-teal: #0d9488;
     
-    /* === A) SURFACE LADDER (Cool Steel blue-grey) === */
-    --bg-0: #1A1714;                     /* App background — Cool Steel */
+    /* === A) SURFACE LADDER (NOCTURNE Warm Charcoal) === */
+    --bg-0: #1A1714;                     /* App background — Warm Charcoal */
     --bg-1: #1A1714;                     /* Page canvas */
     --bg-2: #232019;                     /* Panels / elevated float */
     --bg-3: #232019;                     /* Cards — same as panels for flush */
@@ -898,24 +898,24 @@ html:has(body[data-scroll-locked]) {
     --bg-5: #3A3530;                     /* Active/selected surface */
     --bg-app: var(--bg-0);
     
-    /* Shadcn surface mappings */
-    --background: 222 13% 11%;            /* #1A1714 Cool Steel */
-    --foreground: 216 25% 91%;            /* Cool Steel text */
+    /* Shadcn surface mappings — NOCTURNE Warm Charcoal */
+    --background: 30 13% 9%;              /* #1A1714 Warm Charcoal */
+    --foreground: 36 20% 95%;             /* #F5F3F0 Warm text */
     
-    --card: 222 13% 11%;                  /* Same as --background — flush cards */
-    --card-foreground: 216 25% 91%;
+    --card: 30 13% 9%;                    /* Same as --background — flush cards */
+    --card-foreground: 36 20% 95%;
     
-    --popover: 228 12% 13%;               /* #232019 - Cool Steel float */
-    --popover-foreground: 216 25% 91%;
+    --popover: 42 17% 12%;               /* #232019 - Warm Charcoal float */
+    --popover-foreground: 36 20% 95%;
     
     --primary: 217 91% 60%;              /* #3b82f6 blue */
     --primary-foreground: 0 0% 100%;     /* pure white on buttons only */
     
-    --secondary: 222 12% 12%;            /* Cool Steel card */
-    --secondary-foreground: 216 25% 91%;
+    --secondary: 42 17% 12%;             /* Warm Charcoal card */
+    --secondary-foreground: 36 20% 95%;
     
-    --muted: 222 12% 14%;                /* #232019 */
-    --muted-foreground: 216 20% 72%;     /* --fg-2 */
+    --muted: 33 11% 15%;                 /* #2C2823 */
+    --muted-foreground: 30 8% 60%;       /* #A09890 */
     
     --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
@@ -923,11 +923,11 @@ html:has(body[data-scroll-locked]) {
     --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 98%;
     
-    /* === B) TEXT LADDER (Readable, consistent — no pure white body) === */
-    --fg-1: rgba(225,230,240,0.92);      /* Primary text — Cool Steel */
-    --fg-2: rgba(225,230,240,0.72);      /* Secondary text */
-    --fg-3: rgba(225,230,240,0.60);      /* Muted/hints */
-    --fg-4: rgba(225,230,240,0.38);      /* Disabled */
+    /* === B) TEXT LADDER (NOCTURNE Warm Charcoal text) === */
+    --fg-1: #F5F3F0;                     /* Primary text — Warm Charcoal */
+    --fg-2: #A09890;                     /* Secondary text */
+    --fg-3: #6B6560;                     /* Muted/hints */
+    --fg-4: rgba(245,243,240,0.30);      /* Disabled */
     
     --text-1: var(--fg-1);
     --text-2: var(--fg-2);
@@ -936,38 +936,38 @@ html:has(body[data-scroll-locked]) {
     --text-inverse: #0a0a0a;
     
     /* HSL versions for Tailwind */
-    --text-primary: 216 25% 91%;
-    --text-secondary: 216 15% 72%;
-    --text-tertiary: 220 8% 57%;
-    --text-muted: 220 8% 57%;
+    --text-primary: 36 20% 95%;
+    --text-secondary: 30 8% 60%;
+    --text-tertiary: 27 5% 40%;
+    --text-muted: 27 5% 40%;
     
     /* ═══════════════════════════════════════════════════════════════
        V9.5 NAVIGATION SHELL — AAA Contrast (Dark Mode)
-       Based on Linear/Stripe dark mode standards
+       NOCTURNE Warm Charcoal palette
        ═══════════════════════════════════════════════════════════════ */
-    --nav-text-primary: rgba(225,230,240,0.92);
-    --nav-text-secondary: rgba(225,230,240,0.72);
-    --nav-text-tertiary: rgba(225,230,240,0.55);
-    --nav-module-badge: #3A3530;           /* Cool Steel badge */
-    --nav-section-label: rgba(225,230,240,0.55);
+    --nav-text-primary: #F5F3F0;
+    --nav-text-secondary: #A09890;
+    --nav-text-tertiary: #6B6560;
+    --nav-module-badge: #3A3530;           /* Warm Charcoal badge */
+    --nav-section-label: #6B6560;
     --nav-accent-bar: #3b82f6;             /* Left accent bar */
     
-    /* === C) DIVIDER + BORDER GRAMMAR (Cool Steel borders) === */
-    --divider: rgba(200,210,225,0.06);
-    --border-subtle: rgba(200,210,225,0.08);
-    --border-strong: rgba(200,210,225,0.12);
+    /* === C) DIVIDER + BORDER GRAMMAR (Warm Charcoal borders) === */
+    --divider: rgba(255,255,255,0.05);
+    --border-subtle: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.12);
     --stroke-1: var(--divider);
     --stroke-2: var(--border-subtle);
     
-    --border: 220 15% 85% / 0.06;
-    --input: 220 15% 85% / 0.08;
+    --border: 30 10% 50% / 0.06;
+    --input: 30 10% 50% / 0.08;
     --ring: 217 91% 60%;
     
     /* === D) INTERACTION TOKENS === */
-    --focus-ring: rgba(59,130,246,0.55);   /* Blue focus — Cool Steel */
-    --hover: rgba(200,210,225,0.04);
-    --active: rgba(200,210,225,0.07);
-    --selected: rgba(200,210,225,0.08);    /* Neutral selected */
+    --focus-ring: rgba(59,130,246,0.55);   /* Blue focus */
+    --hover: rgba(255,255,255,0.04);
+    --active: rgba(255,255,255,0.07);
+    --selected: rgba(255,255,255,0.08);    /* Neutral selected */
     
     --row-hover: var(--hover);
     --row-selected: rgba(200,210,225,0.08);
