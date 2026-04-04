@@ -970,8 +970,8 @@ html:has(body[data-scroll-locked]) {
     --selected: rgba(255,255,255,0.08);    /* Neutral selected */
     
     --row-hover: var(--hover);
-    --row-selected: rgba(200,210,225,0.08);
-    --row-active: rgba(200,210,225,0.12);
+    --row-selected: rgba(255,255,255,0.08);
+    --row-active: rgba(255,255,255,0.12);
     
     /* ═══════════════════════════════════════════════════════════════
        CATALYST V5 CANONICAL — Dark Mode Semantic Tokens
@@ -2888,10 +2888,10 @@ input[type="range"]::-moz-range-thumb {
   --bg-2: #232019;
   --bg-3: #232019;
   --bg-4: #2C2823;
-  --border: rgba(200,210,225,0.06);
-  --cp-bd: rgba(200,210,225,0.10);
-  --cp-bd-table: rgba(200,210,225,0.06);
-  --cp-bd-zone: rgba(200,210,225,0.08);
+  --border: rgba(255,255,255,0.06);
+  --cp-bd: rgba(255,255,255,0.10);
+  --cp-bd-table: rgba(255,255,255,0.06);
+  --cp-bd-zone: rgba(255,255,255,0.08);
   --cp-bg: #1A1714;
   --cp-bg-elevated: #2C2823;
   --cp-bg-page: #1A1714;
@@ -2908,9 +2908,9 @@ input[type="range"]::-moz-range-thumb {
   --cp-err-bg: rgba(248,113,113,0.10);
   --cp-err-text: #F87171;
   --cp-float: #2C2823;
-  --cp-hover: rgba(200,210,225,0.05);
-  --cp-interact-hover: rgba(200,210,225,0.04);
-  --cp-interact-press: rgba(200,210,225,0.08);
+  --cp-hover: rgba(255,255,255,0.05);
+  --cp-interact-hover: rgba(255,255,255,0.04);
+  --cp-interact-press: rgba(255,255,255,0.08);
   --cp-interact-selected: rgba(37,99,235,0.15);
   --cp-lozenge-blue-bg: #0C66E4;
   --cp-lozenge-blue-text: #FFFFFF;
@@ -2929,10 +2929,10 @@ input[type="range"]::-moz-range-thumb {
   --cp-prg-bg: rgba(59,130,246,0.10);
   --cp-shadow-overlay: 0px 8px 12px rgba(0,0,0,0.5), 0px 0px 1px rgba(0,0,0,0.6);
   --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.3);
-  --cp-t1: rgba(225,230,240,0.92);
-  --cp-t2: rgba(225,230,240,0.72);
-  --cp-t3: rgba(225,230,240,0.60);
-  --cp-t4: rgba(225,230,240,0.35);
+  --cp-t1: rgba(245,243,240,0.92);
+  --cp-t2: rgba(245,243,240,0.72);
+  --cp-t3: rgba(245,243,240,0.60);
+  --cp-t4: rgba(245,243,240,0.35);
   --cp-text-link: #60A5FA;
   --cp-text-muted: #6B6560;
   --cp-text-primary: #F5F3F0;
@@ -2940,7 +2940,7 @@ input[type="range"]::-moz-range-thumb {
   --cp-text-tertiary: #6B6560;
   --cp-warn: #FBBF24;
   --cp-warn-bg: rgba(251,191,36,0.10);
-  --divider: rgba(200,210,225,0.04);
+  --divider: rgba(255,255,255,0.04);
   --ring: rgba(59,130,246,0.7);
   --shadow: 0 4px 12px rgba(0,0,0,0.4);
   --text-1: #F1F3F5;
