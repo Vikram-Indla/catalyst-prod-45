@@ -216,7 +216,7 @@ export default function TestCycleDetailPage() {
   }
 
   const status = statusConfig[(cycle.status || 'draft').toLowerCase().replace(/-/g, '_')] ?? statusConfig['draft'];
-  const canEdit = cycle.status === 'draft' || cycle.status === 'active';
+  const canEdit = cycle.status === 'draft' || cycle.status === 'in_progress';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
@@ -267,7 +267,7 @@ export default function TestCycleDetailPage() {
                 <Pencil size={16} /> Edit
               </button>
             )}
-            {cycle.status === 'active' && (
+            {cycle.status === 'in_progress' && (
               <button onClick={() => {
                 const notRun = testCases.find(tc => tc.current_status === 'not_run');
                 if (notRun) {
@@ -558,7 +558,7 @@ export default function TestCycleDetailPage() {
                           </span>
                         </td>
                         <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                          {cycle.status === 'active' && (
+                          {cycle.status === 'in_progress' && (
                             <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '0 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                               <Play size={12} /> Run
                             </button>
