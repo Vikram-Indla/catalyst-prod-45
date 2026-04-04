@@ -216,13 +216,15 @@ export function CreateTestCaseModal({
 
     if (error) throw error;
 
-    // 3. Insert steps
-    const validSteps = steps.filter(s => s.action.trim());
+    // 3. Insert steps (including shared steps)
+    const validSteps = steps.filter(s => s.action.trim() || (s as any).sharedStepId);
     const stepsToInsert = validSteps.map((s, i) => ({
       test_case_id: newCase.id,
       step_number: i + 1,
       action: s.action.trim(),
-      expected_result: s.expectedResult.trim() || null,
+      expected_result: s.expectedResult?.trim() || null,
+      is_shared: !!(s as any).sharedStepId,
+      shared_step_id: (s as any).sharedStepId || null,
     }));
 
     if (stepsToInsert.length > 0) {
