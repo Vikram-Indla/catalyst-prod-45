@@ -6,10 +6,15 @@
 export type DefectSeverity = 'critical' | 'major' | 'minor' | 'trivial' | 'high' | 'medium' | 'low';
 export type DefectPriority = 'critical' | 'high' | 'medium' | 'low' | 'Highest' | 'High' | 'Medium' | 'Low' | 'Lowest';
 export type DefectStatus =
+  | 'new'
   | 'open'
+  | 'triaged'
   | 'in_progress'
+  | 'fixed'
   | 'resolved'
+  | 'verified'
   | 'closed'
+  | 'rejected'
   | 'reopened';
 
 // =====================================================
