@@ -257,7 +257,7 @@ export function useDefectLinksG25(defectId: string | undefined) {
       for (const link of links) {
         if (link.link_type === 'test_case') {
           const { data: tc } = await supabase
-            .from('th_test_cases' as any)
+            .from('tm_test_cases' as any)
             .select('id, case_key, title')
             .eq('id', link.linked_id)
             .single();

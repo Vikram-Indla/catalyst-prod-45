@@ -194,7 +194,7 @@ export function useTestPlanCases(planId: string | undefined) {
         .select(`
           *,
           test_case:tm_test_cases(
-            id, key, title, status, priority_id, type_id,
+            id, case_key, title, status, priority_id, case_type_id,
             priority:tm_case_priorities(id, name, color),
             type:tm_case_types(id, name, icon)
           ),

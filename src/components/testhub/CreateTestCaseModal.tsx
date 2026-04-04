@@ -174,9 +174,20 @@ export function CreateTestCaseModal({
   };
 
   const handleCreate = async () => {
-    // 1. Generate case_key - get ALL keys and find the MAX number to avoid duplicates
-    const { data: allCases } = await supabase
-      .from('th_test_cases')
+    // 1. Get project_id (required for tm_test_cases)
+    const { data: proj } = await supabase.from('projects').select('id').limit(1).single();
+    const projectId = proj?.id;
+    if (!projectId) throw new Error('No project found');
+
+    // 2. Resolve priority_id and case_type_id from lookup tables
+    const [priorityRes, typeRes] = await Promise.all([
+      (supabase as any).from('tm_case_priorities').select('id').ilike('name', priority).limit(1).single(),
+      (supabase as any).from('tm_case_types').select('id').ilike('name', type).limit(1).single(),
+    ]);
+
+    // 3. Generate case_key - get ALL keys and find the MAX number to avoid duplicates
+    const { data: allCases } = await (supabase as any)
+      .from('tm_test_cases')
       .select('case_key');
 
     let maxNum = 0;
@@ -191,20 +202,21 @@ export function CreateTestCaseModal({
     }
     const caseKey = `TC-${String(maxNum + 1).padStart(3, '0')}`;
 
-    // 2. Insert test case
-    const { data: newCase, error } = await supabase
-      .from('th_test_cases')
+    // 4. Insert test case into tm_test_cases (canonical table)
+    const { data: newCase, error } = await (supabase as any)
+      .from('tm_test_cases')
       .insert({
+        project_id: projectId,
         case_key: caseKey,
         title: title.trim(),
-        objective: objective.trim() || null,
+        description: objective.trim() || null,
         preconditions: preconditions.trim() || null,
         folder_id: folderId || null,
-        priority,
-        type,
+        priority_id: priorityRes?.data?.id || null,
+        case_type_id: typeRes?.data?.id || null,
         status,
-        automation,
-        owner_id: assignedTo || null,
+        automation_status: automation,
+        created_by: assignedTo || null,
         version: 1,
       })
       .select()
@@ -212,7 +224,7 @@ export function CreateTestCaseModal({
 
     if (error) throw error;
 
-    // 3. Insert steps
+    // 5. Insert steps into tm_test_steps (canonical table)
     const validSteps = steps.filter(s => s.action.trim());
     const stepsToInsert = validSteps.map((s, i) => ({
       test_case_id: newCase.id,
@@ -222,8 +234,8 @@ export function CreateTestCaseModal({
     }));
 
     if (stepsToInsert.length > 0) {
-      const { error: stepsError } = await supabase
-        .from('th_test_steps')
+      const { error: stepsError } = await (supabase as any)
+        .from('tm_test_steps')
         .insert(stepsToInsert);
       if (stepsError) throw stepsError;
     }
@@ -280,19 +292,25 @@ export function CreateTestCaseModal({
 
     const newVersion = (testCase.version || 1) + 1;
 
-    // 1. Update test case
-    const { error: tcError } = await supabase
-      .from('th_test_cases')
+    // Resolve priority_id and case_type_id from lookup tables
+    const [priorityRes, typeRes] = await Promise.all([
+      (supabase as any).from('tm_case_priorities').select('id').ilike('name', priority).limit(1).single(),
+      (supabase as any).from('tm_case_types').select('id').ilike('name', type).limit(1).single(),
+    ]);
+
+    // 1. Update test case in tm_test_cases (canonical table)
+    const { error: tcError } = await (supabase as any)
+      .from('tm_test_cases')
       .update({
         title: title.trim(),
-        objective: objective.trim() || null,
+        description: objective.trim() || null,
         preconditions: preconditions.trim() || null,
         folder_id: folderId || null,
-        priority,
-        type,
+        priority_id: priorityRes?.data?.id || null,
+        case_type_id: typeRes?.data?.id || null,
         status,
-        automation,
-        owner_id: assignedTo || null,
+        automation_status: automation,
+        created_by: assignedTo || null,
         version: newVersion,
       })
       .eq('id', testCase.id);
@@ -300,8 +318,8 @@ export function CreateTestCaseModal({
     if (tcError) throw tcError;
 
     // 2. Delete existing steps
-    await supabase
-      .from('th_test_steps')
+    await (supabase as any)
+      .from('tm_test_steps')
       .delete()
       .eq('test_case_id', testCase.id);
 
@@ -316,17 +334,17 @@ export function CreateTestCaseModal({
       }));
 
     if (stepsToInsert.length > 0) {
-      const { error: stepsError } = await supabase
-        .from('th_test_steps')
+      const { error: stepsError } = await (supabase as any)
+        .from('tm_test_steps')
         .insert(stepsToInsert);
       if (stepsError) throw stepsError;
     }
 
     // 4. Create version history entry
-    await supabase.from('th_test_case_versions').insert({
+    await (supabase as any).from('tm_test_case_versions').insert({
       test_case_id: testCase.id,
-      version: newVersion,
-      changes: JSON.stringify({ updated: 'Test case updated' }),
+      version_number: newVersion,
+      snapshot: JSON.stringify({ updated: 'Test case updated' }),
     });
 
     toast({

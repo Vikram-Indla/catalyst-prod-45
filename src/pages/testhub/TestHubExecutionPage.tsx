@@ -157,13 +157,13 @@ export default function TestHubExecutionPage() {
     if (!cycleId) return;
     const { data, error } = await (supabase as any)
       .from('tm_cycle_scope')
-      .select(`*, test_case:tm_test_cases ( id, case_key, title, objective, preconditions, priority, type ), assignee:profiles!tm_cycle_scope_assigned_to_fkey ( id, full_name )`)
+      .select(`*, test_case:tm_test_cases ( id, case_key, title, description, preconditions, priority_ref:tm_case_priorities(name), type_ref:tm_case_types(name) ), assignee:profiles!tm_cycle_scope_assigned_to_fkey ( id, full_name )`)
       .eq('cycle_id', cycleId)
       .order('created_at');
 
     if (data && data.length > 0) {
       const testCaseIds = data.map(tc => tc.test_case?.id).filter(Boolean);
-      const { data: stepsData } = await supabase.from('th_test_steps').select('*').in('test_case_id', testCaseIds).order('step_number');
+      const { data: stepsData } = await supabase.from('tm_test_steps' as any).select('*').in('test_case_id', testCaseIds).order('step_number');
       if (stepsData) {
         const stepsMap = new Map<string, any[]>();
         stepsData.forEach(s => {
@@ -646,7 +646,7 @@ export default function TestHubExecutionPage() {
                       {statusConfig[currentTestCase.current_status]?.label}
                     </span>
                     <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 5, textTransform: 'capitalize' }}>
-                      {testCase.priority}
+                      {testCase.priority_ref?.name || 'Medium'}
                     </span>
                     {fastTrackMode && (
                       <span style={{ fontSize: 10, fontWeight: 700, color: '#D97706', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 5, display: 'flex', alignItems: 'center', gap: 3 }}>
@@ -655,7 +655,7 @@ export default function TestHubExecutionPage() {
                     )}
                   </div>
                   <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
-                  {testCase.objective && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.objective}</p>}
+                  {testCase.description && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.description}</p>}
                 </div>
 
                 {/* Step progress indicator */}

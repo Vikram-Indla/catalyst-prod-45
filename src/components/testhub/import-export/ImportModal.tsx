@@ -170,13 +170,16 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
         for (let i = 0; i < transformedData.length; i++) {
           const row = transformedData[i];
           try {
-            const { error } = await (supabase as any).from('th_test_cases').insert({
+            // Get project_id for tm_test_cases
+            const { data: proj } = await supabase.from('projects').select('id').limit(1).single();
+            const { error } = await (supabase as any).from('tm_test_cases').insert({
+              project_id: proj?.id,
               title: row.title,
               description: row.description || null,
-              priority: row.priority || 'medium',
               status: row.status || 'draft',
               preconditions: row.preconditions || null,
               expected_result: row.expected_result || null,
+              case_key: `TC-IMP-${Date.now()}-${i}`,
             });
             if (error) throw error;
             successCount++;

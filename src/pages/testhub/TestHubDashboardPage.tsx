@@ -56,10 +56,10 @@ export default function TestHubDashboardPage() {
           .order('created_at', { ascending: false })
           .limit(5),
         (supabase as any)
-          .from('tm_cycle_scope')
-          .select('id, current_status, executed_at, cycle_id, test_case_id, executed_by, tm_test_cases(case_key, title), tm_test_cycles!tm_cycle_scope_cycle_id_fkey(cycle_key), profiles!tm_cycle_scope_executed_by_fkey(full_name)')
-          .not('executed_at', 'is', null)
-          .order('executed_at', { ascending: false })
+          .from('tm_test_runs')
+          .select('id, status, completed_at, cycle_scope_id, executed_by, executor:profiles!tm_test_runs_executed_by_fkey(full_name), cycle_scope:tm_cycle_scope!inner(cycle_id, test_case_id, test_case:tm_test_cases(case_key, title), cycle:tm_test_cycles(cycle_key))')
+          .not('completed_at', 'is', null)
+          .order('completed_at', { ascending: false })
           .limit(10),
         supabase.rpc('get_top_failing_tests', { p_limit: 5 }),
         supabase.rpc('get_defect_stats'),
@@ -81,13 +81,13 @@ export default function TestHubDashboardPage() {
         setRecentActivity(
           (activityRes.data as any[]).map((a) => ({
             id: a.id,
-            execution_status: a.current_status ?? 'not_run',
-            executed_at: a.executed_at ?? '',
-            case_key: a.tm_test_cases?.case_key ?? '',
-            title: a.tm_test_cases?.title ?? '',
-            cycle_key: a.tm_test_cycles?.cycle_key ?? '',
-            cycle_id: a.cycle_id,
-            executed_by_name: a.profiles?.full_name ?? 'Unknown',
+            execution_status: a.status ?? 'not_run',
+            executed_at: a.completed_at ?? '',
+            case_key: a.cycle_scope?.test_case?.case_key ?? '',
+            title: a.cycle_scope?.test_case?.title ?? '',
+            cycle_key: a.cycle_scope?.cycle?.cycle_key ?? '',
+            cycle_id: a.cycle_scope?.cycle_id,
+            executed_by_name: a.executor?.full_name ?? 'Unknown',
           }))
         );
       }

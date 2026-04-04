@@ -65,7 +65,7 @@ export default function TestRunsPage() {
           .from('tm_cycle_scope')
           .select(`
             id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at,
-            test_case:tm_test_cases ( id, case_key, title, priority )
+            test_case:tm_test_cases ( id, case_key, title, priority_ref:tm_case_priorities(name) )
           `)
           .order('updated_at', { ascending: false, nullsFirst: false }),
         (supabase as any)
@@ -222,7 +222,7 @@ export default function TestRunsPage() {
             <tbody>
               {filtered.map(r => {
                 const st = statusConfig[r.current_status] || statusConfig.not_run;
-                const pri = priorityConfig[r.test_case?.priority?.toLowerCase() || 'medium'] || priorityConfig.medium;
+                const pri = priorityConfig[r.test_case?.priority_ref?.name?.toLowerCase() || 'medium'] || priorityConfig.medium;
                 return (
                   <tr
                     key={r.id}

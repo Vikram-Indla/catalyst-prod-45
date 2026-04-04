@@ -260,11 +260,11 @@ export function ViewTestCaseModal({
 
     try {
       const [stepsRes, linksRes, historyRes, runsRes, attachmentsRes] = await Promise.all([
-        supabase.from('th_test_steps').select('*').eq('test_case_id', testCase.id).order('step_number'),
-        supabase.from('th_test_case_links').select('*').eq('test_case_id', testCase.id),
-        supabase.from('th_test_case_versions').select('*').eq('test_case_id', testCase.id).order('version', { ascending: false }),
-        supabase.from('th_test_executions').select('*').eq('test_case_id', testCase.id).order('executed_at', { ascending: false }),
-        supabase.from('th_test_case_attachments').select('*').eq('test_case_id', testCase.id),
+        (supabase as any).from('tm_test_steps').select('*').eq('test_case_id', testCase.id).order('step_number'),
+        (supabase as any).from('tm_test_case_links').select('*').eq('test_case_id', testCase.id),
+        (supabase as any).from('tm_test_case_versions').select('*').eq('test_case_id', testCase.id).order('created_at', { ascending: false }),
+        (supabase as any).from('tm_test_runs').select('*, cycle_scope:tm_cycle_scope!inner(test_case_id)').eq('cycle_scope.test_case_id', testCase.id).order('completed_at', { ascending: false }),
+        (supabase as any).from('th_test_case_attachments').select('*').eq('test_case_id', testCase.id),
       ]);
 
       setSteps(stepsRes.data || []);

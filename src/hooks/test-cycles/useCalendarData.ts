@@ -39,25 +39,25 @@ export function useCalendarData(
             status: 'planned',
           };
 
-      // Fetch test runs for this cycle within the date range
+      // Fetch test runs for this cycle within the date range via tm_cycle_scope join
       // @ts-ignore — deep type instantiation on chained filters
       const { data: runs } = await supabase
         .from('tm_test_runs' as any)
-        .select('id, status, created_at, test_case_id')
-        .eq('cycle_id', cycleId)
+        .select('id, status, created_at, cycle_scope:tm_cycle_scope!inner(test_case_id, cycle_id)')
+        .eq('cycle_scope.cycle_id', cycleId)
         .gte('created_at', dateRange.start.toISOString())
         .lte('created_at', dateRange.end.toISOString());
 
       // Map DB rows to CalendarEvent[]
       let events: CalendarEvent[] = (runs || []).map((run: any) => ({
         id: run.id,
-        testCaseId: run.test_case_id,
-        code: run.tm_test_cases?.id?.substring(0, 8) || '',
-        title: run.tm_test_cases?.title || 'Untitled',
-        module: run.tm_test_cases?.module || 'General',
+        testCaseId: run.cycle_scope?.test_case_id,
+        code: run.cycle_scope?.test_case_id?.substring(0, 8) || '',
+        title: 'Test Run',
+        module: 'General',
         dueDate: new Date(run.created_at),
         status: mapStatus(run.status),
-        priority: run.tm_test_cases?.priority || 'medium',
+        priority: 'medium',
         assigneeId: null,
         assigneeName: null,
         assigneeAvatar: null,
