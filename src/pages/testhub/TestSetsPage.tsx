@@ -53,7 +53,7 @@ export default function TestSetsPage() {
   const refreshMutation = useRefreshDynamicSet();
   const cloneMutation = useCloneTestSet();
   const archiveMutation = useArchiveTestSet();
-  const createCycleMutation = useCreateTestCycleFromSet();
+  
 
   const handleEdit = (set: TestSet) => { setEditingSet(set); setIsCreateOpen(true); };
   const handleClose = () => { setIsCreateOpen(false); setEditingSet(null); };
