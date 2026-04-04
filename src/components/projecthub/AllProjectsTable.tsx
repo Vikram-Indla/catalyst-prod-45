@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { IssueBreakdownPopover } from './IssueBreakdownPopover';
 
 // ── Utilities ──────────────────────────────────────────
 const BADGE_COLORS = ['#3B82F6', '#6366F1', '#0891B2', '#475569', '#0D9488', '#78716C'];
@@ -551,11 +552,13 @@ export function AllProjectsTable({
                 <LeadReassignPopover project={p} />
               </div>
 
-              {/* Cell 5: Issues */}
+              {/* Cell 5: Issues — click for breakdown */}
               <div className="px-2 py-2 text-center border-b border-slate-100 dark:border-slate-700/50" style={{ opacity: active ? 1 : 0.45 }}>
-                <span className="inline-flex items-center justify-center min-w-[28px] px-1.5 py-0.5 rounded-full text-[12px] font-semibold tabular-nums bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                  {issueCount}
-                </span>
+                <IssueBreakdownPopover
+                  projectKey={p.project_key}
+                  projectName={p.name}
+                  issueCount={issueCount}
+                />
               </div>
 
               {/* Cell 6: Members */}
