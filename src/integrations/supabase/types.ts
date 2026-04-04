@@ -27224,6 +27224,73 @@ export type Database = {
           },
         ]
       }
+      plan_test_cycles: {
+        Row: {
+          cycle_id: string
+          id: string
+          linked_at: string | null
+          linked_by: string | null
+          plan_id: string
+        }
+        Insert: {
+          cycle_id: string
+          id?: string
+          linked_at?: string | null
+          linked_by?: string | null
+          plan_id: string
+        }
+        Update: {
+          cycle_id?: string
+          id?: string
+          linked_at?: string | null
+          linked_by?: string | null
+          plan_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_test_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_test_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_test_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "plan_test_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "plan_test_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_test_cycles_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       planhub_activity_log: {
         Row: {
           action: Database["public"]["Enums"]["planhub_audit_action"]
