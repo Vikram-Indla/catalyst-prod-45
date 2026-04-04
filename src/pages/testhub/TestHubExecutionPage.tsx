@@ -161,7 +161,7 @@ export default function TestHubExecutionPage() {
       .from('tm_cycle_scope')
       .select(`*, test_case:tm_test_cases ( id, case_key, title, description, preconditions, priority_id, case_type_id, priority:tm_case_priorities ( id, name, color ), case_type:tm_case_types ( id, name ) ), assignee:profiles!assigned_to ( id, full_name )`)
       .eq('cycle_id', cycleId)
-      .order('created_at');
+      .order('added_at');
 
     if (data && data.length > 0) {
       const testCaseIds = data.map(tc => tc.test_case?.id).filter(Boolean);
