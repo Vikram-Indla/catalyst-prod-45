@@ -212,8 +212,22 @@ export function ViewTestCaseModal({
       ]);
 
       setSteps(stepsRes.data || []);
-      setLinks(linksRes.data || []);
-      setHistory(historyRes.data || []);
+      // Map tm_test_case_links to expected shape
+      const linksData = (linksRes.data || []).map((l: any) => ({
+        id: l.id,
+        link_type: l.linked_item_type || '',
+        linked_item_key: l.linked_item_id || '',
+        linked_item_title: l.linked_item_type || '',
+      }));
+      setLinks(linksData);
+      // Map tm_test_case_versions to expected shape
+      const historyData = (historyRes.data || []).map((v: any) => ({
+        id: v.id,
+        version: v.version_number,
+        changes: v.change_summary || v.snapshot,
+        changed_at: v.created_at,
+      }));
+      setHistory(historyData);
       setRuns(runsRes.data || []);
       setAttachments(attachmentsRes.data || []);
     } catch (err) {
