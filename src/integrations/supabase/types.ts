@@ -46715,8 +46715,15 @@ export type Database = {
             foreignKeyName: "th_execution_attachments_cycle_test_case_id_fkey"
             columns: ["cycle_test_case_id"]
             isOneToOne: false
-            referencedRelation: "th_cycle_test_cases"
+            referencedRelation: "tm_cycle_scope"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_execution_attachments_cycle_test_case_id_fkey"
+            columns: ["cycle_test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["item_id"]
           },
           {
             foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
