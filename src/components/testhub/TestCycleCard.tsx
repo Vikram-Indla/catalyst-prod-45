@@ -155,12 +155,7 @@ export function TestCycleCard({
               <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '6px 0' }} />
               {cycle.status === 'draft' && (
                 <button onClick={() => { onStart(); setMenuOpen(false); }} style={menuItemStyle}>
-                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Mark as Planned
-                </button>
-              )}
-              {cycle.status === 'planned' && (
-                <button onClick={() => { onStart(); setMenuOpen(false); }} style={menuItemStyle}>
-                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Start Execution
+                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Activate Cycle
                 </button>
               )}
               {cycle.status === 'active' && (
@@ -258,21 +253,12 @@ export function TestCycleCard({
           </button>
         )}
         {cycle.status === 'draft' && (
-          <button onClick={onStart} style={{
+          <button onClick={() => navigate(`/testhub/cycles/${cycle.id}`)} style={{
             height: 34, padding: '0 14px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
             border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 6,
           }}>
             <Play size={14} /> Plan
-          </button>
-        )}
-        {cycle.status === 'planned' && (
-          <button onClick={onStart} style={{
-            height: 34, padding: '0 14px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
-            border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-          }}>
-            <Play size={14} /> Start
           </button>
         )}
       </div>
