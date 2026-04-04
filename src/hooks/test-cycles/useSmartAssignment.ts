@@ -87,7 +87,7 @@ export function useSmartAssignment(cycleId: string, testCaseIds: string[]) {
     queryFn: async (): Promise<TestCaseForAssignment[]> => {
       const { data, error } = await (supabase as any)
         .from('tm_cycle_scope')
-        .select('id, test_case_id, test_case:tm_test_cases(id, case_key, title, priority_ref:tm_case_priorities(name))')
+        .select('id, test_case_id, test_case:tm_test_cases(id, case_key, title, priority_id)')
         .eq('cycle_id', cycleId);
       
       if (error || !data) return [];
@@ -99,7 +99,7 @@ export function useSmartAssignment(cycleId: string, testCaseIds: string[]) {
           testCaseId: d.test_case?.case_key || d.test_case_id,
           title: d.test_case?.title || 'Unknown',
           module: 'General',
-          priority: d.test_case?.priority_ref?.name || 'medium',
+          priority: 'medium',
           estimatedDuration: 15,
         }));
     },

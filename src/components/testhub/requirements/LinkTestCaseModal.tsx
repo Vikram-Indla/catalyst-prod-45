@@ -39,7 +39,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
     const fetchTestCases = async () => {
       setIsLoading(true);
       try {
-        let query = (supabase as any).from('tm_test_cases').select('id, case_key, title, priority_ref:tm_case_priorities(name)').order('case_key');
+        let query = (supabase as any).from('tm_test_cases').select('id, case_key, title, priority_id').order('case_key');
         if (alreadyLinkedIds.length > 0) {
           query = query.not('id', 'in', `(${alreadyLinkedIds.join(',')})`);
         }
@@ -143,7 +143,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
           ) : (
             filtered.map(tc => {
               const isSelected = selectedIds.has(tc.id);
-              const priorityName = tc.priority_ref?.name || 'medium';
+              const priorityName = 'medium';
               const priorityColor = PRIORITY_COLORS[priorityName] || '#D97706';
               return (
                 <div key={tc.id} onClick={() => toggleSelect(tc.id)}
@@ -156,7 +156,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                       <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4 }}>{tc.case_key}</span>
-                      <span style={{ fontSize: 11, fontWeight: 500, color: priorityColor }}>{priorityName}</span>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: priorityColor, textTransform: 'capitalize' }}>{priorityName}</span>
                     </div>
                     <p style={{ fontSize: 13, color: '#0F172A', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tc.title}</p>
                   </div>

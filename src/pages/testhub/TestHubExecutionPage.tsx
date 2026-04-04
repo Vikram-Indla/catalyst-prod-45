@@ -157,7 +157,7 @@ export default function TestHubExecutionPage() {
     if (!cycleId) return;
     const { data, error } = await (supabase as any)
       .from('tm_cycle_scope')
-      .select(`*, test_case:tm_test_cases ( id, case_key, title, description, preconditions, priority_ref:tm_case_priorities(name), type_ref:tm_case_types(name) ), assignee:profiles!tm_cycle_scope_assigned_to_fkey ( id, full_name )`)
+      .select(`*, test_case:tm_test_cases ( id, case_key, title, description, preconditions, priority_id, case_type_id ), assignee:profiles!tm_cycle_scope_assigned_to_fkey ( id, full_name )`)
       .eq('cycle_id', cycleId)
       .order('created_at');
 
@@ -646,7 +646,7 @@ export default function TestHubExecutionPage() {
                       {statusConfig[currentTestCase.current_status]?.label}
                     </span>
                     <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 5, textTransform: 'capitalize' }}>
-                      {testCase.priority_ref?.name || 'Medium'}
+                      {currentTestCase?.priority || 'Medium'}
                     </span>
                     {fastTrackMode && (
                       <span style={{ fontSize: 10, fontWeight: 700, color: '#D97706', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 5, display: 'flex', alignItems: 'center', gap: 3 }}>

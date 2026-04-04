@@ -81,7 +81,7 @@ export default function RequirementDetailPage() {
       // Fetch linked tests via tm_requirement_tests joined to tm_test_cases
       const { data: linksData } = await (supabase as any)
         .from('tm_requirement_tests')
-        .select('id, test_case_id, test_case:tm_test_cases(id, case_key, title, priority_ref:tm_case_priorities(name))')
+        .select('id, test_case_id, test_case:tm_test_cases(id, case_key, title, priority_id)')
         .eq('requirement_id', requirementId);
       
       if (linksData) {
@@ -90,7 +90,7 @@ export default function RequirementDetailPage() {
           test_case_id: l.test_case_id,
           case_key: l.test_case?.case_key || '—',
           title: l.test_case?.title || 'Unknown',
-          priority: l.test_case?.priority_ref?.name || 'medium',
+          priority: 'medium',
         })));
       } else {
         setLinkedTests([]);
