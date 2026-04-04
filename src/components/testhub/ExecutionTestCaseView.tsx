@@ -112,7 +112,7 @@ export function ExecutionTestCaseView({
     });
   };
 
-  const status = statusConfig[cycleTestCase.execution_status];
+  const status = statusConfig[cycleTestCase.current_status];
   const priority = priorityConfig[testCase?.priority?.toLowerCase()] || priorityConfig.medium;
 
   return (

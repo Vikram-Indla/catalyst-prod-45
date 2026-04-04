@@ -121,7 +121,7 @@ export default function PlanDetailPage() {
           {plan.status === 'active' && (
             <Button onClick={() => handleStatusChange('executing')}>Start Execution</Button>
           )}
-          {plan.status === 'in_progress' && (
+          {plan.status === 'executing' && (
             <Button onClick={() => handleStatusChange('completed')}>Mark Complete</Button>
           )}
 
