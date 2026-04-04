@@ -1,4 +1,5 @@
 import { useState, useMemo, lazy, Suspense } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Plus, FolderKanban, FolderOpen } from 'lucide-react';
 import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
@@ -56,16 +57,46 @@ export default function AllProjectsPage() {
   const toggleFav = useToggleFavorite();
   useProjectsRealtime();
 
-  const allMemberIds = useMemo(() => projects.flatMap(p => p.member_ids ?? []), [projects]);
+  // Fetch real issue counts from ph_issues to enrich sort
+  const { data: syncCountMap } = useQuery({
+    queryKey: ['project-sync-counts'],
+    queryFn: async () => {
+      const map: Record<string, number> = {};
+      const { data: rows } = await (supabase as any)
+        .from('v_issue_counts')
+        .select('project_key, cnt');
+      if (rows) {
+        rows.forEach((r: any) => {
+          if (r.project_key) map[r.project_key] = (map[r.project_key] || 0) + Number(r.cnt || 0);
+        });
+      }
+      return map;
+    },
+    staleTime: 30_000,
+  });
+
+  // Enrich projects with real sync counts so sorting uses actual numbers
+  const enrichedProjects = useMemo(() => {
+    if (!syncCountMap) return projects;
+    return projects.map(p => {
+      const syncCount = syncCountMap[p.project_key];
+      if (syncCount !== undefined && syncCount > (p.total_issues ?? 0)) {
+        return { ...p, total_issues: syncCount };
+      }
+      return p;
+    });
+  }, [projects, syncCountMap]);
+
+  const allMemberIds = useMemo(() => enrichedProjects.flatMap(p => p.member_ids ?? []), [enrichedProjects]);
   useMemberProfiles(allMemberIds);
 
   // Apply "My Projects" filter before standard filtering
   const preFiltered = useMemo(() => {
     if (filters.statusChip === 'My Projects' && currentUserId) {
-      return projects.filter(p => p.lead_id === currentUserId || (p.member_ids ?? []).includes(currentUserId));
+      return enrichedProjects.filter(p => p.lead_id === currentUserId || (p.member_ids ?? []).includes(currentUserId));
     }
-    return projects;
-  }, [projects, filters.statusChip, currentUserId]);
+    return enrichedProjects;
+  }, [enrichedProjects, filters.statusChip, currentUserId]);
 
   const filtered = useMemo(() => {
     const effectiveFilters = filters.statusChip === 'My Projects'
