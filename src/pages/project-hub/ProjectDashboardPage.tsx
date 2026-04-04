@@ -19,13 +19,19 @@ export default function ProjectDashboardPage() {
     queryKey: ['ph-project-dashboard-v4', key],
     queryFn: async () => {
       if (!key) return null;
-      const { data, error } = await supabase
+      // Try ph_projects first, fall back to projects table
+      const { data: phData } = await supabase
         .from('ph_projects')
         .select('*')
         .eq('key', key.toUpperCase())
         .maybeSingle();
-      if (error) { console.warn(error.message); return null; }
-      return data;
+      if (phData) return phData;
+      const { data: projData } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('key', key.toUpperCase())
+        .maybeSingle();
+      return projData ?? null;
     },
     enabled: !!key,
   });
