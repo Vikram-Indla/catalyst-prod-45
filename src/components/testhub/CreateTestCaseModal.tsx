@@ -106,8 +106,11 @@ export function CreateTestCaseModal({
         setPriorityId(testCase.priority_id || '');
         setCaseTypeId(testCase.case_type_id || '');
         setStatus(testCase.status);
-        setAutomation('manual');
+        setAutomation(testCase.automation_status || 'manual');
         setAssignedTo(testCase.owner_id || '');
+        setTestFormat((testCase as any).test_format || 'steps');
+        setGherkinFeature((testCase as any).gherkin_feature || '');
+        setGherkinScenario((testCase as any).gherkin_scenario || '');
         if (existingSteps && existingSteps.length > 0) {
           setSteps(existingSteps.map(s => ({ ...s, attachments: [] })));
         } else {
