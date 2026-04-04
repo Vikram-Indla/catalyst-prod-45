@@ -406,6 +406,8 @@ export default function TestCycleDetailPage() {
           )}
         </div>
       </div>
+        );
+      })()}
 
       {/* Blocked Items Banner */}
       {blockedTestCases.length > 0 && (
