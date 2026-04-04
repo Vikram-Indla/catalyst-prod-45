@@ -29,6 +29,7 @@ import { SetTypeBadge } from '@/components/test-sets/SetTypeBadge';
 import { CreateTestSetModal } from '@/components/test-sets/CreateTestSetModal';
 import { RefreshConfirmDialog } from '@/components/test-sets/RefreshConfirmDialog';
 import { AddToCycleModal } from '@/components/test-sets/AddToCycleModal';
+import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal';
 import { TestSet, TestSetFilters, TEST_SET_TYPE_CONFIG } from '@/types/test-sets';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
