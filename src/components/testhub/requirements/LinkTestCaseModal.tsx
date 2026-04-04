@@ -156,7 +156,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                       <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4 }}>{tc.case_key}</span>
-                      <span style={{ fontSize: 11, fontWeight: 500, color: priorityColor }}>{tc.priority}</span>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: priorityColor }}>{priorityName}</span>
                     </div>
                     <p style={{ fontSize: 13, color: '#0F172A', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tc.title}</p>
                   </div>

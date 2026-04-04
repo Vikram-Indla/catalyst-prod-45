@@ -90,7 +90,7 @@ export default function RequirementDetailPage() {
           test_case_id: l.test_case_id,
           case_key: l.test_case?.case_key || '—',
           title: l.test_case?.title || 'Unknown',
-          priority: l.test_case?.priority || 'medium',
+          priority: l.test_case?.priority?.name || 'Medium',
         })));
       } else {
         setLinkedTests([]);

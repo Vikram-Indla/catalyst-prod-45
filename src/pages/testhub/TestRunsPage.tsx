@@ -222,7 +222,7 @@ export default function TestRunsPage() {
             <tbody>
               {filtered.map(r => {
                 const st = statusConfig[r.current_status] || statusConfig.not_run;
-                const pri = priorityConfig[r.test_case?.priority?.toLowerCase() || 'medium'] || priorityConfig.medium;
+                const pri = priorityConfig[r.test_case?.priority?.name?.toLowerCase() || 'medium'] || priorityConfig.medium;
                 return (
                   <tr
                     key={r.id}
