@@ -40,7 +40,7 @@ export const DefectTable = memo(function DefectTable({
     return (
       <div className="border border-border rounded-lg overflow-hidden">
         <div className="bg-muted/50">
-          <div className="grid grid-cols-[40px_90px_1fr_100px_110px_120px_100px_80px_50px] gap-2 px-3 py-2 text-xs font-medium text-muted-foreground">
+          <div className="grid grid-cols-[40px_112px_1fr_100px_110px_120px_100px_80px_50px] gap-2 px-3 py-2 text-xs font-medium text-muted-foreground">
             <div />
             <div>ID</div>
             <div>Title</div>
@@ -54,7 +54,7 @@ export const DefectTable = memo(function DefectTable({
         </div>
         <div className="divide-y divide-border">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="grid grid-cols-[40px_90px_1fr_100px_110px_120px_100px_80px_50px] gap-2 px-3 py-3">
+            <div key={i} className="grid grid-cols-[40px_112px_1fr_100px_110px_120px_100px_80px_50px] gap-2 px-3 py-3">
               <Skeleton className="h-4 w-4" />
               <Skeleton className="h-4 w-16" />
               <Skeleton className="h-4 w-full" />
@@ -95,7 +95,7 @@ export const DefectTable = memo(function DefectTable({
                 className={someSelected ? 'data-[state=checked]:bg-primary' : ''}
               />
             </th>
-            <th className="w-[90px] px-2 py-2 text-left">ID</th>
+            <th className="w-[112px] px-2 py-2 text-left">ID</th>
             <th className="px-2 py-2 text-left">Title</th>
             <th className="w-[100px] px-2 py-2 text-left">Severity</th>
             <th className="w-[110px] px-2 py-2 text-left">Status</th>

@@ -4,7 +4,7 @@
 // =====================================================
 
 import { formatDistanceToNowStrict } from 'date-fns';
-import { MoreHorizontal, Ban, RotateCcw } from 'lucide-react';
+import { MoreHorizontal, Ban, RotateCcw, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -40,8 +40,8 @@ export function DefectTableRow({
   onClick,
   onStatusChange,
 }: DefectTableRowProps) {
-  const severityColors = DEFECT_SEVERITY_COLORS[defect.severity];
-  const statusColors = DEFECT_STATUS_COLORS[defect.status];
+  const severityColors = DEFECT_SEVERITY_COLORS[defect.severity] || DEFECT_SEVERITY_COLORS.minor;
+  const statusColors = DEFECT_STATUS_COLORS[defect.status] || DEFECT_STATUS_COLORS.open;
   const age = formatDistanceToNowStrict(new Date(defect.created_at), { addSuffix: false });
 
   return (
@@ -60,10 +60,32 @@ export function DefectTableRow({
       </td>
 
       {/* ID */}
-      <td className="w-24 px-3">
-        <span className="font-mono text-xs font-semibold text-blue-600 hover:underline">
-          {defect.defect_id}
-        </span>
+      <td className="w-28 px-3">
+        <div className="flex items-center gap-1.5">
+          {defect.jira_source && (
+            <span
+              className="inline-flex items-center justify-center w-4 h-4 rounded-sm bg-blue-600 text-white text-[8px] font-bold flex-shrink-0"
+              title={`Jira: ${defect.jira_key}`}
+            >
+              J
+            </span>
+          )}
+          <span className="font-mono text-xs font-semibold text-blue-600 hover:underline truncate">
+            {defect.jira_source && defect.jira_key ? defect.jira_key : defect.defect_id}
+          </span>
+          {defect.jira_source && defect.external_url && (
+            <a
+              href={defect.external_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+              title="Open in Jira"
+            >
+              <ExternalLink className="h-3 w-3 text-slate-400 hover:text-blue-600" />
+            </a>
+          )}
+        </div>
       </td>
 
       {/* Title */}
@@ -94,7 +116,7 @@ export function DefectTableRow({
           }}
         >
           <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusColors.text }} />
-          {STATUS_CONFIG[defect.status].label}
+          {STATUS_CONFIG[defect.status]?.label || defect.status}
         </button>
       </td>
 
