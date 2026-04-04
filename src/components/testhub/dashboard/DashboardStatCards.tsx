@@ -17,6 +17,7 @@ export interface DashboardStats {
   total_skipped: number;
   total_not_run: number;
   overall_pass_rate: number;
+  automation_coverage?: number;
 }
 
 interface Props {

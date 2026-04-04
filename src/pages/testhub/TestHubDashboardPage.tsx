@@ -216,9 +216,16 @@ export default function TestHubDashboardPage() {
             trend={{ direction: 'up', value: '+2', color: '#DC2626' }}
             subtitle={`${stats?.total_failed ?? 0} failed tests`} sparkData={[0, 1, 1, 2, 2, 3, 3, 3]}
             valueColor={(stats?.total_blocked ?? 0) > 0 ? '#DC2626' : undefined} />
-          <KPICard label="Automation coverage" value="0%" accent="#10B981"
-            trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
-            subtitle={`0 of ${stats?.total_test_cases ?? 0} automated`} sparkData={[0, 0, 0, 0, 0, 0, 0, 0]} />
+          {(() => {
+            const autoCoverage = stats?.automation_coverage ?? 0;
+            const totalCases = stats?.total_test_cases ?? 0;
+            const automatedCount = Math.round(totalCases * autoCoverage / 100);
+            return (
+              <KPICard label="Automation coverage" value={`${Number(autoCoverage).toFixed(1)}%`} accent="#10B981"
+                trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
+                subtitle={`${automatedCount} of ${totalCases} automated`} sparkData={[0, 0, 0, 0, 0, 0, 0, 0]} />
+            );
+          })()}
         </div>
 
         {/* ── EXECUTION STATUS BAR — 48px ── */}

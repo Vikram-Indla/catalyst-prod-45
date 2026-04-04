@@ -189,7 +189,7 @@ const CommandCenterPage = lazy(() => import("../pages/testhub/CommandCenterPage"
 const CatyAIPage = ENABLE_AI ? lazy(() => import("../pages/testhub/CatyAIPage")) : () => <FeatureComingSoon title="Caty AI" />;
 const TestHubDocsPage = lazy(() => import("../pages/testhub/TestHubDocsPage"));
 const QualityGatesPage = lazy(() => import("../pages/releases/QualityGatesPage"));
-const MyTestScopePage = lazy(() => import("../pages/releases/MyTestScopePage"));
+const MyTestScopePage = lazy(() => import("../pages/testhub/MyTestScopePage"));
 
 const T10LandingPage = lazy(() => import("../modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
 const T10WeekPage = lazy(() => import("../modules/task10/pages/T10WeekPage").then(m => ({ default: m.T10WeekPage })));
