@@ -142,8 +142,8 @@
   --ct-text-tertiary: rgba(235,238,245, 0.55);
   --ct-text-muted: rgba(235,238,245, 0.30);
   --ct-text-disabled: rgba(235,238,245, 0.20);
-  --ct-bg-page: #181A1E;
-  --ct-bg-surface: #181A1E;
+  --ct-bg-page: #1A1714;
+  --ct-bg-surface: #1A1714;
   --ct-bg-hover: rgba(235,238,245, 0.03);
   --ct-bg-active: rgba(235,238,245, 0.06);
   --ct-bg-muted: rgba(235,238,245, 0.06);
@@ -161,7 +161,7 @@
   --ct-warning-light: rgba(217,119,6, 0.12);
   --ct-danger-light: rgba(239,68,68, 0.12);
   --ct-success-light: rgba(16,185,129, 0.12);
-  background: #181A1E;
+  background: #1A1714;
   color: rgba(235,238,245, 0.72);
 }
 
@@ -177,7 +177,7 @@
 [data-theme="dark"] .ct-search-bar,
 [data-theme="dark"] .ct-dropdown-panel,
 [data-theme="dark"] .ct-licenses-widget {
-  background: #181A1E !important;
+  background: #1A1714 !important;
   border-color: rgba(235,238,245, 0.10) !important;
   box-shadow: none !important;
 }
@@ -221,19 +221,19 @@
 }
 .dark .ct-dropdown-trigger,
 [data-theme="dark"] .ct-dropdown-trigger {
-  background: #181A1E !important;
+  background: #1A1714 !important;
   border-color: rgba(235,238,245, 0.10) !important;
   color: rgba(235,238,245, 0.72) !important;
 }
 .dark .ct-search input,
 [data-theme="dark"] .ct-search input {
-  background: #181A1E !important;
+  background: #1A1714 !important;
   border-color: rgba(235,238,245, 0.10) !important;
   color: rgba(235,238,245, 0.92) !important;
 }
 .dark .ct-pagination,
 [data-theme="dark"] .ct-pagination {
-  background: #181A1E !important;
+  background: #1A1714 !important;
   border-color: rgba(235,238,245, 0.10) !important;
 }
 

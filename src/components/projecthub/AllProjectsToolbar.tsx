@@ -95,7 +95,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
             Status: {statusFilter} <ChevronDown className="w-3.5 h-3.5" />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-44 p-1 bg-white dark:bg-[#1E2027]" align="start">
+        <PopoverContent className="w-44 p-1 bg-white dark:bg-[#232019]" align="start">
           {STATUS_OPTIONS.map(s => (
             <button
               key={s}

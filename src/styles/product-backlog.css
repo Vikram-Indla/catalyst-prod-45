@@ -114,7 +114,7 @@
 /* ═══ DARK MODE — Nocturne One Surface Model ═══ */
 .dark [data-module="product-backlog"],
 [data-theme="dark"] [data-module="product-backlog"] {
-  --cp-bg-page: #181A1E;
+  --cp-bg-page: #1A1714;
   --cp-bg-surface: transparent;
   --cp-bg-sunken: rgba(255,255,255,0.03);
   --cp-bg-elevated: transparent;
@@ -153,11 +153,11 @@
   --cp-lozenge-green-bg: #1B7F37;
   --cp-lozenge-green-text: #FFFFFF;
 
-  background-color: #181A1E !important;
+  background-color: #1A1714 !important;
 }
 .dark [data-module="product-backlog"] .flex-1,
 [data-theme="dark"] [data-module="product-backlog"] .flex-1 {
-  background-color: #181A1E !important;
+  background-color: #1A1714 !important;
 }
 .dark .pb-table,
 [data-theme="dark"] .pb-table {

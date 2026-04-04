@@ -48,8 +48,8 @@
 
 /* ── DARK MODE — Nocturne overrides ── */
 [data-theme="dark"] .strategy-room {
-  --exec-bg-page: #181A1E;
-  --exec-bg-card: #181A1E;
+  --exec-bg-page: #1A1714;
+  --exec-bg-card: #1A1714;
   --exec-bg-hover: rgba(235,238,245,0.03);
   --exec-bg-subtle: rgba(235,238,245,0.03);
 

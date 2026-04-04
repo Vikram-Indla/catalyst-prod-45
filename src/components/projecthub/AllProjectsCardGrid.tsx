@@ -70,7 +70,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
             className={cn(
               "rounded-xl p-5 flex flex-col h-full cursor-pointer transition-all duration-150",
               "bg-white border border-slate-200 shadow-sm hover:shadow-md",
-              "dark:bg-[#181A1E] dark:border-[rgba(255,255,255,0.08)] dark:hover:border-[rgba(255,255,255,0.15)]"
+              "dark:bg-[#1A1714] dark:border-[rgba(255,255,255,0.08)] dark:hover:border-[rgba(255,255,255,0.15)]"
             )}
           >
             {/* Header: badge + name + key + star */}
@@ -139,7 +139,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                   className={cn(
                     "text-center p-3 rounded-lg",
                     "bg-slate-50",
-                    "dark:bg-[#1E2027] dark:border dark:border-[rgba(255,255,255,0.06)]"
+                    "dark:bg-[#232019] dark:border dark:border-[rgba(255,255,255,0.06)]"
                   )}
                 >
                   <div className="text-[22px] font-semibold text-slate-900 dark:text-[#E2E8F0]">{s.v || 0}</div>
