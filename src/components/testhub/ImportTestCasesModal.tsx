@@ -120,7 +120,7 @@ export function ImportTestCasesModal({ isOpen, onClose, onSuccess, folders }: Im
           .insert([{
             case_key: `TC-${String(nextNum).padStart(3, '0')}`,
             title: tc.title,
-            description: tc.objective,
+            description: tc.description,
             preconditions: tc.preconditions,
             folder_id: selectedFolderId || null,
             status: 'draft',
