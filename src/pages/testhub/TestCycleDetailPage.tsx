@@ -37,7 +37,7 @@ interface CycleTestCase {
   id: string;
   cycle_id: string;
   test_case_id: string;
-  execution_status: string;
+  current_status: string;
   executed_at: string | null;
   notes: string | null;
   assigned_to: string | null;
