@@ -19,28 +19,24 @@ export default function ProjectDashboardPage() {
     queryKey: ['ph-project-dashboard-v4', key],
     queryFn: async () => {
       if (!key) return null;
-      // Try ph_projects first, fall back to projects table
-      const { data: phData } = await supabase
-        .from('ph_projects')
-        .select('*')
-        .eq('key', key.toUpperCase())
-        .maybeSingle();
-      if (phData) return phData;
-      const { data: projData } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('key', key.toUpperCase())
-        .maybeSingle();
-      return projData ?? null;
+      const upper = key.toUpperCase();
+      // Try ph_projects first
+      const { data: d1 } = await supabase.from('ph_projects').select('*').eq('key', upper).maybeSingle();
+      if (d1) return d1;
+      // Fall back to projects table (backlog pages use this)
+      const { data: d2 } = await supabase.from('projects').select('*').eq('key', upper).maybeSingle();
+      if (d2) return d2;
+      // Last resort: try case-insensitive on projects
+      const { data: d3 } = await supabase.from('projects').select('*').ilike('key', upper).maybeSingle();
+      return d3 ?? null;
     },
     enabled: !!key,
   });
 
   const projectId = (project as any)?.id ?? null;
-  const resolvedId = projectId || key?.toUpperCase() || 'none';
   const pKey = (project as any)?.key || key?.toUpperCase() || '';
 
-  const { widgets, visibleCount, toggleVisibility, resetToDefaults } = useDashboardWidgetConfig(resolvedId);
+  const { widgets, visibleCount, toggleVisibility, resetToDefaults } = useDashboardWidgetConfig(projectId ?? 'none');
 
   const btnStyle: React.CSSProperties = {
     fontSize: 12, fontWeight: 600, color: 'var(--cp-text-secondary)',
@@ -106,7 +102,10 @@ export default function ProjectDashboardPage() {
             </div>
 
             {/* Widget Grid */}
-            <DashboardWidgetGrid projectId={resolvedId} projectKey={pKey} />
+            <div style={{ border: '2px dashed red', padding: 8, marginBottom: 8 }}>
+              DEBUG: projectId={String(projectId)}, pKey={pKey}, resolved={String(projectId || pKey)}
+            </div>
+            <DashboardWidgetGrid projectId={projectId || pKey} projectKey={pKey} />
           </>
         )}
       </div>
