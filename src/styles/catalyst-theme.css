@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════
    CATALYST DUAL-THEME TOKEN SYSTEM
-   Cool Steel (dark) + Clean White (light)
+   NOCTURNE Warm Charcoal (dark) + Clean White (light)
    ═══════════════════════════════════════════════════════ */
 
 :root, [data-theme="light"] {
@@ -42,23 +42,23 @@
 }
 
 [data-theme="dark"] {
-  --bg-page: #0F1114;
-  --bg-surface: #181A1E;
-  --bg-sunken: #12141A;
-  --bg-elevated: #1E2027;
-  --bg-float: #262830;
+  --bg-page: #1A1714;
+  --bg-surface: #1A1714;
+  --bg-sunken: #1A1714;
+  --bg-elevated: #232019;
+  --bg-float: #2C2823;
   --bg-overlay: rgba(0,0,0,0.65);
-  --text-1: #E2E8F0;
-  --text-2: #94A3B8;
-  --text-3: #64748B;
-  --text-4: #475569;
+  --text-1: #F5F3F0;
+  --text-2: #A09890;
+  --text-3: #6B6560;
+  --text-4: #4A4540;
   --text-inv: #FFFFFF;
   --text-link: #60A5FA;
-  --bd-subtle: rgba(200,210,225,0.08);
-  --bd-default: rgba(200,210,225,0.12);
-  --bd-strong: rgba(200,210,225,0.20);
-  --hover: rgba(148,163,184,0.06);
-  --press: rgba(148,163,184,0.10);
+  --bd-subtle: rgba(255,255,255,0.05);
+  --bd-default: rgba(255,255,255,0.08);
+  --bd-strong: rgba(255,255,255,0.12);
+  --hover: rgba(255,255,255,0.04);
+  --press: rgba(255,255,255,0.08);
   --sel: rgba(96,165,250,0.10);
   --sel-hover: rgba(96,165,250,0.15);
   --p60: #3B82F6;
@@ -67,14 +67,14 @@
   --ok60: #22C55E;
   --warn60: #F59E0B;
   --err60: #EF4444;
-  --loz-gr-bg: #262830;
-  --loz-gr-tx: #94A3B8;
+  --loz-gr-bg: #2C2823;
+  --loz-gr-tx: #A09890;
   --loz-bl-bg: #1A2540;
   --loz-bl-tx: #93C5FD;
   --loz-gn-bg: #0F2A1A;
   --loz-gn-tx: #86EFAC;
-  --pop-bg: #262830;
-  --pop-border: rgba(200,210,225,0.12);
-  --pop-hover: rgba(148,163,184,0.06);
+  --pop-bg: #2C2823;
+  --pop-border: rgba(255,255,255,0.08);
+  --pop-hover: rgba(255,255,255,0.04);
   --shadow-pop: 0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5);
 }

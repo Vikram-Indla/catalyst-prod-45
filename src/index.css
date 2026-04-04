@@ -889,33 +889,33 @@ html:has(body[data-scroll-locked]) {
     --brand-gold-hover: #0f766e;
     --brand-teal: #0d9488;
     
-    /* === A) SURFACE LADDER (Cool Steel blue-grey) === */
-    --bg-0: #181A1E;                     /* App background — Cool Steel */
-    --bg-1: #181A1E;                     /* Page canvas */
-    --bg-2: #1E2027;                     /* Panels / elevated float */
-    --bg-3: #1E2027;                     /* Cards — same as panels for flush */
-    --bg-4: #262830;                     /* Raised/hover */
-    --bg-5: #2C2E36;                     /* Active/selected surface */
+    /* === A) SURFACE LADDER (NOCTURNE Warm Charcoal) === */
+    --bg-0: #1A1714;                     /* App background — Warm Charcoal */
+    --bg-1: #1A1714;                     /* Page canvas */
+    --bg-2: #232019;                     /* Panels / elevated float */
+    --bg-3: #232019;                     /* Cards — same as panels for flush */
+    --bg-4: #2C2823;                     /* Raised/hover */
+    --bg-5: #3A3530;                     /* Active/selected surface */
     --bg-app: var(--bg-0);
     
-    /* Shadcn surface mappings */
-    --background: 222 13% 11%;            /* #181A1E Cool Steel */
-    --foreground: 216 25% 91%;            /* Cool Steel text */
+    /* Shadcn surface mappings — NOCTURNE Warm Charcoal */
+    --background: 30 13% 9%;              /* #1A1714 Warm Charcoal */
+    --foreground: 36 20% 95%;             /* #F5F3F0 Warm text */
     
-    --card: 222 13% 11%;                  /* Same as --background — flush cards */
-    --card-foreground: 216 25% 91%;
+    --card: 30 13% 9%;                    /* Same as --background — flush cards */
+    --card-foreground: 36 20% 95%;
     
-    --popover: 228 12% 13%;               /* #1E2027 - Cool Steel float */
-    --popover-foreground: 216 25% 91%;
+    --popover: 42 17% 12%;               /* #232019 - Warm Charcoal float */
+    --popover-foreground: 36 20% 95%;
     
     --primary: 217 91% 60%;              /* #3b82f6 blue */
     --primary-foreground: 0 0% 100%;     /* pure white on buttons only */
     
-    --secondary: 222 12% 12%;            /* Cool Steel card */
-    --secondary-foreground: 216 25% 91%;
+    --secondary: 42 17% 12%;             /* Warm Charcoal card */
+    --secondary-foreground: 36 20% 95%;
     
-    --muted: 222 12% 14%;                /* #1E2027 */
-    --muted-foreground: 216 20% 72%;     /* --fg-2 */
+    --muted: 33 11% 15%;                 /* #2C2823 */
+    --muted-foreground: 30 8% 60%;       /* #A09890 */
     
     --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
@@ -923,11 +923,11 @@ html:has(body[data-scroll-locked]) {
     --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 98%;
     
-    /* === B) TEXT LADDER (Readable, consistent — no pure white body) === */
-    --fg-1: rgba(225,230,240,0.92);      /* Primary text — Cool Steel */
-    --fg-2: rgba(225,230,240,0.72);      /* Secondary text */
-    --fg-3: rgba(225,230,240,0.60);      /* Muted/hints */
-    --fg-4: rgba(225,230,240,0.38);      /* Disabled */
+    /* === B) TEXT LADDER (NOCTURNE Warm Charcoal text) === */
+    --fg-1: #F5F3F0;                     /* Primary text — Warm Charcoal */
+    --fg-2: #A09890;                     /* Secondary text */
+    --fg-3: #6B6560;                     /* Muted/hints */
+    --fg-4: rgba(245,243,240,0.30);      /* Disabled */
     
     --text-1: var(--fg-1);
     --text-2: var(--fg-2);
@@ -936,42 +936,42 @@ html:has(body[data-scroll-locked]) {
     --text-inverse: #0a0a0a;
     
     /* HSL versions for Tailwind */
-    --text-primary: 216 25% 91%;
-    --text-secondary: 216 15% 72%;
-    --text-tertiary: 220 8% 57%;
-    --text-muted: 220 8% 57%;
+    --text-primary: 36 20% 95%;
+    --text-secondary: 30 8% 60%;
+    --text-tertiary: 27 5% 40%;
+    --text-muted: 27 5% 40%;
     
     /* ═══════════════════════════════════════════════════════════════
        V9.5 NAVIGATION SHELL — AAA Contrast (Dark Mode)
-       Based on Linear/Stripe dark mode standards
+       NOCTURNE Warm Charcoal palette
        ═══════════════════════════════════════════════════════════════ */
-    --nav-text-primary: rgba(225,230,240,0.92);
-    --nav-text-secondary: rgba(225,230,240,0.72);
-    --nav-text-tertiary: rgba(225,230,240,0.55);
-    --nav-module-badge: #32343A;           /* Cool Steel badge */
-    --nav-section-label: rgba(225,230,240,0.55);
+    --nav-text-primary: #F5F3F0;
+    --nav-text-secondary: #A09890;
+    --nav-text-tertiary: #6B6560;
+    --nav-module-badge: #3A3530;           /* Warm Charcoal badge */
+    --nav-section-label: #6B6560;
     --nav-accent-bar: #3b82f6;             /* Left accent bar */
     
-    /* === C) DIVIDER + BORDER GRAMMAR (Cool Steel borders) === */
-    --divider: rgba(200,210,225,0.06);
-    --border-subtle: rgba(200,210,225,0.08);
-    --border-strong: rgba(200,210,225,0.12);
+    /* === C) DIVIDER + BORDER GRAMMAR (Warm Charcoal borders) === */
+    --divider: rgba(255,255,255,0.05);
+    --border-subtle: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.12);
     --stroke-1: var(--divider);
     --stroke-2: var(--border-subtle);
     
-    --border: 220 15% 85% / 0.06;
-    --input: 220 15% 85% / 0.08;
+    --border: 30 10% 50% / 0.06;
+    --input: 30 10% 50% / 0.08;
     --ring: 217 91% 60%;
     
     /* === D) INTERACTION TOKENS === */
-    --focus-ring: rgba(59,130,246,0.55);   /* Blue focus — Cool Steel */
-    --hover: rgba(200,210,225,0.04);
-    --active: rgba(200,210,225,0.07);
-    --selected: rgba(200,210,225,0.08);    /* Neutral selected */
+    --focus-ring: rgba(59,130,246,0.55);   /* Blue focus */
+    --hover: rgba(255,255,255,0.04);
+    --active: rgba(255,255,255,0.07);
+    --selected: rgba(255,255,255,0.08);    /* Neutral selected */
     
     --row-hover: var(--hover);
-    --row-selected: rgba(200,210,225,0.08);
-    --row-active: rgba(200,210,225,0.12);
+    --row-selected: rgba(255,255,255,0.08);
+    --row-active: rgba(255,255,255,0.12);
     
     /* ═══════════════════════════════════════════════════════════════
        CATALYST V5 CANONICAL — Dark Mode Semantic Tokens
@@ -1677,14 +1677,14 @@ html:has(body[data-scroll-locked]) {
   
   /* === DARK MODE SIDEBAR OVERRIDES — ECLIPSE D8-R3 ===
      SidebarBase uses inline styles with isDark conditional tokens.
-     These CSS rules must NOT fight inline styles. Use #181A1E (ECLIPSE surface). */
+     These CSS rules must NOT fight inline styles. Use #1A1714 (ECLIPSE surface). */
   .dark aside,
   .dark [data-sidebar],
   .dark .sidebar,
   [data-theme="dark"] aside,
   [data-theme="dark"] [data-sidebar],
   [data-theme="dark"] .sidebar {
-    background-color: #181A1E;
+    background-color: #1A1714;
     border-right-color: rgba(235,238,245,0.08);
     box-shadow: none;
   }
@@ -2844,7 +2844,7 @@ input[type="range"]::-moz-range-thumb {
    ECLIPSE — NOCTURNE DARK MODE OVERRIDES v2.0
    Consolidated: April 2026
    DO NOT ADD BLOCKS BELOW THIS — CONSOLIDATE ONLY
-   NOCTURNE: #181A1E page / #1F2128 surface / #1F2128 elevated
+   NOCTURNE: #1A1714 page / #232019 surface / #232019 elevated
    ═══════════════════════════════════════════════════ */
 
 .dark .c-section,
@@ -2883,15 +2883,15 @@ input[type="range"]::-moz-range-thumb {
 }
 
 [data-theme="dark"] {
-  --bg-0: #181A1E;
-  --bg-1: #181A1E;
-  --bg-2: #1E2027;
-  --bg-3: #1E2027;
-  --bg-4: #262830;
-  --border: rgba(200,210,225,0.06);
-  --cp-bd: rgba(200,210,225,0.10);
-  --cp-bd-table: rgba(200,210,225,0.06);
-  --cp-bd-zone: rgba(200,210,225,0.08);
+  --bg-0: #1A1714;
+  --bg-1: #1A1714;
+  --bg-2: #232019;
+  --bg-3: #232019;
+  --bg-4: #2C2823;
+  --border: rgba(255,255,255,0.06);
+  --cp-bd: rgba(255,255,255,0.10);
+  --cp-bd-table: rgba(255,255,255,0.06);
+  --cp-bd-zone: rgba(255,255,255,0.08);
   --cp-bg: #1A1714;
   --cp-bg-elevated: #2C2823;
   --cp-bg-page: #1A1714;
@@ -2908,31 +2908,31 @@ input[type="range"]::-moz-range-thumb {
   --cp-err-bg: rgba(248,113,113,0.10);
   --cp-err-text: #F87171;
   --cp-float: #2C2823;
-  --cp-hover: rgba(200,210,225,0.05);
-  --cp-interact-hover: rgba(200,210,225,0.04);
-  --cp-interact-press: rgba(200,210,225,0.08);
+  --cp-hover: rgba(255,255,255,0.05);
+  --cp-interact-hover: rgba(255,255,255,0.04);
+  --cp-interact-press: rgba(255,255,255,0.08);
   --cp-interact-selected: rgba(37,99,235,0.15);
   --cp-lozenge-blue-bg: #0C66E4;
   --cp-lozenge-blue-text: #FFFFFF;
   --cp-lozenge-green-bg: #1B7F37;
   --cp-lozenge-green-text: #FFFFFF;
-  --cp-lozenge-grey-bg: #32343A;
+  --cp-lozenge-grey-bg: #3A3530;
   --cp-lozenge-grey-text: #D4D4D4;
   --cp-lz-bl-bg: #1A2540;
   --cp-lz-bl-t: #93C5FD;
   --cp-lz-gn-bg: #0F2A1A;
   --cp-lz-gn-t: #86EFAC;
-  --cp-lz-gy-bg: #262830;
+  --cp-lz-gy-bg: #2C2823;
   --cp-lz-gy-t: #B8BCC8;
   --cp-ok: #4ADE80;
   --cp-ok-bg: rgba(74,222,128,0.10);
   --cp-prg-bg: rgba(59,130,246,0.10);
   --cp-shadow-overlay: 0px 8px 12px rgba(0,0,0,0.5), 0px 0px 1px rgba(0,0,0,0.6);
   --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.3);
-  --cp-t1: rgba(225,230,240,0.92);
-  --cp-t2: rgba(225,230,240,0.72);
-  --cp-t3: rgba(225,230,240,0.60);
-  --cp-t4: rgba(225,230,240,0.35);
+  --cp-t1: rgba(245,243,240,0.92);
+  --cp-t2: rgba(245,243,240,0.72);
+  --cp-t3: rgba(245,243,240,0.60);
+  --cp-t4: rgba(245,243,240,0.35);
   --cp-text-link: #60A5FA;
   --cp-text-muted: #6B6560;
   --cp-text-primary: #F5F3F0;
@@ -2940,7 +2940,7 @@ input[type="range"]::-moz-range-thumb {
   --cp-text-tertiary: #6B6560;
   --cp-warn: #FBBF24;
   --cp-warn-bg: rgba(251,191,36,0.10);
-  --divider: rgba(200,210,225,0.04);
+  --divider: rgba(255,255,255,0.04);
   --ring: rgba(59,130,246,0.7);
   --shadow: 0 4px 12px rgba(0,0,0,0.4);
   --text-1: #F1F3F5;
@@ -3346,10 +3346,10 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .dark {
-  --bg-0: #181A1E;
-  --bg-1: #181A1E;
-  --bg-2: #1F2128;
-  --bg-3: #1F2128;
+  --bg-0: #1A1714;
+  --bg-1: #1A1714;
+  --bg-2: #232019;
+  --bg-3: #232019;
   --bg-4: #2A2720;
   --border: rgba(255,255,255,0.04);
   --divider: rgba(255,255,255,0.04);
@@ -4654,7 +4654,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] .sidebar,
 [data-theme="dark"] [data-sidebar],
 [data-theme="dark"] aside {
-  background-color: #181A1E !important;
+  background-color: #1A1714 !important;
   border-color: rgba(235,238,245,0.08) !important;
   box-shadow: none !important;
 }

@@ -1,7 +1,7 @@
 /**
  * Catalyst Design System Tokens for Product Roadmap
  * These tokens ensure visual consistency across the roadmap module
- * V5 - Blue + Teal Professional Palette
+ * V5 - Blue + Teal Professional Palette — NOCTURNE Warm Charcoal dark mode
  */
 
 export const catalystTokens = {
@@ -83,23 +83,23 @@ export const catalystTokens = {
     },
   },
 
-  // Dark Mode
+  // Dark Mode — NOCTURNE Warm Charcoal
   dark: {
     text: {
-      primary: '#fafafa',
-      secondary: '#a3a3a3',
-      muted: '#737373',
+      primary: '#F5F3F0',
+      secondary: '#A09890',
+      muted: '#6B6560',
     },
     surface: {
-      bg: '#0a0a0a',
-      card: '#171717',
-      hover: '#2a2a2a',
+      bg: '#1A1714',
+      card: '#232019',
+      hover: '#2C2823',
       active: 'rgba(59, 130, 246, 0.2)',
     },
     border: {
-      default: '#2a2a2a',
-      subtle: '#1f1f1f',
-      strong: '#404040',
+      default: 'rgba(255, 255, 255, 0.08)',
+      subtle: 'rgba(255, 255, 255, 0.05)',
+      strong: 'rgba(255, 255, 255, 0.12)',
     },
   },
 } as const;
@@ -118,10 +118,10 @@ export function getProductColor(productCode: string | null): string {
   return PRODUCT_COLORS[productCode] || catalystTokens.brand.primary;
 }
 
-// Timeline grid colors - Catalyst V5
+// Timeline grid colors — NOCTURNE
 export const TIMELINE_COLORS = {
-  gridLine: 'rgba(255, 255, 255, 0.06)',
-  gridLineDark: 'rgba(255, 255, 255, 0.06)',
+  gridLine: 'rgba(255, 255, 255, 0.05)',
+  gridLineDark: 'rgba(255, 255, 255, 0.05)',
   todayLine: '#ef4444',      // Danger red
   milestoneMarker: '#2563eb', // Primary blue
   barDefault: '#2563eb',      // Primary blue

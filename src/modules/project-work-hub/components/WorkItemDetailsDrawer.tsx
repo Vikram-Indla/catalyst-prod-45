@@ -468,7 +468,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
 
           {/* Jira Sync Status — show when jira_key exists OR sync_source is jira */}
           {jiraData?.jira_key && (
-            <div className="border-t border-[#E2E8F0] dark:border-[#262830] pt-4 mt-4">
+            <div className="border-t border-[#E2E8F0] dark:border-[#2C2823] pt-4 mt-4">
               <label className="block text-[11px] font-semibold text-[#6B7280] dark:text-[#9C8E7E] uppercase mb-3" style={{ fontWeight: 650 }}>
                 Jira Sync
               </label>
@@ -477,7 +477,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] text-[#6B7280] dark:text-[#9C8E7E]">Jira Issue</span>
                   <span
-                    className="font-mono text-[12px] px-2 py-0.5 rounded bg-[#F1F5F9] text-[#1E293B] dark:bg-[#262830] dark:text-[#E2D5C3]"
+                    className="font-mono text-[12px] px-2 py-0.5 rounded bg-[#F1F5F9] text-[#1E293B] dark:bg-[#2C2823] dark:text-[#E2D5C3]"
                     style={{ borderRadius: 4 }}
                   >
                     {jiraData.jira_key || jiraData.item_key || '—'}
