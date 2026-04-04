@@ -359,17 +359,8 @@ export default function TestHubExecutionPage() {
     updateExecutionStatus('passed');
   };
 
-  // Notes auto-save
-  useEffect(() => {
-    if (!selectedTestCaseId) return;
-    const timer = setTimeout(async () => {
-      const currentTC = testCases.find(tc => tc.id === selectedTestCaseId);
-      if (notes !== (currentTC?.notes || '')) {
-        await (supabase as any).from('tm_cycle_scope').update({ notes, updated_at: new Date().toISOString() }).eq('id', selectedTestCaseId);
-      }
-    }, 800);
-    return () => clearTimeout(timer);
-  }, [notes, selectedTestCaseId]);
+  // Notes auto-save — disabled until notes column is added to tm_cycle_scope
+  // useEffect(() => { ... }, [notes, selectedTestCaseId]);
 
   // ── Keyboard Shortcuts ─────────────────────────────────────────────────
   useEffect(() => {
