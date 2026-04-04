@@ -62,7 +62,7 @@ interface CycleTestCase {
     id: string;
     case_key: string;
     title: string;
-    objective: string | null;
+    description: string | null;
     preconditions: string | null;
     priority_id: string | null;
     case_type_id: string | null;
