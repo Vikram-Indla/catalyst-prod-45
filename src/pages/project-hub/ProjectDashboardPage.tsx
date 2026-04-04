@@ -37,9 +37,10 @@ export default function ProjectDashboardPage() {
   });
 
   const projectId = (project as any)?.id ?? null;
+  const resolvedId = projectId || key?.toUpperCase() || 'none';
   const pKey = (project as any)?.key || key?.toUpperCase() || '';
 
-  const { widgets, visibleCount, toggleVisibility, resetToDefaults } = useDashboardWidgetConfig(projectId ?? 'none');
+  const { widgets, visibleCount, toggleVisibility, resetToDefaults } = useDashboardWidgetConfig(resolvedId);
 
   const btnStyle: React.CSSProperties = {
     fontSize: 12, fontWeight: 600, color: 'var(--cp-text-secondary)',
@@ -105,9 +106,7 @@ export default function ProjectDashboardPage() {
             </div>
 
             {/* Widget Grid */}
-            {projectId && (
-              <DashboardWidgetGrid projectId={projectId} projectKey={pKey} />
-            )}
+            <DashboardWidgetGrid projectId={resolvedId} projectKey={pKey} />
           </>
         )}
       </div>
