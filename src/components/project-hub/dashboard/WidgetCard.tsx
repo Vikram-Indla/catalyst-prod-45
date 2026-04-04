@@ -48,7 +48,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
     <div
       role="region"
       aria-label={title}
-      className={`ph-widget-card ${dark ? 'bg-[#181A1E]' : 'bg-[var(--bg-app)]'}`}
+      className={`ph-widget-card ${dark ? 'bg-[#1A1714]' : 'bg-[var(--bg-app)]'}`}
       style={{
         border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid var(--divider)',
         borderRadius: 10,

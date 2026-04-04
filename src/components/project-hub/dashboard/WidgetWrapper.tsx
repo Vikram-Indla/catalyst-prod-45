@@ -1,6 +1,6 @@
 /**
  * WidgetWrapper — V12 Hybrid Precision widget chrome
- * Dark mode: Nocturne #181A1E surface, flush with page
+ * Dark mode: Nocturne #1A1714 surface, flush with page
  */
 import { ChevronDown } from 'lucide-react';
 import { Component, type ReactNode, type ErrorInfo } from 'react';
@@ -69,7 +69,7 @@ export default function WidgetWrapper({
     <div
       role="region"
       aria-label={title}
-      className={`overflow-hidden flex flex-col ${dark ? 'bg-[#181A1E]' : 'bg-[var(--cp-bg-page)]'}`}
+      className={`overflow-hidden flex flex-col ${dark ? 'bg-[#1A1714]' : 'bg-[var(--cp-bg-page)]'}`}
       style={{
         gridColumn: `span ${span}`,
         border: dark ? '1px solid rgba(255,255,255,0.12)' : '0.75px solid var(--cp-border-default)',
@@ -124,7 +124,7 @@ export default function WidgetWrapper({
 
       {/* Body */}
       {!collapsed && (
-        <div className={`flex-1 ${dark ? 'bg-[#181A1E]' : 'bg-[var(--cp-bg-page)]'}`} style={{ padding: flushBody ? 0 : 14 }}>
+        <div className={`flex-1 ${dark ? 'bg-[#1A1714]' : 'bg-[var(--cp-bg-page)]'}`} style={{ padding: flushBody ? 0 : 14 }}>
           <WidgetErrorBoundary title={title}>
             {children}
           </WidgetErrorBoundary>
@@ -134,7 +134,7 @@ export default function WidgetWrapper({
       {/* Footer */}
       {!collapsed && footer && (
         <div
-          className={dark ? 'bg-[#181A1E]' : 'bg-[var(--cp-bg-page)]'}
+          className={dark ? 'bg-[#1A1714]' : 'bg-[var(--cp-bg-page)]'}
           style={{
             borderTop: dark ? '1px solid rgba(255,255,255,0.08)' : '0.75px solid var(--cp-border-subtle)',
             padding: '8px 14px',

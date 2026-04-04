@@ -48,7 +48,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
   return (
     <div
       ref={ref}
-      className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-[#1F2128] border border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
+      className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[rgba(235,238,245,0.10)]"
       style={{
         width: 280,
         borderRadius: 8,
