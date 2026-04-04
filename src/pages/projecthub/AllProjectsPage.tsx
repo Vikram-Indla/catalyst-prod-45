@@ -236,7 +236,10 @@ export default function AllProjectsPage() {
           <p className="text-sm text-slate-500 dark:text-slate-400 py-12 text-center">Sign in to see your assigned projects.</p>
         ) : isStarredEmpty ? (
           /* QA1: Starred tab — 0 starred */
-          <p className="text-sm text-slate-500 dark:text-slate-400 py-12 text-center">No starred projects. Click ☆ on any project to add it here.</p>
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <Star className="w-8 h-8 text-slate-300" />
+            <p className="text-sm text-slate-500 dark:text-slate-400">Star projects to find them quickly here</p>
+          </div>
         ) : isSearchNoResults ? (
           /* QA1: Search — no results */
           <p className="text-sm text-slate-500 dark:text-slate-400 py-12 text-center">No projects match &ldquo;{filters.search}&rdquo;</p>
