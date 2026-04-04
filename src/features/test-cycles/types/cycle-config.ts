@@ -115,7 +115,6 @@ export function getStatusCategory(status: CycleStatus): CycleStatusCategory {
       return 'draft';
     case 'active':
     case 'paused':
-    case 'in_progress':
     case 'planned':
       return 'in_progress';
     case 'completed':
