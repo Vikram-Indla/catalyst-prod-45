@@ -156,14 +156,16 @@ export function CreateTestCaseModal({
       return false;
     }
     
-    const hasValidStep = steps.some(s => s.action.trim());
-    if (!hasValidStep) {
-      toast({
-        title: 'Validation Error',
-        description: 'At least one step with action text is required',
-        variant: 'destructive',
-      });
-      return false;
+    if (testFormat === 'steps') {
+      const hasValidStep = steps.some(s => s.action.trim());
+      if (!hasValidStep) {
+        toast({
+          title: 'Validation Error',
+          description: 'At least one step with action text is required',
+          variant: 'destructive',
+        });
+        return false;
+      }
     }
     return true;
   };
