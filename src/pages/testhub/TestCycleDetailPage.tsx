@@ -304,7 +304,7 @@ export default function TestCycleDetailPage() {
                 <Pencil size={16} /> Edit
               </button>
             )}
-            {cycle.status === 'in_progress' && (
+            {cycle.status === 'active' && (
               <button onClick={() => {
                 const notRun = testCases.find(tc => tc.current_status === 'not_run');
                 if (notRun) {
