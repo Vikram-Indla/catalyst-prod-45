@@ -297,6 +297,7 @@ export function useCreateDefect() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tm-defects', data.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-defect-stats', data.project_id] });
+      queryClient.invalidateQueries({ queryKey: ['testcase-defects'] });
       toast.success(`Defect ${data.key} created`);
     },
     onError: (error: Error) => {
