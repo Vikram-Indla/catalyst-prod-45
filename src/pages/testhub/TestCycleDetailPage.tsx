@@ -103,11 +103,11 @@ export default function TestCycleDetailPage() {
     if (!cycleId) return;
     try {
       const { data, error } = await (supabase as any).from('tm_cycle_scope')
-        .select(`id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at, test_case:tm_test_cases ( id, case_key, title, priority, type )`)
+        .select(`id, cycle_id, test_case_id, assigned_to, current_status, sort_order, priority, due_date, added_at, updated_at, test_case:tm_test_cases ( id, case_key, title, priority_id, case_type_id )`)
         .eq('cycle_id', cycleId).order('sort_order');
       if (error) throw error;
       setTestCases(data || []);
-    } catch { /* ignore */ }
+    } catch (err) { console.error('fetchTestCases error:', err); }
     finally { setIsLoading(false); }
   };
 
