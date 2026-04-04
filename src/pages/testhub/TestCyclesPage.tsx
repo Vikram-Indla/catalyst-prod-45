@@ -241,9 +241,12 @@ export default function TestCyclesPage() {
                 onEdit={() => setEditCycle(cycle)}
                 onClone={() => setCloneCycle(cycle)}
                 onDelete={() => setDeleteCycle(cycle)}
-                onStart={() => handleStatusChange(cycle.id, 'active', 'Started')}
+                onStart={() => {
+                  if (cycle.status === 'draft') handleStatusChange(cycle.id, 'planned', 'Planned');
+                  else if (cycle.status === 'planned') handleStatusChange(cycle.id, 'in_progress', 'Started');
+                }}
                 onComplete={() => handleStatusChange(cycle.id, 'completed', 'Completed')}
-                onReopen={() => handleStatusChange(cycle.id, 'active', 'Reopened')}
+                onReopen={() => handleStatusChange(cycle.id, 'in_progress', 'Reopened')}
                 onArchive={() => handleStatusChange(cycle.id, 'archived', 'Archived')}
               />
             ))}

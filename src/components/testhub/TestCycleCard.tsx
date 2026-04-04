@@ -154,23 +154,23 @@ export function TestCycleCard({
               <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '6px 0' }} />
               {cycle.status === 'draft' && (
                 <button onClick={() => { onStart(); setMenuOpen(false); }} style={menuItemStyle}>
-                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Start Cycle
+                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Mark as Planned
                 </button>
               )}
-              {cycle.status === 'active' && (
+              {cycle.status === 'planned' && (
+                <button onClick={() => { onStart(); setMenuOpen(false); }} style={menuItemStyle}>
+                  <Play size={14} style={{ color: 'var(--sem-success)' }} /> Start Execution
+                </button>
+              )}
+              {cycle.status === 'in_progress' && (
                 <button onClick={() => { onComplete(); setMenuOpen(false); }} style={menuItemStyle}>
                   <CheckCircle2 size={14} style={{ color: 'var(--cp-blue)' }} /> Complete Cycle
                 </button>
               )}
               {cycle.status === 'completed' && (
-                <>
-                  <button onClick={() => { onReopen(); setMenuOpen(false); }} style={menuItemStyle}>
-                    <RotateCcw size={14} style={{ color: 'var(--sem-warning)' }} /> Reopen Cycle
-                  </button>
-                  <button onClick={() => { onArchive(); setMenuOpen(false); }} style={menuItemStyle}>
-                    <Archive size={14} style={{ color: 'var(--fg-3)' }} /> Archive
-                  </button>
-                </>
+                <button onClick={() => { onArchive(); setMenuOpen(false); }} style={menuItemStyle}>
+                  <Archive size={14} style={{ color: 'var(--fg-3)' }} /> Archive
+                </button>
               )}
               <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '6px 0' }} />
               <button onClick={() => { onDelete(); setMenuOpen(false); }} style={{ ...menuItemStyle, color: 'var(--sem-danger)' }}>
@@ -247,7 +247,7 @@ export function TestCycleCard({
         }}>
           <Eye size={14} /> View
         </button>
-        {cycle.status === 'active' && (
+        {cycle.status === 'in_progress' && (
           <button onClick={() => navigate(`/testhub/cycles/${cycle.id}`)} style={{
             height: 34, padding: '0 14px', background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)',
             border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
@@ -257,6 +257,15 @@ export function TestCycleCard({
           </button>
         )}
         {cycle.status === 'draft' && (
+          <button onClick={onStart} style={{
+            height: 34, padding: '0 14px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
+            border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+          }}>
+            <Play size={14} /> Plan
+          </button>
+        )}
+        {cycle.status === 'planned' && (
           <button onClick={onStart} style={{
             height: 34, padding: '0 14px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
             border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
