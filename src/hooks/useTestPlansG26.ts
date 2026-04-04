@@ -83,6 +83,35 @@ export function useCreateTestPlan(projectId?: string) {
   });
 }
 
+export function useDuplicateTestPlan() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (planId: string) => {
+      const { data: source, error: fetchErr } = await supabase
+        .from('tm_test_plans' as any)
+        .select('*')
+        .eq('id', planId)
+        .single();
+      if (fetchErr || !source) throw new Error(fetchErr?.message || 'Plan not found');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      const { id, plan_key, created_at, updated_at, ...rest } = source as any;
+      const { data, error } = await supabase
+        .from('tm_test_plans' as any)
+        .insert({ ...rest, name: `${rest.name} (Copy)`, status: 'draft', created_by: user.id, plan_key: '' } as any)
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return data as any;
+    },
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['g26-test-plans'] });
+      toast.success(`Plan duplicated as ${data.plan_key}`);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
+
 // ─── Update ──────────────────────────────────────────────────────
 export function useUpdateTestPlan() {
   const qc = useQueryClient();
