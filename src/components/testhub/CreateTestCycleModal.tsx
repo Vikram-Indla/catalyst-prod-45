@@ -137,6 +137,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           planned_start: startDate || null,
           planned_end: endDate || null,
           environment_id: environmentId || null,
+          status: cycleStatus,
           updated_at: new Date().toISOString(),
         };
 
