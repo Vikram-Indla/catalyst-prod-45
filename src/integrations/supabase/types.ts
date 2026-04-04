@@ -72309,6 +72309,7 @@ export type Database = {
         Args: { _user_id: string; _workstream_id: string }
         Returns: boolean
       }
+      jsonb_to_text_array: { Args: { val: Json }; Returns: string[] }
       kb_cache_hit: { Args: { p_query_hash: string }; Returns: Json }
       kb_has_product_role: {
         Args: { required_codes: string[] }
