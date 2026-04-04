@@ -81,7 +81,7 @@ export default function TestHubDashboardPage() {
         setRecentActivity(
           (activityRes.data as any[]).map((a) => ({
             id: a.id,
-            execution_status: a.execution_status ?? 'not_run',
+            execution_status: a.current_status ?? 'not_run',
             executed_at: a.executed_at ?? '',
             case_key: a.tm_test_cases?.case_key ?? '',
             title: a.tm_test_cases?.title ?? '',
