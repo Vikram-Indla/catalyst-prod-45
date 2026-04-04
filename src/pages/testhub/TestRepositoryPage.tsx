@@ -39,7 +39,7 @@ interface TestCase {
   ownerInitials?: string | null;
   ownerAvatarUrl?: string | null;
   updatedAt: string;
-  objective?: string | null;
+  description?: string | null;
   preconditions?: string | null;
   folderId?: string | null;
   version?: number;
