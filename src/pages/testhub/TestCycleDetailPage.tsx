@@ -216,7 +216,7 @@ export default function TestCycleDetailPage() {
   }
 
   const status = statusConfig[(cycle.status || 'draft').toLowerCase().replace(/-/g, '_')] ?? statusConfig['draft'];
-  const canEdit = cycle.status === 'draft' || cycle.status === 'in_progress';
+  const canEdit = cycle.status === 'draft' || cycle.status === 'active';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
