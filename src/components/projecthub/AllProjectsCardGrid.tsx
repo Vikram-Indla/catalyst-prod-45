@@ -1,11 +1,13 @@
 import { Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { formatDistanceToNowStrict } from 'date-fns';
+import { formatDistanceToNowStrict, format } from 'date-fns';
 import type { ProjectListItem } from '@/types/projecthub';
 import { MemberStack } from './MemberStack';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 const BADGE_COLORS = ['#3B82F6', '#6366F1', '#0891B2', '#475569', '#0D9488', '#78716C'];
 
@@ -21,6 +23,31 @@ function getInitials(name: string): string {
   return name.substring(0, 2).toUpperCase();
 }
 
+function getSyncStatus(lastSyncAt: string | null): { color: string; label: string; tooltip: string } {
+  if (!lastSyncAt) return {
+    color: 'bg-slate-300',
+    label: 'Not synced',
+    tooltip: 'No Jira sync configured',
+  };
+  const mins = (Date.now() - new Date(lastSyncAt).getTime()) / 60000;
+  const formatted = format(new Date(lastSyncAt), 'dd MMM yyyy HH:mm');
+  if (mins > 120) return {
+    color: 'bg-red-500',
+    label: `Stale · ${Math.round(mins / 60)}h ago`,
+    tooltip: `Stale — last sync ${formatted}`,
+  };
+  if (mins > 15) return {
+    color: 'bg-amber-400',
+    label: `${Math.round(mins)} min ago`,
+    tooltip: `Last synced: ${formatted}`,
+  };
+  return {
+    color: 'bg-green-500',
+    label: `${Math.round(mins)} min ago`,
+    tooltip: `Last synced: ${formatted}\nStatus: OK`,
+  };
+}
+
 interface Props {
   projects: ProjectListItem[];
   favoriteIds: Set<string>;
@@ -31,47 +58,49 @@ interface Props {
 export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSelectProject }: Props) {
   const navigate = useNavigate();
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 w-full">
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full">
       {projects.map(p => {
         const isFav = favoriteIds.has(p.id);
         const badgeColor = getBadgeColor(p.id);
-        const syncHealthy = !!p.last_synced_at;
-        const syncAge = p.last_synced_at
-          ? formatDistanceToNowStrict(new Date(p.last_synced_at), { addSuffix: false })
-          : null;
+        const sync = getSyncStatus(p.last_synced_at);
 
         return (
           <div
             key={p.id}
             onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
-            className="border border-slate-200 dark:border-slate-700 rounded-lg p-5 bg-white dark:bg-[#1E2027] hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all cursor-pointer flex flex-col gap-3.5"
-            style={{ height: '100%' }}
+            className="min-h-[280px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1E2027] p-5 flex flex-col gap-4 hover:shadow-md transition-shadow cursor-pointer"
           >
-            {/* Header: badge + name + dept + key + star */}
+            {/* Header: badge + name + key + star */}
             <div className="flex items-start gap-3">
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0"
+                className="w-10 h-10 rounded-lg flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0"
                 style={{ background: badgeColor }}
               >
                 {p.project_key?.slice(0, 2)}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-semibold text-[15px] leading-tight text-slate-900 dark:text-white truncate">
-                  {p.name}
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-[15px] leading-tight text-slate-900 dark:text-white truncate">
+                    {p.name}
+                  </span>
+                  <span className="ml-0 font-mono text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded tracking-wide flex-shrink-0">
+                    {p.project_key}
+                  </span>
                 </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   {p.department || '—'}
-                </div>
-                <div className="font-mono text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-                  {p.project_key}
                 </div>
               </div>
               <button
                 onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }}
                 className="bg-transparent border-none cursor-pointer p-0.5 shrink-0"
               >
-                <Star size={14} fill={isFav ? '#F59E0B' : 'none'} color={isFav ? '#F59E0B' : undefined}
-                  className={isFav ? '' : 'text-slate-300 dark:text-slate-600'} />
+                <Star
+                  size={14}
+                  fill={isFav ? '#F59E0B' : 'none'}
+                  color={isFav ? '#F59E0B' : undefined}
+                  className={isFav ? 'text-amber-400' : 'text-slate-300 hover:text-amber-300 dark:text-slate-600'}
+                />
               </button>
             </div>
 
@@ -87,7 +116,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                     </AvatarFallback>
                   </Avatar>
                   <span className="text-xs text-slate-600 dark:text-slate-400">
-                    {p.lead_name.split(' ')[0]}
+                    {p.lead_name.split(' ').slice(0, 2).join(' ')}
                   </span>
                 </div>
               ) : (
@@ -96,25 +125,32 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
             </div>
 
             {/* E/S/T stats */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2 border-t border-slate-100 dark:border-slate-700 pt-3">
               {[
-                { v: p.total_epics, l: 'Epics' },
-                { v: p.total_stories, l: 'Stories' },
-                { v: p.total_tasks, l: 'Tasks' },
+                { v: p.total_epics, l: 'EPICS' },
+                { v: p.total_stories, l: 'STORIES' },
+                { v: p.total_tasks, l: 'TASKS' },
               ].map(s => (
                 <div key={s.l} className="text-center py-2.5 px-1 bg-slate-50 dark:bg-slate-800 rounded">
-                  <div className="text-xl font-[650] text-slate-900 dark:text-white">{s.v || 0}</div>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{s.l}</div>
+                  <div className="text-2xl font-semibold text-slate-900 dark:text-white">{s.v || 0}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 uppercase tracking-wide">{s.l}</div>
                 </div>
               ))}
             </div>
 
             {/* Footer: sync + members + updated */}
-            <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700">
-              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                <span className={cn("w-1.5 h-1.5 rounded-full", syncHealthy ? "bg-green-500" : "bg-amber-500")} />
-                {syncAge ? `↔ ${syncAge}` : 'Not synced'}
-              </div>
+            <div className="flex items-center justify-between mt-auto text-xs text-slate-500 dark:text-slate-400">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-medium cursor-default">
+                    <span className={cn("w-1.5 h-1.5 rounded-full", sync.color)} />
+                    {sync.label}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="text-xs max-w-[200px] whitespace-pre-line">
+                  {sync.tooltip}
+                </TooltipContent>
+              </Tooltip>
               <div className="flex items-center gap-2">
                 <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
                 <span className="text-[11px] text-slate-400 dark:text-slate-500">
