@@ -431,11 +431,9 @@ export function AllProjectsTable({
         fallbackSyncAt = recentIssue?.last_synced_at || null;
       }
 
-      const syncedFromLog = new Set<string>(lastSync?.projects_synced || []);
-      const syncedFromIssues = new Set<string>(Object.keys(countMap).filter(k => countMap[k] > 0));
-      const syncedProjectKeys = new Set<string>([...syncedFromLog, ...syncedFromIssues]);
+      const effectiveSyncAt = lastSync?.completed_at || fallbackSyncAt || null;
 
-      return { countMap, lastSyncAt: lastSync?.completed_at || null, syncedProjectKeys };
+      return { countMap, lastSyncAt: effectiveSyncAt, syncedProjectKeys };
     },
     refetchInterval: 30000,
     staleTime: 15_000,
