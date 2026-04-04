@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, User, Users, Check } from 'lucide-react';
+import { X, User, Users, Check, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
