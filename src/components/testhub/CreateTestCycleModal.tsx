@@ -5,8 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 const CYCLE_STATUS_OPTIONS = [
   { value: 'draft', label: 'DRAFT', bg: '#DFE1E6', text: '#253858' },
   { value: 'planned', label: 'PLANNED', bg: '#DEEBFF', text: '#0747A6' },
-  { value: 'in_progress', label: 'IN PROGRESS', bg: '#DEEBFF', text: '#0747A6' },
-  { value: 'active', label: 'ACTIVE', bg: '#DEEBFF', text: '#0747A6' },
+  { value: 'active', label: 'IN PROGRESS', bg: '#DEEBFF', text: '#0747A6' },
   { value: 'completed', label: 'COMPLETED', bg: '#E3FCEF', text: '#006644' },
   { value: 'paused', label: 'PAUSED', bg: '#DFE1E6', text: '#253858' },
   { value: 'archived', label: 'ARCHIVED', bg: '#DFE1E6', text: '#253858' },

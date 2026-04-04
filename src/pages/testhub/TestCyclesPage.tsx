@@ -246,7 +246,7 @@ export default function TestCyclesPage() {
                   else if (cycle.status === 'planned') handleStatusChange(cycle.id, 'active', 'Started');
                 }}
                 onComplete={() => handleStatusChange(cycle.id, 'completed', 'Completed')}
-                onReopen={() => handleStatusChange(cycle.id, 'in_progress', 'Reopened')}
+                onReopen={() => handleStatusChange(cycle.id, 'active', 'Reopened')}
                 onArchive={() => handleStatusChange(cycle.id, 'archived', 'Archived')}
               />
             ))}
