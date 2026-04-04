@@ -63,6 +63,9 @@ export function CreateTestCaseModal({
   const [caseTypeId, setCaseTypeId] = useState('');
   const [status, setStatus] = useState('draft');
   const [automation, setAutomation] = useState('manual');
+  const [testFormat, setTestFormat] = useState<'steps' | 'gherkin' | 'free_text'>('steps');
+  const [gherkinFeature, setGherkinFeature] = useState('');
+  const [gherkinScenario, setGherkinScenario] = useState('');
   const [assignedTo, setAssignedTo] = useState('');
   const [steps, setSteps] = useState<TestStep[]>([
     { id: '1', action: '', expectedResult: '', attachments: [] }
