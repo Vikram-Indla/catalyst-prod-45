@@ -7,11 +7,11 @@ interface TestCase {
   id: string;
   case_key: string;
   title: string;
-  objective: string | null;
+  description: string | null;
   preconditions: string | null;
   folder_id: string | null;
-  priority: string;
-  type: string;
+  priority_id: string | null;
+  case_type_id: string | null;
 }
 
 interface CloneTestCaseModalProps {

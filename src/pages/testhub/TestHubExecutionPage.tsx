@@ -165,7 +165,7 @@ export default function TestHubExecutionPage() {
 
     if (data && data.length > 0) {
       const testCaseIds = data.map(tc => tc.test_case?.id).filter(Boolean);
-      const { data: stepsData } = await supabase.from('th_test_steps').select('*').in('test_case_id', testCaseIds).order('step_number');
+      const { data: stepsData } = await supabase.from('tm_test_steps').select('*').in('test_case_id', testCaseIds).order('step_number');
       if (stepsData) {
         const stepsMap = new Map<string, any[]>();
         stepsData.forEach(s => {

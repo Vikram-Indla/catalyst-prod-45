@@ -68,12 +68,12 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
     setIsSubmitting(true);
     try {
       if (editingTag) {
-        const { error } = await (supabase as any).from('th_tags').update({ name: name.trim(), color, category: category.trim() || null, description: description.trim() || null }).eq('id', editingTag.id);
+        const { error } = await (supabase as any).from('tm_labels').update({ name: name.trim(), color, category: category.trim() || null, description: description.trim() || null }).eq('id', editingTag.id);
         if (error) throw error;
         catalystToast.success('Tag updated');
       } else {
         const { data: { user } } = await supabase.auth.getUser();
-        const { error } = await (supabase as any).from('th_tags').insert({ name: name.trim(), color, category: category.trim() || null, description: description.trim() || null, created_by: user?.id });
+        const { error } = await (supabase as any).from('tm_labels').insert({ name: name.trim(), color, category: category.trim() || null, description: description.trim() || null, created_by: user?.id });
         if (error) {
           if (error.code === '23505') { setErrors({ name: 'A tag with this name already exists' }); return; }
           throw error;

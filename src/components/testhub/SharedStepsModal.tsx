@@ -50,8 +50,8 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
 
   const fetchSharedSteps = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('th_shared_steps')
+    const { data, error } = await (supabase as any)
+      .from('tm_shared_steps')
       .select('*')
       .order('usage_count', { ascending: false });
 
@@ -63,8 +63,8 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
 
   const handleInsert = async (step: SharedStep) => {
     // Increment usage count
-    await supabase
-      .from('th_shared_steps')
+    await (supabase as any)
+      .from('tm_shared_steps')
       .update({ usage_count: step.usage_count + 1 })
       .eq('id', step.id);
 

@@ -47,12 +47,12 @@ export function TagSelector({ entityType, entityId, onTagsChanged }: TagSelector
   const fetchTags = async () => {
     setIsLoading(true);
     try {
-      const { data: allTagsData } = await (supabase as any).from('th_tags').select('id, name, slug, color, category').order('name');
+      const { data: allTagsData } = await (supabase as any).from('tm_labels').select('id, name, slug, color, category').order('name');
       if (allTagsData) setAllTags(allTagsData);
 
       const junctionTable = getJunctionTable();
       const entityColumn = getEntityColumn();
-      const { data: linkedData } = await (supabase as any).from(junctionTable).select(`tag_id, tag:th_tags(id, name, slug, color, category)`).eq(entityColumn, entityId);
+      const { data: linkedData } = await (supabase as any).from(junctionTable).select(`tag_id, tag:tm_labels(id, name, slug, color, category)`).eq(entityColumn, entityId);
 
       if (linkedData) {
         const tags = linkedData.map((l: any) => l.tag).filter(Boolean);

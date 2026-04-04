@@ -58,7 +58,7 @@ export function QuickExecutionModal({
       if (cycleTestCase.test_case_id) {
         setLoadingSteps(true);
         supabase
-          .from('th_test_steps')
+          .from('tm_test_steps')
           .select('step_number, action, expected_result')
           .eq('test_case_id', cycleTestCase.test_case_id)
           .order('step_number')

@@ -1,6 +1,6 @@
 /**
  * G25 Defect Management Hooks
- * Queries th_defects schema (TestHub isolated defect tables)
+ * Queries tm_defects schema (TestHub isolated defect tables)
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,12 +12,12 @@ export function useDefectsG25(filters?: DefectFilters) {
   return useQuery({
     queryKey: ['g25-defects', filters],
     queryFn: async (): Promise<Defect[]> => {
-      let query = supabase
-        .from('th_defects' as any)
+      let query = (supabase as any)
+        .from('tm_defects')
         .select(`
           *,
-          reporter:profiles!th_defects_reported_by_fkey(id, full_name, avatar_url),
-          assignee:profiles!th_defects_assigned_to_fkey(id, full_name, avatar_url)
+          reporter:profiles!tm_defects_reported_by_fkey(id, full_name, avatar_url),
+          assignee:profiles!tm_defects_assigned_to_fkey(id, full_name, avatar_url)
         `)
         .order('created_at', { ascending: false });
 
@@ -57,12 +57,12 @@ export function useDefectG25(defectId: string | undefined) {
     queryKey: ['g25-defect', defectId],
     queryFn: async (): Promise<Defect | null> => {
       if (!defectId) return null;
-      const { data, error } = await supabase
-        .from('th_defects' as any)
+      const { data, error } = await (supabase as any)
+        .from('tm_defects')
         .select(`
           *,
-          reporter:profiles!th_defects_reported_by_fkey(id, full_name, avatar_url),
-          assignee:profiles!th_defects_assigned_to_fkey(id, full_name, avatar_url)
+          reporter:profiles!tm_defects_reported_by_fkey(id, full_name, avatar_url),
+          assignee:profiles!tm_defects_assigned_to_fkey(id, full_name, avatar_url)
         `)
         .eq('id', defectId)
         .single();
@@ -80,8 +80,8 @@ export function useCreateDefectG25() {
     mutationFn: async (input: Record<string, any>) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
-      const { data, error } = await supabase
-        .from('th_defects' as any)
+      const { data, error } = await (supabase as any)
+        .from('tm_defects')
         .insert({ ...input, reported_by: user.id } as any)
         .select()
         .single();
@@ -102,8 +102,8 @@ export function useUpdateDefectG25() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updates }: { id: string } & Record<string, any>) => {
-      const { data, error } = await supabase
-        .from('th_defects' as any)
+      const { data, error } = await (supabase as any)
+        .from('tm_defects')
         .update(updates as any)
         .eq('id', id)
         .select()
@@ -134,7 +134,7 @@ export function useChangeDefectStatusG25() {
       if (['new', 'open', 'in_progress', 'reopened'].includes(status)) {
         updates.resolved_at = null; updates.verified_at = null; updates.closed_at = null;
       }
-      const { data, error } = await supabase.from('th_defects' as any).update(updates as any).eq('id', defectId).select().single();
+      const { data, error } = await (supabase as any).from('tm_defects').update(updates as any).eq('id', defectId).select().single();
       if (error) throw new Error(error.message);
       return data;
     },
@@ -154,7 +154,7 @@ export function useDeleteDefectG25() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (defectId: string) => {
-      const { error } = await supabase.from('th_defects' as any).delete().eq('id', defectId);
+      const { error } = await (supabase as any).from('tm_defects').delete().eq('id', defectId);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
@@ -172,9 +172,9 @@ export function useDefectHistoryG25(defectId: string | undefined) {
     queryKey: ['g25-defect-history', defectId],
     queryFn: async (): Promise<DefectHistoryEntry[]> => {
       if (!defectId) return [];
-      const { data, error } = await supabase
-        .from('th_defect_history' as any)
-        .select(`*, changer:profiles!th_defect_history_changed_by_fkey(full_name, avatar_url)`)
+      const { data, error } = await (supabase as any)
+        .from('tm_defect_history')
+        .select(`*, changer:profiles!tm_defect_history_changed_by_fkey(full_name, avatar_url)`)
         .eq('defect_id', defectId)
         .order('changed_at', { ascending: false });
       if (error) throw new Error(error.message);
@@ -190,9 +190,9 @@ export function useDefectCommentsG25(defectId: string | undefined) {
     queryKey: ['g25-defect-comments', defectId],
     queryFn: async (): Promise<DefectComment[]> => {
       if (!defectId) return [];
-      const { data, error } = await supabase
-        .from('th_defect_comments' as any)
-        .select(`*, creator:profiles!th_defect_comments_created_by_fkey(full_name, avatar_url)`)
+      const { data, error } = await (supabase as any)
+        .from('tm_defect_comments')
+        .select(`*, creator:profiles!tm_defect_comments_created_by_fkey(full_name, avatar_url)`)
         .eq('defect_id', defectId)
         .order('created_at', { ascending: true });
       if (error) throw new Error(error.message);
@@ -208,8 +208,8 @@ export function useCreateDefectCommentG25() {
     mutationFn: async ({ defectId, comment }: { defectId: string; comment: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
-      const { data, error } = await supabase
-        .from('th_defect_comments' as any)
+      const { data, error } = await (supabase as any)
+        .from('tm_defect_comments')
         .insert({ defect_id: defectId, comment, created_by: user.id } as any)
         .select()
         .single();
@@ -228,7 +228,7 @@ export function useDeleteDefectCommentG25() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ commentId, defectId }: { commentId: string; defectId: string }) => {
-      const { error } = await supabase.from('th_defect_comments' as any).delete().eq('id', commentId);
+      const { error } = await (supabase as any).from('tm_defect_comments').delete().eq('id', commentId);
       if (error) throw new Error(error.message);
       return defectId;
     },
@@ -245,8 +245,8 @@ export function useDefectLinksG25(defectId: string | undefined) {
     queryKey: ['g25-defect-links', defectId],
     queryFn: async (): Promise<DefectLink[]> => {
       if (!defectId) return [];
-      const { data, error } = await supabase
-        .from('th_defect_links' as any)
+      const { data, error } = await (supabase as any)
+        .from('tm_defect_links')
         .select('*')
         .eq('defect_id', defectId)
         .order('created_at', { ascending: false });
@@ -256,8 +256,8 @@ export function useDefectLinksG25(defectId: string | undefined) {
       // Resolve test case links
       for (const link of links) {
         if (link.link_type === 'test_case') {
-          const { data: tc } = await supabase
-            .from('th_test_cases' as any)
+          const { data: tc } = await (supabase as any)
+            .from('tm_test_cases')
             .select('id, case_key, title')
             .eq('id', link.linked_id)
             .single();
@@ -275,8 +275,8 @@ export function useCreateDefectLinkG25() {
   return useMutation({
     mutationFn: async ({ defectId, linkType, linkedId }: { defectId: string; linkType: string; linkedId: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
-      const { data, error } = await supabase
-        .from('th_defect_links' as any)
+      const { data, error } = await (supabase as any)
+        .from('tm_defect_links')
         .insert({ defect_id: defectId, link_type: linkType, linked_id: linkedId, created_by: user?.id } as any)
         .select()
         .single();
@@ -294,7 +294,7 @@ export function useDeleteDefectLinkG25() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ linkId, defectId }: { linkId: string; defectId: string }) => {
-      const { error } = await supabase.from('th_defect_links' as any).delete().eq('id', linkId);
+      const { error } = await (supabase as any).from('tm_defect_links').delete().eq('id', linkId);
       if (error) throw new Error(error.message);
       return defectId;
     },

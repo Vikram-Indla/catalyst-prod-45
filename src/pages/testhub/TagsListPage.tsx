@@ -40,7 +40,7 @@ export default function TagsListPage() {
     setIsLoading(true);
     try {
       let query = (supabase as any)
-        .from('th_tags')
+        .from('tm_labels')
         .select('*')
         .order('category', { ascending: true, nullsFirst: false })
         .order('name', { ascending: true });
@@ -85,7 +85,7 @@ export default function TagsListPage() {
   const deleteTag = async (id: string, name: string) => {
     if (!confirm(`Delete tag "${name}"? This will remove it from all items.`)) return;
     try {
-      const { error } = await (supabase as any).from('th_tags').delete().eq('id', id);
+      const { error } = await (supabase as any).from('tm_labels').delete().eq('id', id);
       if (error) throw error;
       catalystToast.success('Tag deleted');
       fetchTags();
