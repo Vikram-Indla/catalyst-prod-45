@@ -333,7 +333,7 @@ export default function TestHubExecutionPage() {
             notes: failureReason && currentStatuses[i]?.status === 'failed' ? failureReason : '',
           }));
 
-          await (supabase as any).from('th_test_executions').insert({
+          const { error: execError } = await (supabase as any).from('th_test_executions').insert({
             test_case_id: currentTestCase.test_case_id,
             test_cycle_id: cycle?.id,
             cycle_name: cycle?.name,
@@ -345,8 +345,11 @@ export default function TestHubExecutionPage() {
             step_results: stepSnapshot,
             notes: failureNotes || null,
           });
+          if (execError) {
+            console.error('[ExecutionPage] th_test_executions INSERT failed:', execError);
+          }
         } catch (histErr) {
-          console.warn('Execution history insert failed (non-fatal):', histErr);
+          console.error('[ExecutionPage] th_test_executions INSERT exception:', histErr);
         }
       }
 
