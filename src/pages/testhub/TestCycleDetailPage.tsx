@@ -48,9 +48,13 @@ interface CycleTestCase {
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
   draft:       { label: 'DRAFT',       color: '#253858', bg: '#DFE1E6' },
   planned:     { label: 'PLANNED',     color: '#253858', bg: '#DFE1E6' },
-  active:      { label: 'ACTIVE',      color: '#0747A6', bg: '#DEEBFF' },
+  active:      { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF' },
+  done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF' },
+  archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6' },
+  paused:      { label: 'PAUSED',      color: '#253858', bg: '#DFE1E6' },
+};
   done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF' },
   archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6' },
 };
