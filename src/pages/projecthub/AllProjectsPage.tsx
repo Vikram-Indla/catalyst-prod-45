@@ -309,17 +309,16 @@ export default function AllProjectsPage() {
             )}
           </div>
         ) : (
-          <div>
+          <div className="pb-6">
             <AllProjectsCardGrid
               projects={pageData}
               favoriteIds={favorites}
               onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
               onSelectProject={id => setSelectedProject(id)}
             />
-            {/* Pagination Footer for grid view */}
             {totalPages > 1 && (
               <div
-                className="flex items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#181A1E] mt-6 rounded-lg"
+                className="mt-6 flex items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[#181A1E] rounded-lg"
                 style={{ fontSize: 13 }}
               >
                 <span className="text-muted-foreground">
