@@ -55,9 +55,6 @@ const statusConfig: Record<string, { label: string; color: string; bg: string }>
   archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6' },
   paused:      { label: 'PAUSED',      color: '#253858', bg: '#DFE1E6' },
 };
-  done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF' },
-  archived:    { label: 'ARCHIVED',    color: '#253858', bg: '#DFE1E6' },
-};
 
 const executionStatusConfig: Record<string, { label: string; color: string; bg: string; Icon: any }> = {
   not_run: { label: 'Not Run', color: '#64748B', bg: '#F1F5F9', Icon: Clock },
