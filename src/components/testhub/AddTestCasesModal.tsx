@@ -94,7 +94,7 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
     setIsSubmitting(true);
     try {
       const insertData = Array.from(selectedIds).map(testCaseId => ({
-        cycle_id: cycleId, test_case_id: testCaseId, execution_status: 'not_run',
+        cycle_id: cycleId, test_case_id: testCaseId, current_status: 'not_run',
       }));
       const { error } = await (supabase as any).from('tm_cycle_scope').insert(insertData);
       if (error) { catalystToast.error(error.message || 'Failed to add test cases'); return; }

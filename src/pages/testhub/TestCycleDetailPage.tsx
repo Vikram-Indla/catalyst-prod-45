@@ -37,7 +37,7 @@ interface CycleTestCase {
   id: string;
   cycle_id: string;
   test_case_id: string;
-  execution_status: string;
+  current_status: string;
   executed_at: string | null;
   notes: string | null;
   assigned_to: string | null;
@@ -115,7 +115,7 @@ export default function TestCycleDetailPage() {
 
   const formatDate = (d: string | null) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
 
-  const filteredTestCases = statusFilter === 'all' ? testCases : testCases.filter(tc => tc.execution_status === statusFilter);
+  const filteredTestCases = statusFilter === 'all' ? testCases : testCases.filter(tc => tc.current_status === statusFilter);
 
   // By Tester stats
   const testerStats = (() => {
@@ -126,13 +126,13 @@ export default function TestCycleDetailPage() {
       if (!map.has(key)) map.set(key, { name, total: 0, executed: 0 });
       const entry = map.get(key)!;
       entry.total++;
-      if (tc.execution_status !== 'not_run') entry.executed++;
+      if (tc.current_status !== 'not_run') entry.executed++;
     });
     return Array.from(map.values()).sort((a, b) => b.total - a.total);
   })();
 
   // Blocked test cases
-  const blockedTestCases = testCases.filter(tc => tc.execution_status === 'blocked');
+  const blockedTestCases = testCases.filter(tc => tc.current_status === 'blocked');
 
   // Export CSV
   const handleExportCSV = () => {
@@ -143,7 +143,7 @@ export default function TestCycleDetailPage() {
       tc.test_case?.title || '',
       tc.test_case?.priority || '',
       tc.assignee?.full_name || '',
-      tc.execution_status,
+      tc.current_status,
       tc.executed_at ? new Date(tc.executed_at).toLocaleString() : '',
       (tc.notes || '').replace(/"/g, '""'),
     ]);
@@ -216,7 +216,7 @@ export default function TestCycleDetailPage() {
   }
 
   const status = statusConfig[(cycle.status || 'draft').toLowerCase().replace(/-/g, '_')] ?? statusConfig['draft'];
-  const canEdit = cycle.status === 'draft' || cycle.status === 'active';
+  const canEdit = cycle.status === 'draft' || cycle.status === 'in_progress';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
@@ -267,9 +267,9 @@ export default function TestCycleDetailPage() {
                 <Pencil size={16} /> Edit
               </button>
             )}
-            {cycle.status === 'active' && (
+            {cycle.status === 'in_progress' && (
               <button onClick={() => {
-                const notRun = testCases.find(tc => tc.execution_status === 'not_run');
+                const notRun = testCases.find(tc => tc.current_status === 'not_run');
                 if (notRun) {
                   navigate(`/testhub/cycles/${cycleId}/execute?testId=${notRun.id}`);
                 } else {
@@ -494,7 +494,7 @@ export default function TestCycleDetailPage() {
                 </thead>
                 <tbody>
                   {filteredTestCases.map((ctc, index) => {
-                    const execStatus = executionStatusConfig[ctc.execution_status] || executionStatusConfig.not_run;
+                    const execStatus = executionStatusConfig[ctc.current_status] || executionStatusConfig.not_run;
                     const StatusIcon = execStatus.Icon;
                     const priority = priorityConfig[ctc.test_case?.priority?.toLowerCase() || ''] || priorityConfig.medium;
                     const isSelected = selectedTestCaseIds.has(ctc.id);
@@ -558,7 +558,7 @@ export default function TestCycleDetailPage() {
                           </span>
                         </td>
                         <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                          {cycle.status === 'active' && (
+                          {cycle.status === 'in_progress' && (
                             <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '0 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                               <Play size={12} /> Run
                             </button>

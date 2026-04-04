@@ -26,7 +26,7 @@ interface TestCase {
 
 interface CycleTestCase {
   id: string;
-  execution_status: 'not_run' | 'passed' | 'failed' | 'blocked' | 'skipped';
+  current_status: 'not_run' | 'passed' | 'failed' | 'blocked' | 'skipped';
   notes: string | null;
   execution_time_seconds: number;
   started_at: string | null;
@@ -112,7 +112,7 @@ export function ExecutionTestCaseView({
     });
   };
 
-  const status = statusConfig[cycleTestCase.execution_status];
+  const status = statusConfig[cycleTestCase.current_status];
   const priority = priorityConfig[testCase?.priority?.toLowerCase()] || priorityConfig.medium;
 
   return (

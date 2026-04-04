@@ -49,7 +49,7 @@ interface CycleTestCase {
   id: string;
   cycle_id: string;
   test_case_id: string;
-  execution_status: string;
+  current_status: string;
   executed_at: string | null;
   executed_by: string | null;
   assigned_to: string | null;
@@ -210,7 +210,7 @@ export default function TestHubExecutionPage() {
 
   // ── Derived state ──────────────────────────────────────────────────────
   const filteredTestCases = testCases.filter(tc => {
-    if (statusFilter !== 'all' && tc.execution_status !== statusFilter) return false;
+    if (statusFilter !== 'all' && tc.current_status !== statusFilter) return false;
     if (showMyTestsOnly && tc.assigned_to !== currentUserId) return false;
     return true;
   });
@@ -239,7 +239,7 @@ export default function TestHubExecutionPage() {
     setIsSubmitting(true);
     try {
       const updateData: any = {
-        execution_status: status,
+        current_status: status,
         executed_at: new Date().toISOString(),
         executed_by: currentUserId,
         execution_time_seconds: Math.floor((Date.now() - sessionStartRef.current) / 1000),
@@ -575,7 +575,7 @@ export default function TestHubExecutionPage() {
                   <div style={{ padding: 20, textAlign: 'center', color: 'hsl(var(--muted-foreground))', fontSize: 12 }}>No tests match filter</div>
                 ) : (
                   filteredTestCases.map(tc => {
-                    const st = statusConfig[tc.execution_status] || statusConfig.not_run;
+                    const st = statusConfig[tc.current_status] || statusConfig.not_run;
                     const StatusIcon = st.icon;
                     const isSelected = tc.id === selectedTestCaseId;
                     return (
@@ -640,10 +640,10 @@ export default function TestHubExecutionPage() {
                     </span>
                     <span style={{
                       fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 5,
-                      color: statusConfig[currentTestCase.execution_status]?.color,
-                      backgroundColor: statusConfig[currentTestCase.execution_status]?.bg,
+                      color: statusConfig[currentTestCase.current_status]?.color,
+                      backgroundColor: statusConfig[currentTestCase.current_status]?.bg,
                     }}>
-                      {statusConfig[currentTestCase.execution_status]?.label}
+                      {statusConfig[currentTestCase.current_status]?.label}
                     </span>
                     <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 5, textTransform: 'capitalize' }}>
                       {testCase.priority}
@@ -800,7 +800,7 @@ export default function TestHubExecutionPage() {
                     { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: handleSkip, color: '#64748B', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
                   ].map(btn => {
                     const Icon = btn.icon;
-                    const isActive = currentTestCase.execution_status === btn.key;
+                    const isActive = currentTestCase.current_status === btn.key;
                     return (
                       <button key={btn.key} onClick={btn.onClick} disabled={isSubmitting} title={`${btn.label} (${btn.shortcut})`} style={{
                         height: 38, padding: '0 16px', border: isActive ? 'none' : `1px solid ${btn.color}30`,
@@ -818,7 +818,7 @@ export default function TestHubExecutionPage() {
                   })}
 
                   {/* Reset */}
-                  {currentTestCase.execution_status !== 'not_run' && (
+                  {currentTestCase.current_status !== 'not_run' && (
                     <button onClick={handleReset} disabled={isSubmitting} title="Reset (Ctrl+R)" style={{
                       height: 38, padding: '0 10px', border: '1px solid hsl(var(--border))', borderRadius: 6,
                       backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))',

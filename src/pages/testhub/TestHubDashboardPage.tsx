@@ -57,7 +57,7 @@ export default function TestHubDashboardPage() {
           .limit(5),
         (supabase as any)
           .from('tm_cycle_scope')
-          .select('id, execution_status, executed_at, cycle_id, test_case_id, executed_by, tm_test_cases(case_key, title), tm_test_cycles!tm_cycle_scope_cycle_id_fkey(cycle_key), profiles!tm_cycle_scope_executed_by_fkey(full_name)')
+          .select('id, current_status, executed_at, cycle_id, test_case_id, executed_by, tm_test_cases(case_key, title), tm_test_cycles!tm_cycle_scope_cycle_id_fkey(cycle_key), profiles!tm_cycle_scope_executed_by_fkey(full_name)')
           .not('executed_at', 'is', null)
           .order('executed_at', { ascending: false })
           .limit(10),
@@ -81,7 +81,7 @@ export default function TestHubDashboardPage() {
         setRecentActivity(
           (activityRes.data as any[]).map((a) => ({
             id: a.id,
-            execution_status: a.execution_status ?? 'not_run',
+            execution_status: a.current_status ?? 'not_run',
             executed_at: a.executed_at ?? '',
             case_key: a.tm_test_cases?.case_key ?? '',
             title: a.tm_test_cases?.title ?? '',

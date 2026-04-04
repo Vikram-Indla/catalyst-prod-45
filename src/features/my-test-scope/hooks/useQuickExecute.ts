@@ -21,24 +21,12 @@ async function executeQuickAction({ cycleTestCaseId, action, reason }: QuickExec
   if (!user) throw new Error('Not authenticated');
 
   const updateData: Record<string, unknown> = {
-    execution_status: action,
-    executed_by: user.id,
-    executed_at: new Date().toISOString(),
+    current_status: action,
+    updated_at: new Date().toISOString(),
   };
 
-  if (action === 'failed' || action === 'blocked') {
-    updateData.failure_reason = reason || null;
-  }
-
-  if (action === 'not_run') {
-    // Unblock: reset execution fields
-    updateData.executed_by = null;
-    updateData.executed_at = null;
-    updateData.failure_reason = null;
-  }
-
-  const { error } = await supabase
-    .from('th_cycle_test_cases')
+  const { error } = await (supabase as any)
+    .from('tm_cycle_scope')
     .update(updateData)
     .eq('id', cycleTestCaseId);
 

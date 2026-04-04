@@ -1,0 +1,1 @@
+ALTER TYPE tm_test_plan_status ADD VALUE IF NOT EXISTS 'pending_approval' AFTER 'draft';

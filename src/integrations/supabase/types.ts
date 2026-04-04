@@ -74012,6 +74012,7 @@ export type Database = {
         | "due_date"
       tm_test_plan_status:
         | "draft"
+        | "pending_approval"
         | "active"
         | "executing"
         | "completed"
@@ -74785,6 +74786,7 @@ export const Constants = {
       ],
       tm_test_plan_status: [
         "draft",
+        "pending_approval",
         "active",
         "executing",
         "completed",
