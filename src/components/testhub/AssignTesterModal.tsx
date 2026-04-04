@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, User, Users, Check } from 'lucide-react';
+import { X, User, Users, Check, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 
@@ -28,11 +28,13 @@ export function AssignTesterModal({
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (isOpen) {
       fetchProfiles();
       setSelectedProfileId(currentAssignee || null);
+      setSearchQuery('');
     }
   }, [isOpen, currentAssignee]);
 
@@ -158,11 +160,48 @@ export function AssignTesterModal({
 
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
+          {/* Search Bar */}
+          <div style={{ position: 'relative', marginBottom: 12 }}>
+            <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+            <input
+              type="text"
+              placeholder="Search by name or email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%', height: 36, border: '1px solid #E2E8F0', borderRadius: 6,
+                padding: '0 32px 0 36px', fontFamily: 'Inter, sans-serif', fontSize: 14,
+                color: '#334155', backgroundColor: 'transparent', outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#2563EB'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{
+                  position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', padding: 2, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <X size={14} style={{ color: '#94A3B8' }} />
+              </button>
+            )}
+          </div>
+
           {isLoading ? (
             <div style={{ textAlign: 'center', padding: 40, color: 'var(--fg-3)' }}>
               Loading team members...
             </div>
-          ) : (
+          ) : (() => {
+            const filtered = profiles.filter(p => {
+              if (!searchQuery.trim()) return true;
+              const q = searchQuery.toLowerCase();
+              return (p.full_name?.toLowerCase().includes(q) || p.email?.toLowerCase().includes(q));
+            });
+            return (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {/* Unassign Option */}
               <button
@@ -197,7 +236,7 @@ export function AssignTesterModal({
               <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '8px 0' }} />
 
               {/* Team Members */}
-              {profiles.map((profile) => {
+              {filtered.map((profile) => {
                 const isSelected = selectedProfileId === profile.id;
                 return (
                   <button
@@ -238,13 +277,14 @@ export function AssignTesterModal({
                 );
               })}
 
-              {profiles.length === 0 && (
+              {filtered.length === 0 && (
                 <div style={{ textAlign: 'center', padding: 24, color: 'var(--fg-4)', fontSize: 14 }}>
-                  No team members found
+                  No users found
                 </div>
               )}
             </div>
-          )}
+            );
+          })()}
         </div>
 
         {/* Footer */}

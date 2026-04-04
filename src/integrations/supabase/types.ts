@@ -51060,7 +51060,14 @@ export type Database = {
             foreignKeyName: "tm_cycle_execution_audit_test_case_id_fkey"
             columns: ["test_case_id"]
             isOneToOne: false
-            referencedRelation: "test_cases"
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_execution_audit_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
             referencedColumns: ["id"]
           },
           {
