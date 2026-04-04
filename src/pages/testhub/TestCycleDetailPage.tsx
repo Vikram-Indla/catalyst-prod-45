@@ -344,7 +344,7 @@ export default function TestCycleDetailPage() {
               {pp}%
             </div>
           </div>
-          <p style={{ fontSize: 14, color: '#334155', margin: 0, fontWeight: 500 }}>{executedCount}/{cycle.total_cases} executed</p>
+          <p style={{ fontSize: 14, color: '#334155', margin: 0, fontWeight: 500 }}>{executedCount}/{totalCount} executed</p>
         </div>
           );
         })()}
