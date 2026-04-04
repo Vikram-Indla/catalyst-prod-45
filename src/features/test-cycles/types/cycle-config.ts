@@ -321,7 +321,6 @@ export const ACTIVE_CYCLE_STATUSES: CycleStatus[] = [
   'planned',
   'active',
   'paused',
-  'in_progress',
 ];
 
 export const CYCLE_ROLE_CONFIG: Record<CycleRole, { label: string; color: string }> = {
