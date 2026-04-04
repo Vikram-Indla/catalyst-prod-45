@@ -985,7 +985,7 @@ export function TestRepositoryPage() {
           id: selectedTestCase.id,
           case_key: selectedTestCase.case_key,
           title: selectedTestCase.title,
-          objective: selectedTestCase.objective,
+          description: selectedTestCase.description,
           preconditions: selectedTestCase.preconditions,
           folder_id: selectedTestCase.folder_id,
           priority: selectedTestCase.priority,
