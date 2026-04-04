@@ -742,38 +742,81 @@ export function CreateTestCaseModal({
             </div>
           </div>
 
-          {/* BOTTOM SECTION: Steps editor - FULL WIDTH */}
-          <div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: 12,
-            }}>
-              <label style={{ ...labelStyle, marginBottom: 0 }}>
-                Test Steps <span style={{ color: 'var(--sem-danger)' }}>*</span>
-              </label>
-              <button
-                type="button"
-                onClick={() => setIsSharedStepsModalOpen(true)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--cp-blue)',
-                  fontSize: 13,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                }}
-              >
-                <Library size={14} />
-                Insert from Library
-              </button>
+          {/* BOTTOM SECTION: Steps / Gherkin / Free Text - FULL WIDTH */}
+          {testFormat === 'steps' && (
+            <div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 12,
+              }}>
+                <label style={{ ...labelStyle, marginBottom: 0 }}>
+                  Test Steps <span style={{ color: 'var(--sem-danger)' }}>*</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsSharedStepsModalOpen(true)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--cp-blue)',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <Library size={14} />
+                  Insert from Library
+                </button>
+              </div>
+              <StepsEditor steps={steps} onChange={setSteps} />
             </div>
-            <StepsEditor steps={steps} onChange={setSteps} />
-          </div>
+          )}
+
+          {testFormat === 'gherkin' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={labelStyle}>Feature</label>
+                <textarea
+                  placeholder="Feature: Invoice Validation"
+                  value={gherkinFeature}
+                  onChange={(e) => setGherkinFeature(e.target.value)}
+                  style={{ ...textareaStyle, minHeight: 60, fontFamily: 'JetBrains Mono, monospace', fontSize: 13 }}
+                  onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Scenario</label>
+                <textarea
+                  placeholder={"Scenario: Valid invoice is processed\n  Given an invoice with amount 100 SAR\n  When the invoice is submitted\n  Then the status should be 'Approved'"}
+                  value={gherkinScenario}
+                  onChange={(e) => setGherkinScenario(e.target.value)}
+                  style={{ ...textareaStyle, minHeight: 160, fontFamily: 'JetBrains Mono, monospace', fontSize: 13 }}
+                  onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
+                />
+              </div>
+            </div>
+          )}
+
+          {testFormat === 'free_text' && (
+            <div>
+              <label style={labelStyle}>Test Description</label>
+              <textarea
+                placeholder="Describe the test procedure in free-form text..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                style={{ ...textareaStyle, minHeight: 200 }}
+                onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
+                onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Shared Steps Modal */}
