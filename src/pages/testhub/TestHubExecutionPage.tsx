@@ -399,8 +399,8 @@ export default function TestHubExecutionPage() {
 
       // Ctrl combos
       if (e.ctrlKey || e.metaKey) {
-        if (key === 'enter') { e.preventDefault(); handlePassAllRemaining(); return; }
-        if (key === 'p') { e.preventDefault(); handlePassAllRemaining(); return; }
+        if (key === 'enter') { e.preventDefault(); handleCompleteExecution(); return; }
+        if (key === 's') { e.preventDefault(); catalystToast.success('Progress saved'); return; }
         if (key === 's') { e.preventDefault(); catalystToast.success('Progress saved'); return; }
         return;
       }
