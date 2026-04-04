@@ -57,8 +57,10 @@ export function JiraSyncCTA() {
     setSyncing(true);
     try {
       await forceSync.mutateAsync({ sync_type: 'full' });
-      toast.success('Sync triggered successfully');
+      toast.success('Sync completed successfully');
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+      queryClient.invalidateQueries({ queryKey: ['wh', 'sync-health'] });
+      queryClient.invalidateQueries({ queryKey: ['wh', 'sync-running'] });
     } catch (err: any) {
       toast.error('Sync failed: ' + (err.message || 'Unknown error'));
     } finally {
