@@ -373,6 +373,7 @@ export function TestRepositoryPage() {
       id: s.id,
       action: s.action,
       expectedResult: s.expected_result || '',
+      sharedStepId: s.shared_step_id || undefined,
     }));
 
     setSelectedTestCase(tc);
