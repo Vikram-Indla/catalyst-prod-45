@@ -34,6 +34,7 @@ export function AssignTesterModal({
     if (isOpen) {
       fetchProfiles();
       setSelectedProfileId(currentAssignee || null);
+      setSearchQuery('');
     }
   }, [isOpen, currentAssignee]);
 
