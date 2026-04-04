@@ -366,7 +366,7 @@ export default function TestCycleDetailPage() {
             <button onClick={() => setStatusFilter('blocked')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'blocked' ? '#FFFBEB' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <AlertTriangle size={18} style={{ color: '#D97706' }} />
               <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Blocked</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#D97706' }}>{cycle.blocked_count}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#D97706' }}>{blockedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('not_run')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'not_run' ? '#F8FAFC' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <Clock size={18} style={{ color: '#64748B' }} />
