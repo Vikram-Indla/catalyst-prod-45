@@ -218,14 +218,27 @@ export default function TestHubExecutionPage() {
     setAttachments(data || []);
   }, [selectedTestCaseId]);
 
-  const fetchExecutionHistory = useCallback(async (cycleScopeId: string) => {
-    const { data } = await (supabase as any)
+  const fetchExecutionHistory = useCallback(async (cycleScopeId: string): Promise<ExecutionHistoryRecord | null> => {
+    if (!cycleScopeId) return null;
+    const { data, error } = await supabase
       .from('th_test_executions')
-      .select('id, execution_number, result, executed_by, executed_at, step_results, executor:profiles!executed_by(full_name)')
+      .select('*')
       .eq('cycle_scope_id', cycleScopeId)
-      .order('execution_number', { ascending: false })
-      .limit(1);
-    return (data && data[0]) ? data[0] as ExecutionHistoryRecord : null;
+      .order('execution_number', { ascending: false });
+    if (error) {
+      console.error('[ExecHistory] FETCH FAILED:', error.code, error.message, error.details);
+      return null;
+    }
+    if (!data || data.length === 0) return null;
+    const latest = data[0];
+    return {
+      id: latest.id,
+      execution_number: latest.execution_number,
+      result: latest.result,
+      executed_by: latest.executed_by,
+      executed_at: latest.executed_at,
+      step_results: Array.isArray(latest.step_results) ? latest.step_results as any : [],
+    } as ExecutionHistoryRecord;
   }, []);
 
   useEffect(() => { fetchCycle(); fetchTestCases(); }, [cycleId]);
