@@ -218,8 +218,8 @@ export default function TestHubExecutionPage() {
     setAttachments(data || []);
   }, [selectedTestCaseId]);
 
-  const fetchExecutionHistory = useCallback(async (cycleScopeId: string) => {
-    if (!cycleScopeId) return [];
+  const fetchExecutionHistory = useCallback(async (cycleScopeId: string): Promise<ExecutionHistoryRecord | null> => {
+    if (!cycleScopeId) return null;
     const { data, error } = await supabase
       .from('th_test_executions')
       .select('*')
@@ -229,7 +229,16 @@ export default function TestHubExecutionPage() {
       console.error('[ExecHistory] FETCH FAILED:', error.code, error.message, error.details);
       return null;
     }
-    return data ?? [];
+    if (!data || data.length === 0) return null;
+    const latest = data[0];
+    return {
+      id: latest.id,
+      execution_number: latest.execution_number,
+      result: latest.result,
+      executed_by: latest.executed_by,
+      executed_at: latest.executed_at,
+      step_results: Array.isArray(latest.step_results) ? latest.step_results as any : [],
+    } as ExecutionHistoryRecord;
   }, []);
 
   useEffect(() => { fetchCycle(); fetchTestCases(); }, [cycleId]);
