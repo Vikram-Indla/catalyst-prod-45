@@ -414,7 +414,7 @@ function CyclePickerForPlan({
         .in('status', ['draft', 'active', 'in_progress'])
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return (data || []) as Array<{ id: string; cycle_key: string; name: string; status: string }>;
+      return ((data || []) as unknown) as Array<{ id: string; cycle_key: string; name: string; status: string }>;
     },
     enabled: open,
   });
