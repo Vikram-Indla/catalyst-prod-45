@@ -3,6 +3,12 @@ import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardDefects } from '@/hooks/useDashboardWidgets';
 import { ExternalLink } from 'lucide-react';
 
+const getAvatarColor = (initials: string): string => {
+  if (!initials) return '#94A3B8';
+  const colors = ['#2563EB', '#0D9488', '#D97706', '#DC2626', '#059669', '#6366F1'];
+  return colors[initials.charCodeAt(0) % colors.length];
+};
+
 const sevClassName = (sev: string): string => {
   const s = (sev || '').toLowerCase();
   if (s === 'critical' || s === 'blocker') return 'bg-[#FFEBE6] dark:bg-[#3a1a1a] text-[#BF2600] dark:text-[#ff8f73]';
@@ -83,7 +89,10 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                   : isResolved
                   ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#85e89d]'
                   : 'bg-[#DFE1E6] dark:bg-[#3A3530] text-[#253858] dark:text-[#A09890]';
-                const assigneeName = d.jira_assignee_name ? d.jira_assignee_name.split(' ')[0] : '—';
+                const assigneeName = d.jira_assignee_name || '';
+                const assigneeFirst = assigneeName ? assigneeName.split(' ')[0] : '—';
+                const assigneeInitials = assigneeName ? assigneeName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : '';
+                const avatarColor = getAvatarColor(assigneeInitials);
                 return (
                   <tr key={d.id} className="transition-colors duration-[120ms] hover:bg-black/[0.04] dark:hover:bg-white/[0.04] bg-white dark:bg-[#1A1714]">
                     <td className={tdClassName} style={{ ...tdStyle, color: 'var(--cp-primary-60)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{displayKey}</td>
@@ -98,7 +107,16 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                         {statusLabel}
                       </span>
                     </td>
-                    <td className={tdClassName} style={{ ...tdStyle, fontSize: 11 }}>{assigneeName}</td>
+                    <td className={tdClassName} style={{ ...tdStyle, fontSize: 11 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        {assigneeInitials ? (
+                          <div style={{ width: 20, height: 20, borderRadius: '50%', backgroundColor: avatarColor, color: '#FFFFFF', fontSize: 9, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            {assigneeInitials}
+                          </div>
+                        ) : null}
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{assigneeFirst}</span>
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
