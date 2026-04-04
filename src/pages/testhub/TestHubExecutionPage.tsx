@@ -290,7 +290,6 @@ export default function TestHubExecutionPage() {
   const canGoNextStep = currentStepIndex < steps.length - 1;
 
   // ── Actions ────────────────────────────────────────────────────────────
-  const selectTest = (id: string) => setSelectedTestCaseId(id);
   const handleExit = () => navigate(`/testhub/cycles/${cycleId}`);
   const handlePrevious = () => { if (canGoPrev) setSelectedTestCaseId(filteredTestCases[currentIndex - 1].id); };
   const handleNext = () => { if (canGoNext) setSelectedTestCaseId(filteredTestCases[currentIndex + 1].id); };
