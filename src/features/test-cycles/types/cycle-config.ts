@@ -141,7 +141,7 @@ export function includeInTotalCycles(status: CycleStatus, includeArchived = fals
  * Check if status counts as "In Progress" for KPIs
  */
 export function isInProgressStatus(status: CycleStatus): boolean {
-  return status === 'active' || status === 'paused' || status === 'in_progress';
+  return status === 'active' || status === 'paused';
 }
 
 /**
