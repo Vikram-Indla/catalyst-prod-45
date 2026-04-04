@@ -39,7 +39,7 @@ interface TestCase {
   ownerInitials?: string | null;
   ownerAvatarUrl?: string | null;
   updatedAt: string;
-  objective?: string | null;
+  description?: string | null;
   preconditions?: string | null;
   folderId?: string | null;
   version?: number;
@@ -73,9 +73,6 @@ interface RawTestCase {
   updated_at: string;
   created_by?: string | null;
   assigned_to?: string | null;
-  objective?: string | null;
-  priority?: string;
-  type?: string;
 }
 
 interface ContextMenuState {
@@ -227,7 +224,7 @@ export function TestRepositoryPage() {
         ownerName,
         ownerAvatarUrl: owner?.avatar_url || null,
         updatedAt: tc.updated_at,
-        objective: tc.description,
+        description: tc.description,
         preconditions: tc.preconditions,
         folderId: tc.folder_id,
         version: tc.version || 1,
@@ -335,13 +332,11 @@ export function TestRepositoryPage() {
       id: testCase.id,
       case_key: testCase.caseKey,
       title: testCase.title,
-      description: testCase.objective || null,
+      description: testCase.description || null,
       preconditions: testCase.preconditions || null,
       folder_id: testCase.folderId || null,
       priority_id: null,
       case_type_id: null,
-      priority: testCase.priority,
-      type: testCase.type,
       status: testCase.status,
       version: testCase.version || 1,
       updated_at: testCase.updatedAt,
@@ -985,11 +980,11 @@ export function TestRepositoryPage() {
           id: selectedTestCase.id,
           case_key: selectedTestCase.case_key,
           title: selectedTestCase.title,
-          objective: selectedTestCase.objective,
+          description: selectedTestCase.description,
           preconditions: selectedTestCase.preconditions,
           folder_id: selectedTestCase.folder_id,
-          priority: selectedTestCase.priority,
-          type: selectedTestCase.type,
+          priority_id: selectedTestCase.priority_id,
+          case_type_id: selectedTestCase.case_type_id,
           status: selectedTestCase.status,
           version: selectedTestCase.version || 1,
           owner_id: selectedTestCase.assigned_to || null,
