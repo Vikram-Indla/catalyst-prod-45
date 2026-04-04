@@ -57,7 +57,7 @@ interface Props {
 export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSelectProject }: Props) {
   const navigate = useNavigate();
   return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full">
+    <div className="w-full max-w-full" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '16px' }}>
       {projects.map(p => {
         const isFav = favoriteIds.has(p.id);
         const badgeColor = getBadgeColor(p.id);
