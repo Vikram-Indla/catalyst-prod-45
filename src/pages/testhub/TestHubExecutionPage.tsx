@@ -359,16 +359,13 @@ export default function TestHubExecutionPage() {
           executed_by: currentUserId,
           executed_at: completedAt,
           notes: failureNotes ?? null,
-          started_at: sessionStartTime,
-          completed_at: completedAt,
-          overall_status: status,
         };
 
         console.log('[ExecHistory] Attempting INSERT:', insertPayload);
 
         const { data: execData, error: execError } = await supabase
           .from('th_test_executions')
-          .insert(insertPayload as never)
+          .insert(insertPayload)
           .select('id, execution_number')
           .single();
 
