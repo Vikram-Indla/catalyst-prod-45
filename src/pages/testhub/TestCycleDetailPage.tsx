@@ -555,7 +555,7 @@ export default function TestCycleDetailPage() {
                           </div>
                         </td>
                         <td style={{ padding: '14px 16px' }}>
-                          <span style={{ fontSize: 12, fontWeight: 500, color: priority.color, backgroundColor: priority.bg, padding: '4px 8px', borderRadius: 4, textTransform: 'capitalize' as const }}>{ctc.test_case?.priority || 'Medium'}</span>
+                          <span style={{ fontSize: 12, fontWeight: 500, color: priority.color, backgroundColor: priority.bg, padding: '4px 8px', borderRadius: 4, textTransform: 'capitalize' as const }}>{ctc.test_case?.priority_id || 'Medium'}</span>
                         </td>
                         <td style={{ padding: '14px 16px' }}>
                           <button
