@@ -337,8 +337,6 @@ export function TestRepositoryPage() {
       folder_id: testCase.folderId || null,
       priority_id: null,
       case_type_id: null,
-      priority: testCase.priority,
-      type: testCase.type,
       status: testCase.status,
       version: testCase.version || 1,
       updated_at: testCase.updatedAt,
