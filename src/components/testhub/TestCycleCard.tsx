@@ -162,7 +162,7 @@ export function TestCycleCard({
                   <Play size={14} style={{ color: 'var(--sem-success)' }} /> Start Execution
                 </button>
               )}
-              {cycle.status === 'in_progress' && (
+              {cycle.status === 'active' && (
                 <button onClick={() => { onComplete(); setMenuOpen(false); }} style={menuItemStyle}>
                   <CheckCircle2 size={14} style={{ color: 'var(--cp-blue)' }} /> Complete Cycle
                 </button>
@@ -247,7 +247,7 @@ export function TestCycleCard({
         }}>
           <Eye size={14} /> View
         </button>
-        {cycle.status === 'in_progress' && (
+        {cycle.status === 'active' && (
           <button onClick={() => navigate(`/testhub/cycles/${cycle.id}`)} style={{
             height: 34, padding: '0 14px', background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)',
             border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',

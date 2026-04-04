@@ -43,7 +43,7 @@ export interface TestCycle {
 
 // Map DB status to UI status - keep as-is from database
 function mapStatus(dbStatus: string | null): CycleStatus {
-  const validStatuses: CycleStatus[] = ['draft', 'planned', 'active', 'paused', 'in_progress', 'completed', 'archived'];
+  const validStatuses: CycleStatus[] = ['draft', 'planned', 'active', 'paused', 'completed', 'archived'];
   if (dbStatus && validStatuses.includes(dbStatus as CycleStatus)) {
     return dbStatus as CycleStatus;
   }

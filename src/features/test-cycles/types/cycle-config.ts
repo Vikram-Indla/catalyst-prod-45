@@ -4,7 +4,7 @@
 // ============================================================================
 
 // Cycle status - full lifecycle enum matching database
-export type CycleStatus = 'draft' | 'planned' | 'active' | 'paused' | 'in_progress' | 'completed' | 'archived';
+export type CycleStatus = 'draft' | 'planned' | 'active' | 'paused' | 'completed' | 'archived';
 
 // Status categories for grouping
 export type CycleStatusCategory = 'draft' | 'in_progress' | 'completed' | 'archived';
@@ -26,11 +26,10 @@ export type CycleRole = 'lead' | 'tester' | 'reviewer';
  * in_progress → paused | completed (legacy support)
  */
 export const VALID_STATUS_TRANSITIONS: Record<CycleStatus, CycleStatus[]> = {
-  draft: ['planned', 'archived'],
+  draft: ['active', 'archived'],
   planned: ['active', 'archived'],
-  active: ['paused', 'completed'],
+  active: ['paused', 'completed', 'archived'],
   paused: ['active', 'archived'],
-  in_progress: ['paused', 'completed'], // Legacy support - treat like active
   completed: ['archived'],
   archived: [],
 };
@@ -86,7 +85,6 @@ export function getStatusEditability(status: CycleStatus): StatusEditability {
       };
     case 'active':
     case 'paused':
-    case 'in_progress':
       return {
         isEditable: true,
         editableFields: ['description', 'planned_end'],
@@ -117,7 +115,6 @@ export function getStatusCategory(status: CycleStatus): CycleStatusCategory {
       return 'draft';
     case 'active':
     case 'paused':
-    case 'in_progress':
     case 'planned':
       return 'in_progress';
     case 'completed':
@@ -144,7 +141,7 @@ export function includeInTotalCycles(status: CycleStatus, includeArchived = fals
  * Check if status counts as "In Progress" for KPIs
  */
 export function isInProgressStatus(status: CycleStatus): boolean {
-  return status === 'active' || status === 'paused' || status === 'in_progress';
+  return status === 'active' || status === 'paused';
 }
 
 /**
@@ -152,7 +149,7 @@ export function isInProgressStatus(status: CycleStatus): boolean {
  * Only active and completed cycles contribute to pass rate
  */
 export function includeInPassRate(status: CycleStatus): boolean {
-  return status === 'active' || status === 'completed' || status === 'in_progress';
+  return status === 'active' || status === 'completed';
 }
 
 /**
@@ -296,11 +293,6 @@ export const CYCLE_STATUS_CONFIG: Record<CycleStatus, { label: string; color: st
     color: 'hsl(38 92% 50%)', 
     bgColor: 'hsl(38 92% 50% / 0.1)' 
   },
-  in_progress: { 
-    label: 'in progress', 
-    color: 'hsl(217 91% 60%)', 
-    bgColor: 'hsl(217 91% 60% / 0.1)' 
-  },
   completed: { 
     label: 'completed', 
     color: 'hsl(142 71% 45%)', 
@@ -319,7 +311,6 @@ export const ALL_CYCLE_STATUSES: CycleStatus[] = [
   'planned', 
   'active',
   'paused',
-  'in_progress',
   'completed',
   'archived',
 ];
@@ -330,7 +321,6 @@ export const ACTIVE_CYCLE_STATUSES: CycleStatus[] = [
   'planned',
   'active',
   'paused',
-  'in_progress',
 ];
 
 export const CYCLE_ROLE_CONFIG: Record<CycleRole, { label: string; color: string }> = {
