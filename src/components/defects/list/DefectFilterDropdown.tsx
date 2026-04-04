@@ -173,3 +173,10 @@ export function getPriorityOptions(): FilterOption[] {
     label: config.label,
   }));
 }
+
+export function getSourceOptions(): FilterOption[] {
+  return [
+    { value: 'jira', label: 'Jira', color: '#2563EB' },
+    { value: 'native', label: 'Catalyst', color: '#64748b' },
+  ];
+}

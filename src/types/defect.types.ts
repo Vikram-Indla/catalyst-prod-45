@@ -69,6 +69,7 @@ export interface DefectFilters {
   assigneeIds: string[];
   reporterIds: string[];
   components: string[];
+  sources: string[];
   search: string;
   isBlocker: boolean | null;
   isRegression: boolean | null;
@@ -84,6 +85,7 @@ export type FilterType =
   | 'assignee' 
   | 'reporter' 
   | 'component'
+  | 'source'
   | 'blocker'
   | 'regression';
 
@@ -142,13 +144,14 @@ export interface DefectColumnConfig {
 }
 
 export const DEFAULT_DEFECT_COLUMNS: DefectColumnConfig[] = [
-  { id: 'defect_id', label: 'ID', width: 90, visible: true, sortable: true, fixed: true },
+  { id: 'defect_id', label: 'ID', width: 112, visible: true, sortable: true, fixed: true },
   { id: 'title', label: 'Title', width: 300, visible: true, sortable: true },
   { id: 'severity', label: 'Severity', width: 100, visible: true, sortable: true },
   { id: 'status', label: 'Status', width: 100, visible: true, sortable: true },
   { id: 'assignee', label: 'Assignee', width: 120, visible: true, sortable: true },
   { id: 'component', label: 'Component', width: 100, visible: true, sortable: true },
   { id: 'age', label: 'Age', width: 80, visible: true, sortable: true },
+  { id: 'source', label: 'Source', width: 80, visible: false, sortable: true },
 ];
 
 // =====================================================

@@ -23,7 +23,7 @@ export function useWeeklyInsightsData() {
           .select('id, title, status, severity, created_at')
           .is('deleted_at', null)
           .gte('created_at', weekStart.toISOString()),
-        supabase.from('defects')
+        supabase.from('tm_defects')
           .select('id, title, status, severity, created_at')
           .gte('created_at', weekStart.toISOString()),
         supabase.from('stories')

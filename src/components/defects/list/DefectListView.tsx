@@ -51,6 +51,13 @@ export function DefectListView({ projectId }: DefectListViewProps) {
       if (filters.severities.length > 0) {
         query = query.in('severity', filters.severities as any);
       }
+      if (filters.sources.length > 0) {
+        if (filters.sources.includes('jira') && !filters.sources.includes('native')) {
+          query = query.eq('jira_source', true);
+        } else if (filters.sources.includes('native') && !filters.sources.includes('jira')) {
+          query = query.eq('jira_source', false);
+        }
+      }
 
       query = query.order('created_at', { ascending: false })
         .range((filters.page - 1) * filters.pageSize, filters.page * filters.pageSize - 1);

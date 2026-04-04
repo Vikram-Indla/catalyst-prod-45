@@ -239,26 +239,51 @@ export function useDashboardIncidents(projectId: string | null | undefined) {
 }
 
 // ─── QA Defects (cross-hub from tm_defects) ───
-export function useDashboardDefects(projectId: string | null | undefined) {
+export function useDashboardDefects(projectId: string | null | undefined, projectKey?: string | null) {
   return useQuery({
-    queryKey: ['ph-dashboard-defects', projectId],
+    queryKey: ['ph-dashboard-defects', projectId, projectKey],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tm_defects')
-        .select('id, defect_key, title, severity, status, created_at')
-        .eq('project_id', projectId!)
-        .order('created_at', { ascending: false })
-        .limit(20);
-      if (error) throw error;
+      let allDefects: any[] = [];
 
-      return (data ?? []).map(d => ({
+      // Fetch Jira-synced defects by project key
+      if (projectKey) {
+        const { data: jiraDefects } = await supabase
+          .from('tm_defects')
+          .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source')
+          .eq('jira_project_key', projectKey)
+          .order('created_at', { ascending: false })
+          .limit(10);
+        if (jiraDefects?.length) allDefects.push(...jiraDefects);
+      }
+
+      // Also fetch native defects by project_id
+      const { data: nativeDefects } = await supabase
+        .from('tm_defects')
+        .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source')
+        .eq('project_id', projectId!)
+        .eq('jira_source', false)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (nativeDefects?.length) allDefects.push(...nativeDefects);
+
+      // Dedupe, sort, cap at 10
+      const seen = new Set<string>();
+      allDefects = allDefects.filter(d => {
+        if (seen.has(d.id)) return false;
+        seen.add(d.id);
+        return true;
+      });
+      allDefects.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      allDefects = allDefects.slice(0, 10);
+
+      return allDefects.map(d => ({
         ...d,
         days_open: d.created_at
           ? Math.max(0, Math.floor((Date.now() - new Date(d.created_at).getTime()) / 86400000))
           : 0,
       }));
     },
-    enabled: !!projectId,
+    enabled: !!projectId || !!projectKey,
     staleTime: 60_000,
   });
 }
