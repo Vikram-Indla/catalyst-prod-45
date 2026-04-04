@@ -143,7 +143,8 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
           ) : (
             filtered.map(tc => {
               const isSelected = selectedIds.has(tc.id);
-              const priorityColor = PRIORITY_COLORS[tc.priority] || '#D97706';
+              const priorityName = tc.priority?.name || 'Medium';
+              const priorityColor = PRIORITY_COLORS[priorityName.toLowerCase()] || '#D97706';
               return (
                 <div key={tc.id} onClick={() => toggleSelect(tc.id)}
                   style={{
