@@ -96,15 +96,30 @@ export function JiraSyncCTA() {
           border: '1px solid var(--catalyst-border, #E2E8F0)',
           borderRadius: 6, cursor: 'pointer',
           fontFamily: "'Inter', sans-serif",
+          opacity: isAnySyncActive ? 1 : 1,
+          transition: 'opacity 0.3s ease',
         }}
       >
-        <span style={{
-          width: 7, height: 7, borderRadius: '50%',
-          background: dotColor,
-          boxShadow: isConnected && webhookActive ? `0 0 6px ${dotColor}` : 'none',
-        }} />
+        {isAnySyncActive ? (
+          <RefreshCw size={13} className="animate-spin" style={{ color: '#2563EB' }} />
+        ) : (
+          <span style={{
+            width: 7, height: 7, borderRadius: '50%',
+            background: dotColor,
+            boxShadow: isConnected && webhookActive ? `0 0 6px ${dotColor}` : 'none',
+          }} />
+        )}
         ↔ Jira Sync
-        <span style={{ fontSize: 11, color: '#94A3B8', marginLeft: 2 }}>{statusLabel}</span>
+        <span style={{
+          fontSize: 11,
+          color: isAnySyncActive ? '#2563EB' : '#94A3B8',
+          marginLeft: 2,
+          fontWeight: isAnySyncActive ? 600 : 400,
+        }}>
+          {isAnySyncActive
+            ? 'Syncing…'
+            : `${statusLabel} · Synced ${formatAge(health?.lastSync?.completed_at)}`}
+        </span>
         <ChevronDown size={12} style={{ marginLeft: 2, opacity: 0.5 }} />
       </button>
 
