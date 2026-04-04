@@ -62,18 +62,23 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
   };
 
   const handleInsert = async (step: SharedStep) => {
-    // Increment usage count
-    await (supabase as any)
-      .from('tm_shared_steps')
-      .update({ usage_count: step.usage_count + 1 })
-      .eq('id', step.id);
-
+    // Call onInsert FIRST — must always succeed
     onInsert({
       action: step.action,
       expectedResult: step.expected_result || '',
       sharedStepId: step.id,
     });
     onClose();
+
+    // Increment usage count after — non-blocking, best effort
+    try {
+      await (supabase as any)
+        .from('tm_shared_steps')
+        .update({ usage_count: (step.usage_count || 0) + 1 })
+        .eq('id', step.id);
+    } catch (err) {
+      console.warn('Usage count not updated:', err);
+    }
   };
 
 

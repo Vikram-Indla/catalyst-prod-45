@@ -321,12 +321,16 @@ export function CreateTestCaseModal({
       if (stepsError) throw stepsError;
     }
 
-    // 4. Create version history entry
-    await (supabase as any).from('th_test_case_versions').insert({
-      test_case_id: testCase.id,
-      version: newVersion,
-      changes: JSON.stringify({ updated: 'Test case updated' }),
-    });
+    // 4. Create version history entry (non-fatal)
+    try {
+      await (supabase as any).from('tm_test_case_versions').insert({
+        test_case_id: testCase.id,
+        version: newVersion,
+        changes: JSON.stringify({ updated: 'Test case updated' }),
+      });
+    } catch (versionErr) {
+      console.warn('Version history not saved:', versionErr);
+    }
 
     toast({
       title: 'Success',
