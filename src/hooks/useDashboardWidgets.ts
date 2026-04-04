@@ -8,6 +8,56 @@ import { supabase } from '@/integrations/supabase/client';
 // "Active" releases = not archived/released/shipped
 const INACTIVE_STATUSES = ['archived', 'released', 'shipped'] as const;
 
+// ─── Avatar resolver: maps display names → avatar URLs via resource_inventory + profiles ───
+let _avatarCache: Map<string, string | null> | null = null;
+let _avatarCachePromise: Promise<Map<string, string | null>> | null = null;
+
+async function getAvatarMap(): Promise<Map<string, string | null>> {
+  if (_avatarCache) return _avatarCache;
+  if (_avatarCachePromise) return _avatarCachePromise;
+
+  _avatarCachePromise = (async () => {
+    const { data: resources } = await supabase
+      .from('resource_inventory')
+      .select('name, profile_id')
+      .eq('is_active', true);
+
+    const profileIds = (resources || []).map(r => r.profile_id).filter((id): id is string => !!id);
+    const avatarMap = new Map<string, string | null>();
+
+    if (profileIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, avatar_url')
+        .in('id', profileIds);
+
+      const profileAvatars = new Map<string, string | null>();
+      for (const p of profiles || []) {
+        profileAvatars.set(p.id, p.avatar_url || null);
+      }
+
+      for (const r of resources || []) {
+        if (r.name && r.profile_id) {
+          const url = profileAvatars.get(r.profile_id) || null;
+          avatarMap.set(r.name.toLowerCase(), url);
+        }
+      }
+    }
+
+    _avatarCache = avatarMap;
+    // Invalidate cache after 5 minutes
+    setTimeout(() => { _avatarCache = null; _avatarCachePromise = null; }, 5 * 60 * 1000);
+    return avatarMap;
+  })();
+
+  return _avatarCachePromise;
+}
+
+export function resolveAvatarUrl(avatarMap: Map<string, string | null>, displayName: string | null): string | null {
+  if (!displayName) return null;
+  return avatarMap.get(displayName.toLowerCase()) || null;
+}
+
 async function getProjectKey(projectId: string): Promise<string | null> {
   const { data, error } = await supabase.from('projects').select('key').eq('id', projectId).single();
   if (error && error.code !== 'PGRST116') throw error;
@@ -222,14 +272,17 @@ export function useDashboardIncidents(projectId: string | null | undefined, proj
     queryFn: async () => {
       if (!projectKey) return [];
 
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
-        .eq('project_key', projectKey)
-        .eq('issue_type', 'Production Incident')
-        .is('deleted_at', null)
-        .order('jira_created_at', { ascending: false })
-        .limit(10);
+      const [{ data, error }, avatarMap] = await Promise.all([
+        supabase
+          .from('ph_issues')
+          .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
+          .eq('project_key', projectKey)
+          .eq('issue_type', 'Production Incident')
+          .is('deleted_at', null)
+          .order('jira_created_at', { ascending: false })
+          .limit(10),
+        getAvatarMap(),
+      ]);
       if (error) throw error;
 
       return (data ?? []).map(inc => ({
@@ -240,6 +293,7 @@ export function useDashboardIncidents(projectId: string | null | undefined, proj
         status: inc.status,
         status_category: inc.status_category,
         assignee: inc.assignee_display_name,
+        assignee_avatar_url: resolveAvatarUrl(avatarMap, inc.assignee_display_name),
         reporter: inc.reporter_display_name,
         resolution: inc.resolution,
         days_open: inc.jira_created_at
@@ -258,6 +312,7 @@ export function useDashboardDefects(projectId: string | null | undefined, projec
     queryKey: ['ph-dashboard-defects', projectId, projectKey],
     queryFn: async () => {
       let allDefects: any[] = [];
+      const avatarMap = await getAvatarMap();
 
       // Fetch Jira-synced defects by project key
       if (projectKey) {
@@ -292,6 +347,7 @@ export function useDashboardDefects(projectId: string | null | undefined, projec
 
       return allDefects.map(d => ({
         ...d,
+        assignee_avatar_url: resolveAvatarUrl(avatarMap, d.jira_assignee_name),
         days_open: d.created_at
           ? Math.max(0, Math.floor((Date.now() - new Date(d.created_at).getTime()) / 86400000))
           : 0,

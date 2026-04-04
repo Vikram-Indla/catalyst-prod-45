@@ -93,6 +93,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 const assigneeFirst = assigneeName ? assigneeName.split(' ')[0] : '—';
                 const assigneeInitials = assigneeName ? assigneeName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : '';
                 const avatarColor = getAvatarColor(assigneeInitials);
+                const avatarUrl = d.assignee_avatar_url;
                 return (
                   <tr key={d.id} className="transition-colors duration-[120ms] hover:bg-black/[0.04] dark:hover:bg-white/[0.04] bg-white dark:bg-[#1A1714]">
                     <td className={tdClassName} style={{ ...tdStyle, color: 'var(--cp-primary-60)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{displayKey}</td>
@@ -110,9 +111,13 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                     <td className={tdClassName} style={{ ...tdStyle, fontSize: 11 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         {assigneeInitials ? (
-                          <div style={{ width: 20, height: 20, borderRadius: '50%', backgroundColor: avatarColor, color: '#FFFFFF', fontSize: 9, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            {assigneeInitials}
-                          </div>
+                          avatarUrl ? (
+                            <img src={avatarUrl} alt={assigneeName} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                          ) : (
+                            <div style={{ width: 20, height: 20, borderRadius: '50%', backgroundColor: avatarColor, color: '#FFFFFF', fontSize: 9, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              {assigneeInitials}
+                            </div>
+                          )
                         ) : null}
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{assigneeFirst}</span>
                       </div>
