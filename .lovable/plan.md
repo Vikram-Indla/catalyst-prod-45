@@ -1,59 +1,55 @@
 
-## Jira Defect Sync — Implementation Plan
+# Jira Sync Comprehensive Audit & Fix Plan
 
-### Architecture Decision
-Since `ph_issues` already receives all Jira data via the existing V2 sync pipeline (webhook + full-sync), we **mirror** Bug-type issues from `ph_issues` → `tm_defects` using a DB trigger + an initial backfill. This avoids duplicating Jira API calls.
+## ROOT CAUSE ANALYSIS
 
-### Step 1 — Migration: Add Jira columns to tm_defects
-Add columns to `tm_defects` for maximum Jira data:
-- `jira_key` (varchar, nullable, unique) — e.g. "BAU-123"
-- `jira_source` (boolean, default false) — visual flag: "From Jira"
-- `jira_project_key` (varchar) — source project
-- `jira_status` (varchar) — raw Jira status name
-- `jira_status_category` (varchar) — To Do / In Progress / Done
-- `jira_assignee_name` (varchar) — display name from Jira
-- `jira_reporter_name` (varchar)
-- `jira_resolution` (varchar)
-- `jira_created_at` (timestamptz)
-- `jira_updated_at` (timestamptz)
-- `last_synced_at` (timestamptz)
-- `jira_parent_key` (varchar) — parent epic/story
-- `jira_story_points` (numeric)
-- `jira_sprint_name` (varchar)
-- `jira_components` (text[])
-- `jira_fix_versions` (text[])
+### Issue 1: "15 hours ago" — Sync log never completes
+The edge function (`wh-jira-sync`) crashes/times out after processing ~4,100 issues (BAU + ICP). It starts IP but hits Deno's wall clock limit → `shutdown`. The final `completed_at` update never runs, so `ph_sync_log` stays `status: 'running'` forever. The "UPDATED" column queries for `status IN ('success','warning')` and finds nothing recent → falls back to stale `last_synced_at`.
 
-### Step 2 — DB Trigger: Auto-mirror ph_issues bugs → tm_defects
-Create a trigger on `ph_issues` (INSERT/UPDATE/DELETE) that:
-- On INSERT/UPDATE where `issue_type = 'QA Bug'`: UPSERT into `tm_defects` matching on `jira_key`
-- On DELETE: Soft-delete matching `tm_defects` row
-- Maps fields: summary→title, description_text→description, priority, status, assignee, labels, components, etc.
-- Sets `jira_source = true`
+**Fix:** Update edge function to write `completed_at` after EACH project (not just at the end). Also mark previous stuck "running" entries as "timeout" on startup.
 
-### Step 3 — Initial Backfill
-Run a one-time SQL INSERT that copies all 507 existing QA Bugs from `ph_issues` into `tm_defects`.
+### Issue 2: Pre-2026 issues included
+BAU has 3,022 issues from before 2026. The JQL uses `updated >= -360d` (12 months lookback), which pulls issues created in 2025 that were merely *updated* in 2026. This is correct Jira behavior — syncing recently-touched issues regardless of creation date.
 
-### Step 4 — UI: Jira Origin Badge
-In the Defects list component, show a small Jira icon/badge on rows where `jira_source = true`.
-Display `jira_key` as an additional column.
+**Decision needed:** Keep all recently-updated issues (current behavior) OR filter display to 2026-created only? I recommend keeping the sync as-is (it's correct) but noting this is by design.
 
-### Step 5 — Bi-directional Delete
-When a user deletes a Jira-sourced defect in Catalyst:
-- Mark it as deleted in `tm_defects`
-- Create an outbound sync event in `sync_outbound_queue` (or equivalent) for the existing outbound Edge Function to process the delete in Jira
+### Issue 3: Missing Jira flags across hubs
+Many hubs consume `ph_issues` data but don't show a Jira origin indicator.
 
-### What this gives you:
-- **Automatic**: Any Jira sync (webhook or manual "Sync Now") that updates `ph_issues` will auto-propagate bugs to `tm_defects` via the trigger
-- **No new Edge Functions** for inbound — reuses the existing pipeline
-- **Clear provenance**: `jira_source` flag + `jira_key` column
-- **Maximum data**: 15+ Jira fields mapped
+## HUB-BY-HUB AUDIT
 
-### Files to modify:
-- 1 migration (schema + trigger + backfill)
-- Defects list component (Jira badge + jira_key column)
-- Defect detail/drawer (show Jira metadata section)
+| Hub | Jira Data Source | Jira Flag Present? | Fix Needed |
+|-----|-----------------|-------------------|------------|
+| **Home** (ForYou) | `ph_issues` via TransitionsTab, DetailPanel | ❌ No flag | Add Jira chip to work items |
+| **StrategyHub** | `es_initiative_epics` → links to `ph_issues` | ❌ No flag | Add flag on linked epics |
+| **ProductHub** | Initiatives, Cards, Roadmap — mostly `ph_initiatives` not `ph_issues` | ⚠️ Partial | Check if cards show Jira key |
+| **ProjectHub** | `ph_issues` (primary), AllProjectsTable, WorkItems, Dashboard | ✅ Sync chip on projects | Fix UPDATED column, add flag on work items |
+| **ReleaseHub** | `rh_release_issues` linked to `ph_issues` | ⚠️ Partial | Add Jira badge on release items |
+| **TestHub** | `tm_defects` mirrored from `ph_issues` | ✅ "From Jira" badge | Already done |
+| **IncidentHub** | `ph_issues` where type='Production Incident' | ❌ No flag | Add Jira key column/badge |
 
-### NOT in scope:
-- Outbound creation (confirmed: Catalyst-native defects stay local)
-- Changing the existing Jira webhook receiver
-- Modifying TestCycleCard, TestHubExecutionPage, or any other TestHub component
+## EXECUTION PLAN (in priority order)
+
+### Fix 1: Edge function — per-project completion tracking
+- Update `wh-jira-sync` to write `completed_at` after each project batch
+- Clean up stuck "running" entries on startup
+- **Impact:** Fixes "15 hours ago" immediately
+
+### Fix 2: ProjectHub UPDATED column
+- Fall back to `MAX(last_synced_at)` from `ph_issues` when no completed sync log exists
+- **Impact:** Shows accurate "just now" after sync
+
+### Fix 3: Reusable `<JiraSyncChip>` component
+- Small chip showing Jira icon + key (e.g., "BAU-1234")
+- Reusable across all hubs
+
+### Fix 4: Add Jira flags to IncidentHub list
+- Add `jira_key` column to incident grid
+
+### Fix 5: Add Jira flags to Home/ForYou
+- Show Jira chip on work items in transitions/detail panel
+
+### Fix 6: Add Jira flags to ReleaseHub items
+- Show Jira badge on release issue rows
+
+**Note:** StrategyHub and ProductHub don't directly display `ph_issues` rows in most views — their Jira linkage is indirect through initiative-epic joins. Adding flags there is lower priority.

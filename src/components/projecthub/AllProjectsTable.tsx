@@ -408,20 +408,35 @@ export function AllProjectsTable({
         });
       }
 
-      // Get last successful sync time
+      // Get last sync time — include 'running' (progressive) entries that have completed_at
       const { data: lastSync } = await (supabase as any)
         .from('ph_sync_log')
         .select('completed_at, projects_synced')
-        .in('status', ['success', 'warning'])
+        .in('status', ['success', 'warning', 'running'])
+        .not('completed_at', 'is', null)
         .order('completed_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
+      // Fallback: get the most recent last_synced_at from ph_issues
+      let fallbackSyncAt: string | null = null;
+      if (!lastSync?.completed_at) {
+        const { data: recentIssue } = await (supabase as any)
+          .from('ph_issues')
+          .select('last_synced_at')
+          .not('last_synced_at', 'is', null)
+          .order('last_synced_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        fallbackSyncAt = recentIssue?.last_synced_at || null;
+      }
+
       const syncedFromLog = new Set<string>(lastSync?.projects_synced || []);
       const syncedFromIssues = new Set<string>(Object.keys(countMap).filter(k => countMap[k] > 0));
       const syncedProjectKeys = new Set<string>([...syncedFromLog, ...syncedFromIssues]);
+      const effectiveSyncAt = lastSync?.completed_at || fallbackSyncAt || null;
 
-      return { countMap, lastSyncAt: lastSync?.completed_at || null, syncedProjectKeys };
+      return { countMap, lastSyncAt: effectiveSyncAt, syncedProjectKeys };
     },
     refetchInterval: 30000,
     staleTime: 15_000,

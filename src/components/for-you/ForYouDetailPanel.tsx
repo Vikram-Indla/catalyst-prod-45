@@ -13,6 +13,7 @@ import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsDark } from '@/components/strategy/themes/useIsDark';
 import type { WorkItem } from '@/hooks/useForYouData';
+import { JiraSyncChip } from '@/components/shared/JiraSyncChip';
 
 // Design tokens — light mode
 const TL = {
@@ -308,6 +309,7 @@ function SubTaskCard({ item, onClick }: { item: SubTaskItem; onClick: () => void
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <JiraIssueTypeIcon issueType={item.issueType} size={16} />
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 650, color: T.primary, flexShrink: 0 }}>{item.key}</span>
+        <JiraSyncChip jiraKey={item.key} size="sm" />
         <span style={{ fontSize: 13, fontWeight: 500, color: T.ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, fontFamily: "'Inter', system-ui" }}>{item.summary}</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, paddingLeft: 26 }}>

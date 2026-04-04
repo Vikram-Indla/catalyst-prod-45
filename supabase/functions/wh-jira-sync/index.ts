@@ -30,6 +30,14 @@ serve(async (req) => {
   const overrideProjects: string[] | undefined = body.projects || body.projectKeys
   const overrideProjectConfigs: Record<string, ProjectConfig> | undefined = body.project_configs
 
+  // ── Clean up stuck "running" entries older than 10 minutes ──
+  const tenMinAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+  await supabase.from('ph_sync_log').update({
+    status: 'timeout',
+    completed_at: new Date().toISOString(),
+    error_message: 'Sync timed out (CPU limit)',
+  }).eq('status', 'running').lt('started_at', tenMinAgo)
+
   // Create log entry
   const { data: logEntry } = await supabase
     .from('ph_sync_log')
@@ -186,7 +194,7 @@ serve(async (req) => {
       .not('catalyst_profile_id', 'is', null)
     const userMap = new Map((userMappings || []).map((m: any) => [m.jira_account_id, m.catalyst_profile_id]))
 
-    // 4. STREAMING per-project sync — fetch, transform, upsert, then release memory
+    // 4. STREAMING per-project sync — NO changelog expansion to save CPU
     const maxResults = 100
     const fields = ['summary','status','assignee','reporter','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016','description','comment','attachment','issuelinks']
     const searchUrl = `${base}/rest/api/3/search/jql`
@@ -197,12 +205,11 @@ serve(async (req) => {
     let totalUpserted = 0
     let totalDefectsSynced = 0
     let totalAttachments = 0
-    let totalChangelog = 0
-    let totalComments = 0
     let totalPruned = 0
     let hadSearchErrors = false
     const allFetchedKeys = new Set<string>()
     const uniqueUsers = new Map<string, any>()
+    const completedProjects: string[] = []
 
     for (const projectKey of projectsToSync) {
       const pConfig = projectConfigs[projectKey] || { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] }
@@ -240,13 +247,14 @@ serve(async (req) => {
       const jql = `${jqlParts.join(' AND ')} ORDER BY updated DESC`
       console.log(`[sync] Project ${projectKey}: JQL = ${jql}`)
 
-      // Paginate and process in PAGE-SIZED batches (not accumulating all)
+      // Paginate and process in PAGE-SIZED batches
       let nextPageToken: string | undefined = undefined
       let projectIssueCount = 0
       let projectError = false
 
       do {
-        const reqBody: Record<string, any> = { jql, fields, maxResults, expand: 'changelog' }
+        // NOTE: No 'expand: changelog' — this was causing CPU Time exceeded for large projects
+        const reqBody: Record<string, any> = { jql, fields, maxResults }
         if (nextPageToken) reqBody.nextPageToken = nextPageToken
 
         const res = await fetch(searchUrl, { method: 'POST', headers: postHeaders, body: JSON.stringify(reqBody) })
@@ -303,12 +311,13 @@ serve(async (req) => {
             jira_created_at: issue.fields.created,
             jira_updated_at: issue.fields.updated,
             synced_at: new Date().toISOString(),
+            last_synced_at: new Date().toISOString(),
             type_icon_url: issue.fields.issuetype?.iconUrl || null,
             description_adf: descAdf,
             description_text: descText,
             comments,
             changelog: [],
-            raw_json: null, // ← No longer storing full raw JSON to save memory
+            raw_json: null,
           }
         })
 
@@ -325,7 +334,7 @@ serve(async (req) => {
         // ── Defects (bugs) ──
         const bugIssues = issues.filter((issue: any) => {
           const t = (issue.fields.issuetype?.name || '').toLowerCase()
-          return t === 'bug' || t === 'defect'
+          return t === 'bug' || t === 'defect' || t === 'qa bug'
         })
         if (bugIssues.length > 0 && tmProjectMap.size > 0) {
           const defectRows = bugIssues
@@ -388,36 +397,7 @@ serve(async (req) => {
           totalAttachments += attachmentRows.length
         }
 
-        // ── Changelog ──
-        const changelogRows: any[] = []
-        for (const issue of issues) {
-          for (const history of (issue.changelog?.histories || [])) {
-            for (const item of (history.items || [])) {
-              changelogRows.push({
-                issue_key: issue.key,
-                jira_history_id: history.id,
-                author_display_name: history.author?.displayName || null,
-                author_account_id: history.author?.accountId || null,
-                author_avatar_url: history.author?.avatarUrls?.['24x24'] || null,
-                field_name: item.field || null,
-                field_type: item.fieldtype || null,
-                from_value: item.from || null,
-                to_value: item.to || null,
-                from_string: item.fromString || null,
-                to_string: item.toString || null,
-                jira_created_at: history.created,
-              })
-            }
-          }
-        }
-        if (changelogRows.length > 0) {
-          const pageKeys = [...new Set(changelogRows.map(r => r.issue_key))]
-          await supabase.from('jira_sync_changelog').delete().in('issue_key', pageKeys)
-          await supabase.from('jira_sync_changelog').insert(changelogRows)
-          totalChangelog += changelogRows.length
-        }
-
-        // ── Comments ──
+        // ── Comments (dedicated table) ──
         const commentRows: any[] = []
         for (const issue of issues) {
           for (const c of (issue.fields.comment?.comments || [])) {
@@ -437,7 +417,6 @@ serve(async (req) => {
           const pageKeys = [...new Set(commentRows.map(r => r.issue_key))]
           await supabase.from('jira_sync_comments').delete().in('issue_key', pageKeys)
           await supabase.from('jira_sync_comments').insert(commentRows)
-          totalComments += commentRows.length
         }
 
         // ── Users ──
@@ -451,6 +430,15 @@ serve(async (req) => {
               jira_avatar_url: assignee.avatarUrls?.['48x48'] || '',
             })
           }
+          const reporter = issue.fields.reporter
+          if (reporter?.accountId && !uniqueUsers.has(reporter.accountId)) {
+            uniqueUsers.set(reporter.accountId, {
+              jira_account_id: reporter.accountId,
+              jira_display_name: reporter.displayName || '',
+              jira_email: reporter.emailAddress || '',
+              jira_avatar_url: reporter.avatarUrls?.['48x48'] || '',
+            })
+          }
         }
 
         totalFetched += issues.length
@@ -458,8 +446,9 @@ serve(async (req) => {
       } while (nextPageToken && projectIssueCount < 5000)
 
       console.log(`[sync] Project ${projectKey}: fetched ${projectIssueCount}, upserted OK`)
+      completedProjects.push(projectKey)
 
-      // ── Per-project prune (remove issues no longer in Jira for this project) ──
+      // ── Per-project prune ──
       if (syncType === 'full' && !projectError) {
         const { data: existingIssues } = await supabase
           .from('ph_issues')
@@ -467,9 +456,12 @@ serve(async (req) => {
           .eq('project_key', projectKey)
 
         if (existingIssues && existingIssues.length > 0) {
+          const projectFetchedKeys = new Set(
+            [...allFetchedKeys].filter(k => k.startsWith(projectKey + '-'))
+          )
           const toDelete = existingIssues
             .map((i: any) => i.issue_key)
-            .filter((k: string) => !allFetchedKeys.has(k))
+            .filter((k: string) => !projectFetchedKeys.has(k))
 
           if (toDelete.length > 0) {
             for (let i = 0; i < toDelete.length; i += 500) {
@@ -481,11 +473,14 @@ serve(async (req) => {
         }
       }
 
-      // Update log with progress
+      // ── Progressive log update after EACH project (prevents stale "15 hours ago") ──
       if (logId) {
         await supabase.from('ph_sync_log').update({
           issues_fetched: totalFetched,
           issues_upserted: totalUpserted,
+          projects_synced: completedProjects,
+          completed_at: new Date().toISOString(),
+          status: 'running',
         }).eq('id', logId)
       }
     }
@@ -510,10 +505,9 @@ serve(async (req) => {
       }
     }
 
-    // 10. Fetch and upsert versions
-    includedProjects = allProjectKeys.length > 0 ? allProjectKeys : includedProjects
+    // 10. Fetch and upsert versions — only for synced projects (not all 55)
     let totalVersions = 0
-    for (const projectKey of includedProjects) {
+    for (const projectKey of completedProjects) {
       try {
         const vRes = await fetch(`${base}/rest/api/3/project/${projectKey}/versions`, { headers })
         if (vRes.ok) {
@@ -540,8 +534,8 @@ serve(async (req) => {
     }
 
     // 11-12. Post-processing RPCs
-    await supabase.rpc('ph_parse_and_update_versions')
-    await supabase.rpc('ph_recompute_all')
+    await supabase.rpc('ph_parse_and_update_versions').catch(() => {})
+    await supabase.rpc('ph_recompute_all').catch(() => {})
 
     // 13. Update connection totals
     await supabase.from('ph_jira_connection').update({
@@ -573,7 +567,7 @@ serve(async (req) => {
       warnings,
       duration_ms: duration,
       completed_at: new Date().toISOString(),
-      projects_synced: projectsToSync,
+      projects_synced: completedProjects,
     }).eq('id', logId)
 
     return new Response(JSON.stringify({
@@ -586,6 +580,7 @@ serve(async (req) => {
       pruned: totalPruned,
       warnings,
       duration_ms: duration,
+      projects_synced: completedProjects,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
