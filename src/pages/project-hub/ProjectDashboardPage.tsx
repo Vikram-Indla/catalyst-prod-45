@@ -101,10 +101,7 @@ export default function ProjectDashboardPage() {
               </div>
             </div>
 
-            {/* Widget Grid */}
-            <div style={{ border: '2px dashed red', padding: 8, marginBottom: 8 }}>
-              DEBUG: projectId={String(projectId)}, pKey={pKey}, resolved={String(projectId || pKey)}
-            </div>
+            {/* Widget Grid — always render; hooks gracefully handle missing projectId */}
             <DashboardWidgetGrid projectId={projectId || pKey} projectKey={pKey} />
           </>
         )}
