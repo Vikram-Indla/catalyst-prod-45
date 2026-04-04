@@ -142,8 +142,8 @@ export function SyncEventsTab() {
 
   return (
     <TooltipProvider>
-      <div className="bg-white dark:bg-[#1F2128] border border-[#E2E8F0] dark:border-[#262830] rounded-md overflow-hidden">
-        <div className="flex items-center gap-3 p-3 border-b border-[#E2E8F0] dark:border-[#262830]">
+      <div className="bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[#2C2823] rounded-md overflow-hidden">
+        <div className="flex items-center gap-3 p-3 border-b border-[#E2E8F0] dark:border-[#2C2823]">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[140px] h-9 text-xs">
               <SelectValue placeholder="All statuses" />
@@ -165,7 +165,7 @@ export function SyncEventsTab() {
 
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b border-[#E2E8F0] dark:border-[#262830]">
+            <tr className="border-b border-[#E2E8F0] dark:border-[#2C2823]">
               {['Time', 'Event Type', 'Jira Key', 'Status', 'Items', 'Duration', 'Error'].map((h) => (
                 <th key={h} className={thClass} style={thStyle}>{h}</th>
               ))}
@@ -176,7 +176,7 @@ export function SyncEventsTab() {
               {filteredLogs.map((log: any) => {
                 const items = (log.items_created ?? 0) + (log.items_updated ?? 0) + (log.items_deleted ?? 0);
                 return (
-                  <tr key={log.id} className="border-b border-[#E2E8F0] dark:border-[#262830]" style={{ height: 36, maxHeight: 36 }}>
+                  <tr key={log.id} className="border-b border-[#E2E8F0] dark:border-[#2C2823]" style={{ height: 36, maxHeight: 36 }}>
                     <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}</td>
                     <td className={tdClass} style={tdStyle}>{log.event_type}</td>
                     <td className={tdClass} style={tdStyle}>{log.jira_key || '—'}</td>
@@ -225,10 +225,10 @@ export function WriteBackQueueTab() {
 
   return (
     <TooltipProvider>
-      <div className="bg-white dark:bg-[#1F2128] border border-[#E2E8F0] dark:border-[#262830] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[#2C2823] rounded-md overflow-hidden">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b border-[#E2E8F0] dark:border-[#262830]">
+            <tr className="border-b border-[#E2E8F0] dark:border-[#2C2823]">
               {['Work Item', 'Operation', 'Status', 'Retries', 'Last Error', 'Queued', 'Action'].map((h) => (
                 <th key={h} className={thClass} style={thStyle}>{h}</th>
               ))}
@@ -237,10 +237,10 @@ export function WriteBackQueueTab() {
           {isLoading ? <SkeletonRows cols={7} /> : isError ? <ErrorRow cols={7} /> : (
             <tbody>
               {(queueItems ?? []).map((q: any) => (
-                <tr key={q.id} className="border-b border-[#E2E8F0] dark:border-[#262830]" style={{ height: 36, maxHeight: 36 }}>
+                <tr key={q.id} className="border-b border-[#E2E8F0] dark:border-[#2C2823]" style={{ height: 36, maxHeight: 36 }}>
                   <td className={tdClass} style={tdStyle}>{q.ph_work_items?.title || q.ph_work_item_id}</td>
                   <td style={tdStyle}>
-                    <span className="inline-block bg-[#F1F5F9] text-[#334155] dark:bg-[#262830] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 3, padding: '2px 6px', textTransform: 'uppercase' }}>
+                    <span className="inline-block bg-[#F1F5F9] text-[#334155] dark:bg-[#2C2823] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 3, padding: '2px 6px', textTransform: 'uppercase' }}>
                       {q.operation}
                     </span>
                   </td>
@@ -288,7 +288,7 @@ export function DeletedItemsTab() {
 
   return (
     <TooltipProvider>
-      <div className="bg-white dark:bg-[#1F2128] border border-[#E2E8F0] dark:border-[#262830] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[#232019] border border-[#E2E8F0] dark:border-[#2C2823] rounded-md overflow-hidden">
         {!isLoading && !isError && (!deletedItems || deletedItems.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-10 gap-2">
             <Trash2 size={32} className="text-gray-300 dark:text-gray-600" />
@@ -298,7 +298,7 @@ export function DeletedItemsTab() {
           <>
             <table className="w-full border-collapse">
               <thead>
-                <tr className="border-b border-[#E2E8F0] dark:border-[#262830]">
+                <tr className="border-b border-[#E2E8F0] dark:border-[#2C2823]">
                   {['Jira Key', 'Catalyst Key', 'Deleted', 'Snapshot Preview'].map((h) => (
                     <th key={h} className={thClass} style={thStyle}>{h}</th>
                   ))}
@@ -310,7 +310,7 @@ export function DeletedItemsTab() {
                     const snap = d.item_snapshot ? JSON.stringify(d.item_snapshot) : '';
                     const preview = snap.length > 80 ? snap.substring(0, 80) + '…' : snap;
                     return (
-                      <tr key={d.id} className="border-b border-[#E2E8F0] dark:border-[#262830]" style={{ height: 36, maxHeight: 36 }}>
+                      <tr key={d.id} className="border-b border-[#E2E8F0] dark:border-[#2C2823]" style={{ height: 36, maxHeight: 36 }}>
                         <td className={tdClass} style={tdStyle}>{d.jira_key || '—'}</td>
                         <td className={tdClass} style={tdStyle}>{d.catalyst_item_key || '—'}</td>
                         <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(d.deleted_at), { addSuffix: true })}</td>
@@ -343,7 +343,7 @@ export function DeletedItemsTab() {
 /* ── Main Component (standalone page — kept as default export) ── */
 export default function JiraSyncAuditLog() {
   return (
-    <div className="p-6 space-y-6 dark:bg-[#181A1E] min-h-screen">
+    <div className="p-6 space-y-6 dark:bg-[#1A1714] min-h-screen">
       <div className="flex items-start justify-between">
         <div>
           <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700 }} className="text-[#0F172A] dark:text-white">

@@ -32,7 +32,7 @@ const TL = {
 const TD = {
   ink: '#F5F3F0', inkSecondary: 'rgba(235,238,245,0.82)', inkTertiary: 'rgba(235,238,245,0.60)',
   inkMuted: 'rgba(235,238,245,0.45)', inkMutedStrong: 'rgba(235,238,245,0.50)',
-  surface: '#1F2128', surfaceSecondary: '#181A1E', surfaceTertiary: 'rgba(255,255,255,0.04)',
+  surface: '#232019', surfaceSecondary: '#1A1714', surfaceTertiary: 'rgba(255,255,255,0.04)',
   border: 'rgba(255,255,255,0.10)', borderStrong: 'rgba(255,255,255,0.18)',
   primary: '#60A5FA', primaryHover: '#93C5FD', primaryBg: 'rgba(59,130,246,0.12)',
   teal: '#5EEAD4', tealText: '#5EEAD4', tealBg: 'rgba(13,148,136,0.15)',

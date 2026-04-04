@@ -390,7 +390,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
-      <DialogContent className="bg-white dark:bg-[#1F2128] sm:max-w-[480px]">
+      <DialogContent className="bg-white dark:bg-[#232019] sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle style={{ fontFamily: "'Sora', sans-serif", fontWeight: 650, fontSize: '18px' }}>New Idea</DialogTitle>
         </DialogHeader>

@@ -13,13 +13,13 @@ export type DarkTokens = {
 
 export const DK: DarkTokens = {
   // Backgrounds
-  pageBg: '#181A1E',
+  pageBg: '#1A1714',
   cardBg: 'transparent',
   headerBg: 'transparent',
   tableHeaderBg: 'rgba(255,255,255,0.03)',
   hoverBg: 'rgba(255,255,255,0.03)',
   selectedBg: 'rgba(59,130,246,0.08)',
-  floatBg: '#1F2128',
+  floatBg: '#232019',
   chipBg: 'rgba(255,255,255,0.06)',
   progressTrack: 'rgba(255,255,255,0.08)',
   iconBg: 'rgba(255,255,255,0.06)',
