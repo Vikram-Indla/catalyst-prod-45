@@ -5,12 +5,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { cn } from '@/lib/utils';
 
-interface BreakdownRow {
-  issue_type: string;
-  status_category: string;
-  cnt: number;
-}
-
 interface TypeSummary {
   type: string;
   total: number;
@@ -23,66 +17,57 @@ interface Props {
   issueCount: number;
 }
 
+const TYPE_BAR_COLORS: Record<string, string> = {
+  epic: '#6554C0', story: '#36B37E', task: '#2684FF', bug: '#FF5630',
+  subtask: '#2684FF', 'sub-task': '#2684FF', incident: '#FF5630',
+  'production incident': '#FF5630', 'new feature': '#36B37E',
+  feature: '#36B37E', improvement: '#36B37E', changes: '#FFAB00',
+  'change request': '#FFAB00', question: '#6554C0', problem: '#FF5630',
+  defect: '#FF5630', issue: '#2684FF', 'qa bug': '#FF5630',
+  backend: '#2684FF', frontend: '#2684FF', integration: '#2684FF',
+  figma: '#2684FF', 'business request': '#36B37E', 'business gap': '#FF5630',
+};
+
+function getBarColor(type: string): string {
+  return TYPE_BAR_COLORS[type.toLowerCase()] || '#94A3B8';
+}
+
 export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: Props) {
   const [open, setOpen] = useState(false);
 
-  const { data: breakdown, isLoading } = useQuery({
+  // Direct query — no RPC needed, avoids PostgREST schema cache issues
+  const { data: typeSummaries = [], isLoading } = useQuery({
     queryKey: ['issue-breakdown', projectKey],
     queryFn: async () => {
-      const { data } = await (supabase as any).rpc('get_project_issue_breakdown', {
-        p_project_key: projectKey,
-      });
-      return (data || []) as BreakdownRow[];
+      const { data, error } = await (supabase as any)
+        .from('ph_issues')
+        .select('issue_type')
+        .eq('project_key', projectKey);
+
+      if (error || !data) return [];
+
+      // Count by issue_type client-side
+      const map = new Map<string, number>();
+      let total = 0;
+      for (const row of data) {
+        const t = row.issue_type || 'Unknown';
+        map.set(t, (map.get(t) || 0) + 1);
+        total++;
+      }
+
+      return Array.from(map.entries())
+        .map(([type, count]) => ({
+          type,
+          total: count,
+          pct: total > 0 ? Math.round((count / total) * 100) : 0,
+        }))
+        .sort((a, b) => b.total - a.total);
     },
     enabled: open,
     staleTime: 60_000,
   });
 
-  // Aggregate by issue type only
-  const typeSummaries: TypeSummary[] = (() => {
-    if (!breakdown || breakdown.length === 0) return [];
-    const map = new Map<string, number>();
-    let grandTotal = 0;
-    for (const row of breakdown) {
-      const existing = map.get(row.issue_type) || 0;
-      map.set(row.issue_type, existing + row.cnt);
-      grandTotal += row.cnt;
-    }
-    return Array.from(map.entries())
-      .map(([type, total]) => ({
-        type,
-        total,
-        pct: grandTotal > 0 ? Math.round((total / grandTotal) * 100) : 0,
-      }))
-      .sort((a, b) => b.total - a.total);
-  })();
-
   const grandTotal = typeSummaries.reduce((s, t) => s + t.total, 0);
-
-  // Color for the horizontal bar segment per type
-  const TYPE_BAR_COLORS: Record<string, string> = {
-    epic: '#6554C0',
-    story: '#36B37E',
-    task: '#2684FF',
-    bug: '#FF5630',
-    subtask: '#2684FF',
-    'sub-task': '#2684FF',
-    incident: '#FF5630',
-    'production incident': '#FF5630',
-    'new feature': '#36B37E',
-    feature: '#36B37E',
-    improvement: '#36B37E',
-    changes: '#FFAB00',
-    'change request': '#FFAB00',
-    question: '#6554C0',
-    problem: '#FF5630',
-    defect: '#FF5630',
-    issue: '#2684FF',
-  };
-
-  function getBarColor(type: string): string {
-    return TYPE_BAR_COLORS[type.toLowerCase()] || '#94A3B8';
-  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -111,7 +96,7 @@ export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: P
             </span>
           </div>
           <span className="text-[11px] text-slate-400 dark:text-slate-500">
-            {grandTotal > 0 ? `${grandTotal} issues · ${typeSummaries.length} types` : 'Issue breakdown'}
+            {grandTotal > 0 ? `${grandTotal} issues across ${typeSummaries.length} types` : 'Issue breakdown'}
           </span>
         </div>
 
@@ -150,7 +135,6 @@ export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: P
                   <div className="text-[12px] font-medium text-slate-700 dark:text-slate-200 truncate">
                     {t.type}
                   </div>
-                  {/* Mini bar per type */}
                   <div className="flex h-1 w-full rounded-full overflow-hidden bg-slate-100 dark:bg-slate-700 mt-1">
                     <div
                       className="rounded-full"

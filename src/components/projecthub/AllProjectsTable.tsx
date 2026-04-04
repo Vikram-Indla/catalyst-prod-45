@@ -389,22 +389,27 @@ export function AllProjectsTable({
 }: Props) {
   const navigate = useNavigate();
 
-  // Per-project sync data from RPC + ph_sync_log (authoritative sources)
+  // Per-project sync data — direct ph_issues query (bypasses RPC/PostgREST cache issues)
   const { data: syncData } = useQuery({
     queryKey: ['project-sync-data'],
     queryFn: async () => {
-      // Use SECURITY DEFINER RPC to get per-project issue counts from ph_issues
       const countMap: Record<string, number> = {};
 
-      const { data: rpcData, error: rpcError } = await (supabase as any).rpc('get_project_issue_counts');
-      if (rpcError) console.error('[IssueCount] RPC error:', rpcError);
-      if (rpcData) {
-        console.log('[IssueCount] RPC returned', rpcData.length, 'rows:', rpcData);
-        rpcData.forEach((r: any) => {
-          if (r.proj) countMap[r.proj] = Number(r.cnt) || 0;
+      // Fetch project_key for every issue and count client-side
+      // This avoids RPC + PostgREST schema cache issues entirely
+      const { data: issueRows, error: issueError } = await (supabase as any)
+        .from('ph_issues')
+        .select('project_key');
+
+      if (issueError) {
+        console.error('[IssueCount] ph_issues query error:', issueError);
+      }
+      if (issueRows) {
+        issueRows.forEach((r: { project_key: string }) => {
+          if (r.project_key) {
+            countMap[r.project_key] = (countMap[r.project_key] || 0) + 1;
+          }
         });
-      } else {
-        console.warn('[IssueCount] RPC returned no data');
       }
 
       // Get last successful sync time
