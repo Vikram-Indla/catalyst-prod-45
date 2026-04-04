@@ -126,6 +126,9 @@ export function CreateTestCaseModal({
         setCaseTypeId('');
         setStatus('draft');
         setAutomation('manual');
+        setTestFormat('steps');
+        setGherkinFeature('');
+        setGherkinScenario('');
         setSteps([{ id: '1', action: '', expectedResult: '', attachments: [] }]);
         setAssignedTo('');
       }
