@@ -214,6 +214,7 @@ serve(async (req) => {
       fetched: totalFetched,
       upserted: totalUpserted,
       duration_ms: Date.now() - startTime,
+      diagnostics,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
