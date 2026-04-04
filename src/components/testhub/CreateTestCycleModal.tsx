@@ -95,6 +95,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         setEndDate('');
         setOwnerId('');
         setEnvironmentId('');
+        setCycleStatus('draft');
       }
       setErrors({});
     }
